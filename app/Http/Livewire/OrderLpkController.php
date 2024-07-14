@@ -54,7 +54,7 @@ class OrderLpkController extends Component
     {
         // dd('test');
         $this->products = MsProduct::get();
-        $this->buyer = MsBuyer::limit(10)->get();
+        $this->buyer = MsBuyer::get();
         $this->tglMasuk = Carbon::now()->format('Y-m-d');
         $this->tglKeluar = Carbon::now()->format('Y-m-d');
         
@@ -151,18 +151,18 @@ class OrderLpkController extends Component
             $data = $data->where('tod.status_order', $this->status);
         }
 
-        $total = $data->count();
-        $perPage = 7;
-        $orders = $data->offset(($this->currentPage - 1) * $perPage)
-                       ->limit($perPage)
-                       ->get();
+        // $total = $data->count();
+        // $perPage = 7;
+        // $orders = $data->offset(($this->currentPage - 1) * $perPage)
+        //                ->limit($perPage)
+        $data = $data->get();
 
         return view('livewire.order-lpk.order-lpk', [
-            'orders' => $orders,
-            'total' => $total,
+            'orders' => $data,
+            // 'total' => $total,
             'currentPage' => $this->currentPage,
-            'perPage' => $perPage,
+            // 'perPage' => $perPage,
             // 'headers' => $this->headerConfig()
-        ]);
+        ])->extends('layouts.master');
     }
 }

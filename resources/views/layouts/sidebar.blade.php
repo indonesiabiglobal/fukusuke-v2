@@ -44,7 +44,7 @@
                     <div class="collapse menu-dropdown" id="sidebarPages">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="asdf" class="nav-link" data-key="t-starter"> Order Entry </a>
+                                <a href="order-lpk" class="nav-link" data-key="t-starter"> Order Entry </a>
                             </li>
                             <li class="nav-item">
                                 <a href="pages-starter" class="nav-link" data-key="t-starter"> LPK Entry </a>

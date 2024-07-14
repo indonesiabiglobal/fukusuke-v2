@@ -9,6 +9,10 @@
     <meta content="Themesbrand" name="author" />
     <!-- App favicon -->
     <link rel="shortcut icon" href="{{ URL::asset('build/images/favicon.ico') }}">
+    {{-- @section('css') --}}
+    <link href="{{ URL::asset('build/libs/jsvectormap/css/jsvectormap.min.css')}}" rel="stylesheet" type="text/css" />
+    <link href="{{ URL::asset('build/libs/swiper/swiper-bundle.min.css')}}" rel="stylesheet" type="text/css" />
+{{-- @endsection --}}
     @include('layouts.head-css')
     @livewireStyles
 </head>
@@ -35,7 +39,7 @@
     </div>
     <!-- END layout-wrapper -->
 
-    {{-- @include('layouts.customizer') --}}
+    @include('layouts.customizer')
     <!-- JAVASCRIPT -->
     @include('layouts.vendor-scripts')
     @livewireScripts

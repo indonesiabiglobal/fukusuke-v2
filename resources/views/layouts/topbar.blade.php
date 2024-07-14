@@ -31,9 +31,9 @@
                     </span>
                 </button>
 
-                <button type="button" class="btn btn-sm px-3 fs-15 text-reset header-item d-none d-md-block" data-bs-toggle="modal" data-bs-target="#searchModal">
+                {{-- <button type="button" class="btn btn-sm px-3 fs-15 text-reset header-item d-none d-md-block" data-bs-toggle="modal" data-bs-target="#searchModal">
                     <span class="bi bi-search me-2"></span> Search for hybrix...
-                </button>
+                </button> --}}
             </div>
 
             <div class="d-flex align-items-center">
