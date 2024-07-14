@@ -30,14 +30,76 @@
             </div>
             <ul class="navbar-nav" id="navbar-nav">
             
-                <li class="menu-title"><span data-key="t-menu">@lang('translation.menu')</span></li>
+                {{-- <li class="menu-title"><span data-key="t-menu">@lang('translation.menu')</span></li> --}}
                 <li class="nav-item">
                     <a href="index" class="nav-link menu-link"> <i class="bi bi-speedometer2"></i> <span data-key="t-dashboard">@lang('translation.dashboards')</span> </a>
                 </li>
 
-                <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">@lang('translation.pages')</span></li>
+                <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">MENU</span></li>
 
                 <li class="nav-item">
+                    <a class="nav-link menu-link" href="#sidebarPages" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarPages">
+                        <i class="bi bi-journal-medical"></i> <span data-key="t-pages">Order & LPK</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="sidebarPages">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a href="asdf" class="nav-link" data-key="t-starter"> Order Entry </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="pages-starter" class="nav-link" data-key="t-starter"> LPK Entry </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="pages-starter" class="nav-link" data-key="t-starter"> Cetak LPK </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="pages-starter" class="nav-link" data-key="t-starter"> Order Report </a>
+                            </li>
+                            {{-- <li class="nav-item">
+                                <a href="#sidebarProfile" class="nav-link" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarProfile" data-key="t-profile">  @lang('translation.profile')
+                                </a>
+                                <div class="collapse menu-dropdown" id="sidebarProfile">
+                                    <ul class="nav nav-sm flex-column">
+                                        <li class="nav-item">
+                                            <a href="pages-profile" class="nav-link" data-key="t-simple-page"> @lang('translation.simple-page') </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="pages-profile-settings" class="nav-link" data-key="t-settings"> @lang('translation.settings') </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li> --}}
+                            {{-- <li class="nav-item">
+                                <a href="pages-team" class="nav-link" data-key="t-team"> @lang('translation.team') </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="pages-timeline" class="nav-link" data-key="t-timeline"> @lang('translation.timeline') </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="pages-faqs" class="nav-link" data-key="t-faqs"> @lang('translation.faqs') </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="pages-pricing" class="nav-link" data-key="t-pricing">  @lang('translation.pricing') </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="pages-maintenance" class="nav-link" data-key="t-maintenance"> @lang('translation.maintenance') 
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="pages-coming-soon" class="nav-link" data-key="t-coming-soon"> @lang('translation.coming-soon') 
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="pages-sitemap" class="nav-link" data-key="t-sitemap"> @lang('translation.sitemap')  </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="pages-search-results" class="nav-link" data-key="t-search-results"> @lang('translation.search-results')  </a>
+                            </li> --}}
+                        </ul>
+                    </div>
+                </li>
+                
+                {{-- <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarAuth" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarAuth">
                         <i class="bi bi-person-circle"></i> <span data-key="t-authentication">@lang('translation.authentication')</span>
                     </a>
@@ -210,9 +272,9 @@
                             </li>
                         </ul>
                     </div>
-                </li>
+                </li> --}}
 
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarPages" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarPages">
                         <i class="bi bi-journal-medical"></i> <span data-key="t-pages">@lang('translation.pages')</span>
                     </a>
@@ -263,7 +325,7 @@
                             </li>
                         </ul>
                     </div>
-                </li>
+                </li> --}}
 
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="widgets">

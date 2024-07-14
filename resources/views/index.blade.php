@@ -827,7 +827,7 @@
 
     </div> <!-- end col -->
 
-    <div class="col-auto layout-rightside-col">
+    {{-- <div class="col-auto layout-rightside-col">
         <div class="overlay"></div>
         <div class="layout-rightside">
             <div class="card h-100 rounded-0">
@@ -1350,12 +1350,13 @@
                 </div>
             </div> <!-- end card-->
         </div> <!-- end .rightbar-->
-    </div> <!-- end col -->
+    </div>  --}}
+    <!-- end col -->
 </div>
-
+{{-- 
 <div>
     <button type="button" class="btn-success btn-rounded shadow-lg btn btn-icon layout-rightside-btn fs-22"><i class="ri-chat-smile-2-line"></i></button>
-</div>
+</div> --}}
 
 @endsection
 
