@@ -15,9 +15,8 @@ use Livewire\WithPagination;
 
 class OrderLpkController extends Component
 {
-    
-    public $tdOrder = [];
-    public $products = [];
+    protected $paginationTheme = 'bootstrap';
+    public $products;
     public $buyer;
     public $tglMasuk;
     public $tglKeluar;
@@ -31,34 +30,13 @@ class OrderLpkController extends Component
     public $file;
 
     use WithPagination;
-    public $headers;
-    public $currentPage = 1;
-
-    // private function headerConfig()
-    // {
-    //     return [
-    //         'id' => '#',
-    //         'po_no' => 'PO Number',
-    //         'produk_name' => 'Nama Produk',
-    //         'product_code' => 'Kode Produk',
-    //         'buyer_name' => 'Buyer',
-    //         'order_qty' => 'Quantity',
-    //         'order_date' => 'Tgl. Order',
-    //         'etddate' => 'Etd',
-    //         'processdate' => 'Tgl Proses',
-    //         // 'seq_no' => 'No.',
-    //     ];
-    // }
 
     public function mount()
     {
-        // dd('test');
         $this->products = MsProduct::get();
         $this->buyer = MsBuyer::get();
         $this->tglMasuk = Carbon::now()->format('Y-m-d');
         $this->tglKeluar = Carbon::now()->format('Y-m-d');
-        
-        // $this->headers = $this->headerConfig();
     }
 
     public function search(){
@@ -68,18 +46,6 @@ class OrderLpkController extends Component
     public function add()
     {
         return redirect()->route('add-order');
-    }
-
-    public function previousPage()
-    {
-        if ($this->currentPage > 1) {
-            $this->currentPage--;
-        }
-    }
-
-    public function nextPage()
-    {
-        $this->currentPage++;
     }
 
     // public function download()
@@ -103,6 +69,11 @@ class OrderLpkController extends Component
     //     $this->dispatchBrowserEvent('notification', ['type' => 'success', 'message' => 'Excel imported successfully.']);
     // }
 
+    // private function resultData()
+    // {
+    //     return 
+    // }
+
     public function render()
     {
         $data = DB::table('tdorder AS tod')
@@ -112,6 +83,7 @@ class OrderLpkController extends Component
                      'tod.processdate', 'tod.processseq', 'tod.updated_by', 'tod.updated_on')
             ->join('msproduct AS mp', 'mp.id', '=', 'tod.product_id')
             ->join('msbuyer AS mbu', 'mbu.id', '=', 'tod.buyer_id');
+            
 
         if($this->transaksi == 2){
             if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
@@ -151,18 +123,10 @@ class OrderLpkController extends Component
             $data = $data->where('tod.status_order', $this->status);
         }
 
-        // $total = $data->count();
-        // $perPage = 7;
-        // $orders = $data->offset(($this->currentPage - 1) * $perPage)
-        //                ->limit($perPage)
-        $data = $data->get();
+        $data = $data->paginate(8);
 
         return view('livewire.order-lpk.order-lpk', [
-            'orders' => $data,
-            // 'total' => $total,
-            'currentPage' => $this->currentPage,
-            // 'perPage' => $perPage,
-            // 'headers' => $this->headerConfig()
+            'data' => $data
         ])->extends('layouts.master');
     }
 }

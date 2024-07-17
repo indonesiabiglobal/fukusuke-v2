@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"  data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg" data-sidebar-image="none" data-preloader="disable">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"  data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg" data-sidebar-image="none" data-preloader="enable">
 
 <head>
     <meta charset="utf-8" />
@@ -15,6 +15,7 @@
 {{-- @endsection --}}
     @include('layouts.head-css')
     @livewireStyles
+    @powerGridStyles
 </head>
 <body>
     <!-- Begin page -->
@@ -43,6 +44,7 @@
     <!-- JAVASCRIPT -->
     @include('layouts.vendor-scripts')
     @livewireScripts
+    @powerGridScripts
 </body>
 
 </html>

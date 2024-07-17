@@ -1370,5 +1370,5 @@
 <!-- dashboard init -->
 <script src="{{ URL::asset('build/libs/list.js/list.min.js') }}"></script>
 <script src="{{ URL::asset('build/js/pages/dashboard-ecommerce.init.js') }}"></script>
-<script src="{{ URL::asset('build/js/app.js') }}"></script>
+{{-- <script src="{{ URL::asset('build/js/app.js') }}"></script> --}}
 @endsection
