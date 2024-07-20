@@ -137,8 +137,13 @@
                 @endphp
                 @forelse ($data as $item)
                     <tr>
-                        <td>
+                        {{-- <td>
                             <a href="{{ route('edit-order', ['orderId' => $item->id]) }}" class="link-success fs-15"><i class="ri-edit-2-line"></i></a>
+                        </td> --}}
+                        <td>
+                            <a href="/edit-order?orderId={{ $item->id }}" class="link-success fs-15">
+                                <i class="ri-edit-2-line"></i>
+                            </a>
                         </td>
                         <td>{{ $item->po_no }}</td>
                         <td>{{ $item->produk_name }}</td>

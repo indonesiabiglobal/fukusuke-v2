@@ -6,6 +6,7 @@ use App\Models\MsBuyer;
 use App\Models\MsProduct;
 use App\Models\TdOrders;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 
@@ -27,13 +28,28 @@ class EditOrderController extends Component
     public $status_order;
     public $dimensi;
     public $product_name;
+    public $tglMasuk;
     // public $data = '';
 
-    public function mount($orderId)
-    {        
-        $this->buyer = MsBuyer::limit(10)->get();        
+    protected $rules = [
+        'po_no' => 'required',
+        'product_code' => 'required',
+        'order_qty' => 'required',
+        'process_date' => 'required',
+        'order_date' => 'required',
+        'stufingdate' => 'required',
+        'etddate' => 'required',
+        'etadate' => 'required',
+        'unit_id' => 'required',
+        'buyer_id' => 'required',
+    ];
 
-        $order = TdOrders::findOrFail($orderId);
+    public function mount(Request $request)
+    {
+        $this->tglMasuk = Carbon::now()->format('Y-m-d');
+        $this->buyer = MsBuyer::get();        
+
+        $order = TdOrders::findOrFail($request->query('orderId'));
         $this->orderId = $order->id;
         $this->po_no = $order->po_no;
         $this->product_code = $order->product_code;
@@ -54,18 +70,8 @@ class EditOrderController extends Component
 
     public function save()
     {
-        $validatedData = $this->validate([
-            'po_no' => 'required',
-            'product_code' => 'required',
-            'order_qty' => 'required',
-            'process_date' => 'required',
-            'order_date' => 'required',
-            'stufingdate' => 'required',
-            'etddate' => 'required',
-            'etadate' => 'required',
-            'unit_id' => 'required',
-            'buyer_id' => 'required',
-        ]);
+        dd($this->validate());
+        $this->validate();
 
         try {
             $order = TdOrders::findOrFail($this->orderId);
@@ -80,10 +86,12 @@ class EditOrderController extends Component
             $order->buyer_id = $this->buyer_id;
             $order->save();
 
-            session()->flash('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
-            return redirect()->route('order-entry');
+            
+            // session()->flash('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
+            return redirect()->route('order-lpk');
         } catch (\Exception $e) {
-            $this->dispatchBrowserEvent('notification', ['type' => 'error', 'message' => 'Failed to save order: ' . $e->getMessage()]);
+            return redirect()->route('order-lpk');
+            // $this->dispatchBrowserEvent('notification', ['type' => 'error', 'message' => 'Failed to save order: ' . $e->getMessage()]);
         }
     }
 
@@ -101,7 +109,7 @@ class EditOrderController extends Component
 
     public function cancel()
     {
-        return redirect()->route('order-entry');
+        return redirect()->route('order-lpk');
     }
 
     public function print()

@@ -26,7 +26,7 @@ Route::get('index/{locale}', [App\Http\Controllers\HomeController::class, 'lang'
 
 
 Route::get('/order-lpk', OrderLpkController::class)->name('order-lpk');
-Route::get('/edit-order/{orderId}', EditOrderController::class)->name('edit-order');
+Route::get('/edit-order', EditOrderController::class)->name('edit-order');
 
 Route::get('/cetak-order', function (Request $request) {
     $processdate = $request->query('processdate');
