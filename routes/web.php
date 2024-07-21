@@ -1,12 +1,18 @@
 <?php
 
 use App\Http\Livewire\AddLpkController;
+use App\Http\Livewire\NippoInfure\AddNippoController;
 use App\Http\Livewire\AddOrderController;
 use App\Http\Livewire\CetakLpkController;
+use App\Http\Livewire\NippoInfure\CheckListInfureController;
 use App\Http\Livewire\EditLpkController;
 use Illuminate\Http\Request;
 use App\Http\Livewire\EditOrderController;
 use App\Http\Livewire\LpkEntryController;
+use App\Http\Livewire\NippoInfure\EditNippoController;
+use App\Http\Livewire\NippoInfure\LabelGentanController;
+use App\Http\Livewire\NippoInfure\LossInfureController;
+use App\Http\Livewire\NippoInfure\NippoInfureController;
 use App\Http\Livewire\OrderLpkController;
 use App\Http\Livewire\OrderReportController;
 use Illuminate\Support\Facades\Auth;
@@ -41,6 +47,16 @@ Route::get('/edit-lpk', EditLpkController::class)->name('edit-lpk');
 
 Route::get('/cetak-lpk', CetakLpkController::class)->name('cetak-lpk');
 Route::get('/order-report', OrderReportController::class)->name('order-report');
+
+// Nipo Infure
+Route::get('/nippo-infure', NippoInfureController::class)->name('nippo-infure');
+Route::get('/edit-nippo/', EditNippoController::class)->name('edit-nippo');
+Route::get('/add-nippo', AddNippoController::class)->name('add-nippo');
+
+Route::get('/loss-infure', LossInfureController::class)->name('loss-infure');
+
+Route::get('/checklist-infure', CheckListInfureController::class)->name('checklist-infure');
+Route::get('/label-gentan', LabelGentanController::class)->name('label-gentan');
 
 // Route::get('/cetak-order', function (Request $request) {
 //     $processdate = $request->query('processdate');
