@@ -31,6 +31,8 @@ use App\Http\Livewire\NippoSeitai\NippoSeitaiController;
 use App\Http\Livewire\NippoSeitai\LabelMasukGudangController;
 use App\Http\Livewire\OrderLpkController;
 use App\Http\Livewire\OrderReportController;
+use App\Http\Livewire\Report\DetailReportController;
+use App\Http\Livewire\Report\GeneralReportController;
 use App\Http\Livewire\Warehouse\PenarikanPaletController;
 use App\Http\Livewire\Warehouse\PengembalianPaletController;
 use Illuminate\Support\Facades\Auth;
@@ -103,11 +105,12 @@ Route::get('/mutasi-isi-palet-kenpin', mutasiIsiPaletKenpinController::class)->n
 Route::get('/print-label-gudang-kenpin', PrintLabelGudangKenpinController::class)->name('print-label-gudang-kenpin');
 Route::get('/report-kenpin', ReportKenpinController::class)->name('report-kenpin');
 
+// Warehouse
 Route::get('/penarikan-palet', PenarikanPaletController::class)->name('penarikan-palet');
 Route::get('/pengembalian-palet', PengembalianPaletController::class)->name('pengembalian-palet');
 
-// Route::get('/general-report', GeneralReport::class)->name('general-report');
-// Route::get('/detail-report', DetailReport::class)->name('detail-report');
+Route::get('/general-report', GeneralReportController::class)->name('general-report');
+Route::get('/detail-report', DetailReportController::class)->name('detail-report');
 
 // Route::get('/cetak-order', function (Request $request) {
 //     $processdate = $request->query('processdate');
