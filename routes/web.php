@@ -10,13 +10,19 @@ use Illuminate\Http\Request;
 use App\Http\Livewire\EditOrderController;
 use App\Http\Livewire\jamKerja\InfureJamKerjaController;
 use App\Http\Livewire\jamKerja\SeitaiJamKerjaController;
+use App\Http\Livewire\Kenpin\AddKenpinInfureController;
+use App\Http\Livewire\Kenpin\AddKenpinSeitaiController;
+use App\Http\Livewire\Kenpin\KenpinInfureController;
+use App\Http\Livewire\Kenpin\KenpinSeitaiController;
+use App\Http\Livewire\Kenpin\mutasiIsiPaletKenpinController;
+use App\Http\Livewire\Kenpin\PrintLabelGudangKenpinController;
+use App\Http\Livewire\Kenpin\ReportKenpinController;
 use App\Http\Livewire\LpkEntryController;
 use App\Http\Livewire\NippoInfure\EditNippoController;
 use App\Http\Livewire\NippoInfure\LabelGentanController;
 use App\Http\Livewire\NippoInfure\LossInfureController;
 use App\Http\Livewire\NippoInfure\NippoInfureController;
 use App\Http\Livewire\NippoSeitai\AddSeitaiController;
-use App\Http\Livewire\NippoSeitai\CheckListSeitai;
 use App\Http\Livewire\NippoSeitai\CheckListSeitaiController;
 use App\Http\Livewire\NippoSeitai\EditSeitaiController;
 use App\Http\Livewire\NippoSeitai\LossSeitaiController;
@@ -83,6 +89,23 @@ Route::get('/label-masuk-gudang', LabelMasukGudangController::class)->name('labe
 // Jam Kerja
 Route::get('/infure-jam-kerja', InfureJamKerjaController::class)->name('infure-jam-kerja');
 Route::get('/seitai-jam-kerja', SeitaiJamKerjaController::class)->name('seitai-jam-kerja');
+
+// Kenpin
+Route::get('/kenpin-infure', KenpinInfureController::class)->name('kenpin-infure');
+Route::get('/add-kenpin-infure', AddKenpinInfureController::class)->name('add-kenpin');
+
+Route::get('/kenpin-seitai', KenpinSeitaiController::class)->name('kenpin-seitai-kenpin');
+Route::get('/add-kenpin-seitai', AddKenpinSeitaiController::class)->name('add-kenpin-seitai');
+
+Route::get('/mutasi-isi-palet-kenpin', mutasiIsiPaletKenpinController::class)->name('mutasi-isi-palet-kenpin');
+Route::get('/print-label-gudang-kenpin', PrintLabelGudangKenpinController::class)->name('print-label-gudang-kenpin');
+Route::get('/report-kenpin', ReportKenpinController::class)->name('report-kenpin');
+
+// Route::get('/penarikan-palet', PenarikanPaletController::class)->name('penarikan-palet');
+// Route::get('/pengembalian-palet', PengembalianPalet::class)->name('pengembalian-palet');
+
+// Route::get('/general-report', GeneralReport::class)->name('general-report');
+// Route::get('/detail-report', DetailReport::class)->name('detail-report');
 
 // Route::get('/cetak-order', function (Request $request) {
 //     $processdate = $request->query('processdate');
