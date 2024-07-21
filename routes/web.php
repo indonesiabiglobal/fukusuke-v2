@@ -8,11 +8,20 @@ use App\Http\Livewire\NippoInfure\CheckListInfureController;
 use App\Http\Livewire\EditLpkController;
 use Illuminate\Http\Request;
 use App\Http\Livewire\EditOrderController;
+
 use App\Http\Livewire\LpkEntryController;
 use App\Http\Livewire\NippoInfure\EditNippoController;
 use App\Http\Livewire\NippoInfure\LabelGentanController;
 use App\Http\Livewire\NippoInfure\LossInfureController;
 use App\Http\Livewire\NippoInfure\NippoInfureController;
+use App\Http\Livewire\NippoSeitai\AddSeitaiController;
+use App\Http\Livewire\NippoSeitai\CheckListSeitai;
+use App\Http\Livewire\NippoSeitai\CheckListSeitaiController;
+use App\Http\Livewire\NippoSeitai\EditSeitaiController;
+use App\Http\Livewire\NippoSeitai\LossSeitaiController;
+use App\Http\Livewire\NippoSeitai\MutasiIsiPaletController;
+use App\Http\Livewire\NippoSeitai\NippoSeitaiController;
+use App\Http\Livewire\NippoSeitai\LabelMasukGudangController;
 use App\Http\Livewire\OrderLpkController;
 use App\Http\Livewire\OrderReportController;
 use Illuminate\Support\Facades\Auth;
@@ -57,6 +66,18 @@ Route::get('/loss-infure', LossInfureController::class)->name('loss-infure');
 
 Route::get('/checklist-infure', CheckListInfureController::class)->name('checklist-infure');
 Route::get('/label-gentan', LabelGentanController::class)->name('label-gentan');
+
+// Nippo Seitai
+Route::get('/nippo-seitai', NippoSeitaiController::class)->name('nippo-seitai');
+Route::get('/add-seitai', AddSeitaiController::class)->name('add-seitai');
+Route::get('/edit-seitai', EditSeitaiController::class)->name('edit-seitai');
+
+Route::get('/loss-seitai', LossSeitaiController::class)->name('loss-seitai');
+Route::get('/add-loss', AddSeitaiController::class)->name('add-loss');
+
+Route::get('/mutasi-isi-palet', MutasiIsiPaletController::class)->name('mutasi-isi-palet');
+Route::get('/check-list-seitai', CheckListSeitaiController::class)->name('check-list-seitai');
+Route::get('/label-masuk-gudang', LabelMasukGudangController::class)->name('label-masuk-gudang');
 
 // Route::get('/cetak-order', function (Request $request) {
 //     $processdate = $request->query('processdate');
