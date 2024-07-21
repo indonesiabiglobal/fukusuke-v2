@@ -31,6 +31,8 @@ use App\Http\Livewire\NippoSeitai\NippoSeitaiController;
 use App\Http\Livewire\NippoSeitai\LabelMasukGudangController;
 use App\Http\Livewire\OrderLpkController;
 use App\Http\Livewire\OrderReportController;
+use App\Http\Livewire\Warehouse\PenarikanPaletController;
+use App\Http\Livewire\Warehouse\PengembalianPaletController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -101,8 +103,8 @@ Route::get('/mutasi-isi-palet-kenpin', mutasiIsiPaletKenpinController::class)->n
 Route::get('/print-label-gudang-kenpin', PrintLabelGudangKenpinController::class)->name('print-label-gudang-kenpin');
 Route::get('/report-kenpin', ReportKenpinController::class)->name('report-kenpin');
 
-// Route::get('/penarikan-palet', PenarikanPaletController::class)->name('penarikan-palet');
-// Route::get('/pengembalian-palet', PengembalianPalet::class)->name('pengembalian-palet');
+Route::get('/penarikan-palet', PenarikanPaletController::class)->name('penarikan-palet');
+Route::get('/pengembalian-palet', PengembalianPaletController::class)->name('pengembalian-palet');
 
 // Route::get('/general-report', GeneralReport::class)->name('general-report');
 // Route::get('/detail-report', DetailReport::class)->name('detail-report');

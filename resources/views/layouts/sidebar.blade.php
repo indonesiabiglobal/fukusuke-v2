@@ -154,10 +154,10 @@
                     <div class="collapse menu-dropdown" id="warehouse">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="/penarikan-palet-warehouse" class="nav-link" data-key="t-starter"> Penarikan Palet </a>
+                                <a href="/penarikan-palet" class="nav-link" data-key="t-starter"> Penarikan Palet </a>
                             </li>
                             <li class="nav-item">
-                                <a href="/pengembalian-palet-warehouse" class="nav-link" data-key="t-starter"> Pengembalian Palet </a>
+                                <a href="/pengembalian-palet" class="nav-link" data-key="t-starter"> Pengembalian Palet </a>
                             </li>
                         </ul>
                     </div>
