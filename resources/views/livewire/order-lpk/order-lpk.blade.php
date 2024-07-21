@@ -3,7 +3,7 @@
     <div class="col-12 col-lg-7">
         <div class="row">
             <div class="col-12 col-lg-3">
-                <label class="form-label text-muted">Filter Tanggal</label>
+                <label class="form-label text-muted fw-bold">Filter Tanggal</label>
             </div>
             <div class="col-12 col-lg-9 mb-1">
                 <div class="form-group">
@@ -31,7 +31,7 @@
             </div>
 
             <div class="col-12 col-lg-3">
-                <label class="form-label text-muted">Search</label>
+                <label class="form-label text-muted fw-bold">Search</label>
             </div>
             <div class="col-12 col-lg-9">
                 <div class="input-group">
@@ -43,7 +43,7 @@
     <div class="col-12 col-lg-5">
         <div class="row">
             <div class="col-12 col-lg-2">
-                <label for="buyer" class="form-label text-muted">Buyer</label>
+                <label for="buyer" class="form-label text-muted fw-bold">Buyer</label>
             </div>
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
@@ -56,7 +56,7 @@
                 </div>
             </div>
             <div class="col-12 col-lg-2">
-                <label for="product" class="form-label text-muted">Product</label>
+                <label for="product" class="form-label text-muted fw-bold">Product</label>
             </div>
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
@@ -69,7 +69,7 @@
                 </div>
             </div>
             <div class="col-12 col-lg-2">
-                <label for="status" class="form-label text-muted">Status</label>
+                <label for="status" class="form-label text-muted fw-bold">Status</label>
             </div>
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
@@ -149,12 +149,9 @@
                 @endphp
                 @forelse ($data as $item)
                     <tr>
-                        {{-- <td>
-                            <a href="{{ route('edit-order', ['orderId' => $item->id]) }}" class="link-success fs-15"><i class="ri-edit-2-line"></i></a>
-                        </td> --}}
                         <td>
-                            <a href="/edit-order?orderId={{ $item->id }}" class="link-success fs-15">
-                                <i class="ri-edit-2-line"></i>
+                            <a href="/edit-order?orderId={{ $item->id }}" class="link-success fs-15 p-1 bg-primary rounded">
+                                <i class="ri-edit-box-line text-white"></i>
                             </a>
                         </td>
                         <td>{{ $item->po_no }}</td>

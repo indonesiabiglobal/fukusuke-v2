@@ -2,7 +2,7 @@
 <div class="app-menu navbar-menu">
     <!-- LOGO -->
     <div class="navbar-brand-box">
-        <a href="index" class="logo logo-dark">
+        {{-- <a href="index" class="logo logo-dark">
             <span class="logo-sm">
                 <img src="{{ URL::asset('build/images/logo-sm.png') }}" alt="" height="26">
             </span>
@@ -17,7 +17,7 @@
             <span class="logo-lg">
                 <img src="{{ URL::asset('build/images/logo-light.png') }}" alt="" height="26">
             </span>
-        </a>
+        </a> --}}
         <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover" id="vertical-hover">
             <i class="ri-record-circle-line"></i>
         </button>
@@ -39,26 +39,25 @@
 
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#orderlpk" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="orderlpk">
-                        <i class="ri-shopping-cart-2-line"></i> <span data-key="t-pages">Order & LPK</span>
+                        <i class="ri-shopping-cart-2-line"></i> <span data-key="t-orderlpk">Order & LPK</span>
                     </a>
                     <div class="collapse menu-dropdown" id="orderlpk">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="/order-lpk" class="nav-link" data-key="t-starter"> Order Entry </a>
+                                <a href="order-lpk" class="nav-link" data-key="t-order-lpk"> Order Entry </a>
                             </li>
                             <li class="nav-item">
-                                <a href="/lpk-entry" class="nav-link" data-key="t-starter"> LPK Entry </a>
+                                <a href="lpk-entry" class="nav-link" data-key="t-lpk-entry"> LPK Entry </a>
                             </li>
                             <li class="nav-item">
-                                <a href="/cetak-lpk" class="nav-link" data-key="t-starter"> Cetak LPK </a>
+                                <a href="cetak-lpk" class="nav-link" data-key="t-lpk"> Cetak LPK </a>
                             </li>
                             <li class="nav-item">
-                                <a href="/order-report" class="nav-link" data-key="t-starter"> Order Report </a>
+                                <a href="order-report" class="nav-link" data-key="t-order-report"> Order Report </a>
                             </li>
                         </ul>
                     </div>
                 </li>
-
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#nippoinfure" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="nippoinfure">
                         <i class="ri-settings-5-line"></i> <span data-key="t-pages">Nippo INFURE</span>
@@ -66,16 +65,16 @@
                     <div class="collapse menu-dropdown" id="nippoinfure">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="/nippo-infure" class="nav-link" data-key="t-starter"> Nipo Infure </a>
+                                <a href="nippo-infure" class="nav-link" data-key="t-starter"> Nipo Infure </a>
                             </li>
                             <li class="nav-item">
-                                <a href="/loss-infure" class="nav-link" data-key="t-starter"> Loss Infure </a>
+                                <a href="loss-infure" class="nav-link" data-key="t-starter"> Loss Infure </a>
                             </li>
                             <li class="nav-item">
-                                <a href="/checklist-infure" class="nav-link" data-key="t-starter"> Check List </a>
+                                <a href="checklist-infure" class="nav-link" data-key="t-starter"> Check List </a>
                             </li>
                             <li class="nav-item">
-                                <a href="/label-gentan" class="nav-link" data-key="t-starter"> Label Gentan </a>
+                                <a href="label-gentan" class="nav-link" data-key="t-starter"> Label Gentan </a>
                             </li>
                         </ul>
                     </div>
@@ -88,19 +87,19 @@
                     <div class="collapse menu-dropdown" id="nipposeitai">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="/nippo-seitai" class="nav-link" data-key="t-starter"> Nipo Seitai </a>
+                                <a href="nippo-seitai" class="nav-link" data-key="t-starter"> Nipo Seitai </a>
                             </li>
                             <li class="nav-item">
-                                <a href="/loss-seitai" class="nav-link" data-key="t-starter"> Loss Seitai </a>
+                                <a href="loss-seitai" class="nav-link" data-key="t-starter"> Loss Seitai </a>
                             </li>
                             <li class="nav-item">
                                 <a href="/mutasi-isi-palet" class="nav-link" data-key="t-starter"> Mutasi Isi Palet </a>
                             </li>
                             <li class="nav-item">
-                                <a href="/check-list-seitai" class="nav-link" data-key="t-starter"> Check List </a>
+                                <a href="check-list-seitai" class="nav-link" data-key="t-starter"> Check List </a>
                             </li>
                             <li class="nav-item">
-                                <a href="/label-masuk-gudang" class="nav-link" data-key="t-starter"> Label Masuk Gudang </a>
+                                <a href="label-masuk-gudang" class="nav-link" data-key="t-starter"> Label Masuk Gudang </a>
                             </li>
                         </ul>
                     </div>
@@ -113,10 +112,10 @@
                     <div class="collapse menu-dropdown" id="jamkerja">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="/infure-jam-kerja" class="nav-link" data-key="t-starter"> Infure </a>
+                                <a href="infure-jam-kerja" class="nav-link" data-key="t-starter"> Infure </a>
                             </li>
                             <li class="nav-item">
-                                <a href="/seitai-jam-kerja" class="nav-link" data-key="t-starter"> Seitai </a>
+                                <a href="seitai-jam-kerja" class="nav-link" data-key="t-starter"> Seitai </a>
                             </li>
                         </ul>
                     </div>
@@ -129,19 +128,19 @@
                     <div class="collapse menu-dropdown" id="kenpin">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="/kenpin-infure" class="nav-link" data-key="t-starter"> Kenpin Infure </a>
+                                <a href="kenpin-infure" class="nav-link" data-key="t-starter"> Kenpin Infure </a>
                             </li>
                             <li class="nav-item">
-                                <a href="/kenpin-seitai" class="nav-link" data-key="t-starter"> Kenpin Seitai </a>
+                                <a href="kenpin-seitai" class="nav-link" data-key="t-starter"> Kenpin Seitai </a>
                             </li>
                             <li class="nav-item">
-                                <a href="/mutasi-isi-palet-kenpin" class="nav-link" data-key="t-starter"> Mutasi Isi Palet </a>
+                                <a href="mutasi-isi-palet-kenpin" class="nav-link" data-key="t-starter"> Mutasi Isi Palet </a>
                             </li>
                             <li class="nav-item">
-                                <a href="/print-label-gudang-kenpin" class="nav-link" data-key="t-starter"> Print Label Gudang </a>
+                                <a href="print-label-gudang-kenpin" class="nav-link" data-key="t-starter"> Print Label Gudang </a>
                             </li>
                             <li class="nav-item">
-                                <a href="/report-kenpin" class="nav-link" data-key="t-starter"> Report </a>
+                                <a href="report-kenpin" class="nav-link" data-key="t-starter"> Report </a>
                             </li>
                         </ul>
                     </div>
@@ -154,10 +153,10 @@
                     <div class="collapse menu-dropdown" id="warehouse">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="/penarikan-palet" class="nav-link" data-key="t-starter"> Penarikan Palet </a>
+                                <a href="penarikan-palet" class="nav-link" data-key="t-starter"> Penarikan Palet </a>
                             </li>
                             <li class="nav-item">
-                                <a href="/pengembalian-palet" class="nav-link" data-key="t-starter"> Pengembalian Palet </a>
+                                <a href="pengembalian-palet" class="nav-link" data-key="t-starter"> Pengembalian Palet </a>
                             </li>
                         </ul>
                     </div>
@@ -170,10 +169,10 @@
                     <div class="collapse menu-dropdown" id="report">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="/general-report" class="nav-link" data-key="t-starter"> General Report </a>
+                                <a href="general-report" class="nav-link" data-key="t-starter"> General Report </a>
                             </li>
                             <li class="nav-item">
-                                <a href="/detail-report" class="nav-link" data-key="t-starter"> Detail Report </a>
+                                <a href="detail-report" class="nav-link" data-key="t-starter"> Detail Report </a>
                             </li>
                         </ul>
                     </div>
@@ -186,7 +185,7 @@
                     <div class="collapse menu-dropdown" id="mastertabel">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="/buyer" class="nav-link" data-key="t-starter"> Buyer </a>
+                                <a href="buyer" class="nav-link" data-key="t-starter"> Buyer </a>
                             </li>
                             <li class="nav-item">
                                 <a href="#produk" class="nav-link" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="produk" data-key="t-profile"><i class="bx bx-money"></i> Produk </a>
