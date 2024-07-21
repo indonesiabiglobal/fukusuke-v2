@@ -48,7 +48,7 @@
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
                     <select class="form-control" wire:model.defer="idBuyer" id="buyer" name="buyer" data-choices data-choices-sorting-false data-choices-removeItem>
-                        <option value="">- Pilih Buyer -</option>
+                        {{-- <option value="">- Pilih Buyer -</option> --}}
                         @foreach ($buyer as $item)
                             <option value="{{ $item->id }}">{{ $item->name }}</option>
                         @endforeach

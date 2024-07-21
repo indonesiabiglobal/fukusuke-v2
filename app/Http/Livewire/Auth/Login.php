@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\Auth;
 
 class Login extends Component
 {
-    public $email = "admin@themesbrand.com";
-    public $password = "12345678";
+    public $email = "bigi@gmail.com";
+    public $password = "secret";
 
     protected $rules = [
         'email' => 'required|string|email|max:255',

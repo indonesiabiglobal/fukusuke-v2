@@ -16,12 +16,8 @@
                     </div>
 
                     <div class="text-white mt-4">
-                        <p class="mb-0">&copy;
-                            <script>
-                                document.write(new Date().getFullYear())
-                            </script> Hybrix. Crafted with <i class="mdi mdi-heart text-danger"></i> by
-                            Themesbrand
-                        </p>
+                        <p class="mb-1">PT Fukusuke Kogyo Indonesia</p>
+                        <span>Blok M-3-2 Kawasan Berikat Mm2100 Cibitung, Bekasi, Jawa Barat, Indonesia.</span>
                     </div>
                 </div>
             </div>
@@ -29,9 +25,9 @@
             <div class="col-xl-4 col-lg-6">
                 <div class="card mb-0 py-5">
                     <div class="card-body p-4 p-sm-5 m-lg-2">
-                        <div class="text-center mt-2">
-                            <h5 class="text-primary fs-22">Welcome Back !</h5>
-                            <p class="text-muted">Sign in to continue to Hybrix.</p>
+                        <div class="mt-2">
+                            <h5 class="fs-22">Sign In</h5>
+                            {{-- <p class="text-muted">Sign in to continue to Fukusuke</p> --}}
                         </div>
                         @if (session()->has('error'))
                             <div class="alert alert-borderless alert-danger alert-dismissible mb-2 mx-2">
@@ -55,8 +51,7 @@
                                     <label for="email" class="form-label">Email <span
                                             class="text-danger">*</span></label>
                                     <input id="email" type="email"
-                                        class="form-control @error('email') is-invalid @enderror" wire:model.live="email"
-                                        value="{{ old('email', 'admin@themesbrand.com') }}" required autocomplete="email" autofocus placeholder="Enter your email">
+                                        class="form-control @error('email') is-invalid @enderror" wire:model.live="email" required autocomplete="email" autofocus placeholder="Enter your email">
                                     @error('email')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
@@ -65,13 +60,6 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <div class="float-end">
-                                        @if (Route::has('password.reset'))
-                                            <a class="text-muted" href="{{ route('password.reset') }}">
-                                                {{ __('Forgot Your Password?') }}
-                                            </a>
-                                        @endif
-                                    </div>
                                     <label class="form-label" for="password-input">Password <span
                                             class="text-danger">*</span></label>
                                     <div class="position-relative auth-pass-inputgroup mb-3">
@@ -90,6 +78,13 @@
                                         </span>
                                     @enderror
                                 </div>
+                                <p>
+                                    @if (Route::has('password.reset'))
+                                        <a class="text-muted" href="{{ route('password.reset') }}">
+                                            {{ __('Forgot Your Password?') }}
+                                        </a>
+                                    @endif
+                                </p>
 
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="remember" id="remember"
@@ -97,12 +92,12 @@
                                     <label class="form-check-label" for="remember">Remember me</label>
                                 </div>
 
-                                <div class="mt-4">
+                                <div class="mt-5">
                                     <button class="btn btn-primary w-100" type="submit">Sign In</button>
                                 </div>
 
-                                <div class="mt-4 pt-2 text-center">
-                                    <div class="signin-other-title">
+                                <div class="mt-6 pt-2 text-center">
+                                    {{-- <div class="signin-other-title">
                                         <h5 class="fs-13 mb-4 title">Sign In with</h5>
                                     </div>
                                     <div class="pt-2 hstack gap-2 justify-content-center">
@@ -114,7 +109,7 @@
                                                 class="ri-github-fill fs-16"></i></button>
                                         <button type="button" class="btn btn-soft-info btn-icon"><i
                                                 class="ri-twitter-fill fs-16"></i></button>
-                                    </div>
+                                    </div> --}}
                                 </div>
                             </form>
 
