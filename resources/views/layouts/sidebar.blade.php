@@ -113,10 +113,10 @@
                     <div class="collapse menu-dropdown" id="jamkerja">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="/jam-kerja-infure" class="nav-link" data-key="t-starter"> Infure </a>
+                                <a href="/infure-jam-kerja" class="nav-link" data-key="t-starter"> Infure </a>
                             </li>
                             <li class="nav-item">
-                                <a href="/jam-kerja-seitai" class="nav-link" data-key="t-starter"> Seitai </a>
+                                <a href="/seitai-jam-kerja" class="nav-link" data-key="t-starter"> Seitai </a>
                             </li>
                         </ul>
                     </div>
