@@ -70,7 +70,7 @@ class EditOrderController extends Component
 
     public function save()
     {
-        dd($this->validate());
+        dd($this->unit_id);
         $this->validate();
 
         try {

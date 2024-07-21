@@ -15,7 +15,7 @@
 {{-- @endsection --}}
     @include('layouts.head-css')
     @livewireStyles
-    @powerGridStyles
+    {{-- @powerGridStyles --}}
 </head>
 <body>
     <!-- Begin page -->
@@ -44,7 +44,7 @@
     <!-- JAVASCRIPT -->
     @include('layouts.vendor-scripts')
     @livewireScripts
-    @powerGridScripts
+    {{-- @powerGridScripts --}}
 </body>
 
 </html>

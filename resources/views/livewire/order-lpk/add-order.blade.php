@@ -1,9 +1,6 @@
 <div class="row">
 	<div class="col-lg-2"></div>
 	<div class="col-lg-8">
-
-		{{-- <div data-toast data-toast-text="Your application was successfully sent" data-toast-gravity="top" data-toast-position="right" data-toast-className="success" data-toast-duration="3000">Success</div> --}}
-
     <form wire:submit.prevent="save">
 		<div class="form-group">
 			<div class="input-group">
@@ -28,7 +25,6 @@
 		<div class="form-group mt-1">
 			<div class="input-group">
                 <label class="control-label col-12 col-lg-3 fw-bold text-muted">Tanggal Order</label>
-				{{-- <input class="form-control datepicker-input" type="date" wire:model="order_date" placeholder="yyyy/mm/dd"/> --}}
 				<input wire:model="order_date" type="text" class="form-control" data-provider="flatpickr" data-date-format="d/m/Y">
 				@error('order_date')
 					<span class="invalid-feedback">{{ $message }}</span>
@@ -137,75 +133,26 @@
                         </span>                    
                     </div>
                 </button>
-
-				@if ($status_order == 0)
-					<button id="btnFilter" type="button" class="btn btn-danger w-lg"  data-bs-toggle="modal" data-bs-target="#modal-default">
-						<i class="ri-delete-bin-line"></i> Delete
-					</button>
-
-					<button id="btnCreate" type="submit" class="btn btn-success w-lg">
-						<span wire:loading.remove wire:target="save">
-							<i class="ri-save-3-line"></i> Update
-						</span>
-						<div wire:loading wire:target="save">
-							<span class="d-flex align-items-center">
-								<span class="spinner-border flex-shrink-0" role="status">
-									<span class="visually-hidden">Loading...</span>
-								</span>
-								<span class="flex-grow-1 ms-1">
-									Loading...
-								</span>
-							</span>
-						</div>
-					</button>
-
-					<button type="button" class="btn btn-success btn-print w-lg" wire:click="print">
-						<i class="bx bx-printer"></i> Print
-					</button>				
-				@endif
-				@if ($status_order == 1)
-					<p class="text-secondary mb-0">Data sudah di LPK ! ..</p>
-				@endif
-                
-				<script>
-					document.addEventListener('livewire:load', function () {
-						Livewire.on('redirectToPrint', function (data) {
-							var printUrl = '{{ route('cetak-order') }}?processdate=' +  data.processdate + 
-							'&po_no=' + data.po_no +
-							'&order_date=' + data.order_date +
-							'&code=' + data.code +
-							'&name=' + data.name +
-							'&dimensi=' + data.dimensi +
-							'&order_qty=' + data.order_qty +
-							'&stufingdate=' + data.stufingdate +
-							'&etddate=' + data.etddate +
-							'&etadate=' + data.etadate +
-							'&namabuyer=' + data.namabuyer;
-							window.open(printUrl, '_blank');
-						});
-					});
-				</script>
+                <button id="btnCreate" type="submit" class="btn btn-success w-lg">
+                    <span wire:loading.remove wire:target="save">
+                        <i class="ri-save-3-line"></i> Save
+                    </span>
+                    <div wire:loading wire:target="save">
+                        <span class="d-flex align-items-center">
+                            <span class="spinner-border flex-shrink-0" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </span>
+                            <span class="flex-grow-1 ms-1">
+                                Loading...
+                            </span>
+                        </span>
+                    </div>
+                </button>
+                <button type="button" class="btn btn-success btn-print w-lg" wire:click="print">
+                    <i class="bx bx-printer"></i> Print
+                </button>
             </div>
-        </div>
-		<div class="modal fade" id="modal-default" tabindex="-1" role="dialog" aria-labelledby="modal-default" aria-hidden="true">
-			<div class="modal-dialog modal-dialog-centered" role="document">
-				<div class="modal-content">
-					{{-- <div class="modal-header">
-						<h2 class="h6 modal-title">Terms of Service</h2>
-						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-					</div> --}}
-					<div class="modal-body">
-						<h3>
-							Are you sure want to delete ?
-						</h3>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" wire:click="delete">Yes</button>
-						<button type="button" class="btn btn-link text-gray-600 ms-auto" data-bs-dismiss="modal">No</button>
-					</div>
-				</div>
-			</div>
-		</div>
+        </div>		
     </form>        
 	</div>
 	<div class="col-lg-2"></div>

@@ -1,8 +1,14 @@
 <?php
 
+use App\Http\Livewire\AddLpkController;
+use App\Http\Livewire\AddOrderController;
+use App\Http\Livewire\CetakLpkController;
+use App\Http\Livewire\EditLpkController;
 use Illuminate\Http\Request;
 use App\Http\Livewire\EditOrderController;
+use App\Http\Livewire\LpkEntryController;
 use App\Http\Livewire\OrderLpkController;
+use App\Http\Livewire\OrderReportController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -24,24 +30,32 @@ Route::get('/new-password/{email?}/{token?}', \App\Http\Livewire\Auth\NewPasswor
 Route::get('/logout', [App\Http\Controllers\HomeController::class, 'logout']);
 Route::get('index/{locale}', [App\Http\Controllers\HomeController::class, 'lang']);
 
-
+// Order LPK
 Route::get('/order-lpk', OrderLpkController::class)->name('order-lpk');
 Route::get('/edit-order', EditOrderController::class)->name('edit-order');
+Route::get('/add-order', AddOrderController::class)->name('add-order');
 
-Route::get('/cetak-order', function (Request $request) {
-    $processdate = $request->query('processdate');
-    $po_no = $request->query('po_no');
-    $order_date = $request->query('order_date');
-    $code = $request->query('code');
-    $name = $request->query('name');
-    $dimensi = $request->query('dimensi');
-    $order_qty = $request->query('order_qty');
-    $stufingdate = $request->query('stufingdate');
-    $etddate = $request->query('etddate');
-    $etadate = $request->query('etadate');
-    $namabuyer = $request->query('namabuyer');
-    return view('livewire.order-lpk.cetak-order', compact('processdate','po_no', 'order_date', 'code', 'name', 'dimensi', 'order_qty', 'stufingdate', 'etddate', 'etadate', 'namabuyer'));
-})->name('cetak-order');
+Route::get('/lpk-entry', LpkEntryController::class)->name('lpk-entry');
+Route::get('/add-lpk', AddLpkController::class)->name('add-lpk');
+Route::get('/edit-lpk', EditLpkController::class)->name('edit-lpk');
+
+Route::get('/cetak-lpk', CetakLpkController::class)->name('cetak-lpk');
+Route::get('/order-report', OrderReportController::class)->name('order-report');
+
+// Route::get('/cetak-order', function (Request $request) {
+//     $processdate = $request->query('processdate');
+//     $po_no = $request->query('po_no');
+//     $order_date = $request->query('order_date');
+//     $code = $request->query('code');
+//     $name = $request->query('name');
+//     $dimensi = $request->query('dimensi');
+//     $order_qty = $request->query('order_qty');
+//     $stufingdate = $request->query('stufingdate');
+//     $etddate = $request->query('etddate');
+//     $etadate = $request->query('etadate');
+//     $namabuyer = $request->query('namabuyer');
+//     return view('livewire.order-lpk.cetak-order', compact('processdate','po_no', 'order_date', 'code', 'name', 'dimensi', 'order_qty', 'stufingdate', 'etddate', 'etadate', 'namabuyer'));
+// })->name('cetak-order');
 
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/test', function() {

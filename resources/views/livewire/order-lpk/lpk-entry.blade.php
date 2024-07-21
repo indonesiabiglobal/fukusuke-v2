@@ -1,4 +1,3 @@
-{{-- @include('layouts.customizer') --}}
 <div class="row">
     <div class="col-12 col-lg-7">
         <div class="row">
@@ -75,8 +74,11 @@
                 <div class="mb-1" wire:ignore>
                     <select class="form-control" wire:model.defer="status" id="status" name="status" data-choices data-choices-sorting-false data-choices-removeItem>
                         <option value="">- All -</option>
-                        <option value="0">Belum LPK</option>
-                        <option value="1">Sudah LPK</option>
+                        <option value="0">Un-Print</option>
+                        <option value="1">Printed</option>
+                        <option value="2">Re-Print</option>
+                        <option value="3">Belum Produksi</option>
+                        <option value="4">Sudah Produksi</option>
                     </select>
                 </div>
             </div>
@@ -104,72 +106,54 @@
                 <button
                     type="button" 
                     class="btn btn-success w-lg p-1"
-                    onclick="window.location.href='/add-order'"
+                    onclick="window.location.href='/add-lpk'"
                     >
                     <i class="ri-add-line"> </i> Add
                 </button>
-            </div>
-            <div class="col-12 col-lg-6">
-                    {{-- <form wire:submit.prevent="import">
-                        <input type="file" wire:model="file">
-                        <button type="submit">Import</button>
-                    </form> --}}
-
-                <input type="file" id="fileInput" wire:model="file" style="display: none;">
-                <button class="btn btn-success w-lg p-1" type="button" onclick="document.getElementById('fileInput').click()">
-                    <i class="ri-upload-2-fill"> </i> Upload Excel
-                </button>
-
-                <button class="btn btn-primary w-lg p-1" wire:click="download" type="button">
-                    <i class="ri-download-cloud-2-line"> </i> Download</button>
-                <button class="btn btn-info w-lg p-1" type="button">
-                    <i class="ri-printer-line"> </i> Print</button>
-            </div>
+            </div>            
         </div>
     </div>
     <div class="table-responsive table-card mt-3 mb-1">
         <table class="table align-middle table-nowrap" id="customerTable" style="width:100%">
             <thead class="table-light">
                 <tr>
-                    <th></th>
-                    <th class="sort">PO Number</th>
-                    <th class="sort">Nama Produk</th>
-                    <th class="sort">Kode Produk</th>
-                    <th class="sort">Buyer</th>
-                    <th class="sort">Quantity</th>
-                    <th class="sort">Tgl. Order</th>
-                    <th class="sort">Etd</th>
-                    <th class="sort">Tgl Proses</th>
-                    <th class="sort">No.</th>
+                    <th class="border-0 rounded-start"></th>
+                    <th class="border-0">No LPK</th>
+                    <th class="border-0">Tgl LPK</th>
+                    <th class="border-0">Panjang LPK</th>
+                    <th class="border-0">Jumlah LPK</th>
+                    <th class="border-0">Jumlah Gentan</th>
+                    <th class="border-0">Master Gulung</th>
+                    <th class="border-0">Progres Infure</th>
+                    <th class="border-0">Progres Seitai</th>
+                    <th class="border-0">Nomor PO</th>
+                    <th class="border-0">Kode Produk</th>
+                    <th class="border-0 rounded-end">Tanggal Proses</th>
                 </tr>
             </thead>
             <tbody class="list form-check-all">
-                @php
-                    $no = 1;
-                @endphp
                 @forelse ($data as $item)
                     <tr>
-                        {{-- <td>
-                            <a href="{{ route('edit-order', ['orderId' => $item->id]) }}" class="link-success fs-15"><i class="ri-edit-2-line"></i></a>
-                        </td> --}}
                         <td>
-                            <a href="/edit-order?orderId={{ $item->id }}" class="link-success fs-15">
+                            <a href="/edit-lpk?orderId={{ $item->id }}" class="link-success fs-15">
                                 <i class="ri-edit-2-line"></i>
                             </a>
                         </td>
+                        <td>{{ $item->lpk_no }}</td>
+                        <td>{{ $item->lpk_date }}</td>
+                        <td>{{ $item->panjang_lpk }}</td>
+                        <td>{{ $item->qty_lpk }}</td>
+                        <td>{{ $item->qty_gentan }}</td>
+                        <td>{{ $item->qty_gulung }}</td>
+                        <td>{{ $item->infure }}</td>
+                        <td>{{ $item->total_assembly_qty }}</td>
                         <td>{{ $item->po_no }}</td>
-                        <td>{{ $item->produk_name }}</td>
                         <td>{{ $item->product_code }}</td>
-                        <td>{{ $item->buyer_name }}</td>
-                        <td>{{ $item->order_qty }}</td>
-                        <td>{{ $item->order_date }}</td>
-                        <td>{{ $item->etddate }}</td>
-                        <td>{{ $item->processdate }}</td>
-                        <td>{{ $no++ }}</td>
+                        <td>{{ $item->tglproses }}</td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="10" class="text-center">
+                        <td colspan="12" class="text-center">
                             <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
                             <h5 class="mt-2">Sorry! No Result Found</h5>
                             <p class="text-muted mb-0">We've searched more than 150+ Orders We did not find any orders for you search.</p>
@@ -180,5 +164,4 @@
         </table>
         {{ $data->links() }}
     </div>
-    {{-- <livewire:tdorder/> --}}
 </div>
