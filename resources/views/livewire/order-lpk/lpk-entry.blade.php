@@ -2,7 +2,7 @@
     <div class="col-12 col-lg-7">
         <div class="row">
             <div class="col-12 col-lg-3">
-                <label class="form-label text-muted">Filter Tanggal</label>
+                <label class="form-label text-muted fw-bold">Filter Tanggal</label>
             </div>
             <div class="col-12 col-lg-9 mb-1">
                 <div class="form-group">
@@ -28,13 +28,20 @@
                     </div>
                 </div>
             </div>
-
             <div class="col-12 col-lg-3">
-                <label class="form-label text-muted">Search</label>
+                <label class="form-label text-muted fw-bold">Nomor LPK</label>
             </div>
             <div class="col-12 col-lg-9">
                 <div class="input-group">
-                    <input wire:model.defer="searchTerm" class="form-control"style="padding:0.44rem" type="text" placeholder="search nomor PO, nama produk" />
+                    <input wire:model.defer="lpk_no" class="form-control"style="padding:0.44rem" type="text" placeholder="000000-000" />
+                </div>
+            </div>
+            <div class="col-12 col-lg-3">
+                <label class="form-label text-muted fw-bold">Search</label>
+            </div>
+            <div class="col-12 col-lg-9">
+                <div class="input-group">
+                    <input wire:model.defer="searchTerm" class="form-control"style="padding:0.44rem" type="text" placeholder="search nomor PO atau nama produk" />
                 </div>
             </div>
         </div>
@@ -42,20 +49,7 @@
     <div class="col-12 col-lg-5">
         <div class="row">
             <div class="col-12 col-lg-2">
-                <label for="buyer" class="form-label text-muted">Buyer</label>
-            </div>
-            <div class="col-12 col-lg-10">
-                <div class="mb-1" wire:ignore>
-                    <select class="form-control" wire:model.defer="idBuyer" id="buyer" name="buyer" data-choices data-choices-sorting-false data-choices-removeItem>
-                        <option value="">- Pilih Buyer -</option>
-                        @foreach ($buyer as $item)
-                            <option value="{{ $item->id }}">{{ $item->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-            <div class="col-12 col-lg-2">
-                <label for="product" class="form-label text-muted">Product</label>
+                <label for="product" class="form-label text-muted fw-bold">Product</label>
             </div>
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
@@ -68,7 +62,20 @@
                 </div>
             </div>
             <div class="col-12 col-lg-2">
-                <label for="status" class="form-label text-muted">Status</label>
+                <label for="buyer" class="form-label text-muted fw-bold">Buyer</label>
+            </div>
+            <div class="col-12 col-lg-10">
+                <div class="mb-1" wire:ignore>
+                    <select class="form-control" wire:model.defer="idBuyer" id="buyer" name="buyer" data-choices data-choices-sorting-false data-choices-removeItem>
+                        <option value="">- All -</option>
+                        @foreach ($buyer as $item)
+                            <option value="{{ $item->id }}">{{ $item->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <div class="col-12 col-lg-2">
+                <label for="status" class="form-label text-muted fw-bold">Status</label>
             </div>
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
