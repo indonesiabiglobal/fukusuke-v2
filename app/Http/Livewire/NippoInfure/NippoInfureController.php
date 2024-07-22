@@ -14,7 +14,7 @@ class NippoInfureController extends Component
 {
     public $nippo = [];
     public $tdOrderLpk;
-    public $product;
+    public $products;
     public $buyer;
     public $machine;
     public $tglMasuk;
@@ -25,10 +25,10 @@ class NippoInfureController extends Component
 
     public function mount()
     {
-        $this->product = MsProduct::limit(10)->get();
-        $this->tdOrderLpk = TdOrderLpk::limit(10)->get();
-        $this->buyer = MsBuyer::limit(10)->get();
-        $this->machine = MsMachine::limit(10)->get();
+        $this->products = MsProduct::get();
+        $this->tdOrderLpk = TdOrderLpk::get();
+        $this->buyer = MsBuyer::get();
+        $this->machine = MsMachine::get();
         $this->tglMasuk = Carbon::now()->format('Y-m-d');
         $this->tglKeluar = Carbon::now()->format('Y-m-d');  
     }
@@ -143,7 +143,7 @@ class NippoInfureController extends Component
     public function render()
     {
         return view('livewire.nippo-infure.nippo-infure', [
-            'nippo' => $this->nippo
+            'data' => $this->nippo
         ])->extends('layouts.master');
     }
 }

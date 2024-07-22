@@ -1,66 +1,83 @@
-{{-- <title>Loss Infure</title> --}}
-<div class="container mt-3">
-    <div class="row">
-        <div class="col-lg-6 mb-3">
-            <div class="form-group">
-                <label class="control-label col-md-3 col-xs-4">
-                    <span class="hidden-xs" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Filter 
-                    </span>Tanggal
-                </label>
-                <div class="input-group col-md-9 col-xs-8">
-                    <div class="col-4 pe-1">
-                        <select class="form-select mb-0" wire:model.defer="transaksi">
-                            <option value="1">Proses</option>
-                            <option value="2">Produksi</option>
-                        </select>
-                    </div>
-                    <div class="col-8">
-                        <div class="form-group">
-                            <div class="input-group">
-                                <input class="form-control datepicker-input" type="date" wire:model.defer="tglMasuk" placeholder="yyyy/mm/dd"/>
-    
-                                <input class="form-control datepicker-input" type="date" wire:model.defer="tglKeluar" placeholder="yyyy/mm/dd"/>
+<div class="row">
+    <div class="col-12 col-lg-7">
+        <div class="row">
+            <div class="col-12 col-lg-3">
+                <label class="form-label text-muted fw-bold">Filter Tanggal</label>
+            </div>
+            <div class="col-12 col-lg-9 mb-1">
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="col-4">
+                            <select class="form-select" style="padding:0.44rem" wire:model.defer="transaksi">
+                                <option value="1">Produksi</option>
+                                <option value="2">Proses</option>
+                            </select>
+                        </div>
+                        <div class="col-8">
+                            <div class="form-group">
+                                <div class="input-group">    
+                                    <input wire:model.defer="tglMasuk" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d/m/Y">
+
+                                    <input wire:model.defer="tglKeluar" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d/m/Y">
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            {{-- <div class="form-group">
-                <label class="control-label col-md-3 col-xs-4" resources="Search">Nomor LPK </label>
-                <div class="input-group col-md-9 col-xs-8">
-                    <input id='searchText' name='searchText' class="form-control" type="text" resources-placeholder="SearchTextOrCode" placeholder="search nomor PO, nama produk" />
+            <div class="col-12 col-lg-3">
+                <label class="form-label text-muted fw-bold">Nomor LPK</label>
+            </div>
+            <div class="col-12 col-lg-9 mb-1">
+                <div class="input-group">
+                    <input wire:model.defer="lpk_no" class="form-control"style="padding:0.44rem" type="text" placeholder="000000-000" />
                 </div>
-            </div> --}}
-            <div class="form-group">
-                <label class="control-label col-md-3 col-xs-4">Search </label>
-                <div class="input-group col-md-9 col-xs-8">
-                    <input id='search' name='search' wire:model.defer="searchTerm" class="form-control" type="text" placeholder="search nomor PO, nama produk" />
+            </div>
+            <div class="col-12 col-lg-3">
+                <label class="form-label text-muted fw-bold">Search</label>
+            </div>
+            <div class="col-12 col-lg-9">
+                <div class="input-group">
+                    <input wire:model.defer="searchTerm" class="form-control"style="padding:0.44rem" type="text" placeholder="search nomor produksi, no han, dll" />
                 </div>
             </div>
         </div>
-    
-        <div class="col-lg-6">
-            {{-- <div class="form-group">
-                <label class="control-label col-md-3 col-xs-4" resources="OrgBranch">Produk</label>
-                <div class="input-group col-md-9 col-xs-8">
-                    <select id='searchProd' name="searchProd" class="js-states form-control" placeholder="- all -"></select>
+    </div>
+
+    <div class="col-12 col-lg-5">
+        <div class="row">
+            <div class="col-12 col-lg-2">
+                <label for="product" class="form-label text-muted fw-bold">Product</label>
+            </div>
+            <div class="col-12 col-lg-10">
+                <div class="mb-1" wire:ignore>
+                    <select class="form-control"  wire:model.defer="idProduct" data-choices data-choices-sorting-false data-choices-removeItem>
+                        <option value="">- All -</option>
+                        @foreach ($products as $item)
+                            <option value="{{ $item->id }}">{{ $item->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
-            </div> --}}
-            <div class="form-group">
-                <label class="control-label col-md-3 col-xs-4">Mesin</label>
-                <div class="input-group col-md-9 col-xs-8">
-                    <select wire:model.defer="machineId" class="form-control" placeholder="- all -">
-                        <option value="">- all -</option>
+            </div>
+            <div class="col-12 col-lg-2">
+                <label class="form-label text-muted fw-bold">Mesin</label>
+            </div>
+            <div class="col-12 col-lg-10">
+                <div class="mb-1" wire:ignore>
+                    <select class="form-control" wire:model.defer="machineId" data-choices data-choices-sorting-false data-choices-removeItem>
+                        <option value="">- All -</option>
                         @foreach ($machine as $item)
                             <option value="{{ $item->id }}">{{ $item->machinename }}</option>
                         @endforeach
                     </select>
                 </div>
             </div>
-            <div class="form-group">
-                <label class="control-label col-md-3 col-xs-4">Status</label>
-                <div class="input-group col-md-9 col-xs-8">
-                    <select wire:model.defer="status" class="form-control" placeholder="- all -">
+            <div class="col-12 col-lg-2">
+                <label for="status" class="form-label text-muted fw-bold">Status</label>
+            </div>
+            <div class="col-12 col-lg-10">
+                <div class="mb-1" wire:ignore>
+                    <select class="form-control" wire:model.defer="status" data-choices data-choices-sorting-false data-choices-removeItem>
                         <option value="">- all -</option>
                         <option value="0">Open </option>
                         <option value="1">Seitai</option>
@@ -69,87 +86,78 @@
                 </div>
             </div>
         </div>
-    
-        <div class="col-lg-12" style="border-top:1px solid #efefef">
-            <div class="toolbar">
-                {{-- <button id="btnFilter" type="button" class="btn btn-info" style="width:125px;"><i class="fa fa-search"></i> Filter</button> --}}
-                <button id="btnFilter" wire:click="search" type="button" class="btn btn-info" style="width:125px;">
-                    <i class="fa fa-search"></i> Filter
+    </div>
+
+    <div class="col-lg-12 mt-2">
+        <div class="row">
+            <div class="col-12 col-lg-6">
+                <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1">
+                    <span wire:loading.remove wire:target="search">
+                        <i class="ri-search-line"></i> Filter
+                    </span>
                     <div wire:loading wire:target="search">
-                        <span class="fa fa-spinner fa-spin"></span>
+                        <span class="d-flex align-items-center">
+                            <span class="spinner-border flex-shrink-0" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </span>
+                            <span class="flex-grow-1 ms-1">
+                                Loading...
+                            </span>
+                        </span>                    
                     </div>
                 </button>
-            </div>
-            <table class="table table-bordered" data-height="414" id="tableSrc"></table>
+            </div>            
         </div>
     </div>
-    <div class="card border-0 shadow mb-4 mt-2">
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-centered table-nowrap mb-0 rounded">
-                    <thead class="thead-light">
-                        <tr>
-                            <th class="border-0 rounded-start">Action</th>
-                            <th class="border-0">Nomor LPK</th>
-                            <th class="border-0">Panjang Produksi</th>
-                            <th class="border-0">Berat Gentan</th>
-                            <th class="border-0">Nomor Gentan</th>
-                            <th class="border-0">Nomor Order</th>
-                            <th class="border-0">Mesin</th>
-                            <th class="border-0">Tanggal Produksi</th>
-                            <th class="border-0">Tanggal Proses</th>
-                            <th class="border-0">Shift</th>
-                            <th class="border-0">Seq</th>
-                            <th class="border-0 rounded-end">Loss</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Item -->
-                        @foreach ($loss as $item)
-                        <tr>
-                            <td>
-                                <a href="{{ route('edit-nippo', ['orderId' => $item->id]) }}" class="btn btn-info">
-                                    <i class="fa fa-edit"></i> Edit
-                                </a>
-                            </td>
-                            <td>                                
-                                {{ $item->lpk_no }}
-                            </td>
-                            <td>
-                                {{ $item->panjang_produksi }}
-                            </td>
-                            <td>
-                                {{ $item->berat_standard }}
-                            </td>
-                            <td>
-                                {{ $item->gentan_no }}
-                            </td>
-                            <td>
-                                {{ $item->order_id }}
-                            </td>
-                            <td>
-                                {{ $item->machine_id }}
-                            </td>
-                            <td>
-                                {{ $item->production_date }}
-                            </td>
-                            <td>
-                                {{ $item->created_on }}
-                            </td>
-                            <td>
-                                {{ $item->work_shift }}
-                            </td>
-                            <td>
-                                {{ $item->seq_no }}
-                            </td>
-                            <td>
-                                {{-- {{ $item->order_id }} --}}
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        </div>
+    <div class="table-responsive table-card mt-3 mb-1">
+        <table class="table align-middle table-nowrap" id="customerTable" style="width:100%">
+            <thead class="table-light">
+                <tr>
+                    <th class="border-0 rounded-start">Action</th>
+                    <th class="border-0">Nomor LPK</th>
+                    <th class="border-0">Panjang Produksi</th>
+                    <th class="border-0">Berat Gentan</th>
+                    <th class="border-0">Nomor Gentan</th>
+                    <th class="border-0">Nomor Order</th>
+                    <th class="border-0">Mesin</th>
+                    <th class="border-0">Tanggal Produksi</th>
+                    <th class="border-0">Tanggal Proses</th>
+                    <th class="border-0">Shift</th>
+                    <th class="border-0">Seq</th>
+                    <th class="border-0 rounded-end">Loss</th>
+                </tr>
+            </thead>
+            <tbody class="list form-check-all">
+                @forelse ($data as $item)
+                    <tr>
+                        <td>
+                            <a href="/edit-nippo?orderId={{ $item->id }}" class="link-success fs-15">
+                                <i class="ri-edit-2-line"></i>
+                            </a>
+                        </td>
+                        <td>{{ $item->lpk_no }}</td>
+                        <td>{{ $item->panjang_produksi }}</td>
+                        <td>{{ $item->berat_standard }}</td>
+                        <td>{{ $item->gentan_no }}</td>
+                        <td>{{ $item->order_id }}</td>
+                        <td>{{ $item->machine_id }}</td>
+                        <td>{{ $item->production_date }}</td>
+                        <td>{{ $item->created_on }}</td>
+                        <td>{{ $item->work_shift }}</td>
+                        <td>{{ $item->seq_no }}</td>
+                        <td> - </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="12" class="text-center">
+                            <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
+                            <h5 class="mt-2">Sorry! No Result Found</h5>
+                            <p class="text-muted mb-0">We've searched more than 150+ Orders We did not find any orders for you search.</p>
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+        {{-- {{ $data->links() }} --}}
     </div>
 </div>

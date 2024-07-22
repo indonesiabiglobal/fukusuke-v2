@@ -14,7 +14,7 @@
 		<div class="form-group mt-1">
 			<div class="input-group">
 				<label class="control-label col-12 col-lg-2 fw-bold">Nomor LPK</label>
-				<input type="text" class="form-control" wire:model.debounce.300ms="lpk_no"/>
+				<input type="text" class="form-control" wire:model.live.debounce.300ms="lpk_no"/>
 			</div>
 		</div>
 		<div class="form-group mt-1">

@@ -2,8 +2,8 @@
 	<div class="col-lg-2"></div>
 	<div class="col-lg-6">
 		<div class="form-group">
-			<div class="input-group col-md-9 col-xs-8">
-				<label class="control-label col-4">Tanggal Produksi</label>
+			<div class="input-group">
+				<label class="control-label col-4 text-muted fw-bold">Tanggal Produksi</label>
 				<div class="col-12 col-lg-8">
 					<select class="form-select mb-0" wire:model.defer="transaksi">
 						<option value="1">Produksi</option>
@@ -14,8 +14,8 @@
 			<div class="col-12 mt-1">
 				<div class="form-group">
 					<div class="input-group">
-						<span class="input-group-addon col-12 col-lg-2">Awal: </span>
-						<input class="form-control datepicker-input" type="date" wire:model.defer="tglMasuk" placeholder="yyyy/mm/dd hh:mm" />
+						<span class="input-group-addon col-12 col-lg-2 text-muted fw-bold">Awal: </span>
+						<input wire:model.defer="tglMasuk" type="text" class="form-control" data-provider="flatpickr" data-date-format="d/m/y" data-enable-time placeholder="yyyy/mm/dd hh:mm">
 					</div>
 				</div>
 			</div>
@@ -24,15 +24,15 @@
 			<div class="col-12">
 				<div class="form-group">
 					<div class="input-group">
-						<span class="input-group-addon col-12 col-lg-2">Akhir: </span>
-						<input class="form-control datepicker-input" type="date" wire:model.defer="tglKeluar" placeholder="yyyy/mm/dd hh:mm" />
+						<span class="input-group-addon col-12 col-lg-2 text-muted fw-bold">Akhir: </span>
+						<input wire:model.defer="tglKeluar" type="text" class="form-control" data-provider="flatpickr" data-date-format="d/m/y" data-time-hrs="true" data-enable-time placeholder="yyyy/mm/dd hh:mm">
 					</div>
 				</div>
 			</div>
 		</div>
 		<div class="form-group mt-1">
 			<div class="input-group">
-				<span class="input-group-addon col-12 col-lg-3">Jenis Report </span>
+				<span class="input-group-addon col-12 col-lg-3 text-muted fw-bold">Jenis Report </span>
 				<select wire:model.defer="jenisReport" class="form-control" placeholder="- pilih jenis report -">
 					<option value="1">Check List</option>
 					<option value="2">Loss Infure</option>
@@ -41,7 +41,7 @@
 		</div>
 		<div class="form-group mt-1">
 			<div class="input-group">
-				<span class="input-group-addon col-12 col-lg-3">Nomor Proses </span>
+				<span class="input-group-addon col-12 col-lg-3 text-muted fw-bold">Nomor Proses </span>
 				<input type="text" class="form-control" placeholder="1" wire:model.defer="noprosesawal">
 				<span class="input-group-text readonly" readonly="readonly">
 					~
@@ -51,51 +51,72 @@
 		</div>
 		<div class="form-group mt-1">
 			<div class="input-group">
-				<span class="input-group-addon col-12 col-lg-3">Nomor LPK </span>
+				<span class="input-group-addon col-12 col-lg-3 text-muted fw-bold">Nomor LPK </span>
 				<input type="text" class="form-control" placeholder="000000-000" wire:model.defer="lpk_no">
 			</div>
 		</div>
 		<div class="form-group mt-1">
 			<div class="input-group">
-				<span class="input-group-addon col-12 col-lg-3">Nomor Order </span>
+				<span class="input-group-addon col-12 col-lg-3 text-muted fw-bold">Nomor Order </span>
 				<input type="text" class="form-control" placeholder=".." wire:model.defer="code">
 			</div>
 		</div>
         <div class="form-group mt-1">
-			<div class="input-group">
-				<span class="input-group-addon col-12 col-lg-3">Departemen</span>
-				<select class="form-control" wire:model.defer="departemenId">
-					<option value="">- all -</option>
-					@foreach ($department as $item)
-						<option value="{{ $item->id }}">{{ $item->name }}</option>
-					@endforeach
-				</select>
+			<div class="row">
+				<div class="col-12 col-lg-3">
+					<label for="product" class="form-label text-muted fw-bold">Departemen</label>
+				</div>
+				<div class="col-12 col-lg-9">
+					<div class="mb-1" wire:ignore>
+						<select class="form-control" wire:model.defer="departemenId" data-choices data-choices-sorting-false data-choices-removeItem>
+							<option value="">- All -</option>
+							@foreach ($department as $item)
+							<option value="{{ $item->id }}">{{ $item->name }}</option>
+						@endforeach
+						</select>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="form-group mt-1">
+			<div class="row">
+				<div class="col-12 col-lg-3">
+					<label for="product" class="form-label text-muted fw-bold">Mesin</label>
+				</div>
+				<div class="col-12 col-lg-9">
+					<div class="mb-1" wire:ignore>
+						<select class="form-control" wire:model.defer="machineId" data-choices data-choices-sorting-false data-choices-removeItem>
+							<option value="">- All -</option>
+							@foreach ($machine as $item)
+							<option value="{{ $item->id }}">{{ $item->machinename }}</option>
+						@endforeach
+						</select>
+					</div>
+				</div>
 			</div>
 		</div>
 		<div class="form-group mt-1">
 			<div class="input-group">
-				<span class="input-group-addon col-12 col-lg-3">Mesin</span>
-				<select class="form-control" wire:model.defer="machineId">
-					<option value="">- all -</option>
-					<option value="1"></option>
-					<option value="2"></option>
-				</select>
-			</div>
-		</div>
-		<div class="form-group mt-1">
-			<div class="input-group">
-				<span class="input-group-addon col-12 col-lg-3">Nomor Han</span>
+				<span class="input-group-addon col-12 col-lg-3 text-muted fw-bold">Nomor Han</span>
 				<input type="text" class="form-control" placeholder="00-00-00A" wire:model.defer="nomor_han" />
 			</div>
 		</div>
 		<hr />
 		<div class="form-group">
-			<label class="control-label col-md-4 col-xs-12"></label>
 			<div class="input-group">
 				<button type="button" class="btn btn-success btn-print" wire:click="export" style="width:99%">
-					<i class="fa fa-print"></i> Generate Report
+					<span wire:loading.remove wire:target="export">
+						<i class="ri-printer-line"></i> Generate Report
+					</span>
 					<div wire:loading wire:target="export">
-						<span class="fa fa-spinner fa-spin"></span>
+						<span class="d-flex align-items-center">
+							<span class="spinner-border flex-shrink-0" role="status">
+								<span class="visually-hidden">Loading...</span>
+							</span>
+							<span class="flex-grow-1 ms-1">
+								Loading...
+							</span>
+						</span>                    
 					</div>
 				</button>
 			</div>

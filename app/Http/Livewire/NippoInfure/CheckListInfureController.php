@@ -27,8 +27,8 @@ class CheckListInfureController extends Component
 
     public function mount()
     {
-        $this->tglMasuk = Carbon::now()->format('Y-m-d');
-        $this->tglKeluar = Carbon::now()->format('Y-m-d');
+        $this->tglMasuk = Carbon::now()->format('d/m/Y') . ' 00:00';
+        $this->tglKeluar = Carbon::now()->format('d/m/Y') . ' 23:59';
         $this->machine = MsMachine::get();
         $this->department = MsDepartment::get();      
     }
