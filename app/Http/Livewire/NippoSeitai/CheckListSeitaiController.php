@@ -3,6 +3,8 @@
 namespace App\Http\Livewire\NippoSeitai;
 
 use App\Exports\SeitaiExport;
+use App\Models\MsDepartment;
+use App\Models\MsMachine;
 use Livewire\Component;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
@@ -21,7 +23,9 @@ class CheckListSeitaiController extends Component
     public function mount()
     {
         $this->tglMasuk = Carbon::now()->format('Y-m-d');
-        $this->tglKeluar = Carbon::now()->format('Y-m-d');    
+        $this->tglKeluar = Carbon::now()->format('Y-m-d');
+        $this->machine = MsMachine::get();
+        $this->department = MsDepartment::get();    
     }
 
     public function export()

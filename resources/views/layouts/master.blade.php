@@ -15,6 +15,9 @@
 {{-- @endsection --}}
     @include('layouts.head-css')
     @livewireStyles
+
+    {{-- toastr --}}
+    {{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" /> --}}
     {{-- @powerGridStyles --}}
 </head>
 <body>
@@ -43,8 +46,23 @@
     {{-- @include('layouts.customizer') --}}
     <!-- JAVASCRIPT -->
     @include('layouts.vendor-scripts')
+
+    {{-- toastr --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" ></script>
     @livewireScripts
     {{-- @powerGridScripts --}}
+    <script>
+        window.addEventListener('notification', event => {
+            toastr[event.detail.type](event.detail.message);
+        });
+
+        // Cek apakah ada session flash notification
+        @if(session()->has('notification'))
+            var type = "{{ session('notification')['type'] }}";
+            var message = "{{ session('notification')['message'] }}";
+            toastr[type](message);
+        @endif
+    </script>
 </body>
 
 </html>

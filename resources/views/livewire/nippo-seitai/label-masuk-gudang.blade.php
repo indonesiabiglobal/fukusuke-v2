@@ -7,8 +7,8 @@
 						Nomor Palet Sumber
 					</span>
 					<input wire:model.defer="nomor_palet" class="form-control" type="text" placeholder="A0000-000000" />
-					<button wire:click="search" type="button" class="btn btn-info">
-						<i class="fa fa-search"></i>
+					<button wire:click="search" type="button" class="btn btn-light">
+						<i class="ri-search-line"></i>
 					</button>
 				</div>
 			</div>
@@ -16,7 +16,7 @@
 				<div class="card-body">
 					<div class="table-responsive">
 						<table class="table table-centered table-nowrap mb-0 rounded">
-							<thead class="thead-light">
+							<thead class="table-light">
 								<tr>
 									<th class="border-0 rounded-start">Nomor LOT</th>
 									<th class="border-0">Mesin</th>

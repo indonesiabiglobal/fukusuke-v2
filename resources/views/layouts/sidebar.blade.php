@@ -93,7 +93,7 @@
                                 <a href="loss-seitai" class="nav-link" data-key="t-starter"> Loss Seitai </a>
                             </li>
                             <li class="nav-item">
-                                <a href="/mutasi-isi-palet" class="nav-link" data-key="t-starter"> Mutasi Isi Palet </a>
+                                <a href="mutasi-isi-palet" class="nav-link" data-key="t-starter"> Mutasi Isi Palet </a>
                             </li>
                             <li class="nav-item">
                                 <a href="check-list-seitai" class="nav-link" data-key="t-starter"> Check List </a>

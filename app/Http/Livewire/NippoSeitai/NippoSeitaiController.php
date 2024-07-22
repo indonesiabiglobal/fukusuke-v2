@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 class NippoSeitaiController extends Component
 {
     public $seitai = [];
-    public $product;
+    public $products;
     public $buyer;
     public $tglMasuk;
     public $tglKeluar;
@@ -24,9 +24,9 @@ class NippoSeitaiController extends Component
 
     public function mount()
     {
-        $this->product = MsProduct::limit(10)->get();
-        $this->buyer = MsBuyer::limit(10)->get();
-        $this->machine = MsMachine::limit(10)->get();
+        $this->products = MsProduct::get();
+        $this->buyer = MsBuyer::get();
+        $this->machine = MsMachine::get();
         $this->tglMasuk = Carbon::now()->format('Y-m-d');
         $this->tglKeluar = Carbon::now()->format('Y-m-d'); 
     }
@@ -187,6 +187,8 @@ class NippoSeitaiController extends Component
 
     public function render()
     {
-        return view('livewire.nippo-seitai.nippo-seitai')->extends('layouts.master');
+        return view('livewire.nippo-seitai.nippo-seitai', [
+            'data' => $this->seitai,
+        ])->extends('layouts.master');
     }
 }

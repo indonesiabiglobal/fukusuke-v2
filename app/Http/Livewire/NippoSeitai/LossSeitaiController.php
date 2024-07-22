@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\NippoSeitai;
 
 use App\Models\MsMachine;
+use App\Models\MsProduct;
 use Carbon\Carbon;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 class LossSeitaiController extends Component
 {
     public $loss = [];
-    // public $product;
+    public $products;
     // public $buyer;
     public $tglMasuk;
     public $tglKeluar;
@@ -20,9 +21,9 @@ class LossSeitaiController extends Component
 
     public function mount()
     {
-        // $this->product = MsProduct::limit(10)->get();
-        // $this->buyer = MsBuyer::limit(10)->get();
-        $this->machine = MsMachine::limit(10)->get();
+        $this->products = MsProduct::get();
+        // $this->buyer = MsBuyer::get();
+        $this->machine = MsMachine::get();
         $this->tglMasuk = Carbon::now()->format('Y-m-d');
         $this->tglKeluar = Carbon::now()->format('Y-m-d'); 
     }
@@ -181,6 +182,8 @@ class LossSeitaiController extends Component
 
     public function render()
     {
-        return view('livewire.nippo-seitai.loss-seitai')->extends('layouts.master');
+        return view('livewire.nippo-seitai.loss-seitai', [
+            'data' => $this->loss,
+        ])->extends('layouts.master');
     }
 }

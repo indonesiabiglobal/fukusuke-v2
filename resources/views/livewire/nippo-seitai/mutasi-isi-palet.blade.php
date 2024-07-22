@@ -7,8 +7,8 @@
 						Nomor Palet Sumber
 					</span>
 					<input wire:model.defer="searchOld" class="form-control" type="text" placeholder="A0000-000000" />
-					<button wire:click="search" type="button" class="btn btn-info">
-						<i class="fa fa-search"></i>
+					<button wire:click="search" type="button" class="btn btn-light">
+						<i class="ri-search-line"></i>
 					</button>
 				</div>
 			</div>
@@ -17,7 +17,7 @@
 				<div class="card-body">
 					<div class="table-responsive">
 						<table class="table table-centered table-nowrap mb-0 rounded">
-							<thead class="thead-light">
+							<thead class="table-light">
 								<tr>
 									<th class="border-0 rounded-start">Action</th>
 									<th class="border-0">Nomor LOT</th>
@@ -65,8 +65,8 @@
 						Nomor Palet Tujuan
 					</span>
 					<input wire:model.defer="searchNew" class="form-control" type="text" placeholder="A0000-000000" />
-					<button wire:click="searchTujuan" type="button" class="btn btn-info">
-						<i class="fa fa-search"></i>
+					<button wire:click="searchTujuan" type="button" class="btn btn-light">
+						<i class="ri-search-line"></i>
 					</button>
 				</div>
 			</div>
@@ -75,7 +75,7 @@
 				<div class="card-body">
 					<div class="table-responsive">
 						<table class="table table-centered table-nowrap mb-0 rounded">
-							<thead class="thead-light">
+							<thead class="table-light">
 								<tr>
 									<th class="border-0 rounded-start">Nomor LOT</th>
 									<th class="border-0">Mesin</th>
@@ -172,13 +172,13 @@
 			</div>
 		</div>
 		<div class="col-12 col-lg-6">
-			<div class="col-lg-12" style="border-top:1px solid #efefef">
+			<div class="col-lg-12">
                 <div class="toolbar">
                     <button id="btnFilter" type="button" class="btn btn-warning" wire:click="cancel">
-                        <i class="fa fa-back"></i> Close
+                        <i class="ri-close-line"></i> Close
                     </button>
 					<button id="btnFilter" type="button" class="btn btn-danger" wire:click="delete">
-                        <i class="fa fa-trash"></i> Undo
+                        <i class="ri-repeat-line"></i> Undo
                     </button>
                     {{-- <button id="btnCreate" type="submit" class="btn btn-success">
                         <i class="fa fa-plus"></i> Proses Mutasi
