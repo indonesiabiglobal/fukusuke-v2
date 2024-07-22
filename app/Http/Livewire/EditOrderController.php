@@ -70,7 +70,6 @@ class EditOrderController extends Component
 
     public function save()
     {
-        dd($this->unit_id);
         $this->validate();
 
         try {
@@ -83,7 +82,7 @@ class EditOrderController extends Component
             $order->etddate = $this->etddate;
             $order->etadate = $this->etadate;
             $order->order_unit = $this->unit_id;
-            $order->buyer_id = $this->buyer_id;
+            $order->buyer_id = $this->buyer_id['value'];
             $order->save();
 
             

@@ -43,19 +43,6 @@
     <div class="col-12 col-lg-5">
         <div class="row">
             <div class="col-12 col-lg-2">
-                <label for="buyer" class="form-label text-muted fw-bold">Buyer</label>
-            </div>
-            <div class="col-12 col-lg-10">
-                <div class="mb-1" wire:ignore>
-                    <select class="form-control" wire:model.defer="idBuyer" id="buyer" name="buyer" data-choices data-choices-sorting-false data-choices-removeItem>
-                        {{-- <option value="">- Pilih Buyer -</option> --}}
-                        @foreach ($buyer as $item)
-                            <option value="{{ $item->id }}">{{ $item->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-            <div class="col-12 col-lg-2">
                 <label for="product" class="form-label text-muted fw-bold">Product</label>
             </div>
             <div class="col-12 col-lg-10">
@@ -63,6 +50,19 @@
                     <select class="form-control"  wire:model.defer="idProduct" id="product" name="product" data-choices data-choices-sorting-false data-choices-removeItem>
                         <option value="">- All -</option>
                         @foreach ($products as $item)
+                            <option value="{{ $item->id }}">{{ $item->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <div class="col-12 col-lg-2">
+                <label for="buyer" class="form-label text-muted fw-bold">Buyer</label>
+            </div>
+            <div class="col-12 col-lg-10">
+                <div class="mb-1" wire:ignore>
+                    <select class="form-control" wire:model.defer="idBuyer" id="buyer" name="buyer" data-choices data-choices-sorting-false data-choices-removeItem>
+                        <option value="">- All -</option>
+                        @foreach ($buyer as $item)
                             <option value="{{ $item->id }}">{{ $item->name }}</option>
                         @endforeach
                     </select>
