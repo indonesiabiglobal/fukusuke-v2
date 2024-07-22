@@ -4,6 +4,7 @@ namespace App\Http\Livewire\jamKerja;
 
 use App\Models\MsEmployee;
 use App\Models\MsMachine;
+use App\Models\MsWorkingShift;
 use App\Models\TdJamKerjaMesin;
 use Carbon\Carbon;
 use Livewire\Component;
@@ -28,6 +29,7 @@ class SeitaiJamKerjaController extends Component
     public $work_hour;
     public $on_hour;
     public $orderid;
+    public $workShift;
 
     public function mount()
     {
@@ -35,6 +37,7 @@ class SeitaiJamKerjaController extends Component
         $this->tglKeluar = Carbon::now()->format('Y-m-d'); 
         $this->machine  = MsMachine::limit(10)->get();
         $this->working_date = Carbon::now()->format('Y-m-d');
+        $this->workShift  = MsWorkingShift::get();
     }
 
     public function search(){
@@ -207,7 +210,7 @@ class SeitaiJamKerjaController extends Component
         ");
 
         return view('livewire.jam-kerja.seitai', 
-            ['jamkerja' => $jamkerja]
+            ['data' => $jamkerja]
         )->extends('layouts.master');
     }
 }

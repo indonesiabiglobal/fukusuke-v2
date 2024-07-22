@@ -35,8 +35,8 @@ class InfureJamKerjaController extends Component
     {
         $this->tglMasuk = Carbon::now()->format('Y-m-d');
         $this->tglKeluar = Carbon::now()->format('Y-m-d'); 
-        $this->machine  = MsMachine::limit(10)->get();
-        $this->workShift  = MsWorkingShift::limit(10)->get();
+        $this->machine  = MsMachine::get();
+        $this->workShift  = MsWorkingShift::get();
         $this->working_date = Carbon::now()->format('Y-m-d');
     }
 
@@ -228,7 +228,7 @@ class InfureJamKerjaController extends Component
         ");
 
         return view('livewire.jam-kerja.infure', 
-            ['jamkerja' => $jamkerja]
+            ['data' => $jamkerja]
         )->extends('layouts.master');
         
     }
