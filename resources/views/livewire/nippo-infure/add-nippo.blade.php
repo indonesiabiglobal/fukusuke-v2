@@ -315,7 +315,7 @@
                     <i class="fa fa-plus"></i> Add Loss Infure
                 </button> --}}
                 <button wire:click="addLossInfure" type="button" class="btn btn-success">
-                    <i class="fa fa-plus"></i> Add Loss Infure
+                    <i class="ri-add-line"></i> Add Loss Infure
                 </button>
             </div>
             <div class="col-lg-4" style="border-top:1px solid #efefef">

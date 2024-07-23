@@ -2,12 +2,17 @@
 
 namespace App\Http\Livewire;
 
+use App\Exports\LpkEntryExport;
+use App\Exports\LpkEntryImport;
+use App\Exports\LpkListExport;
 use Livewire\Component;
 use Carbon\Carbon;
 use App\Models\MsProduct;
 use App\Models\MsBuyer;
 use Illuminate\Support\Facades\DB;
 use Livewire\WithPagination;
+use Maatwebsite\Excel\Facades\Excel;
+use Livewire\WithFileUploads;
 
 class LpkEntryController extends Component
 {
@@ -24,6 +29,9 @@ class LpkEntryController extends Component
     public $lpk_no;
     public $idProduct;
 
+    use WithFileUploads;
+    public $file;
+
     public function mount()
     {
         $this->products = MsProduct::get();
@@ -39,6 +47,39 @@ class LpkEntryController extends Component
     public function add()
     {
         return redirect()->route('add-order');
+    }
+
+    public function download()
+    {
+        return Excel::download(new LpkEntryExport, 'Template_LPK.xlsx');
+    }
+
+    public function updatedFile()
+    {
+        $this->import();
+    }
+
+    public function import()
+    {   
+        $this->validate([
+            'file' => 'required|mimes:xls,xlsx',
+        ]);
+
+        Excel::import(new LpkEntryImport, $this->file->path());
+
+        // $this->dispatchBrowserEvent('notification', ['type' => 'success', 'message' => 'Excel imported successfully.']);
+    }
+
+    public function print()
+    {
+        return Excel::download(new LpkListExport(
+            $this->tglMasuk,
+            $this->tglKeluar,
+            // $this->searchTerm,
+            // $this->idProduct,
+            // $this->idBuyer,
+            // $this->status,
+        ), 'LPKList.xlsx');
     }
 
     public function render()

@@ -40,7 +40,9 @@ class OrderLpkExport implements FromCollection, WithHeadings
         }
 
         return collect(DB::select("
-        select tod.id, tod.po_no, mp.name as produk_name, tod.product_code, mbu.name as buyer_name, tod.order_qty, tod.order_date, tod.stufingdate, tod.etddate, tod.etadate, tod.processdate, tod.processseq, tod.updated_by, tod.updated_on from tdorder as tod left join msproduct as mp on mp.id = tod.product_id left join msbuyer as mbu on mbu.id = tod.buyer_id where tod.processdate >= '$tglMasuk' and tod.processdate <= '$tglKeluar'
+        select tod.id, tod.po_no, mp.name as produk_name, tod.product_code, mbu.name as buyer_name, tod.order_qty, tod.order_date, tod.stufingdate, tod.etddate, tod.etadate, tod.processdate, tod.processseq, tod.updated_by, tod.updated_on 
+        from tdorder as tod left join msproduct as mp on mp.id = tod.product_id left join msbuyer as mbu on mbu.id = tod.buyer_id 
+        where tod.processdate >= '$tglMasuk' and tod.processdate <= '$tglKeluar'
         "));
     }
 
