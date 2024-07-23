@@ -72,10 +72,13 @@ class EditOrderController extends Component
     {
         $this->validate();
 
+        DB::beginTransaction();
         try {
+            $product = MsProduct::where('code', $this->product_id)->first();
             $order = TdOrders::findOrFail($this->orderId);
             $order->po_no = $this->po_no;
-            $order->product_code = $this->product_code;
+            $order->product_id = $product->id;
+            $order->product_code = $product->code;
             $order->order_qty = $this->order_qty;
             $order->processdate = $this->process_date;
             $order->stufingdate = $this->stufingdate;
@@ -84,13 +87,15 @@ class EditOrderController extends Component
             $order->order_unit = $this->unit_id;
             $order->buyer_id = $this->buyer_id['value'];
             $order->save();
-
             
+            DB::commit();
             // session()->flash('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
             return redirect()->route('order-lpk');
         } catch (\Exception $e) {
-            return redirect()->route('order-lpk');
-            // $this->dispatchBrowserEvent('notification', ['type' => 'error', 'message' => 'Failed to save order: ' . $e->getMessage()]);
+            DB::rollBack();
+            dd($e->getMessage());
+            // Log::error('Failed to save order: ' . $e->getMessage());
+            // $this->dispatchBrowserEvent('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
         }
     }
 
@@ -139,6 +144,15 @@ class EditOrderController extends Component
 
     public function render()
     {
+        if(isset($this->product_id) && $this->product_id != ''){
+            $product=MsProduct::where('code', $this->product_id)->first();
+            if($product == null){
+                // $this->dispatchBrowserEvent('notification', ['type' => 'warning', 'message' => 'Nomor Order ' . $this->product_id . ' Tidak Terdaftar']);
+            } else {
+                $this->product_name = $product->name;
+                $this->dimensi = $product->ketebalan.'x'.$product->diameterlipat.'x'.$product->productlength;
+            }
+        }
         return view('livewire.order-lpk.edit-order')->extends('layouts.master');
     }
 }

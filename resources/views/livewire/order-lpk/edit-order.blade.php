@@ -34,7 +34,7 @@
 		<div class="form-group mt-1">
 			<div class="input-group">
                 <label class="control-label col-12 col-lg-3 fw-bold text-muted">Nomor Order</label>
-				<input type="text" class="form-control @error('product_id') is-invalid @enderror" wire:model.debounce.300ms="product_id" />
+				<input type="text" class="form-control @error('product_id') is-invalid @enderror" wire:model.live.debounce.300ms="product_id" />
 				@error('product_id')
 					<span class="invalid-feedback">{{ $message }}</span>
 				@enderror

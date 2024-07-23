@@ -37,7 +37,7 @@ class EditLpkController extends Component
     public $selisihkurang;
     public $dimensi;
 
-    public function mount($orderId)
+    public function mount(Request $request)
     {
         $this->total_assembly_line=0;
         $this->productlength=1;
@@ -79,7 +79,7 @@ class EditLpkController extends Component
         ->join('msproduct as mp', 'mp.id', '=', 'tolp.product_id')
         ->join('msmachine as mm', 'mm.id', '=', 'tolp.machine_id')
         ->join('msbuyer as mbu', 'mbu.id', '=', 'tod.buyer_id')
-        ->where('tolp.id', $orderId)
+        ->where('tolp.id', $request->query('orderId'))
         ->first();
         
         $this->lpk_date = Carbon::parse($order->lpk_date)->format('Y-m-d');

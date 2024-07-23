@@ -21,6 +21,8 @@ class LpkEntryController extends Component
     public $transaksi;
     public $idBuyer;
     public $status;
+    public $lpk_no;
+    public $idProduct;
 
     public function mount()
     {
@@ -88,29 +90,32 @@ class LpkEntryController extends Component
         if (isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined") {
             $data = $data->where(function($query) {
                 $query->where('mp.name', 'ilike', "%{$this->searchTerm}%")
-                        ->orWhere('tolp.lpk_no', 'ilike', "%{$this->searchTerm}%")
+                        // ->orWhere('tolp.lpk_no', 'ilike', "%{$this->searchTerm}%")
                         ->orWhere('tod.po_no', 'ilike', "%{$this->searchTerm}%");
             });
         }
 
-        if (isset($this->idProduct) && $this->idProduct != "" && $this->idProduct != "undefined") {
-            $data = $data->where('mp.id', $this->idProduct);
+        if (isset($this->lpk_no) && $this->lpk_no != "" && $this->lpk_no != "undefined") {
+            $data = $data->where('tolp.lpk_no', 'ilike', "%{$this->lpk_no}%");
         }
 
-        if (isset($this->idBuyer) && $this->idBuyer != "" && $this->idBuyer != "undefined") {
-            $data = $data->where('tod.buyer_id', $this->idBuyer);
+        if (isset($this->idBuyer) && $this->idBuyer['value'] != "" && $this->idBuyer != "undefined") {
+            $data = $data->where('tod.buyer_id', $this->idBuyer['value']);
+        }
+        if (isset($this->idProduct) && $this->idProduct['value'] != "" && $this->idProduct != "undefined") {
+            $data = $data->where('mp.id', $this->idProduct['value']);
         }
 
-        if (isset($this->status) && $this->status != "" && $this->status != "undefined") {
-            if ($this->status == 0){
-                $data = $data->where('tolp.reprint_no', $this->status);
-            } else if ($this->status == 1){
-                $data = $data->where('tolp.reprint_no', $this->status);
-            } else if ($this->status == 2){
+        if (isset($this->status) && $this->status['value'] != "" && $this->status != "undefined") {
+            if ($this->status['value'] == 0){
+                $data = $data->where('tolp.reprint_no', $this->status['value']);
+            } else if ($this->status['value'] == 1){
+                $data = $data->where('tolp.reprint_no', $this->status['value']);
+            } else if ($this->status['value'] == 2){
                 $data = $data->where('tolp.reprint_no', '>', 1);
-            } else if ($this->status == 3){
+            } else if ($this->status['value'] == 3){
                 $data = $data->where('tolp.status_lpk', 0);
-            } else if ($this->status == 4){
+            } else if ($this->status['value'] == 4){
                 $data = $data->where('tolp.status_lpk', 1);
             }
             

@@ -9,6 +9,8 @@ use App\Models\MsProduct;
 use App\Models\TdOrders;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AddOrderController extends Component
 {
@@ -27,36 +29,39 @@ class AddOrderController extends Component
     public $etddate;
     public $etadate;
 
+    protected $rules = [
+        'po_no' => 'required',
+        'order_qty' => 'required|integer',
+        'order_date' => 'required',
+        'stufingdate' => 'required',
+        'etddate' => 'required',
+        'etadate' => 'required',
+        'product_id' => 'required',
+        'buyer_id' => 'required',
+    ];
+
     public function mount()
     {
         $this->process_date = Carbon::now()->format('Y-m-d');
-        $this->buyer = MsBuyer::limit(10)->get();
+        $this->buyer = MsBuyer::get();
     }
 
-    public function noorder(){
-        if(isset($this->product_id) && $this->product_id != ''){
-            $product=MsProduct::where('code', $this->product_id)->first();
-            if($product == null){
-                $this->dispatchBrowserEvent('notification', ['type' => 'warning', 'message' => 'Nomor Order ' . $this->product_id . ' Tidak Terdaftar']);
-            } else {
-                $this->product_name = $product->name;
-            }
-        }
-    }
+    // public function noorder(){
+    //     if(isset($this->product_id) && $this->product_id != ''){
+    //         $product=MsProduct::where('code', $this->product_id)->first();
+    //         if($product == null){
+    //             // $this->dispatchBrowserEvent('notification', ['type' => 'warning', 'message' => 'Nomor Order ' . $this->product_id . ' Tidak Terdaftar']);
+    //         } else {
+    //             $this->product_name = $product->name;
+    //         }
+    //     }
+    // }
 
     public function save()
     {
-        $validatedData = $this->validate([
-            'po_no' => 'required',
-            'order_qty' => 'required|integer',
-            'order_date' => 'required',
-            'stufingdate' => 'required',
-            'etddate' => 'required',
-            'etadate' => 'required',
-            'product_id' => 'required',
-            'buyer_id' => 'required',
-        ]);
+        $this->validate();
 
+        DB::beginTransaction();
         try {
             $product = MsProduct::where('code', $this->product_id)->first();
             $order = new TdOrders();
@@ -67,17 +72,20 @@ class AddOrderController extends Component
             $order->product_code = $product->code;
             $order->order_qty = $this->order_qty;
             $order->order_unit = $this->unit_id;
-            $order->buyer_id = $this->buyer_id;
+            $order->buyer_id = $this->buyer_id['value'];
             $order->stufingdate = $this->stufingdate;
             $order->etddate = $this->etddate;
             $order->etadate = $this->etadate;
             $order->save();
-    
-            // session()->flash('message', 'Order saved successfully.');
-            session()->flash('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
-            return redirect()->route('order-entry');
-        } catch (\Exception $e) {
-            $this->dispatchBrowserEvent('notification', ['type' => 'error', 'message' => 'Failed to save order: ' . $e->getMessage()]);
+
+            DB::commit();
+            // session()->flash('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
+            return redirect()->route('order-lpk');
+        } catch (\Exception $e) {            
+            DB::rollBack();
+            dd($e->getMessage());
+            Log::error('Failed to save order: ' . $e->getMessage());
+            // $this->dispatchBrowserEvent('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
         }
         
     }
@@ -91,9 +99,8 @@ class AddOrderController extends Component
     {
         if(isset($this->product_id) && $this->product_id != ''){
             $product=MsProduct::where('code', $this->product_id)->first();
-            // dd($product);
             if($product == null){
-                $this->dispatchBrowserEvent('notification', ['type' => 'warning', 'message' => 'Nomor Order ' . $this->product_id . ' Tidak Terdaftar']);
+                // $this->dispatchBrowserEvent('notification', ['type' => 'warning', 'message' => 'Nomor Order ' . $this->product_id . ' Tidak Terdaftar']);
             } else {
                 $this->product_name = $product->name;
                 $this->dimensi = $product->ketebalan.'x'.$product->diameterlipat.'x'.$product->productlength;
