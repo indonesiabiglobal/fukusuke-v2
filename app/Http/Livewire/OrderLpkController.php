@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Livewire\WithFileUploads;
 use Maatwebsite\Excel\Facades\Excel;
 use Livewire\WithPagination;
+use Livewire\WithoutUrlPagination;
 
 class OrderLpkController extends Component
 {
@@ -30,7 +31,7 @@ class OrderLpkController extends Component
     use WithFileUploads;
     public $file;
 
-    use WithPagination;
+    use WithPagination, WithoutUrlPagination;
 
     public function mount()
     {

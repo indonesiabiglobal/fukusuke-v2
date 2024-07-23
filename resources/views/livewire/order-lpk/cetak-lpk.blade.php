@@ -52,7 +52,6 @@
 			<div class="input-group">
 				<label class="control-label col-12 col-lg-2 fw-bold"></label>
 				<button type="button" class="btn btn-success btn-print" wire:click="print">
-					{{-- <i class="ri-printer-line"></i> Print --}}
 					<span wire:loading.remove wire:target="print">
 						<i class="ri-printer-line"></i> Print
 					</span>
@@ -73,7 +72,7 @@
 	<div class="col-lg-2">
 	</div>
 </div>
-{{-- <script>
+<script>
 	document.addEventListener('livewire:load', function () {
 		Livewire.on('redirectToPrint', function (lpk_id) {
 			// var dt=data;
@@ -81,4 +80,4 @@
 			window.open(printUrl, '_blank');
 		});
 	});
-</script> --}}
+</script>

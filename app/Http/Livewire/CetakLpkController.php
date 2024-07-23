@@ -70,8 +70,8 @@ class CetakLpkController extends Component
         // dd($ft);
 
         $lpk_id= $this->lpk_id;
-        
         $this->emit('redirectToPrint', $lpk_id);
+        // $this->redirectRoute('report-lpk', ['lpk_id' => $this->lpk_id]);
     }
     
     public function render()

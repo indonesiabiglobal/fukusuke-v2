@@ -8,8 +8,8 @@ use App\Http\Livewire\NippoInfure\CheckListInfureController;
 use App\Http\Livewire\EditLpkController;
 use Illuminate\Http\Request;
 use App\Http\Livewire\EditOrderController;
-use App\Http\Livewire\jamKerja\InfureJamKerjaController;
-use App\Http\Livewire\jamKerja\SeitaiJamKerjaController;
+use App\Http\Livewire\JamKerja\InfureJamKerjaController;
+use App\Http\Livewire\JamKerja\SeitaiJamKerjaController;
 use App\Http\Livewire\Kenpin\AddKenpinInfureController;
 use App\Http\Livewire\Kenpin\AddKenpinSeitaiController;
 use App\Http\Livewire\Kenpin\KenpinInfureController;
@@ -111,6 +111,11 @@ Route::get('/pengembalian-palet', PengembalianPaletController::class)->name('pen
 
 Route::get('/general-report', GeneralReportController::class)->name('general-report');
 Route::get('/detail-report', DetailReportController::class)->name('detail-report');
+
+Route::get('/report-lpk', function (Request $request) {
+    $lpk_id = $request->query('lpk_id');
+    return view('livewire.order-lpk.report-lpk', compact('lpk_id'));
+})->name('report-lpk');
 
 // Route::get('/cetak-order', function (Request $request) {
 //     $processdate = $request->query('processdate');

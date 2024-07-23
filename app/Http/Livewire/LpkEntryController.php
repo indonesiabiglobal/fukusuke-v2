@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Livewire\WithPagination;
 use Maatwebsite\Excel\Facades\Excel;
 use Livewire\WithFileUploads;
+use Livewire\WithoutUrlPagination;
 
 class LpkEntryController extends Component
 {
@@ -29,7 +30,7 @@ class LpkEntryController extends Component
     public $lpk_no;
     public $idProduct;
 
-    use WithFileUploads;
+    use WithFileUploads, WithoutUrlPagination;
     public $file;
 
     public function mount()
