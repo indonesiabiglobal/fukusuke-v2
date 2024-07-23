@@ -30,55 +30,18 @@ class OrderLpkExport implements FromCollection, WithHeadings
 
     public function collection()
     {
-        return new Collection([
-            [
-                'TG_PROSES' => 15032018, 
-                'PO_NUMBER' => 'PO001', 
-                'TG_ORDER' => '14032018',
-                'NO_ORDER' => 'UH244R1',
-                'QTY_ORDER' => '12',
-                'UNIT' => '1',
-                'TG_STUFING' => '16032018',
-                'TG_ETD' => '16032018',
-                'TG_ETA' => '16032018',
-                'KODE_BUYER' => '1001',
-            ],
-        ]);
-        // return $data = DB::table('tdorder AS tod')
-        //     ->select('tod.id', 'tod.product_code','tod.processdate', 'tod.order_date', 'tod.po_no','tod.product_code', 'mp.name AS produk_name', 'mp.id as mp_id', 'tod.order_qty', 'mbu.name AS buyer_name', 'tod.stufingdate', 'tod.etddate', 'tod.etadate', 'mbu.name AS buyer_name')
-        //     ->leftjoin('msproduct AS mp', 'mp.id', '=', 'tod.product_id')
-        //     ->leftjoin('msbuyer AS mbu', 'mbu.id', '=', 'tod.buyer_id');            
+        $tglMasuk = '';
+        if (isset($this->tglMasuk) && $this->tglMasuk != '') {
+            $tglMasuk = $this->tglMasuk . " 00:00:00";
+        }
+        $tglKeluar = '';
+        if (isset($this->tglKeluar) && $this->tglKeluar != '') {
+            $tglKeluar = $this->tglKeluar . " 23:59:59";
+        }
 
-        // if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
-        //     $data = $data->where('tod.order_date', '>=', $this->tglMasuk);
-        // }
-
-        // if (isset($this->tglKeluar) && $this->tglKeluar != "" && $this->tglKeluar != "undefined") {
-        //     $data = $data->where('tod.order_date', '<=', $this->tglKeluar);
-        // }
-
-        // if (isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined") {
-        //     $data = $data->where(function($query) {
-        //         $query->where('mp.name', 'ilike', "%{$this->searchTerm}%")
-        //               ->orWhere('mbu.name', 'ilike', "%{$this->searchTerm}%")
-        //               ->orWhere('tod.po_no', 'ilike', "%{$this->searchTerm}%");
-        //     });
-        // }
-
-        // if (isset($this->idProduct) && $this->idProduct['value'] != "" && $this->idProduct != "undefined") {
-            
-        //     $data = $data->where('mp.id', $this->idProduct);
-        // }
-
-        // if (isset($this->idBuyer) && $this->idBuyer['value'] != "" && $this->idBuyer != "undefined") {
-        //     $data = $data->where('tod.buyer_id', $this->idBuyer);
-        // }
-
-        // if (isset($this->status) && $this->status['value'] != "" && $this->status != "undefined") {
-        //     $data = $data->where('tod.status_order', $this->status);
-        // }
-
-        // $data = $data->get();
+        return collect(DB::select("
+        select tod.id, tod.po_no, mp.name as produk_name, tod.product_code, mbu.name as buyer_name, tod.order_qty, tod.order_date, tod.stufingdate, tod.etddate, tod.etadate, tod.processdate, tod.processseq, tod.updated_by, tod.updated_on from tdorder as tod left join msproduct as mp on mp.id = tod.product_id left join msbuyer as mbu on mbu.id = tod.buyer_id where tod.processdate >= '$tglMasuk' and tod.processdate <= '$tglKeluar'
+        "));
     }
 
     public function headings(): array
