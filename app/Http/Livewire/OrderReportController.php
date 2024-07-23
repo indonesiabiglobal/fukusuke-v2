@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Exports\OrderReportExport;
 use Livewire\Component;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -25,15 +26,15 @@ class OrderReportController extends Component
         $this->buyer = MsBuyer::get();      
     }
 
-    // public function export()
-    // {
-    //     return Excel::download(new ProductsExport(
-    //         $this->tglMasuk, 
-    //         $this->tglKeluar, 
-    //         $this->buyer_id,
-    //         $this->filter,
-    //     ), 'order_report.xlsx');
-    // }
+    public function export()
+    {
+        return Excel::download(new OrderReportExport(
+            $this->tglMasuk, 
+            $this->tglKeluar, 
+            $this->buyer_id,
+            $this->filter,
+        ), 'order_report.xlsx');
+    }
 
     public function render()
     {
