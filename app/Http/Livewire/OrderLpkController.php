@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use App\Exports\OrderEntryExport;
 use App\Exports\OrderEntryImport;
+use App\Exports\OrderLpkExport;
 use App\Models\MsBuyer;
 use App\Models\MsProduct;
 use Carbon\Carbon;
@@ -48,31 +49,38 @@ class OrderLpkController extends Component
         return redirect()->route('add-order');
     }
 
-    // public function download()
-    // {
-    //     return Excel::download(new OrderEntryExport, 'Template_Order.xlsx');
-    // }
+    public function download()
+    {
+        return Excel::download(new OrderEntryExport, 'Template_Order.xlsx');
+    }
+
+    public function print()
+    {
+        return Excel::download(new OrderLpkExport(
+            $this->tglMasuk,
+            $this->tglKeluar,
+            // $this->searchTerm,
+            // $this->idProduct,
+            // $this->idBuyer,
+            // $this->status,
+        ), 'OrderList.xlsx');
+    }
 
     public function updatedFile()
     {
         $this->import();
     }
 
-    // public function import()
-    // {   
-    //     $this->validate([
-    //         'file' => 'required|mimes:xls,xlsx',
-    //     ]);
+    public function import()
+    {   
+        $this->validate([
+            'file' => 'required|mimes:xls,xlsx',
+        ]);
 
-    //     Excel::import(new OrderEntryImport, $this->file->path());
+        Excel::import(new OrderEntryImport, $this->file->path());
 
-    //     $this->dispatchBrowserEvent('notification', ['type' => 'success', 'message' => 'Excel imported successfully.']);
-    // }
-
-    // private function resultData()
-    // {
-    //     return 
-    // }
+        // $this->dispatchBrowserEvent('notification', ['type' => 'success', 'message' => 'Excel imported successfully.']);
+    }
 
     public function render()
     {
@@ -81,8 +89,8 @@ class OrderLpkController extends Component
                      'mbu.name AS buyer_name', 'tod.order_qty', 'tod.order_date', 
                      'tod.stufingdate', 'tod.etddate', 'tod.etadate', 
                      'tod.processdate', 'tod.processseq', 'tod.updated_by', 'tod.updated_on')
-            ->join('msproduct AS mp', 'mp.id', '=', 'tod.product_id')
-            ->join('msbuyer AS mbu', 'mbu.id', '=', 'tod.buyer_id');
+            ->leftjoin('msproduct AS mp', 'mp.id', '=', 'tod.product_id')
+            ->leftjoin('msbuyer AS mbu', 'mbu.id', '=', 'tod.buyer_id');
             
 
         if($this->transaksi == 2){

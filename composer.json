@@ -12,7 +12,7 @@
         "laravel/tinker": "^2.8",
         "laravel/ui": "^4.2",
         "livewire/livewire": "^3.5",
-        "maatwebsite/excel": "^1.1",
+        "maatwebsite/excel": "^3.1",
         "power-components/livewire-powergrid": "*",
         "simplesoftwareio/simple-qrcode": "^4.2"
     },
