@@ -117,6 +117,22 @@ Route::get('/report-lpk', function (Request $request) {
     return view('livewire.order-lpk.report-lpk', compact('lpk_id'));
 })->name('report-lpk');
 
+Route::get('/report-gentan', function (Request $request) {
+    $lpk_no = $request->query('lpk_no');
+    $name = $request->query('name');
+    $code = $request->query('code');
+    $product_type_code = $request->query('product_type_code');
+    $production_date = $request->query('production_date');
+    $work_hour = $request->query('work_hour');
+    $work_shift = $request->query('work_shift');
+    $machineno = $request->query('machineno');
+    $berat_produksi = $request->query('berat_produksi');
+    $nomor_han = $request->query('nomor_han');
+    $nik = $request->query('nik');
+    $empname = $request->query('empname');
+    return view('livewire.nippo-infure.report-gentan', compact('lpk_no','name', 'code', 'product_type_code', 'production_date', 'work_hour', 'work_shift', 'machineno', 'berat_produksi', 'nomor_han', 'nik', 'empname'));
+})->name('report-gentan');
+
 // Route::get('/cetak-order', function (Request $request) {
 //     $processdate = $request->query('processdate');
 //     $po_no = $request->query('po_no');

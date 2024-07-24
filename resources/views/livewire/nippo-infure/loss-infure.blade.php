@@ -7,18 +7,24 @@
             <div class="col-12 col-lg-9 mb-1">
                 <div class="form-group">
                     <div class="input-group">
-                        <div class="col-4">
+                        <div class="col-3">
                             <select class="form-select" style="padding:0.44rem" wire:model.defer="transaksi">
                                 <option value="1">Produksi</option>
                                 <option value="2">Proses</option>
                             </select>
                         </div>
-                        <div class="col-8">
+                        <div class="col-9">
                             <div class="form-group">
                                 <div class="input-group">    
                                     <input wire:model.defer="tglMasuk" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d/m/Y">
+                                    <span class="input-group-text py-0">
+                                        <i class="ri-calendar-event-fill fs-4"></i>
+                                    </span>
 
                                     <input wire:model.defer="tglKeluar" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d/m/Y">
+                                    <span class="input-group-text py-0">
+                                        <i class="ri-calendar-event-fill fs-4"></i>
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -67,7 +73,7 @@
                     <select class="form-control" wire:model.defer="machineId" data-choices data-choices-sorting-false data-choices-removeItem>
                         <option value="">- All -</option>
                         @foreach ($machine as $item)
-                            <option value="{{ $item->id }}">{{ $item->machinename }}</option>
+                            <option value="{{ $item->id }}">{{ $item->machineno }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -131,8 +137,8 @@
                 @forelse ($data as $item)
                     <tr>
                         <td>
-                            <a href="/edit-nippo?orderId={{ $item->id }}" class="link-success fs-15">
-                                <i class="ri-edit-2-line"></i>
+                            <a href="/edit-nippo?orderId={{ $item->id }}" class="link-success fs-15 p-1 bg-primary rounded">
+                                <i class="ri-edit-box-line text-white"></i>
                             </a>
                         </td>
                         <td>{{ $item->lpk_no }}</td>
@@ -158,6 +164,6 @@
                 @endforelse
             </tbody>
         </table>
-        {{-- {{ $data->links() }} --}}
+        {{ $data->links() }}
     </div>
 </div>
