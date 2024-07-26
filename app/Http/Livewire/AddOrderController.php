@@ -79,13 +79,12 @@ class AddOrderController extends Component
             $order->save();
 
             DB::commit();
-            // session()->flash('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
             return redirect()->route('order-lpk');
-        } catch (\Exception $e) {            
+        } catch (\Exception $e) {
             DB::rollBack();
-            dd($e->getMessage());
             Log::error('Failed to save order: ' . $e->getMessage());
-            // $this->dispatchBrowserEvent('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
         }
         
     }
@@ -100,7 +99,7 @@ class AddOrderController extends Component
         if(isset($this->product_id) && $this->product_id != ''){
             $product=MsProduct::where('code', $this->product_id)->first();
             if($product == null){
-                // $this->dispatchBrowserEvent('notification', ['type' => 'warning', 'message' => 'Nomor Order ' . $this->product_id . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Order ' . $this->product_id . ' Tidak Terdaftar']);
             } else {
                 $this->product_name = $product->name;
                 $this->dimensi = $product->ketebalan.'x'.$product->diameterlipat.'x'.$product->productlength;

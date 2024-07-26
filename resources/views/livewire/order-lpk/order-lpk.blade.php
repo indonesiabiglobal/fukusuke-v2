@@ -8,21 +8,21 @@
             <div class="col-12 col-lg-9 mb-1">
                 <div class="form-group">
                     <div class="input-group">
-                        <div class="col-4">
+                        <div class="col-3">
                             <select class="form-select" style="padding:0.44rem" wire:model.defer="transaksi">
                                 <option value="1">Proses</option>
                                 <option value="2">Order</option>
                             </select>
                         </div>
-                        <div class="col-8">
+                        <div class="col-9">
                             <div class="form-group">
                                 <div class="input-group">
-                                    <input wire:model.defer="tglMasuk" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d/m/Y">
+                                    <input wire:model.defer="tglMasuk" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
                                     <span class="input-group-text py-0">
                                         <i class="ri-calendar-event-fill fs-4"></i>
                                     </span>
 
-                                    <input wire:model.defer="tglKeluar" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d/m/Y">
+                                    <input wire:model.defer="tglKeluar" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
                                     <span class="input-group-text py-0">
                                         <i class="ri-calendar-event-fill fs-4"></i>
                                     </span>

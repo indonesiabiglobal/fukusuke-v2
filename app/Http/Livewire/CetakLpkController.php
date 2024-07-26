@@ -65,13 +65,15 @@ class CetakLpkController extends Component
         //         left join mshagataseitai as mhs on mhs.id=mp.hagataseitaiid 
         //         where tdol.lpk_no='240704-046'
         // "))->first();
-        // $ft=[];
-        // $ft=$data;
-        // dd($ft);
 
-        $lpk_id= $this->lpk_id;
+        // $lpk_id= $this->lpk_id;
         // $this->emit('redirectToPrint', $lpk_id);
-        $this->redirectRoute('report-lpk', ['lpk_id' => $this->lpk_id]);
+        // $this->redirectRoute('report-lpk', ['lpk_id' => $this->lpk_id]);
+
+        $printUrl = route('report-lpk');
+        
+        // Emit event ke JavaScript
+        $this->dispatch('redirectToPrint', $printUrl);
     }
     
     public function render()
@@ -91,7 +93,7 @@ class CetakLpkController extends Component
             ->where('lpk_no', $this->lpk_no)
             ->first();
             if($data == null){
-                $this->dispatchBrowserEvent('notification', ['type' => 'warning', 'message' => 'Mesin ' . $this->lpk_no . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Mesin ' . $this->lpk_no . ' Tidak Terdaftar']);
             } else {
                 $this->lpk_id =  $data->lpk_id;
                 $this->lpk_date = $data->lpk_date;

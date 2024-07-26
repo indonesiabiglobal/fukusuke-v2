@@ -34,6 +34,18 @@ class AddLpkController extends Component
     public $qty_gulung;
     public $selisihkurang;
 
+    protected $rules = [
+        'lpk_date' => 'required',
+        'lpk_no' => 'required',
+        'po_no' => 'required',
+        'machineno' => 'required',
+        'qty_lpk' => 'required',
+        'qty_gentan' => 'required',
+        'panjang_lpk' => 'required',
+        'processdate' => 'required',
+        // 'qty_gulung' => 'required'
+    ];
+
     public function mount()
     {
         $this->lpk_date = Carbon::now()->format('Y-m-d');
@@ -47,18 +59,9 @@ class AddLpkController extends Component
 
     public function save()
     {
-        $validatedData = $this->validate([
-            'lpk_date' => 'required',
-            'lpk_no' => 'required',
-            'po_no' => 'required',
-            'machineno' => 'required',
-            'qty_lpk' => 'required',
-            'qty_gentan' => 'required',
-            'panjang_lpk' => 'required',
-            'processdate' => 'required',
-            // 'qty_gulung' => 'required'
-        ]);
+        $this->validate();
 
+        DB::beginTransaction();
         try {
             $order = TdOrders::where('po_no', $this->po_no)->first();
             $machine=MsMachine::where('machineno', $this->machineno)->first();
@@ -96,10 +99,12 @@ class AddLpkController extends Component
                 ['status_order' => 1]
             );
 
-            session()->flash('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
+            DB::commit();
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
             return redirect()->route('lpk-entry');
-        } catch (\Exception $e) {
-            $this->dispatchBrowserEvent('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
+        } catch (\Exception $e) {            
+            DB::rollBack();
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
         }
     }
 
@@ -131,7 +136,7 @@ class AddLpkController extends Component
 
 
             if($tdorder == null){
-                $this->dispatchBrowserEvent('notification', ['type' => 'warning', 'message' => 'Nomor PO ' . $this->po_no . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor PO ' . $this->po_no . ' Tidak Terdaftar']);
             } else {
                 $this->no_order = $tdorder->product_code;
                 $this->processdate = $tdorder->processdate;
@@ -147,7 +152,7 @@ class AddLpkController extends Component
         if(isset($this->machineno) && $this->machineno != ''){
             $machine=MsMachine::where('machineno', $this->machineno)->first();
             if($machine == null){
-                $this->dispatchBrowserEvent('notification', ['type' => 'warning', 'message' => 'Mesin ' . $this->machineno . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Mesin ' . $this->machineno . ' Tidak Terdaftar']);
             } else {
                 $this->machinename = $machine->machinename;
             }

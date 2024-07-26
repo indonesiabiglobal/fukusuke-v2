@@ -100,7 +100,7 @@
                                 <label class="control-label col-5">Jumlah Produksi</label>
                                 <input type="text" placeholder="-" class="form-control" wire:model="qty_produksi" />
                                 <span class="input-group-text">
-                                    mm
+                                    lbr
                                 </span>
                             </div>                            
                         </div>

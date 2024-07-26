@@ -29,7 +29,6 @@ class EditOrderController extends Component
     public $dimensi;
     public $product_name;
     public $tglMasuk;
-    // public $data = '';
 
     protected $rules = [
         'po_no' => 'required',
@@ -49,7 +48,7 @@ class EditOrderController extends Component
         $this->tglMasuk = Carbon::now()->format('Y-m-d');
         $this->buyer = MsBuyer::get();        
 
-        $order = TdOrders::findOrFail($request->query('orderId'));
+        $order = TdOrders::where('id', $request->query('orderId'))->first();
         $this->orderId = $order->id;
         $this->po_no = $order->po_no;
         $this->product_code = $order->product_code;
@@ -63,7 +62,7 @@ class EditOrderController extends Component
         $this->product_id = $product->code;
         $this->product_name = $product->name;
         $this->dimensi = $product->ketebalan.'x'.$product->diameterlipat.'x'.$product->productlength;
-        $this->buyer_id = $order->buyer_id;
+        $this->buyer_id['value'] = $order->buyer_id;
         $this->unit_id = $order->order_unit;
         $this->status_order = $order->status_order;
     }
@@ -89,25 +88,25 @@ class EditOrderController extends Component
             $order->save();
             
             DB::commit();
-            // session()->flash('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
             return redirect()->route('order-lpk');
         } catch (\Exception $e) {
             DB::rollBack();
-            dd($e->getMessage());
             // Log::error('Failed to save order: ' . $e->getMessage());
-            // $this->dispatchBrowserEvent('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
         }
     }
 
     public function delete()
     {
         try {
-            $order = TdOrder::findOrFail($this->orderId);
+            $order = TdOrders::where('id', $this->orderId)->first();
             $order->delete();
 
-            session()->flash('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
+            return redirect()->route('order-lpk');
         } catch (\Exception $e) {
-            $this->dispatchBrowserEvent('notification', ['type' => 'error', 'message' => 'Failed to save order: ' . $e->getMessage()]);
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save order: ' . $e->getMessage()]);
         }
     }
 
@@ -147,7 +146,7 @@ class EditOrderController extends Component
         if(isset($this->product_id) && $this->product_id != ''){
             $product=MsProduct::where('code', $this->product_id)->first();
             if($product == null){
-                // $this->dispatchBrowserEvent('notification', ['type' => 'warning', 'message' => 'Nomor Order ' . $this->product_id . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Order ' . $this->product_id . ' Tidak Terdaftar']);
             } else {
                 $this->product_name = $product->name;
                 $this->dimensi = $product->ketebalan.'x'.$product->diameterlipat.'x'.$product->productlength;

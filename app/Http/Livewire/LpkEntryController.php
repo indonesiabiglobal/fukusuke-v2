@@ -37,8 +37,8 @@ class LpkEntryController extends Component
     {
         $this->products = MsProduct::get();
         $this->buyer = MsBuyer::get();
-        $this->tglMasuk = Carbon::now()->format('Y-m-d');
-        $this->tglKeluar = Carbon::now()->format('Y-m-d'); 
+        $this->tglMasuk = Carbon::now()->format('d-m-Y');
+        $this->tglKeluar = Carbon::now()->format('d-m-Y'); 
     }
 
     public function search(){

@@ -37,13 +37,27 @@ class EditLpkController extends Component
     public $selisihkurang;
     public $dimensi;
 
+    protected $rules = [        
+        'lpk_date' => 'required',
+        'lpk_no' => 'required',
+        'po_no' => 'required',
+        'order_id' => 'required',
+        'machineno' => 'required',
+        'qty_lpk' => 'required',
+        'qty_gentan' => 'required',
+        'qty_gulung' => 'required',
+        'panjang_lpk' => 'required',
+        // 'tglproses' => 'required',
+        // 'buyer_id' => 'required',
+        // 'product_id' => 'required',
+    ];
+
     public function mount(Request $request)
     {
         $this->total_assembly_line=0;
         $this->productlength=1;
         $this->defaultgulung=1;
 
-        // $order = TdOrderLpk::findOrFail($orderId);
         $order = DB::table('tdorderlpk as tolp')
         ->select(
             'tolp.id',
@@ -83,6 +97,7 @@ class EditLpkController extends Component
         ->first();
         
         $this->lpk_date = Carbon::parse($order->lpk_date)->format('Y-m-d');
+        $this->orderId = $order->id;
         $this->lpk_no = $order->lpk_no;
         $this->po_no = $order->po_no;
         $this->order_id = $order->order_id;
@@ -104,21 +119,9 @@ class EditLpkController extends Component
 
     public function save()
     {
-        $validatedData = $this->validate([
-            'lpk_date' => 'required',
-            'lpk_no' => 'required',
-            'po_no' => 'required',
-            'order_id' => 'required',
-            'machineno' => 'required',
-            'qty_lpk' => 'required',
-            'qty_gentan' => 'required',
-            'qty_gulung' => 'required',
-            'panjang_lpk' => 'required',
-            // 'tglproses' => 'required',
-            // 'buyer_id' => 'required',
-            // 'product_id' => 'required',
-        ]);
+        $this->validate();
 
+        DB::beginTransaction();
         try {
             $machine=MsMachine::where('machineno', $this->machineno)->first();
 
@@ -140,26 +143,28 @@ class EditLpkController extends Component
             
             $orderlpk->save();
 
-            // session()->flash('message', 'Order updated successfully.');
-            session()->flash('notification', ['type' => 'success', 'message' => 'LPK updated successfully.']);
+            DB::commit();
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'LPK updated successfully.']);
             return redirect()->route('lpk-entry');
         } catch (\Exception $e) {
-            // session()->flash('error', 'Failed to save the order: ' . $e->getMessage());
-            $this->dispatchBrowserEvent('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
+            DB::rollBack();
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
         }
     }
 
     public function delete()
     {
+        DB::beginTransaction();
         try {
-            $order = TdOrderLpk::findOrFail($this->orderId);
+            $order = TdOrderLpk::where('id', $this->orderId)->first();
             $order->delete();
 
-            // session()->flash('message', 'Order deleted successfully.');
-            session()->flash('notification', ['type' => 'success', 'message' => 'Order deleted successfully.']);
+            DB::commit();
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Order deleted successfully.']);
             return redirect()->route('lpk-entry');
         } catch (\Exception $e) {
-            $this->dispatchBrowserEvent('notification', ['type' => 'error', 'message' => 'Mesin ' . $this->machineno . ' Tidak Terdaftar']);
+            DB::rollBack();
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
         }
     }
 

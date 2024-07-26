@@ -17,6 +17,7 @@
     @livewireStyles
 
     {{-- toastr --}}
+    <script src="https://code.jquery.com/jquery-3.5.0.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
     {{-- @powerGridStyles --}}
 </head>
@@ -53,7 +54,7 @@
     {{-- @powerGridScripts --}}
     <script>
         window.addEventListener('notification', event => {
-            toastr[event.detail.type](event.detail.message);
+            toastr[event.detail[0].type](event.detail[0].message);
         });
 
         // Cek apakah ada session flash notification

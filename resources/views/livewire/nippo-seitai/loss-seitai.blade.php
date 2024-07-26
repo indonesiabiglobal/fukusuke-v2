@@ -7,18 +7,24 @@
             <div class="col-12 col-lg-9 mb-1">
                 <div class="form-group">
                     <div class="input-group">
-                        <div class="col-4">
+                        <div class="col-3">
                             <select class="form-select" style="padding:0.44rem" wire:model.defer="transaksi">
                                 <option value="1">Proses</option>
-                                <option value="2">Order</option>
+                                <option value="2">Produksi</option>
                             </select>
                         </div>
-                        <div class="col-8">
+                        <div class="col-9">
                             <div class="form-group">
                                 <div class="input-group">
-                                    <input wire:model.defer="tglMasuk" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d/m/Y">
+                                    <input wire:model.defer="tglMasuk" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
+                                    <span class="input-group-text py-0">
+                                        <i class="ri-calendar-event-fill fs-4"></i>
+                                    </span>
 
-                                    <input wire:model.defer="tglKeluar" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d/m/Y">
+                                    <input wire:model.defer="tglKeluar" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
+                                    <span class="input-group-text py-0">
+                                        <i class="ri-calendar-event-fill fs-4"></i>
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -51,7 +57,7 @@
             </div>
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
-                    <select class="form-control"  wire:model.defer="idProduct" id="product" name="product" data-choices data-choices-sorting-false data-choices-removeItem>
+                    <select class="form-control" wire:model.defer="idProduct" data-choices data-choices-sorting-false data-choices-removeItem>
                         <option value="">- All -</option>
                         @foreach ($products as $item)
                             <option value="{{ $item->id }}">{{ $item->name }}</option>
@@ -67,7 +73,7 @@
                     <select class="form-control" wire:model.defer="machineid" data-choices data-choices-sorting-false data-choices-removeItem>
                         <option value="">- All -</option>
                         @foreach ($machine as $item)
-                            <option value="{{ $item->id }}">{{ $item->machinename }}</option>
+                            <option value="{{ $item->id }}">{{ $item->machineno }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -77,10 +83,10 @@
             </div>
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
-                    <select class="form-control" wire:model.defer="status" id="status" name="status" data-choices data-choices-sorting-false data-choices-removeItem>
+                    <select class="form-control" wire:model.defer="status" data-choices data-choices-sorting-false data-choices-removeItem>
                         <option value="">- All -</option>
                         <option value="0">Open</option>
-                        <option value="1">Warehouse</option>
+                        <option value="1">Seitai</option>
                         <option value="2">Kenpin</option>
                     </select>
                 </div>
@@ -90,7 +96,7 @@
 
     <div class="col-lg-12 mt-2">
         <div class="row">
-            <div class="col-12 col-lg-6">
+            <div class="col-12 col-lg-10">
                 <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1">
                     <span wire:loading.remove wire:target="search">
                         <i class="ri-search-line"></i> Filter
@@ -104,6 +110,23 @@
                                 Loading...
                             </span>
                         </span>                    
+                    </div>
+                </button>
+            </div>
+            <div class="col-12 col-lg-2">
+                <button class="btn btn-info w-lg p-1" wire:click="print" type="button">
+                    <span wire:loading.remove wire:target="print">
+                        <i class="ri-printer-line"> </i> Print
+                    </span>
+                    <div wire:loading wire:target="print">
+                        <span class="d-flex align-items-center">
+                            <span class="spinner-border flex-shrink-0" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </span>
+                            <span class="flex-grow-1 ms-1">
+                                Loading...
+                            </span>
+                        </span>
                     </div>
                 </button>
             </div>            
@@ -131,8 +154,8 @@
                 @forelse ($data as $item)
                     <tr>
                         <td>
-                            <a href="/edit-seitai?orderId={{ $item->id }}" class="link-success fs-15">
-                                <i class="ri-edit-2-line"></i>
+                            <a href="/edit-seitai?orderId={{ $item->id }}" class="link-success fs-15 p-1 bg-primary rounded">
+                                <i class="ri-edit-box-line text-white"></i>
                             </a>
                         </td>
                         <td>{{ $item->lpk_no }}</td>
@@ -162,6 +185,6 @@
                 @endforelse
             </tbody>
         </table>
-        {{-- {{ $data->links() }} --}}
+        {{ $data->links() }}
     </div>
 </div>
