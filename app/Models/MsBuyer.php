@@ -9,7 +9,9 @@ class MsBuyer extends Model
 {
     use HasFactory;
     protected $table = "msbuyer";
-    protected $fillable = [];
+    protected $guarded = ['id'];
+
+    public $timestamps = false;
 
     // protected $fillable = [
     //     'title',

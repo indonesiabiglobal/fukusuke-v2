@@ -18,6 +18,8 @@ use App\Http\Livewire\Kenpin\MutasiIsiPaletKenpinController;
 use App\Http\Livewire\Kenpin\PrintLabelGudangKenpinController;
 use App\Http\Livewire\Kenpin\ReportKenpinController;
 use App\Http\Livewire\LpkEntryController;
+use App\Http\Livewire\MasterTabel\BuyerController;
+use App\Http\Livewire\MasterTabel\Produk\TipeProduk;
 use App\Http\Livewire\NippoInfure\EditNippoController;
 use App\Http\Livewire\NippoInfure\LabelGentanController;
 use App\Http\Livewire\NippoInfure\LossInfureController;
@@ -112,6 +114,12 @@ Route::get('/pengembalian-palet', PengembalianPaletController::class)->name('pen
 Route::get('/general-report', GeneralReportController::class)->name('general-report');
 Route::get('/detail-report', DetailReportController::class)->name('detail-report');
 
+// Buyer
+Route::get('/buyer', BuyerController::class)->name('buyer');
+
+// Tipe Produk
+Route::get('/tipe-produk', TipeProduk::class)->name('tipe-produk');
+
 Route::get('/report-lpk', function (Request $request) {
     $lpk_id = $request->query('lpk_id');
     return view('livewire.order-lpk.report-lpk', compact('lpk_id'));
@@ -153,11 +161,11 @@ Route::group(['middleware' => 'auth'], function () {
         return view('widgets');
     });
     Route::get('{any}', [App\Http\Controllers\HomeController::class, 'index']);
-    
+
     Route::get('/', function() {
         return view('index');
     });
 
-    
+
 });
 
