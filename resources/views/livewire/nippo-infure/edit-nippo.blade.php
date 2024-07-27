@@ -300,7 +300,7 @@
                                     <div class="form-group">
                                         <label>Kode Loss </label>
                                         <div class="input-group col-md-9 col-xs-8">
-                                            <input class="form-control" type="text" wire:model="loss_infure_id" placeholder="..." />
+                                            <input class="form-control" type="text" wire:model.live="loss_infure_id" placeholder="..." />
                                             @error('loss_infure_id')
                                                 <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror

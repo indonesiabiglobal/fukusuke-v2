@@ -30,8 +30,8 @@
 								@forelse ($data as $item)
 									<tr>
 										<td>
-											<button type="button" class="btn btn-success" wire:click="import({{$item->id}})">
-												<i class="fa fa-edit"></i> Import
+											<button type="button" data-bs-toggle="modal" data-bs-target="#modal-add" class="btn btn-success p-1" wire:click="import({{$item->id}})">
+												<i class="ri-send-plane-2-fill"></i>
 											</button>
 										</td>
 										<td>
@@ -54,6 +54,54 @@
 								@endforelse
 							</tbody>
 						</table>
+					</div>
+				</div>
+			</div>
+			<div class="modal fade" id="modal-add" tabindex="-1" role="dialog" aria-labelledby="modal-add" aria-hidden="true" wire:ignore.self>
+				<div class="modal-dialog modal-dialog-centered" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h2 class="h6 modal-title">Mutasi Palet</h2>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<div class="row">
+								<div class="col-lg-12 mb-1">
+									<div class="form-group">
+										<label>Nomor Lot </label>
+										<div class="input-group col-md-9 col-xs-8">
+											<input class="form-control" type="text" wire:model="nomor_lot" placeholder="..." />
+										</div>
+									</div>
+								</div>
+								<div class="col-lg-12 mb-1">
+									<div class="form-group">
+										<label>Kode Loss </label>
+										<div class="input-group col-md-9 col-xs-8">
+											<input class="form-control readonly" readonly="readonly" type="text" wire:model.defer="qty_seitai" placeholder="..." />
+										</div>
+									</div>
+								</div>
+								<div class="col-lg-12 mb-1">
+									<div class="form-group">
+										<label>Berat Loss </label>
+										<div class="input-group col-md-9 col-xs-8">
+											<input class="form-control" type="text" wire:model.defer="qty_mutasi" placeholder="0" />
+											@error('qty_mutasi')
+												<span class="invalid-feedback">{{ $message }}</span>
+											@enderror
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							{{-- <button type="button" class="btn btn-secondary">Accept</button> --}}
+							<button type="button" class="btn btn-link text-gray-600 ms-auto" data-bs-dismiss="modal">Close</button>
+							<button type="button" class="btn btn-success" wire:click="saveMutasi">
+								Save
+							</button>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -109,55 +157,7 @@
 					</div>
 				</div>
 			</div>
-		</div>
-		<div class="modal fade" id="modal-add" tabindex="-1" role="dialog" aria-labelledby="modal-add" aria-hidden="true" wire:ignore.self>
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h2 class="h6 modal-title">Mutasi Palet</h2>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-					<div class="modal-body">
-						<div class="row">
-							<div class="col-lg-12 mb-1">
-								<div class="form-group">
-									<label>Nomor Lot </label>
-									<div class="input-group col-md-9 col-xs-8">
-										<input class="form-control" type="text" wire:model="nomor_lot" placeholder="..." />
-									</div>
-								</div>
-							</div>
-							<div class="col-lg-12 mb-1">
-								<div class="form-group">
-									<label>Kode Loss </label>
-									<div class="input-group col-md-9 col-xs-8">
-										<input class="form-control readonly" readonly="readonly" type="text" wire:model.defer="qty_seitai" placeholder="..." />
-									</div>
-								</div>
-							</div>
-							<div class="col-lg-12 mb-1">
-								<div class="form-group">
-									<label>Berat Loss </label>
-									<div class="input-group col-md-9 col-xs-8">
-										<input class="form-control" type="text" wire:model.defer="qty_mutasi" placeholder="0" />
-										@error('qty_mutasi')
-											<span class="invalid-feedback">{{ $message }}</span>
-										@enderror
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="modal-footer">
-						{{-- <button type="button" class="btn btn-secondary">Accept</button> --}}
-						<button type="button" class="btn btn-link text-gray-600 ms-auto" data-bs-dismiss="modal">Close</button>
-						<button type="button" class="btn btn-success" wire:click="saveMutasi">
-							Save
-						</button>
-					</div>
-                </div>
-            </div>
-        </div>
+		</div>		
 		<div class="col-12 col-lg-6">
 			<div class="col-12 col-lg-8">
 				<div class="form-group">
