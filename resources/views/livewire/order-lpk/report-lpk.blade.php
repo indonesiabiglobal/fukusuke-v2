@@ -10,7 +10,7 @@
 use Carbon\Carbon;
 
     $data = collect(DB::select("
-                SELECT tdol.lpk_no,tdo.po_no,tdo.order_date, tdo.stufingdate,tdo.order_qty/mp.case_box_count as order_qty,tdol.qty_lpk,mwl.name as warnalpk,
+                SELECTa tdol.lpk_no,tdo.po_no,tdo.order_date, tdo.stufingdate,tdo.order_qty/mp.case_box_count as order_qty,tdol.qty_lpk,mwl.name as warnalpk,
                 tdol.panjang_lpk,mm.machineno as nomesin,mp.codebarcode,tdol.qty_gentan as infure_qtygentan,tdol.qty_gulung as infure_pjgulunglpk,  
                 mp.id, mp.name as product_name,mp.code_alias,mp.code,
                 mpt.code as tipe , mpt.name as tipename,mp.ketebalan as t, mp.diameterlipat as l, mp.productlength as p,

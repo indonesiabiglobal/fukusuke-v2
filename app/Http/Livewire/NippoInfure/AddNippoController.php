@@ -164,7 +164,7 @@ class AddNippoController extends Component
         
         $datas->save();
 
-        $this->emit('closeModal');
+        // $this->emit('closeModal');
     }
 
     public function deleteInfure($orderId)

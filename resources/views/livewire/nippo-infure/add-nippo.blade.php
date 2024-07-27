@@ -320,10 +320,10 @@
         <hr/>
         <div class="row">
             <div class="col-lg-8">
-                {{-- <button id="btnCreate" type="submit" class="btn btn-success">
-                    <i class="fa fa-plus"></i> Add Loss Infure
+                {{-- <button wire:click="addLossInfure" type="button" class="btn btn-success">
+                    <i class="ri-add-line"></i> Add Loss Infure
                 </button> --}}
-                <button wire:click="addLossInfure" type="button" class="btn btn-success">
+                <button data-bs-toggle="modal" data-bs-target="#modal-add" type="button" class="btn btn-success">
                     <i class="ri-add-line"></i> Add Loss Infure
                 </button>
             </div>
@@ -376,9 +376,9 @@
                             <div class="row">
                                 <div class="col-lg-12 mb-1">
                                     <div class="form-group">
-                                        <label>Kode Loss </label>
-                                        <div class="input-group col-md-9 col-xs-8">
-                                            <input class="form-control" type="text" wire:model="loss_infure_id" placeholder="..." />
+                                        <div class="input-group">
+                                            <label class="col-12 col-lg-2 fw-bold text-muted">Kode Loss </label>
+                                            <input class="form-control" type="text" wire:model.live="loss_infure_id" placeholder="..." />
                                             @error('loss_infure_id')
                                                 <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror
@@ -387,8 +387,8 @@
                                 </div>
                                 <div class="col-lg-12 mb-1">
                                     <div class="form-group">
-                                        <label>Kode Loss </label>
-                                        <div class="input-group col-md-9 col-xs-8">
+                                        <div class="input-group">
+                                            <label class="col-12 col-lg-2 fw-bold text-muted">Nama Loss </label>
                                             <input class="form-control readonly" readonly="readonly" type="text" wire:model.defer="name_infure" placeholder="..." />
                                             @error('name')
                                                 <span class="invalid-feedback">{{ $message }}</span>
@@ -398,8 +398,8 @@
                                 </div>
                                 <div class="col-lg-12 mb-1">
                                     <div class="form-group">
-                                        <label>Berat Loss </label>
-                                        <div class="input-group col-md-9 col-xs-8">
+                                        <div class="input-group">
+                                            <label class="col-12 col-lg-2 fw-bold text-muted">Berat Loss </label>
                                             <input class="form-control" type="text" wire:model.defer="berat_loss" placeholder="0" />
                                             @error('berat_loss')
                                                 <span class="invalid-feedback">{{ $message }}</span>

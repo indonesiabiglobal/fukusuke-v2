@@ -7,7 +7,8 @@
                         <div class="form-group">                            
                             <div class="input-group">
                                 <label class="control-label col-5">Tanggal Produksi</label>
-                                <input class="form-control datepicker-input" type="date" wire:model.defer="production_date" placeholder="yyyy/mm/dd"/>
+                                {{-- <input class="form-control datepicker-input" type="date" wire:model.defer="production_date" placeholder="yyyy/mm/dd"/> --}}
+                                <input class="form-control" type="text" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y" wire:model.defer="production_date" placeholder="yyyy/mm/dd"/>
                                 @error('production_date')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -265,8 +266,11 @@
         <hr/>
         <div class="row">
             <div class="col-lg-8">
-                <button wire:click="addLossInfure" type="button" class="btn btn-success">
+                {{-- <button wire:click="addLossInfure" type="button" class="btn btn-success">
                     <i class="fa fa-plus"></i> Add Loss Infure
+                </button> --}}
+                <button data-bs-toggle="modal" data-bs-target="#modal-add" type="button" class="btn btn-success">
+                    <i class="ri-add-line"></i> Add Loss Infure
                 </button>
             </div>
             <div class="col-lg-4" style="border-top:1px solid #efefef">
@@ -296,7 +300,7 @@
                                     <div class="form-group">
                                         <label>Kode Loss </label>
                                         <div class="input-group col-md-9 col-xs-8">
-                                            <input class="form-control" type="text" wire:model="loss_infure_id" placeholder="..." />
+                                            <input class="form-control" type="text" wire:model.live="loss_infure_id" placeholder="..." />
                                             @error('loss_infure_id')
                                                 <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror

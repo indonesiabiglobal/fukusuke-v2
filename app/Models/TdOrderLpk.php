@@ -10,4 +10,5 @@ class TdOrderLpk extends Model
     use HasFactory;
     public $timestamps = false;
     protected $table = "tdorderlpk";
+    protected $guarded = ['id'];
 }
