@@ -329,14 +329,38 @@
             </div>
             <div class="col-lg-4" style="border-top:1px solid #efefef">
                 <div class="toolbar">
-                    <button id="btnFilter" type="button" class="btn btn-warning" wire:click="cancel">
-                        <i class="fa fa-back"></i> Close
+                    <button type="button" class="btn btn-warning" wire:click="cancel">
+                        <span wire:loading.remove wire:target="cancel">
+                            <i class="ri-close-line"> </i> Close
+                        </span>
+                        <div wire:loading wire:target="cancel">
+                            <span class="d-flex align-items-center">
+                                <span class="spinner-border flex-shrink-0" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </span>
+                                <span class="flex-grow-1 ms-1">
+                                    Loading...
+                                </span>
+                            </span>                    
+                        </div>
                     </button>
-                    <button id="btnCreate" type="submit" class="btn btn-success">
-                        <i class="fa fa-plus"></i> Save
+                    <button type="submit" class="btn btn-success">
+                        <span wire:loading.remove wire:target="save">
+                            <i class="ri-save-3-line"></i> Save
+                        </span>
+                        <div wire:loading wire:target="save">
+                            <span class="d-flex align-items-center">
+                                <span class="spinner-border flex-shrink-0" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </span>
+                                <span class="flex-grow-1 ms-1">
+                                    Loading...
+                                </span>
+                            </span>
+                        </div>
                     </button>
                     <button type="button" class="btn btn-success btn-print" disabled="disabled">
-                        <i class="fa fa-print"></i> Print
+                        <i class="bx bx-printer"></i> Print
                     </button>
                 </div>
             </div>

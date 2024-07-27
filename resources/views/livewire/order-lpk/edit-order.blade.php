@@ -126,7 +126,7 @@
 			<hr />
 			<div class="col-lg-12">
 				<div class="toolbar">
-					<button id="btnFilter" type="button" class="btn btn-warning w-lg" wire:click="cancel">
+					<button type="button" class="btn btn-warning w-lg" wire:click="cancel">
 						<span wire:loading.remove wire:target="cancel">
 							<i class="ri-close-line"> </i> Close
 						</span>
@@ -214,22 +214,6 @@
 					</div>
 				</div>
 			</div>
-			<!--end delete modal -->
-			{{-- <div class="modal fade" id="modal-default" tabindex="-1" role="dialog" aria-labelledby="modal-default" aria-hidden="true">
-				<div class="modal-dialog modal-dialog-centered" role="document">
-					<div class="modal-content">
-						<div class="modal-body">
-							<h3>
-								Are you sure want to delete ?
-							</h3>
-						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-secondary" wire:click="delete">Yes</button>
-							<button type="button" class="btn btn-link text-gray-600 ms-auto" data-bs-dismiss="modal">No</button>
-						</div>
-					</div>
-				</div>
-			</div> --}}
 		</form>        
 	</div>
 	<div class="col-lg-2"></div>
