@@ -46,7 +46,7 @@ class EditNippoController extends Component
     public $loss_infure_id;
     public $name_infure;
 
-    public function mount($orderId)
+    public function mount(Request $request)
     {
         $data = DB::table('tdproduct_assembly AS tda')
         ->join('tdorderlpk AS tdol', 'tda.lpk_id', '=', 'tdol.id')
@@ -100,11 +100,11 @@ class EditNippoController extends Component
             'msp.code',
             'msp.name'
         )
-        ->where('tda.id', $orderId)
+        ->where('tda.id', $request->query('orderId'))
         ->first();
         // dd($orderId);
 
-        $this->orderId = $orderId;
+        $this->orderId = $request->query('orderId');
         $this->production_no = $data->production_no;
         $this->production_date = Carbon::parse($data->production_date)->format('Y-m-d');
         $this->created_on = Carbon::parse($data->created_on)->format('Y-m-d');
