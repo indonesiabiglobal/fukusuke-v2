@@ -12,6 +12,7 @@ use App\Http\Livewire\JamKerja\InfureJamKerjaController;
 use App\Http\Livewire\JamKerja\SeitaiJamKerjaController;
 use App\Http\Livewire\Kenpin\AddKenpinInfureController;
 use App\Http\Livewire\Kenpin\AddKenpinSeitaiController;
+use App\Http\Livewire\Kenpin\EditKenpinController;
 use App\Http\Livewire\Kenpin\KenpinInfureController;
 use App\Http\Livewire\Kenpin\KenpinSeitaiController;
 use App\Http\Livewire\Kenpin\MutasiIsiPaletKenpinController;
@@ -98,7 +99,8 @@ Route::get('/seitai-jam-kerja', SeitaiJamKerjaController::class)->name('seitai-j
 
 // Kenpin
 Route::get('/kenpin-infure', KenpinInfureController::class)->name('kenpin-infure');
-Route::get('/add-kenpin-infure', AddKenpinInfureController::class)->name('add-kenpin');
+Route::get('/add-kenpin-infure', AddKenpinInfureController::class)->name('add-kenpin-infure');
+Route::get('/edit-kenpin-infure', EditKenpinController::class)->name('edit-kenpin-infure');
 
 Route::get('/kenpin-seitai', KenpinSeitaiController::class)->name('kenpin-seitai-kenpin');
 Route::get('/add-kenpin-seitai', AddKenpinSeitaiController::class)->name('add-kenpin-seitai');

@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-12 col-lg-7 mb-1">
+    <div class="col-12 col-lg-7">
         <div class="row">
             <div class="col-12 col-lg-3">
                 <label class="form-label text-muted fw-bold">Filter Tanggal</label>
@@ -7,13 +7,7 @@
             <div class="col-12 col-lg-9 mb-1">
                 <div class="form-group">
                     <div class="input-group">
-                        <div class="col-3">
-                            <select class="form-select" style="padding:0.44rem" wire:model.defer="transaksi">
-                                <option value="1">Proses</option>
-                                <option value="2">Order</option>
-                            </select>
-                        </div>
-                        <div class="col-9">
+                        <div class="col-12">
                             <div class="form-group">
                                 <div class="input-group">
                                     <input wire:model.defer="tglMasuk" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
@@ -31,33 +25,53 @@
                     </div>
                 </div>
             </div>
-
+            <div class="col-12 col-lg-3">
+                <label class="form-label text-muted fw-bold">Nomor LPK</label>
+            </div>
+            <div class="col-12 col-lg-9 mb-1">
+                <div class="input-group">
+                    <input wire:model.defer="lpk_no" class="form-control" style="padding:0.44rem" type="text" placeholder="000000-000" />
+                </div>
+            </div>
             <div class="col-12 col-lg-3">
                 <label class="form-label text-muted fw-bold">Search</label>
             </div>
             <div class="col-12 col-lg-9">
                 <div class="input-group">
-                    <input wire:model.defer="searchTerm" class="form-control"style="padding:0.44rem" type="text" placeholder="search nomor PO, nama produk" />
+                    <input wire:model.defer="searchTerm" class="form-control" style="padding:0.44rem" type="text" placeholder="_____-_____" />
                 </div>
             </div>
         </div>
     </div>
     <div class="col-12 col-lg-5">
         <div class="row">
-            <div class="col-12 col-lg-3">
-                <label class="form-label text-muted fw-bold">Nomor Han</label>
+            <div class="col-12 col-lg-2">
+                <label for="product" class="form-label text-muted fw-bold">Product</label>
             </div>
-            <div class="col-12 col-lg-9">
-                <div class="mb-1" wire:ignore>
-                    <input wire:model.defer="no_han" class="form-control" type="text" placeholder="00-00-00-00A" />
+            <div class="col-12 col-lg-10 mb-1">
+                <div wire:ignore>
+                    <select class="form-control" wire:model.defer="idProduct" data-choices data-choices-sorting-false data-choices-removeItem>
+                        <option value="">- All -</option>
+                        @foreach ($products as $item)
+                            <option value="{{ $item->id }}">{{ $item->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
-            <div class="col-12 col-lg-3">
-                <label class="form-label text-muted fw-bold">Status</label>
+            <div class="col-12 col-lg-2">
+                <label class="form-label text-muted fw-bold">No Han</label>
             </div>
-            <div class="col-12 col-lg-9">
-                <div class="mb-1" wire:ignore>
-                    <select class="form-control" placeholder="- all -">
+            <div class="col-12 col-lg-10 mb-1">
+                <div wire:ignore>
+                    <input wire:model.defer="no_han" class="form-control" style="padding:0.44rem" type="text" placeholder="00-00-00-00A" />
+                </div>
+            </div>
+            <div class="col-12 col-lg-2">
+                <label for="status" class="form-label text-muted fw-bold">Status</label>
+            </div>
+            <div class="col-12 col-lg-10">
+                <div wire:ignore>
+                    <select class="form-control" style="padding:0.44rem" wire:model.defer="status" id="status" name="status" data-choices data-choices-sorting-false data-choices-removeItem>
                         <option value="">- all -</option>
                         <option value="1">Proses</option>
                         <option value="2">Finish</option>
@@ -66,7 +80,6 @@
             </div>
         </div>
     </div>
-
     <div class="col-lg-12 mt-3">
         <div class="row">
             <div class="col-12 col-lg-6">
@@ -117,28 +130,9 @@
                     $no = 1;
                 @endphp
                 @forelse ($data as $item)
-                    {{-- <tr>
-                        <td>
-                            <a href="/edit-order?orderId={{ $item->id }}" class="link-success fs-15 p-1 bg-primary rounded">
-                                <i class="ri-edit-box-line text-white"></i>
-                            </a>
-                        </td>
-                        <td>{{ $item->po_no }}</td>
-                        <td>{{ $item->produk_name }}</td>
-                        <td>{{ $item->product_code }}</td>
-                        <td>{{ $item->buyer_name }}</td>
-                        <td>{{ $item->order_qty }}</td>
-                        <td>{{ $item->order_date }}</td>
-                        <td>{{ $item->etddate }}</td>
-                        <td>{{ $item->processdate }}</td>
-                        <td>{{ $no++ }}</td>
-                    </tr> --}}
                     <tr>
                         <td>
-                            {{-- <a href="/edit-order?orderId={{ $item->id }}" class="btn btn-info">
-                                <i class="fa fa-edit"></i> Edit
-                            </a> --}}
-                            <a href="/edit-order?orderId={{ $item->id }}" class="link-success fs-15 p-1 bg-primary rounded">
+                            <a href="/edit-kenpin-infure?orderId={{ $item->id }}" class="link-success fs-15 p-1 bg-primary rounded">
                                 <i class="ri-edit-box-line text-white"></i>
                             </a>
                         </td>

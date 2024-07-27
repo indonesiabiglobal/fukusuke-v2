@@ -3,17 +3,15 @@
 namespace App\Http\Livewire\Kenpin;
 
 use Livewire\Component;
-use App\Models\TdOrder;
 use App\Models\MsEmployee;
 use App\Models\TdKenpinAssembly;
 use App\Models\TdKenpinAssemblyDetail;
-use App\Models\TdOrderLpk;
 use App\Models\TdProductAssembly;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
-class AddKenpinInfureController extends Component
+class EditKenpinController extends Component
 {
     public $kenpin_date;
     public $kenpin_no;
@@ -34,11 +32,41 @@ class AddKenpinInfureController extends Component
     public $berat_loss;
     public $orderid;
 
-    public function mount()
+    public function mount(Request $request)
     {
-        $this->kenpin_date = Carbon::now()->format('Y-m-d');
-        $today = Carbon::now();
-        $this->kenpin_no = $today->format('ym').'-001';
+        $data = DB::table('tdkenpin_assembly AS tda')
+        ->join('tdorderlpk AS tdo', 'tdo.id', '=', 'tda.lpk_id')
+        ->join('msproduct AS msp', 'msp.id', '=', 'tdo.product_id')
+        ->join('msemployee AS mse', 'mse.id', '=', 'tda.employee_id')
+        ->where('tda.id', $request->query('orderId'))
+        ->select(
+            'tda.id',
+            'tda.kenpin_date',
+            'tda.kenpin_no',
+            'tdo.lpk_no',
+            'tdo.lpk_date',
+            'tdo.panjang_lpk',
+            'msp.code',
+            'msp.name',
+            'mse.employeeno',
+            'mse.empname',
+            'tda.remark',
+            'tda.status_kenpin'
+        )
+        ->first();
+        
+        $this->orderid = $data->id;
+        $this->kenpin_date = Carbon::parse($data->kenpin_date)->format('d-m-Y');
+        $this->kenpin_no = $data->kenpin_no;
+        $this->lpk_no = $data->lpk_no;
+        $this->lpk_date = Carbon::parse($data->lpk_date)->format('d-m-Y');
+        $this->panjang_lpk = $data->panjang_lpk;
+        $this->code = $data->code;
+        $this->name = $data->name;
+        $this->employeeno = $data->employeeno;
+        $this->empname = $data->empname;
+        $this->remark = $data->remark;
+        $this->status_kenpin = $data->status_kenpin;
     }
 
     public function addGentan()
@@ -48,6 +76,11 @@ class AddKenpinInfureController extends Component
             'lpk_no' => 'required',
             'employeeno' => 'required',
         ]);
+
+        $this->gentan_no = '';
+        $this->machineno = '';
+        $this->namapetugas = '';
+        $this->berat_loss = '';
 
         if ($validatedData) {
             $this->dispatch('showModal');
@@ -68,6 +101,7 @@ class AddKenpinInfureController extends Component
         $datas->berat_loss = $this->berat_loss;
         $datas->trial468 = 'T';
         $datas->lpk_id = $this->lpk_id;
+        $datas->kenpin_assembly_id = $this->orderid;
         
         $datas->save();
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);
@@ -75,9 +109,9 @@ class AddKenpinInfureController extends Component
         $this->dispatch('closeModal');
     }
 
-    public function deleteInfure($orderId)
+    public function deleteInfure()
     {
-        $data = TdKenpinAssemblyDetail::findOrFail($orderId);
+        $data = TdKenpinAssemblyDetail::where('id', $this->orderid)->first();
         $data->delete();
 
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Hapus']);
@@ -179,7 +213,7 @@ class AddKenpinInfureController extends Component
                 ->join('msproduct AS msp', 'msp.id', '=', 'tdpa.product_id')
                 ->join('msmachine AS msm', 'msm.id', '=', 'tdpa.machine_id')
                 ->join('tdkenpin_assembly_detail AS tad', 'tad.lpk_id', '=', 'tdol.id')
-                ->where('tdpa.lpk_id', $this->lpk_id)
+                ->where('tad.kenpin_assembly_id', $this->orderid)
                 ->get();
             }
         }
@@ -215,7 +249,7 @@ class AddKenpinInfureController extends Component
             }
         }
 
-        return view('livewire.kenpin.add-kenpin')->extends('layouts.master');
+        return view('livewire.kenpin.edit-kenpin')->extends('layouts.master');
     }
 }
 
