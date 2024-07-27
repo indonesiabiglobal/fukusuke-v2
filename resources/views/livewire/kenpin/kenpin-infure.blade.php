@@ -89,7 +89,7 @@
                 <button
                     type="button" 
                     class="btn btn-success w-lg p-1"
-                    onclick="window.location.href='/add-order'"
+                    onclick="window.location.href='/add-kenpin-infure'"
                     >
                     <i class="ri-add-line"> </i> Add
                 </button>

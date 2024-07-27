@@ -1,18 +1,4 @@
 <div class="row">
-	{{-- @if (session()->has('message'))
-		<div class="alert alert-success">
-			{{ session('message') }}
-		</div>
-	@endif
-	@if ($errors->any())
-		<div class="alert alert-danger">
-			<ul>
-				@foreach ($errors->all() as $error)
-					<li>{{ $error }}</li>
-				@endforeach
-			</ul>
-		</div>
-	@endif --}}
     <form wire:submit.prevent="save">
         <div class="row mt-2">
 			<div class="col-12 col-lg-12">
@@ -35,7 +21,7 @@
 				<div class="form-group">
 					<div class="input-group">
 						<label class="control-label col-12 col-lg-6">Nomor LPK</label>
-						<input type="text" class="form-control" placeholder="000000-00"  wire:model="lpk_no" />
+						<input type="text" class="form-control" placeholder="000000-00" wire:model.live="lpk_no" />
 						@error('lpk_no')
 							<span class="invalid-feedback">{{ $message }}</span>
 						@enderror
@@ -78,7 +64,7 @@
 				<div class="form-group">
 					<div class="input-group">
 						<label class="control-label col-12 col-lg-6">Petugas</label>
-						<input type="text" placeholder="-" class="form-control" wire:model="employeeno" />
+						<input type="text" placeholder="-" class="form-control" wire:model.live="employeeno" />
 						@error('employeeno')
 							<span class="invalid-feedback">{{ $message }}</span>
 						@enderror
@@ -142,55 +128,55 @@
                         <h2 class="h6 modal-title">Add Gentan Infure</h2>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                        <div class="modal-body">
-                            <div class="row">
-                                <div class="col-lg-12 mb-1">
-                                    <div class="form-group">
-                                        <label>Nomor Gentan </label>
-                                        <div class="input-group col-md-9 col-xs-8">
-                                            <input class="form-control" type="text" wire:model="gentan_no" placeholder="..." />
-                                            @error('loss_infure_id')
-                                                <span class="invalid-feedback">{{ $message }}</span>
-                                            @enderror
-                                        </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-lg-12 mb-1">
+                                <div class="form-group">
+                                    <label>Nomor Gentan </label>
+                                    <div class="input-group col-md-9 col-xs-8">
+                                        <input class="form-control" type="text" wire:model="gentan_no" placeholder="..." />
+                                        @error('loss_infure_id')
+                                            <span class="invalid-feedback">{{ $message }}</span>
+                                        @enderror
                                     </div>
                                 </div>
-								<div class="col-lg-12 mb-1">
-                                    <div class="form-group">
-                                        <label>Nomor Mesin </label>
-                                        <div class="input-group col-md-9 col-xs-8">
-                                            <input class="form-control readonly" readonly="readonly" type="text" wire:model.defer="machineno" placeholder="..." />
-                                        </div>
+                            </div>
+                            <div class="col-lg-12 mb-1">
+                                <div class="form-group">
+                                    <label>Nomor Mesin </label>
+                                    <div class="input-group col-md-9 col-xs-8">
+                                        <input class="form-control readonly" readonly="readonly" type="text" wire:model.defer="machineno" placeholder="..." />
                                     </div>
                                 </div>
-                                <div class="col-lg-12 mb-1">
-                                    <div class="form-group">
-                                        <label>Petugas </label>
-                                        <div class="input-group col-md-9 col-xs-8">
-                                            <input class="form-control readonly" readonly="readonly" type="text" wire:model.defer="namapetugas" placeholder="..." />
-                                        </div>
+                            </div>
+                            <div class="col-lg-12 mb-1">
+                                <div class="form-group">
+                                    <label>Petugas </label>
+                                    <div class="input-group col-md-9 col-xs-8">
+                                        <input class="form-control readonly" readonly="readonly" type="text" wire:model.defer="namapetugas" placeholder="..." />
                                     </div>
                                 </div>
-                                <div class="col-lg-12 mb-1">
-                                    <div class="form-group">
-                                        <label>Berat Loss </label>
-                                        <div class="input-group col-md-9 col-xs-8">
-                                            <input class="form-control" type="text" wire:model.defer="berat_loss" placeholder="0" />
-                                            @error('berat_loss')
-                                                <span class="invalid-feedback">{{ $message }}</span>
-                                            @enderror
-                                        </div>
+                            </div>
+                            <div class="col-lg-12 mb-1">
+                                <div class="form-group">
+                                    <label>Berat Loss </label>
+                                    <div class="input-group col-md-9 col-xs-8">
+                                        <input class="form-control" type="text" wire:model.defer="berat_loss" placeholder="0" />
+                                        @error('berat_loss')
+                                            <span class="invalid-feedback">{{ $message }}</span>
+                                        @enderror
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            {{-- <button type="button" class="btn btn-secondary">Accept</button> --}}
-                            <button type="button" class="btn btn-link text-gray-600 ms-auto" data-bs-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-success" wire:click="saveGentan">
-                                Save
-                            </button>
-                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        {{-- <button type="button" class="btn btn-secondary">Accept</button> --}}
+                        <button type="button" class="btn btn-link text-gray-600 ms-auto" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-success" wire:click="saveGentan">
+                            Save
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -263,7 +249,16 @@
     </form>        
 
 </div>
+@script
 <script>
+    $wire.on('showModal', () => {
+      
+      $('#modal-add').modal('show');
+       
+    });
+ </script>
+ @endscript
+{{-- <script>
     document.addEventListener('livewire:load', function () {
         Livewire.on('showModal', () => {
             $('#modal-add').modal('show');
@@ -272,4 +267,4 @@
             $('#modal-add').modal('hide');
         });
     });
-</script>
+</script> --}}

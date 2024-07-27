@@ -50,7 +50,7 @@ class AddKenpinInfureController extends Component
         ]);
 
         if ($validatedData) {
-            $this->emit('showModal');
+            $this->dispatch('showModal');
         }
     }
 
@@ -70,9 +70,9 @@ class AddKenpinInfureController extends Component
         $datas->lpk_id = $this->lpk_id;
         
         $datas->save();
-        $this->dispatchBrowserEvent('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);
+        $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);
 
-        $this->emit('closeModal');
+        $this->dispatch('closeModal');
     }
 
     public function deleteInfure($orderId)
@@ -80,7 +80,7 @@ class AddKenpinInfureController extends Component
         $data = TdKenpinAssemblyDetail::findOrFail($orderId);
         $data->delete();
 
-        $this->dispatchBrowserEvent('notification', ['type' => 'success', 'message' => 'Data Berhasil di Hapus']);
+        $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Hapus']);
     }
 
     public function save()
@@ -120,7 +120,7 @@ class AddKenpinInfureController extends Component
             session()->flash('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
             return redirect()->route('kenpin-infure');
         } else {
-            $this->dispatchBrowserEvent('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
         }
     }
 
@@ -150,7 +150,7 @@ class AddKenpinInfureController extends Component
             ->first();
 
             if($tdorderlpk == null){
-                $this->dispatchBrowserEvent('notification', ['type' => 'warning', 'message' => 'Nomor LPK ' . $this->lpk_no . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor LPK ' . $this->lpk_no . ' Tidak Terdaftar']);
             } else {
                 $this->lpk_date = Carbon::parse($tdorderlpk->lpk_date)->format('Y-m-d');
                 $this->panjang_lpk = $tdorderlpk->panjang_lpk;
@@ -194,7 +194,7 @@ class AddKenpinInfureController extends Component
             $msemployee=MsEmployee::where('employeeno', $this->employeeno)->first();
 
             if($msemployee == null){
-                $this->dispatchBrowserEvent('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
             } else {
                 $this->empname = $msemployee->empname;
             }
@@ -214,7 +214,7 @@ class AddKenpinInfureController extends Component
             ->first();
 
             if($gentan == null){
-                $this->dispatchBrowserEvent('notification', ['type' => 'warning', 'message' => 'Nomor Gentan ' . $this->gentan_no . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Gentan ' . $this->gentan_no . ' Tidak Terdaftar']);
             } else {
                 $this->machineno = $gentan->nomesin;
                 $this->namapetugas = $gentan->namapetugas;
