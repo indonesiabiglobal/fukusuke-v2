@@ -7,7 +7,10 @@
                         <div class="form-group">                            
                             <div class="input-group">
                                 <label class="control-label pe-2">Tanggal Produksi</label>
-                                <input class="form-control datepicker-input" type="date" wire:model.defer="production_date" placeholder="yyyy/mm/dd"/>
+                                <input class="form-control" type="text" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y" wire:model.defer="production_date" placeholder="yyyy/mm/dd"/>
+                                <span class="input-group-text py-0">
+                                    <i class="ri-calendar-event-fill fs-4"></i>
+                                </span>
                                 @error('production_date')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -18,7 +21,10 @@
                         <div class="form-group">                            
                             <div class="input-group">
                                 <label class="control-label pe-2">Tanggal Proses</label>
-                                <input class="form-control datepicker-input" type="date" wire:model.defer="created_on" placeholder="yyyy/mm/dd"/>
+                                <input class="form-control" type="text" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y" wire:model.defer="created_on" placeholder="yyyy/mm/dd"/>
+                                <span class="input-group-text py-0">
+                                    <i class="ri-calendar-event-fill fs-4"></i>
+                                </span>
                                 @error('created_on')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -29,7 +35,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Nomor LPK</label>
-                                <input type="text" class="form-control" wire:model.debounce.300ms="lpk_no" />
+                                <input type="text" class="form-control @error('lpk_no') is-invalid @enderror" wire:model.live.debounce.300ms="lpk_no" />
                                 @error('lpk_no')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -41,6 +47,9 @@
                             <div class="input-group">
                                 <label class="control-label pe-2">Tanggal LPK</label>
                                 <input class="form-control readonly datepicker-input" readonly="readonly" type="date" wire:model.defer="lpk_date" placeholder="yyyy/mm/dd"/>
+                                <span class="input-group-text py-0">
+                                    <i class="ri-calendar-event-fill fs-4"></i>
+                                </span>
                                 @error('lpk_date')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -87,7 +96,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Nomor Mesin</label>
-                                <input type="text" placeholder=" ... " class="form-control" wire:model.debounce.300ms="machineno" />
+                                <input type="text" placeholder=" ... " class="form-control @error('lpk_no') is-invalid @enderror" wire:model.live.debounce.300ms="machineno" />
                                 @error('machineno')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -109,7 +118,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Petugas</label>
-                                <input type="text" placeholder=" ... " class="form-control" wire:model="employeeno" />
+                                <input type="text" placeholder=" ... " class="form-control @error('lpk_no') is-invalid @enderror" wire:model.live="employeeno" />
                                 @error('employeeno')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -390,7 +399,7 @@
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-centered table-nowrap mb-0 rounded">
-                        <thead class="thead-light">
+                        <thead class="table-light">
                             <tr>
                                 <th class="border-0 rounded-start">Action</th>
                                 <th class="border-0">Kode</th>

@@ -42,6 +42,7 @@ class OrderLpkController extends Component
     }
 
     public function search(){
+        $this->resetPage();
         $this->render();
     }
 

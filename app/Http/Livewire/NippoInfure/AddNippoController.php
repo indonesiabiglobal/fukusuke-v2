@@ -129,22 +129,13 @@ class AddNippoController extends Component
             // $product->product_id = $this->product_id;
             
             DB::commit();
-            session()->flash('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
             return redirect()->route('nippo-infure');
         } catch (\Exception $e) {            
             DB::rollBack();
             Log::error('Failed to save order: ' . $e->getMessage());
-            $this->dispatchBrowserEvent('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
         }
-        
-        // if ($transStatus == 'true') {
-        //     session()->flash('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
-        //     // return redirect()->route('nippo-infure');
-        // } else {
-        //     Log::error('Failed to save order: ' . $e->getMessage());
-        //     $this->dispatchBrowserEvent('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
-        //     DB::rollBack();
-        // }
     }
 
     public function addLossInfure()
@@ -158,7 +149,7 @@ class AddNippoController extends Component
         ]);
 
         if ($validatedData) {
-            $this->emit('showModal');
+            $this->dispatch('showModal');
         }
     }
 
@@ -181,7 +172,7 @@ class AddNippoController extends Component
         $data = TdProductAssemblyLoss::findOrFail($orderId);
         $data->delete();
 
-        $this->dispatchBrowserEvent('notification', ['type' => 'success', 'message' => 'Data Berhasil di Hapus']);
+        $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Hapus']);
     }
 
     public function cancel()
@@ -210,7 +201,7 @@ class AddNippoController extends Component
             ->first();
 
             if($tdorderlpk == null){
-                $this->dispatchBrowserEvent('notification', ['type' => 'warning', 'message' => 'Nomor LPK ' . $this->lpk_no . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor LPK ' . $this->lpk_no . ' Tidak Terdaftar']);
             } else {
                 $this->lpk_date = Carbon::parse($tdorderlpk->lpk_date)->format('Y-m-d');
                 $this->panjang_lpk = $tdorderlpk->panjang_lpk;
@@ -238,7 +229,7 @@ class AddNippoController extends Component
             $machine=MsMachine::where('machineno', $this->machineno)->first();
 
             if($machine == null){
-                $this->dispatchBrowserEvent('notification', ['type' => 'warning', 'message' => 'Machine ' . $this->machineno . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Machine ' . $this->machineno . ' Tidak Terdaftar']);
             } else {
                 $this->machinename = $machine->machinename;
             }
@@ -248,7 +239,7 @@ class AddNippoController extends Component
             $msemployee=MsEmployee::where('employeeno', $this->employeeno)->first();
 
             if($msemployee == null){
-                $this->dispatchBrowserEvent('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
             } else {
                 $this->empname = $msemployee->empname;
             }
@@ -258,7 +249,7 @@ class AddNippoController extends Component
             $lossinfure=MsLossInfure::where('id', $this->loss_infure_id)->first();
 
             if($lossinfure == null){
-                $this->dispatchBrowserEvent('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->loss_infure_id . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->loss_infure_id . ' Tidak Terdaftar']);
             } else {
                 $this->name_infure = $lossinfure->name;
             }
@@ -280,7 +271,7 @@ class AddNippoController extends Component
 
         if(isset($this->nomor_barcode) && $this->nomor_barcode != ''){
             if($this->code != $this->nomor_barcode){
-                $this->dispatchBrowserEvent('notification', ['type' => 'warning', 'message' => 'Nomor Barcode ' . $this->nomor_barcode . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Barcode ' . $this->nomor_barcode . ' Tidak Terdaftar']);
             }
         }
 
