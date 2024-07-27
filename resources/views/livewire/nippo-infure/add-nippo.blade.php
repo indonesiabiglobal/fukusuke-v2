@@ -4,7 +4,7 @@
             <div class="col-4 col-lg-12">
                 <div class="row">
                     <div class="col-12 col-lg-6">
-                        <div class="form-group">                            
+                        <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label pe-2">Tanggal Produksi</label>
                                 <input class="form-control" type="text" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y" wire:model.defer="production_date" placeholder="yyyy/mm/dd"/>
@@ -18,7 +18,7 @@
                         </div>
                     </div>
                     <div class="col-12 col-lg-6">
-                        <div class="form-group">                            
+                        <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label pe-2">Tanggal Proses</label>
                                 <input class="form-control" type="text" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y" wire:model.defer="created_on" placeholder="yyyy/mm/dd"/>
@@ -57,7 +57,7 @@
                         </div>
                     </div>
                     <div class="col-12 col-lg-4 mt-1">
-                        <div class="form-group">                            
+                        <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label pe-2">Panjang LPK</label>
                                 <input type="text" placeholder="-" class="form-control readonly" readonly="readonly" wire:model="panjang_lpk" />
@@ -82,7 +82,7 @@
                         </div>
                     </div>
                     <div class="col-12 col-lg-8 mt-1">
-                        <div class="form-group">                            
+                        <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label"></label>
                                 <input type="text" placeholder="-" class="form-control readonly" readonly="readonly" wire:model="name" />
@@ -104,7 +104,7 @@
                         </div>
                     </div>
                     <div class="col-12 col-lg-8 mt-1">
-                        <div class="form-group">                            
+                        <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label"></label>
                                 <input type="text" placeholder="-" class="form-control readonly" readonly="readonly" wire:model="machinename" />
@@ -147,11 +147,11 @@
                                 @error('dimensiinfure')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
-                            </div>                            
+                            </div>
                         </div>
                     </div>
                     <div class="col-12 col-lg-8 mt-1">
-                        <div class="form-group">                            
+                        <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-3">Meter Gulung</label>
                                 <input type="text" placeholder="-" class="form-control readonly" readonly="readonly" wire:model="qty_gulung" />
@@ -184,7 +184,7 @@
                                 @error('panjang_produksi')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
-                            </div>                            
+                            </div>
                         </div>
                     </div>
                     <div class="col-12 col-lg-5 mt-1">
@@ -226,7 +226,7 @@
                                 @error('qty_gentan')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
-                            </div>                            
+                            </div>
                         </div>
                     </div>
                     <div class="col-12 col-lg-5 mt-1">
@@ -270,7 +270,7 @@
                         </div>
                     </div>
                     <div class="col-12 col-lg-4 mt-1">
-                        <div class="form-group">                            
+                        <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-4">Shift Kerja</label>
                                 <input type="text" class="form-control readonly" readonly="readonly" wire:model="work_shift" />
@@ -281,7 +281,7 @@
                         </div>
                     </div>
                     <div class="col-12 col-lg-4 mt-1">
-                        <div class="form-group">                            
+                        <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-4">Nomor Han</label>
                                 <input type="text" class="form-control" placeholder="00-00-00-00A" wire:model="nomor_han" />
@@ -314,18 +314,18 @@
                         </div>
                     </div>
                 </div>
-                
+
             </div>
         </div>
         <hr/>
         <div class="row">
             <div class="col-lg-8">
-                {{-- <button wire:click="addLossInfure" type="button" class="btn btn-success">
-                    <i class="ri-add-line"></i> Add Loss Infure
-                </button> --}}
-                <button data-bs-toggle="modal" data-bs-target="#modal-add" type="button" class="btn btn-success">
+                <button wire:click="addLossInfure" type="button" class="btn btn-success">
                     <i class="ri-add-line"></i> Add Loss Infure
                 </button>
+                {{-- <button data-bs-toggle="modal" data-bs-target="#modal-add" type="button" class="btn btn-success">
+                    <i class="ri-add-line"></i> Add Loss Infure
+                </button> --}}
             </div>
             <div class="col-lg-4" style="border-top:1px solid #efefef">
                 <div class="toolbar">
@@ -341,7 +341,7 @@
                                 <span class="flex-grow-1 ms-1">
                                     Loading...
                                 </span>
-                            </span>                    
+                            </span>
                         </div>
                     </button>
                     <button type="submit" class="btn btn-success">
@@ -412,8 +412,23 @@
                         <div class="modal-footer">
                             {{-- <button type="button" class="btn btn-secondary">Accept</button> --}}
                             <button type="button" class="btn btn-link text-gray-600 ms-auto" data-bs-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-success" wire:click="saveInfure">
+                            {{-- <button type="button" class="btn btn-success" wire:click="saveInfure">
                                 Save
+                            </button> --}}
+                            <button type="button" class="btn btn-success" wire:click="saveInfure">
+                                <span wire:loading.remove wire:target="saveInfure">
+                                    <i class="ri-save-3-line"></i> Save
+                                </span>
+                                <div wire:loading wire:target="saveInfure">
+                                    <span class="d-flex align-items-center">
+                                        <span class="spinner-border flex-shrink-0" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </span>
+                                        <span class="flex-grow-1 ms-1">
+                                            Loading...
+                                        </span>
+                                    </span>
+                                </div>
                             </button>
                         </div>
                 </div>
@@ -442,7 +457,7 @@
                                             <i class="fa fa-trash"></i> Delete
                                         </button>
                                     </td>
-                                    <td>                                
+                                    <td>
                                         {{ $item->loss_infure_id }}
                                     </td>
                                     <td>
@@ -471,13 +486,17 @@
         </div>
     </form>
 </div>
+@script
 <script>
-    document.addEventListener('livewire:load', function () {
-        Livewire.on('showModal', () => {
-            $('#modal-add').modal('show');
-        });
-        Livewire.on('closeModal', () => {
-            $('#modal-add').modal('hide');
-        });
+    $wire.on('showModal', () => {
+
+      $('#modal-add').modal('show');
+
     });
-</script>
+    $wire.on('closeModal', () => {
+
+      $('#modal-add').modal('hide');
+
+    });
+ </script>
+@endscript

@@ -56,14 +56,14 @@
             </div>
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
-                    <select class="form-control" wire:model.defer="work_shift" data-choices data-choices-sorting-false data-choices-removeItem>
+                    <select class="form-control" wire:model.defer="work_shift_filter" data-choices data-choices-sorting-false data-choices-removeItem>
                         <option value="">- All -</option>
                         @foreach ($workShift as $item)
                             <option value="{{ $item->id }}">{{ $item->work_shift }}</option>
                         @endforeach
                     </select>
                 </div>
-            </div>            
+            </div>
         </div>
     </div>
     <div class="col-lg-12 mt-2">
@@ -81,12 +81,12 @@
                             <span class="flex-grow-1 ms-1">
                                 Loading...
                             </span>
-                        </span>                    
+                        </span>
                     </div>
                 </button>
-                
+
                 <button
-                    type="button" 
+                    type="button"
                     class="btn btn-success w-lg p-1"
                      data-bs-toggle="modal" data-bs-target="#modal-add"
                     >
@@ -162,8 +162,8 @@
                                         <div class="col-lg-12 mb-1">
                                             <label for="">Lama Mesin Mati</label>
                                             <div class="form-group" style="margin-left:1px; white-space:nowrap">
-                                                <input class="form-control" wire:model="on_hour" type="time" placeholder="hh:mm">
-                                                @error('on_hour')
+                                                <input class="form-control" wire:model="off_hour" type="time" placeholder="hh:mm">
+                                                @error('off_hour')
                                                     <span class="invalid-feedback">{{ $message }}</span>
                                                 @enderror
                                             </div>
@@ -173,8 +173,23 @@
                                 <div class="modal-footer">
                                     {{-- <button type="button" class="btn btn-secondary">Accept</button> --}}
                                     <button type="button" class="btn btn-link text-gray-600 ms-auto" data-bs-dismiss="modal">Close</button>
-                                    <button type="submit" class="btn btn-success" wire:click="save">
+                                    {{-- <button type="submit" class="btn btn-success" wire:click="save">
                                         Save
+                                    </button> --}}
+                                    <button type="submit" class="btn btn-success" wire:click="save">
+                                        <span wire:loading.remove wire:target="save">
+                                            <i class="ri-save-3-line"></i> Save
+                                        </span>
+                                        <div wire:loading wire:target="save">
+                                            <span class="d-flex align-items-center">
+                                                <span class="spinner-border flex-shrink-0" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </span>
+                                                <span class="flex-grow-1 ms-1">
+                                                    Loading...
+                                                </span>
+                                            </span>
+                                        </div>
                                     </button>
                                 </div>
                         </div>
@@ -265,7 +280,7 @@
                         </div>
                     </div>
                 </div>
-            </div>            
+            </div>
         </div>
     </div>
     <div class="table-responsive table-card mt-3 mb-1">
@@ -295,10 +310,10 @@
                         <td>{{ $item->work_shift }}</td>
                         <td>{{ $item->machine_id }}</td>
                         <td>
-                            
+
                         </td>
                         <td>
-                            
+
                         </td>
                         <td>{{ $item->work_hour }}</td>
                         <td>{{ $item->off_hour }}</td>

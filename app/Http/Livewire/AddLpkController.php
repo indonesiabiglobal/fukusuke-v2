@@ -51,7 +51,16 @@ class AddLpkController extends Component
         $this->lpk_date = Carbon::now()->format('Y-m-d');
         $this->processdate = Carbon::now()->format('Y-m-d');
         $today = Carbon::now();
-        $this->lpk_no = $today->format('ymd').'-000';
+        $lastLPK = TdOrderLpk::whereDate('lpk_date', Carbon::today())
+                    ->orderBy('lpk_no', 'desc')
+                    ->first();
+        if($lastLPK != null){
+            $lastNoLPK = explode('-', $lastLPK->lpk_no);
+            $lastNoLPK = $lastNoLPK[1] + 1;
+            $this->lpk_no = $today->format('ymd').'-'.str_pad($lastNoLPK, 3, '0', STR_PAD_LEFT);
+        } else {
+            $this->lpk_no = $today->format('ymd').'-000';
+        }
         $this->total_assembly_line = 0;
         $this->productlength=1;
         $this->defaultgulung=1;
@@ -91,7 +100,7 @@ class AddLpkController extends Component
             $orderlpk->remark = $order->machine_id;
             $orderlpk->qty_gulung = $this->qty_gulung;
             $orderlpk->created_on = Carbon::now()->format('Y-m-d H:i:s');
-            
+
             $orderlpk->save();
 
             TdOrders::where('po_no', $this->po_no)
@@ -102,7 +111,7 @@ class AddLpkController extends Component
             DB::commit();
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
             return redirect()->route('lpk-entry');
-        } catch (\Exception $e) {            
+        } catch (\Exception $e) {
             DB::rollBack();
             $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
         }
@@ -164,7 +173,7 @@ class AddLpkController extends Component
             $this->panjang_lpk = $this->qty_gentan * $this->qty_gulung;
             $this->selisihkurang = $this->productlength - $this->panjang_lpk;
         }
-        
+
         return view('livewire.order-lpk.add-lpk')->extends('layouts.master');
     }
 }

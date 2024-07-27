@@ -24,9 +24,11 @@ class InfureJamKerjaController extends Component
     public $working_date;
     public $empname;
     public $work_shift;
+    public $work_shift_filter;
     public $machine_id;
     public $employee_id;
     public $work_hour;
+    public $off_hour;
     public $on_hour;
     public $orderid;
     public $workShift;
@@ -34,22 +36,23 @@ class InfureJamKerjaController extends Component
     public function mount()
     {
         $this->tglMasuk = Carbon::now()->format('d-m-Y');
-        $this->tglKeluar = Carbon::now()->format('d-m-Y'); 
+        $this->tglKeluar = Carbon::now()->format('d-m-Y');
         $this->machine  = MsMachine::get();
         $this->workShift  = MsWorkingShift::get();
         $this->working_date = Carbon::now()->format('d-m-Y');
     }
 
-    public function search(){
-            $this->render();
+    public function search()
+    {
+        $this->render();
     }
 
     public function edit($orderid)
     {
         $item = TdJamKerjaMesin::find($orderid);
-        if($item){
-            $machine=MsMachine::where('id', $item->machine_id)->first();
-            $msemployee=MsEmployee::where('id', $item->employee_id)->first();
+        if ($item) {
+            $machine = MsMachine::where('id', $item->machine_id)->first();
+            $msemployee = MsEmployee::where('id', $item->employee_id)->first();
 
             $this->orderid = $item->id;
             $this->working_date = $item->working_date;
@@ -60,7 +63,7 @@ class InfureJamKerjaController extends Component
             $this->empname = $msemployee->empname;
             $this->work_hour = Carbon::parse($item->work_hour)->format('H:i');
             $this->on_hour = Carbon::parse($item->on_hour)->format('H:i');
-        }else{
+        } else {
             return redirect()->to('jam-kerja/infure');
         }
     }
@@ -80,34 +83,44 @@ class InfureJamKerjaController extends Component
         $this->on_hour = '';
     }
 
-    public function save(){
+    public function save()
+    {
         $validatedData = $this->validate([
             'working_date' => 'required',
             'work_shift' => 'required',
             'machineno' => 'required',
             'employeeno' => 'required',
             'work_hour' => 'required',
-            'on_hour' => 'required'
+            'off_hour' => 'required'
         ]);
 
         try {
-            if(isset($this->orderid)){
-                $machine=MsMachine::where('machineno', $this->machineno)->first();
-                $msemployee=MsEmployee::where('employeeno', $this->employeeno)->first();
+            // menghitung waktu on hour
+            $workHour = Carbon::parse($this->work_hour);
+            $offHour = Carbon::parse($this->off_hour);
+            // Menghitung perbedaan dalam menit
+            // Menghitung perbedaan waktu
+            $interval = $workHour->diff($offHour);
+            $onHour = $interval->format('%H:%I');
 
-                TdJamKerjaMesin::where('id',$this->orderid)->update([
+            if (isset($this->orderid)) {
+                $machine = MsMachine::where('machineno', $this->machineno)->first();
+                $msemployee = MsEmployee::where('employeeno', $this->employeeno)->first();
+
+                TdJamKerjaMesin::where('id', $this->orderid)->update([
                     'working_date' => $this->working_date,
                     'work_shift' => $this->work_shift,
                     'machine_id' => $machine->id,
                     'employee_id' => $msemployee->id,
                     'work_hour' => $this->work_hour,
-                    'on_hour' => $this->on_hour
+                    'off_hour' => $this->off_hour,
+                    'on_hour' => $onHour
                 ]);
                 $this->reset(['employeeno', 'empname', 'machineno', 'machinename', 'working_date', 'work_shift']);
                 $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
-            }else {
-                $machine=MsMachine::where('machineno', $this->machineno)->first();
-                $msemployee=MsEmployee::where('employeeno', $this->employeeno)->first();
+            } else {
+                $machine = MsMachine::where('machineno', $this->machineno)->first();
+                $msemployee = MsEmployee::where('employeeno', $this->employeeno)->first();
 
                 $orderlpk = new TdJamKerjaMesin();
                 $orderlpk->working_date = $this->working_date;
@@ -115,8 +128,9 @@ class InfureJamKerjaController extends Component
                 $orderlpk->machine_id = $machine->id;
                 $orderlpk->employee_id = $msemployee->id;
                 $orderlpk->work_hour = $this->work_hour;
-                $orderlpk->on_hour = $this->on_hour;
-                
+                $orderlpk->off_hour =  $this->off_hour;
+                $orderlpk->on_hour = $onHour;
+
                 $orderlpk->save();
             }
 
@@ -130,20 +144,20 @@ class InfureJamKerjaController extends Component
 
     public function render()
     {
-        if(isset($this->machineno) && $this->machineno != ''){
-            $machine=MsMachine::where('machineno', $this->machineno)->first();
-            
-            if($machine == null){
+        if (isset($this->machineno) && $this->machineno != '') {
+            $machine = MsMachine::where('machineno', $this->machineno)->first();
+
+            if ($machine == null) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Machine ' . $this->machineno . ' Tidak Terdaftar']);
             } else {
                 $this->machinename = $machine->machinename;
             }
         }
 
-        if(isset($this->employeeno) && $this->employeeno != ''){
-            $msemployee=MsEmployee::where('employeeno', $this->employeeno)->first();
+        if (isset($this->employeeno) && $this->employeeno != '') {
+            $msemployee = MsEmployee::where('employeeno', $this->employeeno)->first();
 
-            if($msemployee == null){
+            if ($msemployee == null) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
             } else {
                 $this->empname = $msemployee->empname;
@@ -151,7 +165,7 @@ class InfureJamKerjaController extends Component
         }
 
         $data = DB::table('tdjamkerjamesin AS tdjkm')
-        ->select(
+            ->select(
                 'tdjkm.id',
                 'tdjkm.working_date',
                 'tdjkm.work_shift',
@@ -164,9 +178,10 @@ class InfureJamKerjaController extends Component
                 'tdjkm.created_by',
                 'tdjkm.created_on',
                 'tdjkm.updated_by',
-                'tdjkm.updated_on');
+                'tdjkm.updated_on'
+            );
 
-        if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {            
+        if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
             $data = $data->where('tdjkm.working_date', '>=', $this->tglMasuk);
         }
 
@@ -177,15 +192,15 @@ class InfureJamKerjaController extends Component
         if (isset($this->machine_id) && $this->machine_id['value'] != "" && $this->machine_id != "undefined") {
             $data = $data->where('tdjkm.machine_id', $this->machine_id['value']);
         }
-
-        if (isset($this->work_shift) && $this->work_shift['value'] != "" && $this->work_shift != "undefined") {
-            $data = $data->where('tdjkm.work_shift', $this->work_shift['value']);
+        if (isset($this->work_shift_filter) && $this->work_shift_filter['value'] != "" && $this->work_shift_filter != "undefined") {
+            $data = $data->where('tdjkm.work_shift', $this->work_shift_filter);
         }
 
         $data = $data->paginate(8);
+        // dd($this->work_shift);
 
         return view('livewire.jam-kerja.infure', [
             'data' => $data
-            ])->extends('layouts.master');
+        ])->extends('layouts.master');
     }
 }

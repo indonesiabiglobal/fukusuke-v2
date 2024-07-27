@@ -74,7 +74,7 @@ class OrderLpkController extends Component
     }
 
     public function import()
-    {   
+    {
         $this->validate([
             'file' => 'required|mimes:xls,xlsx',
         ]);
@@ -87,19 +87,19 @@ class OrderLpkController extends Component
     public function render()
     {
         $data = DB::table('tdorder AS tod')
-            ->select('tod.id', 'tod.po_no', 'mp.name AS produk_name', 'tod.product_code', 
-                     'mbu.name AS buyer_name', 'tod.order_qty', 'tod.order_date', 
-                     'tod.stufingdate', 'tod.etddate', 'tod.etadate', 
+            ->select('tod.id', 'tod.po_no', 'mp.name AS produk_name', 'tod.product_code',
+                     'mbu.name AS buyer_name', 'tod.order_qty', 'tod.order_date',
+                     'tod.stufingdate', 'tod.etddate', 'tod.etadate',
                      'tod.processdate', 'tod.processseq', 'tod.updated_by', 'tod.updated_on')
             ->leftjoin('msproduct AS mp', 'mp.id', '=', 'tod.product_id')
             ->leftjoin('msbuyer AS mbu', 'mbu.id', '=', 'tod.buyer_id');
-            
+
 
         if($this->transaksi == 2){
             if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
                 $data = $data->where('tod.order_date', '>=', $this->tglMasuk);
             }
-    
+
             if (isset($this->tglKeluar) && $this->tglKeluar != "" && $this->tglKeluar != "undefined") {
                 $data = $data->where('tod.order_date', '<=', $this->tglKeluar);
             }
@@ -107,7 +107,7 @@ class OrderLpkController extends Component
             if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
                 $data = $data->where('tod.processdate', '>=', $this->tglMasuk);
             }
-    
+
             if (isset($this->tglKeluar) && $this->tglKeluar != "" && $this->tglKeluar != "undefined") {
                 $data = $data->where('tod.processdate', '<=', $this->tglKeluar);
             }
@@ -121,7 +121,7 @@ class OrderLpkController extends Component
             });
         }
 
-        if (isset($this->idProduct) && $this->idProduct['value'] != "" && $this->idProduct != "undefined") {            
+        if (isset($this->idProduct) && $this->idProduct['value'] != "" && $this->idProduct != "undefined") {
             $data = $data->where('mp.id', $this->idProduct);
         }
 

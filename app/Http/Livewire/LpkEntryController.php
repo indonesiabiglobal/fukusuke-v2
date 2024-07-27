@@ -38,10 +38,11 @@ class LpkEntryController extends Component
         $this->products = MsProduct::get();
         $this->buyer = MsBuyer::get();
         $this->tglMasuk = Carbon::now()->format('d-m-Y');
-        $this->tglKeluar = Carbon::now()->format('d-m-Y'); 
+        $this->tglKeluar = Carbon::now()->format('d-m-Y');
     }
 
-    public function search(){
+    public function search()
+    {
         $this->render();
     }
 
@@ -61,7 +62,7 @@ class LpkEntryController extends Component
     }
 
     public function import()
-    {   
+    {
         $this->validate([
             'file' => 'required|mimes:xls,xlsx',
         ]);
@@ -98,7 +99,7 @@ class LpkEntryController extends Component
                 tolp.total_assembly_qty,
                 tod.po_no,
                 mp.NAME AS product_name,
-                tod.product_code,
+                mp.code as product_code,
                 mm.machineno AS machine_no,
                 mbu.NAME AS buyer_name,
                 tolp.created_on AS tglproses,
@@ -107,33 +108,35 @@ class LpkEntryController extends Component
                 tolp.updated_on AS updatedt
             ")
             ->join('tdorder AS tod', 'tod.id', '=', 'tolp.order_id')
-            ->join('msproduct AS mp', 'mp.id', '=', 'tolp.product_id')
+            ->leftJoin('msproduct AS mp', 'mp.id', '=', 'tolp.product_id')
             ->join('msmachine AS mm', 'mm.id', '=', 'tolp.machine_id')
             ->join('msbuyer AS mbu', 'mbu.id', '=', 'tod.buyer_id');
 
-        if($this->transaksi == 2){
+        if ($this->transaksi == 2) {
             if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
                 $data = $data->where('tolp.lpk_date', '>=', $this->tglMasuk);
             }
-    
+
             if (isset($this->tglKeluar) && $this->tglKeluar != "" && $this->tglKeluar != "undefined") {
                 $data = $data->where('tolp.lpk_date', '<=', $this->tglKeluar);
             }
         } else {
             if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
-                $data = $data->where('tolp.created_on', '>=', $this->tglMasuk);
+                $tglMasuk = Carbon::createFromFormat('d-m-Y', $this->tglMasuk)->startOfDay();
+                $data = $data->where('tolp.created_on', '>=', $tglMasuk);
             }
-    
+
             if (isset($this->tglKeluar) && $this->tglKeluar != "" && $this->tglKeluar != "undefined") {
-                $data = $data->where('tolp.created_on', '<=', $this->tglKeluar);
+                $tglKeluar = Carbon::createFromFormat('d-m-Y', $this->tglKeluar)->endOfDay();
+                $data = $data->where('tolp.created_on', '<=', $tglKeluar);
             }
         }
 
         if (isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined") {
-            $data = $data->where(function($query) {
+            $data = $data->where(function ($query) {
                 $query->where('mp.name', 'ilike', "%{$this->searchTerm}%")
-                        // ->orWhere('tolp.lpk_no', 'ilike', "%{$this->searchTerm}%")
-                        ->orWhere('tod.po_no', 'ilike', "%{$this->searchTerm}%");
+                    // ->orWhere('tolp.lpk_no', 'ilike', "%{$this->searchTerm}%")
+                    ->orWhere('tod.po_no', 'ilike', "%{$this->searchTerm}%");
             });
         }
 
@@ -149,18 +152,17 @@ class LpkEntryController extends Component
         }
 
         if (isset($this->status) && $this->status['value'] != "" && $this->status != "undefined") {
-            if ($this->status['value'] == 0){
+            if ($this->status['value'] == 0) {
                 $data = $data->where('tolp.reprint_no', $this->status['value']);
-            } else if ($this->status['value'] == 1){
+            } else if ($this->status['value'] == 1) {
                 $data = $data->where('tolp.reprint_no', $this->status['value']);
-            } else if ($this->status['value'] == 2){
+            } else if ($this->status['value'] == 2) {
                 $data = $data->where('tolp.reprint_no', '>', 1);
-            } else if ($this->status['value'] == 3){
+            } else if ($this->status['value'] == 3) {
                 $data = $data->where('tolp.status_lpk', 0);
-            } else if ($this->status['value'] == 4){
+            } else if ($this->status['value'] == 4) {
                 $data = $data->where('tolp.status_lpk', 1);
             }
-            
         }
 
         $data = $data->paginate(8);

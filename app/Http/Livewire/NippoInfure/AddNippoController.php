@@ -81,11 +81,11 @@ class AddNippoController extends Component
                 CASE WHEN x.A1 IS NULL THEN 0 ELSE x.A1 END AS C1
             FROM
                 (
-                SELECT SUM(panjang_produksi) AS A1 
+                SELECT SUM(panjang_produksi) AS A1
                 FROM
-                    tdproduct_assembly AS ta 
+                    tdproduct_assembly AS ta
                 WHERE
-                    lpk_id = $lpkid->id 
+                    lpk_id = $lpkid->id
             ) AS x
             ");
 
@@ -103,7 +103,7 @@ class AddNippoController extends Component
             $product->employee_id = $employe->id;
             $product->work_shift = $this->work_shift;
             $product->work_hour = $this->work_hour;
-            $product->lpk_id = $lpkid->id;            
+            $product->lpk_id = $lpkid->id;
             $product->seq_no = $seqno;
             $product->gentan_no = $this->gentan_no;
             $product->nomor_han = $this->nomor_han;
@@ -113,25 +113,25 @@ class AddNippoController extends Component
 
             TdProductAssemblyLoss::where('lpk_id',$lpkid->id)->update([
                 'product_assembly_id' => $product->id,
-            ]);    
-            
+            ]);
+
             TdOrderLpk::where('id',$lpkid->id)->update([
                 'total_assembly_line' => $totalAssembly[0]->c1,
             ]);
 
-            
+
             // $product->panjang_printing_inline = $this->panjang_printing_inline;
             // $product->berat_standard = $this->berat_standard;
-            // $product->berat_produksi = $this->berat_produksi;            
+            // $product->berat_produksi = $this->berat_produksi;
             // $product->status_production = $this->status_production;
             // $product->status_kenpin = $this->status_kenpin;
             // $product->infure_cost = $this->infure_cost;
             // $product->product_id = $this->product_id;
-            
+
             DB::commit();
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
             return redirect()->route('nippo-infure');
-        } catch (\Exception $e) {            
+        } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to save order: ' . $e->getMessage());
             $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
@@ -157,14 +157,22 @@ class AddNippoController extends Component
     {
         $lpkid = TdOrderLpk::where('lpk_no', $this->lpk_no)->first();
 
-        $datas = new TdProductAssemblyLoss();
-        $datas->loss_infure_id = $this->loss_infure_id;
-        $datas->berat_loss = $this->berat_loss;
-        $datas->lpk_id = $lpkid->id;
-        
-        $datas->save();
+        try {
+            DB::beginTransaction();
+            $datas = new TdProductAssemblyLoss();
+            $datas->loss_infure_id = $this->loss_infure_id;
+            $datas->berat_loss = $this->berat_loss;
+            $datas->lpk_id = $lpkid->id;
 
-        // $this->emit('closeModal');
+            $datas->save();
+            DB::commit();
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);
+            $this->dispatch('closeModal');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            log::error('Failed to save infure: ' . $e->getMessage());
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the infure: ' . $e->getMessage()]);
+        }
     }
 
     public function deleteInfure($orderId)
@@ -187,7 +195,7 @@ class AddNippoController extends Component
             ->select(
                 'tolp.id',
                 'tolp.lpk_date',
-                'tolp.panjang_lpk',                
+                'tolp.panjang_lpk',
                 'tolp.created_on',
                 'mp.code',
                 'mp.name',

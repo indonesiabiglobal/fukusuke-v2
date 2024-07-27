@@ -17,17 +17,17 @@ class EditLpkController extends Component
     public $orderId;
     public $lpk_date;
     public $lpk_no;
-    public $po_no; 
+    public $po_no;
     public $order_id;
     public $machineno;
-    public $machinename; 
-    public $qty_lpk; 
-    public $qty_gentan; 
-    public $qty_gulung; 
-    public $panjang_lpk; 
-    public $processdate; 
-    public $tgl_po; 
-    public $buyer_name; 
+    public $machinename;
+    public $qty_lpk;
+    public $qty_gentan;
+    public $qty_gulung;
+    public $panjang_lpk;
+    public $processdate;
+    public $tgl_po;
+    public $buyer_name;
     public $product_name;
     public $order_date;
     public $no_order;
@@ -37,7 +37,7 @@ class EditLpkController extends Component
     public $selisihkurang;
     public $dimensi;
 
-    protected $rules = [        
+    protected $rules = [
         'lpk_date' => 'required',
         'lpk_no' => 'required',
         'po_no' => 'required',
@@ -90,12 +90,12 @@ class EditLpkController extends Component
             'tolp.updated_on as updatedt'
         )
         ->join('tdorder as tod', 'tod.id', '=', 'tolp.order_id')
-        ->join('msproduct as mp', 'mp.id', '=', 'tolp.product_id')
+        ->leftJoin('msproduct as mp', 'mp.id', '=', 'tolp.product_id')
         ->join('msmachine as mm', 'mm.id', '=', 'tolp.machine_id')
         ->join('msbuyer as mbu', 'mbu.id', '=', 'tod.buyer_id')
         ->where('tolp.id', $request->query('orderId'))
         ->first();
-        
+
         $this->lpk_date = Carbon::parse($order->lpk_date)->format('Y-m-d');
         $this->orderId = $order->id;
         $this->lpk_no = $order->lpk_no;
@@ -140,7 +140,7 @@ class EditLpkController extends Component
             $orderlpk->total_assembly_line = $this->total_assembly_line;
             $orderlpk->qty_gulung = $this->qty_gulung;
             $orderlpk->created_on = Carbon::now()->format('Y-m-d H:i:s');
-            
+
             $orderlpk->save();
 
             DB::commit();
