@@ -43,10 +43,10 @@
             </div>
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
-                    <select class="form-control"  wire:model.defer="machine" data-choices data-choices-sorting-false data-choices-removeItem>
+                    <select class="form-control" wire:model.defer="machine_id" data-choices data-choices-sorting-false data-choices-removeItem>
                         <option value="">- All -</option>
                         @foreach ($machine as $item)
-                            <option value="{{ $item->id }}">{{ $item->machinename }}</option>
+                            <option value="{{ $item->id }}">{{ $item->machineno }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -56,7 +56,7 @@
             </div>
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
-                    <select class="form-control" wire:model.defer="idBuyer" data-choices data-choices-sorting-false data-choices-removeItem>
+                    <select class="form-control" wire:model.defer="work_shift" data-choices data-choices-sorting-false data-choices-removeItem>
                         <option value="">- All -</option>
                         @foreach ($workShift as $item)
                             <option value="{{ $item->id }}">{{ $item->work_shift }}</option>
@@ -105,7 +105,10 @@
                                             <label for="">Tanggal</label>
                                             <div class="form-group" style="margin-left:1px; white-space:nowrap">
                                                 <div class="input-group">
-                                                    <input class="form-control datepicker-input" type="date" wire:model.defer="working_date" placeholder="yyyy/mm/dd"/>
+                                                    <input class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y" type="text" wire:model.defer="working_date" placeholder="yyyy/mm/dd"/>
+                                                    <span class="input-group-text py-0">
+                                                        <i class="ri-calendar-event-fill fs-4"></i>
+                                                    </span>
                                                     @error('working_date')
                                                         <span class="invalid-feedback">{{ $message }}</span>
                                                     @enderror
@@ -127,7 +130,7 @@
                                             <div class="form-group">
                                                 <label>Nomor Mesin </label>
                                                 <div class="input-group">
-                                                    <input class="form-control" type="text" wire:model="machineno" placeholder="..." />
+                                                    <input class="form-control" type="text" wire:model.live="machineno" placeholder="..." />
                                                     <input class="form-control readonly" readonly="readonly" type="text" wire:model="machinename" placeholder="..." />
                                                     @error('machineno')
                                                         <span class="invalid-feedback">{{ $message }}</span>
@@ -139,7 +142,7 @@
                                             <div class="form-group">
                                                 <label>Petugas </label>
                                                 <div class="input-group col-md-9 col-xs-8">
-                                                    <input class="form-control" wire:model="employeeno" type="text" placeholder="..." />
+                                                    <input class="form-control" wire:model.live="employeeno" type="text" placeholder="..." />
                                                     <input class="form-control readonly" readonly="readonly" type="text" wire:model="empname" placeholder="..." />
                                                     @error('employeeno')
                                                         <span class="invalid-feedback">{{ $message }}</span>
@@ -212,7 +215,7 @@
                                             <div class="form-group">
                                                 <label>Nomor Mesin </label>
                                                 <div class="input-group">
-                                                    <input class="form-control" type="text" wire:model="machineno" placeholder="..." />
+                                                    <input class="form-control" type="text" wire:model.live="machineno" placeholder="..." />
                                                     <input class="form-control readonly" readonly="readonly" type="text" wire:model="machinename" placeholder="..." />
                                                     @error('machineno')
                                                         <span class="invalid-feedback">{{ $message }}</span>
@@ -224,7 +227,7 @@
                                             <div class="form-group">
                                                 <label>Petugas </label>
                                                 <div class="input-group col-md-9 col-xs-8">
-                                                    <input class="form-control" wire:model="employeeno" type="text" placeholder="..." />
+                                                    <input class="form-control" wire:model.live="employeeno" type="text" placeholder="..." />
                                                     <input class="form-control readonly" readonly="readonly" type="text" wire:model="empname" placeholder="..." />
                                                     @error('employeeno')
                                                         <span class="invalid-feedback">{{ $message }}</span>
@@ -284,9 +287,9 @@
                 @forelse ($data as $item)
                     <tr>
                         <td>
-                            <a href="/edit-lpk?orderId={{ $item->id }}" class="link-success fs-15">
-                                <i class="ri-edit-2-line"></i>
-                            </a>
+                            <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modal-edit" wire:click="edit({{$item->id}})">
+                                <i class="ri-edit-box-line text-white"></i>
+                            </button>
                         </td>
                         <td>{{ $item->working_date }}</td>
                         <td>{{ $item->work_shift }}</td>
@@ -312,7 +315,7 @@
                 @endforelse
             </tbody>
         </table>
-        {{-- {{ $data->links() }} --}}
+        {{ $data->links() }}
     </div>
 </div>
 

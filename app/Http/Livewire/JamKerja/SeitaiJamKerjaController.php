@@ -142,7 +142,7 @@ class SeitaiJamKerjaController extends Component
                     'on_hour' => $this->on_hour
                 ]);
                 $this->reset(['employeeno', 'empname', 'machineno', 'machinename', 'working_date', 'work_shift']);
-                $this->dispatchBrowserEvent('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
+                $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
             }else {
                 $machine=MsMachine::where('machineno', $this->machineno)->first();
                 $msemployee=MsEmployee::where('employeeno', $this->employeeno)->first();
@@ -159,10 +159,10 @@ class SeitaiJamKerjaController extends Component
             }
 
             $this->reset(['employeeno', 'empname', 'machineno', 'machinename', 'working_date', 'work_shift']);
-            $this->dispatchBrowserEvent('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
             return redirect()->route('seitai-jam-kerja');
         } catch (\Exception $e) {
-            $this->dispatchBrowserEvent('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
         }
     }
 
@@ -172,7 +172,7 @@ class SeitaiJamKerjaController extends Component
             $machine=MsMachine::where('machineno', $this->machineno)->first();
             
             if($machine == null){
-                $this->dispatchBrowserEvent('notification', ['type' => 'error', 'message' => 'Machine ' . $this->machineno . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'error', 'message' => 'Machine ' . $this->machineno . ' Tidak Terdaftar']);
             } else {
                 $this->machinename = $machine->machinename;
             }
@@ -182,7 +182,7 @@ class SeitaiJamKerjaController extends Component
             $msemployee=MsEmployee::where('employeeno', $this->employeeno)->first();
 
             if($msemployee == null){
-                $this->dispatchBrowserEvent('notification', ['type' => 'error', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'error', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
             } else {
                 $this->empname = $msemployee->empname;
             }
