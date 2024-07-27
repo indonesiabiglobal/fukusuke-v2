@@ -256,6 +256,12 @@
       $('#modal-add').modal('show');
        
     });
+
+    $wire.on('closeModal', () => {
+      
+      $('#modal-add').modal('hide');
+       
+    });
  </script>
  @endscript
 {{-- <script>
