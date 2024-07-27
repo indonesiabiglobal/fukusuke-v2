@@ -5,7 +5,10 @@
 				<div class="form-group">                            
 					<div class="input-group">
 						<label class="control-label col-12 col-lg-2">Tanggal Kenpin</label>
-						<input class="form-control datepicker-input" type="date" wire:model.defer="kenpin_date" placeholder="yyyy/mm/dd"/>
+                        <input wire:model.defer="kenpin_date" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
+                        <span class="input-group-text py-0">
+                            <i class="ri-calendar-event-fill fs-4"></i>
+                        </span>
 					</div>
 				</div>
 			</div>
@@ -21,7 +24,7 @@
 				<div class="form-group">
 					<div class="input-group">
 						<label class="control-label col-12 col-lg-6">Nomor Order</label>
-						<input type="text" placeholder="-" class="form-control col-4" wire:model.debounce.300ms="code" />
+						<input type="text" placeholder="-" class="form-control col-4" wire:model.live.debounce.300ms="code" />
 					</div>
 				</div>
 			</div>
@@ -37,7 +40,7 @@
 				<div class="form-group">
 					<div class="input-group">
 						<label class="control-label col-12 col-lg-6">Petugas</label>
-						<input type="text" placeholder="-" class="form-control" wire:model="employeeno" />
+						<input type="text" placeholder="-" class="form-control" wire:model.live="employeeno" />
 						@error('employeeno')
 							<span class="invalid-feedback">{{ $message }}</span>
 						@enderror
@@ -83,22 +86,59 @@
 						</span>
 						<input wire:model.defer="nomor_palet" class="form-control" type="text" placeholder="A0000-000000" />
 						<button wire:click="search" type="button" class="btn btn-info">
-							<i class="fa fa-search"></i>
+                            <span wire:loading.remove wire:target="search">
+                                <i class="ri-search-line"></i>
+                            </span>
+                            <div wire:loading wire:target="search">
+                                <span class="d-flex align-items-center">
+                                    <span class="spinner-border flex-shrink-0" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </span>
+                                    <span class="flex-grow-1 ms-1">
+                                        Loading...
+                                    </span>
+                                </span>                    
+                            </div>
 						</button>
 					</div>
 				</div>
             </div>
 			<div class="col-lg-3"></div>
-            <div class="col-lg-4" style="border-top:1px solid #efefef">
+            <div class="col-lg-4">
                 <div class="toolbar">
                     <button type="button" class="btn btn-warning" wire:click="cancel">
-                        <i class="fa fa-back"></i> Close
-                    </button>
+                        <span wire:loading.remove wire:target="cancel">
+                            <i class="ri-close-line"> </i> Close
+                        </span>
+                        <div wire:loading wire:target="cancel">
+                            <span class="d-flex align-items-center">
+                                <span class="spinner-border flex-shrink-0" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </span>
+                                <span class="flex-grow-1 ms-1">
+                                    Loading...
+                                </span>
+                            </span>                    
+                        </div>
+                    </button>    
                     <button type="submit" class="btn btn-success">
-                        <i class="fa fa-plus"></i> Save
+                        <span wire:loading.remove wire:target="save">
+                            <i class="ri-save-3-line"></i> Save
+                        </span>
+                        <div wire:loading wire:target="save">
+                            <span class="d-flex align-items-center">
+                                <span class="spinner-border flex-shrink-0" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </span>
+                                <span class="flex-grow-1 ms-1">
+                                    Loading...
+                                </span>
+                            </span>
+                        </div>
                     </button>
+    
                     <button type="button" class="btn btn-success btn-print" disabled="disabled">
-                        <i class="fa fa-print"></i> Print
+                        <i class="bx bx-printer"></i> Print
                     </button>
                 </div>
             </div>
@@ -172,8 +212,20 @@
                         <div class="modal-footer">
                             {{-- <button type="button" class="btn btn-secondary">Accept</button> --}}
                             <button type="button" class="btn btn-link text-gray-600 ms-auto" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-success" wire:click="saveSeitai">
-                                Save
+                            <button type="button" class="btn btn-success" wire:click="saveSeitai">                                
+                                <span wire:loading.remove wire:target="saveSeitai">
+                                    <i class="ri-save-3-line"></i> Save
+                                </span>
+                                <div wire:loading wire:target="saveSeitai">
+                                    <span class="d-flex align-items-center">
+                                        <span class="spinner-border flex-shrink-0" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </span>
+                                        <span class="flex-grow-1 ms-1">
+                                            Loading...
+                                        </span>
+                                    </span>
+                                </div>
                             </button>
                         </div>
                 </div>
@@ -198,12 +250,12 @@
                             @forelse ($details as $item)
 							<tr>
                                 <td>
-									<button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modal-edit" wire:click="edit({{$item->id}})">
-										<i class="fa fa-edit"></i> Edit
+									<button type="button" class="btn btn-primary p-1" data-bs-toggle="modal" data-bs-target="#modal-edit" wire:click="edit({{$item->id}})">
+										<i class="ri-edit-2-fill"></i>
 									</button>
 
-									<button type="button" class="btn btn-danger" wire:click="deleteSeitai({{$item->id}})">
-										<i class="fa fa-trash"></i> Delete
+									<button type="button" class="btn btn-danger p-1" wire:click="deleteSeitai({{$item->id}})">
+										<i class="ri-delete-bin-4-fill"></i> 
 									</button>
 								</td>
                                 <td>                                
@@ -241,7 +293,18 @@
         </div>
     </form>
 </div>
+@script
 <script>
+    $wire.on('showModal', () => {      
+      $('#modal-edit').modal('show');       
+    });
+
+    $wire.on('closeModal', () => {      
+      $('#modal-edit').modal('hide');       
+    });
+ </script>
+ @endscript
+{{-- <script>
     document.addEventListener('livewire:load', function () {
         Livewire.on('showModal', () => {
             $('#modal-edit').modal('show');
@@ -250,4 +313,4 @@
             $('#modal-edit').modal('hide');
         });
     });
-</script>
+</script> --}}

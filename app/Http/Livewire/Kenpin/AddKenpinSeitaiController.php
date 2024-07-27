@@ -76,9 +76,9 @@ class AddKenpinSeitaiController extends Component
         $data = TdKenpinGoodsDetail::where('product_goods_id', $orderId)->first();
         if ($data) {
             $data->delete();
-            $this->dispatchBrowserEvent('notification', ['type' => 'success', 'message' => 'Data berhasil dihapus.']);
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Data berhasil dihapus.']);
         } else {
-            $this->dispatchBrowserEvent('notification', ['type' => 'error', 'message' => 'Data tidak ditemukan.']);
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Data tidak ditemukan.']);
         }
     }
 
@@ -96,9 +96,9 @@ class AddKenpinSeitaiController extends Component
         $datas->trial468 = 'T';
         
         $datas->save();
-        $this->dispatchBrowserEvent('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);
+        $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);
 
-        $this->emit('closeModal');
+        $this->dispatch('closeModal');
     }
 
     public function save()
@@ -131,17 +131,11 @@ class AddKenpinSeitaiController extends Component
             ]);
             
             DB::commit();
-            $transStatus = 'true';            
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
+            return redirect()->route('kenpin-seitai-kenpin');         
         } catch (\Exception $e) {            
-            $transStatus = 'false';
             DB::rollBack();
-        }
-        
-        if ($transStatus == 'true') {
-            session()->flash('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
-            return redirect()->route('kenpin-infure');
-        } else {
-            $this->dispatchBrowserEvent('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
         }
     }
 
@@ -162,7 +156,7 @@ class AddKenpinSeitaiController extends Component
 
             if($product == null){
                 // session()->flash('error', 'Nomor PO ' . $this->po_no . ' Tidak Terdaftar');
-                $this->dispatchBrowserEvent('notification', ['type' => 'error', 'message' => 'Code ' . $this->code . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'error', 'message' => 'Code ' . $this->code . ' Tidak Terdaftar']);
             } else {
                 $this->name = $product->name;
             }
@@ -173,12 +167,12 @@ class AddKenpinSeitaiController extends Component
 
             if($msemployee == null){
                 // session()->flash('error', 'Nomor PO ' . $this->po_no . ' Tidak Terdaftar');
-                $this->dispatchBrowserEvent('notification', ['type' => 'error', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'error', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
             } else {
                 $this->empname = $msemployee->empname;
             }
         }
-
+        
         if(isset($this->nomor_palet) && $this->nomor_palet != ''){
             $product=MsProduct::where('code', $this->code)->first();
             $this->details = DB::table('tdproduct_goods AS tdpg')
@@ -207,7 +201,7 @@ class AddKenpinSeitaiController extends Component
 
             if($this->details == null){
                 // session()->flash('error', 'Nomor PO ' . $this->po_no . ' Tidak Terdaftar');
-                $this->dispatchBrowserEvent('notification', ['type' => 'error', 'message' => 'Employee ' . $this->details . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'error', 'message' => 'Employee ' . $this->details . ' Tidak Terdaftar']);
             }
         }
 
