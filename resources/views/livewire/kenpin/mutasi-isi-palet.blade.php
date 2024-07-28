@@ -185,7 +185,18 @@
 		</div>
 	</div>
 </form>
+@script
 <script>
+    $wire.on('showModal', () => {      
+      $('#modal-add').modal('show');       
+    });
+
+    $wire.on('closeModal', () => {      
+      $('#modal-add').modal('hide');       
+    });
+ </script>
+ @endscript
+{{-- <script>
     document.addEventListener('livewire:load', function () {
         Livewire.on('showModal', () => {
             $('#modal-add').modal('show');
@@ -194,4 +205,4 @@
             $('#modal-add').modal('hide');
         });
     });
-</script>
+</script> --}}

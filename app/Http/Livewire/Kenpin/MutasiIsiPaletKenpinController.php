@@ -44,9 +44,9 @@ class mutasiIsiPaletKenpinController extends Component
         $this->qty_mutasi=$paletTujuan->qty_produksi;
 
         if ($this->searchNew) {
-            $this->emit('showModal');
+            $this->dispatch('showModal');
         }else{
-            $this->dispatchBrowserEvent('notification', ['type' => 'warning', 'message' => 'Nomor Palet Tujuan ' . $this->searchNew . ' Tidak Terisi']);
+            $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Palet Tujuan ' . $this->searchNew . ' Tidak Terisi']);
         }
     }
 
@@ -57,7 +57,7 @@ class mutasiIsiPaletKenpinController extends Component
         ]);
 
         if($save){
-            $this->dispatchBrowserEvent('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);
         }
     }
 
@@ -68,7 +68,7 @@ class mutasiIsiPaletKenpinController extends Component
         ]);
 
         if($save){
-            $this->dispatchBrowserEvent('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);
         }
     }
 
@@ -100,7 +100,7 @@ class mutasiIsiPaletKenpinController extends Component
                 tdpg.nomor_palet = '$this->searchOld'");
             
             if($this->data == null){
-                $this->dispatchBrowserEvent('notification', ['type' => 'error', 'message' => 'Palet ' . $this->searchOld . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'error', 'message' => 'Palet ' . $this->searchOld . ' Tidak Terdaftar']);
             }
         }
 
@@ -120,7 +120,7 @@ class mutasiIsiPaletKenpinController extends Component
                 tdpg.nomor_palet = '$this->searchNew'");
             
             if($this->result == null){
-                $this->dispatchBrowserEvent('notification', ['type' => 'error', 'message' => 'Palet ' . $this->searchNew . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'error', 'message' => 'Palet ' . $this->searchNew . ' Tidak Terdaftar']);
             }
         }
 
