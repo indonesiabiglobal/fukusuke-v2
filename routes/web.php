@@ -127,6 +127,11 @@ Route::get('/report-lpk', function (Request $request) {
     return view('livewire.order-lpk.report-lpk', compact('lpk_id'));
 })->name('report-lpk');
 
+Route::get('/report-masuk-gudang', function (Request $request) {
+    $no_palet = $request->query('no_palet');
+    return view('livewire.nippo-seitai.report-masuk-gudang', compact('no_palet'));
+})->name('report-masuk-gudang');
+
 Route::get('/report-gentan', function (Request $request) {
     $lpk_no = $request->query('lpk_no');
     $name = $request->query('name');
