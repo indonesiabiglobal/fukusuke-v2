@@ -3,6 +3,7 @@
 use App\Http\Livewire\AddLpkController;
 use App\Http\Livewire\NippoInfure\AddNippoController;
 use App\Http\Livewire\AddOrderController;
+use App\Http\Livewire\Administration\SecurityManagementController;
 use App\Http\Livewire\CetakLpkController;
 use App\Http\Livewire\NippoInfure\CheckListInfureController;
 use App\Http\Livewire\EditLpkController;
@@ -121,6 +122,9 @@ Route::get('/buyer', BuyerController::class)->name('buyer');
 
 // Tipe Produk
 Route::get('/tipe-produk', TipeProduk::class)->name('tipe-produk');
+
+// Administration
+Route::get('/security-management', SecurityManagementController::class)->name('security-management');
 
 Route::get('/report-lpk', function (Request $request) {
     $lpk_id = $request->query('lpk_id');
