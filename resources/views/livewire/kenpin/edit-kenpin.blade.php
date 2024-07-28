@@ -115,8 +115,23 @@
                     <button type="button" class="btn btn-warning" wire:click="cancel">
                         <i class="ri-close-line"></i> Close
                     </button>
-                    <button type="submit" class="btn btn-success">
+                    {{-- <button type="submit" class="btn btn-success">
                         <i class="ri-save-3-line"></i> Save
+                    </button> --}}
+                    <button type="submit" class="btn btn-success">
+                        <span wire:loading.remove wire:target="save">
+                            <i class="ri-save-3-line"></i> Save
+                        </span>
+                        <div wire:loading wire:target="save">
+                            <span class="d-flex align-items-center">
+                                <span class="spinner-border flex-shrink-0" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </span>
+                                <span class="flex-grow-1 ms-1">
+                                    Loading...
+                                </span>
+                            </span>
+                        </div>
                     </button>
                     <button type="button" class="btn btn-success btn-print" disabled="disabled">
                         <i class="bx bx-printer"></i> Print
@@ -177,7 +192,19 @@
                         {{-- <button type="button" class="btn btn-secondary">Accept</button> --}}
                         <button type="button" class="btn btn-link text-gray-600 ms-auto" data-bs-dismiss="modal">Close</button>
                         <button type="button" class="btn btn-success" wire:click="saveGentan">
-                            Save
+                            <span wire:loading.remove wire:target="saveGentan">
+								<i class="ri-save-3-line"></i> Update
+							</span>
+							<div wire:loading wire:target="saveGentan">
+								<span class="d-flex align-items-center">
+									<span class="spinner-border flex-shrink-0" role="status">
+										<span class="visually-hidden">Loading...</span>
+									</span>
+									<span class="flex-grow-1 ms-1">
+										Loading...
+									</span>
+								</span>
+							</div>
                         </button>
                     </div>
                 </div>
@@ -267,13 +294,3 @@
     });
  </script>
  @endscript
-{{-- <script>
-    document.addEventListener('livewire:load', function () {
-        Livewire.on('showModal', () => {
-            $('#modal-add').modal('show');
-        });
-        Livewire.on('closeModal', () => {
-            $('#modal-add').modal('hide');
-        });
-    });
-</script> --}}

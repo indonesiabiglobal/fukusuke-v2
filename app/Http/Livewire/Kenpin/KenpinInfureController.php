@@ -14,14 +14,17 @@ class KenpinInfureController extends Component
     use WithPagination, WithoutUrlPagination;
     
     protected $paginationTheme = 'bootstrap';
-    public $product;
-    // public $buyer;
+    public $products;
     public $tglMasuk;
     public $tglKeluar;
+    public $searchTerm;
+    public $idProduct;
+    public $lpk_no;
+    public $status;
 
     public function mount()
     {
-        $this->product = MsProduct::limit(10)->get();
+        $this->products = MsProduct::get();
         $this->tglMasuk = Carbon::now()->format('Y-m-d');
         $this->tglKeluar = Carbon::now()->format('Y-m-d');
     }
@@ -29,58 +32,6 @@ class KenpinInfureController extends Component
     public function search(){        
         $this->resetPage();
         $this->render();
-        // $tglMasuk = '';
-        // if (isset($this->tglMasuk) && $this->tglMasuk != '') {
-        //     $tglMasuk = "WHERE tdka.kenpin_date >= '" . $this->tglMasuk . "'";
-        // }
-        // $tglKeluar = '';
-        // if (isset($this->tglKeluar) && $this->tglKeluar != '') {
-        //     $tglKeluar = "AND tdka.kenpin_date <= '" . $this->tglKeluar . "'";
-        // }
-        // $searchTerm = '';
-        // if (isset($this->searchTerm) && $this->searchTerm != '') {
-        //     $searchTerm = "AND (tdol.lpk_no ilike '%" . $this->searchTerm . 
-        //     "%' OR tdka.kenpin_no ilike '%" . $this->searchTerm . 
-        //     "%' OR msp.name ilike '%" . $this->searchTerm .
-        //     "%')";
-        // }
-
-        // $this->data = DB::select("
-        // SELECT 
-        //     tdka.id AS id, 
-        //     tdka.kenpin_no AS kenpin_no, 
-        //     tdka.kenpin_date AS kenpin_date, 
-        //     tdka.employee_id AS employee_id,
-        //     mse.empname as namapetugas,
-        //     tdka.lpk_id AS lpk_id, 
-        //     tdka.berat_loss AS berat_loss, 
-        //     tdka.remark AS remark, 
-        //     CASE WHEN tdka.status_kenpin = 1 THEN 'Proses' ELSE 'Finish' END AS status_kenpin, 
-        //     tdka.created_by AS created_by, 
-        //     tdka.created_on AS created_on, 
-        //     tdka.updated_by AS updated_by, 
-        //     tdka.updated_on AS updated_on, 
-        //     tdol.order_id AS order_id, 
-        //     tdol.product_id AS product_id, 
-        //     tdol.lpk_no AS lpk_no, 
-        //     tdol.lpk_date AS lpk_date, 
-        //     tdol.panjang_lpk AS panjang_lpk, 
-        //     tdol.qty_gentan AS qty_gentan, 
-        //     tdol.qty_gulung AS qty_gulung, 
-        //     tdol.qty_lpk AS qty_lpk, 
-        //     tdol.total_assembly_line AS total_assembly_line, 
-        //     tdol.total_assembly_qty AS total_assembly_qty, 
-        //     msp.id AS id1, 
-        //     msp.code AS code, 
-        //     msp.name AS namaproduk
-        // FROM  tdKenpin_assembly AS tdka
-        //     INNER JOIN tdOrderLpk AS tdol ON tdka.lpk_id = tdol.id
-        //     INNER JOIN msProduct AS msp ON tdol.product_id = msp.id
-        //     inner join msemployee as mse on mse.id=tdka.employee_id
-        // $tglMasuk
-        // $tglKeluar
-        // $searchTerm
-        // ");
     }
 
     public function add()
@@ -122,9 +73,27 @@ class KenpinInfureController extends Component
                 'msp.code', 
                 'msp.name AS namaproduk'
             );
-            
+        
+        if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
+            $data = $data->where('tdka.kenpin_date', '>=', $this->tglMasuk);
+        }
+        if (isset($this->tglKeluar) && $this->tglKeluar != "" && $this->tglKeluar != "undefined") {
+            $data = $data->where('tdka.kenpin_date', '<=', $this->tglKeluar);
+        }
+        if (isset($this->lpk_no) && $this->lpk_no != "" && $this->lpk_no != "undefined") {
+            $data = $data->where('tdol.lpk_no', 'ilike', "%{$this->lpk_no}%");
+        }
+        if (isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined") {
+            $data = $data->where('tdka.kenpin_no', 'ilike', "%{$this->searchTerm}%");
+        }
+        if (isset($this->idProduct) && $this->idProduct['value'] != "" && $this->idProduct != "undefined") {
+            $data = $data->where('tdol.product_id', $this->idProduct['value']);
+        }
+        // if (isset($this->lpk_no) && $this->lpk_no != "" && $this->lpk_no != "undefined") {
+        //     $data = $data->where('tdol.lpk_no', 'ilike', "%{$this->lpk_no}%");
+        // }
         if (isset($this->status) && $this->status['value'] != "" && $this->status != "undefined") {
-            $data = $data->where('tod.status_order', $this->status);
+            $data = $data->where('tdka.status_kenpin', $this->status['value']);
         }
 
         $data = $data->paginate();
