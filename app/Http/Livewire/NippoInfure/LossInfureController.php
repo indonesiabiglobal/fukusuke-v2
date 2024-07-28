@@ -46,6 +46,10 @@ class LossInfureController extends Component
         $this->render();
     }
 
+    public function print(){
+        $this->dispatch('redirectToPrint', 1234);
+    }
+
     public function render()
     {
         $data = DB::table('tdproduct_assembly AS tdpa')
