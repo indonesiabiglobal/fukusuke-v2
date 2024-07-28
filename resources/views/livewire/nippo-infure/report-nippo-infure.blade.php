@@ -6,10 +6,10 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
 </head>
-{{-- @php
+@php
     header("Content-type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-	header("Content-Disposition: attachment; filename=test.xls");
-@endphp --}}
+	header("Content-Disposition: attachment; filename=Nippo.xls");
+@endphp
 <body style="background-color: #CCCCCC;margin: 0">
     <div align="center">
         <table class="bayangprint" cellspacing="0" cellpadding="0" bgcolor="#FFFFFF" border="0" width="950" style="padding:25px">
