@@ -10,28 +10,56 @@ use Livewire\WithoutUrlPagination;
 
 class SecurityManagementController extends Component
 {
+    protected $paginationTheme = 'bootstrap';
     public $userrole;
     public $idRole;
     public $searchTerm;
+    public $status;
 
     use WithPagination, WithoutUrlPagination;
-    // public $data=[];
 
     public function mount(){
         $this->userrole = UserRoles::get();
     }
 
+    public function search(){
+        $this->resetPage();
+        $this->render();
+    }
+
     public function render()
     {
-        $data = DB::table('tdorder AS tod')
-            ->select('tod.id', 'tod.po_no', 'mp.name AS produk_name', 'tod.product_code',
-                     'mbu.name AS buyer_name', 'tod.order_qty', 'tod.order_date',
-                     'tod.stufingdate', 'tod.etddate', 'tod.etadate',
-                     'tod.processdate', 'tod.processseq', 'tod.updated_by', 'tod.updated_on')
-            ->leftjoin('msproduct AS mp', 'mp.id', '=', 'tod.product_id')
-            ->leftjoin('msbuyer AS mbu', 'mbu.id', '=', 'tod.buyer_id')
-            ->paginate();
+        $data = DB::table('users')
+            ->select(
+                'id',
+                'username',
+                'email',
+                'empname',
+                'status as role',
+                DB::raw("'' AS job"),
+                DB::raw("CASE WHEN status = 0 THEN 'Inactive' ELSE 'Active' END AS status")
+            );
+            if (isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined") {
+                $data = $data->where(function($query) {
+                    $query->where('username', 'ilike', "%{$this->searchTerm}%");
+                        //   ->orWhere('mbu.name', 'ilike', "%{$this->searchTerm}%")
+                        //   ->orWhere('tod.po_no', 'ilike', "%{$this->searchTerm}%");
+                });
+            }
+            if (isset($this->idRole) && $this->idRole['value'] != "" && $this->idRole != "undefined") {
+                $data = $data->where('status', $this->idRole);
+            }
+            // if (isset($this->status) && $this->status['value'] != "" && $this->status != "undefined") {
+            //     if($this->status['value'] == 0){
+            //         $data = $data->where('status', 0);
+            //     } else {
+            //         $data = $data->where('status', 1);
+            //     }
+            // }
+            $data = $data->paginate(8);
 
-        return view('livewire.administration.security-management')->extends('layouts.master');
+        return view('livewire.administration.security-management', [
+            'data' => $data
+        ])->extends('layouts.master');
     }
 }
