@@ -27,6 +27,7 @@ class SeitaiJamKerjaController extends Component
     public $machine_id;
     public $employee_id;
     public $work_hour;
+    public $off_hour;
     public $on_hour;
     public $orderid;
     public $workShift;
@@ -34,7 +35,7 @@ class SeitaiJamKerjaController extends Component
     public function mount()
     {
         $this->tglMasuk = Carbon::now()->format('Y-m-d');
-        $this->tglKeluar = Carbon::now()->format('Y-m-d'); 
+        $this->tglKeluar = Carbon::now()->format('Y-m-d');
         $this->machine  = MsMachine::limit(10)->get();
         $this->working_date = Carbon::now()->format('Y-m-d');
         $this->workShift  = MsWorkingShift::get();
@@ -51,10 +52,10 @@ class SeitaiJamKerjaController extends Component
             // }
             // $searchTerm = '';
             // if (isset($this->searchTerm) && $this->searchTerm != '') {
-            //     $searchTerm = "AND (tdol.lpk_no ilike '%" . $this->searchTerm . 
-            //     "%' OR tdpg.production_no ilike '%" . $this->searchTerm . 
+            //     $searchTerm = "AND (tdol.lpk_no ilike '%" . $this->searchTerm .
+            //     "%' OR tdpg.production_no ilike '%" . $this->searchTerm .
             //     "%' OR tdpg.product_id ilike '%" . $this->searchTerm .
-            //     "%' OR tdpg.machine_id ilike '%" . $this->searchTerm . 
+            //     "%' OR tdpg.machine_id ilike '%" . $this->searchTerm .
             //     "%')";
             // }
 
@@ -72,7 +73,7 @@ class SeitaiJamKerjaController extends Component
             //     tdjkm.created_by AS created_by,
             //     tdjkm.created_on AS created_on,
             //     tdjkm.updated_by AS updated_by,
-            //     tdjkm.updated_on AS updated_on 
+            //     tdjkm.updated_on AS updated_on
             // FROM
             //     tdJamKerjaMesin AS tdjkm
             // $tglMasuk
@@ -97,7 +98,7 @@ class SeitaiJamKerjaController extends Component
             $this->employeeno = $msemployee->employeeno;
             $this->empname = $msemployee->empname;
             $this->work_hour = Carbon::parse($item->work_hour)->format('H:i');
-            $this->on_hour = Carbon::parse($item->on_hour)->format('H:i');
+            $this->off_hour = Carbon::parse($item->off_hour)->format('H:i');
         }else{
             return redirect()->to('jam-kerja/seitai');
         }
@@ -115,7 +116,7 @@ class SeitaiJamKerjaController extends Component
         $this->machineno = '';
         $this->employeeno = '';
         $this->work_hour = '';
-        $this->on_hour = '';
+        $this->off_hour = '';
     }
 
     public function save(){
@@ -125,10 +126,18 @@ class SeitaiJamKerjaController extends Component
             'machineno' => 'required',
             'employeeno' => 'required',
             'work_hour' => 'required',
-            'on_hour' => 'required'
+            'off_hour' => 'required',
         ]);
 
         try {
+            // menghitung waktu on hour
+            $workHour = Carbon::parse($this->work_hour);
+            $offHour = Carbon::parse($this->off_hour);
+            // Menghitung perbedaan dalam menit
+            // Menghitung perbedaan waktu
+            $interval = $workHour->diff($offHour);
+            $onHour = $interval->format('%H:%I');
+
             if(isset($this->orderid)){
                 $machine=MsMachine::where('machineno', $this->machineno)->first();
                 $msemployee=MsEmployee::where('employeeno', $this->employeeno)->first();
@@ -139,7 +148,8 @@ class SeitaiJamKerjaController extends Component
                     'machine_id' => $machine->id,
                     'employee_id' => $msemployee->id,
                     'work_hour' => $this->work_hour,
-                    'on_hour' => $this->on_hour
+                    'off_hour' => $this->off_hour,
+                    'on_hour' => $onHour
                 ]);
                 $this->reset(['employeeno', 'empname', 'machineno', 'machinename', 'working_date', 'work_shift']);
                 $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
@@ -153,8 +163,9 @@ class SeitaiJamKerjaController extends Component
                 $orderlpk->machine_id = $machine->id;
                 $orderlpk->employee_id = $msemployee->id;
                 $orderlpk->work_hour = $this->work_hour;
-                $orderlpk->on_hour = $this->on_hour;
-                
+                $orderlpk->off_hour =  $this->off_hour;
+                $orderlpk->on_hour = $onHour;
+
                 $orderlpk->save();
             }
 
@@ -170,7 +181,7 @@ class SeitaiJamKerjaController extends Component
     {
         if(isset($this->machineno) && $this->machineno != ''){
             $machine=MsMachine::where('machineno', $this->machineno)->first();
-            
+
             if($machine == null){
                 $this->dispatch('notification', ['type' => 'error', 'message' => 'Machine ' . $this->machineno . ' Tidak Terdaftar']);
             } else {
@@ -202,14 +213,14 @@ class SeitaiJamKerjaController extends Component
             tdjkm.created_by AS created_by,
             tdjkm.created_on AS created_on,
             tdjkm.updated_by AS updated_by,
-            tdjkm.updated_on AS updated_on 
+            tdjkm.updated_on AS updated_on
         FROM
             tdJamKerjaMesin AS tdjkm
         WHERE tdjkm.working_date >= '$this->tglMasuk 00:00'
         AND tdjkm.working_date <= '$this->tglKeluar 23:59'
         ");
 
-        return view('livewire.jam-kerja.seitai', 
+        return view('livewire.jam-kerja.seitai',
             ['data' => $jamkerja]
         )->extends('layouts.master');
     }

@@ -262,8 +262,8 @@
                                         <div class="col-lg-12 mb-1">
                                             <label for="">Lama Mesin Mati</label>
                                             <div class="form-group" style="margin-left:1px; white-space:nowrap">
-                                                <input class="form-control" wire:model="on_hour" type="time" placeholder="hh:mm">
-                                                @error('on_hour')
+                                                <input class="form-control" wire:model="off_hour" type="time" placeholder="hh:mm">
+                                                @error('off_hour')
                                                     <span class="invalid-feedback">{{ $message }}</span>
                                                 @enderror
                                             </div>
@@ -273,8 +273,23 @@
                                 <div class="modal-footer">
                                     {{-- <button type="button" class="btn btn-secondary">Accept</button> --}}
                                     <button type="button" class="btn btn-link text-gray-600 ms-auto" data-bs-dismiss="modal">Close</button>
-                                    <button type="submit" class="btn btn-success" wire:click="save">
+                                    {{-- <button type="submit" class="btn btn-success" wire:click="save">
                                         Save
+                                    </button> --}}
+                                    <button type="submit" class="btn btn-success" wire:click="save">
+                                        <span wire:loading.remove wire:target="save">
+                                            <i class="ri-save-3-line"></i> Save
+                                        </span>
+                                        <div wire:loading wire:target="save">
+                                            <span class="d-flex align-items-center">
+                                                <span class="spinner-border flex-shrink-0" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </span>
+                                                <span class="flex-grow-1 ms-1">
+                                                    Loading...
+                                                </span>
+                                            </span>
+                                        </div>
                                     </button>
                                 </div>
                         </div>

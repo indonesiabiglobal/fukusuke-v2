@@ -62,7 +62,7 @@ class InfureJamKerjaController extends Component
             $this->employeeno = $msemployee->employeeno;
             $this->empname = $msemployee->empname;
             $this->work_hour = Carbon::parse($item->work_hour)->format('H:i');
-            $this->on_hour = Carbon::parse($item->on_hour)->format('H:i');
+            $this->off_hour = Carbon::parse($item->off_hour)->format('H:i');
         } else {
             return redirect()->to('jam-kerja/infure');
         }
@@ -80,7 +80,7 @@ class InfureJamKerjaController extends Component
         $this->machineno = '';
         $this->employeeno = '';
         $this->work_hour = '';
-        $this->on_hour = '';
+        $this->off_hour = '';
     }
 
     public function save()
