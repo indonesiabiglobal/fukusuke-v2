@@ -81,6 +81,11 @@ Route::get('/loss-infure', LossInfureController::class)->name('loss-infure');
 Route::get('/checklist-infure', CheckListInfureController::class)->name('checklist-infure');
 Route::get('/label-gentan', LabelGentanController::class)->name('label-gentan');
 
+Route::get('/report-checklist-infure', function (Request $request) {
+    $lpk_id = '180502-006';
+    return view('livewire.nippo-infure.report-check-list', compact('lpk_id'));
+})->name('nippo-infure-print');
+
 // Nippo Seitai
 Route::get('/nippo-seitai', NippoSeitaiController::class)->name('nippo-seitai');
 Route::get('/add-seitai', AddSeitaiController::class)->name('add-seitai');
