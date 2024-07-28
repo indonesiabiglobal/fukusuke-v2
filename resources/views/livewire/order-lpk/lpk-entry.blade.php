@@ -109,12 +109,12 @@
                             <span class="flex-grow-1 ms-1">
                                 Loading...
                             </span>
-                        </span>                    
+                        </span>
                     </div>
                 </button>
-                
+
                 <button
-                    type="button" 
+                    type="button"
                     class="btn btn-success w-lg p-1"
                     onclick="window.location.href='/add-lpk'"
                     >
@@ -169,13 +169,18 @@
                         </span>
                     </div>
                 </button>
-            </div>                        
+            </div>
         </div>
     </div>
     <div class="table-responsive table-card mt-3 mb-1">
         <table class="table align-middle table-nowrap" id="customerTable" style="width:100%">
             <thead class="table-light">
                 <tr>
+                    <th scope="col" style="width: 10px;">
+                        <div class="form-check">
+                            <input class="form-check-input fs-15" type="checkbox" id="checkAll" value="optionAll">
+                        </div>
+                    </th>
                     <th class="border-0 rounded-start"></th>
                     <th class="border-0">No LPK</th>
                     <th class="border-0">Tgl LPK</th>
@@ -193,6 +198,11 @@
             <tbody class="list form-check-all">
                 @forelse ($data as $item)
                     <tr>
+                        <th scope="row">
+                            <div class="form-check">
+                                <input class="form-check-input fs-15" type="checkbox" name="check" value="option{{ $item->id }}">
+                            </div>
+                        </th>
                         <td>
                             <a href="/edit-lpk?orderId={{ $item->id }}" class="link-success fs-15 p-1 bg-primary rounded">
                                 <i class="ri-edit-box-line text-white"></i>
@@ -224,3 +234,12 @@
         {{ $data->links() }}
     </div>
 </div>
+
+@script
+<script>
+    // memilih seluruh data pada table
+    $('#checkAll').click(function () {
+        $('input:checkbox').not(this).prop('checked', this.checked);
+    });
+</script>
+@endscript
