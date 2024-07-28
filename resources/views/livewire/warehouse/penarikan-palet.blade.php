@@ -1,64 +1,89 @@
-{{-- <title>Order Entry</title> --}}
-<div class="container mt-2">
-    <div class="row">
-        <div class="col-lg-6 mb-3">
-            <div class="form-group">
-                <label class="control-label col-md-3 col-xs-4">
-                    <span class="hidden-xs" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Filter </span>Tanggal
-                </label>
-                <div class="input-group col-md-9 col-xs-8">
-                    <div class="col-4 pe-1">
-                        <select class="form-select mb-0" wire:model.defer="transaksi">
-                            <option value="1">Produksi</option>
-                            <option value="2">Proses</option>
-                        </select>
-                    </div>
-                    <div class="col-8">
-                        <div class="form-group">
-                            <div class="input-group">
-                                <input class="form-control datepicker-input" type="date" wire:model.defer="tglMasuk" placeholder="yyyy/mm/dd"/>
-    
-                                <input class="form-control datepicker-input" type="date" wire:model.defer="tglKeluar" placeholder="yyyy/mm/dd"/>
+<div class="row">
+    <div class="col-12 col-lg-7">
+        <div class="row">
+            <div class="col-12 col-lg-3">
+                <label class="form-label text-muted fw-bold">Filter Tanggal</label>
+            </div>
+            <div class="col-12 col-lg-9 mb-1">
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="col-3">
+                            <select class="form-select" style="padding:0.44rem" wire:model.defer="transaksi">
+                                <option value="1">Proses</option>
+                                <option value="2">Order</option>
+                            </select>
+                        </div>
+                        <div class="col-9">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <input wire:model.defer="tglMasuk" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
+                                    <span class="input-group-text py-0">
+                                        <i class="ri-calendar-event-fill fs-4"></i>
+                                    </span>
+
+                                    <input wire:model.defer="tglKeluar" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
+                                    <span class="input-group-text py-0">
+                                        <i class="ri-calendar-event-fill fs-4"></i>
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>    
-        <div class="col-lg-6">
-            <div class="form-group">
-                <label class="control-label col-md-3 col-xs-4">Produk</label>
-                <div class="input-group col-md-9 col-xs-8">
-                    <select wire:model.defer="product_id" class="form-control" placeholder="- all -">
-                        <option value="">- all -</option>
-                        @foreach ($product as $item)
+
+            <div class="col-12 col-lg-3">
+                <label class="form-label text-muted fw-bold">Search</label>
+            </div>
+            <div class="col-12 col-lg-9">
+                <div class="input-group">
+                    <input wire:model.defer="searchTerm" class="form-control"style="padding:0.44rem" type="text" placeholder="search nomor PO, nama produk" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-lg-5">
+        <div class="row">
+            <div class="col-12 col-lg-2">
+                <label for="product" class="form-label text-muted fw-bold">Product</label>
+            </div>
+            <div class="col-12 col-lg-10">
+                <div class="mb-1" wire:ignore>
+                    <select class="form-control"  wire:model.defer="idProduct" id="product" name="product" data-choices data-choices-sorting-false data-choices-removeItem>
+                        <option value="">- All -</option>
+                        @foreach ($products as $item)
                             <option value="{{ $item->id }}">{{ $item->name }}</option>
                         @endforeach
                     </select>
                 </div>
             </div>            
         </div>
-    
-        <div class="col-lg-12" style="border-top:1px solid #efefef">
-            <div class="toolbar">
-                <button wire:click="search" type="button" class="btn btn-info" style="width:125px;">
-                    <i class="fa fa-search"></i> Filter
-                    <div wire:loading wire:target="search">
-                        <span class="fa fa-spinner fa-spin"></span>
-                    </div>
-                </button>
-                {{-- <button id="btnCreate" type="button" class="btn btn-success" style="width:125px;" asp-app-role="write">
-                    <i class="fa fa-plus"></i> Add
-                </button> --}}
-            </div>
-            <table class="table table-bordered" data-height="414" id="tableSrc"></table>
+    </div>
+
+    <div class="col-lg-12 mt-2">
+        <div class="toolbar">
+            <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1">
+                <span wire:loading.remove wire:target="search">
+                    <i class="ri-search-line"></i> Filter
+                </span>
+                <div wire:loading wire:target="search">
+                    <span class="d-flex align-items-center">
+                        <span class="spinner-border flex-shrink-0" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </span>
+                        <span class="flex-grow-1 ms-1">
+                            Loading...
+                        </span>
+                    </span>
+                </div>
+            </button>
         </div>
     </div>
     <div class="card border-0 shadow mb-4 mt-2">
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-centered table-nowrap mb-0 rounded">
-                    <thead class="thead-light">
+                    <thead class="table-light">
                         <tr>
                             <th class="border-0 rounded-start">Action</th>
                             <th class="border-0">No Palet</th>
@@ -67,22 +92,15 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Item -->
                         @forelse ($penarikan as $item)
-                        <tr>
-                            <td>
-                                <input type="checkbox" wire:model="selectedItems" value="{{ $item->product_id }}">
-                            </td>
-                            <td>                                
-                                {{ $item->nomor_palet }}
-                            </td>
-                            <td>
-                                {{ $item->code }}
-                            </td>
-                            <td>
-                                {{ $item->name }}
-                            </td>
-                        </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" wire:model="selectedItems" value="{{ $item->product_id }}">
+                                </td>
+                                <td>{{ $item->nomor_palet }}</td>
+                                <td>{{ $item->code }}</td>
+                                <td>{{ $item->name }}</td>
+                            </tr>
                         @empty
                         <tr>
                             <td colspan="4" class="text-center">No results found</td>
@@ -95,7 +113,8 @@
     </div>
     <div class="col-12 text-end">
         <button type="button" class="btn btn-success">
-            <i class="fa fa-plus"></i> Proses Penarikan
+            <i class="ri-settings-4-fill"></i> Proses Penarikan
         </button>
     </div>
 </div>
+

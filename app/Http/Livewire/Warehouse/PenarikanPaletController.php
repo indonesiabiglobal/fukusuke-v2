@@ -15,12 +15,12 @@ class PenarikanPaletController extends Component
     public $tglKeluar;
     public $machine;
     public $transaksi;
-    public $product;
+    public $products;
     public $product_id;
 
     public function mount()
     {
-        $this->product = MsProduct::limit(10)->get();
+        $this->products = MsProduct::limit(10)->get();
         $this->machine = MsMachine::limit(10)->get();
         $this->tglMasuk = Carbon::now()->format('Y-m-d');
         $this->tglKeluar = Carbon::now()->format('Y-m-d'); 
