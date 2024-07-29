@@ -39,8 +39,9 @@ class LabelMasukGudangController extends Component
         // WHERE
         //     tod.id = '12766'
         // "))->first();
-        
-        $this->dispatch('redirectToPrint', $this->nomor_palet);
+        // dd($this->nomor_palet);
+        $nomor_palet=$this->nomor_palet;
+        $this->dispatch('redirectToPrint', $nomor_palet);
             
     }
     
@@ -64,7 +65,7 @@ class LabelMasukGudangController extends Component
                 tdpg.nomor_palet='$this->nomor_palet'");
                                     
             if($this->data == null){
-                $this->dispatchBrowserEvent('notification', ['type' => 'error', 'message' => 'Palet ' . $this->nomor_palet . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'error', 'message' => 'Palet ' . $this->nomor_palet . ' Tidak Terdaftar']);
             } else {
                 $this->code = $this->data[0]->code;
                 $this->name = $this->data[0]->name;
