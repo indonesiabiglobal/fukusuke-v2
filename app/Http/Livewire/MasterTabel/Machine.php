@@ -180,7 +180,7 @@ class Machine extends Component
         )
         ->leftJoin('msdepartment as msd', 'msd.id', '=', 'msm.department_id')
         ->leftJoin('msproduct_group as mpg', 'mpg.id', '=', 'msm.product_group_id')
-        ->when($this->searchTerm, function ($query) {
+        ->when(isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined", function ($query) {
             $query->where(function ($query) {
                 $query->where('msm.machinename', 'like', '%' . $this->searchTerm . '%')
                 ->orWhere('msm.machineno', 'like', '%' . $this->searchTerm . '%')
