@@ -112,7 +112,13 @@ class JenisProduk extends Component
     {
         DB::beginTransaction();
         try {
-            DB::table('msproduct_group')->where('id', $this->idDelete)->delete();
+            $statusInactive = 0;
+
+            DB::table('msproduct_group')->where('id', $this->idDelete)->update([
+                'status' => $statusInactive,
+                'updated_by' => auth()->user()->username,
+                'updated_on' => Carbon::now(),
+            ]);
             DB::commit();
             $this->search();
             $this->dispatch('closeModalDelete');
