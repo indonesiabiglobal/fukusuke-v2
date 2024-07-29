@@ -259,7 +259,8 @@
                                 <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
                                     <button type="button" class="btn w-sm btn-light"
                                         data-bs-dismiss="modal">Close</button>
-                                    <button wire:click="destroy" id="btnCreate" type="button" class="btn w-sm btn-danger" id="remove-item">
+                                    <button wire:click="destroy" id="btnCreate" type="button"
+                                        class="btn w-sm btn-danger" id="remove-item">
                                         <span wire:loading.remove wire:target="destroy">
                                             <i class="ri-save-3-line"></i> Yes, Delete It!
                                         </span>
@@ -339,7 +340,11 @@
                         <td>{{ $item->name }}</td>
                         <td>{{ $item->address }}</td>
                         <td>{{ $item->country }}</td>
-                        <td>{{ $item->status == 1 ? 'Active' : 'Non Active' }}</td>
+                        <td>
+                            {!! $item->status == 1
+                                ? '<span class="badge text-success bg-success-subtle">Active</span>'
+                                : '<span class="badge text-bg-danger">Non Active</span>' !!}
+                        </td>
                         <td>{{ $item->updated_by }}</td>
                         <td>{{ $item->updated_on }}</td>
                         {{-- <td>{{ $no++ }}</td> --}}

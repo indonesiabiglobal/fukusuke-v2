@@ -23,6 +23,7 @@ use App\Http\Livewire\Kenpin\PrintLabelGudangKenpinController;
 use App\Http\Livewire\Kenpin\ReportKenpinController;
 use App\Http\Livewire\LpkEntryController;
 use App\Http\Livewire\MasterTabel\BuyerController;
+use App\Http\Livewire\MasterTabel\Produk\JenisProduk;
 use App\Http\Livewire\MasterTabel\Produk\TipeProduk;
 use App\Http\Livewire\NippoInfure\EditNippoController;
 use App\Http\Livewire\NippoInfure\LabelGentanController;
@@ -127,8 +128,9 @@ Route::get('/detail-report', DetailReportController::class)->name('detail-report
 // Buyer
 Route::get('/buyer', BuyerController::class)->name('buyer');
 
-// Tipe Produk
+// Master Tabel Produk
 Route::get('/tipe-produk', TipeProduk::class)->name('tipe-produk');
+Route::get('/jenis-produk', JenisProduk::class)->name('jenis-produk');
 
 // Administration
 Route::get('/security-management', SecurityManagementController::class)->name('security-management');
