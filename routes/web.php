@@ -24,6 +24,7 @@ use App\Http\Livewire\Kenpin\ReportKenpinController;
 use App\Http\Livewire\LpkEntryController;
 use App\Http\Livewire\MasterTabel\BuyerController;
 use App\Http\Livewire\MasterTabel\Department;
+use App\Http\Livewire\MasterTabel\Machine;
 use App\Http\Livewire\MasterTabel\Produk\JenisProduk;
 use App\Http\Livewire\MasterTabel\Produk\TipeProduk;
 use App\Http\Livewire\MasterTabel\Warehouse;
@@ -144,6 +145,8 @@ Route::get('/working-shift', WorkingShift::class)->name('working-shift');
 // master table warehouse
 Route::get('/warehouse', Warehouse::class)->name('warehouse');
 
+// master table mesin
+Route::get('/mesin', Machine::class)->name('mesin');
 
 // Administration
 Route::get('/security-management', SecurityManagementController::class)->name('security-management');
