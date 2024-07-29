@@ -15,7 +15,11 @@
 				<div class="form-group">
 					<div class="input-group">
 						<span class="input-group-addon col-12 col-lg-2 text-muted fw-bold">Awal: </span>
-						<input class="form-control datepicker-input" wire:model.defer="tglMasuk" placeholder="yyyy/mm/dd hh:mm" />
+						{{-- <input class="form-control datepicker-input" wire:model.defer="tglMasuk" placeholder="yyyy/mm/dd hh:mm" /> --}}
+						<input wire:model.defer="tglMasuk" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
+						<span class="input-group-text py-0">
+							<i class="ri-calendar-event-fill fs-4"></i>
+						</span>
 					</div>
 				</div>
 			</div>
@@ -25,7 +29,11 @@
 				<div class="form-group">
 					<div class="input-group">
 						<span class="input-group-addon col-12 col-lg-2 text-muted fw-bold">Akhir: </span>
-						<input class="form-control datepicker-input" wire:model.defer="tglKeluar" placeholder="yyyy/mm/dd hh:mm" />
+						{{-- <input class="form-control datepicker-input" wire:model.defer="tglKeluar" placeholder="yyyy/mm/dd hh:mm" /> --}}
+						<input wire:model.defer="tglKeluar" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
+						<span class="input-group-text py-0">
+							<i class="ri-calendar-event-fill fs-4"></i>
+						</span>
 					</div>
 				</div>
 			</div>
