@@ -34,19 +34,17 @@
                     </div>
                 </button>
                 {{-- Button Add buyer --}}
-                <button type="button" class="btn btn-success w-lg p-1" data-bs-toggle="modal"
-                    data-bs-target="#modal-addBuyer">
+                <button type="button" class="btn btn-success w-lg p-1" wire:click="showModalCreate">
                     <i class="ri-add-line"> </i> Add
                 </button>
                 {{-- modal add buyer --}}
-                <div class="modal fade" id="modal-addBuyer" tabindex="-1" aria-labelledby="modal-addBuyerLabel"
-                    aria-modal="true" wire:ignore.self>
+                <div class="modal fade" id="modal-add" tabindex="-1" aria-labelledby="modal-addLabel" aria-modal="true"
+                    wire:ignore.self>
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="modal-addBuyerLabel">Add Master Buyer</h5> <button
-                                    type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
+                                <h5 class="modal-title" id="modal-addLabel">Add Master Buyer</h5> <button type="button"
+                                    class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
                                 <form wire:submit.prevent="store">
@@ -113,10 +111,10 @@
                                                 <button type="button" class="btn btn-light"
                                                     data-bs-dismiss="modal">Close</button>
                                                 <button id="btnCreate" type="submit" class="btn btn-success w-lg">
-                                                    <span wire:loading.remove wire:target="save">
+                                                    <span wire:loading.remove wire:target="store">
                                                         <i class="ri-save-3-line"></i> Save
                                                     </span>
-                                                    <div wire:loading wire:target="save">
+                                                    <div wire:loading wire:target="store">
                                                         <span class="d-flex align-items-center">
                                                             <span class="spinner-border flex-shrink-0" role="status">
                                                                 <span class="visually-hidden">Loading...</span>
@@ -144,7 +142,7 @@
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="modal-editLabel">Add Master Buyer</h5> <button
+                                <h5 class="modal-title" id="modal-editLabel">Edit Master Buyer</h5> <button
                                     type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
@@ -261,8 +259,21 @@
                                 <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
                                     <button type="button" class="btn w-sm btn-light"
                                         data-bs-dismiss="modal">Close</button>
-                                    <button type="button" class="btn w-sm btn-danger" id="remove-item"
-                                        wire:click="delete">Yes, Delete It!</button>
+                                    <button wire:click="destroy" id="btnCreate" type="button" class="btn w-sm btn-danger" id="remove-item">
+                                        <span wire:loading.remove wire:target="destroy">
+                                            <i class="ri-save-3-line"></i> Yes, Delete It!
+                                        </span>
+                                        <div wire:loading wire:target="destroy">
+                                            <span class="d-flex align-items-center">
+                                                <span class="spinner-border flex-shrink-0" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </span>
+                                                <span class="flex-grow-1 ms-1">
+                                                    Loading...
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -320,15 +331,13 @@
                                 <i class="ri-edit-box-line text-white"></i>
                             </button>
                             <button type="button" class="btn fs-15 p-1 bg-danger rounded removeBuyerModal"
-                                href="#removeBuyerModal" data-bs-toggle="modal" data-bs-target="#removeBuyerModal"
-                                data-remove-id="{{ $item->id }}">
+                                wire:click="delete({{ $item->id }})">
                                 <i class="ri-delete-bin-line  text-white"></i>
                             </button>
                         </td>
                         <td>{{ $item->code }}</td>
                         <td>{{ $item->name }}</td>
                         <td>{{ $item->address }}</td>
-                        <td>{{ $item->country }}</td>
                         <td>{{ $item->country }}</td>
                         <td>{{ $item->status == 1 ? 'Active' : 'Non Active' }}</td>
                         <td>{{ $item->updated_by }}</td>
@@ -353,31 +362,29 @@
     {{-- <livewire:tdorder/> --}}
 </div>
 
-<script>
-    document.addEventListener('livewire:load', function() {
+@script
+    <script>
+        $wire.on('showModalCreate', () => {
+            $('#modal-add').modal('show');
+        });
         // close modal create buyer
-        Livewire.on('closeModalCreate', () => {
-            $('#modal-addBuyer').modal('hide');
+        $wire.on('closeModalCreate', () => {
+            $('#modal-add').modal('hide');
         });
 
         // close modal update buyer
-        Livewire.on('closeModalUpdate', () => {
+        $wire.on('closeModalUpdate', () => {
             $('#modal-edit').modal('hide');
         });
 
-        // Show modal and pass ID
-        document.getElementsByClassName('removeBuyerModal').forEach(button => {
-            button.addEventListener('click', function() {
-                let removeId = this.getAttribute('data-remove-id');
-                console.log(removeId);
-                $('#removeBuyerModal').modal('show');
-            });
+        // show modal delete buyer
+        $wire.on('showModalDelete', () => {
+            $('#removeBuyerModal').modal('show');
         });
 
-        // Confirm delete action
-        document.getElementById('remove-item').addEventListener('click', function() {
-            Livewire.emit('delete');
+        // close modal delete buyer
+        $wire.on('closeModalDelete', () => {
             $('#removeBuyerModal').modal('hide');
         });
-    });
-</script>
+    </script>
+@endscript

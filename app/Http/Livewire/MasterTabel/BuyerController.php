@@ -18,6 +18,8 @@ class BuyerController extends Component
     public $address;
     public $city;
     public $country;
+    public $idUpdate;
+    public $idDelete;
 
     protected $rules = [
         'code' => 'required',
@@ -29,11 +31,22 @@ class BuyerController extends Component
 
     public function mount()
     {
-        $this->buyers = MsBuyer::get(['id', 'code', 'name', 'address', 'country', 'status', 'updated_by', 'updated_on']);
+        $this->buyers = MsBuyer::where('status', 1)
+        ->get(['id', 'code', 'name', 'address', 'country', 'status', 'updated_by', 'updated_on']);
+    }
+
+    public function resetFields()
+    {
+        $this->code = '';
+        $this->name = '';
+        $this->address = '';
+        $this->city = '';
+        $this->country = '';
     }
 
     public function showModalCreate()
     {
+        $this->resetFields();
         $this->dispatch('showModalCreate');
     }
 
@@ -60,7 +73,6 @@ class BuyerController extends Component
             $this->buyers = MsBuyer::get(['id', 'code', 'name', 'address', 'country', 'status', 'updated_by', 'updated_on']);
             $this->dispatch('closeModalCreate');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Buyer saved successfully.']);
-
             // return redirect()->route('buyer');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -72,7 +84,7 @@ class BuyerController extends Component
     public function edit($id)
     {
         $buyer = MsBuyer::where('id', $id)->first();
-
+        $this->idUpdate = $id;
         $this->code = $buyer->code;
         $this->name = $buyer->name;
         $this->address = $buyer->address;
@@ -89,7 +101,8 @@ class BuyerController extends Component
         DB::beginTransaction();
         try {
             $statusActive = 1;
-            $msbuyer = MsBuyer::where('code', $this->code)->first();
+            $msbuyer = MsBuyer::where('id', $this->idUpdate)->first();
+            $msbuyer->code = $this->code;
             $msbuyer->name = $this->name;
             $msbuyer->city = $this->city;
             $msbuyer->address = $this->address;
@@ -99,13 +112,40 @@ class BuyerController extends Component
             $msbuyer->updated_on = Carbon::now();
             $msbuyer->save();
             DB::commit();
-            $this->buyers = MsBuyer::get(['id', 'code', 'name', 'address', 'country', 'status', 'updated_by', 'updated_on']);
             $this->dispatch('closeModalUpdate');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Buyer updated successfully.']);
+            $this->search();
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to update master buyer: ' . $e->getMessage());
             $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to update the buyer: ' . $e->getMessage()]);
+        }
+    }
+
+    public function delete($id)
+    {
+        $this->idDelete = $id;
+        $this->dispatch('showModalDelete');
+    }
+
+    public function destroy()
+    {
+        DB::beginTransaction();
+        try {
+            $statusInactive = 0;
+            $msbuyer = MsBuyer::where('id', $this->idDelete)->first();
+            $msbuyer->status = $statusInactive;
+            $msbuyer->updated_by = Auth::user()->username;
+            $msbuyer->updated_on = Carbon::now();
+            $msbuyer->save();
+            DB::commit();
+            $this->dispatch('closeModalDelete');
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Buyer deleted successfully.']);
+            $this->search();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Failed to delete master buyer: ' . $e->getMessage());
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to delete the buyer: ' . $e->getMessage()]);
         }
     }
 
@@ -120,6 +160,7 @@ class BuyerController extends Component
                         ->orWhere('country', 'ilike', "%" . $this->searchTerm . "%");
                 });
             })
+            ->where('status', 1)
             ->get();
         $this->render();
     }
