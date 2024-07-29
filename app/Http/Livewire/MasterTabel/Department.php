@@ -150,10 +150,13 @@ class Department extends Component
 
         $data = DB::table('msdepartment')
             ->select('id', 'code', 'name', 'division_code', 'status', 'updated_by', 'updated_on')
-            ->where(function ($query) {
-                $query->where('code', 'ilike', '%' . $this->searchTerm . '%')
-                    ->orWhere('name', 'ilike', '%' . $this->searchTerm . '%')
-                    ->orWhere('division_code', 'ilike', '%' . $this->searchTerm . '%');
+            ->when(isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined", function ($query) {
+                $query
+                    ->where(function ($query) {
+                        $query->where('code', 'ilike', '%' . $this->searchTerm . '%')
+                            ->orWhere('name', 'ilike', '%' . $this->searchTerm . '%')
+                            ->orWhere('division_code', 'ilike', '%' . $this->searchTerm . '%');
+                    });
             })
             ->paginate(10);
 

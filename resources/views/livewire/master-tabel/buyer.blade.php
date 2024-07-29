@@ -321,9 +321,6 @@
                 </tr>
             </thead>
             <tbody class="list form-check-all">
-                @php
-                    $no = 1;
-                @endphp
                 @forelse ($buyers as $item)
                     <tr>
                         <td>
