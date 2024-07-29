@@ -25,6 +25,10 @@ use App\Http\Livewire\LpkEntryController;
 use App\Http\Livewire\MasterTabel\BuyerController;
 use App\Http\Livewire\MasterTabel\Department;
 use App\Http\Livewire\MasterTabel\Employee;
+use App\Http\Livewire\MasterTabel\Loss\MenuLossInfureController;
+use App\Http\Livewire\MasterTabel\Loss\MenuLossKatagoriController;
+use App\Http\Livewire\MasterTabel\Loss\MenuLossKlasifikisasiController;
+use App\Http\Livewire\MasterTabel\Loss\MenuLossSeitaiController;
 use App\Http\Livewire\MasterTabel\Machine;
 use App\Http\Livewire\MasterTabel\Produk\JenisProduk;
 use App\Http\Livewire\MasterTabel\Produk\TipeProduk;
@@ -151,6 +155,11 @@ Route::get('/mesin', Machine::class)->name('mesin');
 
 // master table karyawan
 Route::get('/karyawan', Employee::class)->name('karyawan');
+
+Route::get('/menu-loss-infure', MenuLossInfureController::class)->name('menu-loss-infure');
+Route::get('/menu-loss-kategori', MenuLossKatagoriController::class)->name('menu-loss-katagori');
+Route::get('/menu-loss-klasifikasi', MenuLossKlasifikisasiController::class)->name('menu-loss-klasifikisasi');
+Route::get('/menu-loss-seitai', MenuLossSeitaiController::class)->name('menu-loss-seitai');
 
 // Administration
 Route::get('/security-management', SecurityManagementController::class)->name('security-management');
