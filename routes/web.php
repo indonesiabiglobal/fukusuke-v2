@@ -26,6 +26,7 @@ use App\Http\Livewire\MasterTabel\BuyerController;
 use App\Http\Livewire\MasterTabel\Department;
 use App\Http\Livewire\MasterTabel\Produk\JenisProduk;
 use App\Http\Livewire\MasterTabel\Produk\TipeProduk;
+use App\Http\Livewire\MasterTabel\Warehouse;
 use App\Http\Livewire\MasterTabel\WorkingShift;
 use App\Http\Livewire\NippoInfure\EditNippoController;
 use App\Http\Livewire\NippoInfure\LabelGentanController;
@@ -139,6 +140,9 @@ Route::get('/departemen', Department::class)->name('department');
 
 // master table working shift
 Route::get('/working-shift', WorkingShift::class)->name('working-shift');
+
+// master table warehouse
+Route::get('/warehouse', Warehouse::class)->name('warehouse');
 
 
 // Administration
