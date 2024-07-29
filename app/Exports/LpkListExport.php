@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Illuminate\Support\Facades\DB;
@@ -19,41 +20,42 @@ class LpkListExport implements FromCollection, WithHeadings
 
     public function collection()
     {
-        $tglMasuk = '';
+        $tglMasuk = Carbon::now()->startOfDay();
         if (isset($this->tglMasuk) && $this->tglMasuk != '') {
-            $tglMasuk = $this->tglMasuk . " 00:00:00";
+            $tglMasuk = Carbon::createFromFormat('d-m-Y', $this->tglMasuk)->startOfDay();
         }
-        $tglKeluar = '';
+        $tglKeluar = Carbon::now()->startOfDay();
         if (isset($this->tglKeluar) && $this->tglKeluar != '') {
-            $tglKeluar = $this->tglKeluar . " 23:59:59";
+            $tglKeluar = Carbon::createFromFormat('d-m-Y', $this->tglKeluar)->endOfDay();
         }
 
-        return collect(DB::select("
-        select 
+        $data = collect(DB::select("
+        select
                 tolp.id,
                 tolp.created_on AS tglproses,
                 tod.product_code,
                 tolp.lpk_date,
                 tolp.lpk_no,
                 tod.po_no,
-                tolp.seq_no,
+                tolp.product_id,
                 mp.NAME AS product_name,
                 mm.machineno AS machine_no,
                 tolp.qty_lpk,
-                
+
                 tolp.panjang_lpk,
                 tolp.total_assembly_qty,
                 tolp.qty_gulung,
                 tolp.total_assembly_line AS infure,
 
                 tolp.qty_gentan
-            from tdorderlpk as tolp 
-            inner join tdorder as tod on tod.id = tolp.order_id 
-            inner join msproduct as mp on mp.id = tolp.product_id 
-            inner join msmachine as mm on mm.id = tolp.machine_id 
-            inner join msbuyer as mbu on mbu.id = tod.buyer_id 
+            from tdorderlpk as tolp
+            inner join tdorder as tod on tod.id = tolp.order_id
+            left join msproduct as mp on mp.id = tolp.product_id
+            inner join msmachine as mm on mm.id = tolp.machine_id
+            inner join msbuyer as mbu on mbu.id = tod.buyer_id
             where tolp.created_on >= '$tglMasuk' and tolp.created_on <= '$tglKeluar'
         "));
+        return $data;
     }
 
     public function headings(): array

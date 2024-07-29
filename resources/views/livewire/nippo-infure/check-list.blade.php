@@ -6,7 +6,7 @@
 				<label class="control-label col-4 text-muted fw-bold">Tanggal Produksi</label>
 				<div class="col-12 col-lg-8">
 					<select class="form-select mb-0" wire:model.defer="transaksi">
-						<option value="1">Produksi</option>
+						<option value="1" selected>Produksi</option>
 						<option value="2">Order</option>
 					</select>
 				</div>
@@ -19,7 +19,7 @@
 						<span class="input-group-text py-0">
 							<i class="ri-calendar-event-fill fs-4"></i>
 						</span>
-						
+
 						<input wire:model.defer="jamMasuk" type="text" class="form-control" data-provider="timepickr" data-time-hrs="true" id="timepicker-24hrs">
 						<span class="input-group-text py-0">
 							<i class="ri-time-line fs-4"></i>
@@ -49,8 +49,8 @@
 		<div class="form-group mt-1">
 			<div class="input-group">
 				<span class="input-group-addon col-12 col-lg-3 text-muted fw-bold">Jenis Report </span>
-				<select wire:model.defer="jenisReport" class="form-control" placeholder="- pilih jenis report -">
-					<option value="1">Check List</option>
+				<select wire:model="jenisReport" class="form-control" placeholder="- pilih jenis report -">
+					<option value="1" selected>Check List</option>
 					<option value="2">Loss Infure</option>
 				</select>
 			</div>
@@ -120,11 +120,11 @@
 		<hr />
 		<div class="form-group">
 			<div class="input-group">
-				<button type="button" class="btn btn-success btn-print" wire:click="export" style="width:99%">
-					<span wire:loading.remove wire:target="export">
+				<button type="button" class="btn btn-success btn-print" wire:click="printReport" style="width:99%">
+					<span wire:loading.remove wire:target="printReport">
 						<i class="ri-printer-line"></i> Generate Report
 					</span>
-					<div wire:loading wire:target="export">
+					<div wire:loading wire:target="printReport">
 						<span class="d-flex align-items-center">
 							<span class="spinner-border flex-shrink-0" role="status">
 								<span class="visually-hidden">Loading...</span>
@@ -132,7 +132,7 @@
 							<span class="flex-grow-1 ms-1">
 								Loading...
 							</span>
-						</span>                    
+						</span>
 					</div>
 				</button>
 			</div>

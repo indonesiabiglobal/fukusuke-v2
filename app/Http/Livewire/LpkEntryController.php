@@ -29,6 +29,7 @@ class LpkEntryController extends Component
     public $status;
     public $lpk_no;
     public $idProduct;
+    public $checkListLPK = [];
 
     use WithFileUploads, WithoutUrlPagination;
     public $file;
@@ -82,6 +83,13 @@ class LpkEntryController extends Component
             // $this->idBuyer,
             // $this->status,
         ), 'LPKList.xlsx');
+    }
+
+    public function printLPK()
+    {
+        foreach ($this->checkListLPK as $lpk_id) {
+            $this->dispatch('redirectToPrint', $lpk_id);
+        }
     }
 
     public function render()
