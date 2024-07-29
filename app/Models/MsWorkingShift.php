@@ -9,5 +9,7 @@ class MsWorkingShift extends Model
 {
     use HasFactory;
     protected $table = "msworkingshift";
-    protected $fillable = [];
+    protected $guarded = ['id'];
+
+    public $timestamps = false;
 }
