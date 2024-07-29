@@ -103,7 +103,7 @@
     </div>
     <div class="col-lg-12 mt-2">
         <div class="row">
-            <div class="col-12 col-lg-6">
+            <div class="col-12 col-lg-5">
                 <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1">
                     <span wire:loading.remove wire:target="search">
                         <i class="ri-search-line"></i> Filter
@@ -124,7 +124,7 @@
                     <i class="ri-add-line"> </i> Add
                 </button>
             </div>
-            <div class="col-12 col-lg-6">
+            <div class="col-12 col-lg-7">
                 <input type="file" id="fileInput" wire:model="file" style="display: none;">
                 <button class="btn btn-success w-lg p-1" type="button"
                     onclick="document.getElementById('fileInput').click()">
@@ -160,7 +160,7 @@
                 </button>
                 <button class="btn btn-info w-lg p-1" wire:click="print" type="button">
                     <span wire:loading.remove wire:target="print">
-                        <i class="ri-printer-line"> </i> Print
+                        <i class="ri-printer-line"> </i> Export
                     </span>
                     <div wire:loading wire:target="print">
                         <span class="d-flex align-items-center">
