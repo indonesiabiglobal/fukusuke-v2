@@ -96,7 +96,7 @@
 
     <div class="col-lg-12 mt-2">
         <div class="row">
-            <div class="col-12 col-lg-6">
+            <div class="col-12 col-lg-10">
                 <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1">
                     <span wire:loading.remove wire:target="search">
                         <i class="ri-search-line"></i> Filter
@@ -112,7 +112,24 @@
                         </span>                    
                     </div>
                 </button>
-            </div>            
+            </div>
+            <div class="col-lg-2">
+                <button class="btn btn-info w-lg p-1" wire:click="print" type="button">
+                    <span wire:loading.remove wire:target="print">
+                        <i class="ri-printer-line"> </i> Print
+                    </span>
+                    <div wire:loading wire:target="print">
+                        <span class="d-flex align-items-center">
+                            <span class="spinner-border flex-shrink-0" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </span>
+                            <span class="flex-grow-1 ms-1">
+                                Loading...
+                            </span>
+                        </span>
+                    </div>
+                </button>
+            </div>
         </div>
     </div>
     <div class="table-responsive table-card mt-3 mb-1">
@@ -167,3 +184,11 @@
         {{ $data->links() }}
     </div>
 </div>
+@script
+    <script>
+        $wire.on('redirectToPrint', (no_palet) => {
+            var printUrl = '{{ route('report-nippo-infure') }}?no_palet=' + no_palet
+            window.open(printUrl, '_blank');
+        });
+    </script>
+@endscript

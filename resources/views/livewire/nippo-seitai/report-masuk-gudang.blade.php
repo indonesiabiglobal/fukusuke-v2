@@ -6,6 +6,10 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
 </head>
+{{-- @php
+    header("Content-type: application/vnd-ms-excel");
+	header("Content-Disposition: attachment; filename=test.xls");
+@endphp --}}
 <body style="background-color: #CCCCCC;margin: 0">
     <div align="center">
         <table class="bayangprint" cellspacing="0" cellpadding="0" bgcolor="#FFFFFF" border="0" width="730" style="padding:25px">

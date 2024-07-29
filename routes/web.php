@@ -3,6 +3,9 @@
 use App\Http\Livewire\AddLpkController;
 use App\Http\Livewire\NippoInfure\AddNippoController;
 use App\Http\Livewire\AddOrderController;
+use App\Http\Livewire\Administration\AddUserController;
+use App\Http\Livewire\Administration\EditUserController;
+use App\Http\Livewire\Administration\SecurityManagementController;
 use App\Http\Livewire\CetakLpkController;
 use App\Http\Livewire\NippoInfure\CheckListInfureController;
 use App\Http\Livewire\EditLpkController;
@@ -127,10 +130,25 @@ Route::get('/buyer', BuyerController::class)->name('buyer');
 // Tipe Produk
 Route::get('/tipe-produk', TipeProduk::class)->name('tipe-produk');
 
+// Administration
+Route::get('/security-management', SecurityManagementController::class)->name('security-management');
+Route::get('/add-user', AddUserController::class)->name('add-user');
+Route::get('/edit-user', EditUserController::class)->name('edit-user');
+
 Route::get('/report-lpk', function (Request $request) {
     $lpk_id = $request->query('lpk_id');
     return view('livewire.order-lpk.report-lpk', compact('lpk_id'));
 })->name('report-lpk');
+
+Route::get('/report-masuk-gudang', function (Request $request) {
+    $no_palet = $request->query('no_palet');
+    return view('livewire.nippo-seitai.report-masuk-gudang', compact('no_palet'));
+})->name('report-masuk-gudang');
+
+Route::get('/report-nippo-infure', function (Request $request) {
+    $no_palet = $request->query('no_palet');
+    return view('livewire.nippo-infure.report-nippo-infure', compact('no_palet'));
+})->name('report-nippo-infure');
 
 Route::get('/report-gentan', function (Request $request) {
     $lpk_no = $request->query('lpk_no');

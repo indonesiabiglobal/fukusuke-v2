@@ -262,6 +262,19 @@
                         </ul>
                     </div>
                 </li>
+
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="#administration" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="administration">
+                        <i class="ri-admin-line"></i> <span data-key="t-pages">administration</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="administration">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a href="/security-management" class="nav-link" data-key="t-starter"> Security Management </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
             </ul>
         </div>
         <!-- Sidebar -->

@@ -19,28 +19,28 @@ class LabelMasukGudangController extends Component
 
     public function print()
     {
-        $data = collect(DB::select("
-        SELECT
-            tod.processdate,
-            tod.po_no,
-            tod.order_date,
-            mp.code,
-            mp.name,
-            mp.ketebalan||'x'||mp.diameterlipat||'x'||mp.productlength as dimensi,
-            tod.order_qty,
-            tod.stufingdate,
-            tod.etddate,
-            tod.etadate,
-            mbu.name as namabuyer
-        FROM
-            tdorder AS tod
-            INNER JOIN msproduct AS mp ON mp.ID = tod.product_id
-            INNER JOIN msbuyer AS mbu ON mbu.ID = tod.buyer_id 
-        WHERE
-            tod.id = '12766'
-        "))->first();
+        // $data = collect(DB::select("
+        // SELECT
+        //     tod.processdate,
+        //     tod.po_no,
+        //     tod.order_date,
+        //     mp.code,
+        //     mp.name,
+        //     mp.ketebalan||'x'||mp.diameterlipat||'x'||mp.productlength as dimensi,
+        //     tod.order_qty,
+        //     tod.stufingdate,
+        //     tod.etddate,
+        //     tod.etadate,
+        //     mbu.name as namabuyer
+        // FROM
+        //     tdorder AS tod
+        //     INNER JOIN msproduct AS mp ON mp.ID = tod.product_id
+        //     INNER JOIN msbuyer AS mbu ON mbu.ID = tod.buyer_id 
+        // WHERE
+        //     tod.id = '12766'
+        // "))->first();
         
-        $this->emit('redirectToPrint', $data);
+        $this->dispatch('redirectToPrint', $this->nomor_palet);
             
     }
     

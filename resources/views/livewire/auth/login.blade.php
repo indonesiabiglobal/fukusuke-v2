@@ -8,11 +8,18 @@
         <div class="row g-0">
             <div class="col-xl-8 col-lg-6">
                 <div class="h-100 mb-0 p-4 d-flex flex-column justify-content-between">
-                    <div class="d-flex align-items-center">
+                    <div class="d-flex">
                         <div class="flex-grow-1">
-                            <img src="{{ URL::asset('build/images/logo-light-full.png') }}" alt=""
-                                height="32" />
+                            {{-- <img src="{{ URL::asset('build/images/logo-production.png') }}" alt=""
+                                height="32" /> --}}
+                                <h1 class="text-white">Production Control System</h1>
+                                <h5 class="text-white mt-3">Sistem aplikasi monitoring dan <br>
+                                pengendalian produksi, untuk mengatur <br>
+                                output atau hasil produksi yang optimal <br>
+                                dan memperoleh jaminan yang wajar <br>
+                                bahwa spesifikasi akan terpenuhi.</h5>
                         </div>
+                        <img src="{{ URL::asset('build/images/phone.png') }}" alt="" />
                     </div>
 
                     <div class="text-white mt-4">

@@ -48,6 +48,10 @@ class NippoInfureController extends Component
         $this->render();
     }
 
+    public function print(){
+        $this->dispatch('redirectToPrint', 1234);
+    }
+
     public function add()
     {
         return redirect()->route('add-order');

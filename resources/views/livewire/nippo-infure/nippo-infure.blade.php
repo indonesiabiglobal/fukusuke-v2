@@ -193,3 +193,11 @@
         {{ $data->links() }}
     </div>
 </div>
+@script
+    <script>
+        $wire.on('redirectToPrint', (no_palet) => {
+            var printUrl = '{{ route('report-nippo-infure') }}?no_palet=' + no_palet
+            window.open(printUrl, '_blank');
+        });
+    </script>
+@endscript
