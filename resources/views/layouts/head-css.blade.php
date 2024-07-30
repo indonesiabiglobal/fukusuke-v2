@@ -9,3 +9,5 @@
 <link rel="stylesheet" href="{{ URL::asset('build/css/app.min.css') }}" type="text/css" />
 <!-- custom Css-->
 <link rel="stylesheet" href="{{ URL::asset('build/css/custom.min.css') }}" type="text/css" />
+{{-- file upload --}}
+<link href="{{ URL::asset('build/libs/dropzone/dropzone.css') }}" rel="stylesheet">

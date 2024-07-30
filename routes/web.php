@@ -25,6 +25,7 @@ use App\Http\Livewire\LpkEntryController;
 use App\Http\Livewire\MasterTabel\BuyerController;
 use App\Http\Livewire\MasterTabel\Department;
 use App\Http\Livewire\MasterTabel\Employee;
+use App\Http\Livewire\MasterTabel\Katanuki;
 use App\Http\Livewire\MasterTabel\Loss\MenuLossInfureController;
 use App\Http\Livewire\MasterTabel\Loss\MenuLossKatagoriController;
 use App\Http\Livewire\MasterTabel\Loss\MenuLossKlasifikisasiController;
@@ -155,6 +156,9 @@ Route::get('/mesin', Machine::class)->name('mesin');
 
 // master table karyawan
 Route::get('/karyawan', Employee::class)->name('karyawan');
+
+// master table katanuki
+Route::get('/katanukiki', Katanuki::class)->name('katanuki');
 
 Route::get('/menu-loss-infure', MenuLossInfureController::class)->name('menu-loss-infure');
 Route::get('/menu-loss-kategori', MenuLossKatagoriController::class)->name('menu-loss-katagori');
