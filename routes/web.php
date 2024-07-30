@@ -25,6 +25,10 @@ use App\Http\Livewire\LpkEntryController;
 use App\Http\Livewire\MasterTabel\BuyerController;
 use App\Http\Livewire\MasterTabel\Department;
 use App\Http\Livewire\MasterTabel\Employee;
+use App\Http\Livewire\MasterTabel\Kemasan\BoxController;
+use App\Http\Livewire\MasterTabel\Kemasan\GaisoController;
+use App\Http\Livewire\MasterTabel\Kemasan\InnerController;
+use App\Http\Livewire\MasterTabel\Kemasan\LayerController;
 use App\Http\Livewire\MasterTabel\Loss\MenuLossInfureController;
 use App\Http\Livewire\MasterTabel\Loss\MenuLossKatagoriController;
 use App\Http\Livewire\MasterTabel\Loss\MenuLossKlasifikisasiController;
@@ -160,6 +164,11 @@ Route::get('/menu-loss-infure', MenuLossInfureController::class)->name('menu-los
 Route::get('/menu-loss-kategori', MenuLossKatagoriController::class)->name('menu-loss-katagori');
 Route::get('/menu-loss-klasifikasi', MenuLossKlasifikisasiController::class)->name('menu-loss-klasifikisasi');
 Route::get('/menu-loss-seitai', MenuLossSeitaiController::class)->name('menu-loss-seitai');
+
+Route::get('/kemasan-box', BoxController::class)->name('kemasan-box');
+Route::get('/kemasan-gasio', GaisoController::class)->name('kemasan-gasio');
+Route::get('/kemasan-inner', InnerController::class)->name('kemasan-inner');
+Route::get('/kemasan-layer', LayerController::class)->name('kemasan-inner');
 
 // Administration
 Route::get('/security-management', SecurityManagementController::class)->name('security-management');
