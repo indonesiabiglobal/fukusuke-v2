@@ -10,4 +10,5 @@ class MsLossInfure extends Model
     use HasFactory;
     protected $table = "mslossinfure";
     protected $fillable = [];
+    public $timestamps = false;
 }

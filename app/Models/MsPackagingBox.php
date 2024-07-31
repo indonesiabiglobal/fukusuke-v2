@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class MsLossSeitai extends Model
+class MsPackagingBox extends Model
 {
     use HasFactory;
-    protected $table = "mslossseitai";
+    protected $table = "mspackagingbox";
     protected $fillable = [];
     protected $guarded = [];
     public $timestamps = false;

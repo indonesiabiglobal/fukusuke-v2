@@ -291,7 +291,7 @@
                 </tr>
             </thead>
             <tbody class="list form-check-all">
-                {{-- @forelse ($data as $item)
+                @forelse ($result as $item)
                     <tr>
                         <td>
                             <button type="button" class="btn fs-15 p-1 bg-primary rounded" data-bs-toggle="modal"
@@ -303,11 +303,15 @@
                                 <i class="ri-delete-bin-line  text-white"></i>
                             </button>
                         </td>
-                        <td>{{ $item->code }}</td>
                         <td>{{ $item->name }}</td>
-                        <td>{{ $item->address }}</td>
-                        <td>{{ $item->country }}</td>
-                        <td>{{ $item->status == 1 ? 'Active' : 'Non Active' }}</td>
+                        <td>{{ $item->code }}</td>
+                        <td>{{ $item->loss_class_id }}</td>
+                        <td>{{ $item->loss_category_code }}</td>
+                        <td>
+                            {!! $item->status == 1
+                                ? '<span class="badge text-success bg-success-subtle">Active</span>'
+                                : '<span class="badge text-bg-danger">Non Active</span>' !!}
+                        </td>
                         <td>{{ $item->updated_by }}</td>
                         <td>{{ $item->updated_on }}</td>
                     </tr>
@@ -321,10 +325,10 @@
                                 for you search.</p>
                         </td>
                     </tr>
-                @endforelse --}}
+                @endforelse
             </tbody>
         </table>
-        {{-- {{ $buyers->links() }} --}}
+        {{ $result->links() }}
     </div>
 </div>
 

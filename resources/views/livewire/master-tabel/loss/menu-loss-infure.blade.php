@@ -1,7 +1,6 @@
 <div class="row">
     <div class="col-lg-12 mt-2">
         <div class="row">
-
             <div class="col-12 col-lg-6">
                 <button type="button" class="btn btn-success w-lg p-1" wire:click="showModalCreate">
                     <i class="ri-add-line"> </i> Add
@@ -44,16 +43,16 @@
                                         </div>
                                         <div class="col-xxl-12">
                                             <div wire:ignore>
-                                                <label for="name" class="form-label">Klasifikasi Loss</label>
-                                                <select class="form-control @error('loss_class_id') is-invalid @enderror" wire:model.defer="loss_class_id" data-choices data-choices-sorting-false data-choices-removeItem>
+                                                <label for="validationDefault04" class="form-label">Klasifikasi Loss</label>
+                                                <select class="form-control" wire:model.defer="loss_class_id" id="validationDefault04" required data-choices data-choices-sorting-false data-choices-removeItem>
                                                     <option value="">- All -</option>
                                                     @foreach ($class as $item)
                                                         <option value="{{ $item->id }}">{{ $item->name }}</option>
                                                     @endforeach
                                                 </select>
-                                                @error('loss_class_id')
+                                                {{-- @error('loss_class_id')
                                                     <span class="invalid-feedback">{{ $message }}</span>
-                                                @enderror
+                                                @enderror --}}
                                             </div>
                                         </div>
                                         <div class="col-xxl-12">
@@ -117,18 +116,6 @@
                                         {{-- kode buyer --}}
                                         <div class="col-xxl-12">
                                             <div>
-                                                <label for="code" class="form-label">Kode Buyer</label>
-                                                <input type="number"
-                                                    class="form-control @error('code') is-invalid @enderror"
-                                                    id="code" wire:model.defer="code" placeholder="Kode">
-                                                @error('code')
-                                                    <span class="invalid-feedback">{{ $message }}</span>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                        {{-- kode buyer --}}
-                                        <div class="col-xxl-12">
-                                            <div>
                                                 <label for="code" class="form-label">Kode Loss</label>
                                                 <input type="number"
                                                     class="form-control @error('code') is-invalid @enderror"
@@ -138,7 +125,6 @@
                                                 @enderror
                                             </div>
                                         </div>
-                                        {{-- nama buyer --}}
                                         <div class="col-xxl-12">
                                             <div>
                                                 <label for="name" class="form-label">Nama Loss</label>
@@ -156,7 +142,9 @@
                                                 <select class="form-control @error('loss_class_id') is-invalid @enderror" wire:model.defer="loss_class_id" data-choices data-choices-sorting-false data-choices-removeItem>
                                                     <option value="">- All -</option>
                                                     @foreach ($class as $item)
-                                                        <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                                        <option value="{{ $item->id }}" {{ $item->id == $loss_class_id ? 'selected' : '' }}>
+                                                            {{ $item->name }}
+                                                        </option>                      
                                                     @endforeach
                                                 </select>
                                                 @error('loss_class_id')
@@ -256,7 +244,7 @@
             <div class="col-12 col-lg-6">
                 <div class="input-group">
                     <input wire:model.defer="searchTerm" class="form-control"style="padding:0.44rem" type="text"
-                        placeholder="search nama buyer" />
+                        placeholder="pencarian" />
                     <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1">
                         <span wire:loading.remove wire:target="search">
                             <i class="ri-search-line"></i> Filter
@@ -291,7 +279,7 @@
                 </tr>
             </thead>
             <tbody class="list form-check-all">
-                {{-- @forelse ($data as $item)
+                @forelse ($result as $item)
                     <tr>
                         <td>
                             <button type="button" class="btn fs-15 p-1 bg-primary rounded" data-bs-toggle="modal"
@@ -303,11 +291,15 @@
                                 <i class="ri-delete-bin-line  text-white"></i>
                             </button>
                         </td>
-                        <td>{{ $item->code }}</td>
                         <td>{{ $item->name }}</td>
-                        <td>{{ $item->address }}</td>
-                        <td>{{ $item->country }}</td>
-                        <td>{{ $item->status == 1 ? 'Active' : 'Non Active' }}</td>
+                        <td>{{ $item->code }}</td>
+                        <td>{{ $item->loss_class_id }}</td>
+                        <td>{{ $item->loss_category_code }}</td>
+                        <td>
+                            {!! $item->status == 1
+                                ? '<span class="badge text-success bg-success-subtle">Active</span>'
+                                : '<span class="badge text-bg-danger">Non Active</span>' !!}
+                        </td>
                         <td>{{ $item->updated_by }}</td>
                         <td>{{ $item->updated_on }}</td>
                     </tr>
@@ -321,10 +313,10 @@
                                 for you search.</p>
                         </td>
                     </tr>
-                @endforelse --}}
+                @endforelse
             </tbody>
         </table>
-        {{-- {{ $buyers->links() }} --}}
+        {{ $result->links() }}
     </div>
 </div>
 

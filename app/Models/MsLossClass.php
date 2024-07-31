@@ -10,7 +10,8 @@ class MsLossClass extends Model
     use HasFactory;
     protected $table = "mslossclass";
     protected $fillable = [];
-
+    protected $guarded = [];
+    public $timestamps = false;
     // protected $fillable = [
     //     'title',
     //     'content',

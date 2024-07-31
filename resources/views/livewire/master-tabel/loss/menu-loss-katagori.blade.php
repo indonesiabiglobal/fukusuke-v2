@@ -184,7 +184,7 @@
             <div class="col-12 col-lg-6">
                 <div class="input-group">
                     <input wire:model.defer="searchTerm" class="form-control"style="padding:0.44rem" type="text"
-                        placeholder="search nama buyer" />
+                        placeholder="Pencarian" />
                     <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1">
                         <span wire:loading.remove wire:target="search">
                             <i class="ri-search-line"></i> Filter
@@ -215,7 +215,7 @@
                 </tr>
             </thead>
             <tbody class="list form-check-all">
-                {{-- @forelse ($data as $item)
+                @forelse ($result as $item)
                     <tr>
                         <td>
                             <button type="button" class="btn fs-15 p-1 bg-primary rounded" data-bs-toggle="modal"
@@ -229,11 +229,11 @@
                         </td>
                         <td>{{ $item->code }}</td>
                         <td>{{ $item->name }}</td>
-                        <td>{{ $item->address }}</td>
-                        <td>{{ $item->country }}</td>
-                        <td>{{ $item->status == 1 ? 'Active' : 'Non Active' }}</td>
-                        <td>{{ $item->updated_by }}</td>
-                        <td>{{ $item->updated_on }}</td>
+                        <td>
+                            {!! $item->status == 1
+                                ? '<span class="badge text-success bg-success-subtle">Active</span>'
+                                : '<span class="badge text-bg-danger">Non Active</span>' !!}
+                        </td>
                     </tr>
                 @empty
                     <tr>
@@ -245,10 +245,10 @@
                                 for you search.</p>
                         </td>
                     </tr>
-                @endforelse --}}
+                @endforelse
             </tbody>
         </table>
-        {{-- {{ $buyers->links() }} --}}
+        {{ $result->links() }}
     </div>
 </div>
 
