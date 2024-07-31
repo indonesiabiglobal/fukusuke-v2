@@ -154,9 +154,11 @@
                 @forelse ($data as $item)
                     <tr>
                         <td>
-                            <button type="button" class="btn fs-15 p-1 bg-primary rounded" onclick="window.location.href='{{ url('add-master-product') }}'">
-                                <i class="ri-edit-box-line text-white"></i>
-                            </button>
+                            <a href="/edit-master-produk?productId={{ $item->id }}">
+                                <button type="button" class="btn fs-15 p-1 bg-primary rounded">
+                                    <i class="ri-edit-box-line text-white"></i>
+                                </button>
+                            </a>
                             <button type="button" class="btn fs-15 p-1 bg-danger rounded modal-delete"
                                 wire:click="delete({{ $item->id }})">
                                 <i class="ri-delete-bin-line  text-white"></i>

@@ -2,14 +2,14 @@
 
 namespace App\Http\Livewire\MasterTabel\Produk;
 
-use App\Models\MsBuyer;
 use App\Models\MsProduct;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Livewire\Component;
 
-class AddMasterProduk extends Component
+class EditProduk extends Component
 {
     // data master
     public $photoKatanuki;
@@ -37,6 +37,7 @@ class AddMasterProduk extends Component
     public $masterJenisSealSeitai;
 
     // data add produk
+    public $product;
     public $code;
     public $name;
     public $product_type_id;
@@ -107,7 +108,7 @@ class AddMasterProduk extends Component
     public $hagataseitaiid;
     public $jenissealseitaiid;
 
-    public function mount()
+    public function mount(Request $request)
     {
         $this->masterProductType = DB::table('msproduct_type')->get(['id', 'code', 'name']);
         $this->masterMaterial = DB::table('msmaterial')->get(['id', 'code', 'name']);
@@ -131,9 +132,81 @@ class AddMasterProduk extends Component
         $this->masterStampleSeitai = DB::table('msstampleseitai')->get(['id', 'code', 'name']);
         $this->masterHagataSeitai = DB::table('mshagataseitai')->get(['id', 'code', 'name']);
         $this->masterJenisSealSeitai = DB::table('msjenissealseitai')->get(['id', 'code', 'name']);
+
+        $this->product = DB::table('msproduct')->where('id', $request['productId'])->first();
+
+        $this->code = $this->product->code;
+        $this->name = $this->product->name;
+        $this->product_type_id['value'] = $this->product->product_type_id;
+        $this->code_alias = $this->product->code_alias;
+        $this->codebarcode = $this->product->codebarcode;
+        $this->ketebalan = $this->product->ketebalan;
+        $this->diameterlipat = $this->product->diameterlipat;
+        $this->productlength = $this->product->productlength;
+        $this->unit_weight = $this->product->unit_weight;
+        $this->product_unit['value'] = $this->product->product_unit;
+        $this->inflation_thickness = $this->product->inflation_thickness;
+        $this->inflation_fold_diameter = $this->product->inflation_fold_diameter;
+        $this->one_winding_m_number = $this->product->one_winding_m_number;
+        $this->material_classification['value'] = $this->product->material_classification;
+        $this->embossed_classification['value'] = $this->product->embossed_classification;
+        $this->surface_classification['value'] = $this->product->surface_classification;
+        $this->coloring_1 = $this->product->coloring_1;
+        $this->coloring_2 = $this->product->coloring_2;
+        $this->coloring_3 = $this->product->coloring_3;
+        $this->coloring_4 = $this->product->coloring_4;
+        $this->coloring_5 = $this->product->coloring_5;
+        $this->inflation_notes = $this->product->inflation_notes;
+        $this->gentan_classification['value'] = $this->product->gentan_classification;
+        $this->gazette_classification['value'] = $this->product->gazette_classification;
+        $this->gazette_dimension_a = $this->product->gazette_dimension_a;
+        $this->gazette_dimension_b = $this->product->gazette_dimension_b;
+        $this->gazette_dimension_c = $this->product->gazette_dimension_c;
+        $this->gazette_dimension_d = $this->product->gazette_dimension_d;
+        $this->katanuki_id['value'] = $this->product->katanuki_id;
+        $this->extracted_dimension_a = $this->product->extracted_dimension_a;
+        $this->extracted_dimension_b = $this->product->extracted_dimension_b;
+        $this->extracted_dimension_c = $this->product->extracted_dimension_c;
+        $this->number_of_color = $this->product->number_of_color;
+        $this->color_spec_1 = $this->product->color_spec_1;
+        $this->color_spec_2 = $this->product->color_spec_2;
+        $this->color_spec_3 = $this->product->color_spec_3;
+        $this->color_spec_4 = $this->product->color_spec_4;
+        $this->color_spec_5 = $this->product->color_spec_5;
+        $this->back_color_number = $this->product->back_color_number;
+        $this->back_color_1 = $this->product->back_color_1;
+        $this->back_color_2 = $this->product->back_color_2;
+        $this->back_color_3 = $this->product->back_color_3;
+        $this->back_color_4 = $this->product->back_color_4;
+        $this->back_color_5 = $this->product->back_color_5;
+        $this->print_type['value'] = $this->product->print_type;
+        $this->ink_characteristic['value'] = $this->product->ink_characteristic;
+        $this->endless_printing['value'] = $this->product->endless_printing;
+        $this->winding_direction_of_the_web['value'] = $this->product->winding_direction_of_the_web;
+        $this->seal_classification['value'] = $this->product->seal_classification;
+        $this->from_seal_design = $this->product->from_seal_design;
+        $this->lower_sealing_length = $this->product->lower_sealing_length;
+        $this->palet_jumlah_baris = $this->product->palet_jumlah_baris;
+        $this->palet_isi_baris = $this->product->palet_isi_baris;
+        $this->pack_gaiso_id['value'] = $this->product->pack_gaiso_id;
+        $this->pack_box_id['value'] = $this->product->pack_box_id;
+        $this->pack_inner_id['value'] = $this->product->pack_inner_id;
+        $this->pack_layer_id['value'] = $this->product->pack_layer_id;
+        $this->manufacturing_summary = $this->product->manufacturing_summary;
+        $this->case_gaiso_count = $this->product->case_gaiso_count;
+        $this->case_gaiso_count_unit['value'] = $this->product->case_gaiso_count_unit;
+        $this->case_box_count = $this->product->case_box_count;
+        $this->case_box_count_unit['value'] = $this->product->case_box_count_unit;
+        $this->case_inner_count = $this->product->case_inner_count;
+        $this->case_inner_count_unit['value'] = $this->product->case_inner_count_unit;
+        $this->lakbanseitaiid['value'] = $this->product->lakbanseitaiid;
+        $this->lakbaninfureid['value'] = $this->product->lakbaninfureid;
+        $this->stampelseitaiid['value'] = $this->product->stampelseitaiid;
+        $this->hagataseitaiid['value'] = $this->product->hagataseitaiid;
+        $this->jenissealseitaiid['value'] = $this->product->jenissealseitaiid;
     }
 
-    public function store()
+    public function update()
     {
         $validatedData = $this->validate([
             'code' => 'required',
@@ -168,12 +241,14 @@ class AddMasterProduk extends Component
         try {
             DB::beginTransaction();
 
-            $product = new MsProduct();
+            $product = MsProduct::where('id', $this->product->id)->first();
             $product->code = isset($this->code) ? $this->code : null;
             $product->name = isset($this->name) ? $this->name : null;
+
             $productType = DB::table('msproduct_type')->where('id', $this->product_type_id['value'])->first();
             $product->product_type_id = $productType->id;
             $product->product_type_code = $productType->code;
+
             $product->code_alias = isset($this->code_alias) ? $this->code_alias : null;
             $product->codebarcode = isset($this->codebarcode) ? $this->codebarcode : null;
             $product->ketebalan = isset($this->ketebalan)  ? $this->ketebalan : null;
@@ -233,13 +308,13 @@ class AddMasterProduk extends Component
             $product->gazette_dimension_c = isset($this->gazette_dimension_c) ? $this->gazette_dimension_c : null;
             $product->gazette_dimension_d = isset($this->gazette_dimension_d) ? $this->gazette_dimension_d : null;
             $product->katanuki_id = isset($this->katanuki_id) ? $this->katanuki_id['value'] : null;
-            $product->extracted_dimension_a = isset($this->extracted_dimension_a)   ? $this->extracted_dimension_a : null;
-            $product->extracted_dimension_b = isset($this->extracted_dimension_b)   ? $this->extracted_dimension_b : null;
-            $product->extracted_dimension_c = isset($this->extracted_dimension_c)  ? $this->extracted_dimension_c : null;
+            $product->extracted_dimension_a = isset($this->extracted_dimension_a) ? $this->extracted_dimension_a : null;
+            $product->extracted_dimension_b = isset($this->extracted_dimension_b) ? $this->extracted_dimension_b : null;
+            $product->extracted_dimension_c = isset($this->extracted_dimension_c) ? $this->extracted_dimension_c : null;
             $product->number_of_color = isset($this->number_of_color) ? $this->number_of_color : null;
-            $product->color_spec_1 = isset($this->color_spec_1)     ? $this->color_spec_1 : null;
-            $product->color_spec_2 = isset($this->color_spec_2)    ? $this->color_spec_2 : null;
-            $product->color_spec_3 = isset($this->color_spec_3)   ? $this->color_spec_3 : null;
+            $product->color_spec_1 = isset($this->color_spec_1) ? $this->color_spec_1 : null;
+            $product->color_spec_2 = isset($this->color_spec_2) ? $this->color_spec_2 : null;
+            $product->color_spec_3 = isset($this->color_spec_3) ? $this->color_spec_3 : null;
             $product->color_spec_4 = isset($this->color_spec_4) ? $this->color_spec_4 : null;
             $product->color_spec_5 = isset($this->color_spec_5) ? $this->color_spec_5 : null;
             $product->back_color_number = isset($this->back_color_number) ? $this->back_color_number : null;
@@ -282,12 +357,12 @@ class AddMasterProduk extends Component
             $product->from_seal_design = isset($this->from_seal_design) ? $this->from_seal_design : null;
             $product->lower_sealing_length = isset($this->lower_sealing_length) ? $this->lower_sealing_length : null;
             $product->palet_jumlah_baris = isset($this->palet_jumlah_baris) ? $this->palet_jumlah_baris : null;
-            $product->palet_isi_baris = isset($this->palet_isi_baris)   ? $this->palet_isi_baris : null;
+            $product->palet_isi_baris = isset($this->palet_isi_baris) ? $this->palet_isi_baris : null;
             $product->pack_gaiso_id = isset($this->pack_gaiso_id) ? $this->pack_gaiso_id['value'] : null;;
             $product->pack_box_id = isset($this->pack_box_id) ? $this->pack_box_id['value'] : null;
             $product->pack_inner_id = isset($this->pack_inner_id) ? $this->pack_inner_id['value'] : null;;
             $product->pack_layer_id = isset($this->pack_layer_id) ? $this->pack_layer_id['value'] : null;;
-            $product->manufacturing_summary = isset($this->manufacturing_summary)   ? $this->manufacturing_summary : null;
+            $product->manufacturing_summary = isset($this->manufacturing_summary) ? $this->manufacturing_summary : null;
             $product->case_gaiso_count = isset($this->case_gaiso_count) ? $this->case_gaiso_count : null;
             $product->case_gaiso_count_unit = isset($this->case_gaiso_count_unit) ? $this->case_gaiso_count_unit['value'] : null;;
             $product->case_box_count = isset($this->case_box_count) ? $this->case_box_count : null;
@@ -300,19 +375,17 @@ class AddMasterProduk extends Component
             $product->hagataseitaiid = isset($this->hagataseitaiid) ? $this->hagataseitaiid['value'] : null;;
             $product->jenissealseitaiid = isset($this->jenissealseitaiid) ? $this->jenissealseitaiid['value'] : null;;
             $product->status = 1;
-            $product->created_by = auth()->user()->username;
-            $product->created_on = Carbon::now();
             $product->updated_by = auth()->user()->username;
             $product->updated_on = Carbon::now();
             $product->save();
 
             DB::commit();
-            $this->dispatch('notification', ['type' => 'success', 'message' => 'Product created successfully.']);
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Product updated successfully.']);
             return redirect()->route('product');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to save master Product: ' . $e->getMessage());
-            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the Product: ' . $e->getMessage()]);
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to update the Product: ' . $e->getMessage()]);
         }
     }
 
@@ -327,6 +400,6 @@ class AddMasterProduk extends Component
             $katanuki_id = is_array($this->katanuki_id) ? $this->katanuki_id['value'] : $this->katanuki_id;
             $this->photoKatanuki = DB::table('mskatanuki')->where('id', $katanuki_id)->first()->filename;
         }
-        return view('livewire.master-tabel.Produk.add-master-produk')->extends('layouts.master');
+        return view('livewire.master-tabel.produk.edit-produk')->extends('layouts.master');
     }
 }
