@@ -1,0 +1,62 @@
+<?php
+
+namespace App\Http\Livewire\MasterTabel\Produk;
+
+use App\Models\MsProduct;
+use Illuminate\Support\Facades\DB;
+use Livewire\Component;
+use Livewire\WithPagination;
+use Livewire\WithoutUrlPagination;
+
+class MasterProduk extends Component
+{
+    use WithPagination, WithoutUrlPagination;
+    protected $paginationTheme = 'bootstrap';
+    public $products;
+    public $searchTerm;
+    public $product_type_id;
+
+    public function search()
+    {
+        $this->resetPage();
+        $this->render();
+    }
+
+    public function render()
+    {
+        $data = DB::table('msproduct as msp')
+        ->leftJoin('msproduct_type as mspt', 'msp.product_type_id', '=', 'mspt.id')
+        ->leftJoin('mskatanuki as msk', 'msp.katanuki_id', '=', 'msk.id')
+        ->select(
+            'msp.id',
+            'msp.code as product_code',
+            'msp.name as product_name',
+            'msp.product_type_id',
+            'mspt.name as product_type_name',
+            DB::raw('msp.ketebalan || \'x\' || msp.diameterlipat || \'x\' || msp.productlength as dimensi'),
+            'msp.unit_weight',
+            'msk.code as katanuki_code',
+            'msp.number_of_color',
+            'msp.back_color_number',
+            'msp.status',
+            'msp.updated_by',
+            'msp.updated_on'
+        )
+        ->when(isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined", function ($query) {
+            $query->where(function ($query) {
+                $query
+                    ->where('mse.employeeno', 'ilike', "%" . $this->searchTerm . "%")
+                    ->orWhere('mse.empname', 'ilike', "%" . $this->searchTerm . "%")
+                    ->orWhere('msd.name', 'ilike', "%" . $this->searchTerm . "%");
+            });
+        })
+        ->when(isset($this->product_type_id) && $this->product_type_id != "" && $this->product_type_id != "undefined", function ($query) {
+            $query->where('msp.product_type_id', $this->product_type_id);
+        })
+        ->paginate(10);
+
+        return view('livewire.master-tabel.produk.master-produk', [
+            'data' => $data
+        ])->extends('layouts.master');
+    }
+}

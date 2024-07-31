@@ -31,7 +31,9 @@ use App\Http\Livewire\MasterTabel\Loss\MenuLossKatagoriController;
 use App\Http\Livewire\MasterTabel\Loss\MenuLossKlasifikisasiController;
 use App\Http\Livewire\MasterTabel\Loss\MenuLossSeitaiController;
 use App\Http\Livewire\MasterTabel\Machine;
+use App\Http\Livewire\MasterTabel\Produk\AddMasterProduk;
 use App\Http\Livewire\MasterTabel\Produk\JenisProduk;
+use App\Http\Livewire\MasterTabel\Produk\MasterProduk;
 use App\Http\Livewire\MasterTabel\Produk\TipeProduk;
 use App\Http\Livewire\MasterTabel\Warehouse;
 use App\Http\Livewire\MasterTabel\WorkingShift;
@@ -159,6 +161,10 @@ Route::get('/karyawan', Employee::class)->name('karyawan');
 
 // master table katanuki
 Route::get('/katanukiki', Katanuki::class)->name('katanuki');
+
+// master table produk
+Route::get('/master-produk', MasterProduk::class)->name('produk');
+Route::get('/add-master-produk', AddMasterProduk::class)->name('add-master-produk');
 
 Route::get('/menu-loss-infure', MenuLossInfureController::class)->name('menu-loss-infure');
 Route::get('/menu-loss-kategori', MenuLossKatagoriController::class)->name('menu-loss-katagori');
