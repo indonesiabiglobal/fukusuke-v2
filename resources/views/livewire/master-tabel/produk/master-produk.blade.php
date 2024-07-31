@@ -47,7 +47,7 @@
                     </div>
                 </button>
                 {{-- Button Add product --}}
-                <button type="button" class="btn btn-success w-lg p-1" onclick="window.location.href='{{ route('add-master-produk') }}'">
+                <button type="button" class="btn btn-success w-lg p-1" onclick="window.location.href='{{ route('add-master-product') }}'">
                     <i class="ri-add-line"> </i> Add
                 </button>
 
@@ -154,7 +154,7 @@
                 @forelse ($data as $item)
                     <tr>
                         <td>
-                            <button type="button" class="btn fs-15 p-1 bg-primary rounded" wire:click="edit({{ $item->id }})">
+                            <button type="button" class="btn fs-15 p-1 bg-primary rounded" onclick="window.location.href='{{ url('add-master-product') }}'">
                                 <i class="ri-edit-box-line text-white"></i>
                             </button>
                             <button type="button" class="btn fs-15 p-1 bg-danger rounded modal-delete"
@@ -200,28 +200,10 @@
 
 @script
     <script>
-        $wire.on('showModalCreate', () => {
-            $('#modal-add').modal('show');
-        });
-        // close modal create product
-        $wire.on('closeModalCreate', () => {
-            $('#modal-add').modal('hide');
-        });
-
-        // show modal update product
-        $wire.on('showModalUpdate', () => {
-            $('#modal-edit').modal('show');
-        });
-        // close modal update product
-        $wire.on('closeModalUpdate', () => {
-            $('#modal-edit').modal('hide');
-        });
-
         // show modal delete product
         $wire.on('showModalDelete', () => {
             $('#modal-delete').modal('show');
         });
-
         // close modal delete product
         $wire.on('closeModalDelete', () => {
             $('#modal-delete').modal('hide');

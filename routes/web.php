@@ -167,8 +167,9 @@ Route::get('/karyawan', Employee::class)->name('karyawan');
 Route::get('/katanukiki', Katanuki::class)->name('katanuki');
 
 // master table produk
-Route::get('/master-produk', MasterProduk::class)->name('produk');
-Route::get('/add-master-produk', AddMasterProduk::class)->name('add-master-produk');
+Route::get('/master-produk', MasterProduk::class)->name('product');
+Route::get('/add-master-produk', AddMasterProduk::class)->name('add-master-product');
+Route::get('/edit-master-produk', AddMasterProduk::class)->name('edit-master-product');
 
 Route::get('/menu-loss-infure', MenuLossInfureController::class)->name('menu-loss-infure');
 Route::get('/menu-loss-kategori', MenuLossKatagoriController::class)->name('menu-loss-katagori');

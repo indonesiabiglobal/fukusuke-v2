@@ -3,7 +3,10 @@
 namespace App\Http\Livewire\MasterTabel\Produk;
 
 use App\Models\MsProduct;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
@@ -15,11 +18,40 @@ class MasterProduk extends Component
     public $products;
     public $searchTerm;
     public $product_type_id;
+    public $idUpdate;
+    public $idDelete;
 
     public function search()
     {
         $this->resetPage();
         $this->render();
+    }
+
+    public function delete($id)
+    {
+        $this->idDelete = $id;
+        $this->dispatch('showModalDelete');
+    }
+
+    public function destroy()
+    {
+        DB::beginTransaction();
+        try {
+            $statusInactive = 0;
+            MsProduct::where('id', $this->idDelete)->update([
+                'status' => $statusInactive,
+                'updated_by' => Auth::user()->username,
+                'updated_on' => Carbon::now()
+            ]);
+            DB::commit();
+            $this->dispatch('closeModalDelete');
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Buyer deleted successfully.']);
+            $this->search();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Failed to delete master buyer: ' . $e->getMessage());
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to delete the buyer: ' . $e->getMessage()]);
+        }
     }
 
     public function render()
@@ -45,9 +77,8 @@ class MasterProduk extends Component
         ->when(isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined", function ($query) {
             $query->where(function ($query) {
                 $query
-                    ->where('mse.employeeno', 'ilike', "%" . $this->searchTerm . "%")
-                    ->orWhere('mse.empname', 'ilike', "%" . $this->searchTerm . "%")
-                    ->orWhere('msd.name', 'ilike', "%" . $this->searchTerm . "%");
+                    ->where('msp.name', 'ilike', "%" . $this->searchTerm . "%")
+                    ->orWhere('msp.code', 'ilike', "%" . $this->searchTerm . "%");
             });
         })
         ->when(isset($this->product_type_id) && $this->product_type_id != "" && $this->product_type_id != "undefined", function ($query) {
