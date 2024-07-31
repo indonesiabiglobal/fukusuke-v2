@@ -154,7 +154,6 @@ class BoxController extends Component
         $this->render();
     }
 
-
     public function render()
     {
         $result = MsPackagingBox::where('status', 1);

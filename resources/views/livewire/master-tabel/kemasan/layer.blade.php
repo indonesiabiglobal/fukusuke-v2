@@ -42,12 +42,12 @@
                                         <div class="col-xxl-12">
                                             <div wire:ignore>
                                                 <label for="name" class="form-label">Klasifikasi</label>
-                                                <select class="form-control @error('loss_class_id') is-invalid @enderror" wire:model.defer="loss_class_id" data-choices data-choices-sorting-false data-choices-removeItem>
+                                                <select class="form-control @error('box_class') is-invalid @enderror" wire:model.defer="box_class" data-choices data-choices-sorting-false data-choices-removeItem>
                                                     <option value="">- All -</option>
                                                     <option value="1">Khusus</option>
                                                     <option value="2">Standar</option>
                                                 </select>
-                                                @error('loss_class_id')
+                                                @error('box_class')
                                                     <span class="invalid-feedback">{{ $message }}</span>
                                                 @enderror
                                             </div>
@@ -163,12 +163,12 @@
                                         <div class="col-xxl-12">
                                             <div wire:ignore>
                                                 <label for="name" class="form-label">Klasifikasi</label>
-                                                <select class="form-control @error('loss_class_id') is-invalid @enderror" wire:model.defer="loss_class_id" data-choices data-choices-sorting-false data-choices-removeItem>
+                                                <select class="form-control @error('box_class') is-invalid @enderror" wire:model.defer="box_class" data-choices data-choices-sorting-false data-choices-removeItem>
                                                     <option value="">- All -</option>
                                                     <option value="1">Khusus</option>
                                                     <option value="2">Standar</option>
                                                 </select>
-                                                @error('loss_class_id')
+                                                @error('box_class')
                                                     <span class="invalid-feedback">{{ $message }}</span>
                                                 @enderror
                                             </div>
@@ -328,7 +328,7 @@
                 </tr>
             </thead>
             <tbody class="list form-check-all">
-                {{-- @forelse ($data as $item)
+                @forelse ($result as $item)
                     <tr>
                         <td>
                             <button type="button" class="btn fs-15 p-1 bg-primary rounded" data-bs-toggle="modal"
@@ -340,11 +340,17 @@
                                 <i class="ri-delete-bin-line text-white"></i>
                             </button>
                         </td>
-                        <td>{{ $item->code }}</td>
+                        <td>{{ $item->box_class }}</td>
                         <td>{{ $item->name }}</td>
-                        <td>{{ $item->address }}</td>
-                        <td>{{ $item->country }}</td>
-                        <td>{{ $item->status == 1 ? 'Active' : 'Non Active' }}</td>
+                        <td>{{ $item->code }}</td>
+                        <td>{{ $item->panjang }}</td>
+                        <td>{{ $item->lebar }}</td>
+                        <td>{{ $item->tinggi }}</td>
+                        <td>
+                            {!! $item->status == 1
+                                ? '<span class="badge text-success bg-success-subtle">Active</span>'
+                                : '<span class="badge text-bg-danger">Non Active</span>' !!}
+                        </td>
                         <td>{{ $item->updated_by }}</td>
                         <td>{{ $item->updated_on }}</td>
                     </tr>
@@ -358,10 +364,10 @@
                                 for you search.</p>
                         </td>
                     </tr>
-                @endforelse --}}
+                @endforelse
             </tbody>
         </table>
-        {{-- {{ $buyers->links() }} --}}
+        {{ $result->links() }}
     </div>
 </div>
 
