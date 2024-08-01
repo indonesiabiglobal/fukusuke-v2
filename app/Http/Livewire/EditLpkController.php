@@ -196,7 +196,7 @@ class EditLpkController extends Component
 
 
             if($tdorder == null){
-                $this->dispatchBrowserEvent('notification', ['type' => 'warning', 'message' => 'Nomor PO ' . $this->po_no . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor PO ' . $this->po_no . ' Tidak Terdaftar']);
             } else {
                 $this->no_order = $tdorder->product_code;
                 $this->processdate = $tdorder->processdate;
@@ -212,7 +212,7 @@ class EditLpkController extends Component
         if(isset($this->machineno) && $this->machineno != ''){
             $machine=MsMachine::where('machineno', $this->machineno)->first();
             if($machine == null){
-                $this->dispatchBrowserEvent('notification', ['type' => 'warning', 'message' => 'Mesin ' . $this->machineno . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Mesin ' . $this->machineno . ' Tidak Terdaftar']);
             } else {
                 $this->machinename = $machine->machinename;
             }
