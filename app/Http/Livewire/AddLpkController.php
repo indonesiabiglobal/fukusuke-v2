@@ -59,7 +59,7 @@ class AddLpkController extends Component
             $lastNoLPK = $lastNoLPK[1] + 1;
             $this->lpk_no = $today->format('ymd').'-'.str_pad($lastNoLPK, 3, '0', STR_PAD_LEFT);
         } else {
-            $this->lpk_no = $today->format('ymd').'-000';
+            $this->lpk_no = $today->format('ymd').'-001';
         }
         $this->total_assembly_line = 0;
         $this->productlength=1;
