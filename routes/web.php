@@ -76,7 +76,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/login', \App\Http\Livewire\Auth\Login::class)->name('login');
 Route::get('/register', \App\Http\Livewire\Auth\Register::class)->name('register');
 Route::get('/forget-password', \App\Http\Livewire\Auth\ForgetPassword::class)->name('password.reset');
-Route::get('/new-password/{email?}/{token?}', \App\Http\Livewire\Auth\NewPassword::class);
+Route::get('/new-password', \App\Http\Livewire\Auth\NewPassword::class);
 Route::get('/logout', [App\Http\Controllers\HomeController::class, 'logout']);
 Route::get('index/{locale}', [App\Http\Controllers\HomeController::class, 'lang']);
 
