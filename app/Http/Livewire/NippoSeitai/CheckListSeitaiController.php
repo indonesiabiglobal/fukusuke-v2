@@ -24,14 +24,14 @@ class CheckListSeitaiController extends Component
     {
         $this->tglMasuk = Carbon::now()->format('Y-m-d');
         $this->tglKeluar = Carbon::now()->format('Y-m-d');
-        $this->machine = MsMachine::get();
-        $this->department = MsDepartment::get();    
+        $this->machine = MsMachine::where('machineno',  'LIKE', '00S%')->get();
+        $this->department = MsDepartment::where('division_code', 20)->get();
     }
 
     public function export()
     {
         return Excel::download(new SeitaiExport(
-            $this->tglMasuk, 
+            $this->tglMasuk,
             $this->tglKeluar,
         ), 'checklist-infure.xlsx');
     }
