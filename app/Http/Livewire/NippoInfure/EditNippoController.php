@@ -222,7 +222,7 @@ class EditNippoController extends Component
         
         $datas->save();
 
-        // $this->emit('closeModal');
+        $this->dispatch('closeModal');
     }
 
     public function deleteInfure($orderId)

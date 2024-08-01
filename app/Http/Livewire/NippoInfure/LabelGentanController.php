@@ -19,33 +19,7 @@ class LabelGentanController extends Component
 
     public function print()
     {
-        $data = collect(DB::select("
-        SELECT
-            tdol.lpk_no,
-            msp.name,
-            msp.code,
-            msp.product_type_code,
-            to_char(tdpa.production_date, 'YYYY-MM-DD') AS production_date,
-            tdpa.work_hour,
-            tdpa.work_shift,
-            msm.machineno,
-            tdpa.berat_produksi,
-            tdpa.panjang_produksi,
-            tdpa.nomor_han,
-            mse.nik,
-            mse.empname
-        FROM
-            tdproduct_assembly AS tdpa
-            INNER JOIN tdorderlpk AS tdol ON tdpa.lpk_id = tdol.ID
-            INNER JOIN msproduct as msp on msp.id = tdol.product_id
-            LEFT JOIN msworkingshift as msw on msw.id = tdpa.work_shift
-            INNER JOIN msmachine as msm on msm.id = tdpa.machine_id
-            INNER JOIN msemployee as mse on mse.id = tdpa.employee_id
-        WHERE
-            tdol.lpk_no = '$this->lpk_no'
-        "))->first();
-
-        $this->emit('redirectToPrint', $data);
+        $this->dispatch('redirectToPrint', $this->lpk_no);
     }
 
     public function render()
@@ -67,7 +41,7 @@ class LabelGentanController extends Component
             ->where('lpk_no', $this->lpk_no)
             ->first();
             if($data == null){
-                $this->dispatchBrowserEvent('notification', ['type' => 'warning', 'message' => 'Nomor LPK ' . $this->lpk_no . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor LPK ' . $this->lpk_no . ' Tidak Terdaftar']);
             } else {
                 $this->lpk_no = $data->lpk_no;
                 $this->code = $data->code;
