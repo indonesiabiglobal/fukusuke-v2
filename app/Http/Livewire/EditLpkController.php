@@ -173,6 +173,12 @@ class EditLpkController extends Component
         return redirect()->route('lpk-entry');
     }
 
+    public function print()
+    {
+        $lpk_id= $this->orderId;
+        $this->dispatch('redirectToPrint', $lpk_id);
+    }
+
     public function render()
     {
         if(isset($this->po_no) && $this->po_no != ''){
@@ -217,13 +223,13 @@ class EditLpkController extends Component
                 $this->machinename = $machine->machinename;
             }
         }
-        if(isset($this->qty_lpk) && isset($this->productlength)){
+        // if(isset($this->qty_lpk) && isset($this->productlength)){
             $this->total_assembly_line = $this->qty_lpk * $this->productlength;
             $this->qty_gentan = $this->productlength / $this->defaultgulung;
             $this->qty_gulung = $this->productlength * $this->qty_gentan;
             $this->panjang_lpk = $this->qty_gentan * $this->qty_gulung;
             $this->selisihkurang = $this->productlength - $this->panjang_lpk;
-        }
+        // }
 
         return view('livewire.order-lpk.edit-lpk')->extends('layouts.master');
     }

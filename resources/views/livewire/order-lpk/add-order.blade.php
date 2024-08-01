@@ -148,9 +148,6 @@
 							</span>
 						</div>
 					</button>
-					<button type="button" class="btn btn-success btn-print w-lg" wire:click="print">
-						<i class="bx bx-printer"></i> Print
-					</button>
 				</div>
 			</div>
 			<!--  Extra Large modal example -->
