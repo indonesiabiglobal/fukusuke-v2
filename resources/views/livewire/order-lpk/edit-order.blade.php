@@ -172,25 +172,6 @@
 					@if ($status_order == 1)
 						<p class="text-secondary mb-0">Data sudah di LPK ! ..</p>
 					@endif
-					
-					{{-- <script>
-						document.addEventListener('livewire:load', function () {
-							Livewire.on('redirectToPrint', function (data) {
-								var printUrl = '{{ route('cetak-order') }}?processdate=' +  data.processdate + 
-								'&po_no=' + data.po_no +
-								'&order_date=' + data.order_date +
-								'&code=' + data.code +
-								'&name=' + data.name +
-								'&dimensi=' + data.dimensi +
-								'&order_qty=' + data.order_qty +
-								'&stufingdate=' + data.stufingdate +
-								'&etddate=' + data.etddate +
-								'&etadate=' + data.etadate +
-								'&namabuyer=' + data.namabuyer;
-								window.open(printUrl, '_blank');
-							});
-						});
-					</script> --}}
 				</div>
 			</div>
 			<!--  Extra Large modal example -->
@@ -913,3 +894,37 @@
 	</div>
 	<div class="col-lg-2"></div>
 </div>
+@script
+	<script>
+		// document.addEventListener('livewire:load', function () {
+		// 	Livewire.on('redirectToPrint', function (lpk_id) {
+		// 		// var dt=data;
+		// 		var printUrl = '{{ route('report-lpk') }}?lpk_id=' +  lpk_id
+		// 		window.open(printUrl, '_blank');
+		// 	});
+		// });
+
+		$wire.on('redirectToPrint', (orderId) => {
+			var printUrl = '{{ route('cetak-order') }}?orderId=' +  orderId;
+			window.open(printUrl, '_blank');
+		});
+	</script>
+@endscript
+{{-- <script>
+	document.addEventListener('livewire:load', function () {
+		Livewire.on('redirectToPrint', function (data) {
+			var printUrl = '{{ route('cetak-order') }}?processdate=' +  data.processdate + 
+			'&po_no=' + data.po_no +
+			'&order_date=' + data.order_date +
+			'&code=' + data.code +
+			'&name=' + data.name +
+			'&dimensi=' + data.dimensi +
+			'&order_qty=' + data.order_qty +
+			'&stufingdate=' + data.stufingdate +
+			'&etddate=' + data.etddate +
+			'&etadate=' + data.etadate +
+			'&namabuyer=' + data.namabuyer;
+			window.open(printUrl, '_blank');
+		});
+	});
+</script> --}}
