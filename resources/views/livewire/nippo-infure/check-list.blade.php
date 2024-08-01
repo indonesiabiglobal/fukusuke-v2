@@ -120,11 +120,11 @@
 		<hr />
 		<div class="form-group">
 			<div class="input-group">
-				<button type="button" class="btn btn-success btn-print" wire:click="printReport" style="width:99%">
-					<span wire:loading.remove wire:target="printReport">
+				<button type="button" class="btn btn-success btn-print" wire:click="export" style="width:99%">
+					<span wire:loading.remove wire:target="export">
 						<i class="ri-printer-line"></i> Generate Report
 					</span>
-					<div wire:loading wire:target="printReport">
+					<div wire:loading wire:target="export">
 						<span class="d-flex align-items-center">
 							<span class="spinner-border flex-shrink-0" role="status">
 								<span class="visually-hidden">Loading...</span>
