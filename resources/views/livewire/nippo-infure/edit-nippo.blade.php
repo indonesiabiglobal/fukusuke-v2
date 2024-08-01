@@ -305,7 +305,7 @@
                             </span>
                         </div>
                     </button>
-                    <button type="button" class="btn btn-success btn-print">
+                    <button type="button" class="btn btn-success btn-print" wire:click="print">
                         <i class="bx bx-printer"></i> Print
                     </button>
                 </div>
@@ -417,16 +417,6 @@
         </div>
     </form>
 </div>
-{{-- <script>
-    document.addEventListener('livewire:load', function () {
-        Livewire.on('showModal', () => {
-            $('#modal-add').modal('show');
-        });
-        Livewire.on('closeModal', () => {
-            $('#modal-add').modal('hide');
-        });
-    });
-</script> --}}
 @script
     <script>
         $wire.on('showModal', () => {
@@ -436,5 +426,10 @@
         $wire.on('closeModal', () => {
             $('#modal-add').modal('hide');
         });
+
+        $wire.on('redirectToPrint', (lpk_no) => {
+			var printUrl = '{{ route('report-gentan') }}?lpk_no=' + lpk_no
+			window.open(printUrl, '_blank');
+		});
     </script>
 @endscript

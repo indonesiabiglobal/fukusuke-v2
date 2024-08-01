@@ -207,7 +207,7 @@ class EditNippoController extends Component
         ]);
 
         if ($validatedData) {
-            $this->emit('showModal');
+            $this->dispatch('showModal');
         }
     }
 
@@ -236,6 +236,11 @@ class EditNippoController extends Component
     public function cancel()
     {
         return redirect()->route('nippo-infure');
+    }
+
+    public function print()
+    {
+        $this->dispatch('redirectToPrint', $this->lpk_no);
     }
 
     public function render()
