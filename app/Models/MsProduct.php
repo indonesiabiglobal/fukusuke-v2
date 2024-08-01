@@ -9,7 +9,9 @@ class MsProduct extends Model
 {
     use HasFactory;
     protected $table = "msproduct";
-    protected $fillable = [];
+    protected $guarded = ['id'];
+
+    public $timestamps = false;
 
     // protected $fillable = [
     //     'title',

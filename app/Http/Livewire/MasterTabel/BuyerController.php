@@ -31,8 +31,7 @@ class BuyerController extends Component
 
     public function mount()
     {
-        $this->buyers = MsBuyer::where('status', 1)
-        ->get(['id', 'code', 'name', 'address', 'country', 'status', 'updated_by', 'updated_on']);
+        $this->buyers = MsBuyer::get(['id', 'code', 'name', 'address', 'country', 'status', 'updated_by', 'updated_on']);
     }
 
     public function resetFields()
@@ -160,7 +159,6 @@ class BuyerController extends Component
                         ->orWhere('country', 'ilike', "%" . $this->searchTerm . "%");
                 });
             })
-            ->where('status', 1)
             ->get();
         $this->render();
     }
