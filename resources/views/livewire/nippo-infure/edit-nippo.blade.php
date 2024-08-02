@@ -41,7 +41,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Nomor LPK</label>
-                                <input type="text" class="form-control" wire:model.debounce.300ms="lpk_no" />
+                                <input type="text" class="form-control" wire:model.live.debounce.300ms="lpk_no" />
                                 @error('lpk_no')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -71,7 +71,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Nomor Order</label>
-                                <input type="text" placeholder="-" class="form-control readonly" readonly="readonly" wire:model="code" />
+                                <input type="text" placeholder="-" class="form-control readonly" readonly="readonly" wire:model="code" disabled="disabled"/>
                             </div>
                         </div>
                     </div>
@@ -87,7 +87,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Nomor Mesin</label>
-                                <input type="text" placeholder=" ... " class="form-control"  wire:model.debounce.300ms="machineno" />
+                                <input type="text" placeholder=" ... " class="form-control"  wire:model.live.debounce.300ms="machineno" />
                                 @error('machineno')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -106,7 +106,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Petugas</label>
-                                <input type="text" placeholder=" ... " class="form-control" wire:model="employeeno" />
+                                <input type="text" placeholder=" ... " class="form-control" wire:model.live="employeeno" />
                                 @error('employeeno')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -244,7 +244,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Nomor Barcode</label>
-                                <input type="text" class="form-control" wire:model.debounce.300ms="nomor_barcode" />
+                                <input type="text" class="form-control" wire:model.live.debounce.300ms="nomor_barcode" />
                                 @error('nomor_barcode')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -273,16 +273,40 @@
                     <i class="ri-add-line"></i> Add Loss Infure
                 </button>
             </div>
-            <div class="col-lg-4" style="border-top:1px solid #efefef">
+            <div class="col-lg-4">
                 <div class="toolbar">
-                    <button id="btnFilter" type="button" class="btn btn-warning" wire:click="cancel">
-                        <i class="fa fa-back"></i> Close
+                    <button type="button" class="btn btn-warning" wire:click="cancel">
+                        <span wire:loading.remove wire:target="cancel">
+                            <i class="ri-close-line"> </i> Close
+                        </span>
+                        <div wire:loading wire:target="cancel">
+                            <span class="d-flex align-items-center">
+                                <span class="spinner-border flex-shrink-0" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </span>
+                                <span class="flex-grow-1 ms-1">
+                                    Loading...
+                                </span>
+                            </span>
+                        </div>
                     </button>
-                    <button id="btnCreate" type="submit" class="btn btn-success">
-                        <i class="fa fa-plus"></i> Save
+                    <button type="submit" class="btn btn-success">
+                        <span wire:loading.remove wire:target="save">
+                            <i class="ri-save-3-line"></i> Save
+                        </span>
+                        <div wire:loading wire:target="save">
+                            <span class="d-flex align-items-center">
+                                <span class="spinner-border flex-shrink-0" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </span>
+                                <span class="flex-grow-1 ms-1">
+                                    Loading...
+                                </span>
+                            </span>
+                        </div>
                     </button>
-                    <button type="button" class="btn btn-success btn-print" disabled="disabled">
-                        <i class="fa fa-print"></i> Print
+                    <button type="button" class="btn btn-success btn-print" wire:click="print">
+                        <i class="bx bx-printer"></i> Print
                     </button>
                 </div>
             </div>
@@ -345,7 +369,7 @@
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-centered table-nowrap mb-0 rounded">
-                        <thead class="thead-light">
+                        <thead class="table-light">
                             <tr>
                                 <th class="border-0 rounded-start">Action</th>
                                 <th class="border-0">Kode</th>
@@ -393,13 +417,19 @@
         </div>
     </form>
 </div>
-<script>
-    document.addEventListener('livewire:load', function () {
-        Livewire.on('showModal', () => {
+@script
+    <script>
+        $wire.on('showModal', () => {
             $('#modal-add').modal('show');
         });
-        Livewire.on('closeModal', () => {
+        // close modal create buyer
+        $wire.on('closeModal', () => {
             $('#modal-add').modal('hide');
         });
-    });
-</script>
+
+        $wire.on('redirectToPrint', (lpk_no) => {
+			var printUrl = '{{ route('report-gentan') }}?lpk_no=' + lpk_no
+			window.open(printUrl, '_blank');
+		});
+    </script>
+@endscript

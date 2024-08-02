@@ -113,11 +113,11 @@
 				<div class="col-12 col-lg-9">
 					<div wire:ignore>
 						<select class="form-control col-12 col-lg-3 @error('buyer_id') is-invalid @enderror" wire:model="buyer_id" placeholder="" data-choices data-choices-sorting-false data-choices-removeItem>						
-							{{-- @foreach ($buyer as $item)
-							<option value="{{ $item->id }}" {{ $item->id == $buyer_id['value'] ? 'selected' : '' }}>
-								{{ $item->name }}
-							</option>                      
-							@endforeach --}}
+							@foreach ($buyer as $item)
+								<option value="{{ $item->id }}" {{ $item->id == $buyer_id['value'] ? 'selected' : '' }}>
+									{{ $item->name }}
+								</option>
+							@endforeach
 						</select>
 						@error('buyer_id')
 							<span class="invalid-feedback">{{ $message }}</span>
@@ -172,25 +172,6 @@
 					@if ($status_order == 1)
 						<p class="text-secondary mb-0">Data sudah di LPK ! ..</p>
 					@endif
-					
-					{{-- <script>
-						document.addEventListener('livewire:load', function () {
-							Livewire.on('redirectToPrint', function (data) {
-								var printUrl = '{{ route('cetak-order') }}?processdate=' +  data.processdate + 
-								'&po_no=' + data.po_no +
-								'&order_date=' + data.order_date +
-								'&code=' + data.code +
-								'&name=' + data.name +
-								'&dimensi=' + data.dimensi +
-								'&order_qty=' + data.order_qty +
-								'&stufingdate=' + data.stufingdate +
-								'&etddate=' + data.etddate +
-								'&etadate=' + data.etadate +
-								'&namabuyer=' + data.namabuyer;
-								window.open(printUrl, '_blank');
-							});
-						});
-					</script> --}}
 				</div>
 			</div>
 			<!--  Extra Large modal example -->
@@ -913,3 +894,11 @@
 	</div>
 	<div class="col-lg-2"></div>
 </div>
+@script
+	<script>
+		$wire.on('redirectToPrint', (orderId) => {
+			var printUrl = '{{ route('cetak-order') }}?orderId=' +  orderId;
+			window.open(printUrl, '_blank');
+		});
+	</script>
+@endscript

@@ -214,10 +214,18 @@
                     </div>
                 </button>
 
-                <button type="button" class="btn btn-success btn-print" disabled="disabled">
+                <button type="button" class="btn btn-success btn-print" wire:click="print">
                     <i class="bx bx-printer"></i> Print
                 </button>
             </div>
         </div>
     </form>        
 </div>
+@script
+    <script>
+        $wire.on('redirectToPrint', (lpk_id) => {
+            var printUrl = '{{ route('report-lpk') }}?lpk_id=' + lpk_id
+            window.open(printUrl, '_blank');
+        });
+    </script>
+@endscript

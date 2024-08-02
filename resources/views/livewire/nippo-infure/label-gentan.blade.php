@@ -76,22 +76,11 @@
 	</div>
 	<div class="col-lg-2"></div>
 </div>
-<script>
-	document.addEventListener('livewire:load', function () {
-		Livewire.on('redirectToPrint', function (data) {
-			var printUrl = '{{ route('report-gentan') }}?lpk_no=' + data.lpk_no +
-			'&name=' + data.name +
-			'&code=' + data.code +
-			'&product_type_code=' + data.product_type_code +
-			'&production_date=' + data.production_date +
-			'&work_hour=' + data.work_hour +
-			'&work_shift=' + data.work_shift +
-			'&machineno=' + data.machineno +
-			'&berat_produksi=' + data.berat_produksi +
-			'&nomor_han=' + data.nomor_han +
-			'&nik=' + data.nik +
-			'&empname=' + data.empname;
+@script
+	<script>
+		$wire.on('redirectToPrint', (lpk_no) => {
+			var printUrl = '{{ route('report-gentan') }}?lpk_no=' + lpk_no
 			window.open(printUrl, '_blank');
 		});
-	});
-</script>
+	</script>
+@endscript

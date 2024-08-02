@@ -75,7 +75,7 @@ class AddSeitaiController extends Component
         ]);
 
         if ($validatedData) {
-            $this->emit('showModalGentan');
+            $this->dispatch('showModalGentan');
         }
     }
 
@@ -88,7 +88,7 @@ class AddSeitaiController extends Component
         ]);
 
         if ($validatedData) {
-            $this->emit('showModalLoss');
+            $this->dispatch('showModalLoss');
         }
     }
 
@@ -147,7 +147,7 @@ class AddSeitaiController extends Component
             return redirect()->route('nippo-seitai');
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->dispatchBrowserEvent('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
         }
     }
 
@@ -170,8 +170,8 @@ class AddSeitaiController extends Component
         
         $datas->save();
 
-        $this->emit('closeModalGentan');
-        $this->dispatchBrowserEvent('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);
+        $this->dispatch('closeModalGentan');
+        $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);
     }
 
     public function saveLoss()
@@ -188,8 +188,8 @@ class AddSeitaiController extends Component
         
         $datas->save();
 
-        $this->emit('closeModalGentan');
-        $this->dispatchBrowserEvent('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);
+        $this->dispatch('closeModalGentan');
+        $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);
     }
 
     public function deleteGentan($orderId)
@@ -197,7 +197,7 @@ class AddSeitaiController extends Component
         $data = TdProductGoodsAssembly::findOrFail($orderId);
         $data->delete();
 
-        $this->dispatchBrowserEvent('notification', ['type' => 'success', 'message' => 'Data Berhasil di Hapus']);
+        $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Hapus']);
     }
 
     public function deleteLoss($orderId)
@@ -205,7 +205,7 @@ class AddSeitaiController extends Component
         $data = TdProductGoodsLoss::findOrFail($orderId);
         $data->delete();
 
-        $this->dispatchBrowserEvent('notification', ['type' => 'success', 'message' => 'Data Berhasil di Hapus']);
+        $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Hapus']);
     }
 
     public function render()
@@ -230,7 +230,7 @@ class AddSeitaiController extends Component
             ->first();
 
             if($tdorderlpk == null){
-                $this->dispatchBrowserEvent('notification', ['type' => 'warning', 'message' => 'Nomor LPK ' . $this->lpk_no . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor LPK ' . $this->lpk_no . ' Tidak Terdaftar']);
             } else {
                 $this->lpk_date = Carbon::parse($tdorderlpk->lpk_date)->format('Y-m-d');
                 $this->panjang_lpk = $tdorderlpk->panjang_lpk;
@@ -278,7 +278,7 @@ class AddSeitaiController extends Component
             $machine=MsMachine::where('machineno', $this->machineno)->first();
             // dd($machine);
             if($machine == null){
-                $this->dispatchBrowserEvent('notification', ['type' => 'warning', 'message' => 'Machine ' . $this->machineno . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Machine ' . $this->machineno . ' Tidak Terdaftar']);
             } else {
                 $this->machinename = $machine->machinename;
             }
@@ -288,7 +288,7 @@ class AddSeitaiController extends Component
             $msemployee=MsEmployee::where('employeeno', $this->employeeno)->first();
 
             if($msemployee == null){
-                $this->dispatchBrowserEvent('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
             } else {
                 $this->empname = $msemployee->empname;
             }
@@ -298,7 +298,7 @@ class AddSeitaiController extends Component
             $msemployeeinfure=MsEmployee::where('employeeno', $this->employeenoinfure)->first();
 
             if($msemployeeinfure == null){
-                $this->dispatchBrowserEvent('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->employeenoinfure . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->employeenoinfure . ' Tidak Terdaftar']);
             } else {
                 $this->empnameinfure = $msemployeeinfure->empname;
             }
@@ -320,7 +320,7 @@ class AddSeitaiController extends Component
                         ->first();
 
             if($tdProduct == null){
-                $this->dispatchBrowserEvent('notification', ['type' => 'warning', 'message' => 'Nomor Gentan ' . $this->employeenoinfure . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Gentan ' . $this->employeenoinfure . ' Tidak Terdaftar']);
             } else {
                 $this->petugas = $tdProduct->empname;
                 $this->machine_no = $tdProduct->machineno;
@@ -332,7 +332,7 @@ class AddSeitaiController extends Component
             $lossSeitai = MsLossSeitai::where('code', $this->loss_seitai_id)->first();
 
             if($lossSeitai == null){
-                $this->dispatchBrowserEvent('notification', ['type' => 'warning', 'message' => 'Kode Loss ' . $this->employeenoinfure . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Kode Loss ' . $this->employeenoinfure . ' Tidak Terdaftar']);
             } else {
                 $this->namaloss = $lossSeitai->name;
             }
