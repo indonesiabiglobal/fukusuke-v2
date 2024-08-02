@@ -236,7 +236,7 @@ Route::group(['middleware' => 'auth'], function () {
     // });
 
     Route::controller(DashboardController::class)->group(function () {
-        Route::get('/', 'index');
+        Route::get('/', 'index')->name('dashboard');
         // Infure
         Route::get('/kadou-jikan/infure', 'getkadouJikanInfure')->name('kadou-jikan-infure');
         Route::get('/hasil-produksi/infure', 'getHasilProduksiInfure')->name('hasil-produksi-infure');

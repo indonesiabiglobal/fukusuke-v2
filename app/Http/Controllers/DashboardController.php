@@ -2,32 +2,62 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\MsDepartment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+
+use function PHPSTORM_META\map;
 
 class DashboardController extends Controller
 {
     public function index(Request $request)
     {
+        if (isset($request->filterDate)) {
+            $requestFilterDate = $request->filterDate;
+            $filterDate = explode(' to ', $request->filterDate);
+            $startDate = Carbon::parse($filterDate[0])->format('Y-m-d');
+            if (count($filterDate) == 1) {
+                $endDate = Carbon::parse($filterDate[0])->format('Y-m-d');
+            } else {
+                $endDate = Carbon::parse($filterDate[1])->format('Y-m-d');
+            }
+        } else {
+            $startDate = Carbon::now()->subMonth()->format('Y-m-d');
+            $endDate = Carbon::now()->format('Y-m-d');
+            $requestFilterDate = $startDate . ' to ' . $endDate;
+        }
+        $divisionCodeInfure = MsDepartment::where('name', 'INFURE')->first()->division_code;
+        $divisionCodeSeitai = MsDepartment::where('name', 'SEITAI')->first()->division_code;
 
         // dd($kadouJikanMesin);
-        return view('dashboard.index');
+        $data = [
+            'filterDate' => $requestFilterDate,
+
+            // Infure
+            'kadouJikanInfureMesin' => $this->getkadouJikanInfure($startDate, $endDate, $divisionCodeInfure),
+            'hasilProduksiInfure' => $this->getHasilProduksiInfure($startDate, $endDate),
+            'lossInfure' => $this->getLossInfure($startDate, $endDate, $divisionCodeInfure),
+            'topLossInfure' => $this->getTopLossInfure($startDate, $endDate, $divisionCodeInfure),
+            'counterTroubleInfure' => $this->getCounterTroubleInfure($startDate, $endDate),
+
+            // Seitai
+            'kadouJikanSeitaiMesin' => $this->getkadouJikanSeitai($startDate, $endDate, $divisionCodeSeitai),
+            'hasilProduksiSeitai' => $this->getHasilProduksiSeitai($startDate, $endDate),
+            'lossSeitai' => $this->getLossSeitai($startDate, $endDate, $divisionCodeSeitai),
+            'topLossSeitai' => $this->getTopLossSeitai($startDate, $endDate, $divisionCodeSeitai),
+            'counterTroubleSeitai' => $this->getCounterTroubleSeitai($startDate, $endDate),
+
+        ];
+        return view('dashboard.index', $data);
     }
 
     /*
     Infure
     */
-    public function getkadouJikanInfure(Request $request)
+    public function getkadouJikanInfure($startDate, $endDate, $divisionCodeInfure)
     {
-        $filterDate = explode(' to ', $request->filterDate);
-        $startDate = Carbon::parse($filterDate[0])->format('Y-m-d');
-        if (count($filterDate) == 1) {
-            $endDate = Carbon::parse($filterDate[0])->format('Y-m-d');
-        } else {
-            $endDate = Carbon::parse($filterDate[1])->format('Y-m-d');
-        }
-        $division_code = 10;
+        $divisionCodeInfure = MsDepartment::where('name', 'INFURE')->first()->division_code;
         // $machineNo = [
         //     '00I01',
         //     '00I02',
@@ -72,23 +102,26 @@ class DashboardController extends Controller
             ORDER BY
                 y.machine_no
 
-        ', [$startDate, $endDate, $division_code]);
+        ', [$startDate, $endDate, $divisionCodeInfure]);
+        // ', array_merge([$startDate, $endDate, $division_code], $machineNo));
+        $kadouJikanInfure = [
+            "persenmesinkerja" => array_map(function ($item) {
+                return $item->persenmesinkerja;
+            }, $kadouJikanInfureMesin),
+            "machine_no" => array_map(function ($item) {
+                return $item->machine_no;
+            }, $kadouJikanInfureMesin),
+            "machine_name" => array_map(function ($item) {
+                return $item->machine_name;
+            }, $kadouJikanInfureMesin),
+        ];
         // ', array_merge([$startDate, $endDate, $division_code], $machineNo));
 
-        return response()->json([
-            'data' => $kadouJikanInfureMesin
-        ]);
+        return $kadouJikanInfure;
     }
 
-    public function getHasilProduksiInfure(Request $request)
+    public function getHasilProduksiInfure($startDate, $endDate)
     {
-        $filterDate = explode(' to ', $request->filterDate);
-        $startDate = Carbon::parse($filterDate[0])->format('Y-m-d');
-        if (count($filterDate) == 1) {
-            $endDate = Carbon::parse($filterDate[0])->format('Y-m-d');
-        } else {
-            $endDate = Carbon::parse($filterDate[1])->format('Y-m-d');
-        }
         // $machineNo = [
         //     '00I01',
         //     '00I02',
@@ -98,7 +131,7 @@ class DashboardController extends Controller
         //     '00I06',
         // ];
 
-        $hasilProduksiInfure = DB::select('
+        $hasilProduksiMesin = DB::select('
             SELECT x.machine_no,x.machine_name,x.department_name,
             max(x.totalpanjangproduksi) as max,min(x.totalpanjangproduksi) as min from (
                 SELECT pa.created_on, right(mac.machineno, 2) as machine_no,
@@ -117,23 +150,24 @@ class DashboardController extends Controller
         ', [$startDate, $endDate]);
         // ', array_merge([$startDate, $endDate], $machineNo));
 
-        return response()->json([
-            'data' => $hasilProduksiInfure
-        ]);
+        $hasilProduksiInfure = [
+            "max" => array_map(function ($item) {
+                return $item->max;
+            }, $hasilProduksiMesin),
+            "min" => array_map(function ($item) {
+                return $item->min;
+            }, $hasilProduksiMesin),
+            "machine_no" => array_map(function ($item) {
+                return $item->machine_no;
+            }, $hasilProduksiMesin),
+        ];
+
+        return $hasilProduksiInfure;
     }
 
-    public function getLossInfure(Request $request)
+    public function getLossInfure($startDate, $endDate, $divisionCodeInfure)
     {
-        $filterDate = explode(' to ', $request->filterDate);
-        $startDate = Carbon::parse($filterDate[0])->format('Y-m-d');
-        if (count($filterDate) == 1) {
-            $endDate = Carbon::parse($filterDate[0])->startOfDay()->format('Y-m-d H:i:s');
-        } else {
-            $endDate = Carbon::parse($filterDate[1])->endOfDay()->format('Y-m-d  H:i:s');
-        }
-        $division_code = 10;
-
-        $kadouJikanInfureMesin = DB::select('
+        $lossInfureMesin = DB::select('
             SELECT x.* from (
                 select
                     ? as division_code,
@@ -147,28 +181,37 @@ class DashboardController extends Controller
                 group by det.loss_infure_id
             ) as x order BY x.berat_loss DESC
         ', [
-            $division_code,
+            $divisionCodeInfure,
             $startDate,
             $endDate,
         ]);
 
-        return response()->json([
-            'data' => $kadouJikanInfureMesin
-        ]);
+        // menghitung berat loss dari loss infure
+        $totalLossInfure = array_sum(array_map(function ($item) {
+            return $item->berat_loss;
+        }, $lossInfureMesin));
+
+        // $lossInfure = [
+        //     "loss_name" => array_map(function ($item) {
+        //         return $item->loss_name;
+        //     }, $lossInfureMesin),
+        //     "berat_loss" => array_map(function ($item) {
+        //         return $item->berat_loss;
+        //     }, $lossInfureMesin),
+        //     "presentase_loss" => array_map(function ($item) {
+        //         return $item->presentase_loss;
+        //     }, $lossInfureMesin),
+        // ];
+
+        return [
+            'lossInfure' => $lossInfureMesin,
+            'totalLossInfure' => $totalLossInfure
+        ];
     }
 
-    public function getTopLossInfure(Request $request)
+    public function getTopLossInfure($startDate, $endDate, $divisionCodeInfure)
     {
-        $filterDate = explode(' to ', $request->filterDate);
-        $startDate = Carbon::parse($filterDate[0])->format('Y-m-d');
-        if (count($filterDate) == 1) {
-            $endDate = Carbon::parse($filterDate[0])->startOfDay()->format('Y-m-d H:i:s');
-        } else {
-            $endDate = Carbon::parse($filterDate[1])->endOfDay()->format('Y-m-d  H:i:s');
-        }
-        $division_code = 10;
-
-        $kadouJikanInfureMesin = DB::select('
+        $topLossInfure = DB::select('
             SELECT x.* from (
                 select
                     ? as division_code,
@@ -182,26 +225,16 @@ class DashboardController extends Controller
                 group by det.loss_infure_id
                 ) as x order BY x.berat_loss DESC limit 3
         ', [
-            $division_code,
+            $divisionCodeInfure,
             $startDate,
             $endDate,
         ]);
 
-        return response()->json([
-            'data' => $kadouJikanInfureMesin
-        ]);
+        return $topLossInfure;
     }
 
-    public function getCounterTroubleInfure(Request $request)
+    public function getCounterTroubleInfure($startDate, $endDate)
     {
-        $filterDate = explode(' to ', $request->filterDate);
-        $startDate = Carbon::parse($filterDate[0])->format('Y-m-d');
-        if (count($filterDate) == 1) {
-            $endDate = Carbon::parse($filterDate[0])->startOfDay()->format('Y-m-d H:i:s');
-        } else {
-            $endDate = Carbon::parse($filterDate[1])->endOfDay()->format('Y-m-d  H:i:s');
-        }
-
         $counterTroubleInfure = DB::select('
             SELECT x.* from (
                 select
@@ -219,25 +252,14 @@ class DashboardController extends Controller
             $endDate,
         ]);
 
-        return response()->json([
-            'data' => $counterTroubleInfure
-        ]);
+        return $counterTroubleInfure;
     }
 
     /*
     SEITAI
     */
-    public function getkadouJikanSeitai(Request $request)
+    public function getkadouJikanSeitai($startDate, $endDate, $divisionCodeSeitai)
     {
-        $filterDate = explode(' to ', $request->filterDate);
-        $startDate = Carbon::parse($filterDate[0])->format('Y-m-d');
-        if (count($filterDate) == 1) {
-            $endDate = Carbon::parse($filterDate[0])->format('Y-m-d');
-        } else {
-            $endDate = Carbon::parse($filterDate[1])->format('Y-m-d');
-        }
-        $division_code = 20;
-
         // $machineNo = [
         //     '00I01',
         //     '00I02',
@@ -287,60 +309,14 @@ class DashboardController extends Controller
         ', [
             $startDate,
             $endDate,
-            $division_code
+            $divisionCodeSeitai
         ]);
 
-        return response()->json([
-            'data' => $kadouJikanSeitaiMesin
-        ]);
+        return $kadouJikanSeitaiMesin;
     }
 
-    public function getLossSeitai(Request $request)
+    public function getHasilProduksiSeitai($startDate, $endDate)
     {
-        $filterDate = explode(' to ', $request->filterDate);
-        $startDate = Carbon::parse($filterDate[0])->format('Y-m-d');
-        if (count($filterDate) == 1) {
-            $endDate = Carbon::parse($filterDate[0])->startOfDay()->format('Y-m-d H:i:s');
-        } else {
-            $endDate = Carbon::parse($filterDate[1])->endOfDay()->format('Y-m-d  H:i:s');
-        }
-        $division_code = 20;
-
-        $kadouJikanInfureMesin = DB::select('
-            SELECT x.* from (
-                select
-                    ? as division_code,
-                    max(mslos.code) as loss_code,
-                    max(mslos.name) as loss_name,
-                    sum(det.berat_loss) as berat_loss
-                from tdproduct_goods as hdr
-                inner join tdproduct_goods_loss as det on hdr.id = det.product_goods_id
-                inner join mslossseitai as mslos on det.loss_seitai_id = mslos.id
-                where hdr.created_on between ? and ?
-                and mslos.id <> 1
-                group by det.loss_seitai_id
-                )as x order BY x.berat_loss DESC
-        ', [
-            $division_code,
-            $startDate,
-            $endDate,
-        ]);
-
-        return response()->json([
-            'data' => $kadouJikanInfureMesin
-        ]);
-    }
-
-    public function getHasilProduksiSeitai(Request $request)
-    {
-        $filterDate = explode(' to ', $request->filterDate);
-        $startDate = Carbon::parse($filterDate[0])->format('Y-m-d');
-        if (count($filterDate) == 1) {
-            $endDate = Carbon::parse($filterDate[0])->format('Y-m-d');
-        } else {
-            $endDate = Carbon::parse($filterDate[1])->format('Y-m-d');
-        }
-
         $hasilProduksiSeitai = DB::select('
             SELECT x.machine_no,x.machine_name,x.department_name,
             max(x.totalpanjangproduksi) as max,min(x.totalpanjangproduksi) as min from (
@@ -362,23 +338,45 @@ class DashboardController extends Controller
             $endDate,
         ]);
 
-        return response()->json([
-            'data' => $hasilProduksiSeitai
-        ]);
+        return $hasilProduksiSeitai;
     }
 
-    public function getTopLossSeitai(Request $request)
+    public function getLossSeitai($startDate, $endDate, $divisionCodeSeitai)
     {
-        $filterDate = explode(' to ', $request->filterDate);
-        $startDate = Carbon::parse($filterDate[0])->format('Y-m-d');
-        if (count($filterDate) == 1) {
-            $endDate = Carbon::parse($filterDate[0])->startOfDay()->format('Y-m-d H:i:s');
-        } else {
-            $endDate = Carbon::parse($filterDate[1])->endOfDay()->format('Y-m-d  H:i:s');
-        }
-        $division_code = 20;
+        $lossSeitai = DB::select('
+            SELECT x.* from (
+                select
+                    ? as division_code,
+                    max(mslos.code) as loss_code,
+                    max(mslos.name) as loss_name,
+                    sum(det.berat_loss) as berat_loss
+                from tdproduct_goods as hdr
+                inner join tdproduct_goods_loss as det on hdr.id = det.product_goods_id
+                inner join mslossseitai as mslos on det.loss_seitai_id = mslos.id
+                where hdr.created_on between ? and ?
+                and mslos.id <> 1
+                group by det.loss_seitai_id
+                )as x order BY x.berat_loss DESC
+        ', [
+            $divisionCodeSeitai,
+            $startDate,
+            $endDate,
+        ]);
 
-        $kadouJikanSeitaiMesin = DB::select('
+        // menghitung berat loss dari loss infure
+        $totalLossInfure = array_sum(array_map(function ($item) {
+            return $item->berat_loss;
+        }, $lossSeitai));
+
+        return [
+            'lossSeitai' => $lossSeitai,
+            'totalLossSeitai' => $totalLossInfure
+        ];
+    }
+
+    public function getTopLossSeitai($startDate, $endDate, $divisionCodeSeitai)
+    {
+        $topLossSeitai = DB::select('
             SELECT x.* from (
                 select
                     ? as division_code,
@@ -393,27 +391,16 @@ class DashboardController extends Controller
                 group by det.loss_seitai_id
                 )as x order BY x.berat_loss DESC limit 3
         ', [
-            $division_code,
+            $divisionCodeSeitai,
             $startDate,
             $endDate,
         ]);
 
-        return response()->json([
-            'data' => $kadouJikanSeitaiMesin
-        ]);
+        return $topLossSeitai;
     }
 
-    public function getCounterTroubleSeitai(Request $request)
+    public function getCounterTroubleSeitai($startDate, $endDate)
     {
-        $filterDate = explode(' to ', $request->filterDate);
-        $startDate = Carbon::parse($filterDate[0])->format('Y-m-d');
-        if (count($filterDate) == 1) {
-            $endDate = Carbon::parse($filterDate[0])->startOfDay()->format('Y-m-d H:i:s');
-        } else {
-            $endDate = Carbon::parse($filterDate[1])->endOfDay()->format('Y-m-d  H:i:s');
-        }
-        $division_code = 20;
-
         $counterTroubleSeitai = DB::select('
             SELECT x.* from (
                 select
@@ -431,9 +418,6 @@ class DashboardController extends Controller
             $endDate,
         ]);
 
-        return response()->json([
-            'data' => $counterTroubleSeitai
-        ]);
+        return $counterTroubleSeitai;
     }
-
 }
