@@ -18,8 +18,7 @@
                                 <h4 class="card-title mb-0 flex-grow-1 col-7">KADOU JIKAN INFURE</h4>
                                 <div class="input-group">
                                     <input type="text" id="filterDate" class="form-control" data-provider="flatpickr"
-                                        data-date-format="d-m-Y" data-range-date="true"
-                                        onchange="reloadChart()">
+                                        data-date-format="d-m-Y" data-range-date="true" onchange="reloadChart()">
                                     <span class="input-group-text py-0">
                                         <i class="ri-calendar-event-fill fs-4"></i>
                                     </span>
@@ -67,33 +66,64 @@
             </div>
         </div>
     </div>
-    {{-- kadou jikan seitai --}}
+    {{-- Hsail Produksi --}}
     <div class="row">
-        <div class="col">
-            <div class="h-100">
-                <div class="row">
-                    <div class="col-xl-12">
-                        <div class="card">
-                            <div class="card-body p-0 pb-2">
-                                <div class="w-100">
-                                    <div id="hasilProduksiSeitai"
-                                        data-colors='["--tb-dark", "--tb-primary", "--tb-secondary"]' class="apex-charts"
-                                        dir="ltr"></div>
-                                </div>
-                            </div><!-- end card body -->
-                        </div><!-- end card -->
-                    </div><!-- end col -->
-                </div>
-            </div>
+        <div class="col-xl-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">Hasil Produksi Infure Tertinggi dan Terendah</h4>
+                </div><!-- end card header -->
+                <div class="card-body">
+                    <div id="hasilProduksiInfure" data-colors='["--tb-primary", "--tb-success"]' class="apex-charts"
+                        dir="ltr"></div>
+                </div><!-- end card-body -->
+            </div><!-- end card -->
+        </div>
+        <div class="col-xl-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">Hasil Produksi Seitai Tertinggi dan Terendah</h4>
+                </div><!-- end card header -->
+                <div class="card-body">
+                    <div id="hasilProduksiSeitai" data-colors='["--tb-primary", "--tb-success"]' class="apex-charts"
+                        dir="ltr"></div>
+                </div><!-- end card-body -->
+            </div><!-- end card -->
         </div>
     </div>
+    {{-- Loss --}}
+    <div class="row">
+        <div class="col-xl-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">Loss Infure</h4>
+                </div><!-- end card header -->
+
+                <div class="card-body">
+                    <div id="lossInfure" data-colors='["--tb-primary"]' class="apex-charts" dir="ltr"></div>
+                </div><!-- end card-body -->
+            </div><!-- end card -->
+        </div>
+        <div class="col-xl-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">Loss Seitai</h4>
+                </div><!-- end card header -->
+
+                <div class="card-body">
+                    <div id="lossSeitai" data-colors='["--tb-primary"]' class="apex-charts" dir="ltr"></div>
+                </div><!-- end card-body -->
+            </div><!-- end card -->
+        </div>
+    </div>
+    <!-- end row -->
     {{-- TOP Trouble --}}
     <div class="row">
         {{-- TOP Trouble Infure --}}
         <div class="col-xxl-6">
             <div class="card card-height-100">
                 <div class="card-header align-items-center d-flex">
-                    <h4 class="card-title mb-0 flex-grow-1">TOP 3 TROUBLE INFURE</h4>
+                    <h4 class="card-title mb-0 flex-grow-1">TOP 3 LOSS INFURE</h4>
                     <div class="flex-shrink-0">
                     </div>
                 </div><!-- end card header -->
@@ -107,7 +137,7 @@
         <div class="col-xxl-6">
             <div class="card card-height-100">
                 <div class="card-header align-items-center d-flex">
-                    <h4 class="card-title mb-0 flex-grow-1">TOP 3 TROUBLE SEITAI</h4>
+                    <h4 class="card-title mb-0 flex-grow-1">TOP 3 LOSS SEITAI</h4>
                     <div class="flex-shrink-0">
                     </div>
                 </div><!-- end card header -->
@@ -118,6 +148,7 @@
             </div><!-- end card -->
         </div>
     </div> <!-- end row-->
+    {{-- Counter Trouble --}}
     <div class="row">
         <div class="col-xl-6">
             <div class="card">
@@ -235,7 +266,7 @@
 
     <!-- dashboard init -->
     <script src="{{ URL::asset('build/libs/list.js/list.min.js') }}"></script>
-    {{-- <script src="{{ URL::asset('build/js/pages/dashboard-ecommerce.init.js') }}"></script> --}}
+    <script src="{{ URL::asset('build/js/pages/dashboard-ecommerce.init.js') }}"></script>
     {{-- <script src="{{ URL::asset('build/js/app.js') }}"></script> --}}
 
     {{-- <script src="https://img.themesbrand.com/velzon/apexchart-js/stock-prices.js"></script> --}}
@@ -254,10 +285,14 @@
 
         const reloadChart = () => {
             getKadouJikanInfure();
+            getHasilProduksiInfure();
+            getLossInfure()
             getTopLossInfure();
             getCounterTroubleInfure();
 
             getKadouJikanSeitai();
+            getHasilProduksiSeitai();
+            getLossSeitai();
             getTopLossSeitai();
             getCounterTroubleSeitai();
         }
@@ -404,6 +439,190 @@
                 }
             });
         }
+        const getHasilProduksiInfure = () => {
+            $.ajax({
+                type: "GET",
+                url: "{{ route('hasil-produksi-infure') }}",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    filterDate: $('#filterDate').val()
+                },
+                success: function(response) {
+                    var linechartDatalabelColors = getChartColorsArray("hasilProduksiInfure");
+                    if (linechartDatalabelColors) {
+                        let max = [];
+                        let min = [];
+                        let machine_no = [];
+
+                        response.data.map((item, index) => {
+                            max.push(parseFloat(item.max));
+                            min.push(parseFloat(item.min));
+                            machine_no.push(item.machine_no);
+                        });
+                        console.log(max);
+                        console.log(min);
+                        console.log(machine_no);
+                        console.log([26, 24, 32, 36, 33, 31, 33]);
+                        var options = {
+                            chart: {
+                                height: 380,
+                                type: 'line',
+                                zoom: {
+                                    enabled: false
+                                },
+                                toolbar: {
+                                    show: false
+                                }
+                            },
+                            colors: linechartDatalabelColors,
+                            dataLabels: {
+                                enabled: false,
+                            },
+                            stroke: {
+                                width: [3, 3],
+                                curve: 'straight'
+                            },
+                            series: [{
+                                    name: "Tertinggi",
+                                    data: max
+                                },
+                                {
+                                    name: "Terendah",
+                                    data: min
+                                }
+                            ],
+                            // title: {
+                            //     text: 'Hasil Produksi',
+                            //     align: 'left',
+                            //     style: {
+                            //         fontWeight: 500,
+                            //     },
+                            // },
+                            grid: {
+                                row: {
+                                    colors: ['transparent',
+                                        'transparent'
+                                    ], // takes an array which will be repeated on columns
+                                    opacity: 0.2
+                                },
+                                borderColor: '#f1f1f1'
+                            },
+                            markers: {
+                                style: 'inverted',
+                                size: 6
+                            },
+                            xaxis: {
+                                categories: machine_no,
+                                title: {
+                                    text: 'Nomer Mesin'
+                                }
+                            },
+                            yaxis: {
+                                title: {
+                                    text: 'Hasil Produksi'
+                                },
+                                // min: 5,
+                                // max: 40
+                            },
+                            legend: {
+                                position: 'top',
+                                horizontalAlign: 'right',
+                                floating: true,
+                                offsetY: -25,
+                                offsetX: -5
+                            },
+                            responsive: [{
+                                breakpoint: 600,
+                                options: {
+                                    chart: {
+                                        toolbar: {
+                                            show: false
+                                        }
+                                    },
+                                    legend: {
+                                        show: false
+                                    },
+                                }
+                            }]
+                        }
+
+                        var chart = new ApexCharts(
+                            document.querySelector("#hasilProduksiInfure"),
+                            options
+                        );
+                        chart.render();
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log(xhr.responseText);
+                }
+            });
+        }
+        const getLossInfure = () => {
+            $.ajax({
+                type: "GET",
+                url: "{{ route('loss-infure') }}",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    filterDate: $('#filterDate').val()
+                },
+                success: function(response) {
+                    var linechartBasicColors = getChartColorsArray("lossInfure");
+                    if (linechartBasicColors) {
+                        let loss_name = [];
+                        let berat_loss = [];
+
+                        response.data.map((item, index) => {
+                            loss_name.push(item.loss_name);
+                            berat_loss.push(parseFloat(parseFloat(item.berat_loss).toFixed(2)));
+                        });
+                        var options = {
+                            series: [{
+                                name: "Berat Loss",
+                                data: berat_loss
+                            }],
+                            chart: {
+                                height: 350,
+                                type: 'line',
+                                zoom: {
+                                    enabled: false
+                                },
+                                toolbar: {
+                                    show: false
+                                }
+                            },
+                            markers: {
+                                size: 4,
+                            },
+                            dataLabels: {
+                                enabled: false
+                            },
+                            stroke: {
+                                curve: 'straight'
+                            },
+                            colors: linechartBasicColors,
+                            // title: {
+                            //     text: 'Product Trends by Month',
+                            //     align: 'left',
+                            //     style: {
+                            //         fontWeight: 500,
+                            //     },
+                            // },
+
+                            xaxis: {
+                                categories: loss_name,
+                            }
+                        };
+
+                        var chart = new ApexCharts(document.querySelector("#lossInfure"), options);
+                        chart.render();
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log(xhr.responseText);
+                }
+            });
+        }
         const getTopLossInfure = () => {
             $.ajax({
                 type: "GET",
@@ -465,8 +684,6 @@
                             loss_name.push(item.loss_name);
                             loss_code.push(item.loss_code);
                         });
-                        console.log(counterLoss);
-                        console.log(loss_name);
 
                         var options = {
                             series: [{
@@ -688,172 +905,178 @@
                 }
             });
         }
-        const gethasilProduksi = () => {
+        const getHasilProduksiSeitai = () => {
             $.ajax({
                 type: "GET",
-                url: "{{ route('kadou-jikan-seitai') }}",
+                url: "{{ route('hasil-produksi-seitai') }}",
                 data: {
                     _token: "{{ csrf_token() }}",
                     filterDate: $('#filterDate').val()
                 },
                 success: function(response) {
-                    let hasilProduksi = getChartColorsArray(
-                        "hasilProduksi");
-                    if (hasilProduksi) {
-                        let persenmesinkerja = [];
-                        let department_name = [];
-                        let machine_name = [];
+                    var linechartDatalabelColors = getChartColorsArray("hasilProduksiSeitai");
+                    if (linechartDatalabelColors) {
+                        let max = [];
+                        let min = [];
                         let machine_no = [];
-                        let work_hour_mm = [];
-                        let work_hour_off_mm = [];
-                        let work_hour_on_mm = [];
 
                         response.data.map((item, index) => {
-                            persenmesinkerja.push(parseFloat(item.persenmesinkerja));
-                            department_name.push(item.department_name);
-                            machine_name.push(item.machine_name);
+                            max.push(parseFloat(item.max));
+                            min.push(parseFloat(item.min));
                             machine_no.push(item.machine_no);
-                            work_hour_mm.push(parseFloat(item.work_hour_mm));
-                            work_hour_off_mm.push(parseFloat(item.work_hour_off_mm));
-                            work_hour_on_mm.push(parseFloat(item.work_hour_on_mm));
                         });
-
-                        let options = {
-                            series: [{
-                                    name: "persen mesin kerja",
-                                    type: "column",
-                                    data: persenmesinkerja,
-                                },
-                                {
-                                    name: "work hour mm",
-                                    type: "line",
-                                    data: work_hour_mm,
-                                },
-                                {
-                                    name: "work hour off mm",
-                                    type: "line",
-                                    data: work_hour_off_mm,
-                                },
-                                {
-                                    name: "work hour on mm",
-                                    type: "line",
-                                    data: work_hour_on_mm,
-                                },
-                            ],
+                        var options = {
                             chart: {
-                                height: 310,
-                                type: "line",
-                                toolbar: {
-                                    show: false,
+                                height: 380,
+                                type: 'line',
+                                zoom: {
+                                    enabled: false
                                 },
+                                toolbar: {
+                                    show: false
+                                }
+                            },
+                            colors: linechartDatalabelColors,
+                            dataLabels: {
+                                enabled: false,
                             },
                             stroke: {
-                                // curve: "straight",
-                                // dashArray: [0, 0, 8],
-                                width: [0.1, 0, 2],
+                                width: [3, 3],
+                                curve: 'straight'
                             },
-                            fill: {
-                                opacity: [0.03, 0.9, 1],
+                            series: [{
+                                    name: "Tertinggi",
+                                    data: max
+                                },
+                                {
+                                    name: "Terendah",
+                                    data: min
+                                }
+                            ],
+                            // title: {
+                            //     text: 'Average High & Low Temperature',
+                            //     align: 'left',
+                            //     style: {
+                            //         fontWeight: 500,
+                            //     },
+                            // },
+                            grid: {
+                                row: {
+                                    colors: ['transparent',
+                                        'transparent'
+                                    ], // takes an array which will be repeated on columns
+                                    opacity: 0.2
+                                },
+                                borderColor: '#f1f1f1'
                             },
                             markers: {
-                                size: [0, 0, 0],
-                                strokeWidth: 2,
-                                hover: {
-                                    size: 4,
-                                },
+                                style: 'inverted',
+                                size: 6
                             },
                             xaxis: {
-                                categories: machine_name,
-                                axisTicks: {
-                                    show: false,
-                                },
-                                axisBorder: {
-                                    show: false,
-                                },
+                                categories: machine_no,
+                                title: {
+                                    text: 'Nomer Mesin'
+                                }
                             },
-                            grid: {
-                                show: true,
-                                xaxis: {
-                                    lines: {
-                                        show: true,
-                                    },
+                            yaxis: {
+                                title: {
+                                    text: 'Hasil Produksi'
                                 },
-                                yaxis: {
-                                    lines: {
-                                        show: false,
-                                    },
-                                },
-                                padding: {
-                                    top: 0,
-                                    right: -2,
-                                    bottom: 15,
-                                    left: 10,
-                                },
+                                // min: 5,
+                                // max: 40
                             },
                             legend: {
-                                show: true,
-                                horizontalAlign: "center",
-                                offsetX: 0,
-                                offsetY: -5,
-                                markers: {
-                                    width: 9,
-                                    height: 9,
-                                    radius: 6,
-                                },
-                                itemMargin: {
-                                    horizontal: 10,
-                                    vertical: 0,
-                                },
+                                position: 'top',
+                                horizontalAlign: 'right',
+                                floating: true,
+                                offsetY: -25,
+                                offsetX: -5
                             },
-                            plotOptions: {
-                                bar: {
-                                    columnWidth: "20%",
-                                    barHeight: "100%",
-                                    borderRadius: [8],
-                                },
-                            },
-                            colors: hasilProduksi,
-                            tooltip: {
-                                shared: true,
-                                y: [{
-                                        formatter: function(y) {
-                                            if (typeof y !== "undefined") {
-                                                return y.toFixed(0);
-                                            }
-                                            return y;
-                                        },
+                            responsive: [{
+                                breakpoint: 600,
+                                options: {
+                                    chart: {
+                                        toolbar: {
+                                            show: false
+                                        }
                                     },
-                                    {
-                                        formatter: function(y) {
-                                            if (typeof y !== "undefined") {
-                                                return y.toFixed(2);
-                                            }
-                                            return y;
-                                        },
+                                    legend: {
+                                        show: false
                                     },
-                                    {
-                                        formatter: function(y) {
-                                            if (typeof y !== "undefined") {
-                                                return y.toFixed(0);
-                                            }
-                                            return y;
-                                        },
-                                    },
-                                    {
-                                        formatter: function(y) {
-                                            if (typeof y !== "undefined") {
-                                                return y.toFixed(0);
-                                            }
-                                            return y;
-                                        },
-                                    },
-                                ],
-                            },
-                        };
+                                }
+                            }]
+                        }
+
                         var chart = new ApexCharts(
-                            document.querySelector("#hasilProduksi"),
+                            document.querySelector("#hasilProduksiSeitai"),
                             options
                         );
+                        chart.render();
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log(xhr.responseText);
+                }
+            });
+        }
+        const getLossSeitai = () => {
+            $.ajax({
+                type: "GET",
+                url: "{{ route('loss-seitai') }}",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    filterDate: $('#filterDate').val()
+                },
+                success: function(response) {
+                    var linechartBasicColors = getChartColorsArray("lossSeitai");
+                    if (linechartBasicColors) {
+                        let loss_name = [];
+                        let berat_loss = [];
+
+                        response.data.map((item, index) => {
+                            loss_name.push(item.loss_name);
+                            berat_loss.push(parseFloat(parseFloat(item.berat_loss).toFixed(2)));
+                        });
+                        var options = {
+                            series: [{
+                                name: "Berat Loss",
+                                data: berat_loss
+                            }],
+                            chart: {
+                                height: 350,
+                                type: 'line',
+                                zoom: {
+                                    enabled: false
+                                },
+                                toolbar: {
+                                    show: false
+                                }
+                            },
+                            markers: {
+                                size: 4,
+                            },
+                            dataLabels: {
+                                enabled: false
+                            },
+                            stroke: {
+                                curve: 'straight'
+                            },
+                            colors: linechartBasicColors,
+                            // title: {
+                            //     text: 'Product Trends by Month',
+                            //     align: 'left',
+                            //     style: {
+                            //         fontWeight: 500,
+                            //     },
+                            // },
+
+                            xaxis: {
+                                categories: loss_name,
+                            }
+                        };
+
+                        var chart = new ApexCharts(document.querySelector("#lossSeitai"), options);
                         chart.render();
                     }
                 },
@@ -923,8 +1146,6 @@
                             loss_name.push(item.loss_name);
                             loss_code.push(item.loss_code);
                         });
-                        console.log(counterLoss);
-                        console.log(loss_name);
 
                         var options = {
                             series: [{
