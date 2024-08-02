@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Livewire\AddLpkController;
 use App\Http\Livewire\NippoInfure\AddNippoController;
 use App\Http\Livewire\AddOrderController;
@@ -79,6 +80,7 @@ Route::get('/forget-password', \App\Http\Livewire\Auth\ForgetPassword::class)->n
 Route::get('/new-password/{email?}/{token?}', \App\Http\Livewire\Auth\NewPassword::class);
 Route::get('/logout', [App\Http\Controllers\HomeController::class, 'logout']);
 Route::get('index/{locale}', [App\Http\Controllers\HomeController::class, 'lang']);
+
 
 // Order LPK
 Route::get('/order-lpk', OrderLpkController::class)->name('order-lpk');
@@ -239,10 +241,20 @@ Route::group(['middleware' => 'auth'], function () {
     });
     Route::get('{any}', [App\Http\Controllers\HomeController::class, 'index']);
 
-    Route::get('/', function() {
-        return view('index');
+    // Route::get('/', function() {
+    //     return view('index');
+    // });
+
+    Route::controller(DashboardController::class)->group(function () {
+        Route::get('/', 'index');
+        // Infure
+        Route::get('/kadou-jikan/infure', 'getkadouJikanInfure')->name('kadou-jikan-infure');
+        Route::get('/top-loss/infure', 'getTopLossInfure')->name('top-loss-infure');
+        Route::get('/counter-trouble/infure', 'getCounterTroubleInfure')->name('counter-trouble-infure');
+        // Seitai
+        Route::get('/kadou-jikan/seitai', 'getkadouJikanSeitai')->name('kadou-jikan-seitai');
+        Route::get('/top-loss/seitai', 'getTopLossSeitai')->name('top-loss-seitai');
+        Route::get('/counter-trouble/seitai', 'getCounterTroubleSeitai')->name('counter-trouble-seitai');
     });
-
-
 });
 
