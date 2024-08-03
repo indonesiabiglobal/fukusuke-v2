@@ -18,7 +18,7 @@
                                     <div class="input-group">
                                         <input type="text" name="filterDate" id="filterDate" class="form-control"
                                             data-provider="flatpickr" data-date-format="d-m-Y" data-range-date="true"
-                                            value="{{ $filterDate }}">
+                                            data-default-date="{{ $filterDate }}">
                                         <span class="input-group-text py-0">
                                             <i class="ri-calendar-event-fill fs-4"></i>
                                         </span>
@@ -43,8 +43,11 @@
                 <div class="row">
                     <div class="col-xl-12">
                         <div class="card">
-                            <div class="card-header border-0 align-items-center  d-flex">
-                                <h4 class="card-title mb-0 flex-grow-1 col-7">INFURE, KADOU JIKAN </h4>
+                            <div class="card-header border-0 align-items-center d-flex">
+                                <a class="link-primary" href="#" data-bs-toggle="modal"
+                                    data-bs-target="#modalListMesinInfure">
+                                    <h4 class="card-title mb-0 flex-grow-1 col-12">INFURE, Kadou Jikan</h4>
+                                </a>
                             </div>
                             <div class="card-body p-0 pb-2">
                                 <div class="w-100">
@@ -66,7 +69,10 @@
                     <div class="col-xl-12">
                         <div class="card">
                             <div class="card-header border-0 align-items-center d-flex">
-                                <h4 class="card-title mb-0 flex-grow-1 col-7">SEITAI, KADOU JIKAN </h4>
+                                <a class="link-primary" href="#" data-bs-toggle="modal"
+                                    data-bs-target="#modalListMesinSeitai">
+                                    <h4 class="card-title mb-0 flex-grow-1 col-12">SEITAI, Kadou Jikan</h4>
+                                </a>
                             </div>
                             <div class="card-body p-0 pb-2">
                                 <div class="w-100">
@@ -110,7 +116,7 @@
         <div class="col-xl-6">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title mb-0">Loss Infure</h4>
+                    <h4 class="card-title mb-0">INFURE, Loss</h4>
                 </div><!-- end card header -->
 
                 <div class="card-body">
@@ -121,7 +127,7 @@
         <div class="col-xl-6">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title mb-0">Loss Seitai</h4>
+                    <h4 class="card-title mb-0">SEITAI, Loss </h4>
                 </div><!-- end card header -->
 
                 <div class="card-body">
@@ -135,7 +141,7 @@
         <div class="col-xl-6">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title mb-0">Presentase Loss Infure</h4>
+                    <h4 class="card-title mb-0">INFURE, Presentase Loss</h4>
                 </div><!-- end card header -->
 
                 <div class="card-body">
@@ -150,7 +156,7 @@
         <div class="col-xl-6">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title mb-0">Presentase Loss Seitai</h4>
+                    <h4 class="card-title mb-0">SEITAI, Presentase Loss</h4>
                 </div><!-- end card header -->
 
                 <div class="card-body">
@@ -171,7 +177,7 @@
         <div class="col-xxl-6">
             <div class="card card-height-100">
                 <div class="card-header align-items-center d-flex">
-                    <h4 class="card-title mb-0 flex-grow-1">TOP 3 LOSS INFURE</h4>
+                    <h4 class="card-title mb-0 flex-grow-1">INFURE, Top 3 Loss </h4>
                     <div class="flex-shrink-0">
                     </div>
                 </div><!-- end card header -->
@@ -185,7 +191,7 @@
         <div class="col-xxl-6">
             <div class="card card-height-100">
                 <div class="card-header align-items-center d-flex">
-                    <h4 class="card-title mb-0 flex-grow-1">TOP 3 LOSS SEITAI</h4>
+                    <h4 class="card-title mb-0 flex-grow-1">SEITAI, Top 3 Loss </h4>
                     <div class="flex-shrink-0">
                     </div>
                 </div><!-- end card header -->
@@ -201,7 +207,7 @@
         <div class="col-xl-6">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title mb-0">COUNTER TROUBLE INFURE</h4>
+                    <h4 class="card-title mb-0">INFURE, Counter Trouble </h4>
                 </div><!-- end card header -->
 
                 <div class="card-body">
@@ -213,7 +219,7 @@
         <div class="col-xl-6">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title mb-0">COUNTER TROUBLE SEITAI</h4>
+                    <h4 class="card-title mb-0">SEITAI, Counter Trouble</h4>
                 </div><!-- end card header -->
 
                 <div class="card-body">
@@ -238,7 +244,7 @@
 
                 <div class="card-body">
 
-                    <div id="color_heatmap"
+                    <div id="listMesinHidup"
                         data-colors='["--tb-success", "--tb-info", "--tb-primary", "--tb-warning", "--tb-secondary"]'
                         class="apex-charts mt-n3" dir="ltr"></div>
 
@@ -303,6 +309,76 @@
         </div>
     </div> --}}
     <!-- end row-->
+    {{-- Modal Infure Kadou jikan  --}}
+    <div class="modal  fade bs-example-modal-center" id="modalListMesinInfure" tabindex="-1" role="dialog"
+        aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center p-5">
+                    <div class="card card-height-100">
+                        <div class="card-header align-items-center d-flex">
+                            <h4 class="card-title mb-0 flex-grow-1">INFURE Machine Running Rate (Kadou Jikan)</h4>
+                        </div>
+                        <div class="card-body">
+                            <table class="table">
+                                @foreach ($listMachineInfure['listDepartment'] as $department)
+                                    <tr>
+                                        <td>{{ $department['department_name'] }}</td>
+                                        @foreach ($listMachineInfure['listMachineInfure'] as $machine)
+                                            @if ($machine->department_id == $department['department_id'])
+                                                <td class="bg-danger">{{ $machine->machineno }}</td>
+                                            @endif
+                                        @endforeach
+                                    </tr>
+                                @endforeach
+                            </table>
+                        </div><!-- end card body -->
+                    </div>
+                    <div class="mt-4">
+                        <div class="hstack gap-2 justify-content-center">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                            {{-- <a href="javascript:void(0);" class="btn btn-danger">Try Again</a> --}}
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    {{-- Modal Seitai Kadou jikan  --}}
+    <div class="modal  fade bs-example-modal-center" id="modalListMesinSeitai" tabindex="-1" role="dialog"
+        aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center p-5">
+                    <div class="card card-height-100">
+                        <div class="card-header align-items-center d-flex">
+                            <h4 class="card-title mb-0 flex-grow-1">SEITAI Machine Running Rate (Kadou Jikan)</h4>
+                        </div>
+                        <div class="card-body">
+                            <table class="table">
+                                @foreach ($listMachineSeitai['listDepartment'] as $department)
+                                    <tr>
+                                        <td>{{ $department['department_name'] }}</td>
+                                        @foreach ($listMachineSeitai['listMachineSeitai'] as $machine)
+                                            @if ($machine->department_id == $department['department_id'])
+                                                <td class="bg-danger">{{ $machine->machineno }}</td>
+                                            @endif
+                                        @endforeach
+                                    </tr>
+                                @endforeach
+                            </table>
+                        </div><!-- end card body -->
+                    </div>
+                    <div class="mt-4">
+                        <div class="hstack gap-2 justify-content-center">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                            {{-- <a href="javascript:void(0);" class="btn btn-danger">Try Again</a> --}}
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 @endsection
 
 @section('script')
@@ -326,7 +402,7 @@
             $('#filterDate').flatpickr({
                 mode: "range",
                 dateFormat: "d-m-Y",
-                defaultDate: ['today'],
+                defaultDate: ['today to today'],
             });
             /*
             Infure
@@ -363,14 +439,14 @@
                     },
                     series: [{
                         name: 'Mesin Kerja',
-                        data: kadouJikanInfureMesin.persenmesinkerja
+                        data: kadouJikanInfureMesin.map(item => parseFloat(item.persenmesinkerja))
                     }],
                     colors: chartColumnDatatalabelColors,
                     grid: {
                         borderColor: '#f1f1f1',
                     },
                     xaxis: {
-                        categories: kadouJikanInfureMesin.machine_name,
+                        categories: kadouJikanInfureMesin.map(item => item.machine_no),
                         position: 'top',
                         labels: {
                             offsetY: -18,
@@ -473,11 +549,11 @@
                     },
                     series: [{
                             name: "Tertinggi",
-                            data: hasilProduksiInfure.max
+                            data: hasilProduksiInfure.map(item => parseFloat(item.max))
                         },
                         {
                             name: "Terendah",
-                            data: hasilProduksiInfure.min
+                            data: hasilProduksiInfure.map(item => parseFloat(item.min))
                         }
                     ],
                     // title: {
@@ -501,7 +577,7 @@
                         size: 6
                     },
                     xaxis: {
-                        categories: hasilProduksiInfure.machine_no,
+                        categories: hasilProduksiInfure.map(item => item.machine_no),
                         title: {
                             text: 'Nomer Mesin'
                         }

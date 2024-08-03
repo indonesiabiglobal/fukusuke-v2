@@ -23,25 +23,26 @@ class DashboardController extends Controller
                 $endDate = Carbon::parse($filterDate[1])->format('Y-m-d');
             }
         } else {
-            $startDate = Carbon::now()->subMonth()->format('Y-m-d');
-            $endDate = Carbon::now()->format('Y-m-d');
+            $startDate = Carbon::now()->subMonth()->format('d-m-Y');
+            $endDate = Carbon::now()->format('d-m-Y');
             $requestFilterDate = $startDate . ' to ' . $endDate;
         }
         $divisionCodeInfure = MsDepartment::where('name', 'INFURE')->first()->division_code;
         $divisionCodeSeitai = MsDepartment::where('name', 'SEITAI')->first()->division_code;
 
-        // dd($kadouJikanMesin);
         $data = [
             'filterDate' => $requestFilterDate,
 
             // Infure
-            'kadouJikanInfureMesin' => $this->getkadouJikanInfure($startDate, $endDate, $divisionCodeInfure),
+            'listMachineInfure' => $this->getListMachineInfure($startDate, $endDate, $divisionCodeInfure),
+            'kadouJikanInfureMesin' => $this->getKadouJikanInfure($startDate, $endDate, $divisionCodeInfure),
             'hasilProduksiInfure' => $this->getHasilProduksiInfure($startDate, $endDate),
             'lossInfure' => $this->getLossInfure($startDate, $endDate, $divisionCodeInfure),
             'topLossInfure' => $this->getTopLossInfure($startDate, $endDate, $divisionCodeInfure),
             'counterTroubleInfure' => $this->getCounterTroubleInfure($startDate, $endDate),
 
             // Seitai
+            'listMachineSeitai' => $this->getListMachineSeitai($startDate, $endDate, $divisionCodeSeitai),
             'kadouJikanSeitaiMesin' => $this->getkadouJikanSeitai($startDate, $endDate, $divisionCodeSeitai),
             'hasilProduksiSeitai' => $this->getHasilProduksiSeitai($startDate, $endDate),
             'lossSeitai' => $this->getLossSeitai($startDate, $endDate, $divisionCodeSeitai),
@@ -55,7 +56,38 @@ class DashboardController extends Controller
     /*
     Infure
     */
-    public function getkadouJikanInfure($startDate, $endDate, $divisionCodeInfure)
+    public function getListMachineInfure($startDate, $endDate, $divisionCodeInfure)
+    {
+
+        $listMachineInfure = DB::select('
+        SELECT
+            RIGHT( mac.machineno, 2 ) AS machineno,
+            dep."id" as department_id,
+            dep.division_code,
+            dep."name" as department_name
+        FROM
+            "msmachine" AS mac
+            INNER JOIN msdepartment AS dep ON mac.department_id = dep.ID
+        WHERE
+            mac.status = 1 AND division_code = ?
+        ORDER BY machineno ASC
+
+        ', [$divisionCodeInfure]);
+        // ', array_merge([$startDate, $endDate, $division_code], $machineNo));
+        $listDepartment = array_reduce($listMachineInfure, function ($carry, $item) {
+            $carry[$item->department_id] = [
+                'department_id' => $item->department_id,
+                'department_name' => $item->department_name
+            ];
+            return $carry;
+        }, []);
+
+        return [
+            'listMachineInfure' => $listMachineInfure,
+            'listDepartment' => $listDepartment
+        ];
+    }
+    public function getKadouJikanInfure($startDate, $endDate, $divisionCodeInfure)
     {
         $divisionCodeInfure = MsDepartment::where('name', 'INFURE')->first()->division_code;
         // $machineNo = [
@@ -104,20 +136,8 @@ class DashboardController extends Controller
 
         ', [$startDate, $endDate, $divisionCodeInfure]);
         // ', array_merge([$startDate, $endDate, $division_code], $machineNo));
-        $kadouJikanInfure = [
-            "persenmesinkerja" => array_map(function ($item) {
-                return $item->persenmesinkerja;
-            }, $kadouJikanInfureMesin),
-            "machine_no" => array_map(function ($item) {
-                return $item->machine_no;
-            }, $kadouJikanInfureMesin),
-            "machine_name" => array_map(function ($item) {
-                return $item->machine_name;
-            }, $kadouJikanInfureMesin),
-        ];
-        // ', array_merge([$startDate, $endDate, $division_code], $machineNo));
 
-        return $kadouJikanInfure;
+        return $kadouJikanInfureMesin;
     }
 
     public function getHasilProduksiInfure($startDate, $endDate)
@@ -150,19 +170,7 @@ class DashboardController extends Controller
         ', [$startDate, $endDate]);
         // ', array_merge([$startDate, $endDate], $machineNo));
 
-        $hasilProduksiInfure = [
-            "max" => array_map(function ($item) {
-                return $item->max;
-            }, $hasilProduksiMesin),
-            "min" => array_map(function ($item) {
-                return $item->min;
-            }, $hasilProduksiMesin),
-            "machine_no" => array_map(function ($item) {
-                return $item->machine_no;
-            }, $hasilProduksiMesin),
-        ];
-
-        return $hasilProduksiInfure;
+        return $hasilProduksiMesin;
     }
 
     public function getLossInfure($startDate, $endDate, $divisionCodeInfure)
@@ -190,18 +198,6 @@ class DashboardController extends Controller
         $totalLossInfure = array_sum(array_map(function ($item) {
             return $item->berat_loss;
         }, $lossInfureMesin));
-
-        // $lossInfure = [
-        //     "loss_name" => array_map(function ($item) {
-        //         return $item->loss_name;
-        //     }, $lossInfureMesin),
-        //     "berat_loss" => array_map(function ($item) {
-        //         return $item->berat_loss;
-        //     }, $lossInfureMesin),
-        //     "presentase_loss" => array_map(function ($item) {
-        //         return $item->presentase_loss;
-        //     }, $lossInfureMesin),
-        // ];
 
         return [
             'lossInfure' => $lossInfureMesin,
@@ -258,6 +254,37 @@ class DashboardController extends Controller
     /*
     SEITAI
     */
+    public function getListMachineSeitai($startDate, $endDate, $divisionCodeSeitai)
+    {
+
+        $listMachineSeitai = DB::select('
+        SELECT
+            RIGHT( mac.machineno, 2 ) AS machineno,
+            dep."id" as department_id,
+            dep.division_code,
+            dep."name" as department_name
+        FROM
+            "msmachine" AS mac
+            INNER JOIN msdepartment AS dep ON mac.department_id = dep.ID
+        WHERE
+            mac.status = 1 AND division_code = ?
+        ORDER BY machineno ASC
+
+        ', [$divisionCodeSeitai]);
+        // ', array_merge([$startDate, $endDate, $division_code], $machineNo));
+        $listDepartment = array_reduce($listMachineSeitai, function ($carry, $item) {
+            $carry[$item->department_id] = [
+                'department_id' => $item->department_id,
+                'department_name' => $item->department_name
+            ];
+            return $carry;
+        }, []);
+
+        return [
+            'listMachineSeitai' => $listMachineSeitai,
+            'listDepartment' => $listDepartment
+        ];
+    }
     public function getkadouJikanSeitai($startDate, $endDate, $divisionCodeSeitai)
     {
         // $machineNo = [
