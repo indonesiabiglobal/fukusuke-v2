@@ -398,7 +398,9 @@ class EditProduk extends Component
     {
         if (isset($this->katanuki_id) && $this->katanuki_id != '') {
             $katanuki_id = is_array($this->katanuki_id) ? $this->katanuki_id['value'] : $this->katanuki_id;
-            $this->photoKatanuki = DB::table('mskatanuki')->where('id', $katanuki_id)->first()->filename;
+            if ($katanuki_id != '') {
+                $this->photoKatanuki = DB::table('mskatanuki')->where('id', $katanuki_id)->first()->filename;
+            }
         }
         return view('livewire.master-tabel.produk.edit-produk')->extends('layouts.master');
     }

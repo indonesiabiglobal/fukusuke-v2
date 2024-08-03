@@ -8,7 +8,7 @@
                     </div>
                     <div class="col-12 col-lg-9">
                         <div class="input-group">
-                            <input wire:model.defer="searchTerm" class="form-control"style="padding:0.44rem" type="text" placeholder="search nomor PO, nama produk" />
+                            <input wire:model.defer="searchTerm" class="form-control"style="padding:0.44rem" type="text" placeholder="search nama produk, nomor order" />
                         </div>
                     </div>
                 </div>
