@@ -53,6 +53,90 @@ class DashboardController extends Controller
         return view('dashboard.index', $data);
     }
 
+    public function ppic(Request $request)
+    {
+        if (isset($request->filterDate)) {
+            $requestFilterDate = $request->filterDate;
+            $filterDate = explode(' to ', $request->filterDate);
+            $startDate = Carbon::parse($filterDate[0])->format('Y-m-d');
+            if (count($filterDate) == 1) {
+                $endDate = Carbon::parse($filterDate[0])->format('Y-m-d');
+            } else {
+                $endDate = Carbon::parse($filterDate[1])->format('Y-m-d');
+            }
+        } else {
+            $startDate = Carbon::now()->subMonth()->format('d-m-Y');
+            $endDate = Carbon::now()->format('d-m-Y');
+            $requestFilterDate = $startDate . ' to ' . $endDate;
+        }
+        $divisionCodeInfure = MsDepartment::where('name', 'INFURE')->first()->division_code;
+        $divisionCodeSeitai = MsDepartment::where('name', 'SEITAI')->first()->division_code;
+
+        $data = [
+            'filterDate' => $requestFilterDate,
+
+            // Infure
+            'listMachineInfure' => $this->getListMachineInfure($startDate, $endDate, $divisionCodeInfure),
+            'kadouJikanInfureMesin' => $this->getKadouJikanInfure($startDate, $endDate, $divisionCodeInfure),
+            'hasilProduksiInfure' => $this->getHasilProduksiInfure($startDate, $endDate),
+            'lossInfure' => $this->getLossInfure($startDate, $endDate, $divisionCodeInfure),
+            'topLossInfure' => $this->getTopLossInfure($startDate, $endDate, $divisionCodeInfure),
+            'counterTroubleInfure' => $this->getCounterTroubleInfure($startDate, $endDate),
+
+            // Seitai
+            'listMachineSeitai' => $this->getListMachineSeitai($startDate, $endDate, $divisionCodeSeitai),
+            'kadouJikanSeitaiMesin' => $this->getkadouJikanSeitai($startDate, $endDate, $divisionCodeSeitai),
+            'hasilProduksiSeitai' => $this->getHasilProduksiSeitai($startDate, $endDate),
+            'lossSeitai' => $this->getLossSeitai($startDate, $endDate, $divisionCodeSeitai),
+            'topLossSeitai' => $this->getTopLossSeitai($startDate, $endDate, $divisionCodeSeitai),
+            'counterTroubleSeitai' => $this->getCounterTroubleSeitai($startDate, $endDate),
+
+        ];
+        return view('dashboard.dashboard-ppic', $data);
+    }
+
+    public function qc(Request $request)
+    {
+        if (isset($request->filterDate)) {
+            $requestFilterDate = $request->filterDate;
+            $filterDate = explode(' to ', $request->filterDate);
+            $startDate = Carbon::parse($filterDate[0])->format('Y-m-d');
+            if (count($filterDate) == 1) {
+                $endDate = Carbon::parse($filterDate[0])->format('Y-m-d');
+            } else {
+                $endDate = Carbon::parse($filterDate[1])->format('Y-m-d');
+            }
+        } else {
+            $startDate = Carbon::now()->subMonth()->format('d-m-Y');
+            $endDate = Carbon::now()->format('d-m-Y');
+            $requestFilterDate = $startDate . ' to ' . $endDate;
+        }
+        $divisionCodeInfure = MsDepartment::where('name', 'INFURE')->first()->division_code;
+        $divisionCodeSeitai = MsDepartment::where('name', 'SEITAI')->first()->division_code;
+
+        $data = [
+            'filterDate' => $requestFilterDate,
+
+            // Infure
+            'listMachineInfure' => $this->getListMachineInfure($startDate, $endDate, $divisionCodeInfure),
+            'kadouJikanInfureMesin' => $this->getKadouJikanInfure($startDate, $endDate, $divisionCodeInfure),
+            'hasilProduksiInfure' => $this->getHasilProduksiInfure($startDate, $endDate),
+            'lossInfure' => $this->getLossInfure($startDate, $endDate, $divisionCodeInfure),
+            'topLossInfure' => $this->getTopLossInfure($startDate, $endDate, $divisionCodeInfure),
+            'counterTroubleInfure' => $this->getCounterTroubleInfure($startDate, $endDate),
+
+            // Seitai
+            'listMachineSeitai' => $this->getListMachineSeitai($startDate, $endDate, $divisionCodeSeitai),
+            'kadouJikanSeitaiMesin' => $this->getkadouJikanSeitai($startDate, $endDate, $divisionCodeSeitai),
+            'hasilProduksiSeitai' => $this->getHasilProduksiSeitai($startDate, $endDate),
+            'lossSeitai' => $this->getLossSeitai($startDate, $endDate, $divisionCodeSeitai),
+            'topLossSeitai' => $this->getTopLossSeitai($startDate, $endDate, $divisionCodeSeitai),
+            'counterTroubleSeitai' => $this->getCounterTroubleSeitai($startDate, $endDate),
+
+        ];
+        return view('dashboard.dashboard-qc', $data);
+    }
+
     /*
     Infure
     */
