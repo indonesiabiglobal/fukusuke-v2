@@ -6,6 +6,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
+
+    <style>
+        .image-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: auto;
+        }
+
+        .text-infure-gz-dimensi-A {
+            position: absolute;
+            top: 15%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+        }
+        .text-infure-gz-dimensi-B {
+            position: absolute;
+            top: 80%;
+            left: 20%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+        }
+        .text-infure-gz-dimensi-C {
+            position: absolute;
+            top: 80%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+        }
+        .text-infure-gz-dimensi-D {
+            position: absolute;
+            top: 80%;
+            left: 80%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+        }
+    </style>
 </head>
 @php
     use Carbon\Carbon;
@@ -47,7 +88,7 @@
                 mpi.code as seitai_kodeinner, mpi.name as seitai_namainner,mp.case_inner_count as seitai_isiinner,
                 mpl.code as seitai_kodelayer,mpl.name as seitai_namalayer,mhs.code as kodehagata,mhs.name as namahagata,
                 mls.code as seitai_kodelakban,mls.name as seitai_namalakban,mss.name as seitai_stample,'' as jenis,'' as kodeplate,
-                mp.manufacturing_summary as seitai_catatan
+                mp.manufacturing_summary as seitai_catatan, tdol.total_assembly_line
                 from tdorderlpk as tdol
                 left join tdorder as tdo on tdo.id=tdol.order_id
                 left JOIN msproduct as mp on mp.id=tdol.product_id
@@ -83,7 +124,7 @@
                                 </td>
                                 <td width="30%" style="border: 1px solid black;">
                                     <p>Panjang Sebenarnya {{ $data->panjang_lpk }} m</p>
-                                    <p>Selisih -320m</p>
+                                    <p>Selisih - {{ $data->panjang_lpk - $data->total_assembly_line }} m</p>
                                 </td>
                                 <td width="10%">
                                     @php
@@ -353,12 +394,20 @@
                                                 <span>{{ $data->infure_gazette }}</span><br>
                                             </td>
                                         </tr>
-                                        <tr>
-                                            <td style="border-bottom: 1px solid black; text-align:center">
-                                                <img src="{{ asset('storage/' . $data->filename) }}" alt=""
-                                                style="height:100%; width:100%">
-                                            </td>
-                                        </tr>
+                                        @if ($data->infure_gazette != 'Tidak Ada Gazet')
+                                            <tr>
+                                                <td style="border-bottom: 1px solid black; text-align:center">
+                                                    <div class="image-container">
+                                                        <img src="{{ asset('asset/image/Gazette.png') }}" alt=""
+                                                        style="height:100%; width:100%">
+                                                        <div class="text-infure-gz-dimensi-A">{{ $data->infure_gz_dimensi_a }}</div>
+                                                        <div class="text-infure-gz-dimensi-B">{{ $data->infure_gz_dimensi_b }}</div>
+                                                        <div class="text-infure-gz-dimensi-C">{{ $data->infure_gz_dimensi_c }}</div>
+                                                        <div class="text-infure-gz-dimensi-D">{{ $data->infure_gz_dimensi_d }}</div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endif
                                     </table>
                                 </td>
                             </tr>
