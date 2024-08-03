@@ -30,10 +30,14 @@ class CheckListSeitaiController extends Component
 
     public function export()
     {
-        return Excel::download(new SeitaiExport(
-            $this->tglMasuk,
-            $this->tglKeluar,
-        ), 'checklist-infure.xlsx');
+        // return Excel::download(new SeitaiExport(
+        //     $this->tglMasuk,
+        //     $this->tglKeluar,
+        // ), 'checklist-infure.xlsx');
+        $tglMasuk = $this->tglMasuk;
+        $tglKeluar = $this->tglKeluar;
+
+        $this->dispatch('redirectToPrint', "'$tglMasuk 00:00' and tdpa.created_on <= '$tglKeluar 23:59'");
     }
 
     public function render()

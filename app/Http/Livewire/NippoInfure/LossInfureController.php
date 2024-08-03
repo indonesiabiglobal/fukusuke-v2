@@ -47,7 +47,10 @@ class LossInfureController extends Component
     }
 
     public function print(){
-        $this->dispatch('redirectToPrint', 1234);
+        $tglMasuk = $this->tglMasuk;
+        $tglKeluar = $this->tglKeluar;
+
+        $this->dispatch('redirectToPrint', "'$tglMasuk 00:00' and tdpa.created_on <= '$tglKeluar 23:59'");
     }
 
     public function render()

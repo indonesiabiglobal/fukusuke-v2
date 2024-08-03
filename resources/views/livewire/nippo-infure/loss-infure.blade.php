@@ -186,8 +186,8 @@
 </div>
 @script
     <script>
-        $wire.on('redirectToPrint', (no_palet) => {
-            var printUrl = '{{ route('report-nippo-infure') }}?no_palet=' + no_palet
+        $wire.on('redirectToPrint', (datas) => {
+            var printUrl = '{{ route('report-nippo-infure') }}?tanggal=' + datas;
             window.open(printUrl, '_blank');
         });
     </script>

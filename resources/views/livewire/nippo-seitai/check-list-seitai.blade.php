@@ -153,3 +153,11 @@
     </div>
     <div class="col-lg-4"></div>
 </div>
+@script
+    <script>
+        $wire.on('redirectToPrint', (datas) => {
+            var printUrl = '{{ route('report-checklist-seitai') }}?tanggal=' + datas;
+            window.open(printUrl, '_blank');
+        });
+    </script>
+@endscript

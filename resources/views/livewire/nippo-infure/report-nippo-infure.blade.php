@@ -64,7 +64,7 @@
                 inner join msmachine as msm on msm.id = tdpa.machine_id
                 inner join msproduct as msp on msp.id = tdpa.product_id
                 inner join msemployee as mse on mse.id = tdpa.employee_id
-            where tdpa.created_on >= '2024-07-15 00:00' and tdpa.created_on <= '2024-08-02 23:59'
+            where tdpa.created_on >= $tanggal
         "),
     );
 @endphp
@@ -134,7 +134,7 @@
                                                     lpk_id = '$item->lpk_id'
                                             "),
                                         );
-
+                                    
                                     // Ambil item pertama dan sisa item
                                     $firstItem = $detail->first();
                                     $remainingItems = $detail->slice(1);
@@ -165,12 +165,14 @@
 
                             <tr style="text-align: left">
                                 <th colspan="8">GRAND TOTAL</th>
-                                @foreach ($detail as $item)
-                                    @php
-                                        $totalBeratLoss += $item->berat_loss;
-                                    @endphp
-                                @endforeach
-                                <th>{{ $totalBeratLoss }}</th>
+                                @if (!empty($detail))
+                                    @foreach ($detail as $item)
+                                        @php
+                                            $totalBeratLoss += $item->berat_loss;
+                                        @endphp
+                                    @endforeach
+                                    <th>{{ $totalBeratLoss }}</th>
+                                @endif
                             </tr>
                         </table>
                     </td>

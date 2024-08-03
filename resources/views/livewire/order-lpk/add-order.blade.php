@@ -34,7 +34,7 @@
 			<div class="form-group mt-1">
 				<div class="input-group">
                     <label class="control-label col-12 col-lg-3 fw-bold text-muted" style="text-decoration: underline;">
-                        <a href="#" data-bs-toggle="modal" wire:click="showModalNoOrder" >
+                        <a href="#" data-bs-toggle="modal" wire:click="showModalNoOrder" class="text-muted">
                             Nomor Order
                         </a>
                     </label>
@@ -191,24 +191,6 @@
                                             <div class="input-group">
                                                 <label class="control-label col-12 col-lg-4">Kode Tipe</label>
                                                 <input type="text" class="form-control col-12 col-lg-8" wire:model="product_type_id"/>
-                                                {{-- <div class="col-12 col-lg-8" wire:ignore>
-                                                    <select required data-choices data-choices-sorting="true"
-                                                        class="form-select col-12 col-lg-8 @error('product_type_id') is-invalid @enderror"
-                                                        wire:model="product_type_id" placeholder="">
-                                                        <option value="{{ $product_type_id ? $product_type_id->id : '' }}" selected>
-                                                            {{ $product_type_id ? $product_type_id->id : 'Silahkan Pilih' }}
-                                                        </option>
-                                                        @foreach ($masterProductType as $item)
-                                                            <option value="{{ $item->id }}"
-                                                                {{ $item->id == $product_type_id['value'] ? 'selected' : '' }}>
-                                                                {{ $item->name }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                    @error('product_type_id')
-                                                        <span class="invalid-feedback">{{ $message }}</span>
-                                                    @enderror
-                                                </div> --}}
                                             </div>
                                         </div>
                                         <div class="form-group mt-1">
@@ -279,23 +261,6 @@
                                             <div class="input-group" wire:ignore>
                                                 <label class="control-label col-12 col-lg-4">Satuan</label>
                                                 <input required type="text" class="form-control" wire:model="product_unit" />
-                                                {{-- <div class="col-12 col-lg-8" wire:ignore>
-                                                    <select required data-choices data-choices-sorting="true"
-                                                        class="form-select @error('product_unit') is-invalid @enderror"
-                                                        wire:model="product_unit" placeholder="">
-                                                        <option value="" selected>
-                                                            Silahkan Pilih
-                                                        </option>
-                                                        @foreach ($masterUnit as $item)
-                                                            <option value="{{ $item->id }}" {{ $item->id == $product_unit['value'] ? 'selected' : '' }}>
-                                                                {{ $item->name }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                    @error('product_unit')
-                                                        <span class="invalid-feedback">{{ $message }}</span>
-                                                    @enderror
-                                                </div> --}}
                                             </div>
                                         </div>
                                     </div>
@@ -341,69 +306,18 @@
                                             <div class="input-group">
                                                 <label class="control-label col-12 col-lg-4">Material</label>
                                                 <input required type="text" class="form-control col-12 col-lg-8" wire:model="material_classification" placeholder="0" />
-                                                {{-- <div class="col-12 col-lg-8" wire:ignore>
-                                                    <select data-choices data-choices-sorting="true"
-                                                        class="form-select col-12 col-lg-8 @error('material_classification') is-invalid @enderror"
-                                                        wire:model="material_classification" placeholder="">
-                                                        <option value="" selected>
-                                                            Silahkan Pilih
-                                                        </option>
-                                                        @foreach ($masterMaterial as $item)
-                                                            <option value="{{ $item->id }}" {{ $item->id == $material_classification['value'] ? 'selected' : '' }}>
-                                                                {{ $item->name }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                    @error('material_classification')
-                                                        <span class="invalid-feedback">{{ $message }}</span>
-                                                    @enderror
-                                                </div> --}}
                                             </div>
                                         </div>
                                         <div class="form-group mt-1">
                                             <div class="input-group">
                                                 <label class="control-label col-12 col-lg-4">Embos</label>
                                                 <input required type="text" class="form-control col-12 col-lg-8" wire:model="embossed_classification" placeholder="0" />
-                                                {{-- <div class="col-12 col-lg-8" wire:ignore>
-                                                    <select data-choices data-choices-sorting="true"
-                                                        class="form-select col-12 col-lg-8 @error('embossed_classification') is-invalid @enderror"
-                                                        wire:model="embossed_classification" placeholder="">
-                                                        <option value="" selected>
-                                                            Silahkan Pilih
-                                                        </option>
-                                                        @foreach ($masterEmbossed as $item)
-                                                            <option value="{{ $item->id }}" {{ $item->id == $embossed_classification['value'] ? 'selected' : '' }}>
-                                                                {{ $item->name }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                    @error('embossed_classification')
-                                                        <span class="invalid-feedback">{{ $message }}</span>
-                                                    @enderror
-                                                </div> --}}
                                             </div>
                                         </div>
                                         <div class="form-group mt-1">
                                             <div class="input-group">
                                                 <label class="control-label col-12 col-lg-4">Corona</label>
                                                 <input required type="text" class="form-control col-12 col-lg-8" wire:model="surface_classification" placeholder="0" />
-                                                {{-- <div class="col-12 col-lg-8" wire:ignore>
-                                                    <select data-choices data-choices-sorting="true"
-                                                        class="form-select col-12 col-lg-8 @error('surface_classification') is-invalid @enderror"
-                                                        wire:model="surface_classification" placeholder="">
-                                                        <option value="" selected>
-                                                            Silahkan Pilih
-                                                        </option>
-                                                        @foreach ($masterSurface as $item)
-                                                            <option value="{{ $item->id }}" {{ $item->id == $surface_classification['value'] ? 'selected' : '' }}>
-                                                                {{ $item->name }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                    @error('surface_classification')
-                                                        <span class="invalid-feedback">{{ $message }}</span>
-                                                    @enderror
-                                                </div> --}}
                                             </div>
                                         </div>
                                     </div>
@@ -474,23 +388,6 @@
                                             <div class="input-group">
                                                 <label class="control-label col-12 col-lg-4">Gentan</label>
                                                 <input type="text" class="form-control" wire:model="gentan_classification" />
-                                                {{-- <div class="col-12 col-lg-8" wire:ignore wire:ignore>
-                                                    <select data-choices data-choices-sorting="true"
-                                                        class="form-select @error('gentan_classification') is-invalid @enderror"
-                                                        wire:model="gentan_classification" placeholder="">
-                                                        <option value="" selected>
-                                                            Silahkan Pilih
-                                                        </option>
-                                                        @foreach ($masterGentanClassifications as $item)
-                                                            <option value="{{ $item->id }}" {{ $item->id == $gentan_classification['value'] ? 'selected' : '' }}>
-                                                                {{ $item->name }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                                @error('gentan_classification')
-                                                    <span class="invalid-feedback">{{ $message }}</span>
-                                                @enderror --}}
                                             </div>
                                         </div>
                                         <div class="form-group mt-1">
@@ -544,23 +441,6 @@
                                             <div class="input-group">
                                                 <label class="control-label col-12 col-lg-4">Kode Nukigata</label>
                                                 <input type="text" class="form-control" wire:model="katanuki_id" />
-                                                {{-- <div class="col-12 col-lg-8" wire:ignore>
-                                                    <select data-choices data-choices-sorting="true"
-                                                        class="form-select @error('katanuki_id') is-invalid @enderror"
-                                                        wire:model.live="katanuki_id" placeholder="">
-                                                        <option value="" selected>
-                                                            Silahkan Pilih
-                                                        </option>
-                                                        @foreach ($masterKatanuki as $item)
-                                                            <option value="{{ $item->id }}" {{ $item->id == $katanuki_id['value'] ? 'selected' : '' }}>
-                                                                {{ $item->name }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                    @error('katanuki_id')
-                                                        <span class="invalid-feedback">{{ $message }}</span>
-                                                    @enderror
-                                                </div> --}}
                                             </div>
                                         </div>
                                         <div class="form-group mt-1">
@@ -693,92 +573,24 @@
                                             <div class="input-group">
                                                 <label class="control-label col-12 col-lg-4">Jenis Cetak</label>
                                                 <input type="text" class="form-control" wire:model="print_type" />
-                                                {{-- <div class="col-12 col-lg-8" wire:ignore>
-                                                    <select data-choices data-choices-sorting="true"
-                                                        class="form-select @error('print_type') is-invalid @enderror"
-                                                        wire:model="print_type" placeholder="">
-                                                        <option value="" selected>
-                                                            Silahkan Pilih
-                                                        </option>
-                                                        @foreach ($masterPrintType as $item)
-                                                            <option value="{{ $item->id }}" {{ $item->id == $print_type['value'] ? 'selected' : '' }}>
-                                                                {{ $item->name }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                    @error('print_type')
-                                                        <span class="invalid-feedback">{{ $message }}</span>
-                                                    @enderror
-                                                </div> --}}
                                             </div>
                                         </div>
                                         <div class="form-group mt-1">
                                             <div class="input-group">
                                                 <label class="control-label col-12 col-lg-4">Sifat Tinta</label>
                                                 <input type="text" class="form-control" wire:model="ink_characteristic" />
-                                                {{-- <div class="col-12 col-lg-8" wire:ignore>
-                                                    <select data-choices data-choices-sorting="true"
-                                                        class="form-select @error('ink_characteristic') is-invalid @enderror"
-                                                        wire:model="ink_characteristic" placeholder="">
-                                                        <option value="" selected>
-                                                            Silahkan Pilih
-                                                        </option>
-                                                        @foreach ($masterInkCharacteristics as $item)
-                                                            <option value="{{ $item->id }}" {{ $item->id == $ink_characteristic['value'] ? 'selected' : '' }}>
-                                                                {{ $item->name }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                    @error('ink_characteristic')
-                                                        <span class="invalid-feedback">{{ $message }}</span>
-                                                    @enderror
-                                                </div> --}}
                                             </div>
                                         </div>
                                         <div class="form-group mt-1">
                                             <div class="input-group">
                                                 <label class="control-label col-12 col-lg-4">Endless</label>
                                                 <input type="text" class="form-control" wire:model="endless_printing" />
-                                                {{-- <div class="col-12 col-lg-8" wire:ignore>
-                                                    <select data-choices data-choices-sorting="true"
-                                                        class="form-select @error('endless_printing') is-invalid @enderror"
-                                                        wire:model="endless_printing" placeholder="">
-                                                        <option value="" selected>
-                                                            Silahkan Pilih
-                                                        </option>
-                                                        @foreach ($masterEndlessPrinting as $item)
-                                                            <option value="{{ $item->id }}" {{ $item->id == $endless_printing['value'] ? 'selected' : '' }}>
-                                                                {{ $item->name }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                    @error('endless_printing')
-                                                        <span class="invalid-feedback">{{ $message }}</span>
-                                                    @enderror
-                                                </div> --}}
                                             </div>
                                         </div>
                                         <div class="form-group mt-1">
                                             <div class="input-group">
                                                 <label class="control-label col-12 col-lg-4">Arah Gulung</label>
                                                 <input type="text" class="form-control" wire:model="winding_direction_of_the_web" />
-                                                {{-- <div class="col-12 col-lg-8" wire:ignore>
-                                                    <select data-choices data-choices-sorting="true"
-                                                        class="form-select @error('winding_direction_of_the_web') is-invalid @enderror"
-                                                        wire:model="winding_direction_of_the_web" placeholder="">
-                                                        <option value="" selected>
-                                                            Silahkan Pilih
-                                                        </option>
-                                                        @foreach ($masterArahGulung as $item)
-                                                            <option value="{{ $item->id }}" {{ $item->id == $winding_direction_of_the_web['value'] ? 'selected' : '' }}>
-                                                                {{ $item->name }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                    @error('winding_direction_of_the_web')
-                                                        <span class="invalid-feedback">{{ $message }}</span>
-                                                    @enderror
-                                                </div> --}}
                                             </div>
                                         </div>
                                     </div>
@@ -790,23 +602,6 @@
                                             <div class="input-group">
                                                 <label class="control-label col-12 col-lg-6">Klarifikasi Seal</label>
                                                 <input type="text" class="form-control" wire:model="seal_classification" />
-                                                {{-- <div class="col-12 col-lg-6" wire:ignore>
-                                                    <select data-choices data-choices-sorting="true"
-                                                        class="form-select @error('seal_classification') is-invalid @enderror"
-                                                        wire:model="seal_classification" placeholder="">
-                                                        <option value="" selected>
-                                                            Silahkan Pilih
-                                                        </option>
-                                                        @foreach ($masterKlasifikasiSeal as $item)
-                                                            <option value="{{ $item->id }}"  {{ $item->id == $seal_classification['value'] ? 'selected' : '' }}>
-                                                                {{ $item->name }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                    @error('seal_classification')
-                                                        <span class="invalid-feedback">{{ $message }}</span>
-                                                    @enderror
-                                                </div> --}}
                                             </div>
                                         </div>
                                         <div class="form-group mt-1">
@@ -841,92 +636,24 @@
                                             <div class="input-group">
                                                 <label class="control-label col-12 col-lg-6">Lakban Seitai</label>
                                                 <input type="text" class="form-control" wire:model="lakbanseitaiid" />
-                                                {{-- <div class="col-12 col-lg-6" wire:ignore>
-                                                    <select data-choices data-choices-sorting="true"
-                                                        class="form-select @error('lakbanseitaiid') is-invalid @enderror"
-                                                        wire:model="lakbanseitaiid" placeholder="">
-                                                        <option value="" selected>
-                                                            Silahkan Pilih
-                                                        </option>
-                                                        @foreach ($masterLakbanSeitai as $item)
-                                                            <option value="{{ $item->id }}" {{ $item->id == $lakbanseitaiid['value'] ? 'selected' : '' }}>
-                                                                {{ $item->name }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                    @error('lakbanseitaiid')
-                                                        <span class="invalid-feedback">{{ $message }}</span>
-                                                    @enderror
-                                                </div> --}}
                                             </div>
                                         </div>
                                         <div class="form-group mt-1">
                                             <div class="input-group">
                                                 <label class="control-label col-12 col-lg-6">Stempel Seitai</label>
                                                 <input type="text" class="form-control" wire:model="stampelseitaiid" />
-                                                {{-- <div class="col-12 col-lg-6" wire:ignore>
-                                                    <select data-choices data-choices-sorting="true"
-                                                        class="form-select @error('stampelseitaiid') is-invalid @enderror"
-                                                        wire:model="stampelseitaiid" placeholder="">
-                                                        <option value="" selected>
-                                                            Silahkan Pilih
-                                                        </option>
-                                                        @foreach ($masterStampleSeitai as $item)
-                                                            <option value="{{ $item->id }}" {{ $item->id == $stampelseitaiid['value'] ? 'selected' : '' }}>
-                                                                {{ $item->name }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                    @error('stampelseitaiid')
-                                                        <span class="invalid-feedback">{{ $message }}</span>
-                                                    @enderror
-                                                </div> --}}
                                             </div>
                                         </div>
                                         <div class="form-group mt-1">
                                             <div class="input-group">
                                                 <label class="control-label col-12 col-lg-6">Hagata Seitai</label>
                                                 <input type="text" class="form-control" wire:model="hagataseitaiid" />
-                                                {{-- <div class="col-12 col-lg-6" wire:ignore>
-                                                    <select data-choices data-choices-sorting="true"
-                                                        class="form-select @error('hagataseitaiid') is-invalid @enderror"
-                                                        wire:model="hagataseitaiid" placeholder="">
-                                                        <option value="" selected>
-                                                            Silahkan Pilih
-                                                        </option>
-                                                        @foreach ($masterHagataSeitai as $item)
-                                                            <option value="{{ $item->id }}"  {{ $item->id == $hagataseitaiid['value'] ? 'selected' : '' }}>
-                                                                {{ $item->name }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                    @error('hagataseitaiid')
-                                                        <span class="invalid-feedback">{{ $message }}</span>
-                                                    @enderror
-                                                </div> --}}
                                             </div>
                                         </div>
                                         <div class="form-group mt-1">
                                             <div class="input-group">
                                                 <label class="control-label col-12 col-lg-6">Jenis Seal Seitai</label>
                                                 <input type="text" class="form-control" wire:model="jenissealseitaiid" />
-                                                {{-- <div class="col-12 col-lg-6" wire:ignore>
-                                                    <select data-choices data-choices-sorting="true"
-                                                        class="form-select @error('jenissealseitaiid') is-invalid @enderror"
-                                                        wire:model="jenissealseitaiid" placeholder="">
-                                                        <option value="" selected>
-                                                            Silahkan Pilih
-                                                        </option>
-                                                        @foreach ($masterJenisSealSeitai as $item)
-                                                            <option value="{{ $item->id }}"  {{ $item->id == $jenissealseitaiid['value'] ? 'selected' : '' }}>
-                                                                {{ $item->name }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                    @error('jenissealseitaiid')
-                                                        <span class="invalid-feedback">{{ $message }}</span>
-                                                    @enderror
-                                                </div> --}}
                                             </div>
                                         </div>
                                     </div>
@@ -935,96 +662,24 @@
                                             <div class="input-group">
                                                 <label class="control-label col-12 col-lg-3">Kode Gasio</label>
                                                 <input type="text" class="form-control" wire:model="pack_gaiso_id" />
-                                                {{-- <div class="col-12 col-lg-9" wire:ignore>
-                                                    <select data-choices data-choices-sorting="true"
-                                                        class="form-select @error('pack_gaiso_id') is-invalid @enderror"
-                                                        wire:model="pack_gaiso_id" placeholder="">
-                                                        <option value="" selected>
-                                                            Silahkan Pilih
-                                                        </option>
-                                                        @foreach ($masterPackagingGaiso as $item)
-                                                            <option value="{{ $item->id }}"  {{ $item->id == $pack_gaiso_id['value'] ? 'selected' : '' }}>
-                                                                {{ $item->code }}, {{ $item->box_class == 1 ? 'Standar' : 'Khusus' }},
-                                                                {{ $item->name }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                    @error('pack_gaiso_id')
-                                                        <span class="invalid-feedback">{{ $message }}</span>
-                                                    @enderror
-                                                </div> --}}
                                             </div>
                                         </div>
                                         <div class="form-group mt-1">
                                             <div class="input-group">
                                                 <label class="control-label col-12 col-lg-3">Kode Box</label>
                                                 <input type="text" class="form-control" wire:model="pack_box_id" />
-                                                {{-- <div class="col-12 col-lg-9" wire:ignore>
-                                                    <select data-choices data-choices-sorting="true"
-                                                        class="form-select @error('pack_box_id') is-invalid @enderror"
-                                                        wire:model="pack_box_id" placeholder="">
-                                                        <option value="" selected>
-                                                            Silahkan Pilih
-                                                        </option>
-                                                        @foreach ($masterPackagingBox as $item)
-                                                            <option value="{{ $item->id }}"  {{ $item->id == $pack_box_id['value'] ? 'selected' : '' }}>
-                                                                {{ $item->code }}, {{ $item->box_class == 1 ? 'Standar' : 'Khusus' }},
-                                                                {{ $item->name }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                    @error('pack_box_id')
-                                                        <span class="invalid-feedback">{{ $message }}</span>
-                                                    @enderror
-                                                </div> --}}
                                             </div>
                                         </div>
                                         <div class="form-group mt-1">
                                             <div class="input-group">
                                                 <label class="control-label col-12 col-lg-3">Kode Inner</label>
                                                 <input type="text" class="form-control" wire:model="pack_inner_id" />
-                                                {{-- <div class="col-12 col-lg-9" wire:ignore>
-                                                    <select data-choices data-choices-sorting="true"
-                                                        class="form-select @error('pack_inner_id') is-invalid @enderror"
-                                                        wire:model="pack_inner_id" placeholder="">
-                                                        <option value="" selected>
-                                                            Silahkan Pilih
-                                                        </option>
-                                                        @foreach ($masterPackagingInner as $item)
-                                                            <option value="{{ $item->id }}"  {{ $item->id == $pack_inner_id['value'] ? 'selected' : '' }}>
-                                                                {{ $item->code }}, {{ $item->box_class == 1 ? 'Standar' : 'Khusus' }},
-                                                                {{ $item->name }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                    @error('pack_inner_id')
-                                                        <span class="invalid-feedback">{{ $message }}</span>
-                                                    @enderror
-                                                </div> --}}
                                             </div>
                                         </div>
                                         <div class="form-group mt-1">
                                             <div class="input-group">
                                                 <label class="control-label col-12 col-lg-3">Kode Layer</label>
                                                 <input type="text" class="form-control" wire:model="pack_layer_id" />
-                                                {{-- <div class="col-12 col-lg-9" wire:ignore>
-                                                    <select data-choices data-choices-sorting="true"
-                                                        class="form-select @error('pack_layer_id') is-invalid @enderror"
-                                                        wire:model="pack_layer_id" placeholder="">
-                                                        <option value="" selected>
-                                                            Silahkan Pilih
-                                                        </option>
-                                                        @foreach ($masterPackagingLayer as $item)
-                                                            <option value="{{ $item->id }}"  {{ $item->id == $pack_layer_id['value'] ? 'selected' : '' }}>
-                                                                {{ $item->code }}, {{ $item->box_class == 1 ? 'Standar' : 'Khusus' }},
-                                                                {{ $item->name }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                    @error('pack_layer_id')
-                                                        <span class="invalid-feedback">{{ $message }}</span>
-                                                    @enderror
-                                                </div> --}}
                                             </div>
                                         </div>
                                         <div class="form-group mt-1">
@@ -1044,21 +699,6 @@
                                                 <input required type="number" class="form-control" wire:model="case_gaiso_count"
                                                     placeholder="0" />
                                                 <input required type="text" class="form-control" wire:model="case_gaiso_count_unit"/>
-                                                {{-- <select data-choices data-choices-sorting="true"
-                                                    class="form-control @error('case_gaiso_count_unit') is-invalid @enderror"
-                                                    wire:model="case_gaiso_count_unit" placeholder="">
-                                                    <option value="" selected>
-                                                        Unit
-                                                    </option>
-                                                    @foreach ($masterUnit as $item)
-                                                        <option value="{{ $item->id }}"  {{ $item->id == $case_gaiso_count_unit['value'] ? 'selected' : '' }}>
-                                                            {{ $item->name }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                                @error('case_gaiso_count_unit')
-                                                    <span class="invalid-feedback">{{ $message }}</span>
-                                                @enderror --}}
                                             </div>
                                         </div>
                                         <div class="form-group mt-1">
@@ -1067,42 +707,12 @@
                                                 <input type="number" class="form-control" wire:model="case_box_count"
                                                     placeholder="0" />
                                                 <input type="text" class="form-control" wire:model="case_box_count_unit" />
-                                                {{-- <select required data-choices data-choices-sorting="true"
-                                                    class="form-control @error('case_box_count_unit') is-invalid @enderror"
-                                                    wire:model="case_box_count_unit" placeholder="">
-                                                    <option value="" selected>
-                                                        Unit
-                                                    </option>
-                                                    @foreach ($masterUnit as $item)
-                                                        <option value="{{ $item->id }}"  {{ $item->id == $case_box_count_unit['value'] ? 'selected' : '' }}>
-                                                            {{ $item->name }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                                @error('case_box_count_unit')
-                                                    <span class="invalid-feedback">{{ $message }}</span>
-                                                @enderror --}}
                                             </div>
                                         </div>
                                         <div class="form-group mt-1">
                                             <div class="input-group" wire:ignore>
                                                 <label class="control-label col-12 col-lg-2">Isi</label>
                                                 <input required type="text" class="form-control" wire:model="case_inner_count_unit" />
-                                                {{-- <select data-choices data-choices-sorting="true"
-                                                    class="form-control @error('case_inner_count_unit') is-invalid @enderror"
-                                                    wire:model="case_inner_count_unit" placeholder="">
-                                                    <option value="" selected>
-                                                        Unit
-                                                    </option>
-                                                    @foreach ($masterUnit as $item)
-                                                        <option value="{{ $item->id }}"  {{ $item->id == $case_inner_count_unit['value'] ? 'selected' : '' }}>
-                                                            {{ $item->name }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                                @error('case_inner_count_unit')
-                                                    <span class="invalid-feedback">{{ $message }}</span>
-                                                @enderror --}}
                                             </div>
                                         </div>
                                     </div>

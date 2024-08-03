@@ -33,6 +33,9 @@ class AddLpkController extends Component
     public $defaultgulung;
     public $qty_gulung;
     public $selisihkurang;
+    public $warnalpkid;
+
+    public $masterWarnaLPK;
 
     protected $rules = [
         'lpk_date' => 'required',
@@ -43,6 +46,7 @@ class AddLpkController extends Component
         'qty_gentan' => 'required',
         'panjang_lpk' => 'required',
         'processdate' => 'required',
+        'warnalpkid' => 'required',
         // 'qty_gulung' => 'required'
     ];
 
@@ -64,6 +68,9 @@ class AddLpkController extends Component
         $this->total_assembly_line = 0;
         $this->productlength=1;
         $this->defaultgulung=1;
+
+        // master warna LPK
+        $this->masterWarnaLPK = DB::table('mswarnalpk')->get();
     }
 
     public function save()
@@ -97,8 +104,8 @@ class AddLpkController extends Component
             $orderlpk->panjang_lpk = $this->panjang_lpk;
             $orderlpk->total_assembly_line = $this->total_assembly_line;
             $orderlpk->seq_no = $seqno;
-            $orderlpk->remark = $order->machine_id;
             $orderlpk->qty_gulung = $this->qty_gulung;
+            $orderlpk->warnalpkid = $this->warnalpkid['value'];
             $orderlpk->created_on = Carbon::now()->format('Y-m-d H:i:s');
 
             $orderlpk->save();

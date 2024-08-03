@@ -1,29 +1,29 @@
 <div class="row">
     <form wire:submit.prevent="save">
         <div class="row mt-2">
-            <div class="col-4 col-lg-12">
+            <div class="col-lg-12">
                 <div class="row">
                     <div class="col-12 col-lg-6">
-                        <div class="form-group">                            
+                        <div class="form-group">
                             <div class="input-group">
-                                <label class="control-label pe-2">Tanggal Produksi</label>
-                                <input class="form-control datepicker-input" type="date" wire:model.defer="production_date" placeholder="yyyy/mm/dd"/>
+                                <label class="control-label col-12 col-md-3 col-lg-3 pe-2">Tanggal Produksi</label>
+                                <input class="form-control datepicker-input col-12 col-md-9 col-lg-9" type="date" wire:model.defer="production_date" placeholder="yyyy/mm/dd"/>
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-lg-6">
-                        <div class="form-group">                            
+                    <div class="col-12 col-lg-6 mt-1">
+                        <div class="form-group">
                             <div class="input-group">
-                                <label class="control-label pe-2">Tanggal Proses</label>
-                                <input class="form-control datepicker-input" type="date" wire:model.defer="created_on" placeholder="yyyy/mm/dd"/>
+                                <label class="control-label col-12 col-md-3 col-lg-3 pe-2">Tanggal Proses</label>
+                                <input class="form-control datepicker-input col-12 col-md-9 col-lg-9" type="date" wire:model.defer="created_on" placeholder="yyyy/mm/dd"/>
                             </div>
                         </div>
                     </div>
                     <div class="col-12 col-lg-4 mt-1">
                         <div class="form-group">
                             <div class="input-group">
-                                <label class="control-label col-5 pe-2">Nomor LPK</label>
-                                <input type="text" class="form-control"  wire:model.live="lpk_no" />
+                                <label class="control-label col-12 col-md-3 col-lg-5 pe-2">Nomor LPK</label>
+                                <input type="text" class="form-control col-12 col-md-9 col-lg-7"  wire:model.live="lpk_no" />
                                 @error('lpk_no')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -33,60 +33,60 @@
                     <div class="col-12 col-lg-4 mt-1">
                         <div class="form-group">
                             <div class="input-group">
-                                <label class="control-label pe-2">Tanggal LPK</label>
-                                <input class="form-control readonly datepicker-input" readonly="readonly" type="date" wire:model.defer="lpk_date" placeholder="yyyy/mm/dd"/>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-lg-4 mt-1">
-                        <div class="form-group">                            
-                            <div class="input-group">
-                                <label class="control-label pe-2">Jumlah LPK</label>
-                                <input type="text" placeholder="-" class="form-control readonly" readonly="readonly" wire:model="qty_lpk" />
+                                <label class="control-label col-12 col-md-3 col-lg-4 pe-2">Tanggal LPK</label>
+                                <input class="form-control readonly datepicker-input col-12 col-md-9 col-lg-8" readonly="readonly" type="date" wire:model.defer="lpk_date" placeholder="yyyy/mm/dd"/>
                             </div>
                         </div>
                     </div>
                     <div class="col-12 col-lg-4 mt-1">
                         <div class="form-group">
                             <div class="input-group">
-                                <label class="control-label col-5 pe-2">Nomor Order</label>
-                                <input type="text" placeholder="-" class="form-control readonly" readonly="readonly" wire:model="code" />
+                                <label class="control-label col-12 col-md-3 col-lg-4 pe-2">Jumlah LPK</label>
+                                <input type="text" placeholder="-" class="form-control col-12 col-md-9 col-lg-8 readonly" readonly="readonly" wire:model="qty_lpk" />
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-lg-8 mt-1">
-                        <div class="form-group">                            
+                    <div class="col-12 col-md-8 col-lg-4 mt-1">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <label class="control-label col-12 col-md-4 col-lg-5 pe-2">Nomor Order</label>
+                                <input type="text" placeholder="-" class="form-control readonly col-12 col-md-8 col-lg-7" readonly="readonly" wire:model="code" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4 col-lg-8 mt-1">
+                        <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label"></label>
                                 <input type="text" placeholder="-" class="form-control readonly" readonly="readonly" wire:model="name" />
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-lg-4 mt-1">
+                    <div class="col-12 col-md-8 col-lg-4 mt-1">
                         <div class="form-group">
                             <div class="input-group">
-                                <label class="control-label col-5 pe-2">Nomor Mesin</label>
-                                <input type="text" placeholder=" ... " class="form-control" wire:model.live.debounce.300ms="machineno" />
+                                <label class="control-label col-12 col-md-4 col-lg-5 pe-2">Nomor Mesin</label>
+                                <input type="text" placeholder=" ... " class="form-control col-12 col-md-8 col-lg-7" wire:model.live.debounce.300ms="machineno" />
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-lg-8 mt-1">
-                        <div class="form-group">                            
+                    <div class="col-12 col-md-4 col-lg-8 mt-1">
+                        <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label"></label>
                                 <input type="text" placeholder="-" class="form-control readonly" readonly="readonly" wire:model="machinename" />
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-lg-4 mt-1">
+                    <div class="col-12 col-md-8 col-lg-4 mt-1">
                         <div class="form-group">
                             <div class="input-group">
-                                <label class="control-label col-5 pe-2">Petugas</label>
-                                <input type="text" placeholder=" ... " class="form-control" wire:model.live="employeeno" />
+                                <label class="control-label col-12 col-md-4 col-lg-5 pe-2">Petugas</label>
+                                <input type="text" placeholder=" ... " class="form-control col-12 col-md-8 col-lg-7" wire:model.live="employeeno" />
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-lg-8 mt-1">
+                    <div class="col-12 col-md-4 col-lg-8 mt-1">
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label"></label>
@@ -94,21 +94,21 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-lg-4 mt-1">
+                    <div class="col-12 col-md-12 col-lg-4  mt-1">
                         <div class="form-group">
                             <div class="input-group">
-                                <label class="control-label col-5">Jumlah Produksi</label>
+                                <label class="control-label col-12 col-md-3 col-lg-5">Jumlah Produksi</label>
                                 <input type="text" placeholder="-" class="form-control" wire:model="qty_produksi" />
                                 <span class="input-group-text">
                                     lbr
                                 </span>
-                            </div>                            
+                            </div>
                         </div>
                     </div>
-                    <div class="col-12 col-lg-5 mt-1">
-                        <div class="form-group">                            
+                    <div class="col-12 col-md-12 col-lg-4 mt-1">
+                        <div class="form-group">
                             <div class="input-group">
-                                <label class="control-label col-5">Total Produksi</label>
+                                <label class="control-label col-12 col-md-3 col-lg-5">Total Produksi</label>
                                 <input type="text" placeholder="-" class="form-control readonly" readonly="readonly" wire:model="total_produksi" />
                                 <span class="input-group-text">
                                     lbr
@@ -116,10 +116,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-lg-3 mt-1">
-                        <div class="form-group">                            
+                    <div class="col-12 col-md-12 col-lg-4 mt-1">
+                        <div class="form-group">
                             <div class="input-group">
-                                <label class="control-label col-3">Selisih</label>
+                                <label class="control-label col-12 col-md-3 col-lg-5">Selisih</label>
                                 <input type="text" class="form-control readonly" readonly="readonly" wire:model="selisih" />
                                 <span class="input-group-text">
                                     lbr
@@ -127,21 +127,21 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-lg-4 mt-1">
+                    <div class="col-12 col-md-12 col-lg-4 mt-1">
                         <div class="form-group">
                             <div class="input-group">
-                                <label class="control-label col-5">Nomor Palet</label>
+                                <label class="control-label col-12 col-md-3 col-lg-5">Nomor Palet</label>
                                 <input type="text" placeholder="A0000-000000" class="form-control" wire:model="nomor_palet" />
                                 @error('nomor_palet')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
-                            </div>                            
+                            </div>
                         </div>
                     </div>
-                    <div class="col-12 col-lg-8 mt-1">
+                    <div class="col-12 col-md-12 col-lg-4 mt-1">
                         <div class="form-group">
                             <div class="input-group">
-                                <label class="control-label col-3">Nomor LOT</label>
+                                <label class="control-label col-12 col-md-3 col-lg-5">Nomor LOT</label>
                                 <input type="text" placeholder="----------" class="form-control" wire:model="nomor_lot" />
 
                                 <input type="text" class="form-control readonly" readonly="readonly" wire:model="selisih" />
@@ -151,44 +151,43 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="col-12 col-lg-4 mt-1">
+                    <div class="col-12 col-md-12 col-lg-4 mt-1">
                         <div class="form-group">
                             <div class="input-group">
-                                <label class="control-label col-5">Loss Infure</label>
+                                <label class="control-label col-12 col-md-3 col-lg-5">Loss Infure</label>
                                 <input type="text" class="form-control"  wire:model="infure_berat_loss" />
                                 <span class="input-group-text">
                                     kg
                                 </span>
-                            </div>                            
+                            </div>
                         </div>
                     </div>
                     <div class="col-12 col-lg-8 mt-1">
                         <div class="form-group">
                             <div class="input-group">
-                                <label class="control-label col-3">Petugas Infure</label>
+                                <label class="control-label col-3 col-lg-2">Petugas Infure</label>
                                 <input type="text" placeholder="..." class="form-control" wire:model.live="employeenoinfure" />
 
                                 <input type="text" placeholder="-" class="form-control readonly" readonly="readonly" wire:model="empnameinfure" />
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-lg-4 mt-1">
+                    <div class="col-12 col-lg-3 mt-1">
                         <div class="form-group">
                             <div class="input-group">
-                                <label class="control-label col-5 pe-2">Jam Produksi</label>
-                                <input class="form-control" wire:model="work_hour" type="time" placeholder="hh:mm">
+                                <label class="control-label col-12 col-md-3 col-lg-7 pe-2">Jam Produksi</label>
+                                <input class="form-control col-12 col-md-9 col-lg-5" wire:model="work_hour" type="time" placeholder="hh:mm">
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-lg-8 mt-1">
-                        <div class="form-group">                            
+                    <div class="col-12 col-md-12 col-lg-4 mt-1">
+                        <div class="form-group">
                             <div class="input-group">
-                                <label class="control-label col-2">Shift Kerja</label>
+                                <label class="control-label col-12 col-md-3 col-lg-5">Shift Kerja</label>
                                 <input type="text" class="form-control readonly" readonly="readonly" wire:model="work_shift" />
                             </div>
                         </div>
-                    </div>                    
+                    </div>
                 </div>
             </div>
         </div>
@@ -248,8 +247,8 @@
                 </button>
             </div>
         </div>
-        
-        
+
+
         <div class="tab-content" id="myTabContent">
             <div class="tab-pane fade show active" id="periode1SP" role="tabpanel" aria-labelledby="periode1SP-tab">
                 <div class="row justify-content-start">
@@ -260,7 +259,7 @@
                             </button>
                         </div>
                     </div>
-                    
+
                     <div class="card border-0 shadow mb-4 mt-4">
                         <div class="card-body">
                             <div class="table-responsive">
@@ -288,7 +287,7 @@
                                                         <i class="fa fa-trash"></i> Delete
                                                     </button>
                                                 </td>
-                                                <td>                                
+                                                <td>
                                                     {{ $item->gentan_no }}
                                                 </td>
                                                 <td>
@@ -335,7 +334,7 @@
                             </button>
                         </div>
                     </div>
-                    
+
                     <div class="card border-0 shadow mb-4 mt-4">
                         <div class="card-body">
                             <div class="table-responsive">
@@ -359,7 +358,7 @@
                                                         <i class="fa fa-trash"></i> Delete
                                                     </button>
                                                 </td>
-                                                <td>                                
+                                                <td>
                                                     {{ $item->code }}
                                                 </td>
                                                 <td>
@@ -374,7 +373,7 @@
                                             <td colspan="4" class="text-center">No results found</td>
                                         </tr>
                                         @endforelse
-                                        
+
                                         <tr>
                                             <td colspan="3" class="text-end">Berat Loss Total (kg):</td>
                                             <td colspan="1" class="text-center">0</td>
@@ -453,7 +452,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="modal fade" id="modal-loss" tabindex="-1" role="dialog" aria-labelledby="modal-loss" aria-hidden="true" wire:ignore.self>
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
@@ -504,7 +503,7 @@
                 </div>
             </div>
         </div>
-    </form>        
+    </form>
 </div>
 @script
     <script>
