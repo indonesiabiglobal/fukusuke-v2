@@ -52,7 +52,7 @@
                         <label class="control-label col-12 col-lg-3 fw-bold text-muted">Jumlah LPK</label>
                         <input type="text" class="form-control @error('qty_lpk') is-invalid @enderror" wire:model.live="qty_lpk" />
                         <span class="input-group-text">
-                            Lembar                            
+                            Lembar
                         </span>
                         @error('qty_lpk')
                             <span class="invalid-feedback">{{ $message }}</span>
@@ -95,16 +95,35 @@
                         @enderror
                     </div>
                 </div>
+                {{-- warna LPK --}}
                 <div class="form-group mt-1">
-                    <label for="textarea" class="control-label col-12 col-lg-2 fw-bold text-muted">Catatan</label>
-                    <textarea class="form-control" placeholder="Catatan" id="textarea" rows="2" wire:model="remark"></textarea>
-                </div> 
+                    <div class="input-group">
+                        <label class="control-label col-12 col-lg-3 fw-bold text-muted">Warna LPK</label>
+                        <div class="col-12 col-lg-9" wire:ignore>
+                            <select required data-choices data-choices-sorting="true"
+                                class="form-select @error('warnalpkid') is-invalid @enderror"
+                                wire:model="warnalpkid">
+                                <option value="" selected>
+                                    Silahkan Pilih
+                                </option>
+                                @foreach ($masterWarnaLPK as $item)
+                                    <option value="{{ $item->id }}">
+                                        {{ $item->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('warnalpkid')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
             </div>
-            
+
             <div class="col-lg-6">
                 <div class="form-group">
                     <div class="input-group">
-                        <label class="control-label col-12 col-lg-3 fw-bold text-muted">Tanggal Proses</label>                        
+                        <label class="control-label col-12 col-lg-3 fw-bold text-muted">Tanggal Proses</label>
                         <input wire:model.defer="processdate" type="text" class="form-control datepicker-input @error('processdate') is-invalid @enderror" placeholder="yyyy/mm/dd" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d/m/Y"/>
                         <span class="input-group-text py-0">
                             <i class="ri-calendar-event-fill fs-4"></i>
@@ -133,7 +152,7 @@
                     </div>
                 </div>
                 <div class="form-group mt-1">
-                    <div class="input-group">                        
+                    <div class="input-group">
                         <label class="control-label col-12 col-lg-3 fw-bold text-muted">Nama Mesin</label>
                         <input type="text" class="form-control readonly" readonly="readonly" wire:model="machinename" />
                     </div>
@@ -171,9 +190,13 @@
                         </span>
                     </div>
                 </div>
+                <div class="form-group mt-1">
+                    <label for="textarea" class="control-label col-12 col-lg-2 fw-bold text-muted">Catatan</label>
+                    <textarea class="form-control" placeholder="Catatan" id="textarea" rows="2" wire:model="remark"></textarea>
+                </div>
             </div>
         </div>
-        
+
         <div class="col-lg-12 mt-2">
             <div class="toolbar">
                 <button type="button" class="btn btn-warning" wire:click="cancel">
@@ -188,7 +211,7 @@
                             <span class="flex-grow-1 ms-1">
                                 Loading...
                             </span>
-                        </span>                    
+                        </span>
                     </div>
                 </button>
 

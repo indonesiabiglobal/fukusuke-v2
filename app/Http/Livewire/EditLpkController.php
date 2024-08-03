@@ -36,6 +36,10 @@ class EditLpkController extends Component
     public $defaultgulung;
     public $selisihkurang;
     public $dimensi;
+    public $remark;
+    public $warnalpkid;
+
+    public $masterWarnaLPK;
 
     protected $rules = [
         'lpk_date' => 'required',
@@ -47,6 +51,7 @@ class EditLpkController extends Component
         'qty_gentan' => 'required',
         'qty_gulung' => 'required',
         'panjang_lpk' => 'required',
+        'warnalpkid' => 'required',
         // 'tglproses' => 'required',
         // 'buyer_id' => 'required',
         // 'product_id' => 'required',
@@ -57,6 +62,8 @@ class EditLpkController extends Component
         $this->total_assembly_line=0;
         $this->productlength=1;
         $this->defaultgulung=1;
+        // master warna LPK
+        $this->masterWarnaLPK = DB::table('mswarnalpk')->get();
 
         $order = DB::table('tdorderlpk as tolp')
         ->select(
@@ -71,6 +78,8 @@ class EditLpkController extends Component
             'tolp.total_assembly_line as infure',
             'tolp.total_assembly_qty',
             'tolp.total_assembly_line',
+            'tolp.warnalpkid',
+            'tolp.remark',
             'tod.po_no',
             'mp.name as product_name',
             'mp.code',
@@ -115,6 +124,8 @@ class EditLpkController extends Component
         $this->dimensi = $order->ketebalan.'x'.$order->diameterlipat.'x'.$order->productlength;
         $this->total_assembly_line = $order->total_assembly_line;
         $this->productlength = $order->productlength;
+        $this->remark = $order->remark;
+        $this->warnalpkid['value'] = $order->warnalpkid;
     }
 
     public function save()
@@ -139,7 +150,9 @@ class EditLpkController extends Component
             $orderlpk->panjang_lpk = $this->panjang_lpk;
             $orderlpk->total_assembly_line = $this->total_assembly_line;
             $orderlpk->qty_gulung = $this->qty_gulung;
-            $orderlpk->created_on = Carbon::now()->format('Y-m-d H:i:s');
+            $orderlpk->warnalpkid = $this->warnalpkid['value'];
+            $orderlpk->updated_by = auth()->user()->username;
+            $orderlpk->updated_on = Carbon::now()->format('Y-m-d H:i:s');
 
             $orderlpk->save();
 
