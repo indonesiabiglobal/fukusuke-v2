@@ -355,7 +355,7 @@
                                         </tr>
                                         <tr>
                                             <td style="border-bottom: 1px solid black; text-align:center">
-                                                <img src="{{ asset('katanuki/' . $data->filename) }}" alt=""
+                                                <img src="{{ asset('storage/' . $data->filename) }}" alt=""
                                                 style="height:100%; width:100%">
                                             </td>
                                         </tr>
@@ -584,7 +584,7 @@
                         </table>
                     </td>
                     <td style="padding: 3px;border-right: 1px solid black; text-align:center">
-                        <img src="{{ asset('katanuki/' . $data->filename) }}" alt=""
+                        <img src="{{ asset('storage/' . $data->filename) }}" alt=""
                             style="height:100%; width:100%">
                     </td>
                 </tr>

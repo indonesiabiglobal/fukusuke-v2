@@ -31,32 +31,10 @@ class AddOrderController extends Component
 
 
     // data master
-    public $photoKatanuki;
-    public $masterProductType;
-    public $masterMaterial;
-    public $masterEmbossed;
-    public $masterSurface;
-    public $masterGazetteClassifications;
-    public $masterGentanClassifications;
     public $masterKatanuki;
-    public $masterPrintType;
-    public $masterInkCharacteristics;
-    public $masterEndlessPrinting;
-    public $masterArahGulung;
-    public $masterKlasifikasiSeal;
-    public $masterPackagingGaiso;
-    public $masterPackagingBox;
-    public $masterPackagingInner;
-    public $masterPackagingLayer;
-    public $masterUnit;
-    public $masterLakbanInfure;
-    public $masterLakbanSeitai;
-    public $masterStampleSeitai;
-    public $masterHagataSeitai;
-    public $masterJenisSealSeitai;
-
 
     // data add produk
+    public $photoKatanuki;
     public $productNomorOrder;
     public $code;
     public $name;
@@ -158,9 +136,7 @@ class AddOrderController extends Component
                 // nomor order produk
                 $this->productNomorOrder = DB::table('msproduct')->where('code', $this->product_id)->first();
 
-                $this->masterUnit = DB::table('msunit')->get(['id', 'code', 'name']);
                 $this->masterKatanuki = DB::table('mskatanuki')->where('id', $this->productNomorOrder->katanuki_id)->first(['name', 'filename']);
-
 
                 $this->code = $this->productNomorOrder->code;
                 $this->name = $this->productNomorOrder->name;
