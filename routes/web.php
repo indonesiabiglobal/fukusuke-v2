@@ -200,9 +200,14 @@ Route::get('/report-masuk-gudang', function (Request $request) {
 })->name('report-masuk-gudang');
 
 Route::get('/report-nippo-infure', function (Request $request) {
-    $no_palet = $request->query('no_palet');
-    return view('livewire.nippo-infure.report-nippo-infure', compact('no_palet'));
+    $tanggal = $request->query('tanggal');
+    return view('livewire.nippo-infure.report-nippo-infure', compact('tanggal'));
 })->name('report-nippo-infure');
+
+Route::get('/report-checklist-seitai', function (Request $request) {
+    $tanggal = $request->query('tanggal');
+    return view('livewire.nippo-seitai.report-checklist-seitai', compact('tanggal'));
+})->name('report-checklist-seitai');
 
 Route::get('/report-gentan', function (Request $request) {
     $lpk_no = $request->query('lpk_no');
