@@ -44,10 +44,12 @@
                     <div class="col-xl-12">
                         <div class="card">
                             <div class="card-header border-0 align-items-center d-flex">
-                                <a class="link-primary" href="#" data-bs-toggle="modal"
-                                    data-bs-target="#modalListMesinInfure">
-                                    <h4 class="card-title mb-0 flex-grow-1 col-12">INFURE, Kadou Jikan</h4>
-                                </a>
+                                <h4 class="card-title mb-0 flex-grow-1 col-12">
+                                    <a class="link-primary" href="#" data-bs-toggle="modal"
+                                        data-bs-target="#modalListMesinInfure">
+                                        INFURE, Kadou Jikan
+                                    </a>
+                                </h4>
                             </div>
                             <div class="card-body p-0 pb-2">
                                 <div class="w-100">
@@ -69,10 +71,12 @@
                     <div class="col-xl-12">
                         <div class="card">
                             <div class="card-header border-0 align-items-center d-flex">
-                                <a class="link-primary" href="#" data-bs-toggle="modal"
-                                    data-bs-target="#modalListMesinSeitai">
-                                    <h4 class="card-title mb-0 flex-grow-1 col-12">SEITAI, Kadou Jikan</h4>
-                                </a>
+                                <h4 class="card-title mb-0 flex-grow-1 col-12">
+                                    <a class="link-primary" href="#" data-bs-toggle="modal"
+                                        data-bs-target="#modalListMesinSeitai">
+                                        SEITAI, Kadou Jikan
+                                    </a>
+                                </h4>
                             </div>
                             <div class="card-body p-0 pb-2">
                                 <div class="w-100">
