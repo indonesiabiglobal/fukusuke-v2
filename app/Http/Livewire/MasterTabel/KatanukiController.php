@@ -10,7 +10,7 @@ use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
 
-class Katanuki extends Component
+class KatanukiController extends Component
 {
     use WithFileUploads;
     use WithPagination, WithoutUrlPagination;

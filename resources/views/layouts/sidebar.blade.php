@@ -210,7 +210,7 @@
                                 <a href="/karyawan" class="nav-link" data-key="t-starter"> Karyawan </a>
                             </li>
                             <li class="nav-item">
-                                <a href="/katanuki" class="nav-link" data-key="t-starter"> Katanuki </a>
+                                <a href="/menu-katanuki" class="nav-link" data-key="t-starter"> Katanuki </a>
                             </li>
                             <li class="nav-item">
                                 <a href="/mesin" class="nav-link" data-key="t-starter"> Mesin </a>

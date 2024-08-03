@@ -26,7 +26,7 @@ use App\Http\Livewire\LpkEntryController;
 use App\Http\Livewire\MasterTabel\BuyerController;
 use App\Http\Livewire\MasterTabel\Department;
 use App\Http\Livewire\MasterTabel\Employee;
-use App\Http\Livewire\MasterTabel\Katanuki;
+use App\Http\Livewire\MasterTabel\KatanukiController;
 use App\Http\Livewire\MasterTabel\Kemasan\BoxController;
 use App\Http\Livewire\MasterTabel\Kemasan\GaisoController;
 use App\Http\Livewire\MasterTabel\Kemasan\InnerController;
@@ -167,7 +167,7 @@ Route::get('/mesin', Machine::class)->name('mesin');
 Route::get('/karyawan', Employee::class)->name('karyawan');
 
 // master table katanuki
-Route::get('/katanuki', Katanuki::class)->name('katanuki');
+Route::get('/menu-katanuki', KatanukiController::class)->name('menu-katanuki');
 
 // master table produk
 Route::get('/master-produk', MasterProduk::class)->name('product');
