@@ -142,7 +142,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-12 col-md-3 col-lg-5">Nomor LOT</label>
-                                <input type="text" placeholder="----------" class="form-control @error('nomor_palet') is-invalid @enderror" wire:model="nomor_lot" />
+                                <input type="text" placeholder="----------" class="form-control @error('nomor_lot') is-invalid @enderror" wire:model="nomor_lot" />
 
                                 <input type="text" class="form-control readonly" readonly="readonly" wire:model="selisih" />
                                 @error('nomor_lot')

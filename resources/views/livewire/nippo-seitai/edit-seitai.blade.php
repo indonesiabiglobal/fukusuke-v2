@@ -196,7 +196,7 @@
         </div>
         <hr/>
         <div class="row">
-            <div class="col-lg-8">
+            <div class="col-lg-7">
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active" id="periode1SP-tab" data-bs-toggle="tab" data-bs-target="#periode1SP" type="button" role="tab" aria-controls="periode1SP" aria-selected="true">Gentan(s)</button>
@@ -206,9 +206,9 @@
                     </li>
                 </ul>
             </div>
-            <div class="col-lg-4" style="border-top:1px solid #efefef">
+            <div class="col-lg-5">
                 <div class="toolbar">
-                    <button id="btnFilter" type="button" class="btn btn-warning" wire:click="cancel">
+                    {{-- <button id="btnFilter" type="button" class="btn btn-warning" wire:click="cancel">
                         <i class="fa fa-back"></i> Close
                     </button>
                     <button id="btnCreate" type="submit" class="btn btn-success">
@@ -216,6 +216,54 @@
                     </button>
                     <button type="button" class="btn btn-success btn-print" disabled="disabled">
                         <i class="fa fa-print"></i> Print
+                    </button> --}}
+                    <button type="button" class="btn btn-warning" wire:click="cancel">
+                        <span wire:loading.remove wire:target="cancel">
+                            <i class="ri-close-line"> </i> Close
+                        </span>
+                        <div wire:loading wire:target="cancel">
+                            <span class="d-flex align-items-center">
+                                <span class="spinner-border flex-shrink-0" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </span>
+                                <span class="flex-grow-1 ms-1">
+                                    Loading...
+                                </span>
+                            </span>
+                        </div>
+                    </button>
+                    <button id="btnFilter" type="button" class="btn btn-danger" wire:click="destroy">
+                        <span wire:loading.remove wire:target="destroy">
+                            <i class="ri-delete-bin-line"> </i> delete
+                        </span>
+                        <div wire:loading wire:target="destroy">
+                            <span class="d-flex align-items-center">
+                                <span class="spinner-border flex-shrink-0" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </span>
+                                <span class="flex-grow-1 ms-1">
+                                    Loading...
+                                </span>
+                            </span>
+                        </div>
+                    </button>
+                    <button type="submit" class="btn btn-success">
+                        <span wire:loading.remove wire:target="save">
+                            <i class="ri-save-3-line"></i> Save
+                        </span>
+                        <div wire:loading wire:target="save">
+                            <span class="d-flex align-items-center">
+                                <span class="spinner-border flex-shrink-0" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </span>
+                                <span class="flex-grow-1 ms-1">
+                                    Loading...
+                                </span>
+                            </span>
+                        </div>
+                    </button>
+                    <button type="button" class="btn btn-success" wire:click="print">
+                        <i class="bx bx-printer"></i> Print
                     </button>
                 </div>
             </div>
@@ -237,7 +285,7 @@
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table table-centered table-nowrap mb-0 rounded">
-                                    <thead class="thead-light">
+                                    <thead class="table-light">
                                         <tr>
                                             <th class="border-0 rounded-start">Action</th>
                                             <th class="border-0">Gentan</th>
@@ -312,7 +360,7 @@
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table table-centered table-nowrap mb-0 rounded">
-                                    <thead class="thead-light">
+                                    <thead class="table-light">
                                         <tr>
                                             <th class="border-0 rounded-start">Action</th>
                                             <th class="border-0">Kode</th>
@@ -372,7 +420,7 @@
                                     <div class="form-group">
                                         <label>Nomor Gentan </label>
                                         <div class="input-group col-md-9 col-xs-8">
-                                            <input class="form-control" type="text" wire:model="gentan_no" placeholder="..." />
+                                            <input class="form-control" type="text" wire:model.live="gentan_no" placeholder="..." />
                                             @error('gentan_no')
                                                 <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror
@@ -407,7 +455,7 @@
                                     <div class="form-group">
                                         <label>Line Gentan </label>
                                         <div class="input-group col-md-9 col-xs-8">
-                                            <input class="form-control" type="text" wire:model.defer="gentan_line" placeholder="0" />
+                                            <input class="form-control" type="text" wire:model.defer="gentan_line" placeholder="Enter A atau B" />
                                             @error('gentan_line')
                                                 <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror
@@ -476,9 +524,27 @@
             </div>
         </div>
     </form>        
-
 </div>
-<script>
+@script
+    <script>
+        $wire.on('showModalGentan', () => {
+            $('#modal-gentan').modal('show');
+        });
+
+        $wire.on('closeModalGentan', () => {
+            $('#modal-gentan').modal('hide');
+        });
+
+        $wire.on('showModalLoss', () => {
+            $('#modal-loss').modal('show');
+        });
+
+        $wire.on('closeModalLoss', () => {
+            $('#modal-loss').modal('hide');
+        });
+    </script>
+@endscript
+{{-- <script>
     document.addEventListener('livewire:load', function () {
         Livewire.on('showModalGentan', () => {
             $('#modal-gentan').modal('show');
@@ -494,4 +560,4 @@
             $('#modal-loss').modal('hide');
         });
     });
-</script>
+</script> --}}

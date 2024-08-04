@@ -96,6 +96,8 @@ class AddSeitaiController extends Component
     {
         $validatedData = $this->validate([
             'lpk_no' => 'required',
+            'nomor_palet' => 'required',
+            'nomor_lot' => 'required'
         ]);
 
         try {
@@ -119,7 +121,9 @@ class AddSeitaiController extends Component
             $data->production_no = $today->format('dmy').'-'.$seqno;
             $data->production_date = $this->production_date;
             $data->employee_id = $employe->id;
-            $data->employee_id_infure = $employeinfure->id;
+            if(isset($this->employeenoinfure)){
+                $data->employee_id_infure = $employeinfure->id;
+            }
             $data->work_shift = $this->work_shift;
             $data->work_hour = $this->work_hour;
             $data->machine_id = $machine->id;
