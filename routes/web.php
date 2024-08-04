@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DashboardInfureController;
+use App\Http\Controllers\InfureController;
 use App\Http\Livewire\AddLpkController;
 use App\Http\Livewire\NippoInfure\AddNippoController;
 use App\Http\Livewire\AddOrderController;
@@ -252,7 +254,6 @@ Route::get('/report-gentan', function (Request $request) {
     Route::get('/test', function () {
         return view('widgets');
     });
-    Route::get('{any}', [App\Http\Controllers\HomeController::class, 'index']);
 
     // Route::get('/', function() {
     //     return view('index');
@@ -260,7 +261,7 @@ Route::get('/report-gentan', function (Request $request) {
 
     Route::controller(DashboardController::class)->group(function () {
         Route::get('/', 'index')->name('dashboard');
-        // Infure
+    //     // Infure
         Route::get('/kadou-jikan/infure', 'getkadouJikanInfure')->name('kadou-jikan-infure');
         Route::get('/hasil-produksi/infure', 'getHasilProduksiInfure')->name('hasil-produksi-infure');
         Route::get('/loss/infure', 'getLossInfure')->name('loss-infure');
@@ -273,4 +274,16 @@ Route::get('/report-gentan', function (Request $request) {
         Route::get('/top-loss/seitai', 'getTopLossSeitai')->name('top-loss-seitai');
         Route::get('/counter-trouble/seitai', 'getCounterTroubleSeitai')->name('counter-trouble-seitai');
     });
+
+    // Infure
+    Route::controller(DashboardInfureController::class)->group(function () {
+        Route::get('/dashboard-infure', 'index')->name('dashboard-infure');
+        Route::get('/dashboard-infure/kadou-jikan', 'getkadouJikanInfure')->name('dashboard-infure-kadou-jikan-infure');
+        Route::get('/dashboard-infure/hasil-produksi', 'getHasilProduksiInfure')->name('dashboard-infure-hasil-produksi-infure');
+        Route::get('/dashboard-infure/loss/infuregetLossInfure')->name('dashboard-infure-loss-infure');
+        Route::get('/dashboard-infure/top-loss', 'getTopLossInfure')->name('dashboard-infure-top-loss-infure');
+        Route::get('/dashboard-infure/counter-trouble', 'getCounterTroubleInfure')->name('dashboard-infure-counter-trouble-infure');
+    });
+
+    Route::get('{any}', [App\Http\Controllers\HomeController::class, 'index']);
 });
