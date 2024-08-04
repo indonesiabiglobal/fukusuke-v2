@@ -73,7 +73,7 @@
                         <div class="card">
                             <div class="w-100">
                                 <figure class="highcharts-figure">
-                                    <div id="tipeInfure"></div>
+                                    <div id="hasilProduksiInfure"></div>
                                 </figure>
                             </div>                            
                         </div>
@@ -83,15 +83,82 @@
                         <div class="card">
                             <div class="w-100">
                                 <figure class="highcharts-figure">
-                                    <div id="tipeSeitai"></div>
+                                    <div id="hasilProduksiSeitai"></div>
                                 </figure>
-                            </div>
-                            
+                            </div>                            
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Hasil produksi per-tipe Infure Standard-Khusus</h5>
+                </div>
+                <div class="card-body">
+                    <table id="scroll-vertical" class="table table-bordered dt-responsive nowrap align-middle mdl-data-table" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Berat Standard</th>
+                                <th>Berat Produksi</th>
+                                <th>Panjang Produksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1206</td>
+                                <td><span class="badge text-info bg-info-subtle">HD EG PRODUK STANDAR POLOS 25</span></td>
+                                <td>955158</td>
+                                <td>955427</td>
+                                <td>64911347</td>
+                            </tr>
+                            <tr>
+                                <td>1206</td>
+                                <td><span class="badge text-info bg-info-subtle">HD EG PRODUK STANDAR POLOS 30</span></td>
+                                <td>955158</td>
+                                <td>955427</td>
+                                <td>64911347</td>
+                            </tr>
+                            <tr>
+                                <td>1206</td>
+                                <td><span class="badge text-info bg-info-subtle">HD EG PRODUK STANDAR POLOS 35</span></td>
+                                <td>955158</td>
+                                <td>955427</td>
+                                <td>64911347</td>
+                            </tr>
+                            <tr>
+                                <td>1206</td>
+                                <td><span class="badge text-info bg-info-subtle">HD EG PRODUK STANDAR POLOS 40</span></td>
+                                <td>955158</td>
+                                <td>955427</td>
+                                <td>64911347</td>
+                            </tr>
+                            <tr>
+                                <td>1206</td>
+                                <td><span class="badge text-info bg-info-subtle">HD EG PRODUK STANDAR POLOS 45</span></td>
+                                <td>955158</td>
+                                <td>955427</td>
+                                <td>64911347</td>
+                            </tr>
+                            <tr>
+                                <td>1206</td>
+                                <td><span class="badge text-info bg-info-subtle">HD EG PRODUK KHUSUS POLOS 50</span></td>
+                                <td>955158</td>
+                                <td>955427</td>
+                                <td>64911347</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!--end col-->
     </div>
     
 @endsection
@@ -316,7 +383,7 @@
         
     });
 
-    Highcharts.chart('tipeInfure', {
+    Highcharts.chart('hasilProduksiInfure', {
         chart: {
             type: 'column'
         },
@@ -358,7 +425,7 @@
         ]
     });
 
-    Highcharts.chart('tipeSeitai', {
+    Highcharts.chart('hasilProduksiSeitai', {
         chart: {
             type: 'column'
         },

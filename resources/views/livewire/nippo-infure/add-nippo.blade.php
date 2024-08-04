@@ -118,7 +118,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Petugas</label>
-                                <input type="text" placeholder=" ... " class="form-control @error('lpk_no') is-invalid @enderror" wire:model.live="employeeno" />
+                                <input type="text" placeholder=" ... " class="form-control @error('employeeno') is-invalid @enderror" wire:model.live="employeeno" />
                                 @error('employeeno')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -177,7 +177,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5">Panjang Produksi</label>
-                                <input type="text" placeholder="-" class="form-control" wire:model="panjang_produksi" />
+                                <input type="text" placeholder="-" class="form-control @error('panjang_produksi') is-invalid @enderror" wire:model="panjang_produksi" />
                                 <span class="input-group-text">
                                     m
                                 </span>

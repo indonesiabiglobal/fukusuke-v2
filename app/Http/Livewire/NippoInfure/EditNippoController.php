@@ -260,6 +260,7 @@ class EditNippoController extends Component
                 'tolp.qty_gentan'
             )
             ->join('msproduct as mp', 'mp.id', '=', 'tolp.product_id')
+            ->join('tdproduct_assembly as tda', 'tda.lpk_id', '=', 'tolp.id')
             ->where('tolp.lpk_no', $this->lpk_no)
             ->first();
 
@@ -274,6 +275,7 @@ class EditNippoController extends Component
                 $this->dimensiinfure = $tdorderlpk->ketebalan.'x'.$tdorderlpk->diameterlipat;
                 $this->qty_gulung = $tdorderlpk->qty_gulung;
                 $this->qty_gentan = $tdorderlpk->qty_gentan;
+                $this->gentan_no= $tdorderlpk->gentan_no;
 
                 $this->details = DB::table('tdproduct_assembly_loss as tal')
                 ->select(

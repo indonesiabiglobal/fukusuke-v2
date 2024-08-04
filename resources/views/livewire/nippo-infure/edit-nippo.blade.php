@@ -153,10 +153,13 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5">Panjang Produksi</label>
-                                <input type="text" placeholder="-" class="form-control" wire:model="panjang_produksi" />
+                                <input type="text" placeholder="-" class="form-control @error('panjang_produksi') is-invalid @enderror" wire:model="panjang_produksi" />
                                 <span class="input-group-text">
                                     m
                                 </span>
+                                @error('panjang_produksi')
+                                    <span class="invalid-feedback">{{ $message }}</span>
+                                @enderror
                             </div>                            
                         </div>
                     </div>
