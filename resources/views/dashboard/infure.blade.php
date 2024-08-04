@@ -35,7 +35,7 @@
                     <div class="col-xl-12">
                         <div class="card">
                             <div class="card-header border-0 align-items-center">
-                                <form action="{{ route('dashboard') }}" method="get" class=" d-flex">
+                                <form action="{{ route('dashboard-infure') }}" method="get" class=" d-flex">
                                     <div class="input-group">
                                         <input type="text" name="filterDate" id="filterDate" class="form-control"
                                             data-provider="flatpickr" data-date-format="d-m-Y" data-range-date="true"
@@ -64,7 +64,7 @@
                 <div class="row">
                     <div class="col-xl-12">
                         <div class="card">
-                            <div class="card-header align-items-center d-flex">
+                            <div class="card-header border-0 align-items-center d-flex">
                             </div>
                             <div class="card-body p-0 pb-2">
                                 <div class="w-100">
@@ -90,6 +90,7 @@
                         class="table table-bordered dt-responsive nowrap align-middle mdl-data-table" style="width:100%">
                         <thead>
                             <tr>
+                                <th>No</th>
                                 <th>Name</th>
                                 <th>Berat</th>
                                 <th>Presentase</th>
@@ -98,6 +99,7 @@
                         <tbody>
                             @foreach ($lossInfure['lossInfure'] as $data)
                                 <tr>
+                                    <td>{{ $loop->iteration }} </td>
                                     <td>{{ $data->loss_name }} </td>
                                     <td>{{ round($data->berat_loss, 2) }}</td>
                                     <td>
@@ -137,7 +139,8 @@
                                                 class="bx bx-chevron-down"></i>
                                             @php
                                                 $higherLoss = round(
-                                                    ($topLossInfure[0]->berat_loss / $lossInfure['totalLossInfure']) * 100,
+                                                    ($topLossInfure[0]->berat_loss / $lossInfure['totalLossInfure']) *
+                                                        100,
                                                     2,
                                                 );
                                             @endphp
@@ -182,7 +185,7 @@
                 </div><!-- end card header -->
 
                 <div class="card-body">
-                    <div id="courterTroubleInfure" data-colors='["--tb-info"]' class="apex-charts" dir="ltr">
+                    <div id="counterTroubleInfure" data-colors='["--tb-info"]' class="apex-charts" dir="ltr">
                     </div>
                 </div><!-- end card-body -->
             </div><!-- end card -->
@@ -191,7 +194,7 @@
 
     {{-- Hsail Produksi --}}
     <div class="row">
-        <div class="col-xl-6">
+        <div class="col-xl-12">
             <div class="card">
                 <div class="card-header">
                     <h4 class="card-title mb-0">INFURE Hasil Produksi Tertinggi dan Terendah</h4>
@@ -203,43 +206,6 @@
             </div><!-- end card -->
         </div>
     </div>
-    {{-- Loss --}}
-    <div class="row">
-        <div class="col-xl-6">
-            <div class="card">
-                <div class="card-header">
-                    <h4 class="card-title mb-0">INFURE Loss</h4>
-                </div><!-- end card header -->
-
-                <div class="card-body">
-                    <div id="lossInfure" data-colors='["--tb-primary"]' class="apex-charts" dir="ltr"></div>
-                </div><!-- end card-body -->
-            </div><!-- end card -->
-        </div>
-    </div>
-    <div class="row">
-        {{-- Presentase Loss Infure --}}
-        <div class="col-xl-6">
-            <div class="card">
-                <div class="card-header">
-                    <h4 class="card-title mb-0">INFURE Presentase Loss</h4>
-                </div><!-- end card header -->
-
-                <div class="card-body">
-                    <div id="presentaseLossInfure"
-                        data-colors='["--tb-primary", "--tb-success", "--tb-warning", "--tb-danger", "--tb-info"]'
-                        class="apex-charts" dir="ltr"></div>
-                </div><!-- end card-body -->
-            </div><!-- end card -->
-        </div>
-        <!-- end Presentase Loss Infure -->
-    </div>
-    <!-- end row -->
-    <!-- end Loss -->
-    {{-- Counter Trouble --}}
-    <div class="row">
-
-    </div> <!-- end row-->
     {{-- List mesin --}}
     {{-- <div class="row">
         <div class="col-xxl-9">
@@ -426,13 +392,15 @@
                     }
                 },
                 xAxis: {
-                    type: 'category'
+                    type: 'category',
+                    title: {
+                        text: 'Machine No'
+                    }
                 },
                 yAxis: {
                     title: {
                         text: 'Machine Running Rate'
                     }
-
                 },
                 legend: {
                     enabled: false
@@ -566,80 +534,6 @@
             }
             // end Hasil Produksi Infure
 
-            // Loss Infure
-            let lossInfure = @json($lossInfure);
-            let linechartBasicColors = getChartColorsArray("lossInfure");
-            if (linechartBasicColors) {
-                let options = {
-                    series: [{
-                        name: "Berat Loss",
-                        data: lossInfure.lossInfure.map(item => parseFloat(item.berat_loss).toFixed(2))
-                    }],
-                    chart: {
-                        height: 350,
-                        type: 'line',
-                        zoom: {
-                            enabled: false
-                        },
-                        toolbar: {
-                            show: false
-                        }
-                    },
-                    markers: {
-                        size: 4,
-                    },
-                    dataLabels: {
-                        enabled: false
-                    },
-                    stroke: {
-                        curve: 'straight'
-                    },
-                    colors: linechartBasicColors,
-                    // title: {
-                    //     text: 'Product Trends by Month',
-                    //     align: 'left',
-                    //     style: {
-                    //         fontWeight: 500,
-                    //     },
-                    // },
-
-                    xaxis: {
-                        categories: lossInfure.lossInfure.map(item => item.loss_name),
-                    }
-                };
-
-                let chart = new ApexCharts(document.querySelector("#lossInfure"), options);
-                chart.render();
-            }
-
-            // pie chart presentase loss
-            let chartPieBasicColors = getChartColorsArray("presentaseLossInfure");
-            if (chartPieBasicColors) {
-                let options = {
-                    series: lossInfure.lossInfure.map(item => parseFloat(parseFloat(item.berat_loss / lossInfure
-                        .totalLossInfure * 100).toFixed(2))),
-                    chart: {
-                        height: 300,
-                        type: 'pie',
-                    },
-                    labels: lossInfure.lossInfure.map(item => item.loss_name),
-                    legend: {
-                        position: 'bottom'
-                    },
-                    dataLabels: {
-                        dropShadow: {
-                            enabled: false,
-                        }
-                    },
-                    colors: chartPieBasicColors
-                };
-
-                let chart = new ApexCharts(document.querySelector("#presentaseLossInfure"),
-                    options);
-                chart.render();
-            }
-            // end Loss Infure
-
             // top loss infure
             let topLossInfure = @json($topLossInfure);
             let html = '';
@@ -708,17 +602,17 @@
                             }
                         }
                     },
-                    colors: ["--tb-primary", "--tb-success", "--tb-warning", "--tb-danger", "--tb-info"],
+                    colors: ["#FF0000"],
                     fill: {
                         type: 'gradient',
                         gradient: {
                             shade: 'dark',
                             shadeIntensity: 0.5,
-                            gradientToColors: ["--tb-primary", "--tb-success", "--tb-warning", "--tb-danger", "--tb-info"],
+                            gradientToColors: ["#FF0000"],
                             inverseColors: true,
                             opacityFrom: 1,
                             opacityTo: 0.6,
-                            stops: [30, 70, 100]
+                            stops: [5, 20, 50, 100]
                         }
                     },
                     stroke: {
@@ -748,16 +642,81 @@
                 growthChart.render();
             }
             //  end top loss infure
+
+            // Highcharts.chart('counterTrouble', {
+            //     chart: {
+            //         type: 'bar'
+            //     },
+            //     title: {
+            //         text: 'INFURE Hasil Produksi Tertinggi dan Terendah',
+            //         align: 'left'
+            //     },
+            //     // subtitle: {
+            //     //     text: 'Source: <a ' +
+            //     //         'href="https://en.wikipedia.org/wiki/List_of_continents_and_continental_subregions_by_population"' +
+            //     //         'target="_blank">Wikipedia.org</a>',
+            //     //     align: 'left'
+            //     // },
+            //     xAxis: {
+            //         categories: counterTrouble.map(item => item.loss_name),
+            //         title: {
+            //             text: null
+            //         },
+            //         gridLineWidth: 1,
+            //         lineWidth: 0
+            //     },
+            //     yAxis: {
+            //         min: 0,
+            //         title: {
+            //             text: 'Population (millions)',
+            //             align: 'high'
+            //         },
+            //         labels: {
+            //             overflow: 'justify'
+            //         },
+            //         gridLineWidth: 0
+            //     },
+            //     tooltip: {
+            //         valueSuffix: ' millions'
+            //     },
+            //     plotOptions: {
+            //         bar: {
+            //             borderRadius: '50%',
+            //             dataLabels: {
+            //                 enabled: true
+            //             },
+            //             groupPadding: 0.1
+            //         }
+            //     },
+            //     legend: {
+            //         layout: 'vertical',
+            //         align: 'right',
+            //         verticalAlign: 'top',
+            //         x: -40,
+            //         y: 80,
+            //         floating: true,
+            //         borderWidth: 1,
+            //         backgroundColor: Highcharts.defaultOptions.legend.backgroundColor || '#FFFFFF',
+            //         shadow: true
+            //     },
+            //     credits: {
+            //         enabled: false
+            //     },
+            //     series: [{
+            //         name: 'Counter',
+            //         data: counterTrouble.map(item => item.counterloss)
+            //     }]
+            // });
         });
 
         // Counter Table Infure
-        let courterTroubleInfure = @json($counterTroubleInfure);
-        var chartColumnRotateLabelsColors = getChartColorsArray("courterTroubleInfure");
+        let counterTroubleInfure = @json($counterTroubleInfure);
+        var chartColumnRotateLabelsColors = getChartColorsArray("counterTroubleInfure");
         if (chartColumnRotateLabelsColors) {
             var options = {
                 series: [{
                     name: 'Counter Loss',
-                    data: courterTroubleInfure.map(item => parseFloat(item.counterloss))
+                    data: counterTroubleInfure.map(item => parseFloat(item.counterloss))
                 }],
                 // annotations: {
                 //     points: [{
@@ -798,7 +757,7 @@
                     labels: {
                         rotate: -45
                     },
-                    categories: courterTroubleInfure.map(item => item.loss_name),
+                    categories: counterTroubleInfure.map(item => item.loss_name),
                     tickPlacement: 'on'
                 },
                 yaxis: {
@@ -821,10 +780,11 @@
                 }
             };
 
-            var chart = new ApexCharts(document.querySelector("#courterTroubleInfure"),
+            var chart = new ApexCharts(document.querySelector("#counterTroubleInfure"),
                 options);
             chart.render();
         }
+
         // end Counter Table Infure
     </script>
 @endsection

@@ -108,6 +108,10 @@ class AddSeitaiController extends Component
             $employeinfure = MsEmployee::where('employeeno', $this->employeenoinfure)->first();
             $products = MsProduct::where('code', $this->code)->first();
 
+            $lastQty = TdProductGoods::where('lpk_id', $lpkid->id)
+                    // ->whereDate('created_on', Carbon::today())
+                    ->sum('qty_produksi');
+
             $seqno = 1;
             if(!empty($lastSeq)){
                 $seqno = $lastSeq->seq_no + 1;
@@ -127,12 +131,16 @@ class AddSeitaiController extends Component
             $data->product_id = $products->id;
             $data->qty_produksi = $this->qty_produksi;
             $data->infure_berat_loss = $this->infure_berat_loss;
-            $data->seq_no = $seqno;  
+            $data->seq_no = $seqno;
             $data->nomor_palet = $this->nomor_palet;
             $data->nomor_lot = $this->nomor_lot;
-            $data->created_on = $this->created_on;            
-            
+            $data->created_on = $this->created_on;
+
             $data->save();
+
+            TdOrderLpk::where('id',$lpkid->id)->update([
+                'total_assembly_qty' => $lastQty + $this->qty_produksi,
+            ]);
 
             TdProductGoodsAssembly::where('lpk_id',$lpkid->id)->update([
                 'product_goods_id' => $data->id,
@@ -167,7 +175,7 @@ class AddSeitaiController extends Component
         $datas->product_assembly_id = $assembly->id;
         $datas->gentan_line = $this->gentan_line;
         $datas->lpk_id = $lpkid->id;
-        
+
         $datas->save();
 
         $this->dispatch('closeModalGentan');
@@ -185,7 +193,7 @@ class AddSeitaiController extends Component
         $datas->loss_seitai_id = $loss->id;
         $datas->berat_loss = $this->berat_loss;
         $datas->lpk_id = $lpkid->id;
-        
+
         $datas->save();
 
         $this->dispatch('closeModalGentan');
@@ -215,7 +223,7 @@ class AddSeitaiController extends Component
             ->select(
                 'tolp.id',
                 'tolp.lpk_date',
-                'tolp.panjang_lpk',                
+                'tolp.panjang_lpk',
                 'tolp.created_on',
                 'tolp.qty_lpk',
                 'mp.code',

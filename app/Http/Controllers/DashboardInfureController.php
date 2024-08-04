@@ -170,6 +170,7 @@ class DashboardInfureController extends Controller
                     dep.name
                 ) as x
             GROUP BY x.machine_no,x.machine_name,x.department_name
+            ORDER BY x.machine_no
         ', [$startDate, $endDate]);
         // ', array_merge([$startDate, $endDate], $machineNo));
 
@@ -245,7 +246,8 @@ class DashboardInfureController extends Controller
                 inner join mslossinfure as mslos on det.loss_infure_id = mslos.id
                 where hdr.created_on between ? and ?
                 group by mslos.code,mslos.name
-            ) as x order BY x.counterloss DESC
+            ) as x
+            order BY x.loss_name ASC
         ', [
             $startDate,
             $endDate,
@@ -353,8 +355,8 @@ class DashboardInfureController extends Controller
             SELECT pa.created_on, right(mac.machineno, 2) as machine_no,
                 mac.machineno as machine_name,
                 dep.name as department_name,
-                    sum(pa.qty_produksi) as totalpanjangproduksi
-            from tdproduct_goods as pa
+                    sum(pa.panjang_produksi) as totalpanjangproduksi
+            from tdproduct_assembly as pa
             left join msmachine as mac on mac.id=pa.machine_id
             left join msdepartment as dep on mac.department_id = dep.id
             where pa.created_on between ? and ?
@@ -362,7 +364,7 @@ class DashboardInfureController extends Controller
                 mac.machineno,
                 dep.name
             ) as x
-            GROUP BY x.machine_no,x.machine_name,x.department_name
+            GROUP BY	x.machine_no,x.machine_name,x.department_name
         ', [
             $startDate,
             $endDate,
