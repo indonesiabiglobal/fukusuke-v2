@@ -153,10 +153,13 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5">Panjang Produksi</label>
-                                <input type="text" placeholder="-" class="form-control" wire:model="panjang_produksi" />
+                                <input type="text" placeholder="-" class="form-control @error('panjang_produksi') is-invalid @enderror" wire:model="panjang_produksi" />
                                 <span class="input-group-text">
                                     m
                                 </span>
+                                @error('panjang_produksi')
+                                    <span class="invalid-feedback">{{ $message }}</span>
+                                @enderror
                             </div>                            
                         </div>
                     </div>
@@ -265,7 +268,7 @@
         </div>
         <hr/>
         <div class="row">
-            <div class="col-lg-8">
+            <div class="col-lg-7">
                 {{-- <button wire:click="addLossInfure" type="button" class="btn btn-success">
                     <i class="fa fa-plus"></i> Add Loss Infure
                 </button> --}}
@@ -273,13 +276,28 @@
                     <i class="ri-add-line"></i> Add Loss Infure
                 </button>
             </div>
-            <div class="col-lg-4">
-                <div class="toolbar">
+            <div class="col-lg-5">
+                <div class="toolbar">                    
                     <button type="button" class="btn btn-warning" wire:click="cancel">
                         <span wire:loading.remove wire:target="cancel">
                             <i class="ri-close-line"> </i> Close
                         </span>
                         <div wire:loading wire:target="cancel">
+                            <span class="d-flex align-items-center">
+                                <span class="spinner-border flex-shrink-0" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </span>
+                                <span class="flex-grow-1 ms-1">
+                                    Loading...
+                                </span>
+                            </span>
+                        </div>
+                    </button>
+                    <button id="btnFilter" type="button" class="btn btn-danger" wire:click="destroy">
+                        <span wire:loading.remove wire:target="destroy">
+                            <i class="ri-delete-bin-line"> </i> delete
+                        </span>
+                        <div wire:loading wire:target="destroy">
                             <span class="d-flex align-items-center">
                                 <span class="spinner-border flex-shrink-0" role="status">
                                     <span class="visually-hidden">Loading...</span>
@@ -356,7 +374,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            {{-- <button type="button" class="btn btn-secondary">Accept</button> --}}
+                                
                             <button type="button" class="btn btn-link text-gray-600 ms-auto" data-bs-dismiss="modal">Close</button>
                             <button type="button" class="btn btn-success" wire:click="saveInfure">
                                 Save

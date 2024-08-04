@@ -64,6 +64,8 @@ class AddNippoController extends Component
             'lpk_no' => 'required',
             'machineno' => 'required',
             'employeeno' => 'required',
+            'panjang_produksi' => 'required',
+            'qty_gentan' => 'required'
         ]);
 
         DB::beginTransaction();
@@ -202,9 +204,11 @@ class AddNippoController extends Component
                 'mp.ketebalan',
                 'mp.diameterlipat',
                 'tolp.qty_gulung',
-                'tolp.qty_gentan'
+                'tolp.qty_gentan',
+                'tda.gentan_no'
             )
             ->join('msproduct as mp', 'mp.id', '=', 'tolp.product_id')
+            ->join('tdproduct_assembly as tda', 'tda.lpk_id', '=', 'tolp.id')
             ->where('tolp.lpk_no', $this->lpk_no)
             ->first();
 
@@ -218,7 +222,8 @@ class AddNippoController extends Component
                 $this->name = $tdorderlpk->name;
                 $this->dimensiinfure = $tdorderlpk->ketebalan.'x'.$tdorderlpk->diameterlipat;
                 $this->qty_gulung = $tdorderlpk->qty_gulung;
-                $this->qty_gentan = $tdorderlpk->qty_gentan;
+                // $this->qty_gentan = $tdorderlpk->qty_gentan;
+                $this->gentan_no= $tdorderlpk->gentan_no + 1;
 
                 $this->details = DB::table('tdproduct_assembly_loss as tal')
                 ->select(
@@ -261,20 +266,6 @@ class AddNippoController extends Component
             } else {
                 $this->name_infure = $lossinfure->name;
             }
-        }
-
-        $lpkid = TdOrderLpk::where('lpk_no', $this->lpk_no)->first();
-
-        $this->gentan_no = 1;
-        if (!empty($lpkid)) {
-            $lastGentan = TdProductAssembly::where('lpk_id', $lpkid->lpk_id)
-                ->max('gentan_no');
-
-            $nogentan = 1;
-            if(!empty($lastGentan)){
-                $nogentan = $lastGentan->seq_no + 1;
-            }
-            $this->gentan_no=$nogentan;
         }
 
         if(isset($this->nomor_barcode) && $this->nomor_barcode != ''){

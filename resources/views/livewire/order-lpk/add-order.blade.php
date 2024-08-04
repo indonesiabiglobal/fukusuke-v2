@@ -109,15 +109,15 @@
 			<div class="form-group mt-1">
 				<div class="input-group" wire:ignore>
 					<label class="control-label col-12 col-lg-3 fw-bold text-muted">Buyer</label>
-					<select class="form-control" wire:model="buyer_id" placeholder="" data-choices data-choices-sorting-false>
+					<select class="form-control @error('buyer_id') is-invalid @enderror" wire:model="buyer_id" placeholder="" data-choices data-choices-sorting-false>
+                        <option value=""></option>
 						@foreach ($buyer as $item)
-							@if ( $item->id == $buyer_id )
-								<option value="{{ $item->id }}">{{ $item->name }}</option>
-							@else
-								<option value="{{ $item->id }}">{{ $item->name }}</option>
-							@endif
+                            <option value="{{ $item->id }}">{{ $item->name }}</option>
 						@endforeach
 					</select>
+                    @error('buyer_id')
+						<span class="invalid-feedback">{{ $message }}</span>
+					@enderror
 				</div>
 			</div>
 			<hr />
