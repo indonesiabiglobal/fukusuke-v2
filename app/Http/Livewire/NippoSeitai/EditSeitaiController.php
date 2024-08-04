@@ -238,7 +238,7 @@ class EditSeitaiController extends Component
         
         $datas->save();
 
-        $this->dispatch('closeModalGentan');
+        $this->dispatch('closeModalLoss');
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);
     }
 
