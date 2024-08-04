@@ -420,7 +420,7 @@
                                     <div class="form-group">
                                         <label>Nomor Gentan </label>
                                         <div class="input-group col-md-9 col-xs-8">
-                                            <input class="form-control" type="text" wire:model.live="gentan_no" placeholder="..." />
+                                            <input class="form-control" type="text" wire:model.live.debounce.300ms="gentan_no" placeholder="..." />
                                             @error('gentan_no')
                                                 <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror
@@ -486,7 +486,7 @@
                                     <div class="form-group">
                                         <label>Kode Loss </label>
                                         <div class="input-group col-md-9 col-xs-8">
-                                            <input class="form-control" type="text" wire:model="loss_seitai_id" placeholder="..." />
+                                            <input class="form-control" type="text" wire:model.live.debounce.300ms="loss_seitai_id" placeholder="..." />
                                             @error('loss_seitai_id')
                                                 <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror
