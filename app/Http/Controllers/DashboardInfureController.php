@@ -28,7 +28,6 @@ class DashboardInfureController extends Controller
             $requestFilterDate = $startDate . ' to ' . $endDate;
         }
         $divisionCodeInfure = MsDepartment::where('name', 'INFURE')->first()->division_code;
-        $divisionCodeSeitai = MsDepartment::where('name', 'SEITAI')->first()->division_code;
 
         $data = [
             'filterDate' => $requestFilterDate,
@@ -59,7 +58,6 @@ class DashboardInfureController extends Controller
     */
     public function getListMachineInfure($startDate, $endDate, $divisionCodeInfure)
     {
-
         $listMachineInfure = DB::select('
         SELECT
             RIGHT( mac.machineno, 2 ) AS machineno,
@@ -93,14 +91,6 @@ class DashboardInfureController extends Controller
         $divisionCodeInfure = MsDepartment::where('name', 'INFURE')->first()->division_code;
         $diffDay = Carbon::parse($endDate)->diffInDays(Carbon::parse($startDate));
         $minuteOfDay = 24 * 60;
-        // $machineNo = [
-        //     '00I01',
-        //     '00I02',
-        //     '00I03',
-        //     '00I04',
-        //     '00I05',
-        //     '00I06',
-        // ];
 
         $kadouJikanInfureMesin = DB::select('
         SELECT y.* FROM (
@@ -145,15 +135,6 @@ class DashboardInfureController extends Controller
 
     public function getHasilProduksiInfure($startDate, $endDate)
     {
-        // $machineNo = [
-        //     '00I01',
-        //     '00I02',
-        //     '00I03',
-        //     '00I04',
-        //     '00I05',
-        //     '00I06',
-        // ];
-
         $hasilProduksiMesin = DB::select('
             SELECT x.machine_no,x.machine_name,x.department_name,
             max(x.totalpanjangproduksi) as max,min(x.totalpanjangproduksi) as min from (
@@ -292,15 +273,6 @@ class DashboardInfureController extends Controller
     }
     public function getkadouJikanSeitai($startDate, $endDate, $divisionCodeSeitai)
     {
-        // $machineNo = [
-        //     '00I01',
-        //     '00I02',
-        //     '00I03',
-        //     '00I04',
-        //     '00I05',
-        //     '00I06',
-        // ];
-
         $kadouJikanSeitaiMesin = DB::select('
         SELECT y.* FROM (
             SELECT x.*, ROUND(x.work_hour_on_mm / 1440 * 100, 2) AS persenmesinkerja

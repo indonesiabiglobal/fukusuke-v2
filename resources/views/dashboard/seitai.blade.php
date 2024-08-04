@@ -35,7 +35,7 @@
                     <div class="col-xl-12">
                         <div class="card">
                             <div class="card-header border-0 align-items-center">
-                                <form action="{{ route('dashboard-infure') }}" method="get" class=" d-flex">
+                                <form action="{{ route('dashboard-seitai') }}" method="get" class=" d-flex">
                                     <div class="input-group">
                                         <input type="text" name="filterDate" id="filterDate" class="form-control"
                                             data-provider="flatpickr" data-date-format="d-m-Y" data-range-date="true"
@@ -57,7 +57,7 @@
             </div>
         </div>
     </div>
-    {{-- kadou jikan infure --}}
+    {{-- kadou jikan seitai --}}
     <div class="row">
         <div class="col">
             <div class="h-100">
@@ -68,7 +68,7 @@
                             </div>
                             <div class="card-body p-0 pb-2">
                                 <div class="w-100">
-                                    <div id="kadouJikanInfure"></div>
+                                    <div id="kadouJikanSeitai"></div>
                                 </div>
                             </div><!-- end card body -->
                         </div><!-- end card -->
@@ -83,7 +83,7 @@
         <div class="col-12 col-xl-7">
             <div class="card">
                 <div class="card-header align-items-center d-flex">
-                    <h4 class="card-title mb-0">INFURE Loss</h4>
+                    <h4 class="card-title mb-0">SEITAI Loss</h4>
                 </div>
                 <div class="card-body">
                     <table id="scroll-vertical"
@@ -97,7 +97,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($lossInfure['lossInfure'] as $data)
+                            @foreach ($lossSeitai['lossSeitai'] as $data)
                                 <tr>
                                     <td>{{ $loop->iteration }} </td>
                                     <td>{{ $data->loss_name }} </td>
@@ -105,7 +105,7 @@
                                     <td>
                                         @php
                                             $loss = round(
-                                                ($data->berat_loss / $lossInfure['totalLossInfure']) * 100,
+                                                ($data->berat_loss / $lossSeitai['totalLossSeitai']) * 100,
                                                 2,
                                             );
                                         @endphp
@@ -139,7 +139,7 @@
                                                 class="bx bx-chevron-down"></i>
                                             @php
                                                 $higherLoss = round(
-                                                    ($topLossInfure[0]->berat_loss / $lossInfure['totalLossInfure']) *
+                                                    ($topLossSeitai[0]->berat_loss / $lossSeitai['totalLossSeitai']) *
                                                         100,
                                                     2,
                                                 );
@@ -147,7 +147,7 @@
                                             {{ $higherLoss }}%
                                             dari loss
                                         </small>
-                                        <h3 class="mb-0">{{ round($topLossInfure[0]->berat_loss, 2) }}</h3>
+                                        <h3 class="mb-0">{{ round($topLossSeitai[0]->berat_loss, 2) }}</h3>
                                     </div>
                                 </div>
                                 <div id="profileReportChart"></div>
@@ -156,16 +156,16 @@
                         </div>
                     </div>
                 </div>
-                {{-- TOP Trouble Infure --}}
+                {{-- TOP Trouble Seitai --}}
                 <div class="col-12 col-md-6 col-xl-12">
                     <div class="card card-height-100">
                         <div class="card-header align-items-center d-flex">
-                            <h4 class="card-title mb-0 flex-grow-1">INFURE Top 3 Loss </h4>
+                            <h4 class="card-title mb-0 flex-grow-1">SEITAI Top 3 Loss </h4>
                             <div class="flex-shrink-0">
                             </div>
                         </div><!-- end card header -->
                         <div class="card-body pt-0">
-                            <ul class="list-group list-group-flush border-dashed" id="topLossInfure">
+                            <ul class="list-group list-group-flush border-dashed" id="topLossSeitai">
                             </ul>
                         </div><!-- end card body -->
                     </div><!-- end card -->
@@ -181,11 +181,11 @@
         <div class="col-xl-12">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title mb-0">INFURE Counter Trouble </h4>
+                    <h4 class="card-title mb-0">SEITAI Counter Trouble </h4>
                 </div><!-- end card header -->
 
                 <div class="card-body">
-                    <div id="counterTroubleInfure" data-colors='["--tb-info"]' class="apex-charts" dir="ltr">
+                    <div id="counterTroubleSeitai" data-colors='["--tb-info"]' class="apex-charts" dir="ltr">
                     </div>
                 </div><!-- end card-body -->
             </div><!-- end card -->
@@ -197,10 +197,10 @@
         <div class="col-xl-12">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title mb-0">INFURE Hasil Produksi Tertinggi dan Terendah</h4>
+                    <h4 class="card-title mb-0">SEITAI Hasil Produksi Tertinggi dan Terendah</h4>
                 </div><!-- end card header -->
                 <div class="card-body">
-                    <div id="hasilProduksiInfure" data-colors='["--tb-primary", "--tb-success"]' class="apex-charts"
+                    <div id="hasilProduksiSeitai" data-colors='["--tb-primary", "--tb-success"]' class="apex-charts"
                         dir="ltr"></div>
                 </div><!-- end card-body -->
             </div><!-- end card -->
@@ -286,22 +286,22 @@
         </div>
     </div> --}}
     <!-- end row-->
-    {{-- Modal Infure Kadou jikan  --}}
-    <div class="modal  fade bs-example-modal-center" id="modalListMesinInfure" tabindex="-1" role="dialog"
+    {{-- Modal Seitai Kadou jikan  --}}
+    <div class="modal  fade bs-example-modal-center" id="modalListMesinSeitai" tabindex="-1" role="dialog"
         aria-labelledby="mySmallModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-body text-center p-5">
                     <div class="card card-height-100">
                         <div class="card-header align-items-center d-flex">
-                            <h4 class="card-title mb-0 flex-grow-1">INFURE Machine Running Rate (Kadou Jikan)</h4>
+                            <h4 class="card-title mb-0 flex-grow-1">SEITAI Machine Running Rate (Kadou Jikan)</h4>
                         </div>
                         <div class="card-body">
                             <table class="table">
-                                @foreach ($listMachineInfure['listDepartment'] as $department)
+                                @foreach ($listMachineSeitai['listDepartment'] as $department)
                                     <tr>
                                         <td>{{ $department['department_name'] }}</td>
-                                        @foreach ($listMachineInfure['listMachineInfure'] as $machine)
+                                        @foreach ($listMachineSeitai['listMachineSeitai'] as $machine)
                                             @if ($machine->department_id == $department['department_id'])
                                                 <td class="bg-danger">{{ $machine->machineno }}</td>
                                             @endif
@@ -365,20 +365,20 @@
             });
 
             /*
-            Infure
+            Seitai
             */
-            let kadouJikanInfureMesin = @json($kadouJikanInfureMesin);
+            let kadouJikanSeitaiMesin = @json($kadouJikanSeitaiMesin);
 
 
-            // Kadou Jikan Infure
-            Highcharts.chart('kadouJikanInfure', {
+            // Kadou Jikan Seitai
+            Highcharts.chart('kadouJikanSeitai', {
                 chart: {
                     type: 'column'
                 },
                 title: {
                     align: 'left',
                     text: `<a href="#" id="kadouJikanTitle" class="text-muted">
-                               INFURE Machine Running Rate (Kadou Jikan)
+                               SEITAI Machine Running Rate (Kadou Jikan)
                             </a>`,
                     useHTML: true
                 },
@@ -423,9 +423,9 @@
                 },
 
                 series: [{
-                    name: 'Division Infure',
+                    name: 'Division Seitai',
                     colorByPoint: false,
-                    data: kadouJikanInfureMesin.map(item => {
+                    data: kadouJikanSeitaiMesin.map(item => {
                         return {
                             name: item.machine_no,
                             y: parseFloat(item.persenmesinkerja),
@@ -435,13 +435,13 @@
             });
 
             document.getElementById('kadouJikanTitle').addEventListener('click', function() {
-                var myModal = new bootstrap.Modal(document.getElementById('modalListMesinInfure'));
+                var myModal = new bootstrap.Modal(document.getElementById('modalListMesinSeitai'));
                 myModal.show();
             });
 
-            // Hasil Produksi Infure
-            let hasilProduksiInfure = @json($hasilProduksiInfure);
-            let linechartDatalabelColors = getChartColorsArray("hasilProduksiInfure");
+            // Hasil Produksi Seitai
+            let hasilProduksiSeitai = @json($hasilProduksiSeitai);
+            let linechartDatalabelColors = getChartColorsArray("hasilProduksiSeitai");
             if (linechartDatalabelColors) {
                 let options = {
                     chart: {
@@ -464,11 +464,11 @@
                     },
                     series: [{
                             name: "Tertinggi",
-                            data: hasilProduksiInfure.map(item => parseFloat(item.max))
+                            data: hasilProduksiSeitai.map(item => parseFloat(item.max))
                         },
                         {
                             name: "Terendah",
-                            data: hasilProduksiInfure.map(item => parseFloat(item.min))
+                            data: hasilProduksiSeitai.map(item => parseFloat(item.min))
                         }
                     ],
                     title: {
@@ -492,7 +492,7 @@
                         size: 6
                     },
                     xaxis: {
-                        categories: hasilProduksiInfure.map(item => item.machine_no),
+                        categories: hasilProduksiSeitai.map(item => item.machine_no),
                         title: {
                             text: 'Nomer Mesin'
                         }
@@ -527,17 +527,17 @@
                 }
 
                 let chart = new ApexCharts(
-                    document.querySelector("#hasilProduksiInfure"),
+                    document.querySelector("#hasilProduksiSeitai"),
                     options
                 );
                 chart.render();
             }
-            // end Hasil Produksi Infure
+            // end Hasil Produksi Seitai
 
-            // top loss infure
-            let topLossInfure = @json($topLossInfure);
+            // top loss seitai
+            let topLossSeitai = @json($topLossSeitai);
             let html = '';
-            topLossInfure.map((item, index) => {
+            topLossSeitai.map((item, index) => {
                 html += `<li class="list-group-item ps-0">
                             <div class="row align-items-center g-3">
                                 <div class="col-auto">
@@ -558,7 +558,7 @@
                             </div>
                         </li>`;
             });
-            $('#topLossInfure').html(html);
+            $('#topLossSeitai').html(html);
 
 
             // Growth Chart - Radial Bar Chart
@@ -641,18 +641,17 @@
                 const growthChart = new ApexCharts(growthChartEl, growthChartOptions);
                 growthChart.render();
             }
-            //  end top loss infure
-
+            //  end top loss seitai
         });
 
-        // Counter Table Infure
-        let counterTroubleInfure = @json($counterTroubleInfure);
-        var chartColumnRotateLabelsColors = getChartColorsArray("counterTroubleInfure");
+        // Counter Table Seitai
+        let counterTroubleSeitai = @json($counterTroubleSeitai);
+        var chartColumnRotateLabelsColors = getChartColorsArray("counterTroubleSeitai");
         if (chartColumnRotateLabelsColors) {
             var options = {
                 series: [{
                     name: 'Counter Loss',
-                    data: counterTroubleInfure.map(item => parseFloat(item.counterloss))
+                    data: counterTroubleSeitai.map(item => parseFloat(item.counterloss))
                 }],
                 // annotations: {
                 //     points: [{
@@ -693,7 +692,7 @@
                     labels: {
                         rotate: -45
                     },
-                    categories: counterTroubleInfure.map(item => item.loss_name),
+                    categories: counterTroubleSeitai.map(item => item.loss_name),
                     tickPlacement: 'on'
                 },
                 yaxis: {
@@ -716,11 +715,11 @@
                 }
             };
 
-            var chart = new ApexCharts(document.querySelector("#counterTroubleInfure"),
+            var chart = new ApexCharts(document.querySelector("#counterTroubleSeitai"),
                 options);
             chart.render();
         }
 
-        // end Counter Table Infure
+        // end Counter Table Seitai
     </script>
 @endsection

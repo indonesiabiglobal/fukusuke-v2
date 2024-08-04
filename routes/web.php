@@ -64,6 +64,7 @@ use App\Http\Livewire\Warehouse\PenarikanPaletController;
 use App\Http\Livewire\Warehouse\PengembalianPaletController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DashboardSeitaiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -285,6 +286,16 @@ Route::get('/report-gentan', function (Request $request) {
         Route::get('/dashboard-infure/loss/infuregetLossInfure')->name('dashboard-infure-loss-infure');
         Route::get('/dashboard-infure/top-loss', 'getTopLossInfure')->name('dashboard-infure-top-loss-infure');
         Route::get('/dashboard-infure/counter-trouble', 'getCounterTroubleInfure')->name('dashboard-infure-counter-trouble-infure');
+    });
+
+    // Seitai
+    Route::controller(DashboardSeitaiController::class)->group(function () {
+        Route::get('/dashboard-seitai', 'index')->name('dashboard-seitai');
+        Route::get('/dashboard-seitai/kadou-jikan', 'getkadouJikanSeitai')->name('dashboard-seitai-kadou-jikan-seitai');
+        Route::get('/dashboard-seitai/hasil-produksi', 'getHasilProduksiSeitai')->name('dashboard-seitai-hasil-produksi-seitai');
+        Route::get('/dashboard-seitai/loss/seitaigetLossSeitai')->name('dashboard-seitai-loss-seitai');
+        Route::get('/dashboard-seitai/top-loss', 'getTopLossSeitai')->name('dashboard-seitai-top-loss-seitai');
+        Route::get('/dashboard-seitai/counter-trouble', 'getCounterTroubleSeitai')->name('dashboard-seitai-counter-trouble-seitai');
     });
 
     Route::get('{any}', [App\Http\Controllers\HomeController::class, 'index']);
