@@ -69,12 +69,13 @@
 				<div class="input-group">
 					<label class="control-label col-12 col-lg-3 fw-bold text-muted">Unit</label>
 					<select class="form-control @error('unit_id') is-invalid @enderror" wire:model="unit_id" placeholder="" required>
-						<option value="0">Set</option>
+						<option value=""></option>
+                        <option value="0">Set</option>
 						<option value="1">Lembar</option>
 						<option value="2">Meter</option>
 					</select>
 					@error('unit_id')
-						<span class="invalid-tooltip">{{ $message }}</span>
+						<span class="invalid-feedback">{{ $message }}</span>
 					@enderror
 				</div>
 			</div>
