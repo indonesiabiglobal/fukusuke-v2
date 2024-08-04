@@ -96,7 +96,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Nomor Mesin</label>
-                                <input type="text" placeholder=" ... " class="form-control @error('lpk_no') is-invalid @enderror" wire:model.live.debounce.300ms="machineno" />
+                                <input type="text" placeholder=" ... " class="form-control @error('machineno') is-invalid @enderror" wire:model.live.debounce.300ms="machineno" />
                                 @error('machineno')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -163,11 +163,11 @@
                                 @enderror
 
                                 <input type="text" class="form-control readonly" readonly="readonly" placeholder=" .. X .." />
-                                <input type="text" class="form-control readonly" readonly="readonly" wire:model="qty_gentan" />
+                                <input type="text" class="form-control readonly" readonly="readonly" wire:model="qty_gulung" />
                                 <span class="input-group-text">
                                     roll
                                 </span>
-                                @error('qty_gentan')
+                                @error('qty_gulung')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
                             </div>
@@ -219,7 +219,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5">Berat Gentan</label>
-                                <input type="text" class="form-control" wire:model="qty_gentan" />
+                                <input type="text" class="form-control @error('qty_gentan') is-invalid @enderror" wire:model="qty_gentan" />
                                 <span class="input-group-text">
                                     kg
                                 </span>
