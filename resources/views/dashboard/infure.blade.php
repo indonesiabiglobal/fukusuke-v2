@@ -471,13 +471,13 @@
                             data: hasilProduksiInfure.map(item => parseFloat(item.min))
                         }
                     ],
-                    // title: {
-                    //     text: 'Hasil Produksi',
-                    //     align: 'left',
-                    //     style: {
-                    //         fontWeight: 500,
-                    //     },
-                    // },
+                    title: {
+                        text: 'Hasil Produksi',
+                        align: 'left',
+                        style: {
+                            fontWeight: 500,
+                        },
+                    },
                     grid: {
                         row: {
                             colors: ['transparent',
@@ -643,6 +643,7 @@
             }
             //  end top loss infure
 
+            // Counter Trouble
             // Highcharts.chart('counterTrouble', {
             //     chart: {
             //         type: 'bar'
