@@ -261,7 +261,9 @@ Route::get('/report-gentan', function (Request $request) {
 
     Route::controller(DashboardController::class)->group(function () {
         Route::get('/', 'index')->name('dashboard');
-    //     // Infure
+        Route::get('/dashboard-ppic', 'ppic')->name('dashboard-ppic');
+        Route::get('/dashboard-qc', 'qc')->name('dashboard-qc');
+        // Infure
         Route::get('/kadou-jikan/infure', 'getkadouJikanInfure')->name('kadou-jikan-infure');
         Route::get('/hasil-produksi/infure', 'getHasilProduksiInfure')->name('hasil-produksi-infure');
         Route::get('/loss/infure', 'getLossInfure')->name('loss-infure');

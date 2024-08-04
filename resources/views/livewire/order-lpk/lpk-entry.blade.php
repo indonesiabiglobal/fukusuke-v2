@@ -212,6 +212,7 @@
                     <th class="border-0">Progres Seitai</th>
                     <th class="border-0">Nomor PO</th>
                     <th class="border-0">Kode Produk</th>
+                    <th class="border-0">Warna LPK</th>
                     <th class="border-0 rounded-end">Tanggal Proses</th>
                 </tr>
             </thead>
@@ -240,6 +241,7 @@
                         <td>{{ $item->total_assembly_qty }}</td>
                         <td>{{ $item->po_no }}</td>
                         <td>{{ $item->product_code }}</td>
+                        <td>{{ $item->warnalpk }}</td>
                         <td>{{ $item->tglproses }}</td>
                     </tr>
                 @empty

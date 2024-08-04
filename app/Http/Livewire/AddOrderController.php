@@ -116,6 +116,7 @@ class AddOrderController extends Component
         'etadate' => 'required',
         'product_id' => 'required',
         'buyer_id' => 'required',
+        'unit_id' => 'required'
     ];
 
     public function mount()
@@ -236,7 +237,7 @@ class AddOrderController extends Component
             $order->stufingdate = $this->stufingdate;
             $order->etddate = $this->etddate;
             $order->etadate = $this->etadate;
-            $order->save();
+            $order->save(); 
 
             DB::commit();
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
