@@ -307,7 +307,7 @@ class AddSeitaiController extends Component
         if(isset($this->gentan_no) && $this->gentan_no != ''){
             $lpkid = TdOrderLpk::where('lpk_no', $this->lpk_no)->first();
             // $tdProduct=TdProductAssembly::where('gentan_no', $this->gentan_no)->where('lpk_id', $lpkid->id)->first();
-            $tdProduct = DB::table('tdproduct_assembly as tdpa')
+            $tdProduct = DB::table('tdproduct_assemblya as tdpa')
                         ->leftJoin('msmachine as mm', 'mm.id', '=', 'tdpa.machine_id')
                         ->leftJoin('msemployee as mse', 'mse.id', '=', 'tdpa.employee_id')
                         ->select(

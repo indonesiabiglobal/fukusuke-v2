@@ -23,7 +23,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-12 col-md-3 col-lg-5 pe-2">Nomor LPK</label>
-                                <input type="text" class="form-control col-12 col-md-9 col-lg-7"  wire:model.live="lpk_no" />
+                                <input type="text" class="form-control @error('lpk_no') is-invalid @enderror col-12 col-md-9 col-lg-7"  wire:model.live="lpk_no" />
                                 @error('lpk_no')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -131,7 +131,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-12 col-md-3 col-lg-5">Nomor Palet</label>
-                                <input type="text" placeholder="A0000-000000" class="form-control" wire:model="nomor_palet" />
+                                <input type="text" placeholder="A0000-000000" class="form-control @error('nomor_palet') is-invalid @enderror" wire:model="nomor_palet" />
                                 @error('nomor_palet')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -142,7 +142,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-12 col-md-3 col-lg-5">Nomor LOT</label>
-                                <input type="text" placeholder="----------" class="form-control" wire:model="nomor_lot" />
+                                <input type="text" placeholder="----------" class="form-control @error('nomor_palet') is-invalid @enderror" wire:model="nomor_lot" />
 
                                 <input type="text" class="form-control readonly" readonly="readonly" wire:model="selisih" />
                                 @error('nomor_lot')
@@ -495,6 +495,22 @@
                             </div>
                         </div>
                         <div class="modal-footer">
+                            {{-- <button id="btnFilter" type="button" class="btn btn-warning w-lg" wire:click="destroy">
+                                <span wire:loading.remove wire:target="destroy">
+                                    <i class="ri-save-3-line"> </i> delete
+                                </span>
+                                <div wire:loading wire:target="destroy">
+                                    <span class="d-flex align-items-center">
+                                        <span class="spinner-border flex-shrink-0" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </span>
+                                        <span class="flex-grow-1 ms-1">
+                                            Loading...
+                                        </span>
+                                    </span>
+                                </div>
+                            </button> --}}
+
                             <button type="button" class="btn btn-link text-gray-600 ms-auto" data-bs-dismiss="modal">Close</button>
                             <button type="button" class="btn btn-success" wire:click="saveLoss">
                                 Save

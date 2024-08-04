@@ -238,6 +238,22 @@ class EditNippoController extends Component
         return redirect()->route('nippo-infure');
     }
 
+    public function destroy()
+    {
+        DB::beginTransaction();
+        try {
+            $order = TdProductAssembly::where('id', $this->orderId)->first();
+            $order->delete();
+
+            DB::commit();
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Order Deleted successfully.']);
+            return redirect()->route('nippo-infure');
+        } catch (\Exception $e) {            
+            DB::rollBack();
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
+        }  
+    }
+
     public function print()
     {
         $this->dispatch('redirectToPrint', $this->lpk_no);
@@ -257,7 +273,8 @@ class EditNippoController extends Component
                 'mp.ketebalan',
                 'mp.diameterlipat',
                 'tolp.qty_gulung',
-                'tolp.qty_gentan'
+                'tolp.qty_gentan',
+                'tda.gentan_no'
             )
             ->join('msproduct as mp', 'mp.id', '=', 'tolp.product_id')
             ->join('tdproduct_assembly as tda', 'tda.lpk_id', '=', 'tolp.id')
