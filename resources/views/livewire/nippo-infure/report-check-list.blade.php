@@ -15,7 +15,7 @@
     // )->first();
 @endphp
 
-<body style="background-color: #CCCCCC;margin: 0">
+<body style="background-color: #CCCCCC;margin: 0" onload="window.print()">
     <div align="center">
         <h1>CHECKLIST NIPPO SEITAI</h1>
         <h1>Periode Produksi: 01-Jul-2024 00:00  ~  28-Jul-2024 23:59</h1>

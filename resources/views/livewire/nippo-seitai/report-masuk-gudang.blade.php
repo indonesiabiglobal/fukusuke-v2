@@ -12,11 +12,11 @@
 	// header("Content-Disposition: attachment; filename=test.xls");
     $data = collect(
         DB::select("
-        SELECT 
-        tdpg.production_date AS production_date, 
-        tdpg.nomor_palet AS nomor_palet, 
+        SELECT
+        tdpg.production_date AS production_date,
+        tdpg.nomor_palet AS nomor_palet,
             tdpg.nomor_lot AS nomor_lot,
-                tdpg.work_shift AS work_shift,  
+                tdpg.work_shift AS work_shift,
                 tdpg.employee_id AS employee_id,
                 me.empname as namapetugas,
                 tdpg.product_id AS product_id,
@@ -36,7 +36,7 @@
         $date = Carbon::parse( $data[0]->production_date);
         // dd( );
 @endphp
-<body style="background-color: #CCCCCC;margin: 0">
+<body style="background-color: #CCCCCC;margin: 0" onload="window.print()">
     <div align="center">
         <table class="bayangprint" cellspacing="0" cellpadding="0" bgcolor="#FFFFFF" border="0" width="730" style="padding:25px">
             <tbody>
@@ -123,7 +123,7 @@
                                             $totalqty=0;
                                         @endphp
                                         @foreach ($data as $dt )
-                 
+
                                         <tr>
                                             <td width="30%" style="border: 1px solid black;padding: 3px;">
                                                 <span>{{$dt->nomor_lot}}</span>
@@ -144,7 +144,7 @@
                                         @php
                                             $totalqty=$totalqty + $dt->qty_produksi
                                         @endphp
-                                        
+
                                         @endforeach
 
                                         {{-- <tr>
@@ -344,11 +344,11 @@
                                                     <tr>
                                                         <td width="30%" style="text-align: center;font-size:30px;border: 1px solid black;">{{ $data[0]->tinggi }}</td>
                                                         <td width="5%" style="text-align: center;font-size:20px;">
-                                                            &nbsp;X&nbsp; 
+                                                            &nbsp;X&nbsp;
                                                         </td>
                                                         <td width="30%" style="text-align: center;font-size:30px;border: 1px solid black;">{{ $data[0]->jmlbaris }}</td>
                                                         <td width="5%" style="text-align: center;font-size:20px;">
-                                                            &nbsp;+&nbsp; 
+                                                            &nbsp;+&nbsp;
                                                         </td>
                                                         <td width="30%" style="text-align: center;font-size:30px;border: 1px solid black;">{{ $data[0]->jmlbaris }}</td>
                                                     </tr>
@@ -358,8 +358,8 @@
                                         <tr>
                                             <td width="100%" style="border: 1px solid black;padding-top: 5px;padding-bottom: 17px;">
                                                 <p style="vertical-align: top;">Pengecekan Kebersihan Produk</p>
-                                                <input type="checkbox"> Petugas Seitai 
-                                                <input type="checkbox"> Sebelum Stuffing 
+                                                <input type="checkbox"> Petugas Seitai
+                                                <input type="checkbox"> Sebelum Stuffing
                                             </td>
                                         </tr>
                                     </table>

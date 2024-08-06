@@ -26,13 +26,13 @@ $data = collect(
         FROM
             tdorder AS tod
             INNER JOIN msproduct AS mp ON mp.ID = tod.product_id
-            INNER JOIN msbuyer AS mbu ON mbu.ID = tod.buyer_id 
+            INNER JOIN msbuyer AS mbu ON mbu.ID = tod.buyer_id
         WHERE
             tod.id = $orderId
         "),
     )->first();
 @endphp
-<body style="background-color: #CCCCCC;margin: 0">
+<body style="background-color: #CCCCCC;margin: 0" onload="window.print()">
     <div align="center">
         <table class="bayangprint" cellspacing="0" cellpadding="0" bgcolor="#FFFFFF" border="0" width="700" style="padding:25px">
             <tbody>

@@ -68,7 +68,7 @@
         "),
     );
 @endphp
-<body style="background-color: #CCCCCC;margin: 0">
+<body style="background-color: #CCCCCC;margin: 0" onload="window.print()">
     <div align="center">
         <table class="bayangprint" cellspacing="0" cellpadding="0" bgcolor="#FFFFFF" border="0" width="950" style="padding:25px">
             <tbody>
@@ -134,7 +134,7 @@
                                                     lpk_id = '$item->lpk_id'
                                             "),
                                         );
-                                    
+
                                     // Ambil item pertama dan sisa item
                                     $firstItem = $detail->first();
                                     $remainingItems = $detail->slice(1);

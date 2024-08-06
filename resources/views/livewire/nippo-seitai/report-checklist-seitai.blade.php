@@ -38,21 +38,21 @@
             tdpg.infure_berat_loss AS infure_berat_loss,
             tdpg.nomor_palet AS nomor_palet,
             tdpg.nomor_lot AS nomor_lot,
-            tdpg.seq_no AS noproses 
+            tdpg.seq_no AS noproses
         FROM
             tdproduct_goods AS tdpg
             LEFT JOIN tdorderLpk AS tdol ON tdpg.lpk_id = tdol.
             ID LEFT JOIN msemployee AS ma ON tdpg.employee_id = ma.
             ID LEFT JOIN msmachine AS mm ON tdpg.machine_id = mm.
-            ID LEFT JOIN msproduct AS mp ON tdpg.product_id = mp.ID 
+            ID LEFT JOIN msproduct AS mp ON tdpg.product_id = mp.ID
         WHERE
-            tdpg.created_on >= '2024-06-17 00:00:00' 
-            AND tdpg.created_on <= '2024-06-17 23:59:00' 
+            tdpg.created_on >= '2024-06-17 00:00:00'
+            AND tdpg.created_on <= '2024-06-17 23:59:00'
             AND tdpg.id = 356700
         "),
     );
 @endphp
-<body style="background-color: #CCCCCC;margin: 0">
+<body style="background-color: #CCCCCC;margin: 0" onload="window.print()">
     <div align="center">
         <table class="bayangprint" cellspacing="0" cellpadding="0" bgcolor="#FFFFFF" border="0" width="950" style="padding:25px">
             <tbody>
@@ -101,22 +101,22 @@
                                     <td>{{ $item->namaproduk }}</td>
                                     <td>{{ $item->qty_produksi }}</td>
                                     <td></td>
-                                    <td>{{ $item->nomor_palet }}</td>                                    
+                                    <td>{{ $item->nomor_palet }}</td>
                                     @php
                                         $gentanno = collect(
                                             DB::select("
                                                 SELECT
                                                     pga.product_goods_id,
-                                                    tdpa.gentan_no || '-' || pga.gentan_line AS nogentan 
+                                                    tdpa.gentan_no || '-' || pga.gentan_line AS nogentan
                                                 FROM
                                                     tdproduct_goods_assembly AS pga
                                                     LEFT JOIN tdProduct_Goods AS tdpg ON tdpg.ID = pga.product_goods_id
-                                                    LEFT JOIN tdproduct_assembly AS tdpa ON tdpa.ID = pga.product_assembly_id 
+                                                    LEFT JOIN tdproduct_assembly AS tdpa ON tdpa.ID = pga.product_assembly_id
                                                 WHERE
                                                     pga.product_goods_id = '$item->id'
                                             "),
                                         );
-                                    
+
                                         // Ambil item pertama dan sisa item
                                         $firstGentan = $gentanno->first();
                                         $remainingGentan = $gentanno->slice(1);
@@ -130,7 +130,7 @@
                                     @php
                                         $loss = collect(
                                             DB::select("
-                                                select 
+                                                select
                                                     pgl.product_goods_id,ls.name as namaloss,pgl.berat_loss
                                                 FROM tdproduct_goods AS tdpg
                                                     inner join tdproduct_goods_loss as pgl on tdpg.id=pgl.product_goods_id
@@ -139,7 +139,7 @@
                                                     pgl.product_goods_id = '$item->id'
                                             "),
                                         );
-                                    
+
                                         // Ambil item pertama dan sisa item
                                         $firstLoss = $loss->first();
                                         $remainingLoss = $loss->slice(1);
@@ -164,7 +164,7 @@
                                     </tr>
                                 @endforeach
 
-                                
+
                             @endforeach
 
                             {{-- Spasi --}}

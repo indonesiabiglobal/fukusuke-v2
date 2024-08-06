@@ -37,7 +37,7 @@
         "),
     )->first();
 @endphp
-<body style="background-color: #CCCCCC;margin: 0">
+<body style="background-color: #CCCCCC;margin: 0" onload="window.print()">
     <div align="center">
         <table class="bayangprint" cellspacing="0" cellpadding="0" bgcolor="#FFFFFF" border="0" width="350" style="padding:25px">
             <tbody>
@@ -101,7 +101,7 @@
                                     </span>
                                 </td>
                             </tr>
-                            
+
                             <tr>
                                 <td width="40%">
                                     <span>
@@ -135,7 +135,7 @@
                                         </font>
                                     </span>
                                 </td>
-                            </tr>                            
+                            </tr>
                             <tr>
                                 <td width="40%">
                                     <span>
@@ -201,7 +201,7 @@
                                         </font>
                                     </span>
                                 </td>
-                            </tr>                            
+                            </tr>
                             <tr>
                                 <td width="40%">
                                     <span>
@@ -269,7 +269,7 @@
                                         </font>
                                     </span>
                                 </td>
-                            </tr>                            
+                            </tr>
                             <tr>
                                 <td width="40%">
                                     <span>
