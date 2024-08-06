@@ -168,20 +168,114 @@
             </div>
         </div>
     </div>
+    
+    <div class="col text-end dropdown" wire:ignore>
+        {{-- <a href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="ri-more-fill fs-17"></i> 
+        </a> --}}
+        {{-- <button type="button" class="btn btn-soft-primary btn-icon fs-14"><i class="ri-grid-fill"></i></button> --}}
+        <button type="button" data-bs-toggle="dropdown" aria-expanded="false" class="btn btn-soft-primary btn-icon fs-14">
+            <i class="ri-grid-fill"></i>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+                <input class="form-check-input fs-15 ms-2" type="checkbox"
+                wire:model.live="po_no" value="{{ $po_no }}"> PO Number
+            </li>
+            <li>
+                <input class="form-check-input fs-15 ms-2" type="checkbox"
+                wire:model.live="pr_na" value="{{ $pr_na }}"> Nama Produk
+            </li>
+            <li>
+                <input class="form-check-input fs-15 ms-2" type="checkbox"
+                wire:model.live="ko_pr" value="{{ $ko_pr }}"> Kode Produk
+            </li>
+            <li>
+                <input class="form-check-input fs-15 ms-2" type="checkbox"
+                wire:model.live="bu" value="{{ $bu }}"> Buyer
+            </li>
+            <li>
+                <input class="form-check-input fs-15 ms-2" type="checkbox"
+                wire:model.live="qt" value="{{ $qt }}"> Quantity
+            </li>
+            <li>
+                <input class="form-check-input fs-15 ms-2" type="checkbox"
+                wire:model.live="tgo" value="{{ $tgo }}"> Tgl. Order
+            </li>
+            <li>
+                <input class="form-check-input fs-15 ms-2" type="checkbox"
+                wire:model.live="stf" value="{{ $stf }}"> Stufing
+            </li>
+            <li>
+                <input class="form-check-input fs-15 ms-2" type="checkbox"
+                wire:model.live="et" value="{{ $et }}"> Etd
+            </li>
+            <li>
+                <input class="form-check-input fs-15 ms-2" type="checkbox"
+                wire:model.live="eta" value="{{ $eta }}"> Eta
+            </li>
+            <li>
+                <input class="form-check-input fs-15 ms-2" type="checkbox"
+                wire:model.live="tgp" value="{{ $tgp }}"> Tgl Proses
+            </li>
+            <li>
+                <input class="form-check-input fs-15 ms-2" type="checkbox"
+                wire:model.live="no" value="{{ $no }}"> No.
+            </li>
+            <li>
+                <input class="form-check-input fs-15 ms-2" type="checkbox"
+                wire:model.live="updated_by" value="{{ $updated_by }}"> UpdateBy
+            </li>
+            <li>
+                <input class="form-check-input fs-15 ms-2" type="checkbox"
+                wire:model.live="updated_on" value="{{ $updated_on }}"> UpdateDt
+            </li>
+        </ul>
+    </div> 
     <div class="table-responsive table-card mt-3 mb-1">
         <table class="table align-middle table-nowrap" id="customerTable" style="width:100%">
             <thead class="table-light">
                 <tr>
                     <th></th>
-                    <th class="sort">PO Number</th>
-                    <th class="sort">Nama Produk</th>
-                    <th class="sort">Kode Produk</th>
-                    <th class="sort">Buyer</th>
-                    <th class="sort">Quantity</th>
-                    <th class="sort">Tgl. Order</th>
-                    <th class="sort">Etd</th>
-                    <th class="sort">Tgl Proses</th>
-                    <th class="sort">No.</th>
+                    @if ($po_no)
+                        <th>PO Number</th>
+                    @endif
+                    @if ($pr_na)
+                        <th>Nama Produk</th>
+                    @endif
+                    @if ($ko_pr)
+                        <th>Kode Produk</th>
+                    @endif
+                    @if ($bu)
+                        <th>Buyer</th>
+                    @endif
+                    @if ($qt)
+                        <th>Quantity</th>
+                    @endif
+                    @if ($tgo)
+                        <th>Tgl. Order</th>
+                    @endif
+                    @if ($stf)
+                        <th>Stuffing</th>
+                    @endif
+                    @if ($et)
+                        <th>Etd</th>
+                    @endif
+                    @if ($eta)
+                        <th>Eta</th>
+                    @endif
+                    @if ($tgp)
+                        <th>Tgl Proses</th>
+                    @endif
+                    @if ($no)                    
+                        <th>No.</th>
+                    @endif
+                    @if ($updated_by)                    
+                        <th>Update By</th>
+                    @endif
+                    @if ($updated_on)                    
+                        <th>Update On</th>
+                    @endif
                 </tr>
             </thead>
             <tbody class="list form-check-all">
@@ -195,22 +289,51 @@
                                 <i class="ri-edit-box-line text-white"></i>
                             </a>
                         </td>
-                        <td>{{ $item->po_no }}</td>
-                        <td>{{ $item->produk_name }}</td>
-                        <td>{{ $item->product_code }}</td>
-                        <td>{{ $item->buyer_name }}</td>
-                        <td>{{ $item->order_qty }}</td>
-                        <td>{{ $item->order_date }}</td>
-                        <td>{{ $item->etddate }}</td>
-                        <td>{{ $item->processdate }}</td>
-                        <td>{{ $no++ }}</td>
+                        @if ($po_no)
+                            <td>{{ $item->po_no }}</td>
+                        @endif
+                        @if ($pr_na)
+                            <td>{{ $item->produk_name }}</td>
+                        @endif
+                        @if ($ko_pr)
+                            <td>{{ $item->product_code }}</td>
+                        @endif
+                        @if ($bu)
+                            <td>{{ $item->buyer_name }}</td>
+                        @endif
+                        @if ($qt)
+                            <td>{{ $item->order_qty }}</td>
+                        @endif
+                        @if ($tgo)                        
+                            <td>{{ $item->order_date }}</td>
+                        @endif
+                        @if ($stf)
+                            <td>{{ $item->stufingdate }}</td>
+                        @endif
+                        @if ($et)                        
+                            <td>{{ $item->etddate }}</td>
+                        @endif
+                        @if ($eta)
+                            <td>{{ $item->etadate }}</td>
+                        @endif
+                        @if ($tgp)                            
+                            <td>{{ $item->processdate }}</td>
+                        @endif
+                        @if ($no)                            
+                            <td>{{ $no++ }}</td>
+                        @endif
+                        @if ($updated_by)                    
+                            <td>{{ $updated_by }}</td>
+                        @endif
+                        @if ($updated_on)                    
+                            <td>{{ $updated_on }}</td>
+                        @endif
                     </tr>
                 @empty
                     <tr>
                         <td colspan="10" class="text-center">
                             <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
                             <h5 class="mt-2">Sorry! No Result Found</h5>
-                            <p class="text-muted mb-0">We've searched more than 150+ Orders We did not find any orders for you search.</p>
                         </td>
                     </tr>
                 @endforelse
