@@ -170,11 +170,7 @@
     </div>
     
     <div class="col text-end dropdown" wire:ignore>
-        {{-- <a href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="ri-more-fill fs-17"></i> 
-        </a> --}}
-        {{-- <button type="button" class="btn btn-soft-primary btn-icon fs-14"><i class="ri-grid-fill"></i></button> --}}
-        <button type="button" data-bs-toggle="dropdown" aria-expanded="false" class="btn btn-soft-primary btn-icon fs-14">
+        <button type="button" data-bs-toggle="dropdown" aria-expanded="false" class="btn btn-soft-primary btn-icon fs-14 me-4 mb-4">
             <i class="ri-grid-fill"></i>
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
@@ -231,9 +227,9 @@
                 wire:model.live="updated_on" value="{{ $updated_on }}"> UpdateDt
             </li>
         </ul>
-    </div> 
-    <div class="table-responsive table-card mt-3 mb-1">
-        <table class="table align-middle table-nowrap" id="customerTable" style="width:100%">
+    </div>
+    <div class="table-responsive table-card">
+        <table class="table align-middle">
             <thead class="table-light">
                 <tr>
                     <th></th>
@@ -339,7 +335,7 @@
                 @endforelse
             </tbody>
         </table>
-        {{ $data->links() }}
+        {{ $data->links(data: ['scrollTo' => false]) }}
     </div>
     {{-- <livewire:tdorder/> --}}
 </div>

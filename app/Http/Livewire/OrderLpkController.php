@@ -123,7 +123,6 @@ class OrderLpkController extends Component
             ->leftjoin('msproduct AS mp', 'mp.id', '=', 'tod.product_id')
             ->leftjoin('msbuyer AS mbu', 'mbu.id', '=', 'tod.buyer_id');
 
-
         if($this->transaksi == 2){
             if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
                 $data = $data->where('tod.order_date', '>=', $this->tglMasuk);
