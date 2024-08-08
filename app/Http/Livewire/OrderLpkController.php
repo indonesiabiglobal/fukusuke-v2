@@ -48,20 +48,6 @@ class OrderLpkController extends Component
 
     use WithPagination, WithoutUrlPagination;
 
-    private function dataTableHeader(){
-        return [
-            'PO Number',
-            'Nama Produk',
-            'Kode Produk',
-            'Buyer',
-            'Quantity',
-            'Tgl. Order',
-            'Etd',
-            'Tgl Proses',
-            'No.',
-        ];
-    }
-
     public function mount()
     {
         $this->products = MsProduct::get();
@@ -165,7 +151,6 @@ class OrderLpkController extends Component
 
         return view('livewire.order-lpk.order-lpk', [
             'data' => $data,
-            'dataTableHeader' => $this->dataTableHeader()
         ])->extends('layouts.master');
     }
 }
