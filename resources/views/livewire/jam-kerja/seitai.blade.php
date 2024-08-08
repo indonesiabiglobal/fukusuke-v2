@@ -314,10 +314,7 @@
                 @forelse ($data as $item)
                     <tr>
                         <td>
-                            {{-- <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modal-edit" wire:click="edit({{$item->orderid}})">
-                                <i class="fa fa-edit"></i> Edit
-                            </button> --}}
-                            <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modal-edit" wire:click="edit({{$item->orderid}})">
+                            <button type="button" class="link-success fs-15 p-1 bg-primary rounded" data-bs-toggle="modal" data-bs-target="#modal-edit" wire:click="edit({{$item->orderid}})">
                                 <i class="ri-edit-box-line text-white"></i>
                             </button>
                         </td>
@@ -345,6 +342,6 @@
                 @endforelse
             </tbody>
         </table>
-        {{-- {{ $data->links() }} --}}
+        {{ $data->links() }}
     </div>
 </div>

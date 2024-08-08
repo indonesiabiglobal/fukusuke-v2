@@ -9,9 +9,12 @@ use App\Models\TdJamKerjaMesin;
 use Carbon\Carbon;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
+use Livewire\WithPagination;
+use Livewire\WithoutUrlPagination;
 
 class SeitaiJamKerjaController extends Component
 {
+    protected $paginationTheme = 'bootstrap';
     public $tglMasuk;
     public $tglKeluar;
     // public $jamkerja = [];
@@ -31,6 +34,8 @@ class SeitaiJamKerjaController extends Component
     public $on_hour;
     public $orderid;
     public $workShift;
+
+    use WithPagination, WithoutUrlPagination;
 
     public function mount()
     {
@@ -199,26 +204,47 @@ class SeitaiJamKerjaController extends Component
             }
         }
 
-        $jamkerja = DB::select("
-        SELECT
-            tdjkm.id AS orderid,
-            tdjkm.working_date AS working_date,
-            tdjkm.work_shift AS work_shift,
-            tdjkm.machine_id AS machine_id,
-            tdjkm.department_id AS department_id,
-            tdjkm.employee_id AS employee_id,
-            tdjkm.work_hour AS work_hour,
-            tdjkm.off_hour AS off_hour,
-            tdjkm.on_hour AS on_hour,
-            tdjkm.created_by AS created_by,
-            tdjkm.created_on AS created_on,
-            tdjkm.updated_by AS updated_by,
-            tdjkm.updated_on AS updated_on
-        FROM
-            tdJamKerjaMesin AS tdjkm
-        WHERE tdjkm.working_date >= '$this->tglMasuk 00:00'
-        AND tdjkm.working_date <= '$this->tglKeluar 23:59'
-        ");
+        // $jamkerja = DB::select("
+        // SELECT
+        //     tdjkm.id AS orderid,
+        //     tdjkm.working_date AS working_date,
+        //     tdjkm.work_shift AS work_shift,
+        //     tdjkm.machine_id AS machine_id,
+        //     tdjkm.department_id AS department_id,
+        //     tdjkm.employee_id AS employee_id,
+        //     tdjkm.work_hour AS work_hour,
+        //     tdjkm.off_hour AS off_hour,
+        //     tdjkm.on_hour AS on_hour,
+        //     tdjkm.created_by AS created_by,
+        //     tdjkm.created_on AS created_on,
+        //     tdjkm.updated_by AS updated_by,
+        //     tdjkm.updated_on AS updated_on
+        // FROM
+        //     tdJamKerjaMesin AS tdjkm
+        // WHERE tdjkm.working_date >= '$this->tglMasuk 00:00'
+        // AND tdjkm.working_date <= '$this->tglKeluar 23:59'
+        // ");
+
+        $jamkerja = TdJamKerjaMesin::select(
+            'id as orderid',
+            'working_date',
+            'work_shift',
+            'machine_id',
+            'department_id',
+            'employee_id',
+            'work_hour',
+            'off_hour',
+            'on_hour',
+            'created_by',
+            'created_on',
+            'updated_by',
+            'updated_on'
+        )
+        ->whereBetween('working_date', [
+            $this->tglMasuk . ' 00:00:00',
+            $this->tglKeluar . ' 23:59:59'
+        ])
+        ->paginate(8);
 
         return view('livewire.jam-kerja.seitai',
             ['data' => $jamkerja]

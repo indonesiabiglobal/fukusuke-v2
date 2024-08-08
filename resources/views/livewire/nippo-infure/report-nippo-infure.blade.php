@@ -6,10 +6,10 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
 </head>
-{{-- @php
+@php
     header("Content-type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 	header("Content-Disposition: attachment; filename=Nippo.xls");
-@endphp --}}
+@endphp
 @php
     use Carbon\Carbon;
 
