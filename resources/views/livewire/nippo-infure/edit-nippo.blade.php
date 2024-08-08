@@ -189,7 +189,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5">Berat Gentan</label>
-                                <input type="text" class="form-control"  wire:model="qty_gentan" />
+                                <input type="number" class="form-control"  wire:model="qty_gentan" />
                                 <span class="input-group-text">
                                     kg
                                 </span>
