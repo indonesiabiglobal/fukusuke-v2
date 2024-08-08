@@ -34,6 +34,7 @@ class AddLpkController extends Component
     public $qty_gulung;
     public $selisihkurang;
     public $warnalpkid;
+    public $case_box_count;
 
     public $masterWarnaLPK;
 
@@ -145,7 +146,8 @@ class AddLpkController extends Component
                 'mp.ketebalan',
                 'mp.diameterlipat',
                 'mp.productlength',
-                'mp.one_winding_m_number'
+                'mp.one_winding_m_number',
+                'mp.case_box_count'
             )
             ->where('po_no', $this->po_no)
             ->first();
@@ -160,25 +162,39 @@ class AddLpkController extends Component
                 $this->buyer_name = $tdorder->buyer_name;
                 $this->product_name = $tdorder->produk_name;
                 $this->productlength = $tdorder->productlength;
+                $this->case_box_count = $tdorder->case_box_count;
                 $this->defaultgulung = $tdorder->one_winding_m_number;
                 $this->dimensi = $tdorder->ketebalan.'x'.$tdorder->diameterlipat.'x'.$tdorder->productlength;
             }
         }
 
         if(isset($this->machineno) && $this->machineno != ''){
-            $machine=MsMachine::where('machineno', $this->machineno)->first();
+            $machine=MsMachine::where('machineno', 'ilike', '%'. $this->machineno .'%')->first();
             if($machine == null){
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Mesin ' . $this->machineno . ' Tidak Terdaftar']);
             } else {
+                $this->machineno = $machine->machineno;
                 $this->machinename = $machine->machinename;
             }
         }
+
+        if(isset($this->qty_lpk)){
+            $this->total_assembly_line = ($this->qty_lpk * $this->productlength) / $this->case_box_count;
+        }
+
+        if(isset($this->qty_gentan) && isset($this->qty_gulung)){
+            $this->panjang_lpk = (int)$this->qty_gentan * (int)$this->qty_gulung;
+        }
+        if(isset($this->panjang_lpk) && isset($this->total_assembly_line)){
+            $this->selisihkurang = $this->panjang_lpk - $this->total_assembly_line;
+        }
+        
         // if(isset($this->qty_lpk) && isset($this->productlength)){
-            $this->total_assembly_line = $this->qty_lpk * $this->productlength;
-            $this->qty_gentan = $this->productlength / $this->defaultgulung;
-            $this->qty_gulung = $this->productlength * $this->qty_gentan;
-            $this->panjang_lpk = $this->qty_gentan * $this->qty_gulung;
-            $this->selisihkurang = $this->productlength - $this->panjang_lpk;
+            // $this->total_assembly_line = $this->qty_lpk * $this->productlength;
+            // $this->qty_gentan = $this->productlength / $this->defaultgulung;
+            // $this->qty_gulung = $this->productlength * $this->qty_gentan;
+            // $this->panjang_lpk = $this->qty_gentan * $this->qty_gulung;
+            // 
         // }
 
         return view('livewire.order-lpk.add-lpk')->extends('layouts.master');
