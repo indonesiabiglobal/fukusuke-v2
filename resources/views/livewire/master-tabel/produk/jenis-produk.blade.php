@@ -3,7 +3,7 @@
         <div class="row">
 
             <div class="col-12 col-lg-6">
-                <button class="btn btn-primary w-lg p-1" wire:click="download" type="button">
+                {{-- <button class="btn btn-primary w-lg p-1" wire:click="download" type="button">
                     <span wire:loading.remove wire:target="download">
                         <i class="ri-download-cloud-2-line"> </i> Download
                     </span>
@@ -17,8 +17,8 @@
                             </span>
                         </span>
                     </div>
-                </button>
-                <button class="btn btn-info w-lg p-1" wire:click="print" type="button">
+                </button> --}}
+                {{-- <button class="btn btn-info w-lg p-1" wire:click="print" type="button">
                     <span wire:loading.remove wire:target="print">
                         <i class="ri-printer-line"> </i> Print
                     </span>
@@ -32,7 +32,7 @@
                             </span>
                         </span>
                     </div>
-                </button>
+                </button> --}}
                 {{-- Button Add groupProduct --}}
                 <button type="button" class="btn btn-success w-lg p-1" wire:click="showModalCreate">
                     <i class="ri-add-line"> </i> Add

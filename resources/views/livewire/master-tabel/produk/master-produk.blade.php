@@ -97,7 +97,7 @@
                 </div>
                 {{-- end modal delete product --}}
             </div>
-            <div class="col-12 col-lg-6 text-end">
+            {{-- <div class="col-12 col-lg-6 text-end">
                 <button class="btn btn-primary w-lg p-1" wire:click="download" type="button">
                     <span wire:loading.remove wire:target="download">
                         <i class="ri-download-cloud-2-line"> </i> Download
@@ -128,7 +128,7 @@
                         </span>
                     </div>
                 </button>
-            </div>
+            </div> --}}
         </div>
     </div>
     <div class="table-responsive table-card mt-3 mb-1">
