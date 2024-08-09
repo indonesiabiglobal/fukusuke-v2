@@ -992,10 +992,7 @@
                                     <div class="form-group mt-1">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-3">Catatan Produksi</label>
-                                            <textarea class="form-control" rows="2" placeholder="Catatan Produksi" value="{{ $product->manufacturing_summary ?? '' }}"></textarea>
-                                            @error('manufacturing_summary')
-                                                <span class="invalid-feedback">{{ $message }}</span>
-                                            @enderror
+                                            <textarea class="form-control" rows="2" placeholder="Catatan Produksi">{{ $product->manufacturing_summary ?? '' }}</textarea>
                                         </div>
                                     </div>
                                 </div>
