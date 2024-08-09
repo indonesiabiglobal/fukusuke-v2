@@ -16,15 +16,15 @@ class DashboardInfureController extends Controller
         if (isset($request->filterDate)) {
             $requestFilterDate = $request->filterDate;
             $filterDate = explode(' to ', $request->filterDate);
-            $startDate = Carbon::parse($filterDate[0])->format('Y-m-d 00:00:00');
+            $startDate = Carbon::parse($filterDate[0])->format('d-m-Y 00:00:00');
             if (count($filterDate) == 1) {
-                $endDate = Carbon::parse($filterDate[0])->format('Y-m-d 23:59:59');
+                $endDate = Carbon::parse($filterDate[0])->format('d-m-Y 23:59:59');
             } else {
-                $endDate = Carbon::parse($filterDate[1])->format('Y-m-d 23:59:59');
+                $endDate = Carbon::parse($filterDate[1])->format('d-m-Y 23:59:59');
             }
         } else {
-            $startDate = Carbon::now()->subMonth()->format('Y-m-d 00:00:00');
-            $endDate = Carbon::now()->format('Y-m-d 23:59:59');
+            $startDate = Carbon::now()->subMonth()->format('d-m-Y 00:00:00');
+            $endDate = Carbon::now()->format('d-m-Y 23:59:59');
             $requestFilterDate = $startDate . ' to ' . $endDate;
         }
         $divisionCodeInfure = MsDepartment::where('name', 'INFURE')->first()->division_code;

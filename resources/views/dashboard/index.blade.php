@@ -75,7 +75,7 @@
 
     <div class="row">
         {{-- INFURE Machine Running Rate (Kadou Jikan) --}}
-        <div class="col-12 col-xl-9">
+        <div class="col-12 col-lg-9">
             <div class="card card-height-100">
                 <div class="card-header align-items-center d-flex">
                     <h4 class="card-title mb-0 flex-grow-1">INFURE Machine Running Rate (Kadou Jikan)</h4>
@@ -99,7 +99,7 @@
             </div>
         </div>
         {{-- TOP Trouble Infure --}}
-        <div class="col-12 col-xl-3">
+        <div class="col-12 col-lg-3">
             <div class="card card-height-100">
                 <div class="card-header align-items-center d-flex">
                     <h4 class="card-title mb-0 flex-grow-1">INFURE Top 3 Loss</h4>
@@ -140,7 +140,7 @@
 
     <div class="row">
         {{-- SEITAI Machine Running Rate (Kadou Jikan) --}}
-        <div class="col-12 col-xl-9">
+        <div class="col-12 col-lg-9">
             <div class="card card-height-100">
                 <div class="card-header align-items-center d-flex">
                     <h4 class="card-title mb-0 flex-grow-1">SEITAI Machine Running Rate (Kadou Jikan)</h4>
@@ -164,7 +164,7 @@
             </div>
         </div>
         {{-- TOP Trouble Infure --}}
-        <div class="col-12 col-xl-3">
+        <div class="col-12 col-lg-3">
             <div class="card card-height-100">
                 <div class="card-header align-items-center d-flex">
                     <h4 class="card-title mb-0 flex-grow-1">SEITAI Top 3 Loss </h4>

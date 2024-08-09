@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Livewire\MasterTabel\WorkingShift;
 use App\Models\MsDepartment;
+use App\Models\MsWorkingShift;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -16,15 +18,15 @@ class DashboardController extends Controller
         if (isset($request->filterDate)) {
             $requestFilterDate = $request->filterDate;
             $filterDate = explode(' to ', $request->filterDate);
-            $startDate = Carbon::parse($filterDate[0])->format('Y-m-d 00:00:00');
+            $startDate = Carbon::parse($filterDate[0])->format('d-m-Y 00:00:00');
             if (count($filterDate) == 1) {
-                $endDate = Carbon::parse($filterDate[0])->format('Y-m-d 23:59:59');
+                $endDate = Carbon::parse($filterDate[0])->format('d-m-Y 23:59:59');
             } else {
-                $endDate = Carbon::parse($filterDate[1])->format('Y-m-d 23:59:59');
+                $endDate = Carbon::parse($filterDate[1])->format('d-m-Y 23:59:59');
             }
         } else {
-            $startDate = Carbon::now()->subMonth()->format('Y-m-d 00:00:00');
-            $endDate = Carbon::now()->format('Y-m-d 23:59:59');
+            $startDate = Carbon::now()->subMonth()->format('d-m-Y 00:00:00');
+            $endDate = Carbon::now()->format('d-m-Y 23:59:59');
             $requestFilterDate = $startDate . ' to ' . $endDate;
         }
         $divisionCodeInfure = MsDepartment::where('name', 'INFURE')->first()->division_code;
@@ -134,6 +136,12 @@ class DashboardController extends Controller
     // INFURE
     public function getListMachineInfure($startDate, $endDate, $divisionCodeInfure)
     {
+        $today = Carbon::parse('2024-07-09');
+        $shiftSekarang = MsWorkingShift::select('work_shift')
+            ->where('work_hour_from', '<=', $today->format('H:i:s'))
+            ->where('work_hour_till', '>=', $today->format('H:i:s'))
+            ->where('status', 1)
+            ->first();
         $listMachineInfure = DB::select('
         SELECT
             RIGHT( mac.machineno, 2 ) AS machineno,
@@ -148,6 +156,8 @@ class DashboardController extends Controller
         ORDER BY machineno ASC
 
         ', [$divisionCodeInfure]);
+        // [$shiftSekarang, $divisionCodeInfure, $today->format('Y-m-d')]);
+
         // ', array_merge([$startDate, $endDate, $division_code], $machineNo));
         $listDepartment = array_reduce($listMachineInfure, function ($carry, $item) {
             $carry[$item->department_id] = [
