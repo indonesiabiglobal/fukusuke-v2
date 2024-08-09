@@ -110,22 +110,9 @@ class DashboardController extends Controller
 
         $data = [
             'filterDate' => $requestFilterDate,
-
-            // Infure
-            'listMachineInfure' => $this->getListMachineInfure($startDate, $endDate, $divisionCodeInfure),
-            'kadouJikanInfureMesin' => $this->getKadouJikanInfure($startDate, $endDate, $divisionCodeInfure),
-            'hasilProduksiInfure' => $this->getHasilProduksiInfure($startDate, $endDate),
-            'lossInfure' => $this->getLossInfure($startDate, $endDate, $divisionCodeInfure),
-            'topLossInfure' => $this->getTopLossInfure($startDate, $endDate, $divisionCodeInfure),
-            'counterTroubleInfure' => $this->getCounterTroubleInfure($startDate, $endDate),
-
-            // Seitai
-            'listMachineSeitai' => $this->getListMachineSeitai($startDate, $endDate, $divisionCodeSeitai),
-            'kadouJikanSeitaiMesin' => $this->getkadouJikanSeitai($startDate, $endDate, $divisionCodeSeitai),
-            'hasilProduksiSeitai' => $this->getHasilProduksiSeitai($startDate, $endDate),
-            'lossSeitai' => $this->getLossSeitai($startDate, $endDate, $divisionCodeSeitai),
-            'topLossSeitai' => $this->getTopLossSeitai($startDate, $endDate, $divisionCodeSeitai),
-            'counterTroubleSeitai' => $this->getCounterTroubleSeitai($startDate, $endDate),
+            
+            'totalprodukkenpin' => $this->getTotalProdukKenpin(),
+            'jenisprodukkenpin' => $this->getJenisProdukKenpin(),
 
         ];
         return view('dashboard.dashboard-qc', $data);
@@ -335,5 +322,63 @@ class DashboardController extends Controller
         ]);
 
         return $topLossSeitai;
+    }
+    public function getTotalProdukKenpin()
+    {
+        $totalProdukKenpin = DB::select("
+        select
+            '10' as division_code,
+            prd.name as product_code,
+            cast(count(kenpin.product_assembly_id) as varchar) || ' gentan' as jumlahloss
+        from tdkenpin_assembly as kenpinhdr
+        left join tdkenpin_assembly_detail as kenpin on kenpinhdr.id = kenpin.kenpin_assembly_id
+        inner join tdproduct_assembly as asyx on kenpin.product_assembly_id = asyx.id
+        inner join msproduct as prd on asyx.product_id = prd.id
+        where kenpinhdr.kenpin_date ='2018-11-30'
+        group by prd.name
+
+        union all
+        select
+            '20' as division_code,
+            prd.name as product_code,
+            cast(sum(kenpinhdr.qty_loss / (case when prd.case_box_count = 0 then 1000 else prd.case_box_count end)) as varchar) || ' box' as jumlahloss
+        from tdkenpin_goods as kenpinhdr
+        left join tdkenpin_goods_detail as kenpin on kenpinhdr.id = kenpin.kenpin_goods_id
+        left join tdproduct_goods as gdsx on kenpin.product_goods_id = gdsx.id
+        left join msproduct as prd on kenpinhdr.product_id = prd.id
+        where kenpinhdr.kenpin_date ='2022-11-01'
+        and  kenpinhdr.status_kenpin = 2 
+        group by prd.name
+        ");
+
+        return $totalProdukKenpin;
+    }
+    public function getJenisProdukKenpin()
+    {
+        $jenisProdukKenpin = DB::select("
+        select
+            '10' as division_code,
+            kenpinhdr.remark as jenis,
+            cast(count(kenpin.product_assembly_id) as varchar) || ' gentan' as jumlahloss
+        from tdkenpin_assembly as kenpinhdr
+        left join tdkenpin_assembly_detail as kenpin on kenpinhdr.id = kenpin.kenpin_assembly_id
+        inner join tdproduct_assembly as asyx on kenpin.product_assembly_id = asyx.id
+        inner join msproduct as prd on asyx.product_id = prd.id
+        where kenpinhdr.kenpin_date ='2018-11-30'
+        group by kenpinhdr.remark
+        union all
+        select
+            '20' as division_code,
+                kenpinhdr.remark as jenis,
+            cast(sum(kenpinhdr.qty_loss / (case when prd.case_box_count = 0 then 1000 else prd.case_box_count end)) as varchar) || ' box' as jumlahloss
+        from tdkenpin_goods as kenpinhdr
+        left join tdkenpin_goods_detail as kenpin on kenpinhdr.id = kenpin.kenpin_goods_id
+        left join tdproduct_goods as gdsx on kenpin.product_goods_id = gdsx.id
+        left join msproduct as prd on kenpinhdr.product_id = prd.id
+        where kenpinhdr.kenpin_date ='2022-11-01'
+        group by kenpinhdr.remark
+        ");
+
+        return $jenisProdukKenpin;
     }
 }
