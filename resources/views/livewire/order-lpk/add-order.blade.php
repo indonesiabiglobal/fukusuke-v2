@@ -155,7 +155,7 @@
 					</button>
 				</div>
 			</div>
-			<!--  Extra Large modal example -->
+			<!--  modal master produk -->
 			<div class="modal fade" id="modal-noorder-produk" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
 				<div class="modal-dialog modal-xl">
 					<div class="modal-content">

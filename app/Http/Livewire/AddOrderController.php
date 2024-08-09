@@ -148,21 +148,21 @@ class AddOrderController extends Component
                 $this->diameterlipat = $this->productNomorOrder->diameterlipat;
                 $this->productlength = $this->productNomorOrder->productlength;
                 $this->unit_weight = $this->productNomorOrder->unit_weight;
-                $this->product_unit = DB::table('msunit')->where('id', $this->productNomorOrder->product_unit)->first(['name'])->name ?? '';
+                $this->product_unit = DB::table('msunit')->where('id', $this->productNomorOrder->product_unit_id)->first(['name'])->name ?? '';
                 $this->inflation_thickness = $this->productNomorOrder->inflation_thickness;
                 $this->inflation_fold_diameter = $this->productNomorOrder->inflation_fold_diameter;
                 $this->one_winding_m_number = $this->productNomorOrder->one_winding_m_number;
-                $this->material_classification = DB::table('msmaterial')->where('id', $this->productNomorOrder->material_classification)->first(['name'])->name ?? '';
-                $this->embossed_classification = DB::table('msembossedclassification')->where('id', $this->productNomorOrder->embossed_classification)->first(['name'])->name ?? '';
-                $this->surface_classification = DB::table('mssurfaceclassification')->where('id', $this->productNomorOrder->surface_classification)->first(['name'])->name ?? '';
+                $this->material_classification = DB::table('msmaterial')->where('id', $this->productNomorOrder->material_classification_id)->first(['name'])->name ?? '';
+                $this->embossed_classification = DB::table('msembossedclassification')->where('id', $this->productNomorOrder->embossed_classification_id)->first(['name'])->name ?? '';
+                $this->surface_classification = DB::table('mssurfaceclassification')->where('id', $this->productNomorOrder->surface_classification_id)->first(['name'])->name ?? '';
                 $this->coloring_1 = $this->productNomorOrder->coloring_1;
                 $this->coloring_2 = $this->productNomorOrder->coloring_2;
                 $this->coloring_3 = $this->productNomorOrder->coloring_3;
                 $this->coloring_4 = $this->productNomorOrder->coloring_4;
                 $this->coloring_5 = $this->productNomorOrder->coloring_5;
                 $this->inflation_notes = $this->productNomorOrder->inflation_notes;
-                $this->gentan_classification = DB::table('msgentanclassification')->where('id', $this->productNomorOrder->gentan_classification)->first(['name'])->name ?? '';
-                $this->gazette_classification = DB::table('msgazetteclassification')->where('id', $this->productNomorOrder->gazette_classification)->first(['name'])->name ?? '';
+                $this->gentan_classification = DB::table('msgentanclassification')->where('id', $this->productNomorOrder->gentan_classification_id)->first(['name'])->name ?? '';
+                $this->gazette_classification = DB::table('msgazetteclassification')->where('id', $this->productNomorOrder->gazette_classification_id)->first(['name'])->name ?? '';
                 $this->gazette_dimension_a = $this->productNomorOrder->gazette_dimension_a;
                 $this->gazette_dimension_b = $this->productNomorOrder->gazette_dimension_b;
                 $this->gazette_dimension_c = $this->productNomorOrder->gazette_dimension_c;
@@ -184,11 +184,11 @@ class AddOrderController extends Component
                 $this->back_color_3 = $this->productNomorOrder->back_color_3;
                 $this->back_color_4 = $this->productNomorOrder->back_color_4;
                 $this->back_color_5 = $this->productNomorOrder->back_color_5;
-                $this->print_type = DB::table('msjeniscetak')->where('id', $this->productNomorOrder->print_type)->first(['name'])->name ?? '';
-                $this->ink_characteristic = DB::table('mssifattinta')->where('id', $this->productNomorOrder->ink_characteristic)->first(['name'])->name ?? '';
-                $this->endless_printing = DB::table('msendless')->where('id', $this->productNomorOrder->endless_printing)->first(['name'])->name ?? '';
-                $this->winding_direction_of_the_web = DB::table('msarahgulung')->where('id', $this->productNomorOrder->winding_direction_of_the_web)->first(['name'])->name ?? '';
-                $this->seal_classification = DB::table('msklasifikasiseal')->where('id', $this->productNomorOrder->seal_classification)->first(['name'])->name ?? '';
+                $this->print_type = DB::table('msjeniscetak')->where('id', $this->productNomorOrder->print_type_id)->first(['name'])->name ?? '';
+                $this->ink_characteristic = DB::table('mssifattinta')->where('id', $this->productNomorOrder->ink_characteristic_id)->first(['name'])->name ?? '';
+                $this->endless_printing = DB::table('msendless')->where('id', $this->productNomorOrder->endless_printing_id)->first(['name'])->name ?? '';
+                $this->winding_direction_of_the_web = DB::table('msarahgulung')->where('id', $this->productNomorOrder->winding_direction_of_the_web_id)->first(['name'])->name ?? '';
+                $this->seal_classification = DB::table('msklasifikasiseal')->where('id', $this->productNomorOrder->seal_classification_id)->first(['name'])->name ?? '';
                 $this->from_seal_design = $this->productNomorOrder->from_seal_design;
                 $this->lower_sealing_length = $this->productNomorOrder->lower_sealing_length;
                 $this->palet_jumlah_baris = $this->productNomorOrder->palet_jumlah_baris;
@@ -208,7 +208,7 @@ class AddOrderController extends Component
                 $this->lakbanseitaiid = DB::table('mslakbanseitai')->where('id', $this->productNomorOrder->lakbanseitaiid)->first(['name'])->name ?? '';
                 $this->stampelseitaiid = DB::table('msstampleseitai')->where('id', $this->productNomorOrder->stampelseitaiid)->first(['name'])->name ?? '';
                 $this->hagataseitaiid = DB::table('mshagataseitai')->where('id', $this->productNomorOrder->hagataseitaiid)->first(['name'])->name ?? '';
-                $this->jenissealseitaiid = DB::table('msjenissealseitai')->where('id', $this->productNomorOrder->hagataseitaiid)->first(['name'])->name ?? '';
+                $this->jenissealseitaiid = DB::table('msjenissealseitai')->where('id', $this->productNomorOrder->jenissealseitaiid)->first(['name'])->name ?? '';
 
                 // show modal
                 $this->dispatch('showModalNoOrder');
@@ -237,7 +237,7 @@ class AddOrderController extends Component
             $order->stufingdate = $this->stufingdate;
             $order->etddate = $this->etddate;
             $order->etadate = $this->etadate;
-            $order->save(); 
+            $order->save();
 
             DB::commit();
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
