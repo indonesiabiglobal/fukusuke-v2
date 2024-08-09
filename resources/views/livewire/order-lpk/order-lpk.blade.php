@@ -169,173 +169,124 @@
         </div>
     </div>
     
-    <div class="col text-end dropdown" wire:ignore>
+    <div class="col text-end dropdown" x-data="{ 
+        po_no:true, na_pr:true, ko_pr:true, bu:true, qt:true, tgo:true, stf:false, etd:true, eta:false, tgp:true, num:true, up_by: false, up_dt: false
+        }">
         <button type="button" data-bs-toggle="dropdown" aria-expanded="false" class="btn btn-soft-primary btn-icon fs-14 me-4 mb-4">
             <i class="ri-grid-fill"></i>
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
-            <li>
-                <input class="form-check-input fs-15 ms-2" type="checkbox"
-                wire:model.live="po_no" value="{{ $po_no }}"> PO Number
+            <li @click="po_no = !po_no; $refs.checkbox.checked = po_no" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="po_no = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="po_no"> 
+                PO Number
             </li>
-            <li>
-                <input class="form-check-input fs-15 ms-2" type="checkbox"
-                wire:model.live="pr_na" value="{{ $pr_na }}"> Nama Produk
+            <li @click="na_pr = !na_pr; $refs.checkbox.checked = na_pr" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="na_pr = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="na_pr"> 
+                Nama Produk
             </li>
-            <li>
-                <input class="form-check-input fs-15 ms-2" type="checkbox"
-                wire:model.live="ko_pr" value="{{ $ko_pr }}"> Kode Produk
+            <li @click="ko_pr = !ko_pr; $refs.checkbox.checked = ko_pr" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="ko_pr = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="ko_pr"> 
+                Kode Produk
             </li>
-            <li>
-                <input class="form-check-input fs-15 ms-2" type="checkbox"
-                wire:model.live="bu" value="{{ $bu }}"> Buyer
+            <li @click="bu = !bu; $refs.checkbox.checked = bu" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="bu = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="bu"> 
+                Buyer
             </li>
-            <li>
-                <input class="form-check-input fs-15 ms-2" type="checkbox"
-                wire:model.live="qt" value="{{ $qt }}"> Quantity
+            <li @click="qt = !qt; $refs.checkbox.checked = qt" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="qt = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="qt"> 
+                Quantity
             </li>
-            <li>
-                <input class="form-check-input fs-15 ms-2" type="checkbox"
-                wire:model.live="tgo" value="{{ $tgo }}"> Tgl. Order
+            <li @click="tgo = !tgo; $refs.checkbox.checked = tgo" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="tgo = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="tgo"> 
+                Quantity
             </li>
-            <li>
-                <input class="form-check-input fs-15 ms-2" type="checkbox"
-                wire:model.live="stf" value="{{ $stf }}"> Stufing
+            <li @click="stf = !stf; $refs.checkbox.checked = stf" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="stf = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="stf"> 
+                Stuffing
             </li>
-            <li>
-                <input class="form-check-input fs-15 ms-2" type="checkbox"
-                wire:model.live="et" value="{{ $et }}"> Etd
+            <li @click="etd = !etd; $refs.checkbox.checked = etd" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="etd = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="etd"> 
+                Etd
             </li>
-            <li>
-                <input class="form-check-input fs-15 ms-2" type="checkbox"
-                wire:model.live="eta" value="{{ $eta }}"> Eta
+            <li @click="eta = !eta; $refs.checkbox.checked = eta" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="eta = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="eta"> 
+                Eta
             </li>
-            <li>
-                <input class="form-check-input fs-15 ms-2" type="checkbox"
-                wire:model.live="tgp" value="{{ $tgp }}"> Tgl Proses
+            <li @click="tgp = !tgp; $refs.checkbox.checked = tgp" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="tgp = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="tgp"> 
+                Tgl Proses
             </li>
-            <li>
-                <input class="form-check-input fs-15 ms-2" type="checkbox"
-                wire:model.live="no" value="{{ $no }}"> No.
+            <li @click="num = !num; $refs.checkbox.checked = num" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="num = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="num"> 
+                No.
             </li>
-            <li>
-                <input class="form-check-input fs-15 ms-2" type="checkbox"
-                wire:model.live="updated_by" value="{{ $updated_by }}"> UpdateBy
+            <li @click="up_by = !up_by; $refs.checkbox.checked = up_by" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="up_by = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="up_by"> 
+                Update By
             </li>
-            <li>
-                <input class="form-check-input fs-15 ms-2" type="checkbox"
-                wire:model.live="updated_on" value="{{ $updated_on }}"> UpdateDt
+            <li @click="up_dt = !up_dt; $refs.checkbox.checked = up_dt" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="up_dt = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="up_dt"> 
+                UpdateDt
             </li>
         </ul>
-    </div>
-    <div class="table-responsive table-card">
-        <table class="table align-middle">
-            <thead class="table-light">
-                <tr>
-                    <th></th>
-                    @if ($po_no)
-                        <th>PO Number</th>
-                    @endif
-                    @if ($pr_na)
-                        <th>Nama Produk</th>
-                    @endif
-                    @if ($ko_pr)
-                        <th>Kode Produk</th>
-                    @endif
-                    @if ($bu)
-                        <th>Buyer</th>
-                    @endif
-                    @if ($qt)
-                        <th>Quantity</th>
-                    @endif
-                    @if ($tgo)
-                        <th>Tgl. Order</th>
-                    @endif
-                    @if ($stf)
-                        <th>Stuffing</th>
-                    @endif
-                    @if ($et)
-                        <th>Etd</th>
-                    @endif
-                    @if ($eta)
-                        <th>Eta</th>
-                    @endif
-                    @if ($tgp)
-                        <th>Tgl Proses</th>
-                    @endif
-                    @if ($no)                    
-                        <th>No.</th>
-                    @endif
-                    @if ($updated_by)                    
-                        <th>Update By</th>
-                    @endif
-                    @if ($updated_on)                    
-                        <th>Update On</th>
-                    @endif
-                </tr>
-            </thead>
-            <tbody class="list form-check-all">
-                @php
-                    $no = 1;
-                @endphp
-                @forelse ($data as $item)
+    
+        <div class="table-responsive table-card">
+            <table class="table align-middle">
+                <thead class="table-light">
                     <tr>
-                        <td>
-                            <a href="/edit-order?orderId={{ $item->id }}" class="link-success fs-15 p-1 bg-primary rounded">
-                                <i class="ri-edit-box-line text-white"></i>
-                            </a>
-                        </td>
-                        @if ($po_no)
-                            <td>{{ $item->po_no }}</td>
-                        @endif
-                        @if ($pr_na)
-                            <td>{{ $item->produk_name }}</td>
-                        @endif
-                        @if ($ko_pr)
-                            <td>{{ $item->product_code }}</td>
-                        @endif
-                        @if ($bu)
-                            <td>{{ $item->buyer_name }}</td>
-                        @endif
-                        @if ($qt)
-                            <td>{{ $item->order_qty }}</td>
-                        @endif
-                        @if ($tgo)                        
-                            <td>{{ $item->order_date }}</td>
-                        @endif
-                        @if ($stf)
-                            <td>{{ $item->stufingdate }}</td>
-                        @endif
-                        @if ($et)                        
-                            <td>{{ $item->etddate }}</td>
-                        @endif
-                        @if ($eta)
-                            <td>{{ $item->etadate }}</td>
-                        @endif
-                        @if ($tgp)                            
-                            <td>{{ $item->processdate }}</td>
-                        @endif
-                        @if ($no)                            
-                            <td>{{ $no++ }}</td>
-                        @endif
-                        @if ($updated_by)                    
-                            <td>{{ $updated_by }}</td>
-                        @endif
-                        @if ($updated_on)                    
-                            <td>{{ $updated_on }}</td>
-                        @endif
+                        <th></th>
+                        <th x-show="po_no">PO Number</th>
+                        <th x-show="na_pr">Nama Produk</th>
+                        <th x-show="ko_pr">Kode Produk</th>
+                        <th x-show="bu">Buyer</th>
+                        <th x-show="qt">Quantity</th>
+                        <th x-show="tgo">Tgl. Order</th>
+                        <th x-show="stf">Stuffing</th>
+                        <th x-show="etd">Etd</th>
+                        <th x-show="eta">Eta</th>
+                        <th x-show="tgp">Tgl Proses</th>            
+                        <th x-show="num">No.</th>                
+                        <th x-show="up_by">Update By</th>               
+                        <th x-show="up_dt">Update On</th>
                     </tr>
-                @empty
-                    <tr>
-                        <td colspan="10" class="text-center">
-                            <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
-                            <h5 class="mt-2">Sorry! No Result Found</h5>
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-        {{ $data->links(data: ['scrollTo' => false]) }}
+                </thead>
+                <tbody class="list form-check-all">
+                    @php
+                        $no = 1;
+                    @endphp
+                    @forelse ($data as $item)
+                        <tr>
+                            <td>
+                                <a href="/edit-order?orderId={{ $item->id }}" class="link-success fs-15 p-1 bg-primary rounded">
+                                    <i class="ri-edit-box-line text-white"></i>
+                                </a>
+                            </td>
+                            <td x-show="po_no">{{ $item->po_no }}</td>
+                            <td x-show="na_pr">{{ $item->produk_name }}</td>
+                            <td x-show="ko_pr">{{ $item->product_code }}</td>
+                            <td x-show="bu">{{ $item->buyer_name }}</td>
+                            <td x-show="qt">{{ $item->order_qty }}</td>
+                            <td x-show="tgo">{{ $item->order_date }}</td>
+                            <td x-show="stf">{{ $item->stufingdate }}</td>
+                            <td x-show="etd">{{ $item->etddate }}</td>
+                            <td x-show="eta">{{ $item->etadate }}</td>
+                            <td x-show="tgp">{{ $item->processdate }}</td>
+                            <td x-show="num">{{ $no++ }}</td>    
+                            <td x-show="up_by">{{ $updated_by }}</td>  
+                            <td x-show="up_dt">{{ $updated_on }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="10" class="text-center">
+                                <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
+                                <h5 class="mt-2">Sorry! No Result Found</h5>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+            {{ $data->links(data: ['scrollTo' => false]) }}
+        </div>
     </div>
     {{-- <livewire:tdorder/> --}}
 </div>
