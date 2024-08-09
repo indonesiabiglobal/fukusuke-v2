@@ -88,7 +88,7 @@
                                     <td>{{ $department['department_name'] }}</td>
                                     @foreach ($listMachineInfure['listMachineInfure'] as $machine)
                                         @if ($machine->department_id == $department['department_id'])
-                                            <td class="bg-danger">{{ $machine->machineno }}</td>
+                                            <td style="border-width: 1px !important" class="{{ $machine->is_working_shift == 1 ? 'bg-success' : 'bg-danger' }}">{{ $machine->machine_no }}</td>
                                         @endif
                                     @endforeach
                                 </tr>
@@ -153,7 +153,7 @@
                                     <td>{{ $department['department_name'] }}</td>
                                     @foreach ($listMachineSeitai['listMachineSeitai'] as $machine)
                                         @if ($machine->department_id == $department['department_id'])
-                                            <td class="bg-danger">{{ $machine->machineno }}</td>
+                                            <td style="border-width: 1px !important" class="{{ $machine->is_working_shift == 1 ? 'bg-success' : 'bg-danger' }}">{{ $machine->machine_no }}</td>
                                         @endif
                                     @endforeach
                                 </tr>
@@ -198,7 +198,7 @@
                                         <td>{{ $department['department_name'] }}</td>
                                         @foreach ($listMachineInfure['listMachineInfure'] as $machine)
                                             @if ($machine->department_id == $department['department_id'])
-                                                <td class="bg-danger">{{ $machine->machineno }}</td>
+                                                <td style="border-width: 1px !important" class="{{ $machine->is_working_shift == 1 ? 'bg-success' : 'bg-danger' }}">{{ $machine->machine_no }}</td>
                                             @endif
                                         @endforeach
                                     </tr>
@@ -233,7 +233,7 @@
                                         <td>{{ $department['department_name'] }}</td>
                                         @foreach ($listMachineSeitai['listMachineSeitai'] as $machine)
                                             @if ($machine->department_id == $department['department_id'])
-                                                <td class="bg-danger">{{ $machine->machineno }}</td>
+                                                <td style="border-width: 1px !important" class="{{ $machine->is_working_shift == 1 ? 'bg-success' : 'bg-danger' }}">{{ $machine->machine_no }}</td>
                                             @endif
                                         @endforeach
                                     </tr>
