@@ -47,6 +47,12 @@ class EditNippoController extends Component
     public $name_infure;
     public $berat_loss;
 
+    // data master produk
+    public $masterKatanuki;
+    public $product;
+    public $photoKatanuki;
+    public $katanuki_id;
+
     public function mount(Request $request)
     {
         $data = DB::table('tdproduct_assembly AS tda')
@@ -125,6 +131,55 @@ class EditNippoController extends Component
         $this->panjang_produksi = $data->panjang_produksi;
     }
 
+    public function showModalNoOrder()
+    {
+        if (isset($this->code) && $this->code != '') {
+            $this->product = MsProduct::where('code', $this->code)->first();
+            if ($this->product == null) {
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Order ' . $this->code . ' Tidak Terdaftar']);
+            } else {
+                // nomor order produk
+                // $this->productNomorOrder = DB::table('msproduct')->where('code', $this->product_id)->first();
+                $this->masterKatanuki = DB::table('mskatanuki')->where('id', $this->product->katanuki_id)->first(['name', 'filename']);
+
+                // $this->code = $this->product->code;
+                // $this->name = $this->product->name;
+                $this->product->product_type_id = DB::table('msproduct_type')->where('id', $this->product->product_type_id)->first(['name'])->name ?? '';
+                $this->product->product_unit = DB::table('msunit')->where('code', $this->product->product_unit)->first(['name'])->name ?? '';
+                $this->product->material_classification = DB::table('msmaterial')->where('id', $this->product->material_classification)->first(['name'])->name ?? '';
+                $this->product->embossed_classification = DB::table('msembossedclassification')->where('id', $this->product->embossed_classification)->first(['name'])->name ?? '';
+                $this->product->surface_classification = DB::table('mssurfaceclassification')->where('id', $this->product->surface_classification)->first(['name'])->name ?? '';
+                $this->product->gentan_classification = DB::table('msgentanclassification')->where('id', $this->product->gentan_classification)->first(['name'])->name ?? '';
+                $this->product->gazette_classification = DB::table('msgazetteclassification')->where('id', $this->product->gazette_classification)->first(['name'])->name ?? '';
+                $this->katanuki_id = $this->masterKatanuki->name ?? '';
+                $this->photoKatanuki = $this->masterKatanuki->filename ?? '';
+                $this->product->print_type = DB::table('msjeniscetak')->where('code', $this->product->print_type)->first(['name'])->name ?? '';
+                $this->product->ink_characteristic = DB::table('mssifattinta')->where('code', $this->product->ink_characteristic)->first(['name'])->name ?? '';
+                $this->product->endless_printing = DB::table('msendless')->where('code', $this->product->endless_printing)->first(['name'])->name ?? '';
+                $this->product->winding_direction_of_the_web = DB::table('msarahgulung')->where('code', $this->product->winding_direction_of_the_web)->first(['name'])->name ?? '';
+                $this->product->seal_classification = DB::table('msklasifikasiseal')->where('code', $this->product->seal_classification)->first(['name'])->name ?? '';
+                $this->product->pack_gaiso_id = DB::table('mspackaginggaiso')->where('id', $this->product->pack_gaiso_id)->first(['name'])->name ?? '';
+                $this->product->pack_box_id = DB::table('mspackagingbox')->where('id', $this->product->pack_box_id)->first(['name'])->name ?? '';
+                $this->product->pack_inner_id = DB::table('mspackaginginner')->where('id', $this->product->pack_inner_id)->first(['name'])->name ?? '';
+                $this->product->pack_layer_id = DB::table('mspackaginglayer')->where('id', $this->product->pack_layer_id)->first(['name'])->name ?? '';
+                $this->product->case_gaiso_count_unit = DB::table('msunit')->where('id', $this->product->case_gaiso_count_unit)->first(['name'])->name ?? '';
+                $this->product->case_box_count_unit = DB::table('msunit')->where('id', $this->product->case_box_count_unit)->first(['name'])->name ?? '';
+                $this->product->case_inner_count_unit = DB::table('msunit')->where('id', $this->product->case_inner_count_unit)->first(['name'])->name ?? '';
+                $this->product->lakbaninfureid = DB::table('mslakbaninfure')->where('id', $this->product->lakbaninfureid)->first(['name'])->name ?? '';
+                $this->product->lakbanseitaiid = DB::table('mslakbanseitai')->where('id', $this->product->lakbanseitaiid)->first(['name'])->name ?? '';
+                $this->product->stampelseitaiid = DB::table('msstampleseitai')->where('id', $this->product->stampelseitaiid)->first(['name'])->name ?? '';
+                $this->product->hagataseitaiid = DB::table('mshagataseitai')->where('id', $this->product->hagataseitaiid)->first(['name'])->name ?? '';
+                $this->product->jenissealseitaiid = DB::table('msjenissealseitai')->where('id', $this->product->jenissealseitaiid)->first(['name'])->name ?? '';
+                // dd($this->product);
+
+                // show modal
+                $this->dispatch('showModalNoOrder');
+            }
+        } else {
+            $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Order tidak boleh kosong']);
+        }
+    }
+
     public function save()
     {
         // $validatedData = $this->validate([
@@ -162,17 +217,17 @@ class EditNippoController extends Component
                     CASE WHEN x.A1 IS NULL THEN 0 ELSE x.A1 END AS C1
                 FROM
                     (
-                    SELECT SUM(panjang_produksi) AS A1 
+                    SELECT SUM(panjang_produksi) AS A1
                     FROM
-                        tdproduct_assembly AS ta 
+                        tdproduct_assembly AS ta
                     WHERE
-                        lpk_id = $lpkid->id 
+                        lpk_id = $lpkid->id
                 ) AS x
             ");
 
             // $product->panjang_printing_inline = $this->panjang_printing_inline;
             // $product->berat_standard = $this->berat_standard;
-            // $product->berat_produksi = $this->berat_produksi;            
+            // $product->berat_produksi = $this->berat_produksi;
             // $product->status_production = $this->status_production;
             // $product->status_kenpin = $this->status_kenpin;
             // $product->infure_cost = $this->infure_cost;
@@ -181,8 +236,8 @@ class EditNippoController extends Component
 
             TdProductAssemblyLoss::where('lpk_id',$lpkid->id)->update([
                 'product_assembly_id' => $product->id,
-            ]);    
-            
+            ]);
+
             TdOrderLpk::where('id',$lpkid->id)->update([
                 'total_assembly_line' => $totalAssembly[0]->c1,
             ]);
@@ -190,10 +245,10 @@ class EditNippoController extends Component
             DB::commit();
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
             return redirect()->route('nippo-infure');
-        } catch (\Exception $e) {            
+        } catch (\Exception $e) {
             DB::rollBack();
             $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
-        }      
+        }
     }
 
     public function addLossInfure()
@@ -219,7 +274,7 @@ class EditNippoController extends Component
         $datas->loss_infure_id = $this->loss_infure_id;
         $datas->berat_loss = $this->berat_loss;
         $datas->lpk_id = $lpkid->id;
-        
+
         $datas->save();
 
         $this->dispatch('closeModal');
@@ -248,10 +303,10 @@ class EditNippoController extends Component
             DB::commit();
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Order Deleted successfully.']);
             return redirect()->route('nippo-infure');
-        } catch (\Exception $e) {            
+        } catch (\Exception $e) {
             DB::rollBack();
             $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
-        }  
+        }
     }
 
     public function print()
@@ -266,7 +321,7 @@ class EditNippoController extends Component
             ->select(
                 'tolp.id',
                 'tolp.lpk_date',
-                'tolp.panjang_lpk',                
+                'tolp.panjang_lpk',
                 'tolp.created_on',
                 'mp.code',
                 'mp.name',
