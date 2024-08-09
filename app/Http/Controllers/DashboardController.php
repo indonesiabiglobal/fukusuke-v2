@@ -71,24 +71,18 @@ class DashboardController extends Controller
         $data = [
             'filterDate' => $requestFilterDate,
 
-            // Infure
+            'pertipeinfure' => $this->getPerTipeInfure(),
+            'pertipeseitai' => $this->getPerTipeSeitai(),
+            'hasilproduksiinfure' => $this->getHasilProduksiInfure(),
+            'hasilproduksiseitai' => $this->getHasilProduksiSeitai(),
+            
+
             'listMachineInfure' => $this->getListMachineInfure($startDate, $endDate, $divisionCodeInfure),
             'kadouJikanInfureMesin' => $this->getKadouJikanInfure($startDate, $endDate, $divisionCodeInfure),
-            // 'hasilProduksiInfure' => $this->getHasilProduksiInfure($startDate, $endDate),
-            // 'lossInfure' => $this->getLossInfure($startDate, $endDate, $divisionCodeInfure),
-            'lossInfure' => $this->getTotalProdukKenpin(),
-            'jenisprodukkenpin' => $this->getJenisProdukKenpin(),
-
             'topLossInfure' => $this->getTopLossInfure($startDate, $endDate, $divisionCodeInfure),
-            // 'counterTroubleInfure' => $this->getCounterTroubleInfure($startDate, $endDate),
-
-            // Seitai
             'listMachineSeitai' => $this->getListMachineSeitai($startDate, $endDate, $divisionCodeSeitai),
             'kadouJikanSeitaiMesin' => $this->getkadouJikanSeitai($startDate, $endDate, $divisionCodeSeitai),
-            // 'hasilProduksiSeitai' => $this->getHasilProduksiSeitai($startDate, $endDate),
-            // 'lossSeitai' => $this->getLossSeitai($startDate, $endDate, $divisionCodeSeitai),
             'topLossSeitai' => $this->getTopLossSeitai($startDate, $endDate, $divisionCodeSeitai),
-            // 'counterTroubleSeitai' => $this->getCounterTroubleSeitai($startDate, $endDate),
 
         ];
         return view('dashboard.dashboard-ppic', $data);
@@ -439,5 +433,97 @@ class DashboardController extends Controller
         ");
 
         return $jenisProdukKenpin;
+    }
+    public function getPerTipeInfure()
+    {
+        $perTipeInfure = DB::select("
+        SELECT MAX
+            ( prTip.code ) AS product_type_code,
+            MAX ( prTip.NAME ) AS product_type_name,
+            round(SUM ( asy.berat_produksi )) AS berat_produksi,
+            round(SUM ( asy.panjang_produksi )) AS panjang_produksi
+        FROM
+            tdProduct_Assembly AS asy
+            INNER JOIN msProduct AS prd ON asy.product_id = prd.
+            ID INNER JOIN msProduct_type AS prTip ON prd.product_type_id = prTip.ID 
+        WHERE
+            asy.production_date BETWEEN '2024-07-01 00:00:00' 
+            AND '2024-07-04 23:59:00' 
+        GROUP BY
+            prTip.ID
+        ");
+
+        return $perTipeInfure;
+    }
+    public function getPerTipeSeitai()
+    {
+        $perTipeSeitai = DB::select("
+        SELECT 
+            MAX(prT.code) AS product_type_code,
+            MAX(prT.name) AS product_type_name,
+            round(SUM(good.qty_produksi * prd.unit_weight * 0.001)) AS berat_produksi,
+            round(SUM(good.seitai_berat_loss) - COALESCE(SUM(ponsu.berat_loss), 0)) AS seitai_berat_loss
+        FROM tdProduct_Goods AS good 
+        LEFT JOIN (
+            SELECT 
+                los_.product_goods_id, 
+                SUM(los_.berat_loss) AS berat_loss
+            FROM tdProduct_Goods_Loss AS los_
+            WHERE los_.loss_seitai_id = 1 -- ponsu
+            GROUP BY los_.product_goods_id
+        ) ponsu ON good.id = ponsu.product_goods_id
+        INNER JOIN msProduct AS prd ON good.product_id = prd.id 
+        INNER JOIN msProduct_type AS prT ON prd.product_type_id = prT.id 
+        WHERE good.production_date BETWEEN '2024-07-04 00:00:00' AND '2024-07-04 23:59:00'
+        GROUP BY prT.id;
+        ");
+
+        return $perTipeSeitai;
+    }
+    public function getHasilProduksiInfure()
+    {
+        $hasilProduksiInfure = DB::select("
+        SELECT x.bulan, round(x.berat_produksi) as berat_produksi from(
+        SELECT 
+            to_char(asy.production_date,'FMMonth YYYY') as bulan,
+            SUM(asy.berat_standard) AS berat_standard,
+            SUM(asy.berat_produksi) AS berat_produksi,
+            SUM(asy.infure_cost) AS infure_cost,
+            SUM(asy.infure_berat_loss) AS infure_berat_loss,
+            SUM(asy.panjang_produksi) AS panjang_produksi,
+            SUM(asy.panjang_printing_inline) AS panjang_printing_inline,
+            SUM(asy.infure_cost_printing) AS infure_cost_printing
+        FROM tdProduct_Assembly AS asy
+        INNER JOIN msProduct AS prd ON asy.product_id = prd.id 
+        WHERE (asy.production_date BETWEEN '2024-08-04 00:00:00' AND '2024-08-04 23:59:00') or 
+        (asy.production_date BETWEEN '2023-08-04 00:00:00' AND '2023-08-04 23:59:00')
+        GROUP BY to_char(asy.production_date,'FMMonth YYYY')
+        ) as x ORDER BY x.bulan;
+        ");
+
+        return $hasilProduksiInfure;
+    }
+    public function getHasilProduksiSeitai()
+    {
+        $hasilProduksiSeitai = DB::select("
+        SELECT 
+            to_char(good.production_date,'FMMonth YYYY') as bulan,
+            round(SUM(good.qty_produksi * prd.unit_weight * 0.001)) AS berat_produksi
+        FROM tdProduct_Goods AS good 
+        LEFT JOIN (
+            SELECT 
+                los_.product_goods_id, 
+                SUM(los_.berat_loss) AS berat_loss
+            FROM tdProduct_Goods_Loss AS los_
+            WHERE los_.loss_seitai_id = 1 -- ponsu
+            GROUP BY los_.product_goods_id
+        ) ponsu ON good.id = ponsu.product_goods_id
+        INNER JOIN msProduct AS prd ON good.product_id = prd.id 
+        WHERE (good.production_date BETWEEN '2023-08-04 00:00:00' AND '2023-08-04 23:59:00') 
+        or (good.production_date BETWEEN '2024-08-04 00:00:00' AND '2024-08-04 23:59:00')
+        GROUP BY to_char(good.production_date,'FMMonth YYYY')
+        ");
+
+        return $hasilProduksiSeitai;
     }
 }

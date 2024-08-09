@@ -90,17 +90,19 @@
                         class="table table-bordered dt-responsive nowrap align-middle mdl-data-table" style="width:100%">
                         <thead>
                             <tr>
+                                <th>code</th>
                                 <th>Name</th>
                                 <th>Berat</th>
-                                <th>Presentase</th>
+                                <th>Panjang</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($lossInfure as $data)
+                            @foreach ($pertipeinfure as $data)
                                 <tr>
-                                    <td>{{ $data->division_code }} </td>
-                                    <td>{{ $data->product_code }}</td>
-                                    <td>{{ $data->jumlahloss }}</td>
+                                    <td>{{ $data->product_type_code }} </td>
+                                    <td>{{ $data->product_type_name }}</td>
+                                    <td>{{ $data->berat_produksi }}</td>
+                                    <td>{{ $data->panjang_produksi }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -119,17 +121,19 @@
                         class="table table-bordered dt-responsive nowrap align-middle mdl-data-table" style="width:100%">
                         <thead>
                             <tr>
+                                <th>Code</th>
                                 <th>Name</th>
                                 <th>Berat</th>
-                                <th>Presentase</th>
+                                <th>Loss</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($lossInfure as $data)
+                            @foreach ($pertipeseitai as $data)
                                 <tr>
-                                    <td>{{ $data->division_code }} </td>
-                                    <td>{{ $data->product_code }}</td>
-                                    <td>{{ $data->jumlahloss }}</td>
+                                    <td>{{ $data->product_type_code }} </td>
+                                    <td>{{ $data->product_type_name }}</td>
+                                    <td>{{ $data->berat_produksi }}</td>
+                                    <td>{{ $data->seitai_berat_loss }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -149,18 +153,19 @@
                     <div class="d-flex justify-content-between">
                         <div class="avatar-sm flex-shrink-0">
                             <span class="avatar-title bg-primary-subtle rounded fs-3">
-                                <i class="bx bx-wallet text-primary"></i>
+                                <i class="ri-pie-chart-box-line text-primary"></i>
                             </span>
                         </div>
                         <div class="text-end flex-grow-1">
                             <p class="text-uppercase fw-medium text-muted text-truncate fs-13">Hasil Produksi Infure</p>
-                            <h4 class="fs-22 fw-semibold mb-3"><span class="counter-value" data-target="47005.9">0</span>k
+                            <h4 class="fs-22 fw-semibold mb-3">
+                                <span class="counter-value" data-target="{{ $hasilproduksiinfure[0]->berat_produksi }}">0</span>k
                             </h4>
                             <div class="d-flex align-items-center justify-content-end gap-2">
                                 <h5 class="text-danger fs-12 mb-0">
                                     <i class="ri-arrow-right-down-line fs-13 align-middle"></i> -2.74 %
                                 </h5>
-                                <p class="text-muted mb-0">Agust 2023</p>
+                                <p class="text-muted mb-0">{{ $hasilproduksiinfure[0]->bulan }}</p>
                             </div>
                         </div>
                     </div>
@@ -174,18 +179,18 @@
                     <div class="d-flex justify-content-between">
                         <div class="avatar-sm flex-shrink-0">
                             <span class="avatar-title bg-primary-subtle rounded fs-3">
-                                <i class="bx bx-wallet text-primary"></i>
+                                <i class="ri-pie-chart-box-fill text-primary"></i>
                             </span>
                         </div>
                         <div class="text-end flex-grow-1">
                             <p class="text-uppercase fw-medium text-muted text-truncate fs-13">Hasil Produksi Seitai</p>
-                            <h4 class="fs-22 fw-semibold mb-3"><span class="counter-value" data-target="62388.1">0</span>k
+                            <h4 class="fs-22 fw-semibold mb-3"><span class="counter-value" data-target="{{ $hasilproduksiseitai[0]->berat_produksi }}">0</span>k
                             </h4>
                             <div class="d-flex align-items-center justify-content-end gap-2">
                                 <h5 class="text-danger fs-12 mb-0">
                                     <i class="ri-arrow-right-down-line fs-13 align-middle"></i> -2.74 %
                                 </h5>
-                                <p class="text-muted mb-0">Agust 2023</p>
+                                <p class="text-muted mb-0">{{ $hasilproduksiseitai[0]->bulan }}</p>
                             </div>
                         </div>
                     </div>
@@ -199,18 +204,18 @@
                     <div class="d-flex justify-content-between">
                         <div class="avatar-sm flex-shrink-0">
                             <span class="avatar-title bg-primary-subtle rounded fs-3">
-                                <i class="bx bx-wallet text-primary"></i>
+                                <i class="ri-bar-chart-box-line text-primary"></i>
                             </span>
                         </div>
                         <div class="text-end flex-grow-1">
                             <p class="text-uppercase fw-medium text-muted text-truncate fs-13">Hasil Produksi Infure</p>
-                            <h4 class="fs-22 fw-semibold mb-3"><span class="counter-value" data-target="47005.9">0</span>k
+                            <h4 class="fs-22 fw-semibold mb-3"><span class="counter-value" data-target="{{ $hasilproduksiinfure[1]->berat_produksi }}">0</span>k
                             </h4>
                             <div class="d-flex align-items-center justify-content-end gap-2">
                                 <h5 class="text-danger fs-12 mb-0">
                                     <i class="ri-arrow-right-down-line fs-13 align-middle"></i> -2.74 %
                                 </h5>
-                                <p class="text-muted mb-0">Agust 2024</p>
+                                <p class="text-muted mb-0">{{ $hasilproduksiinfure[1]->bulan }}</p>
                             </div>
                         </div>
                     </div>
@@ -224,18 +229,18 @@
                     <div class="d-flex justify-content-between">
                         <div class="avatar-sm flex-shrink-0">
                             <span class="avatar-title bg-primary-subtle rounded fs-3">
-                                <i class="bx bx-wallet text-primary"></i>
+                                <i class="ri-bar-chart-box-fill text-primary"></i>
                             </span>
                         </div>
                         <div class="text-end flex-grow-1">
                             <p class="text-uppercase fw-medium text-muted text-truncate fs-13">Hasil Produksi Seitai</p>
-                            <h4 class="fs-22 fw-semibold mb-3"><span class="counter-value" data-target="62388.1">0</span>k
+                            <h4 class="fs-22 fw-semibold mb-3"><span class="counter-value" data-target="{{ $hasilproduksiseitai[1]->berat_produksi }}">0</span>k
                             </h4>
                             <div class="d-flex align-items-center justify-content-end gap-2">
                                 <h5 class="text-danger fs-12 mb-0">
                                     <i class="ri-arrow-right-down-line fs-13 align-middle"></i> -2.74 %
                                 </h5>
-                                <p class="text-muted mb-0">Agust 2024</p>
+                                <p class="text-muted mb-0">{{ $hasilproduksiseitai[1]->bulan }}</p>
                             </div>
                         </div>
                     </div>
@@ -365,56 +370,6 @@
                 var myModal = new bootstrap.Modal(document.getElementById('modalListMesinInfure'));
                 myModal.show();
             });
-
-            // Hasil Produksi Infure
-            
-            // end Hasil Produksi Infure
-
-            // Loss Infure
-            let lossInfure = @json($lossInfure);
-            let linechartBasicColors = getChartColorsArray("lossInfure");
-            if (linechartBasicColors) {
-                let options = {
-                    series: [{
-                        name: "Berat Loss",
-                        data: lossInfure.lossInfure.map(item => parseFloat(item.berat_loss).toFixed(2))
-                    }],
-                    chart: {
-                        height: 350,
-                        type: 'line',
-                        zoom: {
-                            enabled: false
-                        },
-                        toolbar: {
-                            show: false
-                        }
-                    },
-                    markers: {
-                        size: 4,
-                    },
-                    dataLabels: {
-                        enabled: false
-                    },
-                    stroke: {
-                        curve: 'straight'
-                    },
-                    colors: linechartBasicColors,
-                    // title: {
-                    //     text: 'Product Trends by Month',
-                    //     align: 'left',
-                    //     style: {
-                    //         fontWeight: 500,
-                    //     },
-                    // },
-
-                    xaxis: {
-                        categories: lossInfure.lossInfure.map(item => item.loss_name),
-                    }
-                };
-
-                let chart = new ApexCharts(document.querySelector("#lossInfure"), options);
-                chart.render();
-            }
 
             // pie chart presentase loss
             let chartPieBasicColors = getChartColorsArray("presentaseLossInfure");
