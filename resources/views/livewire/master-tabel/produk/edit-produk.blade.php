@@ -36,7 +36,7 @@
                                     </option>
                                     @foreach ($masterProductType as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ $item->id == $product_type_id['value'] ? 'selected' : '' }}>
+                                            {{ $product_type_id['value'] != null ? ($item->id == $product_type_id['value'] ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -122,7 +122,7 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterUnit as $item)
-                                        <option value="{{ $item->id }}" {{ $item->id == $product_unit['value'] ? 'selected' : '' }}>
+                                        <option value="{{ $item->id }}" {{ $product_unit['value'] != null ? ($item->id == $product_unit['value'] ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach`
@@ -183,7 +183,7 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterMaterial as $item)
-                                        <option value="{{ $item->id }}" {{ $item->id == $material_classification['value'] ? 'selected' : '' }}>
+                                        <option value="{{ $item->id }}" {{ $material_classification['value'] != null ? ($item->id == $material_classification['value'] ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -205,7 +205,7 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterEmbossed as $item)
-                                        <option value="{{ $item->id }}" {{ $item->id == $embossed_classification['value'] ? 'selected' : '' }}>
+                                        <option value="{{ $item->id }}" {{ $embossed_classification['value'] != null ? ($item->id == $embossed_classification['value'] ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -227,7 +227,7 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterSurface as $item)
-                                        <option value="{{ $item->id }}" {{ $item->id == $surface_classification['value'] ? 'selected' : '' }}>
+                                        <option value="{{ $item->id }}" {{ $surface_classification['value'] != null ? ($item->id == $surface_classification['value'] ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -313,7 +313,7 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterGentanClassifications as $item)
-                                        <option value="{{ $item->id }}" {{ $item->id == $gentan_classification['value'] ? 'selected' : '' }}>
+                                        <option value="{{ $item->id }}" {{ $gentan_classification['value'] != null ? ($item->id == $gentan_classification['value'] ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -335,7 +335,7 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterGazetteClassifications as $item)
-                                        <option value="{{ $item->id }}" {{ $item->id == $gazette_classification['value'] ? 'selected' : '' }}>
+                                        <option value="{{ $item->id }}" {{ $gazette_classification['value'] != null ? ($item->id == $gazette_classification['value'] ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -399,7 +399,7 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterKatanuki as $item)
-                                        <option value="{{ $item->id }}" {{ $item->id == $katanuki_id['value'] ? 'selected' : '' }}>
+                                        <option value="{{ $item->id }}" {{ $katanuki_id['value'] != null ? ($item->id == $katanuki_id['value'] ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -547,7 +547,7 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterPrintType as $item)
-                                        <option value="{{ $item->id }}" {{ $item->id == $print_type['value'] ? 'selected' : '' }}>
+                                        <option value="{{ $item->id }}" {{ $print_type['value'] != null ? ($item->id == $print_type['value'] ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -569,7 +569,7 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterInkCharacteristics as $item)
-                                        <option value="{{ $item->id }}" {{ $item->id == $ink_characteristic['value'] ? 'selected' : '' }}>
+                                        <option value="{{ $item->id }}" {{ $ink_characteristic['value'] != null ? ($item->id == $ink_characteristic['value'] ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -591,7 +591,7 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterEndlessPrinting as $item)
-                                        <option value="{{ $item->id }}" {{ $item->id == $endless_printing['value'] ? 'selected' : '' }}>
+                                        <option value="{{ $item->id }}" {{ $endless_printing['value'] != null ? ($item->id == $endless_printing['value'] ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -613,7 +613,7 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterArahGulung as $item)
-                                        <option value="{{ $item->id }}" {{ $item->id == $winding_direction_of_the_web['value'] ? 'selected' : '' }}>
+                                        <option value="{{ $item->id }}" {{ $winding_direction_of_the_web['value'] != null ? ($item->id == $winding_direction_of_the_web['value'] ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -636,11 +636,11 @@
                                 <select data-choices data-choices-sorting="true"
                                     class="form-select @error('seal_classification') is-invalid @enderror"
                                     wire:model="seal_classification" placeholder="">
-                                    <option value="" selected>
+                                    <option value="">
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterKlasifikasiSeal as $item)
-                                        <option value="{{ $item->id }}"  {{ $item->id == $seal_classification['value'] ? 'selected' : '' }}>
+                                        <option value="{{ $item->id }}"  {{ $seal_classification['value'] != null ? ($item->id == $seal_classification['value'] ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -690,7 +690,7 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterLakbanSeitai as $item)
-                                        <option value="{{ $item->id }}" {{ $item->id == $lakbanseitaiid['value'] ? 'selected' : '' }}>
+                                        <option value="{{ $item->id }}" {{ $lakbanseitaiid['value'] != null ? ($item->id == $lakbanseitaiid['value'] ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -712,7 +712,7 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterStampleSeitai as $item)
-                                        <option value="{{ $item->id }}" {{ $item->id == $stampelseitaiid['value'] ? 'selected' : '' }}>
+                                        <option value="{{ $item->id }}" {{ $stampelseitaiid['value'] != null ? ($item->id == $stampelseitaiid['value'] ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -734,7 +734,7 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterHagataSeitai as $item)
-                                        <option value="{{ $item->id }}"  {{ $item->id == $hagataseitaiid['value'] ? 'selected' : '' }}>
+                                        <option value="{{ $item->id }}"  {{ $hagataseitaiid['value'] != null ? ($item->id == $hagataseitaiid['value'] ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -756,7 +756,7 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterJenisSealSeitai as $item)
-                                        <option value="{{ $item->id }}"  {{ $item->id == $jenissealseitaiid['value'] ? 'selected' : '' }}>
+                                        <option value="{{ $item->id }}"  {{ $jenissealseitaiid['value'] != null ? ($item->id == $jenissealseitaiid['value'] ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -780,7 +780,7 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterPackagingGaiso as $item)
-                                        <option value="{{ $item->id }}"  {{ $item->id == $pack_gaiso_id['value'] ? 'selected' : '' }}>
+                                        <option value="{{ $item->id }}"  {{ $pack_gaiso_id['value'] != null ? ($item->id == $pack_gaiso_id['value'] ? 'selected' : '') : '' }}>
                                             {{ $item->code }}, {{ $item->box_class == 1 ? 'Standar' : 'Khusus' }},
                                             {{ $item->name }}
                                         </option>
@@ -803,7 +803,7 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterPackagingBox as $item)
-                                        <option value="{{ $item->id }}"  {{ $item->id == $pack_box_id['value'] ? 'selected' : '' }}>
+                                        <option value="{{ $item->id }}"  {{ $pack_box_id['value'] != null ? ($item->id == $pack_box_id['value'] ? 'selected' : '') : '' }}>
                                             {{ $item->code }}, {{ $item->box_class == 1 ? 'Standar' : 'Khusus' }},
                                             {{ $item->name }}
                                         </option>
@@ -826,7 +826,7 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterPackagingInner as $item)
-                                        <option value="{{ $item->id }}"  {{ $item->id == $pack_inner_id['value'] ? 'selected' : '' }}>
+                                        <option value="{{ $item->id }}"  {{ $pack_inner_id['value'] != null ? ($item->id == $pack_inner_id['value'] ? 'selected' : '') : '' }}>
                                             {{ $item->code }}, {{ $item->box_class == 1 ? 'Standar' : 'Khusus' }},
                                             {{ $item->name }}
                                         </option>
@@ -849,7 +849,7 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterPackagingLayer as $item)
-                                        <option value="{{ $item->id }}"  {{ $item->id == $pack_layer_id['value'] ? 'selected' : '' }}>
+                                        <option value="{{ $item->id }}"  {{ $pack_layer_id['value'] != null ? ($item->id == $pack_layer_id['value'] ? 'selected' : '') : '' }}>
                                             {{ $item->code }}, {{ $item->box_class == 1 ? 'Standar' : 'Khusus' }},
                                             {{ $item->name }}
                                         </option>
@@ -880,11 +880,11 @@
                             <select data-choices data-choices-sorting="true"
                                 class="form-control @error('case_gaiso_count_unit') is-invalid @enderror"
                                 wire:model="case_gaiso_count_unit" placeholder="">
-                                <option value="" selected>
+                                <option value="">
                                     Unit
                                 </option>
                                 @foreach ($masterUnit as $item)
-                                    <option value="{{ $item->id }}"  {{ $item->id == $case_gaiso_count_unit['value'] ? 'selected' : '' }}>
+                                    <option value="{{ $item->id }}"  {{ $case_gaiso_count_unit['value'] != null ? ($item->id == $case_gaiso_count_unit['value'] ? 'selected' : '') : '' }}>
                                         {{ $item->name }}
                                     </option>
                                 @endforeach`
@@ -906,7 +906,7 @@
                                     Unit
                                 </option>
                                 @foreach ($masterUnit as $item)
-                                    <option value="{{ $item->id }}"  {{ $item->id == $case_box_count_unit['value'] ? 'selected' : '' }}>
+                                    <option value="{{ $item->id }}"  {{ $case_box_count_unit['value'] != null ? ($item->id == $case_box_count_unit['value'] ? 'selected' : '') : '' }}>
                                         {{ $item->name }}
                                     </option>
                                 @endforeach`
@@ -928,7 +928,7 @@
                                     Unit
                                 </option>
                                 @foreach ($masterUnit as $item)
-                                    <option value="{{ $item->id }}"  {{ $item->id == $case_inner_count_unit['value'] ? 'selected' : '' }}>
+                                    <option value="{{ $item->id }}"  {{ $case_inner_count_unit['value'] != null ? ($item->id == $case_inner_count_unit['value'] ? 'selected' : '') : '' }}>
                                         {{ $item->name }}
                                     </option>
                                 @endforeach`
