@@ -33,7 +33,12 @@
                     <div class="col-12 col-lg-4 mt-1">
                         <div class="form-group">
                             <div class="input-group">
-                                <label class="control-label col-5 pe-2">Nomor LPK</label>
+                                {{-- <label class="control-label col-5 pe-2">Nomor LPK</label> --}}
+                                <label class="control-label col-5 pe-2 fw-bold text-muted" style="text-decoration: underline;">
+                                    <a href="#" data-bs-toggle="modal" wire:click="showModalLPK" class="text-muted">
+                                        Nomor LPK
+                                    </a>
+                                </label>
                                 <input type="text" class="form-control readonly" readonly="readonly"  wire:model="lpk_no" />
                             </div>
                         </div>
@@ -1072,6 +1077,238 @@
                 </div><!-- /.modal-content -->
             </div><!-- /.modal-dialog -->
         </div><!-- /.modal -->
+
+        <!--  modal LPK -->
+        <div class="modal fade" id="modal-lpk" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="myExtraLargeModalLabel">LPK Info - Nomor: <span class="fw-bold">{{ $lpk_no }}</span></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="col-lg-12">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <label class="control-label col-12 col-lg-3 fw-bold text-muted">Tanggal LPK</label>
+                                            <input value="{{ $orderLPK->lpk_date ?? '' }}" disabled type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d/m/Y">
+                                            <span class="input-group-text py-0">
+                                                <i class="ri-calendar-event-fill fs-4"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group mt-1">
+                                        <div class="input-group">
+                                            <label class="control-label col-12 col-lg-3 fw-bold text-muted">Nomor LPK</label>
+                                            <input type="text" class="form-control" value="{{ $orderLPK->lpk_no ?? '' }}" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group mt-1">
+                                        <div class="input-group">
+                                            <label class="control-label col-12 col-lg-3 fw-bold text-muted">PO Number</label>
+                                            <input type="text" class="form-control" value="{{ $orderLPK->po_no ?? '' }}" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group mt-1">
+                                        <div class="input-group">
+                                            <label class="control-label col-12 col-lg-3 fw-bold text-muted">Nomor Order</label>
+                                            <input type="text" class="form-control readonly" readonly="readonly" value="{{ $orderLPK->no_order ?? '' }}" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group mt-1">
+                                        <div class="input-group">
+                                            <label class="control-label col-12 col-lg-3 fw-bold text-muted">Nomor Mesin</label>
+                                            <input type="text" class="form-control" value="{{ $orderLPK->machineno ?? '' }}" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group mt-1">
+                                        <div class="input-group">
+                                            <label class="control-label col-12 col-lg-3 fw-bold text-muted">Jumlah LPK</label>
+                                            <input type="text" class="form-control" value="{{ $orderLPK->qty_lpk ?? '' }}" />
+                                            <span class="input-group-text">
+                                                Lembar
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group mt-1">
+                                        <div class="input-group">
+                                            <label class="control-label col-12 col-lg-3 fw-bold text-muted">Jumlah Gentan</label>
+                                            <input type="text" class="form-control" value="{{ $orderLPK->qty_gentan ?? '' }}" />
+                                            <span class="input-group-text">
+                                                roll
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group mt-1">
+                                        <div class="input-group">
+                                            <label class="control-label col-12 col-lg-3 fw-bold text-muted">Meter Gulung</label>
+                                            <input type="text" class="form-control" value="{{ $orderLPK->qty_gulung ?? '' }}" />
+                                            <span class="input-group-text">
+                                                meter
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group mt-1">
+                                        <div class="input-group">
+                                            <label class="control-label col-12 col-lg-3 fw-bold text-muted">Panjang LPK</label>
+                                            <input type="text" class="form-control readonly" readonly="readonly" value="{{ $orderLPK->panjang_lpk ?? '' }}" />
+                                            <span class="input-group-text">
+                                                meter
+                                            </span>
+                                        </div>
+                                    </div>
+                                    {{-- warna LPK --}}
+                                    <div class="form-group mt-1">
+                                        <div class="input-group">
+                                            <label class="control-label col-12 col-lg-3 fw-bold text-muted">Warna LPK</label>
+                                            <input type="text" class="form-control readonly" readonly="readonly" value="{{ $orderLPK->warnalpkid ?? '' }}" />
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <label class="control-label col-12 col-lg-3 fw-bold text-muted">Tanggal Proses</label>
+                                            <input value="{{ $orderLPK->processdate ?? '' }}" disabled type="date" class="form-control datepicker-input" placeholder="yyyy/mm/dd" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d/m/Y"/>
+                                            <span class="input-group-text py-0">
+                                                <i class="ri-calendar-event-fill fs-4"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group mt-1">
+                                        <div class="input-group">
+                                            <label class="control-label col-12 col-lg-3 fw-bold text-muted">Tanggal PO</label>
+                                            <input class="form-control datepicker-input readonly" readonly="readonly" type="date" value="{{ $orderLPK->order_date ?? '' }}" placeholder="yyyy/mm/dd"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group mt-1">
+                                        <div class="input-group">
+                                            <label class="control-label col-12 col-lg-3 fw-bold text-muted">Buyer</label>
+                                            <input type="text" class="form-control readonly"  readonly="readonly" value="{{ $orderLPK->buyer_name ?? '' }}" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group mt-1">
+                                        <div class="input-group">
+                                            <label class="control-label col-12 col-lg-3 fw-bold text-muted">Nama Produk</label>
+                                            <input type="text" class="form-control readonly" readonly="readonly" value="{{ $orderLPK->product_name ?? '' }}" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group mt-1">
+                                        <div class="input-group">
+                                            <label class="control-label col-12 col-lg-3 fw-bold text-muted">Nama Mesin</label>
+                                            <input type="text" class="form-control readonly" readonly="readonly" value="{{ $orderLPK->machinename ?? '' }}" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group mt-1">
+                                        <div class="input-group">
+                                            <label class="control-label col-12 col-lg-3 fw-bold text-muted">Panjang Total</label>
+                                            <input type="text" class="form-control readonly"  readonly="readonly" value="{{ $orderLPK->total_assembly_line ?? '' }}" />
+                                            <span class="input-group-text">
+                                                meter
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group mt-1">
+                                        <div class="input-group">
+                                            <label class="control-label col-12 col-lg-3 fw-bold text-muted">Dimensi (TxLxP)</label>
+                                            <input type="text" class="form-control readonly" readonly="readonly" value="{{ $orderLPK->dimensi ?? '' }}" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group mt-1">
+                                        <div class="input-group">
+                                            <label class="control-label col-12 col-lg-3 fw-bold text-muted">Default Gulung</label>
+                                            <input type="text" class="form-control readonly"  readonly="readonly" value="{{ $orderLPK->defaultgulung ?? '' }}" />
+                                            <span class="input-group-text" id="basic-addon2">
+                                                meter
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group mt-1">
+                                        <div class="input-group">
+                                            <label class="control-label col-12 col-lg-3 fw-bold text-muted">Selisih Kurang</label>
+                                            <input type="text" class="form-control readonly"  readonly="readonly" value="{{ $orderLPK->selisihKurang ?? '' }}" />
+                                            <span class="input-group-text">
+                                                meter
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group mt-1">
+                                        <label for="textarea" class="control-label col-12 col-lg-3 fw-bold text-muted">Catatan</label>
+                                        <textarea class="form-control" placeholder="Catatan" id="textarea" rows="2">{{ $orderLPK->remark ?? '' }}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-2">
+                                    <div class="fw-bold text-muted">
+                                        Progress
+                                    </div>
+                                </div>
+                                <div class="col-10">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group mt-1">
+                                                <div class="input-group">
+                                                    <label class="control-label col-12 col-lg-3 text-muted">INFURE:</label>
+                                                    <input type="text" class="form-control readonly" readonly="readonly" value="{{ $orderLPK->progressInfure ?? '' }}" />
+                                                    <span class="input-group-text">
+                                                        meter
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group mt-1">
+                                                <div class="input-group">
+                                                    <label class="control-label col-12 col-lg-3 text-muted">{{ $orderLPK != null ? ($orderLPK->progressInfureSelisih < 0 ? 'Kurang' : 'Lebih') : '' }}:</label>
+                                                    <input type="text" class="form-control readonly {{ $orderLPK != null ? ($orderLPK->progressInfureSelisih < 0 ? 'text-danger' : 'text-info') : '' }}" readonly="readonly" value="{{ $orderLPK->progressInfureSelisih ?? 0 }}" />
+                                                    <span class="input-group-text">
+                                                        meter
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group mt-1">
+                                                <div class="input-group">
+                                                    <label class="control-label col-12 col-lg-3 mt-1 text-muted">SEITAI:</label>
+                                                    <input type="text" class="form-control readonly" readonly="readonly" value="{{ $orderLPK->progressSeitai ?? '' }}" />
+                                                    <span class="input-group-text">
+                                                        lbr
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group mt-1">
+                                                <div class="input-group">
+                                                    <label class="control-label col-12 col-lg-3 mt-1 text-muted">{{ $orderLPK != null ? ($orderLPK->progressSeitaiSelisih < 0 ? 'Kurang' : 'Lebih') : '' }}:</label>
+                                                    <input type="text" class="form-control readonly {{ $orderLPK != null ? ($orderLPK->progressSeitaiSelisih < 0 ? 'text-danger' : 'text-info') : '' }}" readonly="readonly" value="{{ $orderLPK->progressSeitaiSelisih ?? '' }}" />
+                                                    <span class="input-group-text">
+                                                        lbr
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="javascript:void(0);" class="btn btn-light link-success fw-medium" data-bs-dismiss="modal"><i class="ri-close-line me-1 align-middle"></i> Close</a>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
     </form>
 </div>
 @script
@@ -1099,6 +1336,15 @@
         // close modal NoOrder
         $wire.on('closeModalNoOrder', () => {
             $('#modal-noorder-produk').modal('hide');
+        });
+
+        // show modal LPK
+        $wire.on('showModalLPK', () => {
+            $('#modal-lpk').modal('show');
+        });
+        // close modal LPK
+        $wire.on('closeModalLPK', () => {
+            $('#modal-lpk').modal('hide');
         });
     </script>
 @endscript
