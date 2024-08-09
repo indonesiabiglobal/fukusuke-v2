@@ -96,24 +96,11 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($lossInfure['lossInfure'] as $data)
+                            @foreach ($lossInfure as $data)
                                 <tr>
-                                    <td>{{ $data->loss_name }} </td>
-                                    <td>{{ round($data->berat_loss, 2) }}</td>
-                                    <td>
-                                        @php
-                                            $loss = round(
-                                                ($data->berat_loss / $lossInfure['totalLossInfure']) * 100,
-                                                2,
-                                            );
-                                        @endphp
-                                        {{ $loss }}%
-                                        <div class="progress">
-                                            <div class="progress-bar bg-danger" role="progressbar"
-                                                style="width: {{ $loss }}%;" aria-valuenow="{{ $loss }}"
-                                                aria-valuemin="0" aria-valuemax="100"></div>
-                                        </div>
-                                    </td>
+                                    <td>{{ $data->division_code }} </td>
+                                    <td>{{ $data->product_code }}</td>
+                                    <td>{{ $data->jumlahloss }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -138,24 +125,11 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($lossInfure['lossInfure'] as $data)
+                            @foreach ($lossInfure as $data)
                                 <tr>
-                                    <td>{{ $data->loss_name }} </td>
-                                    <td>{{ round($data->berat_loss, 2) }}</td>
-                                    <td>
-                                        @php
-                                            $loss = round(
-                                                ($data->berat_loss / $lossInfure['totalLossInfure']) * 100,
-                                                2,
-                                            );
-                                        @endphp
-                                        {{ $loss }}%
-                                        <div class="progress">
-                                            <div class="progress-bar bg-danger" role="progressbar"
-                                                style="width: {{ $loss }}%;" aria-valuenow="{{ $loss }}"
-                                                aria-valuemin="0" aria-valuemax="100"></div>
-                                        </div>
-                                    </td>
+                                    <td>{{ $data->division_code }} </td>
+                                    <td>{{ $data->product_code }}</td>
+                                    <td>{{ $data->jumlahloss }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -393,98 +367,7 @@
             });
 
             // Hasil Produksi Infure
-            let hasilProduksiInfure = @json($hasilProduksiInfure);
-            let linechartDatalabelColors = getChartColorsArray("hasilProduksiInfure");
-            if (linechartDatalabelColors) {
-                let options = {
-                    chart: {
-                        height: 380,
-                        type: 'line',
-                        zoom: {
-                            enabled: false
-                        },
-                        toolbar: {
-                            show: false
-                        }
-                    },
-                    colors: linechartDatalabelColors,
-                    dataLabels: {
-                        enabled: false,
-                    },
-                    stroke: {
-                        width: [3, 3],
-                        curve: 'straight'
-                    },
-                    series: [{
-                            name: "Tertinggi",
-                            data: hasilProduksiInfure.map(item => parseFloat(item.max))
-                        },
-                        {
-                            name: "Terendah",
-                            data: hasilProduksiInfure.map(item => parseFloat(item.min))
-                        }
-                    ],
-                    // title: {
-                    //     text: 'Hasil Produksi',
-                    //     align: 'left',
-                    //     style: {
-                    //         fontWeight: 500,
-                    //     },
-                    // },
-                    grid: {
-                        row: {
-                            colors: ['transparent',
-                                'transparent'
-                            ], // takes an array which will be repeated on columns
-                            opacity: 0.2
-                        },
-                        borderColor: '#f1f1f1'
-                    },
-                    markers: {
-                        style: 'inverted',
-                        size: 6
-                    },
-                    xaxis: {
-                        categories: hasilProduksiInfure.map(item => item.machine_no),
-                        title: {
-                            text: 'Nomer Mesin'
-                        }
-                    },
-                    yaxis: {
-                        title: {
-                            text: 'Hasil Produksi'
-                        },
-                        // min: 5,
-                        // max: 40
-                    },
-                    legend: {
-                        position: 'top',
-                        horizontalAlign: 'right',
-                        floating: true,
-                        offsetY: -25,
-                        offsetX: -5
-                    },
-                    responsive: [{
-                        breakpoint: 600,
-                        options: {
-                            chart: {
-                                toolbar: {
-                                    show: false
-                                }
-                            },
-                            legend: {
-                                show: false
-                            },
-                        }
-                    }]
-                }
-
-                let chart = new ApexCharts(
-                    document.querySelector("#hasilProduksiInfure"),
-                    options
-                );
-                chart.render();
-            }
+            
             // end Hasil Produksi Infure
 
             // Loss Infure
@@ -586,89 +469,6 @@
                         </li>`;
             });
             $('#topLossInfure').html(html);
-
-
-            // Growth Chart - Radial Bar Chart
-            // --------------------------------------------------------------------
-            
-            //  end top loss infure
         });
-
-        // Counter Table Infure
-        let courterTroubleInfure = @json($counterTroubleInfure);
-        var chartColumnRotateLabelsColors = getChartColorsArray("courterTroubleInfure");
-        if (chartColumnRotateLabelsColors) {
-            var options = {
-                series: [{
-                    name: 'Counter Loss',
-                    data: courterTroubleInfure.map(item => parseFloat(item.counterloss))
-                }],
-                // annotations: {
-                //     points: [{
-                //         x: 'Bananas',
-                //         seriesIndex: 0,
-                //         label: {
-                //             borderColor: '#775DD0',
-                //             offsetY: 0,
-                //             style: {
-                //                 color: '#fff',
-                //                 background: '#775DD0',
-                //             },
-                //             text: 'Bananas are good',
-                //         }
-                //     }]
-                // },
-                chart: {
-                    height: 350,
-                    type: 'bar',
-                    toolbar: {
-                        show: false,
-                    }
-                },
-                plotOptions: {
-                    bar: {
-                        borderRadius: 10,
-                        columnWidth: '50%',
-                    }
-                },
-                dataLabels: {
-                    enabled: false
-                },
-                stroke: {
-                    width: 2
-                },
-                colors: chartColumnRotateLabelsColors,
-                xaxis: {
-                    labels: {
-                        rotate: -45
-                    },
-                    categories: courterTroubleInfure.map(item => item.loss_name),
-                    tickPlacement: 'on'
-                },
-                yaxis: {
-                    title: {
-                        text: 'Servings',
-                    },
-                },
-                fill: {
-                    type: 'gradient',
-                    gradient: {
-                        shade: 'light',
-                        type: "horizontal",
-                        shadeIntensity: 0.25,
-                        gradientToColors: undefined,
-                        inverseColors: true,
-                        opacityFrom: 0.85,
-                        opacityTo: 0.85,
-                        stops: [50, 0, 100]
-                    },
-                }
-            };
-
-            var chart = new ApexCharts(document.querySelector("#courterTroubleInfure"),
-                options);
-            chart.render();
-        }
-        // end Counter Table Infure
     </script>
 @endsection

@@ -72,18 +72,21 @@ class DashboardController extends Controller
             // Infure
             'listMachineInfure' => $this->getListMachineInfure($startDate, $endDate, $divisionCodeInfure),
             'kadouJikanInfureMesin' => $this->getKadouJikanInfure($startDate, $endDate, $divisionCodeInfure),
-            'hasilProduksiInfure' => $this->getHasilProduksiInfure($startDate, $endDate),
-            'lossInfure' => $this->getLossInfure($startDate, $endDate, $divisionCodeInfure),
+            // 'hasilProduksiInfure' => $this->getHasilProduksiInfure($startDate, $endDate),
+            // 'lossInfure' => $this->getLossInfure($startDate, $endDate, $divisionCodeInfure),
+            'lossInfure' => $this->getTotalProdukKenpin(),
+            'jenisprodukkenpin' => $this->getJenisProdukKenpin(),
+
             'topLossInfure' => $this->getTopLossInfure($startDate, $endDate, $divisionCodeInfure),
-            'counterTroubleInfure' => $this->getCounterTroubleInfure($startDate, $endDate),
+            // 'counterTroubleInfure' => $this->getCounterTroubleInfure($startDate, $endDate),
 
             // Seitai
             'listMachineSeitai' => $this->getListMachineSeitai($startDate, $endDate, $divisionCodeSeitai),
             'kadouJikanSeitaiMesin' => $this->getkadouJikanSeitai($startDate, $endDate, $divisionCodeSeitai),
-            'hasilProduksiSeitai' => $this->getHasilProduksiSeitai($startDate, $endDate),
-            'lossSeitai' => $this->getLossSeitai($startDate, $endDate, $divisionCodeSeitai),
+            // 'hasilProduksiSeitai' => $this->getHasilProduksiSeitai($startDate, $endDate),
+            // 'lossSeitai' => $this->getLossSeitai($startDate, $endDate, $divisionCodeSeitai),
             'topLossSeitai' => $this->getTopLossSeitai($startDate, $endDate, $divisionCodeSeitai),
-            'counterTroubleSeitai' => $this->getCounterTroubleSeitai($startDate, $endDate),
+            // 'counterTroubleSeitai' => $this->getCounterTroubleSeitai($startDate, $endDate),
 
         ];
         return view('dashboard.dashboard-ppic', $data);
