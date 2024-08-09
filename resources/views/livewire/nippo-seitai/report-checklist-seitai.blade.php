@@ -6,10 +6,10 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
 </head>
-{{-- @php
+@php
     header("Content-type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-	header("Content-Disposition: attachment; filename=Nippo.xls");
-@endphp --}}
+	header("Content-Disposition: attachment; filename=NippoSeitai.xls");
+@endphp
 @php
     use Carbon\Carbon;
 
@@ -46,15 +46,14 @@
             ID LEFT JOIN msmachine AS mm ON tdpg.machine_id = mm.
             ID LEFT JOIN msproduct AS mp ON tdpg.product_id = mp.ID
         WHERE
-            tdpg.created_on >= '2024-06-17 00:00:00'
-            AND tdpg.created_on <= '2024-06-17 23:59:00'
-            AND tdpg.id = 356700
+            $tanggal
+            limit 10
         "),
     );
 @endphp
-<body style="background-color: #CCCCCC;margin: 0" onload="window.print()">
+<body style="background-color: #CCCCCC;margin: 0">
     <div align="center">
-        <table class="bayangprint" cellspacing="0" cellpadding="0" bgcolor="#FFFFFF" border="0" width="950" style="padding:25px">
+        <table class="bayangprint" cellspacing="0" cellpadding="0" bgcolor="#FFFFFF" border="0" width="1050" style="padding:25px">
             <tbody>
                 <tr>
                     <td>
@@ -89,8 +88,11 @@
                                 <th>NIK</th>
                                 <th>Nomor LOT</th>
                             </tr>
-
-                            {{-- items --}}
+                            
+                            @php
+                                $qty_produksi=0;
+                                $berat_gentan=0;
+                            @endphp
                             @foreach ($data as $item)
                                 <tr>
                                     <td>{{ \Carbon\Carbon::parse($item->tglproduksi)->format('d-m-y') }}</td>
@@ -140,7 +142,6 @@
                                             "),
                                         );
 
-                                        // Ambil item pertama dan sisa item
                                         $firstLoss = $loss->first();
                                         $remainingLoss = $loss->slice(1);
                                     @endphp
@@ -151,37 +152,51 @@
                                         <td>{{ $firstLoss->berat_loss }}</td>
                                     @endif
                                 </tr>
-                                @foreach ($remainingGentan as $item)
+                                <tr>
+                                    <td>{{ $item->noproses }}</td>
+                                    <td>{{ $item->shift }}</td>
+                                    <td colspan="3">{{ $item->namapetugas }}</td>
+                                    <td>{{ $item->noorder }}</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>{{ $item->nomor_lot }}</td>
+                                    
+                                    @if (isset($remainingGentan[1]) || isset($remainingLoss[1]))
+                                        <td>{{ isset($remainingGentan[1]->nogentan) ? $remainingGentan[1]->nogentan : '' }}</td>
+                                        <td>{{ isset($remainingLoss[1]->namaloss) ? $remainingLoss[1]->namaloss : '' }}</td>
+                                        <td>{{ isset($remainingLoss[1]->berat_loss) ? $remainingLoss[1]->berat_loss : '' }}</td>
+                                    @endif
+                                </tr>
+
+                                @if (isset($remainingGentan[2]) || isset($remainingLoss[2]))
                                     <tr>
                                         <td colspan="9"></td>
-                                        <td>{{ $item->nogentan }}</td>
-                                    @foreach ($remainingLoss as $item)
-                                    {{-- <tr> --}}
-                                        <td>{{ $item->namaloss }}</td>
-                                        <td>{{ $item->berat_loss }}</td>
-                                    {{-- </tr>                                         --}}
-                                    @endforeach
+                                        <td>{{ isset($remainingGentan[2]->nogentan) ? $remainingGentan[2]->nogentan : '' }}</td>
+                                        <td>{{ isset($remainingLoss[2]->namaloss) ? $remainingLoss[2]->namaloss : '' }}</td>
+                                        <td>{{ isset($remainingLoss[2]->berat_loss) ? $remainingLoss[2]->berat_loss : '' }}</td>
                                     </tr>
-                                @endforeach
+                                @endif
 
+                                @if (isset($remainingGentan[3]) || isset($remainingLoss[3]))
+                                    <tr>
+                                        <td colspan="9"></td>
+                                        <td>{{ isset($remainingGentan[3]->nogentan) ? $remainingGentan[3]->nogentan : '' }}</td>
+                                        <td>{{ isset($remainingLoss[3]->namaloss) ? $remainingLoss[3]->namaloss : '' }}</td>
+                                        <td>{{ isset($remainingLoss[3]->berat_loss) ? $remainingLoss[3]->berat_loss : '' }}</td>
+                                    </tr>
+                                @endif
 
+                                @php
+                                    $qty_produksi += $item->qty_produksi;
+                                @endphp
                             @endforeach
 
-                            {{-- Spasi --}}
-                            <tr>
-                                <th colspan="9"></th>
-                            </tr>
-
                             <tr style="text-align: left">
-                                <th colspan="8">GRAND TOTAL</th>
-                                {{-- @if (!empty($detail))
-                                    @foreach ($detail as $item)
-                                        @php
-                                            $totalBeratLoss += $item->berat_loss;
-                                        @endphp
-                                    @endforeach
-                                    <th>{{ $totalBeratLoss }}</th>
-                                @endif --}}
+                                <th colspan="6">GRAND TOTAL</th>
+                                <th>{{ $qty_produksi }}</th>
+                                <th>-</th>
+                                <th colspan="3"></th>
+                                <th>-</th>
                             </tr>
                         </table>
                     </td>

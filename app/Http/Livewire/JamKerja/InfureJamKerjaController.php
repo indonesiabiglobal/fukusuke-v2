@@ -9,9 +9,12 @@ use App\Models\TdJamKerjaMesin;
 use Carbon\Carbon;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
+use Livewire\WithPagination;
+use Livewire\WithoutUrlPagination;
 
 class InfureJamKerjaController extends Component
 {
+    protected $paginationTheme = 'bootstrap';
     public $tglMasuk;
     public $tglKeluar;
     // public $jamkerja = [];
@@ -32,6 +35,8 @@ class InfureJamKerjaController extends Component
     public $on_hour;
     public $orderid;
     public $workShift;
+
+    use WithPagination, WithoutUrlPagination;
 
     public function mount()
     {

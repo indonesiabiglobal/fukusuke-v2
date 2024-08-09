@@ -29,246 +29,107 @@
 @endsection
 @section('content')
     <div class="row">
-        <div class="col">
-            <div class="h-100">
-                <div class="row">
-                    <div class="col-xl-12">
-                        <div class="card">
-                            <div class="card-header border-0 align-items-center">
-                                <form action="{{ route('dashboard') }}" method="get" class=" d-flex">
-                                    <div class="input-group">
-                                        <input type="text" name="filterDate" id="filterDate" class="form-control"
-                                            data-provider="flatpickr" data-date-format="d-m-Y" data-range-date="true"
-                                            data-default-date="{{ $filterDate }}">
-                                        <span class="input-group-text py-0">
-                                            <i class="ri-calendar-event-fill fs-4"></i>
-                                        </span>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary btn-load w-lg p-1">
-                                        <span>
-                                            <i class="ri-search-line"></i> Filter
-                                        </span>
-                                    </button>
-                                </form>
-                            </div>
-                        </div><!-- end card -->
-                    </div><!-- end col -->
-                </div>
-            </div>
-        </div>
-    </div>
-    {{-- kadou jikan infure --}}
-    <div class="row">
-        <div class="col">
-            <div class="h-100">
-                <div class="row">
-                    <div class="col-xl-12">
-                        <div class="card">
-                            <div class="card-header align-items-center d-flex">
-                            </div>
-                            <div class="card-body p-0 pb-2">
-                                <div class="w-100">
-                                    <div id="kadouJikanInfure"></div>
-                                </div>
-                            </div><!-- end card body -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- Loss --}}
-    <div class="row">
-        <div class="col-12 col-xl-6">
-            <div class="card">
-                <div class="card-header align-items-center d-flex">
-                    <h4 class="card-title mb-0">Hasil produksi per-tipe Infure</h4>
-                </div>
-                <div class="card-body">
-                    <table id="scroll-infure"
-                        class="table table-bordered dt-responsive nowrap align-middle mdl-data-table" style="width:100%">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Berat</th>
-                                <th>Presentase</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($lossInfure['lossInfure'] as $data)
-                                <tr>
-                                    <td>{{ $data->loss_name }} </td>
-                                    <td>{{ round($data->berat_loss, 2) }}</td>
-                                    <td>
-                                        @php
-                                            $loss = round(
-                                                ($data->berat_loss / $lossInfure['totalLossInfure']) * 100,
-                                                2,
-                                            );
-                                        @endphp
-                                        {{ $loss }}%
-                                        <div class="progress">
-                                            <div class="progress-bar bg-danger" role="progressbar"
-                                                style="width: {{ $loss }}%;" aria-valuenow="{{ $loss }}"
-                                                aria-valuemin="0" aria-valuemax="100"></div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-xl-6">
-            <div class="card">
-                <div class="card-header align-items-center d-flex">
-                    <h4 class="card-title mb-0">Hasil produksi per-tipe Seitai</h4>
-                </div>
-                <div class="card-body">
-                    <table id="scroll-seitai"
-                        class="table table-bordered dt-responsive nowrap align-middle mdl-data-table" style="width:100%">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Berat</th>
-                                <th>Presentase</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($lossInfure['lossInfure'] as $data)
-                                <tr>
-                                    <td>{{ $data->loss_name }} </td>
-                                    <td>{{ round($data->berat_loss, 2) }}</td>
-                                    <td>
-                                        @php
-                                            $loss = round(
-                                                ($data->berat_loss / $lossInfure['totalLossInfure']) * 100,
-                                                2,
-                                            );
-                                        @endphp
-                                        {{ $loss }}%
-                                        <div class="progress">
-                                            <div class="progress-bar bg-danger" role="progressbar"
-                                                style="width: {{ $loss }}%;" aria-valuenow="{{ $loss }}"
-                                                aria-valuemin="0" aria-valuemax="100"></div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    {{-- end Loss --}}
-
-    {{-- TOP Trouble --}}
-    <div class="row">
-        <div class="col-12 col-md-6 col-lg-6 mb-1">
-            <div class="card">
+        <div class="col-12 col-md-6 col-lg-4">
+            <!-- card -->
+            <div class="card card-animate">
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
-                        <div class="avatar-sm flex-shrink-0">
-                            <span class="avatar-title bg-primary-subtle rounded fs-3">
-                                <i class="bx bx-wallet text-primary"></i>
-                            </span>
-                        </div>
-                        <div class="text-end flex-grow-1">
-                            <p class="text-uppercase fw-medium text-muted text-truncate fs-13">Hasil Produksi Infure</p>
-                            <h4 class="fs-22 fw-semibold mb-3"><span class="counter-value" data-target="47005.9">0</span>k
-                            </h4>
-                            <div class="d-flex align-items-center justify-content-end gap-2">
-                                <h5 class="text-danger fs-12 mb-0">
-                                    <i class="ri-arrow-right-down-line fs-13 align-middle"></i> -2.74 %
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted text-truncate fs-13">Total Produk Kenpin</p>
+                            <h4 class="fs-22 fw-semibold mb-3">$<span class="counter-value" data-target="745.35">0</span></h4>
+                            <div class="d-flex align-items-center gap-2">
+                                <h5 class="text-success fs-12 mb-0">
+                                    <i class="ri-arrow-right-up-line fs-13 align-middle"></i> +18.30 %
                                 </h5>
-                                <p class="text-muted mb-0">Agust 2023</p>
+                                <p class="text-muted mb-0">than last week</p>
                             </div>
                         </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-success-subtle rounded fs-3">
+                                <i class="bx bx-dollar-circle text-success"></i>
+                            </span>
+                        </div>
                     </div>
+                </div><!-- end card body -->
+                <div class="animation-effect-6 text-success opacity-25 fs-18">
+                    <i class="bi bi-currency-dollar"></i>
                 </div>
-            </div>
-        </div>
+                <div class="animation-effect-4 text-success opacity-25 fs-18">
+                    <i class="bi bi-currency-pound"></i>
+                </div>
+                <div class="animation-effect-3 text-success opacity-25 fs-18">
+                    <i class="bi bi-currency-euro"></i>
+                </div>
+            </div><!-- end card -->
+        </div><!-- end col -->
 
-        <div class="col-12 col-md-6 col-lg-6 mb-1">
-            <div class="card">
+        <div class="col-12 col-md-6 col-lg-4">
+            <!-- card -->
+            <div class="card card-animate">
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
-                        <div class="avatar-sm flex-shrink-0">
-                            <span class="avatar-title bg-primary-subtle rounded fs-3">
-                                <i class="bx bx-wallet text-primary"></i>
-                            </span>
-                        </div>
-                        <div class="text-end flex-grow-1">
-                            <p class="text-uppercase fw-medium text-muted text-truncate fs-13">Hasil Produksi Seitai</p>
-                            <h4 class="fs-22 fw-semibold mb-3"><span class="counter-value" data-target="62388.1">0</span>k
-                            </h4>
-                            <div class="d-flex align-items-center justify-content-end gap-2">
-                                <h5 class="text-danger fs-12 mb-0">
-                                    <i class="ri-arrow-right-down-line fs-13 align-middle"></i> -2.74 %
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted text-truncate fs-13">Total Jenis Kenpin</p>
+                            <h4 class="fs-22 fw-semibold mb-3">$<span class="counter-value" data-target="745.35">0</span></h4>
+                            <div class="d-flex align-items-center gap-2">
+                                <h5 class="text-success fs-12 mb-0">
+                                    <i class="ri-arrow-right-up-line fs-13 align-middle"></i> +18.30 %
                                 </h5>
-                                <p class="text-muted mb-0">Agust 2023</p>
+                                <p class="text-muted mb-0">than last week</p>
                             </div>
                         </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-success-subtle rounded fs-3">
+                                <i class="bx bx-dollar-circle text-success"></i>
+                            </span>
+                        </div>
                     </div>
+                </div><!-- end card body -->
+                <div class="animation-effect-6 text-success opacity-25 fs-18">
+                    <i class="bi bi-currency-dollar"></i>
                 </div>
-            </div>
-        </div>
+                <div class="animation-effect-4 text-success opacity-25 fs-18">
+                    <i class="bi bi-currency-pound"></i>
+                </div>
+                <div class="animation-effect-3 text-success opacity-25 fs-18">
+                    <i class="bi bi-currency-euro"></i>
+                </div>
+            </div><!-- end card -->
+        </div><!-- end col -->
 
-        <div class="col-12 col-md-6 col-lg-6 mb-1">
-            <div class="card">
+        <div class="col-12 col-md-6 col-lg-4">
+            <!-- card -->
+            <div class="card card-animate">
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
-                        <div class="avatar-sm flex-shrink-0">
-                            <span class="avatar-title bg-primary-subtle rounded fs-3">
-                                <i class="bx bx-wallet text-primary"></i>
-                            </span>
-                        </div>
-                        <div class="text-end flex-grow-1">
-                            <p class="text-uppercase fw-medium text-muted text-truncate fs-13">Hasil Produksi Infure</p>
-                            <h4 class="fs-22 fw-semibold mb-3"><span class="counter-value" data-target="47005.9">0</span>k
-                            </h4>
-                            <div class="d-flex align-items-center justify-content-end gap-2">
-                                <h5 class="text-danger fs-12 mb-0">
-                                    <i class="ri-arrow-right-down-line fs-13 align-middle"></i> -2.74 %
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted text-truncate fs-13">Total Kasus</p>
+                            <h4 class="fs-22 fw-semibold mb-3">$<span class="counter-value" data-target="745.35">0</span></h4>
+                            <div class="d-flex align-items-center gap-2">
+                                <h5 class="text-success fs-12 mb-0">
+                                    <i class="ri-arrow-right-up-line fs-13 align-middle"></i> +18.30 %
                                 </h5>
-                                <p class="text-muted mb-0">Agust 2024</p>
+                                <p class="text-muted mb-0">than last week</p>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-md-6 col-lg-6 mb-1">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
                         <div class="avatar-sm flex-shrink-0">
-                            <span class="avatar-title bg-primary-subtle rounded fs-3">
-                                <i class="bx bx-wallet text-primary"></i>
+                            <span class="avatar-title bg-success-subtle rounded fs-3">
+                                <i class="bx bx-dollar-circle text-success"></i>
                             </span>
                         </div>
-                        <div class="text-end flex-grow-1">
-                            <p class="text-uppercase fw-medium text-muted text-truncate fs-13">Hasil Produksi Seitai</p>
-                            <h4 class="fs-22 fw-semibold mb-3"><span class="counter-value" data-target="62388.1">0</span>k
-                            </h4>
-                            <div class="d-flex align-items-center justify-content-end gap-2">
-                                <h5 class="text-danger fs-12 mb-0">
-                                    <i class="ri-arrow-right-down-line fs-13 align-middle"></i> -2.74 %
-                                </h5>
-                                <p class="text-muted mb-0">Agust 2024</p>
-                            </div>
-                        </div>
                     </div>
+                </div><!-- end card body -->
+                <div class="animation-effect-6 text-success opacity-25 fs-18">
+                    <i class="bi bi-currency-dollar"></i>
                 </div>
-            </div>
-        </div>
-        
+                <div class="animation-effect-4 text-success opacity-25 fs-18">
+                    <i class="bi bi-currency-pound"></i>
+                </div>
+                <div class="animation-effect-3 text-success opacity-25 fs-18">
+                    <i class="bi bi-currency-euro"></i>
+                </div>
+            </div><!-- end card -->
+        </div><!-- end col -->
     </div>
 @endsection
 

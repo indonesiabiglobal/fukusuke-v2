@@ -318,11 +318,12 @@ class EditNippoController extends Component
         }
 
         if(isset($this->machineno) && $this->machineno != ''){
-            $machine=MsMachine::where('machineno', $this->machineno)->first();
+            $machine=MsMachine::where('machineno', 'ilike', '%'. $this->machineno .'%')->first();
 
             if($machine == null){
                 $this->dispatch('notification', ['type' => 'error', 'message' => 'Machine ' . $this->machineno . ' Tidak Terdaftar']);
             } else {
+                $this->machineno = $machine->machineno;
                 $this->machinename = $machine->machinename;
             }
         }

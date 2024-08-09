@@ -106,7 +106,7 @@
 					@enderror
 				</div>
 			</div>
-			<div class="form-group mt-1">
+			{{-- <div class="form-group mt-1">
 				<div class="input-group" wire:ignore>
 					<label class="control-label col-12 col-lg-3 fw-bold text-muted">Buyer</label>
 					<select class="form-control @error('buyer_id') is-invalid @enderror" wire:model="buyer_id" placeholder="" data-choices data-choices-sorting-false>
@@ -118,6 +118,24 @@
                     @error('buyer_id')
 						<span class="invalid-feedback">{{ $message }}</span>
 					@enderror
+				</div>
+			</div> --}}
+            <div class="row mt-1">
+				<div class="col-12 col-lg-3">
+					<label class="form-label text-muted fw-bold">Buyer</label>
+				</div>
+				<div class="col-12 col-lg-9">
+					<div wire:ignore>
+						<select class="form-control col-12 col-lg-3 @error('buyer_id') is-invalid @enderror" wire:model="buyer_id" placeholder="" data-choices data-choices-sorting-false data-choices-removeItem>
+							<option value=""></option>
+                            @foreach ($buyer as $item)
+                                <option value="{{ $item->id }}">{{ $item->name }}</option>
+                            @endforeach
+						</select>
+						@error('buyer_id')
+							<span class="invalid-feedback">{{ $message }}</span>
+						@enderror
+					</div>
 				</div>
 			</div>
 			<hr />

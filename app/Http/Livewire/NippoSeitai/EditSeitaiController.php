@@ -366,12 +366,11 @@ class EditSeitaiController extends Component
         }
 
         if(isset($this->machineno) && $this->machineno != ''){
-            $machine=MsMachine::where('machineno', $this->machineno)->first();
-            // dd($machine);
+            $machine=MsMachine::where('machineno', 'ilike', '%'. $this->machineno .'%')->first();
             if($machine == null){
-                // session()->flash('error', 'Nomor PO ' . $this->po_no . ' Tidak Terdaftar');
                 $this->dispatch('notification', ['type' => 'error', 'message' => 'Machine ' . $this->machineno . ' Tidak Terdaftar']);
             } else {
+                $this->machineno = $machine->machineno;
                 $this->machinename = $machine->machinename;
             }
         }

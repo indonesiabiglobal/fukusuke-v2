@@ -13,17 +13,22 @@ class CheckListSeitaiController extends Component
 {
     public $tglMasuk;
     public $tglKeluar;
+    public $jamMasuk;
+    public $jamKeluar;
     public $machine;
     public $noprosesawal;
     public $noprosesakhir;
     public $lpk_no;
     public $code;
     public $department;
+    public $jenisReport='1';
 
     public function mount()
     {
         $this->tglMasuk = Carbon::now()->format('Y-m-d');
         $this->tglKeluar = Carbon::now()->format('Y-m-d');
+        $this->jamMasuk = Carbon::today()->format('H:i');
+        $this->jamKeluar = Carbon::today()->addDay()->subMinute()->format('H:i');
         $this->machine = MsMachine::where('machineno',  'LIKE', '00S%')->get();
         $this->department = MsDepartment::where('division_code', 20)->get();
     }
@@ -34,10 +39,20 @@ class CheckListSeitaiController extends Component
         //     $this->tglMasuk,
         //     $this->tglKeluar,
         // ), 'checklist-infure.xlsx');
-        $tglMasuk = $this->tglMasuk;
-        $tglKeluar = $this->tglKeluar;
 
-        $this->dispatch('redirectToPrint', "'$tglMasuk 00:00' and tdpa.created_on <= '$tglKeluar 23:59'");
+        if ($this->jenisReport == 2) {
+            $tglMasuk = $this->tglMasuk;
+            $tglKeluar = $this->tglKeluar;
+            
+            $this->dispatch('printSeitai', "tdpg.created_on >= '$tglMasuk 00:00' and tdpg.created_on <= '$tglKeluar 23:59'");
+        } else {
+            $tglMasuk = $this->tglMasuk;
+            $tglKeluar = $this->tglKeluar;
+
+            $this->dispatch('printNippo', "tdpg.created_on >= '$tglMasuk 00:00' and tdpg.created_on <= '$tglKeluar 23:59'");
+        }
+        
+        
     }
 
     public function render()

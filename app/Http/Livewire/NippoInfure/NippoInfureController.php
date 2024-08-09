@@ -40,8 +40,8 @@ class NippoInfureController extends Component
         $this->tdOrderLpk = TdOrderLpk::get();
         $this->buyer = MsBuyer::get();
         $this->machine = MsMachine::get();
-        $this->tglMasuk = Carbon::now()->format('Y-m-d');
-        $this->tglKeluar = Carbon::now()->format('Y-m-d');  
+        $this->tglMasuk = Carbon::now()->format('d-m-Y');
+        $this->tglKeluar = Carbon::now()->format('d-m-Y');
     }
 
     public function search(){
@@ -49,7 +49,10 @@ class NippoInfureController extends Component
     }
 
     public function print(){
-        $this->dispatch('redirectToPrint', 1234);
+        $tglMasuk = $this->tglMasuk;
+        $tglKeluar = $this->tglKeluar;
+
+        $this->dispatch('redirectToPrint', "'$tglMasuk 00:00' and tdpa.created_on <= '$tglKeluar 23:59'");
     }
 
     public function add()

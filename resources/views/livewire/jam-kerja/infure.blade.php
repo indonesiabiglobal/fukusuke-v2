@@ -317,9 +317,12 @@
                 @forelse ($data as $item)
                     <tr>
                         <td>
-                            <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modal-edit" wire:click="edit({{$item->id}})">
+                            <button type="button" class="link-success fs-15 p-1 bg-primary rounded" data-bs-toggle="modal" data-bs-target="#modal-edit" wire:click="edit({{$item->id}})">
                                 <i class="ri-edit-box-line text-white"></i>
                             </button>
+                            {{-- <a href="/edit-order?orderId={{ $item->id }}" class="link-success fs-15 p-1 bg-primary rounded">
+                                <i class="ri-edit-box-line text-white"></i>
+                            </a> --}}
                         </td>
                         <td>{{ $item->working_date }}</td>
                         <td>{{ $item->work_shift }}</td>

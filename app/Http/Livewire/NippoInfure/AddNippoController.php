@@ -3,8 +3,6 @@
 namespace App\Http\Livewire\NippoInfure;
 
 use Livewire\Component;
-use App\Models\TdOrder;
-use App\Models\MsBuyer;
 use App\Models\MsEmployee;
 use App\Models\MsLossInfure;
 use App\Models\MsMachine;
@@ -61,7 +59,7 @@ class AddNippoController extends Component
         $this->work_hour = Carbon::now()->format('H:i');
 
         $workingShift = MsWorkingShift::where('work_hour_from', '<=', $this->work_hour)->where('work_hour_till', '>=', $this->work_hour)->first();
-        $this->work_shift = $workingShift->id;
+        $this->work_shift = $workingShift->work_shift;
     }
 
     public function showModalNoOrder()
@@ -265,7 +263,7 @@ class AddNippoController extends Component
                 'tda.gentan_no'
             )
             ->join('msproduct as mp', 'mp.id', '=', 'tolp.product_id')
-            ->join('tdproduct_assembly as tda', 'tda.lpk_id', '=', 'tolp.id')
+            ->leftJoin('tdproduct_assembly as tda', 'tda.lpk_id', '=', 'tolp.id')
             ->where('tolp.lpk_no', $this->lpk_no)
             ->first();
 
@@ -296,11 +294,12 @@ class AddNippoController extends Component
         }
 
         if(isset($this->machineno) && $this->machineno != ''){
-            $machine=MsMachine::where('machineno', $this->machineno)->first();
+            $machine=MsMachine::where('machineno', 'ilike', '%'. $this->machineno .'%')->first();
 
             if($machine == null){
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Machine ' . $this->machineno . ' Tidak Terdaftar']);
             } else {
+                $this->machineno = $machine->machineno;
                 $this->machinename = $machine->machinename;
             }
         }
