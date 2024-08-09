@@ -44,10 +44,8 @@ class AddNippoController extends Component
     public $nomor_barcode;
     public $panjang_produksi;
 
-    // data master
-    public $masterKatanuki;
-
     // data master produk
+    public $masterKatanuki;
     public $product;
     public $photoKatanuki;
     public $katanuki_id;
