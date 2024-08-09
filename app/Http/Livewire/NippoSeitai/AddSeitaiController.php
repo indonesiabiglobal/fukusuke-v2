@@ -155,7 +155,7 @@ class AddSeitaiController extends Component
             ]);
 
             DB::commit();
-            session()->flash('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);
             return redirect()->route('nippo-seitai');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -200,7 +200,7 @@ class AddSeitaiController extends Component
 
         $datas->save();
 
-        $this->dispatch('closeModalGentan');
+        $this->dispatch('closeModalLoss');
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);
     }
 
@@ -218,6 +218,22 @@ class AddSeitaiController extends Component
         $data->delete();
 
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Hapus']);
+    }
+
+    public function resetGentan()
+    {
+        $this->gentan_no = '';
+        $this->machine_no = '';
+        $this->petugas = '';
+        $this->berat_produksi = '';
+        $this->gentan_line = '';
+    }
+
+    public function resetSeitai()
+    {
+        $this->loss_seitai_id = '';
+        $this->namaloss = '';
+        $this->berat_loss = '';
     }
 
     public function render()
@@ -332,7 +348,8 @@ class AddSeitaiController extends Component
                         ->first();
 
             if($tdProduct == null){
-                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Gentan ' . $this->employeenoinfure . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Gentan ' . $this->gentan_no . ' Tidak Terdaftar']);
+                $this->resetGentan();
             } else {
                 $this->petugas = $tdProduct->empname;
                 $this->machine_no = $tdProduct->machineno;
@@ -345,6 +362,7 @@ class AddSeitaiController extends Component
 
             if($lossSeitai == null){
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Kode Loss ' . $this->employeenoinfure . ' Tidak Terdaftar']);
+                $this->resetSeitai();
             } else {
                 $this->namaloss = $lossSeitai->name;
             }

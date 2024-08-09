@@ -192,8 +192,80 @@
             </div>
         </div>
     </div>
-    <div class="table-responsive table-card mt-3 mb-1">
-        <table class="table align-middle table-nowrap" id="customerTable" style="width:100%">
+
+    <div class="col text-end dropdown" wire:ignore>
+        <button type="button" data-bs-toggle="dropdown" aria-expanded="false" class="btn btn-soft-primary btn-icon fs-14 me-4 mb-4">
+            <i class="ri-grid-fill"></i>
+        </button>
+        {{-- <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+                <input class="form-check-input fs-15 ms-2" type="checkbox"
+                wire:model.live="po_no" value="{{ $po_no }}"> Tanggal LPK
+            </li>
+            <li>
+                <input class="form-check-input fs-15 ms-2" type="checkbox"
+                wire:model.live="pr_na" value="{{ $pr_na }}"> Panjang LPK
+            </li>
+            <li>
+                <input class="form-check-input fs-15 ms-2" type="checkbox"
+                wire:model.live="ko_pr" value="{{ $ko_pr }}"> Jumlah LPK
+            </li>
+            <li>
+                <input class="form-check-input fs-15 ms-2" type="checkbox"
+                wire:model.live="bu" value="{{ $bu }}"> Jumlah Gentan
+            </li>
+            <li>
+                <input class="form-check-input fs-15 ms-2" type="checkbox"
+                wire:model.live="qt" value="{{ $qt }}"> Meter Gulung
+            </li>
+            <li>
+                <input class="form-check-input fs-15 ms-2" type="checkbox"
+                wire:model.live="tgo" value="{{ $tgo }}"> Selisih
+            </li>
+            <li>
+                <input class="form-check-input fs-15 ms-2" type="checkbox"
+                wire:model.live="stf" value="{{ $stf }}"> Progress Infure
+            </li>
+            <li>
+                <input class="form-check-input fs-15 ms-2" type="checkbox"
+                wire:model.live="et" value="{{ $et }}"> Progress Seitai
+            </li>
+            <li>
+                <input class="form-check-input fs-15 ms-2" type="checkbox"
+                wire:model.live="eta" value="{{ $eta }}"> Nama Produk
+            </li>
+            <li>
+                <input class="form-check-input fs-15 ms-2" type="checkbox"
+                wire:model.live="tgp" value="{{ $tgp }}"> Kode Produk
+            </li>
+            <li>
+                <input class="form-check-input fs-15 ms-2" type="checkbox"
+                wire:model.live="no" value="{{ $no }}"> Mesin
+            </li>
+            <li>
+                <input class="form-check-input fs-15 ms-2" type="checkbox"
+                wire:model.live="updated_by" value="{{ $updated_by }}"> Buyer
+            </li>
+            <li>
+                <input class="form-check-input fs-15 ms-2" type="checkbox"
+                wire:model.live="updated_on" value="{{ $updated_on }}"> Tanggal Proses
+            </li>
+            <li>
+                <input class="form-check-input fs-15 ms-2" type="checkbox"
+                wire:model.live="no" value="{{ $no }}"> Seq.
+            </li>
+            <li>
+                <input class="form-check-input fs-15 ms-2" type="checkbox"
+                wire:model.live="updated_by" value="{{ $updated_by }}"> UpdateBy
+            </li>
+            <li>
+                <input class="form-check-input fs-15 ms-2" type="checkbox"
+                wire:model.live="updated_on" value="{{ $updated_on }}"> Updated
+            </li>
+        </ul> --}}
+    </div>
+    <div class="table-responsive table-card">
+        <table class="table align-middle">
             <thead class="table-light">
                 <tr>
                     <th scope="col" style="width: 10px;">

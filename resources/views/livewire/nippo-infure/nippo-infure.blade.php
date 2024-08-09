@@ -16,12 +16,12 @@
                         <div class="col-9">
                             <div class="form-group">
                                 <div class="input-group">    
-                                    <input wire:model.defer="tglMasuk" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d/m/Y">
+                                    <input wire:model.defer="tglMasuk" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
                                     <span class="input-group-text py-0">
                                         <i class="ri-calendar-event-fill fs-4"></i>
                                     </span>
 
-                                    <input wire:model.defer="tglKeluar" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d/m/Y">
+                                    <input wire:model.defer="tglKeluar" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
                                     <span class="input-group-text py-0">
                                         <i class="ri-calendar-event-fill fs-4"></i>
                                     </span>
@@ -195,8 +195,8 @@
 </div>
 @script
     <script>
-        $wire.on('redirectToPrint', (no_palet) => {
-            var printUrl = '{{ route('report-nippo-infure') }}?no_palet=' + no_palet
+        $wire.on('redirectToPrint', (datas) => {
+            var printUrl = '{{ route('report-nippo-infure') }}?tanggal=' + datas;
             window.open(printUrl, '_blank');
         });
     </script>

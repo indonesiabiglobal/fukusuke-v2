@@ -319,7 +319,7 @@
         </div>
         <hr/>
         <div class="row">
-            <div class="col-lg-8">
+            <div class="col-lg-9">
                 <button wire:click="addLossInfure" type="button" class="btn btn-success">
                     <i class="ri-add-line"></i> Add Loss Infure
                 </button>
@@ -327,7 +327,7 @@
                     <i class="ri-add-line"></i> Add Loss Infure
                 </button> --}}
             </div>
-            <div class="col-lg-4" style="border-top:1px solid #efefef">
+            <div class="col-lg-3" style="border-top:1px solid #efefef">
                 <div class="toolbar">
                     <button type="button" class="btn btn-warning" wire:click="cancel">
                         <span wire:loading.remove wire:target="cancel">
@@ -358,9 +358,6 @@
                                 </span>
                             </span>
                         </div>
-                    </button>
-                    <button type="button" class="btn btn-success btn-print" disabled="disabled">
-                        <i class="bx bx-printer"></i> Print
                     </button>
                 </div>
             </div>

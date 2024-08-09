@@ -206,7 +206,7 @@ class AddNippoController extends Component
                 'tda.gentan_no'
             )
             ->join('msproduct as mp', 'mp.id', '=', 'tolp.product_id')
-            ->join('tdproduct_assembly as tda', 'tda.lpk_id', '=', 'tolp.id')
+            ->leftJoin('tdproduct_assembly as tda', 'tda.lpk_id', '=', 'tolp.id')
             ->where('tolp.lpk_no', $this->lpk_no)
             ->first();
 
