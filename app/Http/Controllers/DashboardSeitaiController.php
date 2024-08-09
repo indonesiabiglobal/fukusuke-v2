@@ -16,18 +16,33 @@ class DashboardSeitaiController extends Controller
         if (isset($request->filterDate)) {
             $requestFilterDate = $request->filterDate;
             $filterDate = explode(' to ', $request->filterDate);
-            $startDate = Carbon::parse($filterDate[0])->format('Y-m-d');
+            $startDate = Carbon::parse($filterDate[0])->format('d-m-Y 00:00:00');
             if (count($filterDate) == 1) {
-                $endDate = Carbon::parse($filterDate[0])->format('Y-m-d');
+                $endDate = Carbon::parse($filterDate[0])->format('d-m-Y 23:59:59');
             } else {
-                $endDate = Carbon::parse($filterDate[1])->format('Y-m-d');
+                $endDate = Carbon::parse($filterDate[1])->format('d-m-Y 23:59:59');
             }
         } else {
-            $startDate = Carbon::now()->subMonth()->format('d-m-Y');
-            $endDate = Carbon::now()->format('d-m-Y');
+            $startDate = Carbon::now()->subMonth()->format('d-m-Y 00:00:00');
+            $endDate = Carbon::now()->format('d-m-Y 23:59:59');
             $requestFilterDate = $startDate . ' to ' . $endDate;
         }
         $divisionCodeSeitai = MsDepartment::where('name', 'SEITAI')->first()->division_code;
+
+        $lossSeitai = $this->getLossSeitai($startDate, $endDate, $divisionCodeSeitai);
+        $topLossSeitai = $this->getTopLossSeitai($startDate, $endDate, $divisionCodeSeitai);
+
+        if ($topLossSeitai != null) {
+            $higherLoss = $topLossSeitai[0]->berat_loss;
+        } else {
+            $higherLoss = 0;
+        }
+
+        if ($lossSeitai['totalLossSeitai'] != 0) {
+            $higherLossPercentage = round(($higherLoss / $lossSeitai['totalLossSeitai']) * 100, 2);
+        } else {
+            $higherLossPercentage = 0;
+        }
 
         $data = [
             'filterDate' => $requestFilterDate,
@@ -36,9 +51,11 @@ class DashboardSeitaiController extends Controller
             'listMachineSeitai' => $this->getListMachineSeitai($startDate, $endDate, $divisionCodeSeitai),
             'kadouJikanSeitaiMesin' => $this->getkadouJikanSeitai($startDate, $endDate, $divisionCodeSeitai),
             'hasilProduksiSeitai' => $this->getHasilProduksiSeitai($startDate, $endDate),
-            'lossSeitai' => $this->getLossSeitai($startDate, $endDate, $divisionCodeSeitai),
-            'topLossSeitai' => $this->getTopLossSeitai($startDate, $endDate, $divisionCodeSeitai),
             'counterTroubleSeitai' => $this->getCounterTroubleSeitai($startDate, $endDate),
+            'lossSeitai' => $lossSeitai,
+            'topLossSeitai' => $topLossSeitai,
+            'higherLoss' => round($higherLoss, 2),
+            'higherLossPercentage' => $higherLossPercentage,
         ];
         return view('dashboard.seitai', $data);
     }
@@ -79,9 +96,12 @@ class DashboardSeitaiController extends Controller
     }
     public function getkadouJikanSeitai($startDate, $endDate, $divisionCodeSeitai)
     {
+        $diffDay = Carbon::parse($endDate)->diffInDays(Carbon::parse($startDate)) + 1;
+        $minuteOfDay = 24 * 60;
+
         $kadouJikanSeitaiMesin = DB::select('
         SELECT y.* FROM (
-            SELECT x.*, ROUND(x.work_hour_on_mm / 1440 * 100, 2) AS persenmesinkerja
+            SELECT x.*, ROUND(x.work_hour_on_mm / ? * 100, 2) AS persenmesinkerja
             FROM (
                 SELECT
                     RIGHT(mac.machineno, 2) AS machine_no,
@@ -116,11 +136,7 @@ class DashboardSeitaiController extends Controller
                 WHERE y.persenmesinkerja > 0
             ORDER BY
                 y.machine_no
-        ', [
-            $startDate,
-            $endDate,
-            $divisionCodeSeitai
-        ]);
+        ', [$diffDay * $minuteOfDay,$startDate, $endDate, $divisionCodeSeitai]);
 
         return $kadouJikanSeitaiMesin;
     }

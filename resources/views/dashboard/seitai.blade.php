@@ -137,17 +137,10 @@
                                     <div class="mt-sm-auto">
                                         <small class="text-danger text-nowrap fw-semibold"><i
                                                 class="bx bx-chevron-down"></i>
-                                            @php
-                                                $higherLoss = round(
-                                                    ($topLossSeitai[0]->berat_loss / $lossSeitai['totalLossSeitai']) *
-                                                        100,
-                                                    2,
-                                                );
-                                            @endphp
-                                            {{ $higherLoss }}%
+                                            {{ $higherLossPercentage }}%
                                             dari loss
                                         </small>
-                                        <h3 class="mb-0">{{ round($topLossSeitai[0]->berat_loss, 2) }}</h3>
+                                        <h3 class="mb-0">{{ $higherLoss }}</h3>
                                     </div>
                                 </div>
                                 <div id="profileReportChart"></div>
@@ -565,7 +558,7 @@
             // --------------------------------------------------------------------
             const growthChartEl = document.querySelector('#growthChart'),
                 growthChartOptions = {
-                    series: [{{ $higherLoss }}],
+                    series: [{{ $higherLossPercentage }}],
                     labels: ['Loss'],
                     chart: {
                         height: 210,
