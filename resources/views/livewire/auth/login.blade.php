@@ -2,8 +2,24 @@
     Login
 @endsection
 
-<section class="auth-bg-cover min-vh-100 p-4 p-lg-5 d-flex align-items-center justify-content-center">
-    <div class="bg-overlay"></div>
+<section class="min-vh-100 p-4 p-lg-5 d-flex align-items-center justify-content-center">
+    {{-- <div class="top-tagbar bg-light text-dark" style="padding: 30px;">
+        <div class="w-100">
+            <div class="row justify-content-between mt-3">
+                <div class="col-8">                        
+                    <h4>
+                        <img width="70px" src="{{ URL::asset('build/images/production.png') }}" alt="Header Avatar">
+                        Production Control
+                    </h4>
+                </div>
+                <div class="col-4">
+                    <p>Need an Account ?
+                        <button class="btn btn-danger w-50 ms-3" type="button">CREATE ACCOUNT</button>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div> --}}
     <div class="container-fluid px-0">
         <div class="row g-0">
             <div class="col-xl-8 col-lg-6">
@@ -12,30 +28,36 @@
                         <div class="flex-grow-1">
                             {{-- <img src="{{ URL::asset('build/images/logo-production.png') }}" alt=""
                                 height="32" /> --}}
-                                <h1 class="text-white">Production Control System</h1>
-                                <h5 class="text-white mt-3">Sistem aplikasi monitoring dan <br>
+                                <h1 class="text-dark">Production Control System</h1>
+                                <h5 class="text-dark mt-3">Sistem aplikasi monitoring dan <br>
                                 pengendalian produksi, untuk mengatur <br>
                                 output atau hasil produksi yang optimal <br>
                                 dan memperoleh jaminan yang wajar <br>
                                 bahwa spesifikasi akan terpenuhi.</h5>
                         </div>
-                        <img src="{{ URL::asset('build/images/phone.png') }}" alt="" />
+                        <img src="{{ URL::asset('build/images/phone.png') }}" width="250" alt="" />
                     </div>
 
-                    <div class="text-white mt-4">
-                        <p class="mb-1">PT Fukusuke Kogyo Indonesia</p>
-                        <span>Blok M-3-2 Kawasan Berikat Mm2100 Cibitung, Bekasi, Jawa Barat, Indonesia.</span>
+                    <div class="text-dark mt-4">
+                        <div class="row">
+                            <div class="col-6">
+                                <p class="mb-1 fw-bold">PT Fukusuke Kogyo Indonesia</p>
+                                <span>Blok M-3-2 Kawasan Berikat Mm2100 Cibitung, Bekasi, Jawa Barat, Indonesia.</span>
+                            </div>
+                            <div class="col-6">
+                                <p class="mb-1 fw-bold">Produk Usaha</p>
+                                <span>Kantong Plastik</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
             <!--end col-->
             <div class="col-xl-4 col-lg-6">
-                <div class="card mb-0 py-5">
+                <div class="card mb-0 py-2 border border-3">
                     <div class="card-body p-4 p-sm-5 m-lg-2">
-                        <div class="mt-2">
-                            <h5 class="fs-22">Sign In</h5>
-                            {{-- <p class="text-muted">Sign in to continue to Fukusuke</p> --}}
-                        </div>
+                        <h5 class="fs-22">Sign In</h5>
+                        
                         @if (session()->has('error'))
                             <div class="alert alert-borderless alert-danger alert-dismissible mb-2 mx-2">
                                 {{ session('error') }}
@@ -102,28 +124,7 @@
                                 <div class="mt-5">
                                     <button class="btn btn-primary w-100" type="submit">Sign In</button>
                                 </div>
-
-                                <div class="mt-6 pt-2 text-center">
-                                    {{-- <div class="signin-other-title">
-                                        <h5 class="fs-13 mb-4 title">Sign In with</h5>
-                                    </div>
-                                    <div class="pt-2 hstack gap-2 justify-content-center">
-                                        <button type="button" class="btn btn-soft-primary btn-icon"><i
-                                                class="ri-facebook-fill fs-16"></i></button>
-                                        <button type="button" class="btn btn-soft-danger btn-icon"><i
-                                                class="ri-google-fill fs-16"></i></button>
-                                        <button type="button" class="btn btn-soft-dark btn-icon"><i
-                                                class="ri-github-fill fs-16"></i></button>
-                                        <button type="button" class="btn btn-soft-info btn-icon"><i
-                                                class="ri-twitter-fill fs-16"></i></button>
-                                    </div> --}}
-                                </div>
                             </form>
-
-                            <div class="text-center mt-5">
-                                <p class="mb-0">Don't have an account ? <a href="{{ url('register') }}"
-                                        class="fw-semibold text-secondary text-decoration-underline"> Sign Up</a> </p>
-                            </div>
                         </div>
                     </div>
                     <!-- end card body -->
