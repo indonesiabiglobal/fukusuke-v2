@@ -109,7 +109,7 @@ class DashboardController extends Controller
 
         $data = [
             'filterDate' => $requestFilterDate,
-            
+
             'totalprodukkenpin' => $this->getTotalProdukKenpin(),
             'jenisprodukkenpin' => $this->getJenisProdukKenpin(),
 
@@ -120,26 +120,46 @@ class DashboardController extends Controller
     // INFURE
     public function getListMachineInfure($startDate, $endDate, $divisionCodeInfure)
     {
-        $today = Carbon::parse('2024-07-09');
+        $today = Carbon::now();
         $shiftSekarang = MsWorkingShift::select('work_shift')
             ->where('work_hour_from', '<=', $today->format('H:i:s'))
             ->where('work_hour_till', '>=', $today->format('H:i:s'))
             ->where('status', 1)
             ->first();
         $listMachineInfure = DB::select('
-        SELECT
-            RIGHT( mac.machineno, 2 ) AS machineno,
-            dep."id" as department_id,
-            dep.division_code,
-            dep."name" as department_name
-        FROM
-            "msmachine" AS mac
-            INNER JOIN msdepartment AS dep ON mac.department_id = dep.ID
-        WHERE
-            mac.status = 1 AND division_code = ?
-        ORDER BY machineno ASC
+        SELECT x.* from (
+            SELECT
+            RIGHT(mac.machineno, 2) AS machine_no,
+                mac.machineno AS machine_name,
+                dep.division_code,
+                dep."id" as department_id,
+                dep."name" as department_name,
+                    CASE
+                    WHEN jam.work_shift= ? THEN
+                    1 ELSE 0
+                END AS is_working_shift
+            FROM
+                msmachine AS mac
+            INNER JOIN
+                msdepartment AS dep ON mac.department_id = dep.id
+            LEFT JOIN (
+                SELECT
+                    jam_.machine_id,jam_.work_shift
 
-        ', [$divisionCodeInfure]);
+                FROM
+                    tdjamkerjamesin AS jam_
+                WHERE
+                    jam_.working_date = ?
+                    AND jam_.work_shift= ?
+                GROUP BY
+                    jam_.machine_id,jam_.work_shift
+            ) AS jam ON mac.id = jam.machine_id
+            WHERE
+                mac.status = 1
+                    and dep.division_code=? ) as x
+        GROUP BY x.machine_no,x.machine_name,
+        x.division_code,x.department_id,x.department_name,x.is_working_shift ORDER BY x.machine_no
+        ', [$shiftSekarang, $today->format('Y-m-d'), $shiftSekarang,$divisionCodeInfure]);
         // [$shiftSekarang, $divisionCodeInfure, $today->format('Y-m-d')]);
 
         // ', array_merge([$startDate, $endDate, $division_code], $machineNo));
@@ -231,21 +251,47 @@ class DashboardController extends Controller
     */
     public function getListMachineSeitai($startDate, $endDate, $divisionCodeSeitai)
     {
-
+        $today = Carbon::now();
+        $shiftSekarang = MsWorkingShift::select('work_shift')
+            ->where('work_hour_from', '<=', $today->format('H:i:s'))
+            ->where('work_hour_till', '>=', $today->format('H:i:s'))
+            ->where('status', 1)
+            ->first();
         $listMachineSeitai = DB::select('
-        SELECT
-            RIGHT( mac.machineno, 2 ) AS machineno,
-            dep."id" as department_id,
-            dep.division_code,
-            dep."name" as department_name
-        FROM
-            "msmachine" AS mac
-            INNER JOIN msdepartment AS dep ON mac.department_id = dep.ID
-        WHERE
-            mac.status = 1 AND division_code = ?
-        ORDER BY machineno ASC
+        SELECT x.* from (
+            SELECT
+            RIGHT(mac.machineno, 2) AS machine_no,
+                mac.machineno AS machine_name,
+                dep.division_code,
+                dep."id" as department_id,
+                dep."name" as department_name,
+                    CASE
+                    WHEN jam.work_shift= ? THEN
+                    1 ELSE 0
+                END AS is_working_shift
+            FROM
+                msmachine AS mac
+            INNER JOIN
+                msdepartment AS dep ON mac.department_id = dep.id
+            LEFT JOIN (
+                SELECT
+                    jam_.machine_id,jam_.work_shift
 
-        ', [$divisionCodeSeitai]);
+                FROM
+                    tdjamkerjamesin AS jam_
+                WHERE
+                    jam_.working_date = ?
+                    AND jam_.work_shift= ?
+                GROUP BY
+                    jam_.machine_id,jam_.work_shift
+            ) AS jam ON mac.id = jam.machine_id
+            WHERE
+                mac.status = 1
+                    and dep.division_code=? ) as x
+        GROUP BY x.machine_no,x.machine_name,
+        x.division_code,x.department_id,x.department_name,x.is_working_shift ORDER BY x.machine_no
+
+        ', [$shiftSekarang, $today->format('Y-m-d'), $shiftSekarang,$divisionCodeSeitai]);
         // ', array_merge([$startDate, $endDate, $division_code], $machineNo));
         $listDepartment = array_reduce($listMachineSeitai, function ($carry, $item) {
             $carry[$item->department_id] = [
@@ -354,7 +400,7 @@ class DashboardController extends Controller
         left join tdproduct_goods as gdsx on kenpin.product_goods_id = gdsx.id
         left join msproduct as prd on kenpinhdr.product_id = prd.id
         where kenpinhdr.kenpin_date ='2022-11-01'
-        and  kenpinhdr.status_kenpin = 2 
+        and  kenpinhdr.status_kenpin = 2
         group by prd.name
         ");
 
