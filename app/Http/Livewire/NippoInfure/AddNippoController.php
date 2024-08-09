@@ -199,7 +199,7 @@ class AddNippoController extends Component
                 $this->dispatch('showModalLPK');
             }
         } else {
-            $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Order tidak boleh kosong']);
+            $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor LPK tidak boleh kosong']);
         }
     }
 
