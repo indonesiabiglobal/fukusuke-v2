@@ -58,6 +58,12 @@ class EditSeitaiController extends Component
     public $loss_seitai_id;
     public $berat_loss;
 
+    // data master produk
+    public $masterKatanuki;
+    public $product;
+    public $photoKatanuki;
+    public $katanuki_id;
+
     public function mount(Request $request)
     {
         $data = DB::table('tdproduct_goods AS tdpg')
@@ -67,37 +73,37 @@ class EditSeitaiController extends Component
         ->leftJoin('msemployee AS mse', 'tdpg.employee_id', '=', 'mse.id')
         ->leftJoin('msemployee AS mse2', 'tdpg.employee_id_infure', '=', 'mse2.id')
         ->select(
-            'tdpg.id AS id', 
-            'tdpg.production_no AS production_no', 
-            'tdpg.production_date AS production_date', 
-            'tdpg.employee_id AS employee_id', 
-            'tdpg.employee_id_infure AS employee_id_infure', 
-            'tdpg.work_shift AS work_shift', 
-            'tdpg.work_hour AS work_hour', 
-            'tdpg.machine_id AS machine_id', 
-            'tdpg.lpk_id AS lpk_id', 
-            'tdpg.product_id AS product_id', 
-            'tdpg.qty_produksi AS qty_produksi', 
-            'tdpg.seitai_berat_loss AS seitai_berat_loss', 
-            'tdpg.infure_berat_loss AS infure_berat_loss', 
-            'tdpg.nomor_palet AS nomor_palet', 
-            'tdpg.nomor_lot AS nomor_lot', 
-            'tdpg.seq_no AS seq_no', 
-            'tdpg.status_production AS status_production', 
-            'tdpg.status_warehouse AS status_warehouse', 
-            'tdpg.kenpin_qty_loss AS kenpin_qty_loss', 
-            'tdpg.kenpin_qty_loss_proses AS kenpin_qty_loss_proses', 
-            'tdpg.created_by AS created_by', 
-            'tdpg.created_on AS created_on', 
-            'tdpg.updated_by AS updated_by', 
-            'tdpg.updated_on AS updated_on', 
-            'tdol.order_id AS order_id', 
-            'tdol.lpk_no AS lpk_no', 
-            'tdol.lpk_date AS lpk_date', 
-            'tdol.panjang_lpk AS panjang_lpk', 
-            'tdol.qty_gentan AS qty_gentan', 
-            'tdol.qty_gulung AS qty_gulung', 
-            'tdol.qty_lpk AS qty_lpk', 
+            'tdpg.id AS id',
+            'tdpg.production_no AS production_no',
+            'tdpg.production_date AS production_date',
+            'tdpg.employee_id AS employee_id',
+            'tdpg.employee_id_infure AS employee_id_infure',
+            'tdpg.work_shift AS work_shift',
+            'tdpg.work_hour AS work_hour',
+            'tdpg.machine_id AS machine_id',
+            'tdpg.lpk_id AS lpk_id',
+            'tdpg.product_id AS product_id',
+            'tdpg.qty_produksi AS qty_produksi',
+            'tdpg.seitai_berat_loss AS seitai_berat_loss',
+            'tdpg.infure_berat_loss AS infure_berat_loss',
+            'tdpg.nomor_palet AS nomor_palet',
+            'tdpg.nomor_lot AS nomor_lot',
+            'tdpg.seq_no AS seq_no',
+            'tdpg.status_production AS status_production',
+            'tdpg.status_warehouse AS status_warehouse',
+            'tdpg.kenpin_qty_loss AS kenpin_qty_loss',
+            'tdpg.kenpin_qty_loss_proses AS kenpin_qty_loss_proses',
+            'tdpg.created_by AS created_by',
+            'tdpg.created_on AS created_on',
+            'tdpg.updated_by AS updated_by',
+            'tdpg.updated_on AS updated_on',
+            'tdol.order_id AS order_id',
+            'tdol.lpk_no AS lpk_no',
+            'tdol.lpk_date AS lpk_date',
+            'tdol.panjang_lpk AS panjang_lpk',
+            'tdol.qty_gentan AS qty_gentan',
+            'tdol.qty_gulung AS qty_gulung',
+            'tdol.qty_lpk AS qty_lpk',
             'tdol.total_assembly_qty AS total_assembly_qty',
             'msp.code',
             'msp.name',
@@ -163,6 +169,55 @@ class EditSeitaiController extends Component
         ->get();
     }
 
+    public function showModalNoOrder()
+    {
+        if (isset($this->code) && $this->code != '') {
+            $this->product = MsProduct::where('code', $this->code)->first();
+            if ($this->product == null) {
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Order ' . $this->code . ' Tidak Terdaftar']);
+            } else {
+                // nomor order produk
+                // $this->productNomorOrder = DB::table('msproduct')->where('code', $this->product_id)->first();
+                $this->masterKatanuki = DB::table('mskatanuki')->where('id', $this->product->katanuki_id)->first(['name', 'filename']);
+
+                // $this->code = $this->product->code;
+                // $this->name = $this->product->name;
+                $this->product->product_type_id = DB::table('msproduct_type')->where('id', $this->product->product_type_id)->first(['name'])->name ?? '';
+                $this->product->product_unit = DB::table('msunit')->where('code', $this->product->product_unit)->first(['name'])->name ?? '';
+                $this->product->material_classification = DB::table('msmaterial')->where('id', $this->product->material_classification)->first(['name'])->name ?? '';
+                $this->product->embossed_classification = DB::table('msembossedclassification')->where('id', $this->product->embossed_classification)->first(['name'])->name ?? '';
+                $this->product->surface_classification = DB::table('mssurfaceclassification')->where('id', $this->product->surface_classification)->first(['name'])->name ?? '';
+                $this->product->gentan_classification = DB::table('msgentanclassification')->where('id', $this->product->gentan_classification)->first(['name'])->name ?? '';
+                $this->product->gazette_classification = DB::table('msgazetteclassification')->where('id', $this->product->gazette_classification)->first(['name'])->name ?? '';
+                $this->katanuki_id = $this->masterKatanuki->name ?? '';
+                $this->photoKatanuki = $this->masterKatanuki->filename ?? '';
+                $this->product->print_type = DB::table('msjeniscetak')->where('code', $this->product->print_type)->first(['name'])->name ?? '';
+                $this->product->ink_characteristic = DB::table('mssifattinta')->where('code', $this->product->ink_characteristic)->first(['name'])->name ?? '';
+                $this->product->endless_printing = DB::table('msendless')->where('code', $this->product->endless_printing)->first(['name'])->name ?? '';
+                $this->product->winding_direction_of_the_web = DB::table('msarahgulung')->where('code', $this->product->winding_direction_of_the_web)->first(['name'])->name ?? '';
+                $this->product->seal_classification = DB::table('msklasifikasiseal')->where('code', $this->product->seal_classification)->first(['name'])->name ?? '';
+                $this->product->pack_gaiso_id = DB::table('mspackaginggaiso')->where('id', $this->product->pack_gaiso_id)->first(['name'])->name ?? '';
+                $this->product->pack_box_id = DB::table('mspackagingbox')->where('id', $this->product->pack_box_id)->first(['name'])->name ?? '';
+                $this->product->pack_inner_id = DB::table('mspackaginginner')->where('id', $this->product->pack_inner_id)->first(['name'])->name ?? '';
+                $this->product->pack_layer_id = DB::table('mspackaginglayer')->where('id', $this->product->pack_layer_id)->first(['name'])->name ?? '';
+                $this->product->case_gaiso_count_unit = DB::table('msunit')->where('id', $this->product->case_gaiso_count_unit)->first(['name'])->name ?? '';
+                $this->product->case_box_count_unit = DB::table('msunit')->where('id', $this->product->case_box_count_unit)->first(['name'])->name ?? '';
+                $this->product->case_inner_count_unit = DB::table('msunit')->where('id', $this->product->case_inner_count_unit)->first(['name'])->name ?? '';
+                $this->product->lakbaninfureid = DB::table('mslakbaninfure')->where('id', $this->product->lakbaninfureid)->first(['name'])->name ?? '';
+                $this->product->lakbanseitaiid = DB::table('mslakbanseitai')->where('id', $this->product->lakbanseitaiid)->first(['name'])->name ?? '';
+                $this->product->stampelseitaiid = DB::table('msstampleseitai')->where('id', $this->product->stampelseitaiid)->first(['name'])->name ?? '';
+                $this->product->hagataseitaiid = DB::table('mshagataseitai')->where('id', $this->product->hagataseitaiid)->first(['name'])->name ?? '';
+                $this->product->jenissealseitaiid = DB::table('msjenissealseitai')->where('id', $this->product->jenissealseitaiid)->first(['name'])->name ?? '';
+                // dd($this->product);
+
+                // show modal
+                $this->dispatch('showModalNoOrder');
+            }
+        } else {
+            $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Order tidak boleh kosong']);
+        }
+    }
+
     public function addGentan()
     {
         $validatedData = $this->validate([
@@ -217,7 +272,7 @@ class EditSeitaiController extends Component
         $datas->product_assembly_id = $assembly->id;
         $datas->gentan_line = $this->gentan_line;
         $datas->lpk_id = $lpkid->id;
-        
+
         $datas->save();
 
         $this->dispatch('closeModalGentan');
@@ -235,7 +290,7 @@ class EditSeitaiController extends Component
         $datas->loss_seitai_id = $loss->id;
         $datas->berat_loss = $this->berat_loss;
         $datas->lpk_id = $lpkid->id;
-        
+
         $datas->save();
 
         $this->dispatch('closeModalLoss');
@@ -252,10 +307,10 @@ class EditSeitaiController extends Component
             DB::commit();
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Order Deleted successfully.']);
             return redirect()->route('nippo-infure');
-        } catch (\Exception $e) {            
+        } catch (\Exception $e) {
             DB::rollBack();
             $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
-        }  
+        }
     }
 
     public function save()
@@ -279,12 +334,12 @@ class EditSeitaiController extends Component
                 $data->employee_id_infure = $employeinfure->id;
             }
             $data->qty_produksi = $this->qty_produksi;
-            $data->nomor_palet = $this->nomor_palet; 
+            $data->nomor_palet = $this->nomor_palet;
             $data->nomor_lot = $this->nomor_lot;
-            $data->infure_berat_loss = $this->infure_berat_loss; 
+            $data->infure_berat_loss = $this->infure_berat_loss;
             $data->work_shift = $this->work_shift;
-            $data->work_hour = $this->work_hour;  
-            
+            $data->work_hour = $this->work_hour;
+
             $data->save();
 
             DB::commit();
@@ -293,7 +348,7 @@ class EditSeitaiController extends Component
         } catch (\Exception $e) {
             DB::rollBack();
             $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
-        } 
+        }
     }
 
     public function cancel()
@@ -307,7 +362,7 @@ class EditSeitaiController extends Component
             $tdorderlpk = DB::table('tdorderlpk as tolp')
             ->select(
                 'tolp.lpk_date',
-                'tolp.panjang_lpk',                
+                'tolp.panjang_lpk',
                 'tolp.created_on',
                 'tolp.qty_lpk',
                 'mp.code',

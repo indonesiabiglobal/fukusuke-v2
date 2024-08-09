@@ -70,7 +70,6 @@
                     <div class="col-12 col-lg-4 mt-1">
                         <div class="form-group">
                             <div class="input-group">
-                                {{-- <label class="control-label col-5 pe-2">Nomor Order</label> --}}
                                 <label class="control-label col-5 pe-2 fw-bold text-muted" style="text-decoration: underline;">
                                     <a href="#" data-bs-toggle="modal" wire:click="showModalNoOrder" class="text-muted">
                                         Nomor Order
@@ -1001,7 +1000,7 @@
 			window.open(printUrl, '_blank');
 		});
 
-
+        // show modal NoOrder Produk
         $wire.on('showModalNoOrder', () => {
             $('#modal-noorder-produk').modal('show');
         });
