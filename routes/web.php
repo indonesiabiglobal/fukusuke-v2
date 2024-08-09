@@ -222,35 +222,42 @@ Route::group(['middleware' => 'auth'], function () {
         $empname = $request->query('empname');
         return view('livewire.nippo-infure.report-gentan', compact('lpk_no', 'name', 'code', 'product_type_code', 'production_date', 'work_hour', 'work_shift', 'machineno', 'berat_produksi', 'nomor_han', 'nik', 'empname'));
     })->name('report-gentan');
-Route::get('/report-nippo-infure', function (Request $request) {
-    $tanggal = $request->query('tanggal');
-    return view('livewire.nippo-infure.report-nippo-infure', compact('tanggal'));
-})->name('report-nippo-infure');
+
+    Route::get('/report-nippo-infure', function (Request $request) {
+        $tanggal = $request->query('tanggal');
+        return view('livewire.nippo-infure.report-nippo-infure', compact('tanggal'));
+    })->name('report-nippo-infure');
 
     Route::get('/cetak-order', function (Request $request) {
         $orderId = $request->query('orderId');
         return view('livewire.order-lpk.cetak-order', compact('orderId'));
     })->name('cetak-order');
-Route::get('/report-checklist-seitai', function (Request $request) {
-    $tanggal = $request->query('tanggal');
-    return view('livewire.nippo-seitai.report-checklist-seitai', compact('tanggal'));
-})->name('report-checklist-seitai');
 
-Route::get('/report-gentan', function (Request $request) {
-    $lpk_no = $request->query('lpk_no');
-    $name = $request->query('name');
-    $code = $request->query('code');
-    $product_type_code = $request->query('product_type_code');
-    $production_date = $request->query('production_date');
-    $work_hour = $request->query('work_hour');
-    $work_shift = $request->query('work_shift');
-    $machineno = $request->query('machineno');
-    $berat_produksi = $request->query('berat_produksi');
-    $nomor_han = $request->query('nomor_han');
-    $nik = $request->query('nik');
-    $empname = $request->query('empname');
-    return view('livewire.nippo-infure.report-gentan', compact('lpk_no','name', 'code', 'product_type_code', 'production_date', 'work_hour', 'work_shift', 'machineno', 'berat_produksi', 'nomor_han', 'nik', 'empname'));
-})->name('report-gentan');
+    Route::get('/report-checklist-seitai', function (Request $request) {
+        $tanggal = $request->query('tanggal');
+        return view('livewire.nippo-seitai.report-checklist-seitai', compact('tanggal'));
+    })->name('report-checklist-seitai');
+
+    Route::get('/report-loss-seitai', function (Request $request) {
+        $tanggal = $request->query('tanggal');
+        return view('livewire.nippo-seitai.report-loss-seitai', compact('tanggal'));
+    })->name('report-loss-seitai');
+
+    Route::get('/report-gentan', function (Request $request) {
+        $lpk_no = $request->query('lpk_no');
+        $name = $request->query('name');
+        $code = $request->query('code');
+        $product_type_code = $request->query('product_type_code');
+        $production_date = $request->query('production_date');
+        $work_hour = $request->query('work_hour');
+        $work_shift = $request->query('work_shift');
+        $machineno = $request->query('machineno');
+        $berat_produksi = $request->query('berat_produksi');
+        $nomor_han = $request->query('nomor_han');
+        $nik = $request->query('nik');
+        $empname = $request->query('empname');
+        return view('livewire.nippo-infure.report-gentan', compact('lpk_no','name', 'code', 'product_type_code', 'production_date', 'work_hour', 'work_shift', 'machineno', 'berat_produksi', 'nomor_han', 'nik', 'empname'));
+    })->name('report-gentan');
 
     Route::get('/test', function () {
         return view('widgets');

@@ -21,11 +21,10 @@
                             <i class="ri-calendar-event-fill fs-4"></i>
                         </span>
 
-                        <input wire:model.defer="jamMasuk" type="text" class="form-control" data-provider="timepickr"
-                            data-time-hrs="true" id="timepicker-24hrs">
-                        <span class="input-group-text py-0">
-                            <i class="ri-time-line fs-4"></i>
-                        </span>
+                        <input wire:model.defer="jamMasuk" type="text" class="form-control" data-provider="timepickr" data-time-hrs="true" id="timepicker-24hrs">
+						<span class="input-group-text py-0">
+							<i class="ri-time-line fs-4"></i>
+						</span>
                     </div>
                 </div>
             </div>
@@ -41,11 +40,10 @@
                             <i class="ri-calendar-event-fill fs-4"></i>
                         </span>
 
-                        <input wire:model.defer="jamKeluar" type="text" class="form-control"
-                            data-provider="timepickr" data-time-hrs="true" id="timepicker-24hrs">
-                        <span class="input-group-text py-0">
-                            <i class="ri-time-line fs-4"></i>
-                        </span>
+                        <input wire:model.defer="jamKeluar" type="text" class="form-control" data-provider="timepickr" data-time-hrs="true" id="timepicker-24hrs">
+						<span class="input-group-text py-0">
+							<i class="ri-time-line fs-4"></i>
+						</span>
                     </div>
                 </div>
             </div>
@@ -53,7 +51,7 @@
         <div class="form-group mt-1">
             <div class="input-group">
                 <span class="input-group-addon col-12 col-lg-3 text-muted fw-bold">Jenis Report </span>
-                <select id="department" class="form-control" placeholder="- pilih jenis report -">
+                <select wire:model.defer="jenisReport" class="form-control" placeholder="- pilih jenis report -">
                     <option value="1">Check List</option>
                     <option value="2">Loss Seitai</option>
                 </select>
@@ -155,8 +153,13 @@
 </div>
 @script
     <script>
-        $wire.on('redirectToPrint', (datas) => {
+        $wire.on('printNippo', (datas) => {
             var printUrl = '{{ route('report-checklist-seitai') }}?tanggal=' + datas;
+            window.open(printUrl, '_blank');
+        });
+        
+        $wire.on('printSeitai', (datas) => {
+            var printUrl = '{{ route('report-loss-seitai') }}?tanggal=' + datas;
             window.open(printUrl, '_blank');
         });
     </script>
