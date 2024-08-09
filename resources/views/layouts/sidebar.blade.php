@@ -23,6 +23,10 @@
         </button>
     </div>
 
+    @php
+        $userRoles = auth()->user()->useraccessrole->pluck('rolename')->toArray();
+    @endphp
+
     <div id="scrollbar">
         <div class="container-fluid">
 
@@ -45,7 +49,7 @@
                             </li>
                             <li class="nav-item">
                                 <a href="dashboard-infure" class="nav-link" data-key="d-infure"> INFURE </a>
-                            </li>   
+                            </li>
                             <li class="nav-item">
                                 <a href="/dashboard-ppic" class="nav-link" data-key="dashboard-ppic"> PPIC </a>
                             </li>
@@ -57,7 +61,7 @@
                 </li>
 
                 {{-- <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">MENU</span></li> --}}
-
+                @if (in_array("Order", $userRoles) || in_array("Admin", $userRoles))
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#orderlpk" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="orderlpk">
                         <i class="ri-shopping-cart-2-line"></i> <span data-key="t-orderlpk">Order & LPK</span>
@@ -79,6 +83,9 @@
                         </ul>
                     </div>
                 </li>
+                @endif
+
+                @if (in_array("NippoInfure", $userRoles) || in_array("Admin", $userRoles))
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#nippoinfure" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="nippoinfure">
                         <i class="ri-settings-5-line"></i> <span data-key="t-pages">Nippo INFURE</span>
@@ -100,7 +107,9 @@
                         </ul>
                     </div>
                 </li>
+                @endif
 
+                @if (in_array("NippoSeitai", $userRoles) || in_array("Admin", $userRoles))
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#nipposeitai" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="nipposeitai">
                         <i class="ri-settings-5-line"></i> <span data-key="t-pages">Nippo SEITAI</span>
@@ -125,7 +134,9 @@
                         </ul>
                     </div>
                 </li>
+                @endif
 
+                @if (in_array("JamKerja", $userRoles) || in_array("Admin", $userRoles))
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#jamkerja" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="jamkerja">
                         <i class="ri-time-line"></i> <span data-key="t-pages">Jam Kerja</span>
@@ -141,7 +152,9 @@
                         </ul>
                     </div>
                 </li>
+                @endif
 
+                @if (in_array("Kenpin", $userRoles) || in_array("Admin", $userRoles))
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#kenpin" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="kenpin">
                         <i class="ri-film-line"></i> <span data-key="t-pages">Kenpin</span>
@@ -166,7 +179,9 @@
                         </ul>
                     </div>
                 </li>
+                @endif
 
+                @if (in_array("Warehouse", $userRoles) || in_array("Admin", $userRoles))
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#warehouse" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="warehouse">
                         <i class="bi bi-journal-medical"></i> <span data-key="t-pages">Warehouse</span>
@@ -182,7 +197,9 @@
                         </ul>
                     </div>
                 </li>
+                @endif
 
+                @if (in_array("Admin", $userRoles))
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#report" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="report">
                         <i class="ri-printer-line"></i> <span data-key="t-pages">Report</span>
@@ -198,7 +215,9 @@
                         </ul>
                     </div>
                 </li>
+                @endif
 
+                @if (in_array("Master", $userRoles) || in_array("Admin", $userRoles))
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#mastertabel" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="mastertabel">
                         <i class="bx bx-table"></i> <span data-key="t-pages">Master Tabel</span>
@@ -283,7 +302,9 @@
                         </ul>
                     </div>
                 </li>
+                @endif
 
+                @if (in_array("Admin", $userRoles))
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#administration" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="administration">
                         <i class="ri-admin-line"></i> <span data-key="t-pages">administration</span>
@@ -296,6 +317,7 @@
                         </ul>
                     </div>
                 </li>
+                @endif
             </ul>
         </div>
         <!-- Sidebar -->
