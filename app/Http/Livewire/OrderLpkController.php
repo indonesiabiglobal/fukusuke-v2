@@ -28,21 +28,6 @@ class OrderLpkController extends Component
     public $transaksi;
     public $status;
 
-    // Datatable
-    public $po_no = true;
-    public $pr_na = true;
-    public $ko_pr = true;
-    public $bu = true;
-    public $qt = true;
-    public $tgo = true;
-    public $et = true;
-    public $tgp = true;
-    public $no = true;
-    public $stf = false;
-    public $eta = false;
-    public $updated_by = false;
-    public $updated_on = false;
-
     use WithFileUploads;
     public $file;
 

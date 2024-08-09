@@ -193,11 +193,165 @@
         </div>
     </div>
 
-    <div class="col text-end dropdown" wire:ignore>
+    <div class="col text-end dropdown" x-data="{ 
+        lpk_date:true, lpk_panjang:true, lpk_jumlah:true, gentan_jumlah:true, gulung_meter:true, selisih:false, infure_progress:true, seitai_progress:true, produk_nama:false, produk_kode:true, mesin:false, buyer:false, proses_tanggal: true, seq: false, up_by: false, up_dt: false
+        }">
         <button type="button" data-bs-toggle="dropdown" aria-expanded="false" class="btn btn-soft-primary btn-icon fs-14 me-4 mb-4">
             <i class="ri-grid-fill"></i>
         </button>
-        {{-- <ul class="dropdown-menu dropdown-menu-end">
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li @click="lpk_date = !lpk_date; $refs.checkbox.checked = lpk_date" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="lpk_date = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="lpk_date"> 
+                Tanggal LPK
+            </li>
+            <li @click="lpk_panjang = !lpk_panjang; $refs.checkbox.checked = lpk_panjang" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="lpk_panjang = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="lpk_panjang"> 
+                Panjang LPK
+            </li>
+            <li @click="lpk_jumlah = !lpk_jumlah; $refs.checkbox.checked = lpk_jumlah" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="lpk_jumlah = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="lpk_jumlah"> 
+                Jumlah LPK
+            </li>
+            <li @click="gentan_jumlah = !gentan_jumlah; $refs.checkbox.checked = gentan_jumlah" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="gentan_jumlah = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="gentan_jumlah"> 
+                Jumlah Gentan
+            </li>
+            <li @click="gulung_meter = !gulung_meter; $refs.checkbox.checked = gulung_meter" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="gulung_meter = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="gulung_meter"> 
+                Meter Gulung
+            </li>
+            <li @click="selisih = !selisih; $refs.checkbox.checked = selisih" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="selisih = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="selisih"> 
+                Selisih
+            </li>
+            <li @click="infure_progress = !infure_progress; $refs.checkbox.checked = infure_progress" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="infure_progress = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="infure_progress"> 
+                Progress Infure
+            </li>
+            <li @click="seitai_progress = !seitai_progress; $refs.checkbox.checked = seitai_progress" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="seitai_progress = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="seitai_progress"> 
+                Progress Seitai
+            </li>
+            <li @click="produk_nama = !produk_nama; $refs.checkbox.checked = produk_nama" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="produk_nama = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="produk_nama"> 
+                Nama Produk
+            </li>
+            <li @click="produk_kode = !produk_kode; $refs.checkbox.checked = produk_kode" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="produk_kode = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="produk_kode"> 
+                Kode Produk
+            </li>
+            <li @click="mesin = !mesin; $refs.checkbox.checked = mesin" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="mesin = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="mesin"> 
+                Mesin
+            </li>
+            <li @click="buyer = !buyer; $refs.checkbox.checked = buyer" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="buyer = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="buyer"> 
+                Buyer
+            </li>
+            <li @click="proses_tanggal = !proses_tanggal; $refs.checkbox.checked = proses_tanggal" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="proses_tanggal = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="proses_tanggal"> 
+                Tanggal Proses
+            </li>
+            <li @click="seq = !seq; $refs.checkbox.checked = seq" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="seq = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="seq"> 
+                Seq
+            </li>
+            <li @click="by_update = !by_update; $refs.checkbox.checked = by_update" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="by_update = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="by_update"> 
+                Update By
+            </li>
+            <li @click="updated = !updated; $refs.checkbox.checked = updated" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="updated = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="updated"> 
+                Updated
+            </li>
+        </ul>
+    
+        <div class="table-responsive table-card">
+            <table class="table align-middle table-nowrap">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col" style="width: 10px;">
+                            <div class="form-check">
+                                <input class="form-check-input fs-15" type="checkbox" id="checkAll" value="optionAll">
+                            </div>
+                        </th>
+                        <th></th>
+                        <th>No LPK</th>
+                        <th x-show="lpk_date">Tgl LPK</th>
+                        <th x-show="lpk_panjang">Panjang LPK</th>
+                        <th x-show="lpk_jumlah">Jumlah LPK</th>
+                        <th x-show="gentan_jumlah">Jumlah Gentan</th>
+                        <th x-show="gulung_meter">Master Gulung</th>
+                        <th x-show="selisih">Selisih</th>
+                        <th x-show="infure_progress">Progres Infure</th>
+                        <th x-show="seitai_progress">Progres Seitai</th>
+                        <th>Nomor PO</th>
+                        <th x-show="produk_nama">Nama Produk</th>
+                        <th x-show="produk_kode">Kode Produk</th>
+                        <th x-show="mesin">Mesin</th>
+                        <th x-show="buyer">Buyer</th>
+                        <th>Warna LPK</th>
+                        <th x-show="proses_tanggal">Tanggal Proses</th>
+                        <th x-show="seq">seq</th>
+                        <th x-show="by_update">Update By</th>
+                        <th x-show="updated">Updated</th>
+                    </tr>
+                </thead>
+                <tbody class="list form-check-all">
+                    @forelse ($data as $item)
+                        <tr>
+                            <th scope="row">
+                                <div class="form-check">
+                                    <input class="form-check-input fs-15 checkListLPK" type="checkbox"
+                                        wire:model="checkListLPK" value="{{ $item->id }}">
+                                </div>
+                            </th>
+                            <td>
+                                <a href="/edit-lpk?orderId={{ $item->id }}"
+                                    class="link-success fs-15 p-1 bg-primary rounded">
+                                    <i class="ri-edit-box-line text-white"></i>
+                                </a>
+                            </td>
+                            <td>{{ $item->lpk_no }}</td>
+                            <td x-show="lpk_date">{{ $item->lpk_date }}</td>
+                            <td x-show="lpk_panjang">{{ $item->panjang_lpk }}</td>
+                            <td x-show="lpk_jumlah">{{ $item->qty_lpk }}</td>
+                            <td x-show="gentan_jumlah">{{ $item->qty_gentan }}</td>
+                            <td x-show="gulung_meter">{{ $item->qty_gulung }}</td>
+                            <td x-show="selisih">-</td>
+                            <td x-show="infure_progress">{{ $item->infure }}</td>
+                            <td x-show="seitai_progress">{{ $item->total_assembly_qty }}</td>
+                            <td>{{ $item->po_no }}</td>
+                            <td x-show="produk_nama">{{ $item->product_name }}</td>
+                            <td x-show="produk_kode">{{ $item->product_code }}</td>
+                            <td x-show="mesin">{{ $item->machine_no }}</td>
+                            <td x-show="buyer">{{ $item->buyer_name }}</td>
+                            <td>{{ $item->warnalpk }}</td>
+                            <td x-show="proses_tanggal">{{ $item->tglproses }}</td>
+                            <td x-show="seq">{{ $item->seq_no }}</td>
+                            <td x-show="by_update">{{ $item->updated_by }}</td>
+                            <td x-show="updated">{{ $item->updatedt }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="12" class="text-center">
+                                <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                                    colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
+                                <h5 class="mt-2">Sorry! No Result Found</h5>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+            {{ $data->links(data: ['scrollTo' => false]) }}
+        </div>
+    </div>
+
+    {{-- <div class="col text-end dropdown" wire:ignore>
+        <button type="button" data-bs-toggle="dropdown" aria-expanded="false" class="btn btn-soft-primary btn-icon fs-14 me-4 mb-4">
+            <i class="ri-grid-fill"></i>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
             <li>
                 <input class="form-check-input fs-15 ms-2" type="checkbox"
                 wire:model.live="po_no" value="{{ $po_no }}"> Tanggal LPK
@@ -262,9 +416,9 @@
                 <input class="form-check-input fs-15 ms-2" type="checkbox"
                 wire:model.live="updated_on" value="{{ $updated_on }}"> Updated
             </li>
-        </ul> --}}
-    </div>
-    <div class="table-responsive table-card">
+        </ul>
+    </div> --}}
+    {{-- <div class="table-responsive table-card">
         <table class="table align-middle">
             <thead class="table-light">
                 <tr>
@@ -330,7 +484,7 @@
             </tbody>
         </table>
         {{ $data->links() }}
-    </div>
+    </div> --}}
 </div>
 
 @script
