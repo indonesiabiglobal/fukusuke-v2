@@ -28,109 +28,94 @@
     </style>
 @endsection
 @section('content')
-    <div class="row">
-        <div class="col-12 col-md-6 col-lg-4">
-            <!-- card -->
-            <div class="card card-animate">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div class="flex-grow-1">
-                            <p class="text-uppercase fw-medium text-muted text-truncate fs-13">Total Produk Kenpin</p>
-                            <h4 class="fs-22 fw-semibold mb-3">$<span class="counter-value" data-target="745.35">0</span></h4>
-                            <div class="d-flex align-items-center gap-2">
-                                <h5 class="text-success fs-12 mb-0">
-                                    <i class="ri-arrow-right-up-line fs-13 align-middle"></i> +18.30 %
-                                </h5>
-                                <p class="text-muted mb-0">than last week</p>
-                            </div>
+<div class="row">
+    <div class="col">
+        <div class="h-100">
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="card">
+                        <div class="card-header border-0 align-items-center">
+                            <form action="{{ route('dashboard-infure') }}" method="get" class=" d-flex">
+                                <div class="input-group">
+                                    <input type="text" name="filterDate" id="filterDate" class="form-control"
+                                        data-provider="flatpickr" data-date-format="d-m-Y" data-range-date="true"
+                                        data-default-date="{{ $filterDate }}">
+                                    <span class="input-group-text py-0">
+                                        <i class="ri-calendar-event-fill fs-4"></i>
+                                    </span>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-load w-lg p-1">
+                                    <span>
+                                        <i class="ri-search-line"></i> Filter
+                                    </span>
+                                </button>
+                            </form>
                         </div>
-                        <div class="avatar-sm flex-shrink-0">
-                            <span class="avatar-title bg-success-subtle rounded fs-3">
-                                <i class="bx bx-dollar-circle text-success"></i>
-                            </span>
-                        </div>
-                    </div>
-                </div><!-- end card body -->
-                <div class="animation-effect-6 text-success opacity-25 fs-18">
-                    <i class="bi bi-currency-dollar"></i>
-                </div>
-                <div class="animation-effect-4 text-success opacity-25 fs-18">
-                    <i class="bi bi-currency-pound"></i>
-                </div>
-                <div class="animation-effect-3 text-success opacity-25 fs-18">
-                    <i class="bi bi-currency-euro"></i>
-                </div>
-            </div><!-- end card -->
-        </div><!-- end col -->
-
-        <div class="col-12 col-md-6 col-lg-4">
-            <!-- card -->
-            <div class="card card-animate">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div class="flex-grow-1">
-                            <p class="text-uppercase fw-medium text-muted text-truncate fs-13">Total Jenis Kenpin</p>
-                            <h4 class="fs-22 fw-semibold mb-3">$<span class="counter-value" data-target="745.35">0</span></h4>
-                            <div class="d-flex align-items-center gap-2">
-                                <h5 class="text-success fs-12 mb-0">
-                                    <i class="ri-arrow-right-up-line fs-13 align-middle"></i> +18.30 %
-                                </h5>
-                                <p class="text-muted mb-0">than last week</p>
-                            </div>
-                        </div>
-                        <div class="avatar-sm flex-shrink-0">
-                            <span class="avatar-title bg-success-subtle rounded fs-3">
-                                <i class="bx bx-dollar-circle text-success"></i>
-                            </span>
-                        </div>
-                    </div>
-                </div><!-- end card body -->
-                <div class="animation-effect-6 text-success opacity-25 fs-18">
-                    <i class="bi bi-currency-dollar"></i>
-                </div>
-                <div class="animation-effect-4 text-success opacity-25 fs-18">
-                    <i class="bi bi-currency-pound"></i>
-                </div>
-                <div class="animation-effect-3 text-success opacity-25 fs-18">
-                    <i class="bi bi-currency-euro"></i>
-                </div>
-            </div><!-- end card -->
-        </div><!-- end col -->
-
-        <div class="col-12 col-md-6 col-lg-4">
-            <!-- card -->
-            <div class="card card-animate">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div class="flex-grow-1">
-                            <p class="text-uppercase fw-medium text-muted text-truncate fs-13">Total Kasus</p>
-                            <h4 class="fs-22 fw-semibold mb-3">$<span class="counter-value" data-target="745.35">0</span></h4>
-                            <div class="d-flex align-items-center gap-2">
-                                <h5 class="text-success fs-12 mb-0">
-                                    <i class="ri-arrow-right-up-line fs-13 align-middle"></i> +18.30 %
-                                </h5>
-                                <p class="text-muted mb-0">than last week</p>
-                            </div>
-                        </div>
-                        <div class="avatar-sm flex-shrink-0">
-                            <span class="avatar-title bg-success-subtle rounded fs-3">
-                                <i class="bx bx-dollar-circle text-success"></i>
-                            </span>
-                        </div>
-                    </div>
-                </div><!-- end card body -->
-                <div class="animation-effect-6 text-success opacity-25 fs-18">
-                    <i class="bi bi-currency-dollar"></i>
-                </div>
-                <div class="animation-effect-4 text-success opacity-25 fs-18">
-                    <i class="bi bi-currency-pound"></i>
-                </div>
-                <div class="animation-effect-3 text-success opacity-25 fs-18">
-                    <i class="bi bi-currency-euro"></i>
-                </div>
-            </div><!-- end card -->
-        </div><!-- end col -->
+                    </div><!-- end card -->
+                </div><!-- end col -->
+            </div>
+        </div>
     </div>
+</div>
+<div class="row">
+    <div class="col-12 col-xl-6">
+        <div class="card">
+            <div class="card-header align-items-center d-flex">
+                <h4 class="card-title mb-0">Total Produk Kenpin</h4>
+            </div>
+            <div class="card-body">
+                <table id="scroll-infure"
+                    class="table table-bordered dt-responsive nowrap align-middle mdl-data-table" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Division</th>
+                            <th>Code</th>
+                            <th>Jumlah Loss</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($totalprodukkenpin as $data)
+                            <tr>
+                                <td>{{ $data->division_code }} </td>
+                                <td>{{ $data->product_code }}</td>
+                                <td>{{ $data->jumlahloss }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-xl-6">
+        <div class="card">
+            <div class="card-header align-items-center d-flex">
+                <h4 class="card-title mb-0">Total Produk Jenis Kenpin</h4>
+            </div>
+            <div class="card-body">
+                <table id="scroll-seitai"
+                    class="table table-bordered dt-responsive nowrap align-middle mdl-data-table" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Division</th>
+                            <th>Jenis</th>
+                            <th>Jumlah Loss</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($jenisprodukkenpin as $data)
+                            <tr>
+                                <td>{{ $data->division_code }} </td>
+                                <td>{{ $data->jenis }}</td>
+                                <td>{{ $data->jumlahloss }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('script')
@@ -179,357 +164,7 @@
                 "scrollCollapse": true,
                 "paging": false
             });
-
-            /*
-            Infure
-            */
-            let kadouJikanInfureMesin = @json($kadouJikanInfureMesin);
-
-
-            // Kadou Jikan Infure
-            Highcharts.chart('kadouJikanInfure', {
-                chart: {
-                    type: 'column'
-                },
-                title: {
-                    align: 'left',
-                    text: `<a href="#" id="kadouJikanTitle" class="text-muted">
-                               Hasil produksi per-jenis Infure EG-Arm-Gomi
-                            </a>`,
-                    useHTML: true
-                },
-                accessibility: {
-                    announceNewData: {
-                        enabled: true
-                    }
-                },
-                xAxis: {
-                    categories: ['HD EG', 'HD GOMI', 'HD ARM', 'LD GOMI'],
-                    crosshair: true,
-                    accessibility: {
-                        description: 'Countries'
-                    }
-                },
-                yAxis: {
-                    title: {
-                        text: 'Machine Running Rate'
-                    }
-
-                },
-                legend: {
-                    enabled: false
-                },
-                plotOptions: {
-                    series: {
-                        borderWidth: 0,
-                        dataLabels: {
-                            enabled: true,
-                            format: '{point.y:f}'
-                        },
-                        borderRadius: 8
-                    }
-                },
-
-                tooltip: {
-                    headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
-                    pointFormat: '<span style="color:{point.color};">{point.name}</span>: ' +
-                        '<b>{point.y:.2f}%</b> of total<br/>'
-                },
-
-                series: [
-                    {
-                        name: 'Corn',
-                        data: [53651639, 23938806, 1054159, 9881334]
-                    },
-                    {
-                        name: 'Wheat',
-                        data: [0, 40801, 21759, 1681]
-                    }
-                ]
-            });
-
-            document.getElementById('kadouJikanTitle').addEventListener('click', function() {
-                var myModal = new bootstrap.Modal(document.getElementById('modalListMesinInfure'));
-                myModal.show();
-            });
-
-            // Hasil Produksi Infure
-            let hasilProduksiInfure = @json($hasilProduksiInfure);
-            let linechartDatalabelColors = getChartColorsArray("hasilProduksiInfure");
-            if (linechartDatalabelColors) {
-                let options = {
-                    chart: {
-                        height: 380,
-                        type: 'line',
-                        zoom: {
-                            enabled: false
-                        },
-                        toolbar: {
-                            show: false
-                        }
-                    },
-                    colors: linechartDatalabelColors,
-                    dataLabels: {
-                        enabled: false,
-                    },
-                    stroke: {
-                        width: [3, 3],
-                        curve: 'straight'
-                    },
-                    series: [{
-                            name: "Tertinggi",
-                            data: hasilProduksiInfure.map(item => parseFloat(item.max))
-                        },
-                        {
-                            name: "Terendah",
-                            data: hasilProduksiInfure.map(item => parseFloat(item.min))
-                        }
-                    ],
-                    // title: {
-                    //     text: 'Hasil Produksi',
-                    //     align: 'left',
-                    //     style: {
-                    //         fontWeight: 500,
-                    //     },
-                    // },
-                    grid: {
-                        row: {
-                            colors: ['transparent',
-                                'transparent'
-                            ], // takes an array which will be repeated on columns
-                            opacity: 0.2
-                        },
-                        borderColor: '#f1f1f1'
-                    },
-                    markers: {
-                        style: 'inverted',
-                        size: 6
-                    },
-                    xaxis: {
-                        categories: hasilProduksiInfure.map(item => item.machine_no),
-                        title: {
-                            text: 'Nomer Mesin'
-                        }
-                    },
-                    yaxis: {
-                        title: {
-                            text: 'Hasil Produksi'
-                        },
-                        // min: 5,
-                        // max: 40
-                    },
-                    legend: {
-                        position: 'top',
-                        horizontalAlign: 'right',
-                        floating: true,
-                        offsetY: -25,
-                        offsetX: -5
-                    },
-                    responsive: [{
-                        breakpoint: 600,
-                        options: {
-                            chart: {
-                                toolbar: {
-                                    show: false
-                                }
-                            },
-                            legend: {
-                                show: false
-                            },
-                        }
-                    }]
-                }
-
-                let chart = new ApexCharts(
-                    document.querySelector("#hasilProduksiInfure"),
-                    options
-                );
-                chart.render();
-            }
-            // end Hasil Produksi Infure
-
-            // Loss Infure
-            let lossInfure = @json($lossInfure);
-            let linechartBasicColors = getChartColorsArray("lossInfure");
-            if (linechartBasicColors) {
-                let options = {
-                    series: [{
-                        name: "Berat Loss",
-                        data: lossInfure.lossInfure.map(item => parseFloat(item.berat_loss).toFixed(2))
-                    }],
-                    chart: {
-                        height: 350,
-                        type: 'line',
-                        zoom: {
-                            enabled: false
-                        },
-                        toolbar: {
-                            show: false
-                        }
-                    },
-                    markers: {
-                        size: 4,
-                    },
-                    dataLabels: {
-                        enabled: false
-                    },
-                    stroke: {
-                        curve: 'straight'
-                    },
-                    colors: linechartBasicColors,
-                    // title: {
-                    //     text: 'Product Trends by Month',
-                    //     align: 'left',
-                    //     style: {
-                    //         fontWeight: 500,
-                    //     },
-                    // },
-
-                    xaxis: {
-                        categories: lossInfure.lossInfure.map(item => item.loss_name),
-                    }
-                };
-
-                let chart = new ApexCharts(document.querySelector("#lossInfure"), options);
-                chart.render();
-            }
-
-            // pie chart presentase loss
-            let chartPieBasicColors = getChartColorsArray("presentaseLossInfure");
-            if (chartPieBasicColors) {
-                let options = {
-                    series: lossInfure.lossInfure.map(item => parseFloat(parseFloat(item.berat_loss / lossInfure
-                        .totalLossInfure * 100).toFixed(2))),
-                    chart: {
-                        height: 300,
-                        type: 'pie',
-                    },
-                    labels: lossInfure.lossInfure.map(item => item.loss_name),
-                    legend: {
-                        position: 'bottom'
-                    },
-                    dataLabels: {
-                        dropShadow: {
-                            enabled: false,
-                        }
-                    },
-                    colors: chartPieBasicColors
-                };
-
-                let chart = new ApexCharts(document.querySelector("#presentaseLossInfure"),
-                    options);
-                chart.render();
-            }
-            // end Loss Infure
-
-            // top loss infure
-            let topLossInfure = @json($topLossInfure);
-            let html = '';
-            topLossInfure.map((item, index) => {
-                html += `<li class="list-group-item ps-0">
-                            <div class="row align-items-center g-3">
-                                <div class="col-auto">
-                                    <div class="avatar-sm p-1 py-2 h-auto bg-light rounded-3">
-                                        <div class="text-center">
-                                            <h5 class="mb-0">${index + 1}</h5>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <h5 class="text-muted mt-0 mb-1 fs-13">
-                                        <span class="badge text bg-primary">LOSS</span> ${item.loss_name}
-                                    </h5>
-                                    <a href="#" class="text-reset fs-14 mb-0">
-                                        <span class="badge text bg-danger">Berat</span> ${parseFloat(item.berat_loss).toFixed(3)}
-                                    </a>
-                                </div>
-                            </div>
-                        </li>`;
-            });
-            $('#topLossInfure').html(html);
-
-
-            // Growth Chart - Radial Bar Chart
-            // --------------------------------------------------------------------
-            
-            //  end top loss infure
         });
-
-        // Counter Table Infure
-        let courterTroubleInfure = @json($counterTroubleInfure);
-        var chartColumnRotateLabelsColors = getChartColorsArray("courterTroubleInfure");
-        if (chartColumnRotateLabelsColors) {
-            var options = {
-                series: [{
-                    name: 'Counter Loss',
-                    data: courterTroubleInfure.map(item => parseFloat(item.counterloss))
-                }],
-                // annotations: {
-                //     points: [{
-                //         x: 'Bananas',
-                //         seriesIndex: 0,
-                //         label: {
-                //             borderColor: '#775DD0',
-                //             offsetY: 0,
-                //             style: {
-                //                 color: '#fff',
-                //                 background: '#775DD0',
-                //             },
-                //             text: 'Bananas are good',
-                //         }
-                //     }]
-                // },
-                chart: {
-                    height: 350,
-                    type: 'bar',
-                    toolbar: {
-                        show: false,
-                    }
-                },
-                plotOptions: {
-                    bar: {
-                        borderRadius: 10,
-                        columnWidth: '50%',
-                    }
-                },
-                dataLabels: {
-                    enabled: false
-                },
-                stroke: {
-                    width: 2
-                },
-                colors: chartColumnRotateLabelsColors,
-                xaxis: {
-                    labels: {
-                        rotate: -45
-                    },
-                    categories: courterTroubleInfure.map(item => item.loss_name),
-                    tickPlacement: 'on'
-                },
-                yaxis: {
-                    title: {
-                        text: 'Servings',
-                    },
-                },
-                fill: {
-                    type: 'gradient',
-                    gradient: {
-                        shade: 'light',
-                        type: "horizontal",
-                        shadeIntensity: 0.25,
-                        gradientToColors: undefined,
-                        inverseColors: true,
-                        opacityFrom: 0.85,
-                        opacityTo: 0.85,
-                        stops: [50, 0, 100]
-                    },
-                }
-            };
-
-            var chart = new ApexCharts(document.querySelector("#courterTroubleInfure"),
-                options);
-            chart.render();
-        }
         // end Counter Table Infure
     </script>
 @endsection
