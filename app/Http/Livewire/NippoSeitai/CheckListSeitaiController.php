@@ -13,6 +13,8 @@ class CheckListSeitaiController extends Component
 {
     public $tglMasuk;
     public $tglKeluar;
+    public $jamMasuk;
+    public $jamKeluar;
     public $machine;
     public $noprosesawal;
     public $noprosesakhir;

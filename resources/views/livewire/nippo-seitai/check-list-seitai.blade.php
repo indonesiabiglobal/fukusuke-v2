@@ -16,7 +16,7 @@
                     <div class="input-group">
                         <span class="input-group-addon col-12 col-lg-2 text-muted fw-bold">Awal: </span>
                         <input wire:model.defer="tglMasuk" type="text" class="form-control" style="padding:0.44rem"
-                            data-provider="flatpickr" data-date-format="d/m/Y">
+                            data-provider="flatpickr" data-date-format="Y-m-d">
                         <span class="input-group-text py-0">
                             <i class="ri-calendar-event-fill fs-4"></i>
                         </span>
@@ -35,7 +35,7 @@
                     <div class="input-group">
                         <span class="input-group-addon col-12 col-lg-2 text-muted fw-bold">Akhir: </span>
                         <input wire:model.defer="tglKeluar" type="text" class="form-control" style="padding:0.44rem"
-                            data-provider="flatpickr" data-date-format="d/m/Y">
+                            data-provider="flatpickr" data-date-format="Y-m-d">
                         <span class="input-group-text py-0">
                             <i class="ri-calendar-event-fill fs-4"></i>
                         </span>
@@ -157,7 +157,7 @@
             var printUrl = '{{ route('report-checklist-seitai') }}?tanggal=' + datas;
             window.open(printUrl, '_blank');
         });
-        
+
         $wire.on('printSeitai', (datas) => {
             var printUrl = '{{ route('report-loss-seitai') }}?tanggal=' + datas;
             window.open(printUrl, '_blank');
