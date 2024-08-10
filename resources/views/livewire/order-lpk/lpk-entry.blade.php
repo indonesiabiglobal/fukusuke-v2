@@ -194,7 +194,7 @@
     </div>
 
     <div class="col text-end dropdown" x-data="{ 
-        lpk_date:true, lpk_panjang:true, lpk_jumlah:true, gentan_jumlah:true, gulung_meter:true, selisih:false, infure_progress:true, seitai_progress:true, produk_nama:false, produk_kode:true, mesin:false, buyer:false, proses_tanggal: true, seq: false, up_by: false, up_dt: false
+        lpk_date:true, lpk_panjang:true, lpk_jumlah:true, gentan_jumlah:true, gulung_meter:true, selisih:false, infure_progress:true, seitai_progress:true, produk_nama:false, produk_kode:true, mesin:false, buyer:false, proses_tanggal: true, seq: false, by_update: false, updated: false
         }">
         <button type="button" data-bs-toggle="dropdown" aria-expanded="false" class="btn btn-soft-primary btn-icon fs-14 me-4 mb-4">
             <i class="ri-grid-fill"></i>
