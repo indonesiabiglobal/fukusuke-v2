@@ -272,8 +272,8 @@
                             <td x-show="eta">{{ $item->etadate }}</td>
                             <td x-show="tgp">{{ $item->processdate }}</td>
                             <td x-show="num">{{ $no++ }}</td>    
-                            <td x-show="up_by">{{ $updated_by }}</td>  
-                            <td x-show="up_dt">{{ $updated_on }}</td>
+                            <td x-show="up_by">{{ $item->updated_by }}</td>  
+                            <td x-show="up_dt">{{ $item->updated_on }}</td>
                         </tr>
                     @empty
                         <tr>
