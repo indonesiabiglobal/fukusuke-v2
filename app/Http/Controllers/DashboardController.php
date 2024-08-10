@@ -104,14 +104,12 @@ class DashboardController extends Controller
             $endDate = Carbon::now()->format('d-m-Y');
             $requestFilterDate = $startDate . ' to ' . $endDate;
         }
-        $divisionCodeInfure = MsDepartment::where('name', 'INFURE')->first()->division_code;
-        $divisionCodeSeitai = MsDepartment::where('name', 'SEITAI')->first()->division_code;
 
         $data = [
             'filterDate' => $requestFilterDate,
 
-            'totalprodukkenpin' => $this->getTotalProdukKenpin(),
-            'jenisprodukkenpin' => $this->getJenisProdukKenpin(),
+            'totalprodukkenpin' => $this->getTotalProdukKenpin($startDate, $endDate),
+            'jenisprodukkenpin' => $this->getJenisProdukKenpin($startDate, $endDate,),
 
         ];
         return view('dashboard.dashboard-qc', $data);
@@ -376,7 +374,7 @@ class DashboardController extends Controller
 
         return $topLossSeitai;
     }
-    public function getTotalProdukKenpin()
+    public function getTotalProdukKenpin($startDate, $endDate)
     {
         $totalProdukKenpin = DB::select("
         select
@@ -387,7 +385,7 @@ class DashboardController extends Controller
         left join tdkenpin_assembly_detail as kenpin on kenpinhdr.id = kenpin.kenpin_assembly_id
         inner join tdproduct_assembly as asyx on kenpin.product_assembly_id = asyx.id
         inner join msproduct as prd on asyx.product_id = prd.id
-        where kenpinhdr.kenpin_date ='2018-11-30'
+        where kenpinhdr.kenpin_date = ?
         group by prd.name
 
         union all
@@ -399,14 +397,17 @@ class DashboardController extends Controller
         left join tdkenpin_goods_detail as kenpin on kenpinhdr.id = kenpin.kenpin_goods_id
         left join tdproduct_goods as gdsx on kenpin.product_goods_id = gdsx.id
         left join msproduct as prd on kenpinhdr.product_id = prd.id
-        where kenpinhdr.kenpin_date ='2022-11-01'
+        where kenpinhdr.kenpin_date = ?
         and  kenpinhdr.status_kenpin = 2
         group by prd.name
-        ");
+        ", [
+            $startDate,
+            $endDate,
+        ]);
 
         return $totalProdukKenpin;
     }
-    public function getJenisProdukKenpin()
+    public function getJenisProdukKenpin($startDate, $endDate)
     {
         $jenisProdukKenpin = DB::select("
         select
@@ -417,7 +418,7 @@ class DashboardController extends Controller
         left join tdkenpin_assembly_detail as kenpin on kenpinhdr.id = kenpin.kenpin_assembly_id
         inner join tdproduct_assembly as asyx on kenpin.product_assembly_id = asyx.id
         inner join msproduct as prd on asyx.product_id = prd.id
-        where kenpinhdr.kenpin_date ='2018-11-30'
+        where kenpinhdr.kenpin_date = ?
         group by kenpinhdr.remark
         union all
         select
@@ -428,9 +429,12 @@ class DashboardController extends Controller
         left join tdkenpin_goods_detail as kenpin on kenpinhdr.id = kenpin.kenpin_goods_id
         left join tdproduct_goods as gdsx on kenpin.product_goods_id = gdsx.id
         left join msproduct as prd on kenpinhdr.product_id = prd.id
-        where kenpinhdr.kenpin_date ='2022-11-01'
+        where kenpinhdr.kenpin_date = ?
         group by kenpinhdr.remark
-        ");
+        ", [
+            $startDate,
+            $endDate,
+        ]);
 
         return $jenisProdukKenpin;
     }

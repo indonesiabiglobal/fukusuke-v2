@@ -123,7 +123,7 @@
             </div>            
         </div>
     </div>
-    <div class="col-lg-2">
+    <div class="col-lg-2 mt-2">
         <button class="btn btn-info w-lg p-1" wire:click="print" type="button">
             <span wire:loading.remove wire:target="print">
                 <i class="ri-printer-line"> </i> Print
