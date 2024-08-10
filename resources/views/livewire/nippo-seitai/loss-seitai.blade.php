@@ -132,7 +132,152 @@
             </div>            
         </div>
     </div>
-    <div class="table-responsive table-card mt-3 mb-1">
+
+    <div class="col text-end dropdown" x-data="{ 
+        lpk_date:false, lpk_jumlah:true, produksi_jumlah:true, selisih:false, seitai_loss:true, loss:false, produk_nama:false, order_nomor:true,
+        mesin:true, produksi_tanggal: true, proses_tanggal:true, jam:true, shift:true, palet_nomor:false, lot_nomor:false, seq:true, by_update:false, updated:false
+        }">
+        <button type="button" data-bs-toggle="dropdown" aria-expanded="false" class="btn btn-soft-primary btn-icon fs-14 mt-2 mb-4">
+            <i class="ri-grid-fill"></i>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li @click="lpk_date = !lpk_date; $refs.checkbox.checked = lpk_date" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="lpk_date = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="lpk_date"> 
+                Tanggal LPK
+            </li>
+            <li @click="lpk_jumlah = !lpk_jumlah; $refs.checkbox.checked = lpk_jumlah" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="lpk_jumlah = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="lpk_jumlah"> 
+                Jumlah LPK
+            </li>
+            <li @click="produksi_jumlah = !produksi_jumlah; $refs.checkbox.checked = produksi_jumlah" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="produksi_jumlah = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="produksi_jumlah"> 
+                Jumlah Produksi
+            </li>
+            <li @click="selisih = !selisih; $refs.checkbox.checked = selisih" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="selisih = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="selisih"> 
+                Selisih
+            </li>
+            <li @click="seitai_loss = !seitai_loss; $refs.checkbox.checked = seitai_loss" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="seitai_loss = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="seitai_loss"> 
+                Loss Seitai
+            </li>
+            <li @click="infure_loss = !infure_loss; $refs.checkbox.checked = infure_loss" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="infure_loss = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="infure_loss"> 
+                Loss Infure
+            </li>
+            <li @click="produk_nama = !produk_nama; $refs.checkbox.checked = produk_nama" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="produk_nama = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="produk_nama"> 
+                Nama Produk
+            </li>
+            <li @click="order_nomor = !order_nomor; $refs.checkbox.checked = order_nomor" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="order_nomor = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="order_nomor"> 
+                Nomor Order
+            </li>
+            <li @click="mesin = !mesin; $refs.checkbox.checked = mesin" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="mesin = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="mesin"> 
+                Mesin
+            </li>
+            <li @click="produksi_tanggal = !produksi_tanggal; $refs.checkbox.checked = produksi_tanggal" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="produksi_tanggal = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="produksi_tanggal"> 
+                Tanggal Produksi
+            </li>
+            <li @click="proses_tanggal = !proses_tanggal; $refs.checkbox.checked = proses_tanggal" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="proses_tanggal = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="proses_tanggal"> 
+                Tanggal Proses
+            </li>
+            <li @click="shift = !shift; $refs.checkbox.checked = shift" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="shift = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="shift"> 
+                Shift
+            </li>
+            <li @click="palet_nomor = !palet_nomor; $refs.checkbox.checked = palet_nomor" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="palet_nomor = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="palet_nomor"> 
+                Nomor Palet
+            </li>
+            <li @click="lot_nomor = !lot_nomor; $refs.checkbox.checked = lot_nomor" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="lot_nomor = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="lot_nomor"> 
+                Nomor Lot
+            </li>
+            <li @click="seq = !seq; $refs.checkbox.checked = seq" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="seq = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="seq"> 
+                Seq
+            </li>
+            <li @click="by_update = !by_update; $refs.checkbox.checked = by_update" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="by_update = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="by_update"> 
+                Update By
+            </li>
+            <li @click="updated = !updated; $refs.checkbox.checked = updated" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="updated = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="updated"> 
+                Updated
+            </li>            
+        </ul>
+    
+        <div class="table-responsive table-card">
+            <table class="table align-middle table-nowrap">
+                <thead class="table-light">
+                    <tr>
+                        <th></th>
+                        <th>Nomor LPK</th>
+                        <th x-show="lpk_date">Tgl. LPK</th>
+                        <th x-show="lpk_jumlah">Jml. LPK</th>
+                        <th x-show="produksi_jumlah">Jml. Produksi</th>
+                        <th x-show="selisih">Selisih</th>
+                        <th x-show="seitai_loss">Loss Seitai</th>
+                        <th x-show="infure_loss">Loss Infure</th>
+                        <th x-show="produk_nama">Nama Produk</th>
+                        <th x-show="order_nomor">Nomor Order</th>
+                        <th x-show="mesin">Mesin</th>
+                        <th x-show="produksi_tanggal">Tanggal Produksi</th>
+                        <th x-show="proses_tanggal">Tanggal Proses</th>
+                        <th x-show="shift">Shift</th>
+                        <th x-show="palet_nomor">No Palet</th>
+                        <th x-show="lot_nomor">No Lot</th>
+                        <th x-show="seq">Seq</th>
+                        <th x-show="by_update">Update By</th>
+                        <th x-show="updated">Updated</th>
+                    </tr>
+                </thead>
+                <tbody class="list form-check-all">
+                    @forelse ($data as $item)
+                        <tr>
+                            <td>
+                                <a href="/edit-seitai?orderId={{ $item->id }}" class="link-success fs-15 p-1 bg-primary rounded">
+                                    <i class="ri-edit-box-line text-white"></i>
+                                </a>
+                            </td>
+                            <td>{{ $item->lpk_no }}</td>
+                            <td x-show="lpk_date">{{ $item->lpk_date }}</td>
+                            <td x-show="lpk_jumlah">{{ $item->qty_lpk }}</td>
+                            <td x-show="produksi_jumlah">{{ $item->qty_produksi }}</td>
+                            <td x-show="selisih"> </td>
+                            <td x-show="seitai_loss">{{ $item->seitai_berat_loss }}</td>
+                            <td x-show="infure_loss">{{ $item->infure_berat_loss }}</td>
+                            <td x-show="produk_nama">{{ $item->product_name }}</td>
+                            <td x-show="order_nomor">{{ $item->order_id }}</td>
+                            <td x-show="mesin">{{ $item->machine_id }}</td>
+                            <td x-show="produksi_tanggal">{{ $item->production_date }}</td>
+                            <td x-show="proses_tanggal">{{ $item->production_date }}</td>
+                            <td x-show="shift">{{ $item->work_shift }}</td>
+                            <td x-show="palet_nomor">{{ $item->nomor_palet }}</td>
+                            <td x-show="lot_nomor">{{ $item->nomor_lot }}</td>
+                            <td x-show="seq">{{ $item->seq_no }}</td>
+                            <td x-show="by_update">{{ $item->updated_by }}</td>
+                            <td x-show="updated">{{ $item->updated_on }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="12" class="text-center">
+                                <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
+                                <h5 class="mt-2">Sorry! No Result Found</h5>
+                                <p class="text-muted mb-0">We've searched more than 150+ Orders We did not find any orders for you search.</p>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+            {{ $data->links(data: ['scrollTo' => false]) }}
+        </div>
+    </div>
+    {{-- <div class="table-responsive table-card mt-3 mb-1">
         <table class="table align-middle table-nowrap" id="customerTable" style="width:100%">
             <thead class="table-light">
                 <tr>
@@ -186,5 +331,5 @@
             </tbody>
         </table>
         {{ $data->links() }}
-    </div>
+    </div> --}}
 </div>

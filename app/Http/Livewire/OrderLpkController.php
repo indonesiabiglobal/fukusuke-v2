@@ -32,6 +32,19 @@ class OrderLpkController extends Component
     public $file;
 
     use WithPagination, WithoutUrlPagination;
+    public $searchParam = '';
+    public $perPage = 10;
+    public $sortField = 'id';
+    public $sortDirection = 'asc';
+
+    public function sortBy($field){
+        if($this->sortField === $field){
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortField = $field;
+            $this->sortDirection = 'desc';
+        }
+    }
 
     public function mount()
     {
@@ -92,7 +105,8 @@ class OrderLpkController extends Component
                      'tod.stufingdate', 'tod.etddate', 'tod.etadate',
                      'tod.processdate', 'tod.processseq', 'tod.updated_by', 'tod.updated_on')
             ->leftjoin('msproduct AS mp', 'mp.id', '=', 'tod.product_id')
-            ->leftjoin('msbuyer AS mbu', 'mbu.id', '=', 'tod.buyer_id');
+            ->leftjoin('msbuyer AS mbu', 'mbu.id', '=', 'tod.buyer_id')
+            ->orderBy($this->sortField, $this->sortDirection);
 
         if($this->transaksi == 2){
             if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
@@ -131,7 +145,6 @@ class OrderLpkController extends Component
         if (isset($this->status) && $this->status['value'] != "" && $this->status != "undefined") {
             $data = $data->where('tod.status_order', $this->status);
         }
-
         $data = $data->paginate(8);
 
         return view('livewire.order-lpk.order-lpk', [
