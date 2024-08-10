@@ -66,23 +66,18 @@ class DashboardController extends Controller
             $requestFilterDate = $startDate . ' to ' . $endDate;
         }
         $divisionCodeInfure = MsDepartment::where('name', 'INFURE')->first()->division_code;
-        $divisionCodeSeitai = MsDepartment::where('name', 'SEITAI')->first()->division_code;
 
         $data = [
             'filterDate' => $requestFilterDate,
 
-            'pertipeinfure' => $this->getPerTipeInfure(),
-            'pertipeseitai' => $this->getPerTipeSeitai(),
-            'hasilproduksiinfure' => $this->getHasilProduksiInfure(),
-            'hasilproduksiseitai' => $this->getHasilProduksiSeitai(),
+            'pertipeinfure' => $this->getPerTipeInfure($startDate, $endDate),
+            'pertipeseitai' => $this->getPerTipeSeitai($startDate, $endDate),
+            'hasilproduksiinfure' => $this->getHasilProduksiInfure($startDate, $endDate),
+            'hasilproduksiseitai' => $this->getHasilProduksiSeitai($startDate, $endDate),
             
 
-            'listMachineInfure' => $this->getListMachineInfure($startDate, $endDate, $divisionCodeInfure),
             'kadouJikanInfureMesin' => $this->getKadouJikanInfure($startDate, $endDate, $divisionCodeInfure),
             'topLossInfure' => $this->getTopLossInfure($startDate, $endDate, $divisionCodeInfure),
-            'listMachineSeitai' => $this->getListMachineSeitai($startDate, $endDate, $divisionCodeSeitai),
-            'kadouJikanSeitaiMesin' => $this->getkadouJikanSeitai($startDate, $endDate, $divisionCodeSeitai),
-            'topLossSeitai' => $this->getTopLossSeitai($startDate, $endDate, $divisionCodeSeitai),
 
         ];
         return view('dashboard.dashboard-ppic', $data);
@@ -438,7 +433,7 @@ class DashboardController extends Controller
 
         return $jenisProdukKenpin;
     }
-    public function getPerTipeInfure()
+    public function getPerTipeInfure($startDate, $endDate)
     {
         $perTipeInfure = DB::select("
         SELECT MAX
@@ -451,15 +446,18 @@ class DashboardController extends Controller
             INNER JOIN msProduct AS prd ON asy.product_id = prd.
             ID INNER JOIN msProduct_type AS prTip ON prd.product_type_id = prTip.ID 
         WHERE
-            asy.production_date BETWEEN '2024-07-01 00:00:00' 
-            AND '2024-07-04 23:59:00' 
+            asy.production_date BETWEEN ? 
+            AND ? 
         GROUP BY
             prTip.ID
-        ");
+        ", [
+            $startDate,
+            $endDate,
+        ]);
 
         return $perTipeInfure;
     }
-    public function getPerTipeSeitai()
+    public function getPerTipeSeitai($startDate, $endDate)
     {
         $perTipeSeitai = DB::select("
         SELECT 
@@ -478,13 +476,16 @@ class DashboardController extends Controller
         ) ponsu ON good.id = ponsu.product_goods_id
         INNER JOIN msProduct AS prd ON good.product_id = prd.id 
         INNER JOIN msProduct_type AS prT ON prd.product_type_id = prT.id 
-        WHERE good.production_date BETWEEN '2024-07-04 00:00:00' AND '2024-07-04 23:59:00'
+        WHERE good.production_date BETWEEN ? AND ?
         GROUP BY prT.id;
-        ");
+        ", [
+            $startDate,
+            $endDate,
+        ]);
 
         return $perTipeSeitai;
     }
-    public function getHasilProduksiInfure()
+    public function getHasilProduksiInfure($startDate, $endDate)
     {
         $hasilProduksiInfure = DB::select("
         SELECT x.bulan, round(x.berat_produksi) as berat_produksi from(
@@ -507,7 +508,7 @@ class DashboardController extends Controller
 
         return $hasilProduksiInfure;
     }
-    public function getHasilProduksiSeitai()
+    public function getHasilProduksiSeitai($startDate, $endDate)
     {
         $hasilProduksiSeitai = DB::select("
         SELECT 
