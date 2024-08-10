@@ -212,6 +212,9 @@
                             <li class="nav-item">
                                 <a href="detail-report" class="nav-link" data-key="t-starter"> Detail Report </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="production-loss-report" class="nav-link" data-key="t-starter"> Production Loss Report </a>
+                            </li>
                         </ul>
                     </div>
                 </li>
