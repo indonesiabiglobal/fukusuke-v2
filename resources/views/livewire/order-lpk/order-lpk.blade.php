@@ -172,7 +172,7 @@
     <div class="col text-end dropdown" x-data="{ 
         po_no:true, na_pr:true, ko_pr:true, bu:true, qt:true, tgo:true, stf:false, etd:true, eta:false, tgp:true, num:true, up_by: false, up_dt: false
         }">
-        <button type="button" data-bs-toggle="dropdown" aria-expanded="false" class="btn btn-soft-primary btn-icon fs-14 me-4 mb-4">
+        <button type="button" data-bs-toggle="dropdown" aria-expanded="false" class="btn btn-soft-primary btn-icon fs-14 mb-4">
             <i class="ri-grid-fill"></i>
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
@@ -231,11 +231,13 @@
         </ul>
     
         <div class="table-responsive table-card">
-            <table class="table align-middle">
+            <table class="table table-bordered align-middle dt-responsive mdl-data-table" style="overflow-x: :scroll">
                 <thead class="table-light">
                     <tr>
                         <th></th>
-                        <th x-show="po_no">PO Number</th>
+                        <th x-show="po_no" wire:click='sortBy("id")'>PO Number
+                            <i class="ri-arrow-up-line"></i>
+                        </th>
                         <th x-show="na_pr">Nama Produk</th>
                         <th x-show="ko_pr">Kode Produk</th>
                         <th x-show="bu">Buyer</th>
@@ -288,5 +290,6 @@
             {{ $data->links(data: ['scrollTo' => false]) }}
         </div>
     </div>
+    
     {{-- <livewire:tdorder/> --}}
 </div>

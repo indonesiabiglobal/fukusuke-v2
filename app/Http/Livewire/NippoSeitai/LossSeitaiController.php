@@ -89,9 +89,11 @@ class LossSeitaiController extends Component
                 'tdol.qty_gentan AS qty_gentan',
                 'tdol.qty_gulung AS qty_gulung',
                 'tdol.qty_lpk AS qty_lpk',
-                'tdol.total_assembly_qty AS total_assembly_qty'
+                'tdol.total_assembly_qty AS total_assembly_qty',
+                'mp.name AS product_name'
             ])
             ->join('tdorderlpk AS tdol', 'tdpg.lpk_id', '=', 'tdol.id')
+            ->leftJoin('msproduct AS mp', 'mp.id', '=', 'tdol.product_id')
             ->leftJoin('tdproduct_goods_assembly AS tga', 'tga.product_goods_id', '=', 'tdpg.id')
             ->leftJoin('tdproduct_assembly AS ta', 'ta.id', '=', 'tga.product_assembly_id');
 
@@ -166,9 +168,11 @@ class LossSeitaiController extends Component
                 'tdol.qty_gentan AS qty_gentan',
                 'tdol.qty_gulung AS qty_gulung',
                 'tdol.qty_lpk AS qty_lpk',
-                'tdol.total_assembly_qty AS total_assembly_qty'
+                'tdol.total_assembly_qty AS total_assembly_qty',
+                'mp.name AS product_name'
             )
-            ->join('tdorderlpk AS tdol', 'tdpg.lpk_id', '=', 'tdol.id');
+            ->join('tdorderlpk AS tdol', 'tdpg.lpk_id', '=', 'tdol.id')
+            ->leftJoin('msproduct AS mp', 'mp.id', '=', 'tdol.product_id');
 
             if (isset($this->tglMasuk) && $this->tglMasuk != '') {
                 $data = $data->where('tdpg.production_date', '>=', $this->tglMasuk);
