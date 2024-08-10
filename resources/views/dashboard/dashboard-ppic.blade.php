@@ -35,7 +35,7 @@
                     <div class="col-xl-12">
                         <div class="card">
                             <div class="card-header border-0 align-items-center">
-                                <form action="{{ route('dashboard') }}" method="get" class=" d-flex">
+                                <form action="{{ route('dashboard-ppic') }}" method="get" class=" d-flex">
                                     <div class="input-group">
                                         <input type="text" name="filterDate" id="filterDate" class="form-control"
                                             data-provider="flatpickr" data-date-format="d-m-Y" data-range-date="true"
