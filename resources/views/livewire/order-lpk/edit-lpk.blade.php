@@ -222,29 +222,35 @@
                     </div>
                 </button>
 
-                <button type="button" class="btn btn-danger" wire:click="delete">
-                    <i class="ri-delete-bin-line"></i> Delete
-                </button>
+                @if ($status_lpk == 0)
+                    <button type="button" class="btn btn-danger" wire:click="delete">
+                        <i class="ri-delete-bin-line"></i> Delete
+                    </button>
 
-                <button type="submit" class="btn btn-success w-lg">
-                    <span wire:loading.remove wire:target="save">
-                        <i class="ri-save-3-line"></i> Update
-                    </span>
-                    <div wire:loading wire:target="save">
-                        <span class="d-flex align-items-center">
-                            <span class="spinner-border flex-shrink-0" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </span>
-                            <span class="flex-grow-1 ms-1">
-                                Loading...
-                            </span>
+                    <button type="submit" class="btn btn-success w-lg">
+                        <span wire:loading.remove wire:target="save">
+                            <i class="ri-save-3-line"></i> Update
                         </span>
-                    </div>
-                </button>
+                        <div wire:loading wire:target="save">
+                            <span class="d-flex align-items-center">
+                                <span class="spinner-border flex-shrink-0" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </span>
+                                <span class="flex-grow-1 ms-1">
+                                    Loading...
+                                </span>
+                            </span>
+                        </div>
+                    </button>
 
-                <button type="button" class="btn btn-success btn-print" wire:click="print">
-                    <i class="bx bx-printer"></i> Print
-                </button>
+                    <button type="button" class="btn btn-success btn-print" wire:click="print">
+                        <i class="bx bx-printer"></i> Print
+                    </button>
+                @endif
+                @if ($status_lpk == 1)
+                    <p class="text-secondary mb-0">Data LPK Sudah Di Produksi ! ..</p>
+                @endif
+                
             </div>
         </div>
 
