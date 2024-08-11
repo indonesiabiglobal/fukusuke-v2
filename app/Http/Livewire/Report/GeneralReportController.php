@@ -316,6 +316,15 @@ class GeneralReportController extends Component
                     return response()->download($file);
                 }
                 break;
+            case 'Daftar Produksi Per Tipe Per Mesin':
+                if ($this->nipon == 'Infure') {
+                    $file = $this->daftarProduksiPerTipePerMesinInfure($tglMasuk, $tglKeluar);
+                    return response()->download($file);
+                } else {
+                    $file = $this->daftarProduksiPerTipePerMesinSeitai($tglMasuk, $tglKeluar);
+                    return response()->download($file);
+                }
+                break;
         }
     }
 
@@ -323,6 +332,7 @@ class GeneralReportController extends Component
     {
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
+        $activeWorksheet->setShowGridlines(false);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER MESIN INFURE');
@@ -670,6 +680,7 @@ class GeneralReportController extends Component
     {
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
+        $activeWorksheet->setShowGridlines(false);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER MESIN SEITAI');
@@ -1054,6 +1065,398 @@ class GeneralReportController extends Component
 
         // size auto
         $spreadsheet->getActiveSheet()->getColumnDimension('C')->setAutoSize(true);
+
+        $writer = new Xlsx($spreadsheet);
+        $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
+        $writer->save($filename);
+        return $filename;
+    }
+
+    public function daftarProduksiPerTipePerMesinInfure($tglMasuk, $tglKeluar)
+    {
+        $spreadsheet = new Spreadsheet();
+        $activeWorksheet = $spreadsheet->getActiveSheet();
+        $activeWorksheet->setShowGridlines(false);
+
+        // Judul
+        $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER TIPE PER MESIN INFURE');
+        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        // Style Judul
+        phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
+
+        // Header
+        $columnTipeProduk = 'A';
+        $columnTipeProdukEnd = 'B';
+        $spreadsheet->getActiveSheet()->mergeCells($columnTipeProduk . '3:' . $columnTipeProdukEnd . '3');
+        $activeWorksheet->setCellValue('A3', 'Tipe Produk');
+
+        $columnMesin = 'C';
+        $columnMesinEnd = 'D';
+        $spreadsheet->getActiveSheet()->mergeCells($columnMesin . '3:' . $columnMesinEnd . '3');
+        $activeWorksheet->setCellValue('B3', 'Mesin');
+
+        // header
+        $rowHeaderStart = 3;
+        $columnHeaderStart = 'E';
+        $columnHeaderEnd = 'E';
+        $header = [
+            'Berat Standar (Kg)',
+            'Berat Produksi (Kg)',
+            'Weight Rate',
+            'Infure Cost',
+            'Loss (Kg)',
+            'Loss (%)',
+            'Panjang Infure (meter)',
+            'Panjang Inline Printing (meter)',
+            'Inline Printing Cost',
+            'Process Cost',
+        ];
+
+        foreach ($header as $key => $value) {
+            $activeWorksheet->setCellValue($columnHeaderEnd . $rowHeaderStart, $value);
+            $columnHeaderEnd++;
+        }
+        $columnHeaderEnd = chr(ord($columnHeaderEnd) - 1);
+
+        // style header
+        phpspreadsheet::addFullBorder($spreadsheet, $columnTipeProduk . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
+        phpspreadsheet::styleFont($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart, true, 9, 'Calibri');
+        phpspreadsheet::textAlignCenter($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
+
+        $data = DB::select("
+            select max(dep.name) AS department_name,
+                max(dep.id) AS department_id,
+                max(prTip.id) AS product_type_id,
+                max(prTip.name) AS product_type_name,
+                max(mac.machineNo) AS machine_no,
+                max(mac.machineName) AS machine_name,
+                SUM(asy.berat_standard) AS berat_standard,
+                SUM(asy.berat_produksi) AS berat_produksi,
+                SUM(asy.infure_cost) AS infure_cost,
+                SUM(asy.infure_berat_loss) AS infure_berat_loss,
+                SUM(asy.panjang_produksi) AS panjang_produksi,
+                SUM(asy.panjang_printing_inline) AS panjang_printing_inline,
+                SUM(asy.infure_cost_printing) AS infure_cost_printing
+            FROM tdProduct_Assembly AS asy
+            left JOIN msMachine AS mac ON asy.machine_id = mac.id
+            left JOIN msDepartment AS dep ON mac.department_id = dep.id
+            left JOIN msProduct AS prd ON asy.product_id = prd.id
+            left JOIN msProduct_type AS prTip ON prd.product_type_id = prTip.id
+            WHERE asy.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
+            GROUP BY dep.id, asy.machine_id, prTip.id
+        ");
+
+        $listDepartment = array_reduce($data, function ($carry, $item) {
+            $carry[$item->department_id] = [
+                'department_id' => $item->department_id,
+                'department_name' => $item->department_name
+            ];
+            return $carry;
+        }, []);
+
+        $listProductType = array_reduce($data, function ($carry, $item) {
+            $carry[$item->department_id][$item->product_type_id] = [
+                'product_type_id' => $item->product_type_id,
+                'product_type_name' => $item->product_type_name
+            ];
+            return $carry;
+        }, []);
+
+        // list mesin berdasarkan tanggal pertama dan departemen
+        $listMachine = array_reduce($data, function ($carry, $item) {
+            $carry[$item->product_type_id][$item->machine_no] = $item->machine_name;
+            return $carry;
+        }, []);
+
+        $dataFilter = array_reduce($data, function ($carry, $item) {
+            $carry[$item->department_id][$item->product_type_id][$item->machine_no] = $item;
+            return $carry;
+        }, []);
+
+        // index
+        $startColumnItem = 'A';
+        $endColumnItem = $columnHeaderEnd;
+        $startColumnItemData = 'E';
+        $columnMachineNo = 'C';
+        $columnMachineName = 'D';
+        $startRowItem = 5;
+        $rowItem = $startRowItem;
+        // daftar departemen
+        foreach ($listDepartment as $department) {
+            // Menulis data departemen
+            $activeWorksheet->setCellValue($startColumnItem . $rowItem, $department['department_name']);
+            $spreadsheet->getActiveSheet()->mergeCells($startColumnItem . $rowItem . ':' . $endColumnItem . $rowItem);
+            phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $rowItem, true, 9, 'Calibri');
+            $rowItem++;
+
+            // daftar tipe produk
+            foreach ($listProductType[$department['department_id']] as $productType) {
+                $spreadsheet->getActiveSheet()->mergeCells($startColumnItem . $rowItem . ':' . $endColumnItem . $rowItem);
+                $activeWorksheet->setCellValue($startColumnItem . $rowItem, $productType['product_type_name']);
+                phpspreadsheet::styleFont($spreadsheet, $columnMachineNo . $rowItem, false, 8, 'Calibri');
+                // daftar mesin
+                foreach ($listMachine[$productType['product_type_id']] as $machineNo => $machineName) {
+                    $columnItem = $startColumnItemData;
+
+                    // Menulis data mesin
+                    $spreadsheet->getActiveSheet()->setCellValue($columnMachineNo . $rowItem, $machineNo);
+                    $spreadsheet->getActiveSheet()->setCellValue($columnMachineName . $rowItem, $machineName);
+                    // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
+
+                    // memasukkan data
+                    $dataItem = $dataFilter[$department['department_id']][$productType['product_type_id']][$machineNo] ?? (object)[
+                        'berat_standard' => 0,
+                        'berat_produksi' => 0,
+                        'infure_cost' => 0,
+                        'infure_berat_loss' => 0,
+                        'panjang_produksi' => 0,
+                        'panjang_printing_inline' => 0,
+                        'infure_cost_printing' => 0
+                    ];
+                    // berat standar
+                    $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->berat_standard);
+                    phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                    $columnItem++;
+                    // berat produksi
+                    $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->berat_produksi);
+                    phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                    $columnItem++;
+                    // weight rate
+                    $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->berat_standard > 0 ? $dataItem->berat_produksi / $dataItem->berat_standard : 0);
+                    phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowItem);
+                    $columnItem++;
+                    // infure cost
+                    $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->infure_cost);
+                    phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                    $columnItem++;
+                    // loss
+                    $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->infure_berat_loss);
+                    phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                    $columnItem++;
+                    // loss %
+                    $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->berat_produksi > 0 ? $dataItem->infure_berat_loss / $dataItem->berat_produksi : 0);
+                    phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowItem);
+                    $columnItem++;
+                    // panjang infure
+                    $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->panjang_produksi);
+                    phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                    $columnItem++;
+                    // panjang inline printing
+                    $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->panjang_printing_inline);
+                    phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                    $columnItem++;
+                    // inline printing cost
+                    $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->infure_cost_printing);
+                    phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                    $columnItem++;
+                    // process cost
+                    $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->infure_cost + $dataItem->infure_cost_printing);
+                    phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                    phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
+                    $columnItem++;
+
+                    phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem, false, 8, 'Calibri');
+                    $rowItem++;
+                }
+                // perhitungan jumlah berdasarkan type produk
+                $spreadsheet->getActiveSheet()->mergeCells($columnMachineNo . $rowItem . ':' . $columnMachineName . $rowItem);
+                // $activeWorksheet->setCellValue($columnMachineNo . $rowItem, 'Total ' . $department['department_name']);
+                $columnItem = $startColumnItemData;
+                $columnItemEnd = chr(ord($columnItem) + count($header) - 1);
+                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productType['product_type_id']]) + 1) . ':' . $columnItem . ($rowItem - 1) . ')');
+                phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                $columnItem++;
+                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productType['product_type_id']]) + 1) . ':' . $columnItem . ($rowItem - 1) . ')');
+                phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                $columnItem++;
+                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productType['product_type_id']]) + 1) . ':' . $columnItem . ($rowItem - 1) . ')/COUNTIF(' . $columnItem . ($rowItem - count($listMachine[$productType['product_type_id']]) + 1) . ':' . $columnItem . ($rowItem - 1) . ', "<>0")');
+                phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowItem);
+                $columnItem++;
+                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productType['product_type_id']]) + 1) . ':' . $columnItem . ($rowItem - 1) . ')');
+                phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                $columnItem++;
+                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productType['product_type_id']]) + 1) . ':' . $columnItem . ($rowItem - 1) . ')');
+                phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                $columnItem++;
+                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productType['product_type_id']]) + 1) . ':' . $columnItem . ($rowItem - 1) . ')/COUNTIF(' . $columnItem . ($rowItem - count($listMachine[$productType['product_type_id']]) + 1) . ':' . $columnItem . ($rowItem - 1) . ', "<>0")');
+                phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowItem);
+                $columnItem++;
+                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productType['product_type_id']]) + 1) . ':' . $columnItem . ($rowItem - 1) . ')');
+                phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                $columnItem++;
+                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productType['product_type_id']]) + 1) . ':' . $columnItem . ($rowItem - 1) . ')');
+                phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                $columnItem++;
+                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productType['product_type_id']]) + 1) . ':' . $columnItem . ($rowItem - 1) . ')');
+                phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                $columnItem++;
+                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productType['product_type_id']]) + 1) . ':' . $columnItem . ($rowItem - 1) . ')');
+                phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                phpspreadsheet::addFullBorder($spreadsheet, $columnMachineNo . $rowItem . ':' . $columnItem . $rowItem);
+                $columnItem++;
+                phpspreadsheet::styleFont($spreadsheet, $columnMachineNo . $rowItem . ':' . $columnHeaderEnd . $rowItem, true, 8, 'Calibri');
+
+                $rowItem++;
+            }
+            // total berdasarkan departemen
+            $columnTotalDepartment = $startColumnItem;
+            $columnTotalDepartmentEnd = 'D';
+            $spreadsheet->getActiveSheet()->mergeCells($startColumnItem . $rowItem . ':' . $columnTotalDepartmentEnd . $rowItem);
+            $activeWorksheet->setCellValue($columnTotalDepartment . $rowItem, 'Total');
+            phpspreadsheet::styleFont($spreadsheet, $columnTotalDepartment . $rowItem . ':' . $columnHeaderEnd . $rowItem, true, 8, 'Calibri');
+
+            $columnItem = $startColumnItemData;
+            $columnItemEnd = chr(ord($columnItem) + count($header) - 1);
+            $totalByDepartment = array_reduce(
+                array_keys($listProductType[$department['department_id']]),
+                function ($carry, $productType) use ($dataFilter, $department) {
+                    $dataItems = $dataFilter[$department['department_id']][$productType] ?? [];
+
+                    foreach ($dataItems as $item) {
+                        $carry['berat_standard'] += $item->berat_standard;
+                        $carry['berat_produksi'] += $item->berat_produksi;
+                        $carry['infure_cost'] += $item->infure_cost;
+                        $carry['infure_berat_loss'] += $item->infure_berat_loss;
+                        $carry['panjang_produksi'] += $item->panjang_produksi;
+                        $carry['panjang_printing_inline'] += $item->panjang_printing_inline;
+                        $carry['infure_cost_printing'] += $item->infure_cost_printing;
+                    }
+
+                    return $carry;
+                },
+                [
+                    'berat_standard' => 0,
+                    'berat_produksi' => 0,
+                    'infure_cost' => 0,
+                    'infure_berat_loss' => 0,
+                    'panjang_produksi' => 0,
+                    'panjang_printing_inline' => 0,
+                    'infure_cost_printing' => 0
+                ]
+            );
+
+            // berat standar
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, array_sum(array_column($totalByDepartment, 'berat_standard')));
+            phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // berat produksi
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, array_sum(array_column($totalByDepartment, 'berat_produksi')));
+            phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // weight rate
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, array_sum(array_column($totalByDepartment, 'berat_produksi')) > 0 ? array_sum(array_column($totalByDepartment, 'berat_produksi')) / array_sum(array_column($totalByDepartment, 'berat_standard')) : 0);
+            phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // infure cost
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, array_sum(array_column($totalByDepartment, 'infure_cost')));
+            phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // loss
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, array_sum(array_column($totalByDepartment, 'infure_berat_loss')));
+            phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // loss %
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, array_sum(array_column($totalByDepartment, 'berat_produksi')) > 0 ? array_sum(array_column($totalByDepartment, 'infure_berat_loss')) / array_sum(array_column($totalByDepartment, 'berat_produksi')) : 0);
+            phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // panjang infure
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, array_sum(array_column($totalByDepartment, 'panjang_produksi')));
+            phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // panjang inline printing
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, array_sum(array_column($totalByDepartment, 'panjang_printing_inline')));
+            phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // inline printing cost
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, array_sum(array_column($totalByDepartment, 'infure_cost_printing')));
+            phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // process cost
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, array_sum(array_column($totalByDepartment, 'infure_cost')) + array_sum(array_column($totalByDepartment, 'infure_cost_printing')));
+            phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            phpspreadsheet::styleFont($spreadsheet, $columnMachineNo . $rowItem . ':' . $columnItem . $rowItem, true, 8, 'Calibri');
+            phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
+            $columnItem++;
+
+            $rowItem++;
+            $rowItem++;
+        }
+
+        // Grand total
+        $rowGrandTotal = $rowItem;
+        $spreadsheet->getActiveSheet()->mergeCells($startColumnItem . $rowGrandTotal . ':' . $columnMachineName . $rowGrandTotal);
+        $spreadsheet->getActiveSheet()->setCellValue($startColumnItem . $rowGrandTotal, 'GRAND TOTAL');
+        phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $rowGrandTotal . ':' . $columnHeaderEnd . $rowGrandTotal, true, 8, 'Calibri');
+        // $this->addFullBorder($spreadsheet, $columnMachineNo . $rowGrandTotal . ':' . $columnValueAvg . $rowGrandTotal);
+
+        $grandTotal = array_reduce(array_keys($listDepartment), function ($carry, $department) use ($dataFilter, $listProductType) {
+            $productType = $listProductType[$department];
+            foreach ($productType as $type) {
+                $dataItem = $dataFilter[$department][$type['product_type_id']] ?? [];
+                $carry['berat_standard'] += array_sum(array_column($dataItem, 'berat_standard'));
+                $carry['berat_produksi'] += array_sum(array_column($dataItem, 'berat_produksi'));
+                $carry['infure_cost'] += array_sum(array_column($dataItem, 'infure_cost'));
+                $carry['infure_berat_loss'] += array_sum(array_column($dataItem, 'infure_berat_loss'));
+                $carry['panjang_produksi'] += array_sum(array_column($dataItem, 'panjang_produksi'));
+                $carry['panjang_printing_inline'] += array_sum(array_column($dataItem, 'panjang_printing_inline'));
+                $carry['infure_cost_printing'] += array_sum(array_column($dataItem, 'infure_cost_printing'));
+            }
+            return $carry;
+        }, [
+            'berat_standard' => 0,
+            'berat_produksi' => 0,
+            'infure_cost' => 0,
+            'infure_berat_loss' => 0,
+            'panjang_produksi' => 0,
+            'panjang_printing_inline' => 0,
+            'infure_cost_printing' => 0
+        ]);
+
+        $columnItem = $startColumnItemData;
+        $columnItemEnd = chr(ord($columnItem) + count($header) - 1);
+        // berat standar
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_standard']);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        // berat produksi
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_produksi']);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        // weight rate
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_standard'] > 0 ? $grandTotal['berat_produksi'] / $grandTotal['berat_standard'] : 0);
+        phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        // infure cost
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['infure_cost']);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        // loss
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['infure_berat_loss']);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        // loss %
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_produksi'] > 0 ? $grandTotal['infure_berat_loss'] / $grandTotal['berat_produksi'] : 0);
+        phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        // panjang infure
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['panjang_produksi']);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        // panjang inline printing
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['panjang_printing_inline']);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        // inline printing cost
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['infure_cost_printing']);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        // process cost
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['infure_cost'] + $grandTotal['infure_cost_printing']);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowGrandTotal . ':' . $columnItem . $rowGrandTotal);
+        $columnItem++;
+
+        $activeWorksheet->getStyle($columnMesin . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart)->getAlignment()->setWrapText(true);
 
         $writer = new Xlsx($spreadsheet);
         $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
