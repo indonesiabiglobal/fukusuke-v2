@@ -110,21 +110,21 @@ class NippoInfureController extends Component
         ->join('msmachine AS msm', 'msm.id', '=', 'tda.machine_id')
         ->join('tdorder AS tdo', 'tdol.order_id', '=', 'tdo.id');
 
-        if($this->transaksi == 2){
+        if($this->transaksi == 2){            
             if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
-                $data = $data->where('tda.production_date', '>=', $this->tglMasuk);
+                $data = $data->where('tda.created_on', '>=', $this->tglMasuk . " 00:00:00");
             }
     
             if (isset($this->tglKeluar) && $this->tglKeluar != "" && $this->tglKeluar != "undefined") {
-                $data = $data->where('tda.production_date', '<=', $this->tglKeluar);
+                $data = $data->where('tda.created_on', '<=', $this->tglKeluar . " 23:59:59");
             }
         } else {
             if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
-                $data = $data->where('tda.created_on', '>=', $this->tglMasuk);
+                $data = $data->where('tda.production_date', '>=', $this->tglMasuk . " 00:00:00");
             }
     
             if (isset($this->tglKeluar) && $this->tglKeluar != "" && $this->tglKeluar != "undefined") {
-                $data = $data->where('tda.created_on', '<=', $this->tglKeluar);
+                $data = $data->where('tda.production_date', '<=', $this->tglKeluar . " 23:59:59");
             }
         }
 
