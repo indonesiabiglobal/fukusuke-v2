@@ -30,7 +30,8 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label pe-2">Tanggal Proses</label>
-                                <input class="form-control datepicker-input" type="date" wire:model.defer="created_on" placeholder="yyyy/mm/dd"/>
+                                {{-- <input class="form-control datepicker-input" type="date" wire:model.defer="created_on" placeholder="yyyy/mm/dd"/> --}}
+                                <input class="form-control readonly datepicker-input bg-light" readonly="readonly" type="date" wire:model.defer="created_on" placeholder="yyyy/mm/dd"/>
                                 @error('created_on')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -302,7 +303,7 @@
                             </span>
                         </div>
                     </button>
-                    <button id="btnFilter" type="button" class="btn btn-danger" wire:click="destroy">
+                    <button type="button" class="btn btn-danger" wire:click="destroy">
                         <span wire:loading.remove wire:target="destroy">
                             <i class="ri-delete-bin-line"> </i> delete
                         </span>
@@ -317,7 +318,7 @@
                             </span>
                         </div>
                     </button>
-                    <button type="submit" class="btn btn-success">
+                    <button type="button" class="btn btn-success" wire:click="save">
                         <span wire:loading.remove wire:target="save">
                             <i class="ri-save-3-line"></i> Save
                         </span>

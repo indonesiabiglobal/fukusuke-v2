@@ -224,6 +224,9 @@ class AddNippoController extends Component
             $machine = MsMachine::where('machineno', $this->machineno)->first();
             $employe = MsEmployee::where('employeeno', $this->employeeno)->first();
             $products = MsProduct::where('code', $this->code)->first();
+            $maxGentan = TdProductAssembly::where('lpk_id', $lpkid->id)
+            ->orderBy('gentan_no', 'DESC')
+            ->first();
 
             $totalAssembly = DB::select("
             SELECT
@@ -254,6 +257,9 @@ class AddNippoController extends Component
             $product->work_hour = $this->work_hour;
             $product->lpk_id = $lpkid->id;
             $product->seq_no = $seqno;
+            if($this->gentan_no == 0){
+                $this->gentan_no = $maxGentan->gentan_no + 1;
+            }
             $product->gentan_no = $this->gentan_no;
             $product->nomor_han = $this->nomor_han;
             $product->product_id = $products->id;
