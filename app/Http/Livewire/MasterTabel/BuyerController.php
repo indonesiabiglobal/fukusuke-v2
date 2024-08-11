@@ -8,9 +8,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Livewire\Component;
+use Livewire\WithPagination;
+use Livewire\WithoutUrlPagination;
 
 class BuyerController extends Component
 {
+    protected $paginationTheme = 'bootstrap';
     public $buyers;
     public $searchTerm;
     public $code;
@@ -20,6 +23,21 @@ class BuyerController extends Component
     public $country;
     public $idUpdate;
     public $idDelete;
+
+    use WithPagination, WithoutUrlPagination;
+    // public $searchParam = '';
+    public $perPage = 10;
+    public $sortField = 'id';
+    public $sortDirection = 'asc';
+
+    public function sortBy($field){
+        if($this->sortField === $field){
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortField = $field;
+            $this->sortDirection = 'desc';
+        }
+    }
 
     protected $rules = [
         'code' => 'required',
@@ -150,21 +168,44 @@ class BuyerController extends Component
 
     public function search()
     {
-        $this->buyers = MsBuyer::select('id', 'code', 'name', 'address', 'country', 'status', 'updated_by', 'updated_on')
-            ->when(isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined", function ($query) {
-                $query->where(function ($queryWhere) {
-                    $queryWhere->where('code', 'ilike', "%" . $this->searchTerm . "%")
-                        ->orWhere('name', 'ilike', "%" . $this->searchTerm . "%")
-                        ->orWhere('address', 'ilike', "%" . $this->searchTerm . "%")
-                        ->orWhere('country', 'ilike', "%" . $this->searchTerm . "%");
-                });
-            })
-            ->get();
+        $this->resetPage();
         $this->render();
+
+        // $this->buyers = MsBuyer::select('id', 'code', 'name', 'address', 'country', 'status', 'updated_by', 'updated_on')
+        //     ->when(isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined", function ($query) {
+        //         $query->where(function ($queryWhere) {
+        //             $queryWhere->where('code', 'ilike', "%" . $this->searchTerm . "%")
+        //                 ->orWhere('name', 'ilike', "%" . $this->searchTerm . "%")
+        //                 ->orWhere('address', 'ilike', "%" . $this->searchTerm . "%")
+        //                 ->orWhere('country', 'ilike', "%" . $this->searchTerm . "%");
+        //         });
+        //     })
+        //     ->get();
+        // $this->render();
     }
 
     public function render()
     {
-        return view('livewire.master-tabel.buyer')->extends('layouts.master');
+        $data = DB::table('msbuyer AS mb')
+            ->select('mb.id', 'mb.code', 'mb.name', 'mb.address', 'mb.country', 'mb.status', 'mb.updated_by', 'mb.updated_on')
+            ->orderBy($this->sortField, $this->sortDirection);
+
+            if (isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined") {
+                $data = $data->where(function($query) {
+                    $query->where('mb.code', 'ilike', "%{$this->searchTerm}%")
+                          ->orWhere('mb.name', 'ilike', "%{$this->searchTerm}%")
+                          ->orWhere('mb.address', 'ilike', "%{$this->searchTerm}%")
+                          ->orWhere('mb.country', 'ilike', "%{$this->searchTerm}%");
+                });
+            }  
+
+            $data = $data->paginate(8);  
+            
+            return view('livewire.master-tabel.buyer', [
+                'buyers' => $data,
+            ])->extends('layouts.master');
+        
+
+        // return view('livewire.master-tabel.buyer')->extends('layouts.master');
     }
 }
