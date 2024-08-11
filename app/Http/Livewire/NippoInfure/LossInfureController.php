@@ -94,8 +94,10 @@ class LossInfureController extends Component
             'tdol.qty_lpk AS qty_lpk',
             'tdol.total_assembly_line AS total_assembly_line',
             'tdol.total_assembly_qty AS total_assembly_qty',
+            'mp.name AS product_name'
         ])
         ->join('tdorderlpk AS tdol', 'tdpa.lpk_id', '=', 'tdol.id')
+        ->leftJoin('msproduct AS mp', 'mp.id', '=', 'tdol.product_id')
         ->join('msmachine AS msm', 'msm.id', '=', 'tdpa.machine_id');
 
         if($this->transaksi == 2){

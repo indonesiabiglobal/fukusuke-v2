@@ -103,8 +103,10 @@ class NippoInfureController extends Component
             'tdol.total_assembly_qty AS total_assembly_qty',
             'msm.machineno',
             'tdo.product_code',
+            'mp.name AS product_name'
         ])
         ->join('tdorderlpk AS tdol', 'tda.lpk_id', '=', 'tdol.id')
+        ->leftJoin('msproduct AS mp', 'mp.id', '=', 'tdol.product_id')
         ->join('msmachine AS msm', 'msm.id', '=', 'tda.machine_id')
         ->join('tdorder AS tdo', 'tdol.order_id', '=', 'tdo.id');
 
