@@ -268,7 +268,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Nomor Gentan</label>
-                                <input type="text" class="form-control readonly bg-light" readonly="readonly" wire:model="gentan_no" />
+                                <input type="text" class="form-control" wire:model="gentan_no" />
                             </div>
                         </div>
                     </div>
