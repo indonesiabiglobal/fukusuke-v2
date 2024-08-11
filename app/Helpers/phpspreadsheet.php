@@ -4,7 +4,7 @@ namespace App\Helpers;
 
 class phpspreadsheet
 {
-    public function addFullBorder($spreadsheet, $range, $borderStyle = \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN, $color = 'FF000000')
+    public static function addFullBorder($spreadsheet, $range, $borderStyle = \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN, $color = 'FF000000')
     {
         $spreadsheet->getActiveSheet()->getStyle($range)->applyFromArray([
             'borders' => [
@@ -65,11 +65,18 @@ class phpspreadsheet
         ]);
     }
 
-    public function numberFormatCommaSeparated($spreadsheet, $range)
+    public static function numberFormatCommaSeparated($spreadsheet, $range)
     {
         $spreadsheet->getActiveSheet()->getStyle($range)
             ->getNumberFormat()
             ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+    }
+
+    public static function numberFormatThousands($spreadsheet, $range)
+    {
+        $spreadsheet->getActiveSheet()->getStyle($range)
+            ->getNumberFormat()
+            ->setFormatCode('#,###');
     }
 
     public static function textAlignCenter($spreadsheet, $range)
