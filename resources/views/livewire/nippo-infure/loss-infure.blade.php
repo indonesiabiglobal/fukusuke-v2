@@ -138,7 +138,7 @@
         selisih:false, produk_nama:false, order_nomor:true, mesin:true, produksi_tanggal:true, proses_tanggal:true, jam:true, shift:true,
         seq:true, loss:false, by_update:false, updated:false,
         }">
-        <button type="button" data-bs-toggle="dropdown" aria-expanded="false" class="btn btn-soft-primary btn-icon fs-14 mt-2 mb-4">
+        <button type="button" data-bs-toggle="dropdown" aria-expanded="false" class="btn btn-soft-primary btn-icon fs-14 mb-4">
             <i class="ri-grid-fill"></i>
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
@@ -250,7 +250,7 @@
                     @forelse ($data as $item)
                         <tr>
                             <td>
-                                <a href="/edit-nippo?orderId={{ $item->id }}&status=editLoss" class="link-success fs-15 p-1 bg-primary rounded">
+                                <a href="/edit-nippo?orderId={{ $item->id }}&status=true" class="link-success fs-15 p-1 bg-primary rounded">
                                     <i class="ri-edit-box-line text-white"></i>
                                 </a>
                             </td>

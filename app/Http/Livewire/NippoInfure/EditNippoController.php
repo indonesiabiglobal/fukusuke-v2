@@ -55,6 +55,7 @@ class EditNippoController extends Component
 
     // data LPK
     public $orderLPK;
+    public $statusEditLoss=false;
 
     public function mount(Request $request)
     {
@@ -112,8 +113,8 @@ class EditNippoController extends Component
         )
         ->where('tda.id', $request->query('orderId'))
         ->first();
-        // dd($orderId);
 
+        $this->statusEditLoss = $request->query('status');
         $this->orderId = $request->query('orderId');
         $this->production_no = $data->production_no;
         $this->production_date = Carbon::parse($data->production_date)->format('Y-m-d');

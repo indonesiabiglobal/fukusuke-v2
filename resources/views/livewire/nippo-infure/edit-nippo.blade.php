@@ -286,8 +286,9 @@
                     <i class="ri-add-line"></i> Add Loss Infure
                 </button>
             </div>
+            
             <div class="col-lg-5">
-                <div class="toolbar">
+                <div class="toolbar float-end">
                     <button type="button" class="btn btn-warning" wire:click="cancel">
                         <span wire:loading.remove wire:target="cancel">
                             <i class="ri-close-line"> </i> Close
@@ -303,39 +304,58 @@
                             </span>
                         </div>
                     </button>
-                    <button type="button" class="btn btn-danger" wire:click="destroy">
-                        <span wire:loading.remove wire:target="destroy">
-                            <i class="ri-delete-bin-line"> </i> delete
-                        </span>
-                        <div wire:loading wire:target="destroy">
-                            <span class="d-flex align-items-center">
-                                <span class="spinner-border flex-shrink-0" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </span>
-                                <span class="flex-grow-1 ms-1">
-                                    Loading...
-                                </span>
+                    @if ($statusEditLoss)
+                        <button type="button" class="btn btn-success" wire:click="save">
+                            <span wire:loading.remove wire:target="save">
+                                <i class="ri-save-3-line"></i> Update
                             </span>
-                        </div>
-                    </button>
-                    <button type="button" class="btn btn-success" wire:click="save">
-                        <span wire:loading.remove wire:target="save">
-                            <i class="ri-save-3-line"></i> Save
-                        </span>
-                        <div wire:loading wire:target="save">
-                            <span class="d-flex align-items-center">
-                                <span class="spinner-border flex-shrink-0" role="status">
-                                    <span class="visually-hidden">Loading...</span>
+                            <div wire:loading wire:target="save">
+                                <span class="d-flex align-items-center">
+                                    <span class="spinner-border flex-shrink-0" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </span>
+                                    <span class="flex-grow-1 ms-1">
+                                        Loading...
+                                    </span>
                                 </span>
-                                <span class="flex-grow-1 ms-1">
-                                    Loading...
-                                </span>
+                            </div>
+                        </button>
+                    @else
+                        <button type="button" class="btn btn-danger" wire:click="destroy">
+                            <span wire:loading.remove wire:target="destroy">
+                                <i class="ri-delete-bin-line"> </i> delete
                             </span>
-                        </div>
-                    </button>
-                    <button type="button" class="btn btn-success btn-print" wire:click="print">
-                        <i class="bx bx-printer"></i> Print
-                    </button>
+                            <div wire:loading wire:target="destroy">
+                                <span class="d-flex align-items-center">
+                                    <span class="spinner-border flex-shrink-0" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </span>
+                                    <span class="flex-grow-1 ms-1">
+                                        Loading...
+                                    </span>
+                                </span>
+                            </div>
+                        </button>
+                        <button type="button" class="btn btn-success" wire:click="save">
+                            <span wire:loading.remove wire:target="save">
+                                <i class="ri-save-3-line"></i> Update
+                            </span>
+                            <div wire:loading wire:target="save">
+                                <span class="d-flex align-items-center">
+                                    <span class="spinner-border flex-shrink-0" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </span>
+                                    <span class="flex-grow-1 ms-1">
+                                        Loading...
+                                    </span>
+                                </span>
+                            </div>
+                        </button>
+                        <button type="button" class="btn btn-success btn-print" wire:click="print">
+                            <i class="bx bx-printer"></i> Print
+                        </button>
+                    @endif
+                    
                 </div>
             </div>
         </div>
