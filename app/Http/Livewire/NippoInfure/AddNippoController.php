@@ -34,7 +34,7 @@ class AddNippoController extends Component
     public $qty_gentan;
     public $work_hour;
     public $work_shift;
-    public $gentan_no;
+    public $gentan_no=0;
     public $nomor_han;
     public $name_infure;
     public $loss_infure_id;
