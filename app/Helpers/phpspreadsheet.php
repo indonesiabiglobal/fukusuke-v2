@@ -79,6 +79,13 @@ class phpspreadsheet
             ->setFormatCode('#,###');
     }
 
+    public static function numberPercentage($spreadsheet, $range)
+    {
+        $spreadsheet->getActiveSheet()->getStyle($range)
+        ->getNumberFormat()
+        ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_PERCENTAGE_00);
+    }
+
     public static function textAlignCenter($spreadsheet, $range)
     {
         $spreadsheet->getActiveSheet()->getStyle($range)->getAlignment()

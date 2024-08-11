@@ -215,6 +215,7 @@ class ProductionLossReportController extends Component
         }
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
+        $activeWorksheet->setShowGridlines(false);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'REPORT PRODUKSI DAN LOSS MESIN' . ($this->nipon == 'infure' ? ' INFURE' : 'SEITAI'));
@@ -403,7 +404,7 @@ class ProductionLossReportController extends Component
         $this->styleFont($spreadsheet, $columnMachineNo . $rowGrandTotal . ':' . $columnValueAvg . $rowGrandTotal, false, 8, 'Calibri');
 
         $writer = new Xlsx($spreadsheet);
-        if ($this->nipon == 'Infure') {
+        if ($this->nipon == 'infure') {
             $writer->save('asset/report/Report-Infure.xlsx');
             return response()->download('asset/report/Report-Infure.xlsx');
         } else {

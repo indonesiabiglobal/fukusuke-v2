@@ -35,9 +35,9 @@ class GeneralReportExport implements FromCollection, WithHeadings
             $tglKeluar = "AND tod.processdate <= '" . $this->tglKeluar . "'";
         }
 
-        if ($this->nipon==1){
+        if ($this->nipon== 'Infure'){
             switch($this->jenisreport) {
-                case '1':
+                case 'Daftar Produksi Per Mesin':
                     return collect(DB::select("
                         SELECT max(mac.machineNo) AS machine_no,
                         max(mac.machineName) AS machine_name,
@@ -51,27 +51,27 @@ class GeneralReportExport implements FromCollection, WithHeadings
                         SUM(asy.infure_cost_printing) AS infure_cost_printing,
                         COALESCE(MAX(jam.work_hour), 0) AS work_hour_mm,
                         COALESCE(MAX(jam.off_hour), 0) AS work_hour_off_mm,
-                        COALESCE(MAX(jam.on_hour), 0) AS work_hour_on_mm 
+                        COALESCE(MAX(jam.on_hour), 0) AS work_hour_on_mm
                     FROM tdProduct_Assembly AS asy
                     LEFT JOIN LATERAL (
-                        SELECT 
-                            SUM(EXTRACT(EPOCH FROM work_hour) / 60) AS work_hour, 
-                            SUM(EXTRACT(EPOCH FROM off_hour) / 60) AS off_hour, 
-                            SUM(EXTRACT(EPOCH FROM on_hour) / 60) AS on_hour 
-                        FROM tdJamKerjaMesin AS jam_ 
-                        WHERE asy.machine_id = jam_.machine_id 
+                        SELECT
+                            SUM(EXTRACT(EPOCH FROM work_hour) / 60) AS work_hour,
+                            SUM(EXTRACT(EPOCH FROM off_hour) / 60) AS off_hour,
+                            SUM(EXTRACT(EPOCH FROM on_hour) / 60) AS on_hour
+                        FROM tdJamKerjaMesin AS jam_
+                        WHERE asy.machine_id = jam_.machine_id
                         AND jam_.working_date BETWEEN '$this->tglMasuk' AND '$this->tglKeluar'
                         GROUP BY jam_.machine_id
                     ) AS jam ON true
-                    left JOIN msMachine AS mac ON asy.machine_id = mac.id 
-                    left JOIN msDepartment AS dep ON mac.department_id = dep.id 
+                    left JOIN msMachine AS mac ON asy.machine_id = mac.id
+                    left JOIN msDepartment AS dep ON mac.department_id = dep.id
                     WHERE asy.production_date BETWEEN '$this->tglMasuk' AND '$this->tglKeluar'
                     GROUP BY asy.machine_id
-            
+
                     "));
                     break;
-    
-                case '2':
+
+                case 'Daftar Produksi Per Tipe Per Mesin':
                     return collect(DB::select("
                         select max(dep.name) AS department_name,
                             max(prTip.name) AS product_type_name,
@@ -85,17 +85,17 @@ class GeneralReportExport implements FromCollection, WithHeadings
                             SUM(asy.panjang_printing_inline) AS panjang_printing_inline,
                             SUM(asy.infure_cost_printing) AS infure_cost_printing
                         FROM tdProduct_Assembly AS asy
-                        left JOIN msMachine AS mac ON asy.machine_id = mac.id 
-                        left JOIN msDepartment AS dep ON mac.department_id = dep.id 
-                        left JOIN msProduct AS prd ON asy.product_id = prd.id 
-                        left JOIN msProduct_type AS prTip ON prd.product_type_id = prTip.id 
+                        left JOIN msMachine AS mac ON asy.machine_id = mac.id
+                        left JOIN msDepartment AS dep ON mac.department_id = dep.id
+                        left JOIN msProduct AS prd ON asy.product_id = prd.id
+                        left JOIN msProduct_type AS prTip ON prd.product_type_id = prTip.id
                         WHERE asy.production_date BETWEEN '$this->tglMasuk' AND '$this->tglKeluar'
                         GROUP BY dep.id, asy.machine_id, prTip.id
-            
+
                     "));
                     break;
-    
-                case '3':
+
+                case 'Daftar Produksi Per Jenis':
                     return collect(DB::select("
                         SELECT max(prGrp.code) AS product_group_code,
                         max(prGrp.name) AS product_group_name,
@@ -107,17 +107,17 @@ class GeneralReportExport implements FromCollection, WithHeadings
                         SUM(asy.panjang_printing_inline) AS panjang_printing_inline,
                         SUM(asy.infure_cost_printing) AS infure_cost_printing
                     FROM tdProduct_Assembly AS asy
-                    INNER JOIN msProduct AS prd ON asy.product_id = prd.id 
-                    INNER JOIN msProduct_type AS prTip ON prd.product_type_id = prTip.id 
-                    INNER JOIN msProduct_group AS prGrp ON prTip.product_group_id = prGrp.id 
+                    INNER JOIN msProduct AS prd ON asy.product_id = prd.id
+                    INNER JOIN msProduct_type AS prTip ON prd.product_type_id = prTip.id
+                    INNER JOIN msProduct_group AS prGrp ON prTip.product_group_id = prGrp.id
                     WHERE asy.production_date BETWEEN '$this->tglMasuk' AND '$this->tglKeluar'
                     GROUP BY prGrp.id
-        
+
                 "));
                     break;
-                case '4':
+                case 'Daftar Produksi Per Tipe':
                     return collect(DB::select("
-                         SELECT 
+                         SELECT
                             max(prTip.code) AS product_type_code,
                             max(prTip.name) AS product_type_name,
                             SUM(asy.berat_standard) AS berat_standard,
@@ -128,16 +128,16 @@ class GeneralReportExport implements FromCollection, WithHeadings
                             SUM(asy.panjang_printing_inline) AS panjang_printing_inline,
                             SUM(asy.infure_cost_printing) AS infure_cost_printing
                         FROM tdProduct_Assembly AS asy
-                        INNER JOIN msProduct AS prd ON asy.product_id = prd.id 
-                        INNER JOIN msProduct_type AS prTip ON prd.product_type_id = prTip.id 
+                        INNER JOIN msProduct AS prd ON asy.product_id = prd.id
+                        INNER JOIN msProduct_type AS prTip ON prd.product_type_id = prTip.id
                         WHERE asy.production_date BETWEEN '$this->tglMasuk' AND '$this->tglKeluar'
                         GROUP BY prTip.id
-        
+
                     "));
-                    break;   
-                case '5':
+                    break;
+                case 'Daftar Produksi Per Produk':
                     return collect(DB::select("
-                        SELECT 
+                        SELECT
                             max(prd.code) AS product_code,
                             max(prd.name) AS product_name,
                             SUM(asy.berat_standard) AS berat_standard,
@@ -148,15 +148,15 @@ class GeneralReportExport implements FromCollection, WithHeadings
                             SUM(asy.panjang_printing_inline) AS panjang_printing_inline,
                             SUM(asy.infure_cost_printing) AS infure_cost_printing
                         FROM tdProduct_Assembly AS asy
-                        INNER JOIN msProduct AS prd ON asy.product_id = prd.id  
+                        INNER JOIN msProduct AS prd ON asy.product_id = prd.id
                         WHERE asy.production_date BETWEEN '$this->tglMasuk' AND '$this->tglKeluar'
                         GROUP BY prd.id
-        
+
                 "));
                     break;
-                case '6':
+                case 'Daftar Produksi Per Departemen Per Jenis':
                     return collect(DB::select("
-                        SELECT 
+                        SELECT
                             max(dep.name) AS department_name,
                             max(prGrp.code) AS product_group_code,
                             max(prGrp.name) AS product_group_name,
@@ -168,19 +168,19 @@ class GeneralReportExport implements FromCollection, WithHeadings
                             SUM(asy.panjang_printing_inline) AS panjang_printing_inline,
                             SUM(asy.infure_cost_printing) AS infure_cost_printing
                         FROM tdProduct_Assembly AS asy
-                        INNER JOIN msMachine AS mac ON asy.machine_id = mac.id 
-                        INNER JOIN msDepartment AS dep ON mac.department_id = dep.id 
-                        INNER JOIN msProduct AS prd ON asy.product_id = prd.id 
-                        INNER JOIN msProduct_type AS prTip ON prd.product_type_id = prTip.id 
-                        INNER JOIN msProduct_group AS prGrp ON prTip.product_group_id = prGrp.id 
+                        INNER JOIN msMachine AS mac ON asy.machine_id = mac.id
+                        INNER JOIN msDepartment AS dep ON mac.department_id = dep.id
+                        INNER JOIN msProduct AS prd ON asy.product_id = prd.id
+                        INNER JOIN msProduct_type AS prTip ON prd.product_type_id = prTip.id
+                        INNER JOIN msProduct_group AS prGrp ON prTip.product_group_id = prGrp.id
                         WHERE asy.production_date BETWEEN '$this->tglMasuk' AND '$this->tglKeluar'
                         GROUP BY dep.id, prGrp.id
-        
+
                     "));
-                    break;         
-                case '7':
+                    break;
+                case 'Daftar Produksi Per Departemen & Tipe':
                     return collect(DB::select("
-                        SELECT 
+                        SELECT
                             max(dep.name) AS department_name,
                             max(prTip.code) AS product_type_code,
                             max(prTip.name) AS product_type_name,
@@ -192,18 +192,18 @@ class GeneralReportExport implements FromCollection, WithHeadings
                             SUM(asy.panjang_printing_inline) AS panjang_printing_inline,
                             SUM(asy.infure_cost_printing) AS infure_cost_printing
                         FROM tdProduct_Assembly AS asy
-                        INNER JOIN msMachine AS mac ON asy.machine_id = mac.id 
-                        INNER JOIN msDepartment AS dep ON mac.department_id = dep.id 
-                        INNER JOIN msProduct AS prd ON asy.product_id = prd.id 
-                        INNER JOIN msProduct_type AS prTip ON prd.product_type_id = prTip.id 
+                        INNER JOIN msMachine AS mac ON asy.machine_id = mac.id
+                        INNER JOIN msDepartment AS dep ON mac.department_id = dep.id
+                        INNER JOIN msProduct AS prd ON asy.product_id = prd.id
+                        INNER JOIN msProduct_type AS prTip ON prd.product_type_id = prTip.id
                         WHERE asy.production_date BETWEEN '$this->tglMasuk' AND '$this->tglKeluar'
                         GROUP BY dep.id, prTip.id
-        
-                    "));  
-                        break; 
-                case '8':
+
+                    "));
+                        break;
+                case 'Daftar Produksi Per Departemen & Petugas':
                     return collect(DB::select("
-                        SELECT 
+                        SELECT
                             max(dep.name) AS department_name,
                             max(man.employeeNo) AS employeeNo,
                             max(man.empName) AS empName,
@@ -215,19 +215,19 @@ class GeneralReportExport implements FromCollection, WithHeadings
                             SUM(asy.panjang_printing_inline) AS panjang_printing_inline,
                             SUM(asy.infure_cost_printing) AS infure_cost_printing
                         FROM tdProduct_Assembly AS asy
-                        INNER JOIN msEmployee AS man ON asy.employee_id = man.id 
-                        INNER JOIN msDepartment AS dep ON man.department_id = dep.id 
+                        INNER JOIN msEmployee AS man ON asy.employee_id = man.id
+                        INNER JOIN msDepartment AS dep ON man.department_id = dep.id
                         WHERE asy.production_date BETWEEN '$this->tglMasuk' AND '$this->tglKeluar'
                         GROUP BY dep.id, asy.employee_id
-        
-                    "));
-                        break; 
-                // case '9':
 
-                    //     break;    
-                case '10':
+                    "));
+                        break;
+                // case 'Daftar Produksi Per Palet':
+
+                    //     break;
+                case 'Daftar Loss Per Departemen':
                     return collect(DB::select("
-                        SELECT 
+                        SELECT
                             max(dep.name) AS department_name,
                             max(mslosCls.name) AS loss_class_name,
                             max(mslos.code) AS loss_code,
@@ -242,12 +242,12 @@ class GeneralReportExport implements FromCollection, WithHeadings
                         INNER JOIN msDepartment AS dep ON mac.department_id = dep.id
                         WHERE asy.production_date BETWEEN '$this->tglMasuk' AND '$this->tglKeluar'
                         GROUP BY dep.id, det.loss_infure_id
-        
+
                     "));
                         break;
-                case '11':
+                case 'Daftar Loss Per Departemen & Jenis':
                     return collect(DB::select("
-                        SELECT 
+                        SELECT
                             max(dep.name) AS department_name,
                             max(prGrp.code || ' : ' || prGrp.name) AS product_group_name,
                             max(mslosCls.name) AS loss_class_name,
@@ -266,12 +266,12 @@ class GeneralReportExport implements FromCollection, WithHeadings
                         INNER JOIN msProduct_group AS prGrp ON prTip.product_group_id = prGrp.id
                         WHERE asy.production_date BETWEEN '$this->tglMasuk' AND '$this->tglKeluar'
                         GROUP BY dep.id, prGrp.id, det.loss_infure_id
-        
+
                     "));
                          break;
-                case '12':
+                case 'Daftar Loss Per Petugas':
                     return collect(DB::select("
-                        SELECT 
+                        SELECT
                             max(dep.name) AS department_name,
                             max(mac.employeeNo) AS employeeNo,
                             max(mac.empName) AS empName,
@@ -304,7 +304,7 @@ class GeneralReportExport implements FromCollection, WithHeadings
                             GROUP BY los_.product_assembly_id
                         ) AS loss ON true
                         LEFT JOIN (
-                            SELECT 
+                            SELECT
                                 good.employee_id_infure,
                                 SUM(good.infure_berat_loss) AS infure_berat_loss
                             FROM tdProduct_Goods AS good
@@ -315,11 +315,11 @@ class GeneralReportExport implements FromCollection, WithHeadings
                         INNER JOIN msDepartment AS dep ON mac.department_id = dep.id
                         WHERE asy.production_date BETWEEN '$this->tglMasuk' AND '$this->tglKeluar'
                         GROUP BY dep.id, asy.employee_id
-                     "));    
-                        break;            
-                case '13':
+                     "));
+                        break;
+                case 'Daftar Loss Per Mesin':
                     return collect(DB::select("
-                         SELECT 
+                         SELECT
                             max(mac.machineNo || ' : ' || mac.machineName) AS machine_name,
                             max(mslosCls.name) AS loss_class_name,
                             max(mslos.code) AS loss_code,
@@ -327,18 +327,18 @@ class GeneralReportExport implements FromCollection, WithHeadings
                             SUM(CASE WHEN mslos.loss_category_code <> '1' THEN det.berat_loss ELSE 0 END) AS berat_loss_produksi,
                             SUM(CASE WHEN mslos.loss_category_code = '1' THEN det.berat_loss ELSE 0 END) AS berat_loss_kebutuhan
                         FROM tdProduct_Assembly AS asy
-                        INNER JOIN tdProduct_Assembly_Loss AS det ON asy.id = det.product_assembly_id 
-                        INNER JOIN msLossInfure AS mslos ON det.loss_infure_id = mslos.id 
-                        INNER JOIN msLossClass AS mslosCls ON mslos.loss_class_id = mslosCls.id 
-                        INNER JOIN msMachine AS mac ON asy.machine_id = mac.id 
+                        INNER JOIN tdProduct_Assembly_Loss AS det ON asy.id = det.product_assembly_id
+                        INNER JOIN msLossInfure AS mslos ON det.loss_infure_id = mslos.id
+                        INNER JOIN msLossClass AS mslosCls ON mslos.loss_class_id = mslosCls.id
+                        INNER JOIN msMachine AS mac ON asy.machine_id = mac.id
                         WHERE asy.production_date BETWEEN '$this->tglMasuk' AND '$this->tglKeluar'
                         GROUP BY mac.id, det.loss_infure_id;
-        
+
                     "));
-                        break;            
-                case '14':
+                        break;
+                case 'Kapasitas Produksi':
                     return collect(DB::select("
-                        SELECT 
+                        SELECT
                             max(prGrp.code) AS product_group_code,
                             max(prGrp.name) AS product_group_name,
                             MAX(mac.machineNo) AS machine_no,
@@ -347,26 +347,26 @@ class GeneralReportExport implements FromCollection, WithHeadings
                             SUM(asy.berat_produksi) AS berat_produksi,
                             MAX(mac.capacity_kg) AS capacity_kg,
                             MAX(mac.capacity_lembar) AS capacity_lembar--,
-                            --@day AS seq_no  
+                            --@day AS seq_no
                         FROM tdProduct_Assembly AS asy
-                        INNER JOIN msProduct AS prd ON asy.product_id = prd.id 
-                        INNER JOIN msProduct_type AS prTip ON prd.product_type_id = prTip.id 
-                        INNER JOIN msProduct_group AS prGrp ON prTip.product_group_id = prGrp.id 
-                        INNER JOIN msMachine AS mac ON asy.machine_id = mac.id 
+                        INNER JOIN msProduct AS prd ON asy.product_id = prd.id
+                        INNER JOIN msProduct_type AS prTip ON prd.product_type_id = prTip.id
+                        INNER JOIN msProduct_group AS prGrp ON prTip.product_group_id = prGrp.id
+                        INNER JOIN msMachine AS mac ON asy.machine_id = mac.id
                         WHERE asy.production_date BETWEEN '$this->tglMasuk' AND '$this->tglKeluar'
                         GROUP BY prGrp.id, asy.machine_id
-        
+
                     "));
                     break;
                     default:
-                    
+
             }
-         
-         }else{
+
+        }else{
             switch($this->jenisreport) {
-                case '1':
+                case 'Daftar Produksi Per Mesin':
                     return collect(DB::select("
-                        SELECT 
+                        SELECT
                                 MAX(mac.machineNo) AS machine_no,
                                 MAX(mac.machineName) AS machine_name,
                                 MAX(dep.name) AS department_name,
@@ -379,17 +379,17 @@ class GeneralReportExport implements FromCollection, WithHeadings
                                 COALESCE(MAX(jam.work_hour), 0) AS work_hour_mm,
                                 COALESCE(MAX(jam.off_hour), 0) AS work_hour_off_mm,
                                 COALESCE(MAX(jam.on_hour), 0) AS work_hour_on_mm
-                            FROM tdProduct_Goods AS good 
+                            FROM tdProduct_Goods AS good
                             LEFT JOIN (
-                                SELECT 
-                                    los_.product_goods_id, 
+                                SELECT
+                                    los_.product_goods_id,
                                     SUM(los_.berat_loss) AS berat_loss
                                 FROM tdProduct_Goods_Loss AS los_
                                 WHERE los_.loss_seitai_id = 1
                                 GROUP BY los_.product_goods_id
                             ) ponsu ON good.id = ponsu.product_goods_id
                             LEFT JOIN (
-                                SELECT 
+                                SELECT
                                     jam_.machine_id,
                                     SUM(EXTRACT(EPOCH FROM work_hour) / 60) AS work_hour,
                                     SUM(EXTRACT(EPOCH FROM off_hour) / 60) AS off_hour,
@@ -398,133 +398,133 @@ class GeneralReportExport implements FromCollection, WithHeadings
                                 WHERE jam_.working_date BETWEEN '$this->tglMasuk' AND '$this->tglKeluar'
                                 GROUP BY jam_.machine_id
                             ) jam ON good.machine_id = jam.machine_id
-                            INNER JOIN msMachine AS mac ON good.machine_id = mac.id 
-                            INNER JOIN msDepartment AS dep ON mac.department_id = dep.id 
-                            INNER JOIN msProduct AS prd ON good.product_id = prd.id 
-                            INNER JOIN msProduct_type AS prT ON prd.product_type_id = prT.id 
+                            INNER JOIN msMachine AS mac ON good.machine_id = mac.id
+                            INNER JOIN msDepartment AS dep ON mac.department_id = dep.id
+                            INNER JOIN msProduct AS prd ON good.product_id = prd.id
+                            INNER JOIN msProduct_type AS prT ON prd.product_type_id = prT.id
                             WHERE good.production_date BETWEEN '$this->tglMasuk' AND '$this->tglKeluar'
                             GROUP BY good.machine_id;
-            
+
                     "));
                     break;
-    
-                case '2':
+
+                case 'Daftar Produksi Per Tipe Per Mesin':
                     return collect(DB::select("
-                       SELECT 
+                       SELECT
                             MAX(dep.name) AS department_name,
                             MAX(prT.name) AS product_type_name,
                             MAX(mac.machineNo) AS machine_no,
-                            MAX(mac.machineName) AS machine_name,							
+                            MAX(mac.machineName) AS machine_name,
                             SUM(good.qty_produksi) AS qty_produksi,
                             SUM(good.qty_produksi * prd.unit_weight * 0.001) AS berat_produksi,
                             SUM(good.qty_produksi * prT.harga_sat_seitai) AS seitai_cost,
                             SUM(good.seitai_berat_loss) - COALESCE(SUM(ponsu.berat_loss), 0) AS seitai_berat_loss,
                             COALESCE(SUM(ponsu.berat_loss), 0) AS seitai_berat_loss_ponsu,
                             SUM(good.infure_berat_loss) AS infure_berat_loss
-                        FROM tdProduct_Goods AS good 
+                        FROM tdProduct_Goods AS good
                         LEFT JOIN (
-                            SELECT 
-                                los_.product_goods_id, 
+                            SELECT
+                                los_.product_goods_id,
                                 SUM(los_.berat_loss) AS berat_loss
                             FROM tdProduct_Goods_Loss AS los_
                             WHERE los_.loss_seitai_id = 1
                             GROUP BY los_.product_goods_id
                         ) ponsu ON good.id = ponsu.product_goods_id
-                        INNER JOIN msMachine AS mac ON good.machine_id = mac.id 
-                        INNER JOIN msDepartment AS dep ON mac.department_id = dep.id 
-                        INNER JOIN msProduct AS prd ON good.product_id = prd.id 
-                        INNER JOIN msProduct_type AS prT ON prd.product_type_id = prT.id 
+                        INNER JOIN msMachine AS mac ON good.machine_id = mac.id
+                        INNER JOIN msDepartment AS dep ON mac.department_id = dep.id
+                        INNER JOIN msProduct AS prd ON good.product_id = prd.id
+                        INNER JOIN msProduct_type AS prT ON prd.product_type_id = prT.id
                         WHERE good.production_date BETWEEN '$this->tglMasuk' AND '$this->tglKeluar'
                         GROUP BY dep.id, prT.name, good.machine_id;
-            
+
                     "));
                     break;
-    
-                case '3':
+
+                case 'Daftar Produksi Per Jenis':
                     return collect(DB::select("
-                        SELECT 
+                        SELECT
                             MAX(prGrp.code) AS product_group_code,
                             MAX(prGrp.name) AS product_group_name,
                             SUM(good.qty_produksi) AS qty_produksi,
                             SUM(good.qty_produksi * prd.unit_weight * 0.001) AS berat_produksi,
-                            SUM(good.qty_produksi * prT.harga_sat_seitai) AS seitai_cost, 
+                            SUM(good.qty_produksi * prT.harga_sat_seitai) AS seitai_cost,
                             SUM(good.seitai_berat_loss) - COALESCE(SUM(ponsu.berat_loss), 0) AS seitai_berat_loss,
                             COALESCE(SUM(ponsu.berat_loss), 0) AS seitai_berat_loss_ponsu,
-                            SUM(good.infure_berat_loss) AS infure_berat_loss 
-                        FROM tdProduct_Goods AS good 
+                            SUM(good.infure_berat_loss) AS infure_berat_loss
+                        FROM tdProduct_Goods AS good
                         LEFT JOIN (
-                            SELECT 
-                                los_.product_goods_id, 
+                            SELECT
+                                los_.product_goods_id,
                                 SUM(los_.berat_loss) AS berat_loss
                             FROM tdProduct_Goods_Loss AS los_
                             WHERE los_.loss_seitai_id = 1 -- ponsu
                             GROUP BY los_.product_goods_id
                         ) ponsu ON good.id = ponsu.product_goods_id
-                        INNER JOIN msProduct AS prd ON good.product_id = prd.id 
-                        INNER JOIN msProduct_type AS prT ON prd.product_type_id = prT.id 
-                        INNER JOIN msProduct_group AS prGrp ON prT.product_group_id = prGrp.id 
+                        INNER JOIN msProduct AS prd ON good.product_id = prd.id
+                        INNER JOIN msProduct_type AS prT ON prd.product_type_id = prT.id
+                        INNER JOIN msProduct_group AS prGrp ON prT.product_group_id = prGrp.id
                         WHERE good.production_date BETWEEN '$this->tglMasuk' AND '$this->tglKeluar'
                         GROUP BY prGrp.name;
-        
+
                     "));
                     break;
-                case '4':
+                case 'Daftar Produksi Per Tipe':
                     return collect(DB::select("
-                       SELECT 
+                       SELECT
                             MAX(prT.code) AS product_type_code,
                             MAX(prT.name) AS product_type_name,
                             SUM(good.qty_produksi) AS qty_produksi,
                             SUM(good.qty_produksi * prd.unit_weight * 0.001) AS berat_produksi,
-                            SUM(good.qty_produksi * prT.harga_sat_seitai) AS seitai_cost, 
+                            SUM(good.qty_produksi * prT.harga_sat_seitai) AS seitai_cost,
                             SUM(good.seitai_berat_loss) - COALESCE(SUM(ponsu.berat_loss), 0) AS seitai_berat_loss,
                             COALESCE(SUM(ponsu.berat_loss), 0) AS seitai_berat_loss_ponsu,
-                            SUM(good.infure_berat_loss) AS infure_berat_loss 
-                        FROM tdProduct_Goods AS good 
+                            SUM(good.infure_berat_loss) AS infure_berat_loss
+                        FROM tdProduct_Goods AS good
                         LEFT JOIN (
-                            SELECT 
-                                los_.product_goods_id, 
+                            SELECT
+                                los_.product_goods_id,
                                 SUM(los_.berat_loss) AS berat_loss
                             FROM tdProduct_Goods_Loss AS los_
                             WHERE los_.loss_seitai_id = 1 -- ponsu
                             GROUP BY los_.product_goods_id
                         ) ponsu ON good.id = ponsu.product_goods_id
-                        INNER JOIN msProduct AS prd ON good.product_id = prd.id 
-                        INNER JOIN msProduct_type AS prT ON prd.product_type_id = prT.id 
+                        INNER JOIN msProduct AS prd ON good.product_id = prd.id
+                        INNER JOIN msProduct_type AS prT ON prd.product_type_id = prT.id
                         WHERE good.production_date BETWEEN '$this->tglMasuk' AND '$this->tglKeluar'
                         GROUP BY prT.id;
-        
+
                     "));
-                    break;   
-                case '5':
+                    break;
+                case 'Daftar Produksi Per Produk':
                     return collect(DB::select("
-                        SELECT 
+                        SELECT
                             MAX(prd.code) AS product_code,
                             MAX(prd.name) AS product_name,
                             SUM(good.qty_produksi) AS qty_produksi,
                             SUM(good.qty_produksi * prd.unit_weight * 0.001) AS berat_produksi,
-                            SUM(good.qty_produksi * prT.harga_sat_seitai) AS seitai_cost, 
+                            SUM(good.qty_produksi * prT.harga_sat_seitai) AS seitai_cost,
                             SUM(good.seitai_berat_loss) - COALESCE(SUM(ponsu.berat_loss), 0) AS seitai_berat_loss,
                             COALESCE(SUM(ponsu.berat_loss), 0) AS seitai_berat_loss_ponsu,
-                            SUM(good.infure_berat_loss) AS infure_berat_loss 
-                        FROM tdProduct_Goods AS good 
+                            SUM(good.infure_berat_loss) AS infure_berat_loss
+                        FROM tdProduct_Goods AS good
                         LEFT JOIN (
-                            SELECT 
-                                los_.product_goods_id, 
+                            SELECT
+                                los_.product_goods_id,
                                 SUM(los_.berat_loss) AS berat_loss
                             FROM tdProduct_Goods_Loss AS los_
                             WHERE los_.loss_seitai_id = 1 -- ponsu
                             GROUP BY los_.product_goods_id
                         ) ponsu ON good.id = ponsu.product_goods_id
-                        INNER JOIN msProduct AS prd ON good.product_id = prd.id 
-                        INNER JOIN msProduct_type AS prT ON prd.product_type_id = prT.id 
+                        INNER JOIN msProduct AS prd ON good.product_id = prd.id
+                        INNER JOIN msProduct_type AS prT ON prd.product_type_id = prT.id
                         WHERE good.production_date BETWEEN '$this->tglMasuk' AND '$this->tglKeluar'
                         GROUP BY prd.id;
-        
+
                 "));
                     break;
-                case '6':
+                case 'Daftar Produksi Per Departemen Per Jenis':
                     return collect(DB::select("
-                        SELECT 
+                        SELECT
                             MAX(dep.name) AS department_name,
                             MAX(prGrp.code) AS product_group_code,
                             MAX(prGrp.name) AS product_group_name,
@@ -534,28 +534,28 @@ class GeneralReportExport implements FromCollection, WithHeadings
                             SUM(good.seitai_berat_loss) - COALESCE(SUM(ponsu.berat_loss), 0) AS seitai_berat_loss,
                             COALESCE(SUM(ponsu.berat_loss), 0) AS seitai_berat_loss_ponsu,
                             SUM(good.infure_berat_loss) AS infure_berat_loss
-                        FROM tdProduct_Goods AS good 
+                        FROM tdProduct_Goods AS good
                         LEFT JOIN (
-                            SELECT 
-                                los_.product_goods_id, 
+                            SELECT
+                                los_.product_goods_id,
                                 SUM(los_.berat_loss) AS berat_loss
                             FROM tdProduct_Goods_Loss AS los_
                             WHERE los_.loss_seitai_id = 1 -- ponsu
                             GROUP BY los_.product_goods_id
                         ) ponsu ON good.id = ponsu.product_goods_id
-                        INNER JOIN msMachine AS mac ON good.machine_id = mac.id 
-                        INNER JOIN msDepartment AS dep ON mac.department_id = dep.id 
-                        INNER JOIN msProduct AS prd ON good.product_id = prd.id 
-                        INNER JOIN msProduct_type AS prT ON prd.product_type_id = prT.id 
-                        INNER JOIN msProduct_group AS prGrp ON prT.product_group_id = prGrp.id 
+                        INNER JOIN msMachine AS mac ON good.machine_id = mac.id
+                        INNER JOIN msDepartment AS dep ON mac.department_id = dep.id
+                        INNER JOIN msProduct AS prd ON good.product_id = prd.id
+                        INNER JOIN msProduct_type AS prT ON prd.product_type_id = prT.id
+                        INNER JOIN msProduct_group AS prGrp ON prT.product_group_id = prGrp.id
                         WHERE good.production_date BETWEEN '$this->tglMasuk' AND '$this->tglKeluar'
                         GROUP BY dep.id, prGrp.id;
-        
+
                     "));
-                    break;         
-                case '7':
+                    break;
+                case 'Daftar Produksi Per Departemen & Tipe':
                     return collect(DB::select("
-                        SELECT 
+                        SELECT
                             MAX(dep.name) AS department_name,
                             MAX(prT.code) AS product_type_code,
                             MAX(prT.name) AS product_type_name,
@@ -565,27 +565,27 @@ class GeneralReportExport implements FromCollection, WithHeadings
                             SUM(good.seitai_berat_loss) - COALESCE(SUM(ponsu.berat_loss), 0) AS seitai_berat_loss,
                             COALESCE(SUM(ponsu.berat_loss), 0) AS seitai_berat_loss_ponsu,
                             SUM(good.infure_berat_loss) AS infure_berat_loss
-                        FROM tdProduct_Goods AS good 
+                        FROM tdProduct_Goods AS good
                         LEFT JOIN (
-                            SELECT 
-                                los_.product_goods_id, 
+                            SELECT
+                                los_.product_goods_id,
                                 SUM(los_.berat_loss) AS berat_loss
                             FROM tdProduct_Goods_Loss AS los_
                             WHERE los_.loss_seitai_id = 1 -- ponsu
                             GROUP BY los_.product_goods_id
                         ) ponsu ON good.id = ponsu.product_goods_id
-                        INNER JOIN msMachine AS mac ON good.machine_id = mac.id 
-                        INNER JOIN msDepartment AS dep ON mac.department_id = dep.id 
-                        INNER JOIN msProduct AS prd ON good.product_id = prd.id 
-                        INNER JOIN msProduct_type AS prT ON prd.product_type_id = prT.id 
+                        INNER JOIN msMachine AS mac ON good.machine_id = mac.id
+                        INNER JOIN msDepartment AS dep ON mac.department_id = dep.id
+                        INNER JOIN msProduct AS prd ON good.product_id = prd.id
+                        INNER JOIN msProduct_type AS prT ON prd.product_type_id = prT.id
                         WHERE good.production_date BETWEEN '$this->tglMasuk' AND '$this->tglKeluar'
                         GROUP BY dep.id, prT.id;
-        
-                    "));  
-                        break; 
-                case '8':
+
+                    "));
+                        break;
+                case 'Daftar Produksi Per Departemen & Petugas':
                     return collect(DB::select("
-                        SELECT 
+                        SELECT
                             MAX(dep.name) AS department_name,
                             MAX(man.employeeNo) AS employeeNo,
                             MAX(man.empName) AS empName,
@@ -597,23 +597,23 @@ class GeneralReportExport implements FromCollection, WithHeadings
                             SUM(good.infure_berat_loss) AS infure_berat_loss
                         FROM tdProduct_Goods AS good
                         LEFT JOIN (
-                            SELECT 
-                                los_.product_goods_id, 
+                            SELECT
+                                los_.product_goods_id,
                                 SUM(los_.berat_loss) AS berat_loss
                             FROM tdProduct_Goods_Loss AS los_
                             WHERE los_.loss_seitai_id = 1 -- ponsu
                             GROUP BY los_.product_goods_id
                         ) ponsu ON good.id = ponsu.product_goods_id
-                        INNER JOIN msEmployee AS man ON good.employee_id = man.id  
-                        INNER JOIN msDepartment AS dep ON man.department_id = dep.id 
-                        INNER JOIN msProduct AS prd ON good.product_id = prd.id 
-                        INNER JOIN msProduct_type AS prT ON prd.product_type_id = prT.id 
+                        INNER JOIN msEmployee AS man ON good.employee_id = man.id
+                        INNER JOIN msDepartment AS dep ON man.department_id = dep.id
+                        INNER JOIN msProduct AS prd ON good.product_id = prd.id
+                        INNER JOIN msProduct_type AS prT ON prd.product_type_id = prT.id
                         WHERE good.production_date BETWEEN '$this->tglMasuk' AND '$this->tglKeluar'
                         GROUP BY dep.id, good.employee_id;
-        
+
                     "));
-                        break; 
-                case '9':
+                        break;
+                case 'Daftar Produksi Per Palet':
                     return collect(DB::select("
                             SELECT
                             prd.code || ' ' || prd.name AS product_code,
@@ -636,54 +636,54 @@ class GeneralReportExport implements FromCollection, WithHeadings
                         INNER JOIN msProduct AS prd ON good.product_id = prd.id
                         WHERE good.production_date BETWEEN '$this->tglMasuk' AND '$this->tglKeluar';
                      "));
-                        break;    
-                case '10':
+                        break;
+                case 'Daftar Loss Per Departemen':
                     return collect(DB::select("
-                        SELECT 
+                        SELECT
                             max(dep.name) AS department_name,
                             max(mslosCls.name) AS loss_class_name,
                             max(mslos.code) AS loss_code,
-                            max(mslos.name) AS loss_name,	
+                            max(mslos.name) AS loss_name,
                             SUM(CASE WHEN mslos.loss_category_code <> '1' THEN det.berat_loss ELSE 0 END) AS berat_loss_produksi,
                             SUM(CASE WHEN mslos.loss_category_code = '1' THEN det.berat_loss ELSE 0 END) AS berat_loss_kebutuhan
                         FROM tdProduct_Goods AS good
-                        INNER JOIN tdProduct_Goods_Loss AS det ON good.id = det.product_goods_id 
-                        INNER JOIN msLossSeitai AS mslos ON det.loss_seitai_id = mslos.id 
-                        INNER JOIN msLossClass AS mslosCls ON mslos.loss_class_id = mslosCls.id 
-                        INNER JOIN msMachine AS mac ON good.machine_id = mac.id 
-                        INNER JOIN msDepartment AS dep ON mac.department_id = dep.id 
+                        INNER JOIN tdProduct_Goods_Loss AS det ON good.id = det.product_goods_id
+                        INNER JOIN msLossSeitai AS mslos ON det.loss_seitai_id = mslos.id
+                        INNER JOIN msLossClass AS mslosCls ON mslos.loss_class_id = mslosCls.id
+                        INNER JOIN msMachine AS mac ON good.machine_id = mac.id
+                        INNER JOIN msDepartment AS dep ON mac.department_id = dep.id
                         WHERE good.production_date BETWEEN '$this->tglMasuk' AND '$this->tglKeluar'
                         GROUP BY dep.id, det.loss_seitai_id;
-        
+
                     "));
                         break;
-                case '11':
+                case 'Daftar Loss Per Departemen & Jenis':
                     return collect(DB::select("
-                        SELECT 
+                        SELECT
                             max(dep.name) AS department_name,
                             max(prGrp.code || ' : ' || prGrp.name) AS product_group_name,
                             max(mslosCls.name) AS loss_class_name,
                             max(mslos.code) AS loss_code,
-                            max(mslos.name) AS loss_name,	
+                            max(mslos.name) AS loss_name,
                             SUM(CASE WHEN mslos.loss_category_code <> '1' THEN det.berat_loss ELSE 0 END) AS berat_loss_produksi,
                             SUM(CASE WHEN mslos.loss_category_code = '1' THEN det.berat_loss ELSE 0 END) AS berat_loss_kebutuhan
                         FROM tdProduct_Goods AS good
-                        INNER JOIN tdProduct_Goods_Loss AS det ON good.id = det.product_goods_id 
-                        INNER JOIN msLossSeitai AS mslos ON det.loss_seitai_id = mslos.id 
-                        INNER JOIN msLossClass AS mslosCls ON mslos.loss_class_id = mslosCls.id 
-                        INNER JOIN msMachine AS mac ON good.machine_id = mac.id 
-                        INNER JOIN msDepartment AS dep ON mac.department_id = dep.id 
-                        INNER JOIN msProduct AS prd ON good.product_id = prd.id 
-                        INNER JOIN msProduct_type AS prTip ON prd.product_type_id = prTip.id 
-                        INNER JOIN msProduct_group AS prGrp ON prTip.product_group_id = prGrp.id 
+                        INNER JOIN tdProduct_Goods_Loss AS det ON good.id = det.product_goods_id
+                        INNER JOIN msLossSeitai AS mslos ON det.loss_seitai_id = mslos.id
+                        INNER JOIN msLossClass AS mslosCls ON mslos.loss_class_id = mslosCls.id
+                        INNER JOIN msMachine AS mac ON good.machine_id = mac.id
+                        INNER JOIN msDepartment AS dep ON mac.department_id = dep.id
+                        INNER JOIN msProduct AS prd ON good.product_id = prd.id
+                        INNER JOIN msProduct_type AS prTip ON prd.product_type_id = prTip.id
+                        INNER JOIN msProduct_group AS prGrp ON prTip.product_group_id = prGrp.id
                         WHERE good.production_date BETWEEN '$this->tglMasuk' AND '$this->tglKeluar'
-                        GROUP BY dep.id, prGrp.id, det.loss_seitai_id;  
-        
+                        GROUP BY dep.id, prGrp.id, det.loss_seitai_id;
+
                     "));
                          break;
-                case '12':
+                case 'Daftar Loss Per Petugas':
                     return collect(DB::select("
-                        SELECT 
+                        SELECT
                             max(dep.name) AS department_name,
                             max(mac.employeeNo) AS employeeNo,
                             max(mac.empName) AS empName,
@@ -709,26 +709,26 @@ class GeneralReportExport implements FromCollection, WithHeadings
                                 SUM(CASE WHEN mslosCls.code = '07' THEN los_.berat_loss ELSE 0 END) AS berat_loss_07,
                                 SUM(CASE WHEN mslosCls.code = '99' THEN los_.berat_loss ELSE 0 END) AS berat_loss_99
                             FROM tdProduct_Goods_Loss AS los_
-                            INNER JOIN msLossSeitai AS mslos ON los_.loss_seitai_id = mslos.id 
-                            INNER JOIN msLossClass AS mslosCls ON mslos.loss_class_id = mslosCls.id 
-                            WHERE good.id = los_.product_goods_id AND mslos.id <> 1 
+                            INNER JOIN msLossSeitai AS mslos ON los_.loss_seitai_id = mslos.id
+                            INNER JOIN msLossClass AS mslosCls ON mslos.loss_class_id = mslosCls.id
+                            WHERE good.id = los_.product_goods_id AND mslos.id <> 1
                             GROUP BY los_.product_goods_id
                         ) AS loss ON true
-                        INNER JOIN msEmployee AS mac ON good.employee_id = mac.id 
-                        INNER JOIN msDepartment AS dep ON mac.department_id = dep.id 
-                        INNER JOIN msProduct AS prd ON good.product_id = prd.id 
+                        INNER JOIN msEmployee AS mac ON good.employee_id = mac.id
+                        INNER JOIN msDepartment AS dep ON mac.department_id = dep.id
+                        INNER JOIN msProduct AS prd ON good.product_id = prd.id
                         WHERE good.production_date BETWEEN '$this->tglMasuk' AND '$this->tglKeluar'
                         GROUP BY dep.id, good.employee_id;
-        
-                    "));    
-                        break;            
-                case '13':
+
+                    "));
+                        break;
+                case 'Daftar Loss Per Mesin':
                     return collect(DB::select("
-                       SELECT 
+                       SELECT
                             max(mac.machineNo || ' : ' || mac.machineName) AS machine_name,
                             max(mslosCls.name) AS loss_class_name,
                             max(mslos.code) AS loss_code,
-                            max(mslos.name) AS loss_name,    
+                            max(mslos.name) AS loss_name,
                             SUM(CASE WHEN mslos.loss_category_code <> '1' THEN det.berat_loss ELSE 0 END) AS berat_loss_produksi,
                             SUM(CASE WHEN mslos.loss_category_code = '1' THEN det.berat_loss ELSE 0 END) AS berat_loss_kebutuhan
                         FROM tdProduct_Goods AS good
@@ -738,12 +738,12 @@ class GeneralReportExport implements FromCollection, WithHeadings
                         INNER JOIN msMachine AS mac ON good.machine_id = mac.id
                         WHERE good.production_date BETWEEN '$this->tglMasuk' AND '$this->tglKeluar'
                         GROUP BY mac.id, det.loss_seitai_id;
-        
+
                     "));
-                        break;            
-                case '14':
+                        break;
+                case 'Kapasitas Produksi':
                     return collect(DB::select("
-                         SELECT 
+                         SELECT
                             MAX(prGrp.code) AS product_group_code,
                             MAX(prGrp.name) AS product_group_name,
                             MAX(mac.machineNo) AS machine_no,
@@ -752,30 +752,30 @@ class GeneralReportExport implements FromCollection, WithHeadings
                             SUM(good.qty_produksi * prd.unit_weight * 0.001) AS berat_produksi,
                             MAX(mac.capacity_kg) AS capacity_kg,
                             MAX(mac.capacity_lembar) AS capacity_lembar--,
-                            --@day AS seq_no 
-                        FROM tdProduct_Goods AS good 
-                        INNER JOIN msProduct AS prd ON good.product_id = prd.id 
-                        INNER JOIN msProduct_type AS prT ON prd.product_type_id = prT.id 
-                        INNER JOIN msProduct_group AS prGrp ON prT.product_group_id = prGrp.id 
-                        INNER JOIN msMachine AS mac ON good.machine_id = mac.id 
-                        WHERE good.production_date BETWEEN '$this->tglMasuk' AND '$this->tglKeluar' 
-                        GROUP BY prGrp.name, good.machine_id;   
-        
+                            --@day AS seq_no
+                        FROM tdProduct_Goods AS good
+                        INNER JOIN msProduct AS prd ON good.product_id = prd.id
+                        INNER JOIN msProduct_type AS prT ON prd.product_type_id = prT.id
+                        INNER JOIN msProduct_group AS prGrp ON prT.product_group_id = prGrp.id
+                        INNER JOIN msMachine AS mac ON good.machine_id = mac.id
+                        WHERE good.production_date BETWEEN '$this->tglMasuk' AND '$this->tglKeluar'
+                        GROUP BY prGrp.name, good.machine_id;
+
                     "));
                     break;
                     default:
-                    
+
             }
-         }  
+         }
     }
 
     public function headings(): array
     {
 
-       
+
             switch($this->jenisreport) {
-                case '1':
-                    if ($this->nipon==1){
+                case 'Daftar Produksi Per Mesin':
+                    if ($this->nipon== 'Infure'){
                         return [
                             'machine_no','machine_name','department_name','berat_standard','berat_produksi','infure_cost',
                             'infure_berat_loss','panjang_produksi','panjang_printing_inline','infure_cost_printing',
@@ -783,14 +783,14 @@ class GeneralReportExport implements FromCollection, WithHeadings
                         ];
                     }else{
                         return [
-                            'No Mesin',	'Nama Mesin','Departeman','Jumlah Produksi','Berat Produksi','Sseitai Cost',	
-                            'Berat loss Seitai','Seitai Berat Loss Ponsu','Infure Berat Loss','Jam Mulai Kerja',	
+                            'No Mesin',	'Nama Mesin','Departeman','Jumlah Produksi','Berat Produksi','Sseitai Cost',
+                            'Berat loss Seitai','Seitai Berat Loss Ponsu','Infure Berat Loss','Jam Mulai Kerja',
                             'Work Hour Off','Work Hour On'
                         ];
-                    }    
+                    }
                     break;
-    
-                case '2':
+
+                case 'Daftar Produksi Per Tipe Per Mesin':
                     if ($this->nipon==1){
                         return[
                             'Departemen','Type Produk','No Mesin','Mesin','Berat Standart','Berat Produksi','Cost produksi',
@@ -798,14 +798,14 @@ class GeneralReportExport implements FromCollection, WithHeadings
                         ];
                     }else{
                         return[
-                            'Departemen','Type Produk','No Mesin','Mesin',	
-                            'Jumlah Produksi','Berat Produksi','Seitai Cost',	
+                            'Departemen','Type Produk','No Mesin','Mesin',
+                            'Jumlah Produksi','Berat Produksi','Seitai Cost',
                             'Berat loss Seitai','Seitai Berat Loss Ponsu','Infure Berat Loss'
-                        ]; 
-                    }    
+                        ];
+                    }
                     break;
-    
-                    case '3':
+
+                    case 'Daftar Produksi Per Jenis':
                         if ($this->nipon==1){
                             return[
                                 'product_group_code','product_group_name','Berat Standart','Berat Produksi',
@@ -815,17 +815,17 @@ class GeneralReportExport implements FromCollection, WithHeadings
                             ];
                         }else{
                             return[
-                               'product_group_code','product_group_name',	
-                               'Jumlah Produksi','Berat Produksi','Seitai Cost',	
+                               'product_group_code','product_group_name',
+                               'Jumlah Produksi','Berat Produksi','Seitai Cost',
                                 'Berat loss Seitai','Seitai Berat Loss Ponsu','Infure Berat Loss'
-                            ]; 
-                        }        
+                            ];
+                        }
                         break;
 
-                    case '4':
+                    case 'Daftar Produksi Per Tipe':
                        if ($this->nipon==1){
                         return[
-                                'Kode Produk Tipe','Tipe Produk'	
+                                'Kode Produk Tipe','Tipe Produk'
                                 ,'Berat Standart','Berat Produksi',
                                 'Cost Produksi','Berat Loss Produksi','Panjang Produksi',
                                 'Panjang Inline Printing',	'Cost Printing Produksi'
@@ -833,16 +833,16 @@ class GeneralReportExport implements FromCollection, WithHeadings
                             ];
                         }else{
                             return[
-                                'Kode Produk Tipe','Tipe Produk',	
-                               'Jumlah Produksi','Berat Produksi','Seitai Cost',	
+                                'Kode Produk Tipe','Tipe Produk',
+                               'Jumlah Produksi','Berat Produksi','Seitai Cost',
                                 'Berat loss Seitai','Seitai Berat Loss Ponsu','Infure Berat Loss'
-                            ]; 
-                        }  
-                        break;   
-                    case '5':
+                            ];
+                        }
+                        break;
+                    case 'Daftar Produksi Per Produk':
                         if ($this->nipon==1){
                             return[
-                                'Kode Produk',	'Nama Produk'	
+                                'Kode Produk',	'Nama Produk'
                                 ,'Berat Standart','Berat Produksi',
                                 'Cost Produksi','Berat Loss Produksi','Panjang Produksi',
                                 'Panjang Inline Printing',	'Cost Printing Produksi'
@@ -850,16 +850,16 @@ class GeneralReportExport implements FromCollection, WithHeadings
                         }else{
                             return[
                                'Kode Produk',	'Nama Produk',
-                               'Jumlah Produksi','Berat Produksi','Seitai Cost',	
+                               'Jumlah Produksi','Berat Produksi','Seitai Cost',
                                 'Berat loss Seitai','Seitai Berat Loss Ponsu','Infure Berat Loss'
-                            ]; 
-                        }  
+                            ];
+                        }
                         break;
 
-                    case '6':
+                    case 'Daftar Produksi Per Departemen Per Jenis':
                         if ($this->nipon==1){
                             return[
-                                'Departemen','Kode Group Produk','Nama Group Produk'	
+                                'Departemen','Kode Group Produk','Nama Group Produk'
                                 ,'Berat Standart','Berat Produksi',
                                 'Cost Produksi','Berat Loss Produksi','Panjang Produksi',
                                 'Panjang Inline Printing',	'Cost Printing Produksi'
@@ -867,36 +867,36 @@ class GeneralReportExport implements FromCollection, WithHeadings
                             ];
                         }else{
                             return[
-                                'Departemen','Kode Group Produk','Nama Group Produk',	
-                                'Jumlah Produksi','Berat Produksi','Seitai Cost',	
+                                'Departemen','Kode Group Produk','Nama Group Produk',
+                                'Jumlah Produksi','Berat Produksi','Seitai Cost',
                                 'Berat loss Seitai','Seitai Berat Loss Ponsu','Infure Berat Loss'
-                            ]; 
-                        }  
-                        break;  
+                            ];
+                        }
+                        break;
 
-                    case '7':
+                    case 'Daftar Produksi Per Departemen & Tipe':
                         if ($this->nipon==1){
                             return[
-                                'Departemen','Kode Tipe Produk','Tipe Produk'	
+                                'Departemen','Kode Tipe Produk','Tipe Produk'
                                 ,'Berat Standart','Berat Produksi',
                                 'Cost Produksi','Berat Loss Produksi','Panjang Produksi',
                                 'Panjang Inline Printing',	'Cost Printing Produksi'
                             ];
                         }else{
                             return[
-                                'Departemen','Kode Tipe Produk','Tipe Produk',	
-                                'Jumlah Produksi','Berat Produksi','Seitai Cost',	
+                                'Departemen','Kode Tipe Produk','Tipe Produk',
+                                'Jumlah Produksi','Berat Produksi','Seitai Cost',
                                 'Berat loss Seitai','Seitai Berat Loss Ponsu','Infure Berat Loss'
-    
 
-                            ]; 
-                        }    
-                            break; 
 
-                    case '8':
+                            ];
+                        }
+                            break;
+
+                    case 'Daftar Produksi Per Departemen & Petugas':
                         if ($this->nipon==1){
                             return[
-                                'Departemen','Petugas Id','Nama Petugas'	
+                                'Departemen','Petugas Id','Nama Petugas'
                                 ,'Berat Standart','Berat Produksi',
                                 'Cost Produksi','Berat Loss Produksi','Panjang Produksi',
                                 'Panjang Inline Printing',	'Cost Printing Produksi'
@@ -904,25 +904,25 @@ class GeneralReportExport implements FromCollection, WithHeadings
                             ];
                         }else{
                             return[
-                                'Departemen','Petugas Id','Nama Petugas',	
-                                'Jumlah Produksi','Berat Produksi','Seitai Cost',	
+                                'Departemen','Petugas Id','Nama Petugas',
+                                'Jumlah Produksi','Berat Produksi','Seitai Cost',
                                 'Berat loss Seitai','Seitai Berat Loss Ponsu','Infure Berat Loss'
-                            ]; 
-                        }  
-                            break; 
+                            ];
+                        }
+                            break;
 
-                    case '9':
+                    case 'Daftar Produksi Per Palet':
                         if ($this->nipon==2){
                             return[
-                                'product_code',	'lpk_no',	'nomor_palet',	'production_date',	'work_shift',	
+                                'product_code',	'lpk_no',	'nomor_palet',	'production_date',	'work_shift',
                                 'nomor_lot',	'qty_produksi',	'berat_produksi',	'qty_produksi_box','kenpin_qty_loss_proses',
-                                'kenpin_qty_berat_proses',	'kenpin_qty_box_proses','kenpin_qty_loss',	
+                                'kenpin_qty_berat_proses',	'kenpin_qty_box_proses','kenpin_qty_loss',
                                 'kenpin_qty_berat',	'kenpin_qty_box'
                             ];
-                        } 
-                            break;  
+                        }
+                            break;
 
-                    case '10':
+                    case 'Daftar Loss Per Departemen':
                         if ($this->nipon==1){
                             return[
                                 'Departemen','Kelompok Loss','Kode Loss','Loss Name','Berat Loss Produksi',	'Berat Loss Kebutuhan'
@@ -930,25 +930,25 @@ class GeneralReportExport implements FromCollection, WithHeadings
                         }else{
                             return[
                                  'Departemen','Kelompok Loss','Kode Loss','Loss Name','Berat Loss Produksi','Berat Loss Kebutuhan'
-                            ]; 
-                        }  
+                            ];
+                        }
                             break;
 
-                    case '11':
+                    case 'Daftar Loss Per Departemen & Jenis':
                         if ($this->nipon==1){
                             return[
-                                'Departemen','Kelompok Produk',	
+                                'Departemen','Kelompok Produk',
                                 'Kelompok Loss','Kode Loss','Loss Name','Berat Loss Produksi',	'Berat Loss Kebutuhan'
                             ];
                         }else{
                             return[
-                                'Departemen','Kelompok Produk',	
+                                'Departemen','Kelompok Produk',
                                 'Kelompok Loss','Kode Loss','Loss Name','Berat Loss Produksi',	'Berat Loss Kebutuhan'
-                            ]; 
-                        }  
+                            ];
+                        }
                              break;
 
-                    case '12':
+                    case 'Daftar Loss Per Petugas':
                         if ($this->nipon==1){
                             return[
                                 'Departemen','Petugas Id',	'Petugas',	'Berat Produksi',
@@ -962,11 +962,11 @@ class GeneralReportExport implements FromCollection, WithHeadings
                                 'Departemen','Petugas Id',	'Petugas',	'Berat Produksi',
                                 'Berat Loss Produksi','Berat Loss 01','Berat Loss 02','Berat Loss 03',
                                 'Berat Loss 04','Berat Loss 05','Berat Loss 06','Berat Loss 07','Berat Loss 99'
-                            ]; 
-                        }  
-                            break;  
+                            ];
+                        }
+                            break;
 
-                    case '13':
+                    case 'Daftar Loss Per Mesin':
                         if ($this->nipon==1){
                             return[
                                 'Nama Mesin','Kelompok Nama Loss','Kode Los','Nama Loss',
@@ -976,11 +976,11 @@ class GeneralReportExport implements FromCollection, WithHeadings
                             return[
                                'Nama Mesin','Kelompok Nama Loss','Kode Los','Nama Loss',
                                 'Berat Loss Produksi','Berat Loss Kebutuhan'
-                            ]; 
-                        }  
-                            break;  
+                            ];
+                        }
+                            break;
 
-                    case '14':
+                    case 'Kapasitas Produksi':
                         if ($this->nipon==1){
                             return[
                                 'Kode Group Produk','Nama Group Produk','No Mesin','Nama Mesin','Panjang Produksi',
@@ -989,16 +989,16 @@ class GeneralReportExport implements FromCollection, WithHeadings
                             ];
                         }else{
                             return[
-                                'Kode Group Produk','Nama Group Produk','No Mesin','Nama Mesin',	
+                                'Kode Group Produk','Nama Group Produk','No Mesin','Nama Mesin',
                                 'Jumlah Produksi','Berat Produksi','Kapacity (Kg)','Kapacity(lembar)'
-                            ]; 
-                        }  
+                            ];
+                        }
                         break;
                     default:
-                    
+
             }
-         
-        
+
+
     }
 }
 

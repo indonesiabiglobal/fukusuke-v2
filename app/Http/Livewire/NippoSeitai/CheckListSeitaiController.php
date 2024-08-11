@@ -248,7 +248,7 @@ class CheckListSeitaiController extends Component
             $loss = collect(
                 DB::select("
                 select
-                pgl.product_goods_id,ls.name as namaloss,pgl.berat_loss
+                pgl.product_goods_id,ls.name as namaloss,ls.code as codeloss, pgl.berat_loss
                 FROM tdproduct_goods AS tdpg
                 inner join tdproduct_goods_loss as pgl on tdpg.id=pgl.product_goods_id
                 left join mslossseitai as ls on pgl.loss_seitai_id=ls.id
@@ -349,7 +349,7 @@ class CheckListSeitaiController extends Component
             // Nama Loss
             $rowLoss = $rowItemStart;
             foreach ($loss as $itemLoss) {
-                $activeWorksheet->setCellValue($columnNamaLoss . $rowLoss, $itemLoss->namaloss);
+                $activeWorksheet->setCellValue($columnNamaLoss . $rowLoss, $itemLoss->codeloss . '. ' . $itemLoss->namaloss);
                 phpspreadsheet::styleFont($spreadsheet, $columnNamaLoss . $rowLoss, false, 8, 'Calibri');
                 // Berat
                 $activeWorksheet->setCellValue($columnBerat . $rowLoss, $itemLoss->berat_loss);
