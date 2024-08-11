@@ -198,7 +198,7 @@
             </li>
             <li @click="tgo = !tgo; $refs.checkbox.checked = tgo" style="cursor: pointer;">
                 <input x-ref="checkbox" @change="tgo = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="tgo"> 
-                Quantity
+                Tgl Order
             </li>
             <li @click="stf = !stf; $refs.checkbox.checked = stf" style="cursor: pointer;">
                 <input x-ref="checkbox" @change="stf = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="stf"> 
@@ -235,9 +235,7 @@
                 <thead class="table-light">
                     <tr>
                         <th></th>
-                        <th x-show="po_no" wire:click='sortBy("id")'>PO Number
-                            <i class="ri-arrow-up-line"></i>
-                        </th>
+                        <th x-show="po_no">PO Number</th>
                         <th x-show="na_pr">Nama Produk</th>
                         <th x-show="ko_pr">Kode Produk</th>
                         <th x-show="bu">Buyer</th>

@@ -94,7 +94,7 @@ class OrderLpkController extends Component
 
         Excel::import(new OrderEntryImport, $this->file->path());
 
-        // $this->dispatchBrowserEvent('notification', ['type' => 'success', 'message' => 'Excel imported successfully.']);
+        $this->dispatch('notification', ['type' => 'success', 'message' => 'Excel imported successfully.']);
     }
 
     public function render()

@@ -50,13 +50,13 @@
 			<div class="form-group mt-1">
 				<div class="input-group">
 					<label class="control-label col-12 col-lg-3 fw-bold text-muted">Nama Produk</label>
-					<input type="text" class="form-control readonly"  readonly="readonly" wire:model="product_name" />
+					<input type="text" class="form-control readonly bg-light"  readonly="readonly" wire:model="product_name" />
 				</div>
 			</div>
 			<div class="form-group mt-1">
 				<div class="input-group">
 					<label class="control-label col-12 col-lg-3 fw-bold text-muted">Dimensi</label>
-					<input type="text" class="form-control readonly"  readonly="readonly" wire:model="dimensi" />
+					<input type="text" class="form-control readonly bg-light"  readonly="readonly" wire:model="dimensi" />
 				</div>
 			</div>
 			<div class="form-group mt-1">
@@ -154,7 +154,7 @@
 							<i class="ri-delete-bin-line"></i> Delete
 						</button>
 
-						<button id="btnCreate" type="submit" class="btn btn-success w-lg">
+						<button type="button" class="btn btn-success w-lg" wire:click="save">
 							<span wire:loading.remove wire:target="save">
 								<i class="ri-save-3-line"></i> Update
 							</span>

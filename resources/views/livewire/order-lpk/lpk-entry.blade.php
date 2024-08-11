@@ -5,7 +5,7 @@
                 <label class="form-label text-muted fw-bold">Filter Tanggal</label>
             </div>
             <div class="col-12 col-lg-9 mb-1">
-                <div class="form-group">
+                <div class="form-group" wire:ignore>
                     <div class="input-group">
                         <div class="col-3">
                             <select class="form-select" style="padding:0.44rem" wire:model.defer="transaksi">
@@ -124,7 +124,7 @@
                     <i class="ri-add-line"> </i> Add
                 </button>
             </div>
-            <div class="col-12 col-lg-7">
+            <div class="col-12 col-lg-7 d-none d-sm-block">
                 <input type="file" id="fileInput" wire:model="file" style="display: none;">
                 <button class="btn btn-success w-lg p-1" type="button"
                     onclick="document.getElementById('fileInput').click()">
@@ -196,7 +196,7 @@
     <div class="col text-end dropdown" x-data="{ 
         lpk_date:true, lpk_panjang:true, lpk_jumlah:true, gentan_jumlah:true, gulung_meter:true, selisih:false, infure_progress:true, seitai_progress:true, produk_nama:false, produk_kode:true, mesin:false, buyer:false, proses_tanggal: true, seq: false, by_update: false, updated: false
         }">
-        <button type="button" data-bs-toggle="dropdown" aria-expanded="false" class="btn btn-soft-primary btn-icon fs-14 me-4 mb-4">
+        <button type="button" data-bs-toggle="dropdown" aria-expanded="false" class="btn btn-soft-primary btn-icon fs-14 mb-4">
             <i class="ri-grid-fill"></i>
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
