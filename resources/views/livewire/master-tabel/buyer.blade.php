@@ -305,62 +305,99 @@
             </div>
         </div>
     </div>
-    <div class="table-responsive table-card mt-3 mb-1">
-        <table class="table align-middle table-nowrap" id="customerTable" style="width:100%">
-            <thead class="table-light">
-                <tr>
-                    <th>Action</th>
-                    <th class="sort">Kode Buyer</th>
-                    <th class="sort">Nama Buyer</th>
-                    <th class="sort">Alamat</th>
-                    <th class="sort">Negara</th>
-                    <th class="sort">Status</th>
-                    <th class="sort">Updated By</th>
-                    <th class="sort">Updated</th>
-                    {{-- <th class="sort">No.</th> --}}
-                </tr>
-            </thead>
-            <tbody class="list form-check-all">
-                @forelse ($buyers as $item)
+    <div class="col text-end dropdown" x-data="{ 
+        po_no:true, na_pr:true, ko_pr:true, bu:true, qt:true, up_by: true, up_dt: false
+        }">
+        <button type="button" data-bs-toggle="dropdown" aria-expanded="false" class="btn btn-soft-primary btn-icon fs-14 mb-4">
+            <i class="ri-grid-fill"></i>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li @click="po_no = !po_no; $refs.checkbox.checked = po_no" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="po_no = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="po_no"> 
+                Kode Buyer
+            </li>
+            <li @click="na_pr = !na_pr; $refs.checkbox.checked = na_pr" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="na_pr = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="na_pr"> 
+                Nama Buyer
+            </li>
+            <li @click="ko_pr = !ko_pr; $refs.checkbox.checked = ko_pr" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="ko_pr = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="ko_pr"> 
+                Alamat
+            </li>
+            <li @click="bu = !bu; $refs.checkbox.checked = bu" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="bu = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="bu"> 
+                Negara
+            </li>
+            <li @click="qt = !qt; $refs.checkbox.checked = qt" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="qt = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="qt"> 
+                Status
+            </li>
+            <li @click="up_by = !up_by; $refs.checkbox.checked = up_by" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="up_by = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="up_by"> 
+                Update By
+            </li>
+            <li @click="up_dt = !up_dt; $refs.checkbox.checked = up_dt" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="up_dt = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="up_dt"> 
+                UpdateDt
+            </li>
+        </ul>
+    
+        <div class="table-responsive table-card">
+            <table class="table table-bordered align-middle dt-responsive mdl-data-table" style="overflow-x: :scroll">
+                <thead class="table-light">
                     <tr>
-                        <td>
-                            <button type="button" class="btn fs-15 p-1 bg-primary rounded" data-bs-toggle="modal"
-                                data-bs-target="#modal-edit" wire:click="edit({{ $item->id }})">
-                                <i class="ri-edit-box-line text-white"></i>
-                            </button>
-                            <button type="button" class="btn fs-15 p-1 bg-danger rounded removeBuyerModal"
-                                wire:click="delete({{ $item->id }})">
-                                <i class="ri-delete-bin-line  text-white"></i>
-                            </button>
-                        </td>
-                        <td>{{ $item->code }}</td>
-                        <td>{{ $item->name }}</td>
-                        <td>{{ $item->address }}</td>
-                        <td>{{ $item->country }}</td>
-                        <td>
-                            {!! $item->status == 1
+                        <th></th>
+                        <th x-show="po_no" style="width: 70px;" wire:click='sortBy("id")'>Kode Buyer
+                            <i class="ri-arrow-up-line"></i>
+                        </th>
+                        <th x-show="na_pr" style="width: 200px; text-align: left;">Nama Buyer</th>
+                        <th x-show="ko_pr" style="width: 350px; text-align: left; ">Alamat</th>
+                        <th x-show="bu" style="width: 80px; text-align: left;" >Negara</th>
+                        <th x-show="qt" style="width: 60px;">Status</th>
+                        <th x-show="up_by" style="width: 50px;">Updated By</th>
+                        <th x-show="up_dt" style="width: 50px;">Updated</th>
+                    </tr>
+                </thead>
+                <tbody class="list form-check-all">
+                    @php
+                        $no = 1;
+                    @endphp
+                    @forelse ($buyers as $item)
+                        <tr>
+                            <td class="d-flex">
+                                <button type="button" class="btn fs-10 p-1 bg-primary rounded me-2" data-bs-toggle="modal"
+                                    data-bs-target="#modal-edit" wire:click="edit({{ $item->id }})">
+                                    <i class="ri-edit-box-line text-white"></i>
+                                </button>
+                                <button type="button" class="btn fs-10 p-1 bg-danger rounded" wire:click="delete({{ $item->id }})">
+                                    <i class="ri-delete-bin-line text-white"></i>
+                                </button>
+                            </td>
+                            <td x-show="po_no" style="width: 70px;">{{ $item->code }}</td>
+                            <td x-show="na_pr" style="width: 200px; text-align: left;">{{ $item->name }}</td>
+                            <td x-show="ko_pr" style="width: 350px; text-align: left;">{{ $item->address }}</td>
+                            <td x-show="bu" style="width: 80px; text-align: left;">{{ $item->country }}</td>
+                            <td x-show="qt" style="width: 60px;">{!! $item->status == 1
                                 ? '<span class="badge text-success bg-success-subtle">Active</span>'
-                                : '<span class="badge text-bg-danger">Non Active</span>' !!}
-                        </td>
-                        <td>{{ $item->updated_by }}</td>
-                        <td>{{ $item->updated_on }}</td>
-                        {{-- <td>{{ $no++ }}</td> --}}
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="10" class="text-center">
-                            <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
-                                colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
-                            <h5 class="mt-2">Sorry! No Result Found</h5>
-                            <p class="text-muted mb-0">We've searched more than 150+ Orders We did not find any orders
-                                for you search.</p>
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-        {{-- {{ $buyers->links() }} --}}
+                                : '<span class="badge text-bg-danger">Non Active</span>' !!}</td>
+                            <td x-show="up_by" style="width: 50px;">{{ $item->updated_by }}</td>  
+                            <td x-show="up_dt" style="width: 50px;">{{ $item->updated_on }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="10" class="text-center">
+                                <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:25px;height:25px"></lord-icon>
+                                <h5 class="mt-2">Sorry! No Result Found</h5>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+            {{-- {{ $buyers->links(data: ['scrollTo' => false]) }} --}}
+            {{-- {{ $buyers->links() }} --}}
+        </div>
     </div>
+    
     {{-- <livewire:tdorder/> --}}
 </div>
 
