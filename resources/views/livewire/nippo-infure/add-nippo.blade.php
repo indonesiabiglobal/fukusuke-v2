@@ -105,7 +105,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Nomor Mesin</label>
-                                <input type="text" placeholder=" ... " class="form-control @error('machineno') is-invalid @enderror" wire:model.live.debounce.300ms="machineno" />
+                                <input type="text" placeholder=" ... " class="form-control @error('machineno') is-invalid @enderror" wire:model.live.debounce.800ms="machineno" />
                                 @error('machineno')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
