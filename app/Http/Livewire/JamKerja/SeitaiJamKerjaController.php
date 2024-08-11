@@ -39,10 +39,10 @@ class SeitaiJamKerjaController extends Component
 
     public function mount()
     {
-        $this->tglMasuk = Carbon::now()->format('Y-m-d');
-        $this->tglKeluar = Carbon::now()->format('Y-m-d');
+        $this->tglMasuk = Carbon::now()->format('d-m-Y');
+        $this->tglKeluar = Carbon::now()->format('d-m-Y');
         $this->machine  = MsMachine::limit(10)->get();
-        $this->working_date = Carbon::now()->format('Y-m-d');
+        $this->working_date = Carbon::now()->format('d-m-Y');
         $this->workShift  = MsWorkingShift::get();
     }
 

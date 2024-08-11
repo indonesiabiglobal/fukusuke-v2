@@ -10,12 +10,12 @@
                         <div class="col-12">
                             <div class="form-group">
                                 <div class="input-group">
-                                    <input wire:model.defer="tglMasuk" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d/m/Y">
+                                    <input wire:model.defer="tglMasuk" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
                                     <span class="input-group-text py-0">
                                         <i class="ri-calendar-event-fill fs-4"></i>
                                     </span>
 
-                                    <input wire:model.defer="tglKeluar" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d/m/Y">
+                                    <input wire:model.defer="tglKeluar" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
                                     <span class="input-group-text py-0">
                                         <i class="ri-calendar-event-fill fs-4"></i>
                                     </span>
@@ -67,7 +67,7 @@
         </div>
     </div>
 
-    <div class="col-lg-12" style="border-top:1px solid #efefef">
+    <div class="col-lg-12">
         <div class="toolbar">
             <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1">
                 <span wire:loading.remove wire:target="search">
@@ -295,19 +295,119 @@
             </div>
         </div>
     </div>
-    <div class="table-responsive table-card mt-3 mb-1">
-        <table class="table align-middle table-nowrap" id="customerTable" style="width:100%">
+    <div class="col text-end dropdown" x-data="{ 
+        tanggal:true, shift:true, nomor_mesin:true, nik:true, petugas:true, jam_kerja:true, jam_mati:true, jam_jalan:true, update_by:false, updated: false
+        }">
+        <button type="button" data-bs-toggle="dropdown" aria-expanded="false" class="btn btn-soft-primary btn-icon fs-14 mb-4">
+            <i class="ri-grid-fill"></i>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li @click="tanggal = !tanggal; $refs.checkbox.checked = tanggal" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="tanggal = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="tanggal"> 
+                Tanggal
+            </li>
+            <li @click="shift = !shift; $refs.checkbox.checked = shift" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="shift = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="shift"> 
+                Shift
+            </li>
+            <li @click="nomor_mesin = !nomor_mesin; $refs.checkbox.checked = nomor_mesin" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="nomor_mesin = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="nomor_mesin"> 
+                Nomor Mesin
+            </li>
+            <li @click="nik = !nik; $refs.checkbox.checked = nik" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="nik = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="nik"> 
+                NIK
+            </li>
+            <li @click="petugas = !petugas; $refs.checkbox.checked = petugas" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="petugas = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="petugas"> 
+                Petugas
+            </li>
+            <li @click="jam_kerja = !jam_kerja; $refs.checkbox.checked = jam_kerja" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="jam_kerja = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="jam_kerja"> 
+                Jam Kerja
+            </li>
+            <li @click="jam_mati = !jam_mati; $refs.checkbox.checked = jam_mati" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="jam_mati = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="jam_mati"> 
+                Jam Mati
+            </li>
+            <li @click="jam_jalan = !jam_jalan; $refs.checkbox.checked = jam_jalan" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="jam_jalan = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="jam_jalan"> 
+                Jam Jalan
+            </li>
+            <li @click="update_by = !update_by; $refs.checkbox.checked = update_by" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="update_by = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="update_by"> 
+                Update By
+            </li>
+            <li @click="updated = !updated; $refs.checkbox.checked = updated" style="cursor: pointer;">
+                <input x-ref="checkbox" @change="updated = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="updated"> 
+                Updated
+            </li>
+        </ul>
+    
+        <div class="table-responsive table-card">
+            <table class="table align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Action</th>
+                        <th x-show="tanggal">Tanggal</th>
+                        <th x-show="shift">Shift</th>
+                        <th x-show="nomor_mesin">Nomor Mesin</th>
+                        <th x-show="nik">NIK</th>
+                        <th x-show="petugas">Petugas</th>
+                        <th x-show="jam_kerja">Jam Kerja</th>
+                        <th x-show="jam_mati">Jam Mati</th>
+                        <th x-show="jam_jalan">Jam Jalan</th>
+                        <th x-show="update_by">Update By</th>
+                        <th x-show="updated">Updated</th>
+                    </tr>
+                </thead>
+                <tbody class="list form-check-all">
+                    @forelse ($data as $item)
+                        <tr>
+                            <td>
+                                <button type="button" class="link-success fs-15 p-1 bg-primary rounded" data-bs-toggle="modal" data-bs-target="#modal-edit" wire:click="edit({{$item->orderid}})">
+                                    <i class="ri-edit-box-line text-white"></i>
+                                </button>
+                            </td>
+                            <td x-show="tanggal">{{ $item->working_date }}</td>
+                            <td x-show="shift">{{ $item->work_shift }}</td>
+                            <td x-show="nomor_mesin">{{ $item->machine_id }}</td>
+                            <td x-show="nik"> </td>
+                            <td x-show="petugas"> </td>
+                            <td x-show="jam_kerja">{{ $item->work_hour }}</td>
+                            <td x-show="jam_mati">{{ $item->off_hour }}</td>
+                            <td x-show="jam_jalan">{{ $item->on_hour }}</td>
+                            <td x-show="update_by">{{ $item->updated_by }}</td>
+                            <td x-show="updated">{{ $item->updated_on }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="12" class="text-center">
+                                <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
+                                <h5 class="mt-2">Sorry! No Result Found</h5>
+                                <p class="text-muted mb-0">We've searched more than 150+ Orders We did not find any orders for you search.</p>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+            {{ $data->links(data: ['scrollTo' => false]) }}
+        </div>
+    </div>
+
+    {{-- <div class="table-responsive table-card mt-3 mb-1">
+        <table class="table align-middle">
             <thead class="table-light">
                 <tr>
-                    <th class="border-0 rounded-start">Action</th>
-                    <th class="border-0">Tanggal</th>
-                    <th class="border-0">Shift</th>
-                    <th class="border-0">Nomor Mesin</th>
-                    <th class="border-0">NIK</th>
-                    <th class="border-0">Petugas</th>
-                    <th class="border-0 rounded-end">Jam Kerja</th>
-                    <th class="border-0">Jam Mati</th>
-                    <th class="border-0">Jam Jalan</th>
+                    <th>Action</th>
+                    <th>Tanggal</th>
+                    <th>Shift</th>
+                    <th>Nomor Mesin</th>
+                    <th>NIK</th>
+                    <th>Petugas</th>
+                    <th>Jam Kerja</th>
+                    <th>Jam Mati</th>
+                    <th>Jam Jalan</th>
                 </tr>
             </thead>
             <tbody class="list form-check-all">
@@ -343,5 +443,5 @@
             </tbody>
         </table>
         {{ $data->links() }}
-    </div>
+    </div> --}}
 </div>
