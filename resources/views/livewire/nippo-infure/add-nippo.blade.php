@@ -353,7 +353,7 @@
                             </span>
                         </div>
                     </button>
-                    <button type="submit" class="btn btn-success">
+                    <button type="button" wire:click="save" class="btn btn-success">
                         <span wire:loading.remove wire:target="save">
                             <i class="ri-save-3-line"></i> Save
                         </span>
