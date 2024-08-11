@@ -380,7 +380,7 @@ class AddNippoController extends Component
                 $this->dimensiinfure = $tdorderlpk->ketebalan.'x'.$tdorderlpk->diameterlipat;
                 $this->qty_gulung = $tdorderlpk->qty_gulung;
                 // $this->qty_gentan = $tdorderlpk->qty_gentan;
-                $this->gentan_no= $tdorderlpk->gentan_no + 1;
+                // $this->gentan_no= $tdorderlpk->gentan_no + 1;
 
                 $this->details = DB::table('tdproduct_assembly_loss as tal')
                 ->select(
