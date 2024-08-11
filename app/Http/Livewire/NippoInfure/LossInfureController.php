@@ -102,19 +102,19 @@ class LossInfureController extends Component
 
         if($this->transaksi == 2){
             if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
-                $data = $data->where('tdpa.production_date', '>=', $this->tglMasuk);
-            }
-    
-            if (isset($this->tglKeluar) && $this->tglKeluar != "" && $this->tglKeluar != "undefined") {
-                $data = $data->where('tdpa.production_date', '<=', $this->tglKeluar);
-            }
-        } else {
-            if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
                 $data = $data->where('tdpa.created_on', '>=', $this->tglMasuk);
             }
     
             if (isset($this->tglKeluar) && $this->tglKeluar != "" && $this->tglKeluar != "undefined") {
                 $data = $data->where('tdpa.created_on', '<=', $this->tglKeluar);
+            }            
+        } else {
+            if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
+                $data = $data->where('tdpa.production_date', '>=', $this->tglMasuk);
+            }
+    
+            if (isset($this->tglKeluar) && $this->tglKeluar != "" && $this->tglKeluar != "undefined") {
+                $data = $data->where('tdpa.production_date', '<=', $this->tglKeluar);
             }
         }
         if (isset($this->machineId) && $this->machineId['value'] != "" && $this->machineId != "undefined") {            

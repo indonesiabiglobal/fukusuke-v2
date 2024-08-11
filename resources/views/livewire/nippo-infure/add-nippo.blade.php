@@ -336,8 +336,8 @@
                     <i class="ri-add-line"></i> Add Loss Infure
                 </button> --}}
             </div>
-            <div class="col-lg-3" style="border-top:1px solid #efefef">
-                <div class="toolbar">
+            <div class="col-lg-3">
+                <div class="toolbar float-end">
                     <button type="button" class="btn btn-warning" wire:click="cancel">
                         <span wire:loading.remove wire:target="cancel">
                             <i class="ri-close-line"> </i> Close
