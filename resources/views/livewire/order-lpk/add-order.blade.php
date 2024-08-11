@@ -6,6 +6,9 @@
 				<div class="input-group">
 					<label class="control-label col-12 col-lg-3 fw-bold text-muted">Tanggal Proses</label>
 					<input class="form-control datepicker-input @error('process_date') is-invalid @enderror" type="date" wire:model="process_date" placeholder="yyyy/mm/dd"/ disabled>
+                    <span class="input-group-text py-0">
+                        <i class="ri-calendar-event-fill fs-4"></i>
+                    </span>
 					@error('process_date')
 						<span class="invalid-feedback">{{ $message }}</span>
 					@enderror
@@ -26,6 +29,9 @@
 				<div class="input-group">
 					<label class="control-label col-12 col-lg-3 fw-bold text-muted">Tanggal Order</label>
 					<input wire:model.live="order_date" type="text" class="form-control @error('order_date') is-invalid @enderror" data-provider="flatpickr" data-date-format="d/m/Y">
+                    <span class="input-group-text py-0">
+                        <i class="ri-calendar-event-fill fs-4"></i>
+                    </span>
 					@error('order_date')
 						<span class="invalid-feedback">{{ $message }}</span>
 					@enderror
@@ -47,13 +53,13 @@
 			<div class="form-group mt-1">
 				<div class="input-group">
 					<label class="control-label col-12 col-lg-3 fw-bold text-muted">Nama Produk</label>
-					<input type="text" class="form-control readonly bg-light"  readonly="readonly" wire:model="product_name" />
+					<input type="text" class="form-control readonly bg-light" readonly="readonly" wire:model="product_name" />
 				</div>
 			</div>
 			<div class="form-group mt-1">
 				<div class="input-group">
 					<label class="control-label col-12 col-lg-3 fw-bold text-muted">Dimensi</label>
-					<input type="text" class="form-control readonly bg-light"  readonly="readonly" wire:model="dimensi" />
+					<input type="text" class="form-control readonly bg-light" readonly="readonly" wire:model="dimensi" />
 				</div>
 			</div>
 			<div class="form-group mt-1">
@@ -83,6 +89,9 @@
 				<div class="input-group">
 					<label class="control-label col-12 col-lg-3 fw-bold text-muted">Tanggal Stuffing</label>
 					<input class="form-control datepicker-input @error('stufingdate') is-invalid @enderror" type="text" wire:model="stufingdate" data-provider="flatpickr" data-date-format="d/m/Y" placeholder="yyyy/mm/dd"/>
+                    <span class="input-group-text py-0">
+                        <i class="ri-calendar-event-fill fs-4"></i>
+                    </span>
 					@error('stufingdate')
 						<span class="invalid-feedback">{{ $message }}</span>
 					@enderror
@@ -92,6 +101,9 @@
 				<div class="input-group">
 					<label class="control-label col-12 col-lg-3 fw-bold text-muted">ETD</label>
 					<input class="form-control datepicker-input @error('etddate') is-invalid @enderror" type="text" wire:model="etddate" data-provider="flatpickr" data-date-format="d/m/Y" placeholder="yyyy/mm/dd"/>
+                    <span class="input-group-text py-0">
+                        <i class="ri-calendar-event-fill fs-4"></i>
+                    </span>
 					@error('etddate')
 						<span class="invalid-feedback">{{ $message }}</span>
 					@enderror
@@ -101,25 +113,14 @@
 				<div class="input-group">
 					<label class="control-label col-12 col-lg-3 fw-bold text-muted">ETA</label>
 					<input class="form-control datepicker-input @error('etadate') is-invalid @enderror" type="text" wire:model="etadate" data-provider="flatpickr" data-date-format="d/m/Y" placeholder="yyyy/mm/dd"/>
+                    <span class="input-group-text py-0">
+                        <i class="ri-calendar-event-fill fs-4"></i>
+                    </span>
 					@error('etadate')
 						<span class="invalid-feedback">{{ $message }}</span>
 					@enderror
 				</div>
 			</div>
-			{{-- <div class="form-group mt-1">
-				<div class="input-group" wire:ignore>
-					<label class="control-label col-12 col-lg-3 fw-bold text-muted">Buyer</label>
-					<select class="form-control @error('buyer_id') is-invalid @enderror" wire:model="buyer_id" placeholder="" data-choices data-choices-sorting-false>
-                        <option value=""></option>
-						@foreach ($buyer as $item)
-                            <option value="{{ $item->id }}">{{ $item->name }}</option>
-						@endforeach
-					</select>
-                    @error('buyer_id')
-						<span class="invalid-feedback">{{ $message }}</span>
-					@enderror
-				</div>
-			</div> --}}
             <div class="row mt-1">
 				<div class="col-12 col-lg-3">
 					<label class="form-label text-muted fw-bold">Buyer</label>
@@ -132,10 +133,11 @@
                                 <option value="{{ $item->id }}">{{ $item->name }}</option>
                             @endforeach
 						</select>
-						@error('buyer_id')
+						
+					</div>
+                    @error('buyer_id')
 							<span class="invalid-feedback">{{ $message }}</span>
 						@enderror
-					</div>
 				</div>
 			</div>
 			<hr />

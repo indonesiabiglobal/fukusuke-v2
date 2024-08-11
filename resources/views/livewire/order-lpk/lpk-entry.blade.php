@@ -267,7 +267,7 @@
         </ul>
     
         <div class="table-responsive table-card">
-            <table class="table align-middle table-nowrap">
+            <table class="table align-middle">
                 <thead class="table-light">
                     <tr>
                         <th scope="col" style="width: 10px;">

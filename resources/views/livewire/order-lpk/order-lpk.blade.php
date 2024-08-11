@@ -6,7 +6,7 @@
                 <label class="form-label text-muted fw-bold">Filter Tanggal</label>
             </div>
             <div class="col-12 col-lg-9 mb-1">
-                <div class="form-group">
+                <div class="form-group" wire:ignore>
                     <div class="input-group">
                         <div class="col-3">
                             <select class="form-select" style="padding:0.44rem" wire:model.defer="transaksi">
@@ -112,12 +112,7 @@
                     <i class="ri-add-line"> </i> Add
                 </button>
             </div>
-            <div class="col-12 col-lg-6">
-                    {{-- <form wire:submit.prevent="import">
-                        <input type="file" wire:model="file">
-                        <button type="submit">Import</button>
-                    </form> --}}
-
+            <div class="col-12 col-lg-6 d-none d-sm-block">
                 <input type="file" id="fileInput" wire:model="file" style="display: none;">
                 <button class="btn btn-success w-lg p-1" type="button" onclick="document.getElementById('fileInput').click()">
                     <span wire:loading.remove wire:target="file">

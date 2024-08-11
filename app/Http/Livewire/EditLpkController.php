@@ -13,6 +13,7 @@ use Carbon\Carbon;
 
 class EditLpkController extends Component
 {
+    public $code;
     public $buyer;
     public $orderId;
     public $lpk_date;
@@ -41,6 +42,12 @@ class EditLpkController extends Component
     public $case_box_count;
 
     public $masterWarnaLPK;
+
+    // data master produk
+    public $masterKatanuki;
+    public $product;
+    public $photoKatanuki;
+    public $katanuki_id;
 
     protected $rules = [
         'lpk_date' => 'required',
@@ -193,6 +200,55 @@ class EditLpkController extends Component
         $this->dispatch('redirectToPrint', $lpk_id);
     }
 
+    public function showModalNoOrder()
+    {
+        if (isset($this->no_order) && $this->no_order != '') {
+            $this->product = MsProduct::where('code', $this->no_order)->first();
+            if ($this->product == null) {
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Order ' . $this->no_order . ' Tidak Terdaftar']);
+            } else {
+                // nomor order produk
+                // $this->productNomorOrder = DB::table('msproduct')->where('code', $this->product_id)->first();
+                $this->masterKatanuki = DB::table('mskatanuki')->where('id', $this->product->katanuki_id)->first(['name', 'filename']);
+
+                // $this->code = $this->product->code;
+                // $this->name = $this->product->name;
+                $this->product->product_type_id = DB::table('msproduct_type')->where('id', $this->product->product_type_id)->first(['name'])->name ?? '';
+                $this->product->product_unit = DB::table('msunit')->where('code', $this->product->product_unit)->first(['name'])->name ?? '';
+                $this->product->material_classification = DB::table('msmaterial')->where('id', $this->product->material_classification)->first(['name'])->name ?? '';
+                $this->product->embossed_classification = DB::table('msembossedclassification')->where('id', $this->product->embossed_classification)->first(['name'])->name ?? '';
+                $this->product->surface_classification = DB::table('mssurfaceclassification')->where('id', $this->product->surface_classification)->first(['name'])->name ?? '';
+                $this->product->gentan_classification = DB::table('msgentanclassification')->where('id', $this->product->gentan_classification)->first(['name'])->name ?? '';
+                $this->product->gazette_classification = DB::table('msgazetteclassification')->where('id', $this->product->gazette_classification)->first(['name'])->name ?? '';
+                $this->katanuki_id = $this->masterKatanuki->name ?? '';
+                $this->photoKatanuki = $this->masterKatanuki->filename ?? '';
+                $this->product->print_type = DB::table('msjeniscetak')->where('code', $this->product->print_type)->first(['name'])->name ?? '';
+                $this->product->ink_characteristic = DB::table('mssifattinta')->where('code', $this->product->ink_characteristic)->first(['name'])->name ?? '';
+                $this->product->endless_printing = DB::table('msendless')->where('code', $this->product->endless_printing)->first(['name'])->name ?? '';
+                $this->product->winding_direction_of_the_web = DB::table('msarahgulung')->where('code', $this->product->winding_direction_of_the_web)->first(['name'])->name ?? '';
+                $this->product->seal_classification = DB::table('msklasifikasiseal')->where('code', $this->product->seal_classification)->first(['name'])->name ?? '';
+                $this->product->pack_gaiso_id = DB::table('mspackaginggaiso')->where('id', $this->product->pack_gaiso_id)->first(['name'])->name ?? '';
+                $this->product->pack_box_id = DB::table('mspackagingbox')->where('id', $this->product->pack_box_id)->first(['name'])->name ?? '';
+                $this->product->pack_inner_id = DB::table('mspackaginginner')->where('id', $this->product->pack_inner_id)->first(['name'])->name ?? '';
+                $this->product->pack_layer_id = DB::table('mspackaginglayer')->where('id', $this->product->pack_layer_id)->first(['name'])->name ?? '';
+                $this->product->case_gaiso_count_unit = DB::table('msunit')->where('id', $this->product->case_gaiso_count_unit)->first(['name'])->name ?? '';
+                $this->product->case_box_count_unit = DB::table('msunit')->where('id', $this->product->case_box_count_unit)->first(['name'])->name ?? '';
+                $this->product->case_inner_count_unit = DB::table('msunit')->where('id', $this->product->case_inner_count_unit)->first(['name'])->name ?? '';
+                $this->product->lakbaninfureid = DB::table('mslakbaninfure')->where('id', $this->product->lakbaninfureid)->first(['name'])->name ?? '';
+                $this->product->lakbanseitaiid = DB::table('mslakbanseitai')->where('id', $this->product->lakbanseitaiid)->first(['name'])->name ?? '';
+                $this->product->stampelseitaiid = DB::table('msstampleseitai')->where('id', $this->product->stampelseitaiid)->first(['name'])->name ?? '';
+                $this->product->hagataseitaiid = DB::table('mshagataseitai')->where('id', $this->product->hagataseitaiid)->first(['name'])->name ?? '';
+                $this->product->jenissealseitaiid = DB::table('msjenissealseitai')->where('id', $this->product->jenissealseitaiid)->first(['name'])->name ?? '';
+                // dd($this->product);
+
+                // show modal
+                $this->dispatch('showModalNoOrder');
+            }
+        } else {
+            $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Order tidak boleh kosong']);
+        }
+    }
+
     public function render()
     {
         if(isset($this->po_no) && $this->po_no != ''){
@@ -250,13 +306,6 @@ class EditLpkController extends Component
         if(isset($this->panjang_lpk) && isset($this->total_assembly_line)){
             $this->selisihkurang = $this->panjang_lpk - $this->total_assembly_line;
         }
-        // if(isset($this->qty_lpk) && isset($this->productlength)){
-            // $this->total_assembly_line = $this->qty_lpk * $this->productlength;
-            // $this->qty_gentan = $this->productlength / $this->defaultgulung;
-            // $this->qty_gulung = $this->productlength * $this->qty_gentan;
-            // $this->panjang_lpk = $this->qty_gentan * $this->qty_gulung;
-            // $this->selisihkurang = $this->productlength - $this->panjang_lpk;
-        // }
 
         return view('livewire.order-lpk.edit-lpk')->extends('layouts.master');
     }

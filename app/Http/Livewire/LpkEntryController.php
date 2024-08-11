@@ -44,6 +44,7 @@ class LpkEntryController extends Component
 
     public function search()
     {
+        $this->resetPage();
         $this->render();
     }
 
@@ -70,7 +71,7 @@ class LpkEntryController extends Component
 
         Excel::import(new LpkEntryImport, $this->file->path());
 
-        // $this->dispatchBrowserEvent('notification', ['type' => 'success', 'message' => 'Excel imported successfully.']);
+        $this->dispatch('notification', ['type' => 'success', 'message' => 'Excel imported successfully.']);
     }
 
     public function print()
