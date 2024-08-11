@@ -25,7 +25,7 @@
 			<div class="form-group mt-1">
 				<div class="input-group">
 					<label class="control-label col-12 col-lg-3 fw-bold text-muted">Tanggal Order</label>
-					<input wire:model="order_date" type="text" class="form-control @error('order_date') is-invalid @enderror" data-provider="flatpickr" data-date-format="d/m/Y">
+					<input wire:model.live="order_date" type="text" class="form-control @error('order_date') is-invalid @enderror" data-provider="flatpickr" data-date-format="d/m/Y">
 					@error('order_date')
 						<span class="invalid-feedback">{{ $message }}</span>
 					@enderror
@@ -47,13 +47,13 @@
 			<div class="form-group mt-1">
 				<div class="input-group">
 					<label class="control-label col-12 col-lg-3 fw-bold text-muted">Nama Produk</label>
-					<input type="text" class="form-control readonly"  readonly="readonly" wire:model="product_name" />
+					<input type="text" class="form-control readonly bg-light"  readonly="readonly" wire:model="product_name" />
 				</div>
 			</div>
 			<div class="form-group mt-1">
 				<div class="input-group">
 					<label class="control-label col-12 col-lg-3 fw-bold text-muted">Dimensi</label>
-					<input type="text" class="form-control readonly"  readonly="readonly" wire:model="dimensi" />
+					<input type="text" class="form-control readonly bg-light"  readonly="readonly" wire:model="dimensi" />
 				</div>
 			</div>
 			<div class="form-group mt-1">

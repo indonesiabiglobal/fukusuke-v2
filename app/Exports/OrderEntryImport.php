@@ -18,6 +18,11 @@ class OrderEntryImport implements ToModel, WithHeadingRow
 
     public function model(array $row)
     {
+        $row['tg_order'] = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['tg_order']);
+        $row['tg_proses'] = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['tg_proses']);
+        $row['tg_etd'] = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['tg_etd']);
+        $row['tg_eta'] = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['tg_eta']);
+
         $product = MsProduct::where('code', $row['no_order'])->first();
 
         return new TdOrders([
@@ -25,7 +30,7 @@ class OrderEntryImport implements ToModel, WithHeadingRow
             'po_no' => $row['po_number'],
             'order_date' => $row['tg_order'],
             'product_id' => $product->id,
-            'product_code' => $product->code,
+            'product_code' => $row['no_order'],
             'order_qty' => $row['qty_order'],
             'order_unit' => $row['unit'],
             'stufingdate' => $row['tg_stufing'],
