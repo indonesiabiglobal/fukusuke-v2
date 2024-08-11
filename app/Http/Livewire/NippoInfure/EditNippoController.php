@@ -293,6 +293,10 @@ class EditNippoController extends Component
             $employe = MsEmployee::where('employeeno', $this->employeeno)->first();
             $products = MsProduct::where('code', $this->code)->first();
 
+            $maxGentan = TdProductAssembly::where('lpk_id', $lpkid->id)
+            ->orderBy('gentan_no', 'DESC')
+            ->first();
+
             $product = TdProductAssembly::findOrFail($this->orderId);
             $product->production_date = $this->production_date;
             $product->created_on = $this->created_on;
@@ -301,6 +305,9 @@ class EditNippoController extends Component
             $product->work_shift = $this->work_shift;
             $product->work_hour = $this->work_hour;
             $product->lpk_id = $lpkid->id;
+            if($this->gentan_no == 0){
+                $this->gentan_no = $maxGentan->gentan_no + 1;
+            }
             $product->gentan_no = $this->gentan_no;
             $product->nomor_han = $this->nomor_han;
             $product->product_id = $products->id;
@@ -318,14 +325,6 @@ class EditNippoController extends Component
                         lpk_id = $lpkid->id
                 ) AS x
             ");
-
-            // $product->panjang_printing_inline = $this->panjang_printing_inline;
-            // $product->berat_standard = $this->berat_standard;
-            // $product->berat_produksi = $this->berat_produksi;
-            // $product->status_production = $this->status_production;
-            // $product->status_kenpin = $this->status_kenpin;
-            // $product->infure_cost = $this->infure_cost;
-            // $product->product_id = $this->product_id;
             $product->save();
 
             TdProductAssemblyLoss::where('lpk_id',$lpkid->id)->update([
@@ -422,8 +421,7 @@ class EditNippoController extends Component
                 'mp.ketebalan',
                 'mp.diameterlipat',
                 'tolp.qty_gulung',
-                'tolp.qty_gentan',
-                'tda.gentan_no'
+                'tolp.qty_gentan'
             )
             ->join('msproduct as mp', 'mp.id', '=', 'tolp.product_id')
             ->join('tdproduct_assembly as tda', 'tda.lpk_id', '=', 'tolp.id')
@@ -441,7 +439,7 @@ class EditNippoController extends Component
                 $this->dimensiinfure = $tdorderlpk->ketebalan.'x'.$tdorderlpk->diameterlipat;
                 $this->qty_gulung = $tdorderlpk->qty_gulung;
                 $this->qty_gentan = $tdorderlpk->qty_gentan;
-                $this->gentan_no= $tdorderlpk->gentan_no;
+                // $this->gentan_no= $tdorderlpk->gentan_no;
 
                 $this->details = DB::table('tdproduct_assembly_loss as tal')
                 ->select(
@@ -485,20 +483,6 @@ class EditNippoController extends Component
             } else {
                 $this->empname = $msemployee->empname;
             }
-        }
-
-        $lpkid = TdOrderLpk::where('lpk_no', $this->lpk_no)->first();
-
-        $this->gentan_no = 1;
-        if (!empty($lpkid)) {
-            $lastGentan = TdProductAssembly::where('lpk_id', $lpkid->lpk_id)
-                ->max('gentan_no');
-
-            $nogentan = 1;
-            if(!empty($lastGentan)){
-                $nogentan = $lastGentan->seq_no + 1;
-            }
-            $this->gentan_no=$nogentan;
         }
 
         if(isset($this->nomor_barcode) && $this->nomor_barcode != ''){

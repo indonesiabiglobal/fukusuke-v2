@@ -20,31 +20,31 @@
         <div class="form-group mt-1">
             <div class="input-group">
                 <label class="control-label col-12 col-lg-2 fw-bold">Tanggal LPK</label>
-                <input type="text" wire:model="lpk_date" class="form-control readonly" readonly="readonly" />
+                <input type="text" wire:model="lpk_date" class="form-control readonly bg-light" readonly="readonly" />
             </div>
         </div>
         <div class="form-group mt-1">
             <div class="input-group">
                 <label class="control-label col-12 col-lg-2 fw-bold">Jumlah LPK</label>
-                <input type="text" wire:model="qty_lpk" class="form-control readonly integer" readonly="readonly" />
+                <input type="text" wire:model="qty_lpk" class="form-control readonly bg-light" readonly="readonly" />
             </div>
         </div>
         <div class="form-group mt-1">
             <div class="input-group">
                 <label class="control-label col-12 col-lg-2 fw-bold">Nomor Order</label>
-                <input type="text" wire:model="code" class="form-control readonly" readonly="readonly" />
+                <input type="text" wire:model="code" class="form-control readonly bg-light" readonly="readonly" />
             </div>
         </div>
         <div class="form-group mt-1">
             <div class="input-group">
                 <label class="control-label col-12 col-lg-2 fw-bold">Nama Produk</label>
-                <input type="text" wire:model="product_name" class="form-control readonly" readonly="readonly" />
+                <input type="text" wire:model="product_name" class="form-control readonly bg-light" readonly="readonly" />
             </div>
         </div>
         <div class="form-group mt-1">
             <div class="input-group">
                 <label class="control-label col-12 col-lg-2 fw-bold">Re-Print</label>
-                <input type="text" wire:model="reprint_no" class="form-control readonly" readonly="readonly" />
+                <input type="text" wire:model="reprint_no" class="form-control readonly bg-light" readonly="readonly" />
             </div>
         </div>
         <hr />

@@ -250,7 +250,7 @@
                     @forelse ($data as $item)
                         <tr>
                             <td>
-                                <a href="/edit-nippo?orderId={{ $item->id }}" class="link-success fs-15 p-1 bg-primary rounded">
+                                <a href="/edit-nippo?orderId={{ $item->id }}&status=editLoss" class="link-success fs-15 p-1 bg-primary rounded">
                                     <i class="ri-edit-box-line text-white"></i>
                                 </a>
                             </td>

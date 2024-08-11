@@ -40,6 +40,7 @@ class EditLpkController extends Component
     public $remark;
     public $warnalpkid;    
     public $case_box_count;
+    public $status_lpk;
 
     public $masterWarnaLPK;
 
@@ -69,7 +70,7 @@ class EditLpkController extends Component
     {
         $this->total_assembly_line=0;
         $this->productlength=1;
-        $this->defaultgulung=1;
+        $this->defaultgulung=1;        
         // master warna LPK
         $this->masterWarnaLPK = DB::table('mswarnalpk')->get();
 
@@ -104,7 +105,8 @@ class EditLpkController extends Component
             'mp.productlength',
             'tolp.seq_no',
             'tolp.updated_by',
-            'tolp.updated_on as updatedt'
+            'tolp.updated_on as updatedt',
+            'tolp.status_lpk'
         )
         ->join('tdorder as tod', 'tod.id', '=', 'tolp.order_id')
         ->leftJoin('msproduct as mp', 'mp.id', '=', 'tolp.product_id')
@@ -134,6 +136,7 @@ class EditLpkController extends Component
         $this->productlength = $order->productlength;
         $this->remark = $order->remark;
         $this->warnalpkid['value'] = $order->warnalpkid;
+        $this->status_lpk=$order->status_lpk;
     }
 
     public function save()

@@ -142,11 +142,11 @@
     </div>
 
     <div class="col text-end dropdown" x-data="{ 
-        lpk_date:false, lpk_panjang:false, produksi_panjang:true, gentan_berat:true, gentan_nomor:false, standard_berat:true, rasio:false,
+        lpk_date:false, lpk_panjang:false, produksi_panjang:true, gentan_berat:true, gentan_nomor:true, standard_berat:true, rasio:false,
         selisih:false, produk_nama:false, order_nomor:true, mesin:true, produksi_tanggal:true, proses_tanggal:true, jam:true, shift:true,
         seq:true, loss:false, by_update:false, updated:false,
         }">
-        <button type="button" data-bs-toggle="dropdown" aria-expanded="false" class="btn btn-soft-primary btn-icon fs-14 mt-2 mb-4">
+        <button type="button" data-bs-toggle="dropdown" aria-expanded="false" class="btn btn-soft-primary btn-icon fs-14 mb-4">
             <i class="ri-grid-fill"></i>
         </button>
         <ul class="dropdown-menu dropdown-menu-end">

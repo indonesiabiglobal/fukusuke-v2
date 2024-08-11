@@ -19,7 +19,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Nomor Produksi</label>
-                                <input type="text" class="form-control readonly" readonly="readonly" wire:model="production_no" />
+                                <input type="text" class="form-control readonly bg-light" readonly="readonly" wire:model="production_no" />
                                 @error('production_no')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -30,7 +30,8 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label pe-2">Tanggal Proses</label>
-                                <input class="form-control datepicker-input" type="date" wire:model.defer="created_on" placeholder="yyyy/mm/dd"/>
+                                {{-- <input class="form-control datepicker-input" type="date" wire:model.defer="created_on" placeholder="yyyy/mm/dd"/> --}}
+                                <input class="form-control readonly datepicker-input bg-light" readonly="readonly" type="date" wire:model.defer="created_on" placeholder="yyyy/mm/dd"/>
                                 @error('created_on')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -57,7 +58,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label pe-2">Tanggal LPK</label>
-                                <input class="form-control readonly datepicker-input" readonly="readonly" type="date" wire:model.defer="lpk_date" placeholder="yyyy/mm/dd"/>
+                                <input class="form-control readonly datepicker-input bg-light" readonly="readonly" type="date" wire:model.defer="lpk_date" placeholder="yyyy/mm/dd"/>
                             </div>
                         </div>
                     </div>
@@ -65,7 +66,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label pe-2">Panjang LPK</label>
-                                <input type="text" placeholder="-" class="form-control readonly" readonly="readonly" wire:model="panjang_lpk" />
+                                <input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="panjang_lpk" />
                                 <span class="input-group-text">
                                     m
                                 </span>
@@ -80,7 +81,7 @@
                                         Nomor Order
                                     </a>
                                 </label>
-                                <input type="text" placeholder="-" class="form-control readonly" readonly="readonly" wire:model="code" disabled="disabled"/>
+                                <input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="code" disabled="disabled"/>
                             </div>
                         </div>
                     </div>
@@ -88,7 +89,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label"></label>
-                                <input type="text" placeholder="-" class="form-control readonly" readonly="readonly" wire:model="name" />
+                                <input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="name" />
                             </div>
                         </div>
                     </div>
@@ -107,7 +108,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label"></label>
-                                <input type="text" placeholder="-" class="form-control readonly" readonly="readonly" wire:model="machinename" />
+                                <input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="machinename" />
                             </div>
                         </div>
                     </div>
@@ -126,7 +127,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label"></label>
-                                <input type="text" placeholder="-" class="form-control readonly" readonly="readonly" wire:model="empname" />
+                                <input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="empname" />
                             </div>
                         </div>
                     </div>
@@ -134,7 +135,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5">Dimensi Infure</label>
-                                <input type="text" placeholder="-" class="form-control readonly" readonly="readonly" wire:model="dimensiinfure" />
+                                <input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="dimensiinfure" />
                                 <span class="input-group-text">
                                     mm
                                 </span>
@@ -145,13 +146,13 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-3">Meter Gulung</label>
-                                <input type="text" placeholder="-" class="form-control readonly" readonly="readonly" wire:model="qty_gulung" />
+                                <input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="qty_gulung" />
                                 <span class="input-group-text">
                                     m
                                 </span>
 
-                                <input type="text" class="form-control readonly" readonly="readonly" placeholder=" .. X .." />
-                                <input type="text" class="form-control readonly" readonly="readonly" wire:model="qty_gentan" />
+                                <input type="text" class="form-control readonly bg-light" readonly="readonly" placeholder=" .. X .." />
+                                <input type="text" class="form-control readonly bg-light" readonly="readonly" wire:model="qty_gentan" />
                                 <span class="input-group-text">
                                     roll
                                 </span>
@@ -162,7 +163,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5">Panjang Produksi</label>
-                                <input type="text" placeholder="-" class="form-control @error('panjang_produksi') is-invalid @enderror" wire:model="panjang_produksi" />
+                                <input type="number" placeholder="-" class="form-control @error('panjang_produksi') is-invalid @enderror" wire:model="panjang_produksi" />
                                 <span class="input-group-text">
                                     m
                                 </span>
@@ -176,7 +177,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-6">Total Panjang Produksi</label>
-                                <input type="text" placeholder="0" class="form-control readonly" readonly="readonly" wire:model="total_assembly_qty" />
+                                <input type="text" placeholder="0" class="form-control readonly bg-light" readonly="readonly" wire:model="total_assembly_qty" />
                                 <span class="input-group-text">
                                     m
                                 </span>
@@ -187,7 +188,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-3">Selisih</label>
-                                <input type="text" placeholder="0" class="form-control readonly" readonly="readonly" wire:model="selisih" />
+                                <input type="text" placeholder="0" class="form-control readonly bg-light" readonly="readonly" wire:model="selisih" />
                                 <span class="input-group-text">
                                     m
                                 </span>
@@ -209,7 +210,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-6">Berat Standard</label>
-                                <input type="text" placeholder="0" class="form-control readonly" readonly="readonly" wire:model="berat_standard" />
+                                <input type="text" placeholder="0" class="form-control readonly bg-light" readonly="readonly" wire:model="berat_standard" />
                                 <span class="input-group-text">
                                     kg
                                 </span>
@@ -220,7 +221,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-3">Rasio</label>
-                                <input type="text" placeholder="0" class="form-control readonly" readonly="readonly"  wire:model="rasio" />
+                                <input type="text" placeholder="0" class="form-control readonly bg-light" readonly="readonly"  wire:model="rasio" />
                                 <span class="input-group-text">
                                     %
                                 </span>
@@ -239,7 +240,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-4">Shift Kerja</label>
-                                <input type="text" class="form-control readonly" readonly="readonly" wire:model="work_shift" />
+                                <input type="text" class="form-control readonly bg-light" readonly="readonly" wire:model="work_shift" />
                             </div>
                         </div>
                     </div>
@@ -267,7 +268,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Nomor Gentan</label>
-                                <input type="text" class="form-control readonly" readonly="readonly" wire:model="gentan_no" />
+                                <input type="text" class="form-control" wire:model="gentan_no" />
                             </div>
                         </div>
                     </div>
@@ -302,7 +303,7 @@
                             </span>
                         </div>
                     </button>
-                    <button id="btnFilter" type="button" class="btn btn-danger" wire:click="destroy">
+                    <button type="button" class="btn btn-danger" wire:click="destroy">
                         <span wire:loading.remove wire:target="destroy">
                             <i class="ri-delete-bin-line"> </i> delete
                         </span>
@@ -317,7 +318,7 @@
                             </span>
                         </div>
                     </button>
-                    <button type="submit" class="btn btn-success">
+                    <button type="button" class="btn btn-success" wire:click="save">
                         <span wire:loading.remove wire:target="save">
                             <i class="ri-save-3-line"></i> Save
                         </span>
