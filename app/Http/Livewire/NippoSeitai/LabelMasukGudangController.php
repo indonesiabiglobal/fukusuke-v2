@@ -126,7 +126,7 @@ class LabelMasukGudangController extends Component
         $columnTanggalValueStart = 'M';
         $columnTanggalValueEnd = 'S';
         $spreadsheet->getActiveSheet()->mergeCells($columnTanggalValueStart . $rowTextGudang . ':' . $columnTanggalValueEnd . $rowTextGudang);
-        $spreadsheet->getActiveSheet()->setCellValue($columnTanggalValueStart . $rowTextGudang, Carbon::parse($data[0]->production_date));
+        $spreadsheet->getActiveSheet()->setCellValue($columnTanggalValueStart . $rowTextGudang, Carbon::parse($data[0]->production_date)->format('d-m-Y'));
         phpspreadsheet::styleFont($spreadsheet, $columnTanggalValueStart . $rowTextGudang, false, 11, 'Tahoma');
         phpspreadsheet::addOutlineBorder($spreadsheet, $columnTanggalStart . $rowTextGudang . ':' . $columnTanggalValueEnd . $rowTextGudang);
 
@@ -324,7 +324,7 @@ class LabelMasukGudangController extends Component
         $spreadsheet->getActiveSheet()->mergeCells($columnNomorProdukStart . $rowTitleNomorProdukStart . ':' . $endColumn . $rowTitleNomorProdukEnd);
         $spreadsheet->getActiveSheet()->setCellValue($columnNomorProdukStart . $rowTitleNomorProdukStart, $data[0]->nocode);
         phpspreadsheet::styleFont($spreadsheet, $columnNomorProdukStart . $rowTitleNomorProdukStart, false, 36, 'Times New Roman');
-        phpspreadsheet::textAlignCenter($spreadsheet, $columnNomorProdukStart . $rowTitleNomorProdukStart);
+        phpspreadsheet::textAlignLeft($spreadsheet, $columnNomorProdukStart . $rowTitleNomorProdukStart);
         phpspreadsheet::addOutlineBorder($spreadsheet, $columnTitleNomorProdukStart . $rowTitleNomorProdukStart . ':' . $endColumn . $rowTitleNomorProdukEnd);
 
         // title nama produk
@@ -418,8 +418,8 @@ class LabelMasukGudangController extends Component
         phpspreadsheet::addOutlineBorder($spreadsheet, $columnJumlahBarisStart . $rowJumlahBarisValueStart . ':' . $columnJumlahBarisValueEnd . $rowJumlahBarisValueEnd);
 
         // tanda +
-        $columnTandaPlusStart = 'AF';
-        $columnTandaPlusEnd = 'AG';
+        $columnTandaPlusStart = 'AE';
+        $columnTandaPlusEnd = 'AF';
         $rowTandaPlusStart = 18;
         $rowTandaPlusEnd = 19;
         $spreadsheet->getActiveSheet()->mergeCells($columnTandaPlusStart . $rowTandaPlusStart . ':' . $columnTandaPlusEnd . $rowTandaPlusEnd);
@@ -428,8 +428,8 @@ class LabelMasukGudangController extends Component
         phpspreadsheet::textAlignCenter($spreadsheet, $columnTandaPlusStart . $rowTandaPlusStart);
 
         // title satuan
-        $columnSatuanStart = 'AH';
-        $columnSatuanEnd = 'AJ';
+        $columnSatuanStart = 'AG';
+        $columnSatuanEnd = 'AI';
         $rowSatuanStart = 17;
         $spreadsheet->getActiveSheet()->mergeCells($columnSatuanStart . $rowSatuanStart . ':' . $columnSatuanEnd . $rowSatuanStart);
         $spreadsheet->getActiveSheet()->setCellValue($columnSatuanStart . $rowSatuanStart, 'Satuan');
@@ -437,8 +437,8 @@ class LabelMasukGudangController extends Component
         phpspreadsheet::textAlignCenter($spreadsheet, $columnSatuanStart . $rowSatuanStart);
 
         // value satuan
-        $columnSatuanValueStart = 'AH';
-        $columnSatuanValueEnd = 'AJ';
+        $columnSatuanValueStart = 'AG';
+        $columnSatuanValueEnd = 'AI';
         $rowSatuanValueStart = 18;
         $rowSatuanValueEnd = 19;
         $spreadsheet->getActiveSheet()->mergeCells($columnSatuanValueStart . $rowSatuanValueStart . ':' . $columnSatuanValueEnd . $rowSatuanValueEnd);

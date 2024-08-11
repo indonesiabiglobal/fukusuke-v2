@@ -6,8 +6,8 @@
                 <label class="control-label col-4 text-muted fw-bold">Tanggal Produksi</label>
                 <div class="col-12 col-lg-8">
                     <select class="form-select mb-0" wire:model.defer="transaksi">
-                        <option value="1">Produksi</option>
-                        <option value="2">Order</option>
+                        <option value="produksi">Produksi</option>
+                        <option value="order">Order</option>
                     </select>
                 </div>
             </div>
@@ -52,19 +52,19 @@
             <div class="input-group">
                 <span class="input-group-addon col-12 col-lg-3 text-muted fw-bold">Jenis Report </span>
                 <select wire:model.defer="jenisReport" class="form-control" placeholder="- pilih jenis report -">
-                    <option value="1">Check List</option>
-                    <option value="2">Loss Seitai</option>
+                    <option value="CheckList">Check List</option>
+                    <option value="LossSeitai">Loss Seitai</option>
                 </select>
             </div>
         </div>
         <div class="form-group mt-1">
             <div class="input-group">
                 <span class="input-group-addon col-12 col-lg-3 text-muted fw-bold">Nomor Proses </span>
-                <input type="text" class="form-control" placeholder="1" wire:model.defer="noprosesawal">
+                <input type="text" class="form-control" placeholder="1" wire:model.defer="noprosesawal" value="1">
                 <span class="input-group-text readonly" readonly="readonly">
                     ~
                 </span>
-                <input type="text" class="form-control" placeholder="1000" wire:model.defer="noprosesakhir">
+                <input type="text" class="form-control" placeholder="1000" wire:model.defer="noprosesakhir" value="1000">
             </div>
         </div>
         <div class="form-group mt-1">
@@ -76,7 +76,7 @@
         <div class="form-group mt-1">
             <div class="input-group">
                 <span class="input-group-addon col-12 col-lg-3 text-muted fw-bold">Nomor Order </span>
-                <input type="text" class="form-control" placeholder=".." wire:model.defer="code">
+                <input type="text" class="form-control" placeholder=".." wire:model.defer="noorder">
             </div>
         </div>
         <div class="form-group mt-1">
@@ -86,7 +86,7 @@
                 </div>
                 <div class="col-12 col-lg-9">
                     <div class="mb-1" wire:ignore>
-                        <select class="form-control" wire:model.defer="departemenId" data-choices
+                        <select class="form-control" wire:model.defer="departmentId" data-choices
                             data-choices-sorting-false data-choices-removeItem>
                             <option value="">- All -</option>
                             @foreach ($department as $item)
@@ -108,7 +108,7 @@
                             data-choices-sorting-false data-choices-removeItem>
                             <option value="">- All -</option>
                             @foreach ($machine as $item)
-                                <option value="{{ $item->id }}">{{ $item->machinename }}</option>
+                                <option value="{{ $item->id }}">{{ $item->machineno }} - {{ $item->machinename }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -119,13 +119,13 @@
             <div class="input-group">
                 <span class="input-group-addon col-12 col-lg-3 text-muted fw-bold">Nomor Palet</span>
                 <input type="text" class="form-control" placeholder="A0000-000000"
-                    wire:model.defer="nomor_palet" />
+                    wire:model.defer="nomorPalet" />
             </div>
         </div>
         <div class="form-group mt-1">
             <div class="input-group">
                 <span class="input-group-addon col-12 col-lg-3 text-muted fw-bold">Nomor LOT</span>
-                <input type="text" class="form-control" placeholder="---" wire:model.defer="nomor_lot" />
+                <input type="text" class="form-control" placeholder="---" wire:model.defer="nomorLot" />
             </div>
         </div>
         <hr />
