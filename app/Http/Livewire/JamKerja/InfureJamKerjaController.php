@@ -43,7 +43,7 @@ class InfureJamKerjaController extends Component
         $this->tglMasuk = Carbon::now()->format('d-m-Y');
         $this->tglKeluar = Carbon::now()->format('d-m-Y');
         $this->machine  = MsMachine::get();
-        $this->workShift  = MsWorkingShift::get();
+        $this->workShift  = MsWorkingShift::where('status', 1)->get();
         $this->working_date = Carbon::now()->format('d-m-Y');
     }
 
