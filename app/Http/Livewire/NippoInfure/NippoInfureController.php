@@ -39,7 +39,7 @@ class NippoInfureController extends Component
         $this->products = MsProduct::get();
         $this->tdOrderLpk = TdOrderLpk::get();
         $this->buyer = MsBuyer::get();
-        $this->machine = MsMachine::get();
+        $this->machine = MsMachine::whereIn('department_id', [10, 12, 15, 2, 4, 10])->get();
         $this->tglMasuk = Carbon::now()->format('d-m-Y');
         $this->tglKeluar = Carbon::now()->format('d-m-Y');
     }
@@ -62,6 +62,26 @@ class NippoInfureController extends Component
 
     public function render()
     {
+        if(isset($this->lpk_no) && $this->lpk_no != ''){
+            $prefix = substr($this->lpk_no, 0, 6);
+            $suffix = substr($this->lpk_no, -3);
+
+            $tdorderlpk = DB::table('tdorderlpk as tolp')
+            ->select(
+                'tolp.lpk_no'
+            )
+            // ->where('tolp.lpk_no', $this->lpk_no)
+            ->whereRaw("LEFT(lpk_no, 6) ILIKE ?", ["{$prefix}"])
+            ->whereRaw("RIGHT(lpk_no, 3) ILIKE ?", ["{$suffix}"])
+            ->first();
+
+            if($tdorderlpk == null){
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor LPK ' . $this->lpk_no . ' Tidak Terdaftar']);
+            } else {
+                $this->lpk_no = $tdorderlpk->lpk_no;
+            }
+        }
+
         $data = DB::table('tdproduct_assembly AS tda')
         ->select([
             'tda.id AS id',
@@ -143,7 +163,7 @@ class NippoInfureController extends Component
         if (isset($this->status) && $this->status['value'] != "" && $this->status != "undefined") {
             if ($this->status['value'] == 0) {
                 $data->where('tda.status_production', 0)
-                      ->where('tda.status_kenpin', 0);
+                    ->where('tda.status_kenpin', 0);
             } elseif ($this->status['value'] == 1) {
                 $data->where('tda.status_production', 1);
             } elseif ($this->status['value'] == 2) {
@@ -154,9 +174,9 @@ class NippoInfureController extends Component
         if (isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined") {
             $data = $data->where(function($query) {
                 $query->where('tda.production_no', 'ilike', "%{$this->searchTerm}%")
-                      ->orWhere('tda.product_id', 'ilike', "%{$this->searchTerm}%")
-                      ->orWhere('tda.machine_id', 'ilike', "%{$this->searchTerm}%")
-                      ->orWhere('tda.nomor_han', 'ilike', "%{$this->searchTerm}%");
+                    ->orWhere('mp.name', 'ilike', "%{$this->searchTerm}%")
+                    ->orWhere('tda.machine_id', 'ilike', "%{$this->searchTerm}%")
+                    ->orWhere('tda.nomor_han', 'ilike', "%{$this->searchTerm}%");
             });
         }
         $data = $data->paginate(8);

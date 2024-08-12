@@ -285,6 +285,10 @@
                 <button data-bs-toggle="modal" data-bs-target="#modal-add" type="button" class="btn btn-success">
                     <i class="ri-add-line"></i> Add Loss Infure
                 </button>
+
+                @if ($statusSeitai)
+                    <h3 class="text-danger">Gentan sudah di produksi di Seitai!</h3>
+                @endif
             </div>
             
             <div class="col-lg-5">
@@ -336,21 +340,24 @@
                                 </span>
                             </div>
                         </button>
-                        <button type="button" class="btn btn-success" wire:click="save">
-                            <span wire:loading.remove wire:target="save">
-                                <i class="ri-save-3-line"></i> Update
-                            </span>
-                            <div wire:loading wire:target="save">
-                                <span class="d-flex align-items-center">
-                                    <span class="spinner-border flex-shrink-0" role="status">
-                                        <span class="visually-hidden">Loading...</span>
-                                    </span>
-                                    <span class="flex-grow-1 ms-1">
-                                        Loading...
-                                    </span>
+                        @if (empty($statusSeitai))
+                            <button type="button" class="btn btn-success" wire:click="save">
+                                <span wire:loading.remove wire:target="save">
+                                    <i class="ri-save-3-line"></i> Update
                                 </span>
-                            </div>
-                        </button>
+                                <div wire:loading wire:target="save">
+                                    <span class="d-flex align-items-center">
+                                        <span class="spinner-border flex-shrink-0" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </span>
+                                        <span class="flex-grow-1 ms-1">
+                                            Loading...
+                                        </span>
+                                    </span>
+                                </div>
+                            </button>
+                        @endif
+                        
                         <button type="button" class="btn btn-success btn-print" wire:click="print">
                             <i class="bx bx-printer"></i> Print
                         </button>
