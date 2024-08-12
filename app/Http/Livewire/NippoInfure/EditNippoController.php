@@ -46,6 +46,7 @@ class EditNippoController extends Component
     public $loss_infure_id;
     public $name_infure;
     public $berat_loss;
+    public $statusSeitai;
 
     // data master produk
     public $masterKatanuki;
@@ -65,6 +66,7 @@ class EditNippoController extends Component
         ->join('msemployee AS mse', 'mse.id', '=', 'tda.employee_id')
         ->join('msproduct AS msp', 'msp.id', '=', 'tda.product_id')
         ->join('tdorder AS tdo', 'tdol.order_id', '=', 'tdo.id')
+        ->leftJoin('tdproduct_goods as tdpg', 'tdpg.lpk_id', '=', 'tdol.id')
         ->select(
             'tda.id AS id',
             'tda.production_no AS production_no',
@@ -109,12 +111,14 @@ class EditNippoController extends Component
             'mse.employeeno',
             'mse.empname',
             'msp.code',
-            'msp.name'
+            'msp.name',
+            DB::raw("CASE WHEN tdpg.id IS NOT NULL THEN 1 ELSE 0 END as tdpg")
         )
         ->where('tda.id', $request->query('orderId'))
         ->first();
 
         $this->statusEditLoss = $request->query('status');
+        $this->statusSeitai = $data->tdpg;
         $this->orderId = $request->query('orderId');
         $this->production_no = $data->production_no;
         $this->production_date = Carbon::parse($data->production_date)->format('Y-m-d');
@@ -411,8 +415,12 @@ class EditNippoController extends Component
     public function render()
     {
         if(isset($this->lpk_no) && $this->lpk_no != ''){
+            $prefix = substr($this->lpk_no, 0, 6);
+            $suffix = substr($this->lpk_no, -3);
+
             $tdorderlpk = DB::table('tdorderlpk as tolp')
             ->select(
+                'tolp.lpk_no',
                 'tolp.id',
                 'tolp.lpk_date',
                 'tolp.panjang_lpk',
@@ -426,7 +434,9 @@ class EditNippoController extends Component
             )
             ->join('msproduct as mp', 'mp.id', '=', 'tolp.product_id')
             ->join('tdproduct_assembly as tda', 'tda.lpk_id', '=', 'tolp.id')
-            ->where('tolp.lpk_no', $this->lpk_no)
+            // ->where('tolp.lpk_no', $this->lpk_no)
+            ->whereRaw("LEFT(lpk_no, 6) ILIKE ?", ["{$prefix}"])
+            ->whereRaw("RIGHT(lpk_no, 3) ILIKE ?", ["{$suffix}"])
             ->first();
 
             if($tdorderlpk == null){
@@ -440,6 +450,7 @@ class EditNippoController extends Component
                 $this->dimensiinfure = $tdorderlpk->ketebalan.'x'.$tdorderlpk->diameterlipat;
                 $this->qty_gulung = $tdorderlpk->qty_gulung;
                 $this->qty_gentan = $tdorderlpk->qty_gentan;
+                $this->lpk_no = $tdorderlpk->lpk_no;
                 // $this->gentan_no= $tdorderlpk->gentan_no;
 
                 $this->details = DB::table('tdproduct_assembly_loss as tal')
@@ -466,7 +477,7 @@ class EditNippoController extends Component
         }
 
         if(isset($this->machineno) && $this->machineno != ''){
-            $machine=MsMachine::where('machineno', 'ilike', '%'. $this->machineno .'%')->first();
+            $machine=MsMachine::where('machineno', 'ilike', '%'. $this->machineno .'%')->whereIn('department_id', [10, 12, 15, 2, 4, 10])->first();
 
             if($machine == null){
                 $this->dispatch('notification', ['type' => 'error', 'message' => 'Machine ' . $this->machineno . ' Tidak Terdaftar']);

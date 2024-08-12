@@ -350,8 +350,12 @@ class AddNippoController extends Component
     public function render()
     {
         if(isset($this->lpk_no) && $this->lpk_no != ''){
+            $prefix = substr($this->lpk_no, 0, 6);
+            $suffix = substr($this->lpk_no, -3);
+
             $tdorderlpk = DB::table('tdorderlpk as tolp')
             ->select(
+                'tolp.lpk_no',
                 'tolp.id',
                 'tolp.lpk_date',
                 'tolp.panjang_lpk',
@@ -366,7 +370,9 @@ class AddNippoController extends Component
             )
             ->join('msproduct as mp', 'mp.id', '=', 'tolp.product_id')
             ->leftJoin('tdproduct_assembly as tda', 'tda.lpk_id', '=', 'tolp.id')
-            ->where('tolp.lpk_no', $this->lpk_no)
+            // ->where('tolp.lpk_no', $this->lpk_no)
+            ->whereRaw("LEFT(lpk_no, 6) ILIKE ?", ["{$prefix}"])
+            ->whereRaw("RIGHT(lpk_no, 3) ILIKE ?", ["{$suffix}"])
             ->first();
 
             if($tdorderlpk == null){
@@ -379,6 +385,7 @@ class AddNippoController extends Component
                 $this->name = $tdorderlpk->name;
                 $this->dimensiinfure = $tdorderlpk->ketebalan.'x'.$tdorderlpk->diameterlipat;
                 $this->qty_gulung = $tdorderlpk->qty_gulung;
+                $this->lpk_no = $tdorderlpk->lpk_no;
                 // $this->qty_gentan = $tdorderlpk->qty_gentan;
                 // $this->gentan_no= $tdorderlpk->gentan_no + 1;
 
@@ -396,7 +403,7 @@ class AddNippoController extends Component
         }
 
         if(isset($this->machineno) && $this->machineno != ''){
-            $machine=MsMachine::where('machineno', 'ilike', '%'. $this->machineno .'%')->first();
+            $machine=MsMachine::where('machineno', 'ilike', '%'. $this->machineno .'%')->whereIn('department_id', [10, 12, 15, 2, 4, 10])->first();
 
             if($machine == null){
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Machine ' . $this->machineno . ' Tidak Terdaftar']);

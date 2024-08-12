@@ -93,7 +93,7 @@
                     <div class="collapse menu-dropdown" id="nippoinfure">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="nippo-infure" class="nav-link" data-key="t-starter"> Nipo Infure </a>
+                                <a href="nippo-infure" class="nav-link" data-key="t-starter"> Nippo Infure </a>
                             </li>
                             <li class="nav-item">
                                 <a href="loss-infure" class="nav-link" data-key="t-starter"> Loss Infure </a>
