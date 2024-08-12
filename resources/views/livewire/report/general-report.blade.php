@@ -52,7 +52,7 @@
 		<div class="form-group mt-1">
 			<div class="input-group">
 				<span class="input-group-addon col-12 col-lg-3">Nippo </span>
-				<select class="form-control" wire:model.defer="nipon" placeholder="- pilih -">
+				<select class="form-control" wire:model.live="nipon" placeholder="- pilih -">
 					<option value="Infure" selected="selected">Infure</option>
 					<option value="Seitai">Seitai</option>
 				</select>
@@ -76,7 +76,9 @@
 					<option value="Daftar Produksi Per Departemen & Tipe">Daftar Produksi Per Departemen & Tipe</option>
 					<option value="Daftar Produksi Per Departemen & Petugas">Daftar Produksi Per Departemen & Petugas</option>
 					{{-- <option value="9" style="display:none">Daftar Produksi Per Palet</option> --}}
-					<option value="Daftar Produksi Per Palet">Daftar Produksi Per Palet</option>
+                    @if ($nipon == 'Seitai')
+                        <option value="Daftar Produksi Per Palet">Daftar Produksi Per Palet</option>
+                    @endif
 					<option value="Daftar Loss Per Departemen">Daftar Loss Per Departemen</option>
 					<option value="Daftar Loss Per Departemen & Jenis">Daftar Loss Per Departemen & Jenis</option>
 					<option value="Daftar Loss Per Petugas">Daftar Loss Per Petugas</option>
