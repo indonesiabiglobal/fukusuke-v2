@@ -11,7 +11,7 @@
 
     $data = collect(
         DB::select("
-        SELECT
+        SELECT 
             tdol.lpk_no,
             msp.name,
             msp.code,
@@ -24,8 +24,9 @@
             tdpa.panjang_produksi,
             tdpa.nomor_han,
             mse.nik,
-            mse.empname
-        FROM
+            mse.empname,
+            tdpa.gentan_no
+        FROM    
             tdproduct_assembly AS tdpa
             INNER JOIN tdorderlpk AS tdol ON tdpa.lpk_id = tdol.ID
             INNER JOIN msproduct as msp on msp.id = tdol.product_id
@@ -33,7 +34,7 @@
             INNER JOIN msmachine as msm on msm.id = tdpa.machine_id
             INNER JOIN msemployee as mse on mse.id = tdpa.employee_id
         WHERE
-            tdol.lpk_no = '$lpk_no'
+            tdpa.id = $lpk_no  
         "),
     )->first();
 @endphp
@@ -47,7 +48,7 @@
                             <tr>
                                 <td width="50%" align="center">
                                     <span>
-                                        <font style="font-size: 38px; font-weight: bold;">1</font>
+                                        <font style="font-size: 38px; font-weight: bold;">{{ $data->gentan_no }}</font>
                                     </span>
                                 </td>
                                 <td width="50%" align="center">
@@ -66,7 +67,7 @@
                                 <td align="center">
                                     <span>
                                         <font style="font-size: 28px; font-weight: bold;">
-                                            {{ $lpk_no }}
+                                            {{ $data->lpk_no }}
                                         </font>
                                     </span>
                                 </td>
