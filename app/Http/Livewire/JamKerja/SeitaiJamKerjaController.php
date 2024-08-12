@@ -43,7 +43,7 @@ class SeitaiJamKerjaController extends Component
         $this->tglKeluar = Carbon::now()->format('d-m-Y');
         $this->machine  = MsMachine::limit(10)->get();
         $this->working_date = Carbon::now()->format('d-m-Y');
-        $this->workShift  = MsWorkingShift::get();
+        $this->workShift  = MsWorkingShift::where('status', 1)->get();
     }
 
     public function search(){
