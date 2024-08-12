@@ -10,7 +10,7 @@
 		<div class="form-group mt-1">
 			<div class="input-group">
 				<label class="control-label col-12 col-lg-3 text-muted fw-bold">Nomor Gentan</label>
-				<input type="text"  wire:model="gentan_no" class="form-control" placeholder="..." />
+				<input type="text"  wire:model.live="gentan_no" class="form-control" placeholder="..." />
 			</div>
 		</div>
 		<div class="form-group mt-1">
