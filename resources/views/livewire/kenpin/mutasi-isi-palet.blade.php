@@ -7,8 +7,20 @@
 						Nomor Palet Sumber
 					</span>
 					<input wire:model.defer="searchOld" class="form-control" type="text" placeholder="A0000-000000" />
-					<button wire:click="search" type="button" class="btn btn-info">
-						<i class="fa fa-search"></i>
+					<button wire:click="search" type="button" class="btn btn-light">
+						<span wire:loading.remove wire:target="search">
+							<i class="ri-search-line"></i>							
+						</span>
+						<div wire:loading wire:target="search">
+							<span class="d-flex align-items-center">
+								<span class="spinner-border flex-shrink-0" role="status">
+									<span class="visually-hidden">Loading...</span>
+								</span>
+								<span class="flex-grow-1 ms-1">
+									Loading...
+								</span>
+							</span>
+						</div>
 					</button>
 				</div>
 			</div>
@@ -38,7 +50,7 @@
 											{{ $item->nomor_lot }}
 										</td>
 										<td>
-											{{ $item->machinename }}
+											{{ $item->machineno }}
 										</td>
 										<td>
 											{{ $item->production_date }}
@@ -65,8 +77,20 @@
 						Nomor Palet Tujuan
 					</span>
 					<input wire:model.defer="searchNew" class="form-control" type="text" placeholder="A0000-000000" />
-					<button wire:click="searchTujuan" type="button" class="btn btn-info">
-						<i class="fa fa-search"></i>
+					<button wire:click="searchTujuan" type="button" class="btn btn-light">
+						<span wire:loading.remove wire:target="searchTujuan">
+							<i class="ri-search-line"></i>
+						</span>
+						<div wire:loading wire:target="searchTujuan">
+							<span class="d-flex align-items-center">
+								<span class="spinner-border flex-shrink-0" role="status">
+									<span class="visually-hidden">Loading...</span>
+								</span>
+								<span class="flex-grow-1 ms-1">
+									Loading...
+								</span>
+							</span>
+						</div>
 					</button>
 				</div>
 			</div>
@@ -90,7 +114,7 @@
 											{{ $item->nomor_lot }}
 										</td>
 										<td>
-											{{ $item->machinename }}
+											{{ $item->machineno }}
 										</td>
 										<td>
 											{{ $item->production_date }}
@@ -152,7 +176,19 @@
 						{{-- <button type="button" class="btn btn-secondary">Accept</button> --}}
 						<button type="button" class="btn btn-link text-gray-600 ms-auto" data-bs-dismiss="modal">Close</button>
 						<button type="button" class="btn btn-success" wire:click="saveMutasi">
-							Save
+							<span wire:loading.remove wire:target="saveMutasi">
+								Save					
+							</span>
+							<div wire:loading wire:target="saveMutasi">
+								<span class="d-flex align-items-center">
+									<span class="spinner-border flex-shrink-0" role="status">
+										<span class="visually-hidden">Loading...</span>
+									</span>
+									<span class="flex-grow-1 ms-1">
+										Loading...
+									</span>
+								</span>
+							</div>
 						</button>
 					</div>
                 </div>
@@ -182,7 +218,19 @@
                         <i class="fa fa-back"></i> Close
                     </button>
 					<button id="btnFilter" type="button" class="btn btn-danger" wire:click="delete">
-                        <i class="fa fa-trash"></i> Undo
+						<span wire:loading.remove wire:target="delete">
+							<i class="ri-repeat-line"></i> Undo
+						</span>
+						<div wire:loading wire:target="delete">
+							<span class="d-flex align-items-center">
+								<span class="spinner-border flex-shrink-0" role="status">
+									<span class="visually-hidden">Loading...</span>
+								</span>
+								<span class="flex-grow-1 ms-1">
+									Loading...
+								</span>
+							</span>
+						</div>
                     </button>
                     {{-- <button id="btnCreate" type="submit" class="btn btn-success">
                         <i class="fa fa-plus"></i> Proses Mutasi
