@@ -116,6 +116,7 @@ class NippoSeitaiController extends Component
                     $query->where('tdol.lpk_no', 'ilike', '%' . $this->searchTerm . '%')
                              ->orWhere('tdpg.production_no', 'ilike', '%' . $this->searchTerm . '%')
                              ->orWhere('tdpg.product_id', 'ilike', '%' . $this->searchTerm . '%')
+                             ->orWhere('tdpg.nomor_palet', 'ilike', '%' . $this->searchTerm . '%')
                              ->orWhere('tdpg.machine_id', 'ilike', '%' . $this->searchTerm . '%');
                 });
             }
@@ -195,6 +196,7 @@ class NippoSeitaiController extends Component
                     $query->where('tdol.lpk_no', 'ilike', '%' . $this->searchTerm . '%')
                             ->orWhere('tdpg.production_no', 'ilike', '%' . $this->searchTerm . '%')
                             ->orWhere('tdpg.product_id', 'ilike', '%' . $this->searchTerm . '%')
+                            ->orWhere('tdpg.nomor_palet', 'ilike', '%' . $this->searchTerm . '%')
                             ->orWhere('tdpg.machine_id', 'ilike', '%' . $this->searchTerm . '%');
                 });
             }
