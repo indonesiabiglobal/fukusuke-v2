@@ -20,7 +20,7 @@ class LayerController extends Component
     public $box_class;
     public $panjang;
     public $lebar;
-    public $tinggi;
+    public $tinggi=0;
     public $idUpdate;
     public $idDelete;
     public $class;
@@ -31,7 +31,6 @@ class LayerController extends Component
         'box_class' => 'required',
         'panjang' => 'required',
         'lebar' => 'required',
-        'tinggi' => 'required',
     ];
 
     public function resetFields()
@@ -55,6 +54,11 @@ class LayerController extends Component
 
         DB::beginTransaction();
         try {
+            $tinggi=0;
+            if(isset($this->tinggi) && $this->tinggi != ""){
+                $tinggi=$this->tinggi;
+            }
+            
             $statusActive = 1;
             $data = MsPackagingLayer::create([
                 'code' => $this->code,
@@ -62,7 +66,7 @@ class LayerController extends Component
                 'box_class' => $this->box_class['value'],
                 'panjang' => $this->panjang,
                 'lebar' => $this->lebar,
-                'tinggi' => $this->tinggi,
+                'tinggi' => $tinggi,
                 'status' => $statusActive,
                 'created_by' => Auth::user()->username,
                 'created_on' => Carbon::now(),
