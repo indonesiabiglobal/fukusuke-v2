@@ -66,6 +66,7 @@ use App\Http\Livewire\MasterTabel\Loss\MenuLossInfureController;
 use App\Http\Livewire\MasterTabel\Loss\MenuLossSeitaiController;
 use App\Http\Livewire\Administration\SecurityManagementController;
 use App\Http\Livewire\MasterTabel\Loss\MenuLossKatagoriController;
+use App\Http\Livewire\MasterTabel\Loss\MenuLossKenpinController;
 use App\Http\Livewire\MasterTabel\Loss\MenuLossKlasifikisasiController;
 
 /*
@@ -182,6 +183,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/menu-loss-infure', MenuLossInfureController::class)->name('menu-loss-infure');
     Route::get('/menu-loss-kategori', MenuLossKatagoriController::class)->name('menu-loss-katagori');
+    Route::get('/menu-loss-kenpin', MenuLossKenpinController::class)->name('menu-loss-kenpin');
     Route::get('/menu-loss-klasifikasi', MenuLossKlasifikisasiController::class)->name('menu-loss-klasifikisasi');
     Route::get('/menu-loss-seitai', MenuLossSeitaiController::class)->name('menu-loss-seitai');
 
