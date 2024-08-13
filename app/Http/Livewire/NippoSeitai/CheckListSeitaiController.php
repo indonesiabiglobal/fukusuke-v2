@@ -6,6 +6,7 @@ use App\Exports\SeitaiExport;
 use App\Helpers\phpspreadsheet;
 use App\Models\MsDepartment;
 use App\Models\MsMachine;
+use App\Models\MsWorkingShift;
 use Livewire\Component;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -31,13 +32,15 @@ class CheckListSeitaiController extends Component
     public $nomorPalet;
     public $nomorLot;
     public $jenisReport = 'CheckList';
+    public $dataJamMasuk;
+    public $dataJamKeluar;
 
     public function mount()
     {
         $this->tglMasuk = Carbon::now()->format('Y-m-d');
         $this->tglKeluar = Carbon::now()->format('Y-m-d');
-        $this->jamMasuk = Carbon::today()->format('H:i');
-        $this->jamKeluar = Carbon::today()->addDay()->subMinute()->format('H:i');
+        $this->dataJamMasuk = MsWorkingShift::orderBy('work_hour_from')->get();
+        $this->dataJamKeluar = MsWorkingShift::orderBy('work_hour_from','desc')->get();
         $this->machine = MsMachine::where('machineno',  'LIKE', '00S%')->get();
         $this->department = MsDepartment::where('division_code', 20)->get();
     }
@@ -65,8 +68,18 @@ class CheckListSeitaiController extends Component
     public function export()
     {
         // filter
-        $tglMasuk = Carbon::parse($this->tglMasuk . ' ' . $this->jamMasuk)->format('Y-m-d H:i');
-        $tglKeluar = Carbon::parse($this->tglKeluar . ' ' . $this->jamKeluar)->format('Y-m-d H:i');
+        $jamMasuk = '00:00:00';
+        if(isset($this->jamMasuk)){
+            $jamMasuk = $this->jamMasuk['value'];
+        }
+        $jamKeluar = '23:59:00';
+        if(isset($this->jamKeluar)){
+            $jamKeluar = $this->jamKeluar['value'];
+        }
+
+        $tglMasuk = Carbon::parse($this->tglMasuk)->format('Y-m-d ') .  $jamMasuk;
+        $tglKeluar = Carbon::parse($this->tglKeluar)->format('Y-m-d ') . $jamKeluar;
+        
         if ($this->transaksi == 'produksi') {
             $filterDate = "tdpg.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'";
         } else {

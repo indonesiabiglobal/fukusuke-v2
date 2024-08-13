@@ -21,7 +21,14 @@
                             <i class="ri-calendar-event-fill fs-4"></i>
                         </span>
 
-                        <input wire:model.defer="jamMasuk" type="text" class="form-control" data-provider="timepickr" data-time-hrs="true" id="timepicker-24hrs">
+                        <div class="mb-1" wire:ignore>
+							<select class="form-control" wire:model.defer="jamMasuk" data-choices data-choices-sorting-false data-choices-removeItem>
+								@foreach ($dataJamMasuk as $item)
+									<option value="{{ $item->work_hour_from }}">{{ $item->work_hour_from }}</option>
+								@endforeach
+							</select>
+						</div>
+                        {{-- <input wire:model.defer="jamMasuk" type="text" class="form-control" data-provider="timepickr" data-time-hrs="true" id="timepicker-24hrs"> --}}
 						<span class="input-group-text py-0">
 							<i class="ri-time-line fs-4"></i>
 						</span>
@@ -40,7 +47,13 @@
                             <i class="ri-calendar-event-fill fs-4"></i>
                         </span>
 
-                        <input wire:model.defer="jamKeluar" type="text" class="form-control" data-provider="timepickr" data-time-hrs="true" id="timepicker-24hrs">
+                        <div class="mb-1" wire:ignore>
+							<select class="form-control" wire:model.defer="jamKeluar" data-choices data-choices-sorting-false data-choices-removeItem>
+                                @foreach ($dataJamKeluar as $item)
+									<option value="{{ $item->work_hour_from }}">{{ $item->work_hour_till }}</option>
+								@endforeach
+							</select>
+						</div>
 						<span class="input-group-text py-0">
 							<i class="ri-time-line fs-4"></i>
 						</span>
@@ -129,25 +142,21 @@
             </div>
         </div>
         <hr />
-        <div class="form-group">
-            <div class="input-group">
-                <button type="button" class="btn btn-success btn-print" wire:click="export" style="width:99%">
-                    <span wire:loading.remove wire:target="export">
-                        <i class="ri-printer-line"></i> Generate Report
+        <button type="button" class="btn btn-success btn-print" wire:click="export" style="width:99%">
+            <span wire:loading.remove wire:target="export">
+                <i class="ri-printer-line"></i> Generate Report
+            </span>
+            <div wire:loading wire:target="export">
+                <span class="d-flex align-items-center">
+                    <span class="spinner-border flex-shrink-0" role="status">
+                        <span class="visually-hidden">Loading...</span>
                     </span>
-                    <div wire:loading wire:target="export">
-                        <span class="d-flex align-items-center">
-                            <span class="spinner-border flex-shrink-0" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </span>
-                            <span class="flex-grow-1 ms-1">
-                                Loading...
-                            </span>
-                        </span>
-                    </div>
-                </button>
+                    <span class="flex-grow-1 ms-1">
+                        Loading...
+                    </span>
+                </span>
             </div>
-        </div>
+        </button>
     </div>
     <div class="col-lg-4"></div>
 </div>

@@ -6,6 +6,7 @@ use App\Exports\LossInfureExport;
 use App\Exports\NippoInfureExport;
 use App\Models\MsDepartment;
 use App\Models\MsMachine;
+use App\Models\MsWorkingShift;
 use Livewire\Component;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
@@ -32,8 +33,8 @@ class CheckListInfureController extends Component
     {
         $this->tglMasuk = Carbon::now()->format('Y-m-d');
         $this->tglKeluar = Carbon::now()->format('Y-m-d');
-        $this->jamMasuk = Carbon::today()->format('H:i');
-        $this->jamKeluar = Carbon::today()->addDay()->subMinute()->format('H:i');
+        $this->jamMasuk = MsWorkingShift::orderBy('work_hour_from')->get();
+        $this->jamKeluar = MsWorkingShift::orderBy('work_hour_from')->get();
         $this->machine = MsMachine::get();
         $this->department = MsDepartment::get();
     }
