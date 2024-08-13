@@ -11,4 +11,5 @@ class MsLossInfure extends Model
     protected $table = "mslossinfure";
     protected $fillable = [];
     public $timestamps = false;
+    protected $guarded = ['id'];
 }
