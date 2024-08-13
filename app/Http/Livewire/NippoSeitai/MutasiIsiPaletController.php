@@ -94,13 +94,14 @@ class MutasiIsiPaletController extends Component
             SELECT
                 tdpg.id,
                 tdpg.nomor_lot,
-                msm.machinename,
+                msm.machineno,
                 tdpg.production_date,
-                tdpg.qty_produksi,
+                tdpg.qty_produksi / msp.case_box_count as qty_produksi,
                 tdpg.nomor_palet
             FROM
                 tdproduct_goods AS tdpg
                 INNER JOIN msmachine AS msm ON msm.id = tdpg.machine_id
+                INNER JOIN msproduct as msp on msp.id = tdpg.product_id
             WHERE
                 tdpg.nomor_palet = '$this->searchOld'");
             
@@ -114,13 +115,14 @@ class MutasiIsiPaletController extends Component
             SELECT
                 tdpg.id,
                 tdpg.nomor_lot,
-                msm.machinename,
+                msm.machineno,
                 tdpg.production_date,
-                tdpg.qty_produksi,
+                tdpg.qty_produksi / msp.case_box_count as qty_produksi,
                 tdpg.nomor_palet
             FROM
                 tdproduct_goods AS tdpg
                 INNER JOIN msmachine AS msm ON msm.id = tdpg.machine_id
+                INNER JOIN msproduct as msp on msp.id = tdpg.product_id
             WHERE
                 tdpg.nomor_palet = '$this->searchNew'");
             

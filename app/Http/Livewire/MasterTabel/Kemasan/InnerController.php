@@ -73,11 +73,11 @@ class InnerController extends Component
 
             DB::commit();            
             $this->dispatch('closeModalCreate');
-            $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Buyer saved successfully.']);
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Inner saved successfully.']);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Failed to save master buyer: ' . $e->getMessage());
-            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the buyer: ' . $e->getMessage()]);
+            Log::error('Failed to save master Inner: ' . $e->getMessage());
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the Inner: ' . $e->getMessage()]);
         }
     }
 

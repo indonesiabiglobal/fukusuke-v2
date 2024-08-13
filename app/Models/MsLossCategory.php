@@ -5,11 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class MsLossInfure extends Model
+class MsLossCategory extends Model
 {
     use HasFactory;
-    protected $table = "mslossinfure";
+    protected $table = "mslosscategory";
     protected $fillable = [];
+    protected $guarded = [];
     public $timestamps = false;
-    protected $guarded = ['id'];
+    // protected $fillable = [
+    //     'title',
+    //     'content',
+    // ];
 }

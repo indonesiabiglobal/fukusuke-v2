@@ -300,7 +300,7 @@
                                             <a href="/kemasan-layer" class="nav-link" data-key="t-settings"> Kemasan Layer </a>
                                         </li>
                                         <li class="nav-item">
-                                            <a href="/kemasan-gasio" class="nav-link" data-key="t-settings"> Kemasan Gasio </a>
+                                            <a href="/kemasan-gasio" class="nav-link" data-key="t-settings"> Kemasan Gaiso </a>
                                         </li>
                                     </ul>
                                 </div>

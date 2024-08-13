@@ -167,6 +167,15 @@
                                                 @enderror
                                             </div>
                                         </div>
+                                        <div class="col-xxl-12">
+                                            <div>
+                                                <label for="empname" class="form-label">Status</label>
+                                                <select data-choices data-choices-sorting="true" class="form-select" wire:model="status">                                                
+                                                    <option value="0" {{ $status == '0' ? 'selected' : '' }}>Inactive</option>
+                                                    <option value="1" {{ $status == '1' ? 'selected' : '' }}>Active</option>
+                                                </select>
+                                            </div>
+                                        </div>
                                         {{-- Departemen Karyawan --}}
                                         <div class="col-xxl-12">
                                             <div class="row">

@@ -71,11 +71,10 @@ class MenuLossInfureController extends Component
             DB::commit();            
             $this->dispatch('closeModalCreate');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Loss Infure saved successfully.']);
-            // return redirect()->route('buyer');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to save Loss Infure: ' . $e->getMessage());
-            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the buyer: ' . $e->getMessage()]);
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the Loss Infure: ' . $e->getMessage()]);
         }
     }
 
@@ -87,8 +86,6 @@ class MenuLossInfureController extends Component
         $this->name = $data->name;
         $this->loss_class_id = $data->loss_class_id;
         $this->loss_category_code = $data->loss_category_code;
-
-        // $this->dispatch('showModalUpdate', $buyer);
     }
 
     public function update()

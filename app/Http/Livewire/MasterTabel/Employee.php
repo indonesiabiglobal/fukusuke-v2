@@ -19,6 +19,7 @@ class Employee extends Component
     public $department_id;
     public $idUpdate;
     public $idDelete;
+    public $status;
 
     public function mount()
     {
@@ -75,10 +76,11 @@ class Employee extends Component
     {
         $employee = DB::table('msemployee')
             ->where('id', $id)
-            ->first(['employeeno', 'empname', 'department_id']);
+            ->first(['employeeno', 'empname', 'department_id', 'status']);
         $this->employeeno = $employee->employeeno;
         $this->empname = $employee->empname;
         $this->department_id = $employee->department_id;
+        $this->status = $employee->status;
         $this->idUpdate = $id;
         $this->dispatch('showModalUpdate');
     }
@@ -99,6 +101,7 @@ class Employee extends Component
                     'employeeno' => $this->employeeno,
                     'empname' => $this->empname,
                     'department_id' => $this->department_id,
+                    'status' => $this->status,
                     'updated_by' => auth()->user()->username,
                     'updated_on' => now(),
                 ]);
