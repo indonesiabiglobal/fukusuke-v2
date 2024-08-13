@@ -159,15 +159,19 @@
 			</div>
 		</div>		
 		<div class="col-12 col-lg-6">
-			<div class="col-12 col-lg-8">
-				<div class="form-group">
-					<label class="control-label col-md-3 col-xs-4">Product</label>
-					<select class="form-control" id="basic-usage" wire:model.defer="idProduct" placeholder="- all -">
-						<option value="">- all -</option>
-						{{-- @foreach ($products as $item)
-							<option value="{{ $item->id }}">{{ $item->name }}</option>
-						@endforeach  --}}
-					</select>
+			<div class="row">
+				<div class="col-12 col-lg-2">
+					<label for="product" class="form-label text-muted fw-bold">Product</label>
+				</div>
+				<div class="col-12 col-lg-10">
+					<div class="mb-1" wire:ignore>
+						<select class="form-control"  wire:model.defer="idProduct" id="product" name="product" data-choices data-choices-sorting-false data-choices-removeItem>
+							<option value="">- All -</option>
+							@foreach ($products as $item)
+								<option value="{{ $item->id }}">{{ $item->name }}</option>
+							@endforeach
+						</select>
+					</div>
 				</div>
 			</div>
 		</div>

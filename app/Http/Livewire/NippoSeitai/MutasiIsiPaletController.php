@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\NippoSeitai;
 
+use App\Models\MsProduct;
 use App\Models\TdProductGoods;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +17,12 @@ class MutasiIsiPaletController extends Component
     public $qty_seitai;
     public $qty_mutasi;
     public $orderId;
+    public $products;
+
+    public function mount()
+    {
+        $this->products = MsProduct::get();
+    }
 
     public function search ()
     {
