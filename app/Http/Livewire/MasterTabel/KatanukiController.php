@@ -56,16 +56,18 @@ class KatanukiController extends Component
         $this->validate([
             'code' => 'required|unique:mskatanuki,code',
             'name' => 'required',
-            'photo' => 'required|image|max:10240',
+            // 'photo' => 'required|image|max:10240',
         ]);
 
         DB::beginTransaction();
         try {
             $statusActive = 1;
             // menyimpan file image ke storage
-            $filename = $this->photo->getClientOriginalName();
-            $this->filename = $this->photo->storeAs('katanuki', $filename, 'public');
-
+            if(isset($this->photo)){
+                $filename = $this->photo->getClientOriginalName();
+                $this->filename = $this->photo->storeAs('katanuki', $filename, 'public');
+            }
+            
             // menyimpan data ke database
             DB::table('mskatanuki')->insert([
                 'code' => $this->code,
