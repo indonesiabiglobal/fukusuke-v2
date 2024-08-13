@@ -398,6 +398,24 @@ class GeneralReportController extends Component
                     return response()->download($file);
                 }
                 break;
+            case 'Daftar Loss Per Petugas':
+                if ($this->nipon == 'Infure') {
+                    $file = $this->daftarLossPerPetugasInfure($tglMasuk, $tglKeluar);
+                    return response()->download($file);
+                } else {
+                    $file = $this->daftarLossPerPetugasSeitai($tglMasuk, $tglKeluar);
+                    return response()->download($file);
+                }
+                break;
+            case 'Daftar Loss Per Mesin':
+                if ($this->nipon == 'Infure') {
+                    $file = $this->daftarLossPerMesinInfure($tglMasuk, $tglKeluar);
+                    return response()->download($file);
+                } else {
+                    $file = $this->daftarLossPerMesinSeitai($tglMasuk, $tglKeluar);
+                    return response()->download($file);
+                }
+                break;
         }
     }
 
@@ -5910,6 +5928,1261 @@ class GeneralReportController extends Component
         $columnItem++;
 
         $activeWorksheet->getStyle($columnFirstHeader . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart)->getAlignment()->setWrapText(true);
+
+        // size auto
+        $endColumnItem++;
+        while ($startColumnItemData !== $endColumnItem) {
+            $spreadsheet->getActiveSheet()->getColumnDimension($startColumnItemData)->setAutoSize(true);
+            $startColumnItemData++;
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
+        $writer->save($filename);
+        return $filename;
+    }
+
+    public function daftarLossPerPetugasInfure($tglMasuk, $tglKeluar)
+    {
+        $spreadsheet = new Spreadsheet();
+        $activeWorksheet = $spreadsheet->getActiveSheet();
+        $activeWorksheet->setShowGridlines(false);
+
+        // Judul
+        $activeWorksheet->setCellValue('B1', 'DAFTAR LOSS PER PETUGAS INFURE');
+        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        // Style Judul
+        phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
+
+        // Header
+        $columnMesin = 'B';
+        $columnMesinEnd = 'C';
+        $spreadsheet->getActiveSheet()->mergeCells($columnMesin . '3:' . $columnMesinEnd . '3');
+        $activeWorksheet->setCellValue('B3', 'Petugas (NIK, Nama)');
+
+        // header
+        $rowHeaderStart = 3;
+        $columnHeaderStart = 'D';
+        $columnHeaderEnd = 'D';
+        $header = [
+            'Produksi (Kg)',
+            'Total Loss (Kg)',
+            'Presentase Loss(%)',
+            'Katagae (Kg)',
+            'Kualitas (Kg)',
+            'Lain-lain (Kg)',
+            'Mesin (Kg)',
+            'Orang (Kg)',
+            'Printing (Kg)',
+            'Tachiage (Kg)',
+            'Loss Infure di Seitai (Kg)',
+        ];
+
+        foreach ($header as $key => $value) {
+            $activeWorksheet->setCellValue($columnHeaderEnd . $rowHeaderStart, $value);
+            $columnHeaderEnd++;
+        }
+        $columnHeaderEnd = chr(ord($columnHeaderEnd) - 1);
+
+        // style header
+        phpspreadsheet::addFullBorder($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
+        phpspreadsheet::styleFont($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart, true, 9, 'Calibri');
+        phpspreadsheet::textAlignCenter($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
+
+        $data = DB::select("
+            SELECT
+                max(dep.name) AS department_name,
+                max(dep.id) AS department_id,
+                max(mac.employeeNo) AS employeeNo,
+                max(mac.empName) AS empname,
+                SUM(asy.berat_produksi) AS berat_produksi,
+                SUM(asy.infure_berat_loss) AS infure_berat_loss,
+                COALESCE(SUM(loss.berat_loss_katagae), 0) AS berat_loss_katagae,
+                COALESCE(SUM(loss.berat_loss_tachiage), 0) AS berat_loss_tachiage,
+                COALESCE(SUM(loss.berat_loss_kualitas), 0) AS berat_loss_kualitas,
+                COALESCE(SUM(loss.berat_loss_printing), 0) AS berat_loss_printing,
+                COALESCE(SUM(loss.berat_loss_mesin), 0) AS berat_loss_mesin,
+                COALESCE(SUM(loss.berat_loss_orang), 0) AS berat_loss_orang,
+                COALESCE(SUM(loss.berat_loss_lainlain), 0) AS berat_loss_lainlain,
+                COALESCE(MAX(loss_sitai.infure_berat_loss), 0) AS seitai_infure_berat_loss
+            FROM tdProduct_Assembly AS asy
+            LEFT JOIN LATERAL (
+                SELECT
+                    SUM(CASE WHEN mslosCls.code = '01' THEN los_.berat_loss ELSE 0 END) AS berat_loss_katagae,
+                    SUM(CASE WHEN mslosCls.code = '03' THEN los_.berat_loss ELSE 0 END) AS berat_loss_kualitas,
+                    SUM(CASE WHEN mslosCls.code = '09' THEN los_.berat_loss ELSE 0 END) AS berat_loss_lainlain,
+                    SUM(CASE WHEN mslosCls.code = '07' THEN los_.berat_loss ELSE 0 END) AS berat_loss_mesin,
+                    SUM(CASE WHEN mslosCls.code = '08' THEN los_.berat_loss ELSE 0 END) AS berat_loss_orang,
+                    SUM(CASE WHEN mslosCls.code = '05' THEN los_.berat_loss ELSE 0 END) AS berat_loss_printing,
+                    SUM(CASE WHEN mslosCls.code = '02' THEN los_.berat_loss ELSE 0 END) AS berat_loss_tachiage
+                FROM tdProduct_Assembly_Loss AS los_
+                INNER JOIN msLossInfure AS mslos ON los_.loss_infure_id = mslos.id
+                INNER JOIN msLossClass AS mslosCls ON mslos.loss_class_id = mslosCls.id
+                WHERE asy.id = los_.product_assembly_id
+                GROUP BY los_.product_assembly_id
+            ) AS loss ON true
+            LEFT JOIN (
+                SELECT
+                    good.employee_id_infure,
+                    SUM(good.infure_berat_loss) AS infure_berat_loss
+                FROM tdProduct_Goods AS good
+                WHERE (good.production_date BETWEEN '$tglMasuk' AND '$tglKeluar')
+                GROUP BY good.employee_id_infure
+            ) AS loss_sitai ON asy.employee_id = loss_sitai.employee_id_infure
+            INNER JOIN msEmployee AS mac ON asy.employee_id = mac.id
+            INNER JOIN msDepartment AS dep ON mac.department_id = dep.id
+            WHERE asy.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
+            GROUP BY dep.id, asy.employee_id
+        ");
+
+        $listDepartment = array_reduce($data, function ($carry, $item) {
+            $carry[$item->department_id] = [
+                'department_id' => $item->department_id,
+                'department_name' => $item->department_name
+            ];
+            return $carry;
+        }, []);
+
+        // list petugas
+        $listEmployee = array_reduce($data, function ($carry, $item) {
+            $carry[$item->department_id][$item->employeeno] = $item->empname;
+            return $carry;
+        }, []);
+
+        $dataFilter = array_reduce($data, function ($carry, $item) {
+            // Periksa apakah department_id sudah ada
+            if (!isset($carry[$item->department_id])) {
+                $carry[$item->department_id] = [];
+            }
+
+            // Periksa apakah employeeno sudah ada di department_id tersebut
+            if (!isset($carry[$item->department_id][$item->employeeno])) {
+                $carry[$item->department_id][$item->employeeno] = [
+                    'employeeno' => $item->employeeno,
+                    'empname' => $item->empname,
+                    'berat_produksi' => $item->berat_produksi,
+                    'infure_berat_loss' => $item->infure_berat_loss,
+                    'berat_loss_katagae' => $item->berat_loss_katagae,
+                    'berat_loss_tachiage' => $item->berat_loss_tachiage,
+                    'berat_loss_kualitas' => $item->berat_loss_kualitas,
+                    'berat_loss_printing' => $item->berat_loss_printing,
+                    'berat_loss_mesin' => $item->berat_loss_mesin,
+                    'berat_loss_orang' => $item->berat_loss_orang,
+                    'berat_loss_lainlain' => $item->berat_loss_lainlain,
+                    'seitai_infure_berat_loss' => $item->seitai_infure_berat_loss
+                ];
+            }
+
+            return $carry;
+        }, []);
+
+
+        // index
+        $startColumnItem = 'B';
+        $endColumnItem = $columnHeaderEnd;
+        $startColumnItemData = 'D';
+        $columnEmployee = 'B';
+        $columnEmployeeName = 'C';
+        $startRowItem = 4;
+        $rowItem = $startRowItem;
+        // daftar departemen
+        foreach ($listDepartment as $department) {
+            // Menulis data departemen
+            $activeWorksheet->setCellValue($startColumnItem . $rowItem, $department['department_name']);
+            $spreadsheet->getActiveSheet()->mergeCells($startColumnItem . $rowItem . ':' . $endColumnItem . $rowItem);
+            phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $rowItem, true, 9, 'Calibri');
+            $rowItem++;
+            $startRowItemSum = $rowItem;
+            // daftar petugas
+            foreach ($listEmployee[$department['department_id']] as $employeeNo => $employeeName) {
+                // Menulis data petugas
+                // $spreadsheet->getActiveSheet()->mergeCells($columnEmployee . $rowItem . ':' . $columnEmployeeName . $rowItem);
+                $spreadsheet->getActiveSheet()->setCellValue($columnEmployee . $rowItem, $employeeNo);
+                phpspreadsheet::textAlignCenter($spreadsheet, $columnEmployee . $rowItem);
+                $spreadsheet->getActiveSheet()->setCellValue($columnEmployeeName . $rowItem, $employeeName);
+                // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
+
+                // memasukkan data
+                $dataItem = $dataFilter[$department['department_id']][$employeeNo] ?? [
+                    'employeeno' => $employeeNo,
+                    'empname' => '',
+                    'berat_produksi' => 0,
+                    'infure_berat_loss' => 0,
+                    'berat_loss_katagae' => 0,
+                    'berat_loss_tachiage' => 0,
+                    'berat_loss_kualitas' => 0,
+                    'berat_loss_printing' => 0,
+                    'berat_loss_mesin' => 0,
+                    'berat_loss_orang' => 0,
+                    'berat_loss_lainlain' => 0,
+                    'seitai_infure_berat_loss' => 0
+                ];
+
+                // $spreadsheet->getActiveSheet()->mergeCells($columnEmployee . $rowItem . ':' . $columnEmployeeName . $rowItem);
+                $columnItem = $startColumnItemData;
+                // produksi
+                $columnProduksi = $columnItem;
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem['berat_produksi']);
+                phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                $columnItem++;
+                // total loss
+                $columnTotalLoss = $columnItem;
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem['infure_berat_loss']);
+                phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                $columnItem++;
+                // presentase loss
+                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=IF(' . $columnProduksi . $rowItem . '=0, 0, ' . $columnTotalLoss . $rowItem . '/' . $columnProduksi . $rowItem . ')');
+                $spreadsheet->getActiveSheet()->getStyle($columnItem . $rowItem)->getNumberFormat()->setFormatCode('0.00%');
+                phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowItem);
+                $columnItem++;
+                // katagae
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem['berat_loss_katagae']);
+                if ($dataItem['berat_loss_katagae'] == 0) {
+                    $activeWorksheet->getStyle($columnItem . $rowItem)->getNumberFormat()->setFormatCode('0;-0;"-"');
+                } else {
+                    phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                }
+                $columnItem++;
+                // kualitas
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem['berat_loss_kualitas']);
+                if ($dataItem['berat_loss_kualitas'] == 0) {
+                    $activeWorksheet->getStyle($columnItem . $rowItem)->getNumberFormat()->setFormatCode('0;-0;"-"');
+                } else {
+                    phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                }
+                $columnItem++;
+                // lain-lain
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem['berat_loss_lainlain']);
+                if ($dataItem['berat_loss_lainlain'] == 0) {
+                    $activeWorksheet->getStyle($columnItem . $rowItem)->getNumberFormat()->setFormatCode('0;-0;"-"');
+                } else {
+                    phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                }
+                $columnItem++;
+                // mesin
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem['berat_loss_mesin']);
+                if ($dataItem['berat_loss_mesin'] == 0) {
+                    $activeWorksheet->getStyle($columnItem . $rowItem)->getNumberFormat()->setFormatCode('0;-0;"-"');
+                } else {
+                    phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                }
+                $columnItem++;
+                // orang
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem['berat_loss_orang']);
+                if ($dataItem['berat_loss_orang'] == 0) {
+                    $activeWorksheet->getStyle($columnItem . $rowItem)->getNumberFormat()->setFormatCode('0;-0;"-"');
+                } else {
+                    phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                }
+                $columnItem++;
+                // printing
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem['berat_loss_printing']);
+                if ($dataItem['berat_loss_printing'] == 0) {
+                    $activeWorksheet->getStyle($columnItem . $rowItem)->getNumberFormat()->setFormatCode('0;-0;"-"');
+                } else {
+                    phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                }
+                $columnItem++;
+                // tachiage
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem['berat_loss_tachiage']);
+                if ($dataItem['berat_loss_tachiage'] == 0) {
+                    $activeWorksheet->getStyle($columnItem . $rowItem)->getNumberFormat()->setFormatCode('0;-0;"-"');
+                } else {
+                    phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                }
+                $columnItem++;
+                // loss infure di seitai
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem['seitai_infure_berat_loss']);
+                if ($dataItem['seitai_infure_berat_loss'] == 0) {
+                    $activeWorksheet->getStyle($columnItem . $rowItem)->getNumberFormat()->setFormatCode('0;-0;"-"');
+                } else {
+                    phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                }
+                // Terapkan custom format untuk mengganti tampilan 0 dengan -
+                phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
+                $columnItem++;
+
+                phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem, false, 8, 'Calibri');
+                $rowItem++;
+            }
+            // perhitungan jumlah berdasarkan departemen
+            $spreadsheet->getActiveSheet()->mergeCells($columnEmployee . $rowItem . ':' . 'C' . $rowItem);
+            $activeWorksheet->setCellValue($columnEmployee . $rowItem, 'Total');
+            $columnItem = $startColumnItemData;
+            // produksi
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // total loss
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // presentase loss
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=IF(' . $columnProduksi . $rowItem . '=0, 0, ' . $columnTotalLoss . $rowItem . '/' . $columnProduksi . $rowItem . ')');
+            $spreadsheet->getActiveSheet()->getStyle($columnItem . $rowItem)->getNumberFormat()->setFormatCode('0.00%');
+            phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // katagae
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // kualitas
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // lain-lain
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // mesin
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // orang
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // printing
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // tachiage
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // loss infure di seitai
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            phpspreadsheet::addFullBorder($spreadsheet, $columnEmployee . $rowItem . ':' . $columnItem . $rowItem);
+            phpspreadsheet::styleFont($spreadsheet, $columnEmployee . $rowItem . ':' . $columnItem . $rowItem, true, 8, 'Calibri');
+            $columnItem++;
+
+            $rowItem++;
+            $rowItem++;
+        }
+
+        // Grand total
+        $rowGrandTotal = $rowItem;
+        $spreadsheet->getActiveSheet()->mergeCells($columnEmployee . $rowGrandTotal . ':' . 'C' . $rowGrandTotal);
+        $spreadsheet->getActiveSheet()->setCellValue($columnEmployee . $rowGrandTotal, 'GRAND TOTAL');
+        phpspreadsheet::styleFont($spreadsheet, $columnEmployee . $rowGrandTotal . ':' . $columnHeaderEnd . $rowGrandTotal, true, 8, 'Calibri');
+        // $this->addFullBorder($spreadsheet, $columnEmployee . $rowGrandTotal . ':' . $columnValueAvg . $rowGrandTotal);
+
+        $grandTotal = [
+            'berat_produksi' => 0,
+            'infure_berat_loss' => 0,
+            'berat_loss_katagae' => 0,
+            'berat_loss_tachiage' => 0,
+            'berat_loss_kualitas' => 0,
+            'berat_loss_printing' => 0,
+            'berat_loss_mesin' => 0,
+            'berat_loss_orang' => 0,
+            'berat_loss_lainlain' => 0,
+            'seitai_infure_berat_loss' => 0
+        ];
+
+        foreach ($dataFilter as $departmentId => $Employeees) {
+            foreach ($listEmployee[$departmentId] as $EmployeeNo => $EmployeeName) {
+                if (isset($Employeees[$EmployeeNo])) {
+                    $dataItem = $Employeees[$EmployeeNo];
+                    $grandTotal['berat_produksi'] += $dataItem['berat_produksi'];
+                    $grandTotal['infure_berat_loss'] += $dataItem['infure_berat_loss'];
+                    $grandTotal['berat_loss_katagae'] += $dataItem['berat_loss_katagae'];
+                    $grandTotal['berat_loss_tachiage'] += $dataItem['berat_loss_tachiage'];
+                    $grandTotal['berat_loss_kualitas'] += $dataItem['berat_loss_kualitas'];
+                    $grandTotal['berat_loss_printing'] += $dataItem['berat_loss_printing'];
+                    $grandTotal['berat_loss_mesin'] += $dataItem['berat_loss_mesin'];
+                    $grandTotal['berat_loss_orang'] += $dataItem['berat_loss_orang'];
+                    $grandTotal['berat_loss_lainlain'] += $dataItem['berat_loss_lainlain'];
+                    $grandTotal['seitai_infure_berat_loss'] += $dataItem['seitai_infure_berat_loss'];
+                } else {
+                    // Tambahkan default value jika $Employee tidak ditemukan
+                    $grandTotal['berat_produksi'] += 0;
+                    $grandTotal['infure_berat_loss'] += 0;
+                    $grandTotal['berat_loss_katagae'] += 0;
+                    $grandTotal['berat_loss_tachiage'] += 0;
+                    $grandTotal['berat_loss_kualitas'] += 0;
+                    $grandTotal['berat_loss_printing'] += 0;
+                    $grandTotal['berat_loss_mesin'] += 0;
+                    $grandTotal['berat_loss_orang'] += 0;
+                    $grandTotal['berat_loss_lainlain'] += 0;
+                    $grandTotal['seitai_infure_berat_loss'] += 0;
+                }
+            }
+        }
+
+        $columnItem = $startColumnItemData;
+        // produksi
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_produksi']);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        // total loss
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['infure_berat_loss']);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        // presentase loss
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, '=IF(' . $columnProduksi . $rowGrandTotal . '=0, 0, ' . $columnTotalLoss . $rowGrandTotal . '/' . $columnProduksi . $rowGrandTotal . ')');
+        $spreadsheet->getActiveSheet()->getStyle($columnItem . $rowGrandTotal)->getNumberFormat()->setFormatCode('0.00%');
+        phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        // katagae
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_loss_katagae']);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        // kualitas
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_loss_kualitas']);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        // lain-lain
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_loss_lainlain']);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        // mesin
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_loss_mesin']);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        // orang
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_loss_orang']);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        // printing
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_loss_printing']);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        // tachiage
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_loss_tachiage']);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        // loss infure di seitai
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['seitai_infure_berat_loss']);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+
+        phpspreadsheet::addFullBorder($spreadsheet, $columnEmployee . $rowGrandTotal . ':' . $columnItem . $rowGrandTotal);
+        $columnItem++;
+
+        $activeWorksheet->getStyle($columnMesin . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart)->getAlignment()->setWrapText(true);
+
+        // size auto
+        $endColumnItem++;
+        $spreadsheet->getActiveSheet()->getColumnDimension('C')->setAutoSize(true);
+        while ($startColumnItemData !== $endColumnItem) {
+            $spreadsheet->getActiveSheet()->getColumnDimension($startColumnItemData)->setAutoSize(true);
+            $startColumnItemData++;
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
+        $writer->save($filename);
+        return $filename;
+    }
+
+    public function daftarLossPerPetugasSeitai($tglMasuk, $tglKeluar)
+    {
+        $spreadsheet = new Spreadsheet();
+        $activeWorksheet = $spreadsheet->getActiveSheet();
+        $activeWorksheet->setShowGridlines(false);
+
+        // Judul
+        $activeWorksheet->setCellValue('B1', 'DAFTAR LOSS PER PETUGAS INFURE');
+        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        // Style Judul
+        phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
+
+        // Header
+        $columnMesin = 'B';
+        $columnMesinEnd = 'C';
+        $spreadsheet->getActiveSheet()->mergeCells($columnMesin . '3:' . $columnMesinEnd . '3');
+        $activeWorksheet->setCellValue('B3', 'Petugas (NIK, Nama)');
+
+        // header
+        $rowHeaderStart = 3;
+        $columnHeaderStart = 'D';
+        $columnHeaderEnd = 'D';
+        $header = [
+            'Produksi (Kg)',
+            'Total Loss (Kg)',
+            'Presentase Loss (%)',
+            'Katanuki (Kg)',
+            'Kualitas (Kg)',
+            'Mesin (Kg)',
+            'Lain-lain (Kg)',
+        ];
+
+        foreach ($header as $key => $value) {
+            $activeWorksheet->setCellValue($columnHeaderEnd . $rowHeaderStart, $value);
+            $columnHeaderEnd++;
+        }
+        $columnHeaderEnd = chr(ord($columnHeaderEnd) - 1);
+
+        // style header
+        phpspreadsheet::addFullBorder($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
+        phpspreadsheet::styleFont($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart, true, 9, 'Calibri');
+        phpspreadsheet::textAlignCenter($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
+
+        $data = DB::select("
+            SELECT
+                max(dep.name) AS department_name,
+                max(dep.id) AS department_id,
+                max(mac.employeeNo) AS employeeNo,
+                max(mac.empName) AS empName,
+                sum(good.qty_produksi * prd.unit_weight * 0.001) AS berat_produksi,
+                sum(good.seitai_berat_loss) AS seitai_berat_loss,
+                COALESCE(SUM(loss.berat_loss_katanuki), 0) AS berat_loss_katanuki,
+                COALESCE(SUM(loss.berat_loss_kualitas), 0) AS berat_loss_kualitas,
+                COALESCE(SUM(loss.berat_loss_mesin), 0) AS berat_loss_mesin,
+                COALESCE(SUM(loss.berat_loss_lainlain), 0) AS berat_loss_lainlain
+            FROM tdProduct_Goods AS good
+            LEFT JOIN LATERAL (
+                SELECT
+                    SUM(CASE WHEN mslosCls.code = '24' THEN los_.berat_loss ELSE 0 END) AS berat_loss_katanuki,
+                    SUM(CASE WHEN mslosCls.code = '03' THEN los_.berat_loss ELSE 0 END) AS berat_loss_kualitas,
+                    SUM(CASE WHEN mslosCls.code = '07' THEN los_.berat_loss ELSE 0 END) AS berat_loss_mesin,
+                    SUM(CASE WHEN mslosCls.code = '09' THEN los_.berat_loss ELSE 0 END) AS berat_loss_lainlain
+                FROM tdProduct_Goods_Loss AS los_
+                INNER JOIN msLossSeitai AS mslos ON los_.loss_seitai_id = mslos.id
+                INNER JOIN msLossClass AS mslosCls ON mslos.loss_class_id = mslosCls.id
+                WHERE good.id = los_.product_goods_id AND mslos.id <> 1
+                GROUP BY los_.product_goods_id
+            ) AS loss ON true
+            INNER JOIN msEmployee AS mac ON good.employee_id = mac.id
+            INNER JOIN msDepartment AS dep ON mac.department_id = dep.id
+            INNER JOIN msProduct AS prd ON good.product_id = prd.id
+            WHERE good.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
+            GROUP BY dep.id, good.employee_id
+        ");
+
+        $listDepartment = array_reduce($data, function ($carry, $item) {
+            $carry[$item->department_id] = [
+                'department_id' => $item->department_id,
+                'department_name' => $item->department_name
+            ];
+            return $carry;
+        }, []);
+
+        // list petugas
+        $listEmployee = array_reduce($data, function ($carry, $item) {
+            $carry[$item->department_id][$item->employeeno] = $item->empname;
+            return $carry;
+        }, []);
+
+        $dataFilter = array_reduce($data, function ($carry, $item) {
+            // Periksa apakah department_id sudah ada
+            if (!isset($carry[$item->department_id])) {
+                $carry[$item->department_id] = [];
+            }
+
+            // Periksa apakah employeeno sudah ada di department_id tersebut
+            if (!isset($carry[$item->department_id][$item->employeeno])) {
+                $carry[$item->department_id][$item->employeeno] = [
+                    'employeeno' => $item->employeeno,
+                    'empname' => $item->empname,
+                    'berat_produksi' => $item->berat_produksi,
+                    'seitai_berat_loss' => $item->seitai_berat_loss,
+                    'berat_loss_katanuki' => $item->berat_loss_katanuki,
+                    'berat_loss_kualitas' => $item->berat_loss_kualitas,
+                    'berat_loss_mesin' => $item->berat_loss_mesin,
+                    'berat_loss_lainlain' => $item->berat_loss_lainlain,
+                ];
+            }
+
+            return $carry;
+        }, []);
+
+
+        // index
+        $startColumnItem = 'B';
+        $endColumnItem = $columnHeaderEnd;
+        $startColumnItemData = 'D';
+        $columnEmployee = 'B';
+        $columnEmployeeName = 'C';
+        $startRowItem = 4;
+        $rowItem = $startRowItem;
+        // daftar departemen
+        foreach ($listDepartment as $department) {
+            // Menulis data departemen
+            $activeWorksheet->setCellValue($startColumnItem . $rowItem, $department['department_name']);
+            $spreadsheet->getActiveSheet()->mergeCells($startColumnItem . $rowItem . ':' . $endColumnItem . $rowItem);
+            phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $rowItem, true, 9, 'Calibri');
+            $rowItem++;
+            $startRowItemSum = $rowItem;
+            // daftar petugas
+            foreach ($listEmployee[$department['department_id']] as $employeeNo => $employeeName) {
+                // Menulis data petugas
+                // $spreadsheet->getActiveSheet()->mergeCells($columnEmployee . $rowItem . ':' . $columnEmployeeName . $rowItem);
+                $spreadsheet->getActiveSheet()->setCellValue($columnEmployee . $rowItem, $employeeNo);
+                phpspreadsheet::textAlignCenter($spreadsheet, $columnEmployee . $rowItem);
+                $spreadsheet->getActiveSheet()->setCellValue($columnEmployeeName . $rowItem, $employeeName);
+                // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
+
+                // memasukkan data
+                $dataItem = $dataFilter[$department['department_id']][$employeeNo] ?? [
+                    'employeeno' => $employeeNo,
+                    'empname' => '',
+                    'berat_produksi' => 0,
+                    'seitai_berat_loss' => 0,
+                    'berat_loss_katanuki' => 0,
+                    'berat_loss_kualitas' => 0,
+                    'berat_loss_mesin' => 0,
+                    'berat_loss_lainlain' => 0,
+                ];
+
+                // $spreadsheet->getActiveSheet()->mergeCells($columnEmployee . $rowItem . ':' . $columnEmployeeName . $rowItem);
+                $columnItem = $startColumnItemData;
+                // produksi
+                $columnProduksi = $columnItem;
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem['berat_produksi']);
+                phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                $columnItem++;
+                // total loss
+                $columnTotalLoss = $columnItem;
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem['seitai_berat_loss']);
+                phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                $columnItem++;
+                // presentase loss
+                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=IF(' . $columnProduksi . $rowItem . '=0, 0, ' . $columnTotalLoss . $rowItem . '/' . $columnProduksi . $rowItem . ')');
+                $spreadsheet->getActiveSheet()->getStyle($columnItem . $rowItem)->getNumberFormat()->setFormatCode('0.00%');
+                phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowItem);
+                $columnItem++;
+                // katanuki
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem['berat_loss_katanuki']);
+                if ($dataItem['berat_loss_katanuki'] == 0) {
+                    $activeWorksheet->getStyle($columnItem . $rowItem)->getNumberFormat()->setFormatCode('0;-0;"-"');
+                } else {
+                    phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                }
+                $columnItem++;
+                // kualitas
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem['berat_loss_kualitas']);
+                if ($dataItem['berat_loss_kualitas'] == 0) {
+                    $activeWorksheet->getStyle($columnItem . $rowItem)->getNumberFormat()->setFormatCode('0;-0;"-"');
+                } else {
+                    phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                }
+                $columnItem++;
+                // mesin
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem['berat_loss_mesin']);
+                if ($dataItem['berat_loss_mesin'] == 0) {
+                    $activeWorksheet->getStyle($columnItem . $rowItem)->getNumberFormat()->setFormatCode('0;-0;"-"');
+                } else {
+                    phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                }
+                $columnItem++;
+                // lain-lain
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem['berat_loss_lainlain']);
+                if ($dataItem['berat_loss_lainlain'] == 0) {
+                    $activeWorksheet->getStyle($columnItem . $rowItem)->getNumberFormat()->setFormatCode('0;-0;"-"');
+                } else {
+                    phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                }
+                // Terapkan custom format untuk mengganti tampilan 0 dengan -
+                phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
+                $columnItem++;
+
+                phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem, false, 8, 'Calibri');
+                $rowItem++;
+            }
+            // perhitungan jumlah berdasarkan departemen
+            $spreadsheet->getActiveSheet()->mergeCells($columnEmployee . $rowItem . ':' . 'C' . $rowItem);
+            $activeWorksheet->setCellValue($columnEmployee . $rowItem, 'Total');
+            $columnItem = $startColumnItemData;
+            // produksi
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // total loss
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // presentase loss
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=IF(' . $columnProduksi . $rowItem . '=0, 0, ' . $columnTotalLoss . $rowItem . '/' . $columnProduksi . $rowItem . ')');
+            $spreadsheet->getActiveSheet()->getStyle($columnItem . $rowItem)->getNumberFormat()->setFormatCode('0.00%');
+            phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // katanuki
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // kualitas
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // mesin
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // lain-lain
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            phpspreadsheet::addFullBorder($spreadsheet, $columnEmployee . $rowItem . ':' . $columnItem . $rowItem);
+            phpspreadsheet::styleFont($spreadsheet, $columnEmployee . $rowItem . ':' . $columnItem . $rowItem, true, 8, 'Calibri');
+            $columnItem++;
+
+            $rowItem++;
+            $rowItem++;
+        }
+
+        // Grand total
+        $rowGrandTotal = $rowItem;
+        $spreadsheet->getActiveSheet()->mergeCells($columnEmployee . $rowGrandTotal . ':' . 'C' . $rowGrandTotal);
+        $spreadsheet->getActiveSheet()->setCellValue($columnEmployee . $rowGrandTotal, 'GRAND TOTAL');
+        phpspreadsheet::styleFont($spreadsheet, $columnEmployee . $rowGrandTotal . ':' . $columnHeaderEnd . $rowGrandTotal, true, 8, 'Calibri');
+        // $this->addFullBorder($spreadsheet, $columnEmployee . $rowGrandTotal . ':' . $columnValueAvg . $rowGrandTotal);
+
+        $grandTotal = [
+            'berat_produksi' => 0,
+            'seitai_berat_loss' => 0,
+            'berat_loss_katanuki' => 0,
+            'berat_loss_kualitas' => 0,
+            'berat_loss_mesin' => 0,
+            'berat_loss_lainlain' => 0,
+        ];
+
+        foreach ($dataFilter as $departmentId => $Employeees) {
+            foreach ($listEmployee[$departmentId] as $EmployeeNo => $EmployeeName) {
+                if (isset($Employeees[$EmployeeNo])) {
+                    $dataItem = $Employeees[$EmployeeNo];
+                    $grandTotal['berat_produksi'] += $dataItem['berat_produksi'];
+                    $grandTotal['seitai_berat_loss'] += $dataItem['seitai_berat_loss'];
+                    $grandTotal['berat_loss_katanuki'] += $dataItem['berat_loss_katanuki'];
+                    $grandTotal['berat_loss_kualitas'] += $dataItem['berat_loss_kualitas'];
+                    $grandTotal['berat_loss_mesin'] += $dataItem['berat_loss_mesin'];
+                    $grandTotal['berat_loss_lainlain'] += $dataItem['berat_loss_lainlain'];
+                } else {
+                    // Tambahkan default value jika $Employee tidak ditemukan
+                    $grandTotal['berat_produksi'] += 0;
+                    $grandTotal['seitai_berat_loss'] += 0;
+                    $grandTotal['berat_loss_katanuki'] += 0;
+                    $grandTotal['berat_loss_kualitas'] += 0;
+                    $grandTotal['berat_loss_mesin'] += 0;
+                    $grandTotal['berat_loss_lainlain'] += 0;
+                }
+            }
+        }
+
+        $columnItem = $startColumnItemData;
+        // produksi
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_produksi']);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        // total loss
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['seitai_berat_loss']);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        // presentase loss
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, '=IF(' . $columnProduksi . $rowGrandTotal . '=0, 0, ' . $columnTotalLoss . $rowGrandTotal . '/' . $columnProduksi . $rowGrandTotal . ')');
+        $spreadsheet->getActiveSheet()->getStyle($columnItem . $rowGrandTotal)->getNumberFormat()->setFormatCode('0.00%');
+        phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        // katanuki
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_loss_katanuki']);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        // kualitas
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_loss_kualitas']);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        // mesin
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_loss_mesin']);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        // lain-lain
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_loss_lainlain']);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+
+        phpspreadsheet::addFullBorder($spreadsheet, $columnEmployee . $rowGrandTotal . ':' . $columnItem . $rowGrandTotal);
+        $columnItem++;
+
+        $activeWorksheet->getStyle($columnMesin . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart)->getAlignment()->setWrapText(true);
+
+        // size auto
+        $endColumnItem++;
+        $spreadsheet->getActiveSheet()->getColumnDimension('C')->setAutoSize(true);
+        while ($startColumnItemData !== $endColumnItem) {
+            $spreadsheet->getActiveSheet()->getColumnDimension($startColumnItemData)->setAutoSize(true);
+            $startColumnItemData++;
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
+        $writer->save($filename);
+        return $filename;
+    }
+
+    public function daftarLossPerMesinInfure($tglMasuk, $tglKeluar)
+    {
+        $spreadsheet = new Spreadsheet();
+        $activeWorksheet = $spreadsheet->getActiveSheet();
+        $activeWorksheet->setShowGridlines(false);
+
+        // Judul
+        $activeWorksheet->setCellValue('B1', 'DAFTAR LOSS PER MESIN INFURE');
+        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        // Style Judul
+        phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
+
+        // Header
+        $columnMesin = 'B';
+        $columnMesinEnd = 'C';
+        $spreadsheet->getActiveSheet()->mergeCells($columnMesin . '3:' . $columnMesinEnd . '3');
+        $activeWorksheet->setCellValue('B3', 'Klasifikasi');
+
+        // header
+        $rowHeaderStart = 3;
+        $columnHeaderStart = 'D';
+        $columnHeaderEnd = 'D';
+        $header = [
+            'Kode Loss',
+            'Nama Loss',
+            'Loss Produksi (Kg)',
+            'Loss Kebutuhan (Kg)',
+        ];
+
+        foreach ($header as $key => $value) {
+            $activeWorksheet->setCellValue($columnHeaderEnd . $rowHeaderStart, $value);
+            $columnHeaderEnd++;
+        }
+        $columnHeaderEnd = chr(ord($columnHeaderEnd) - 1);
+
+        // style header
+        phpspreadsheet::addFullBorder($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
+        phpspreadsheet::styleFont($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart, true, 9, 'Calibri');
+        phpspreadsheet::textAlignCenter($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
+
+        $data = DB::select("
+            SELECT
+                max(mac.machineNo) AS machine_no,
+                max(mac.machineNo || ' : ' || mac.machineName) AS machine_name,
+                max(mslosCls.name) AS loss_class_name,
+                max(mslos.code) AS loss_code,
+                max(mslos.name) AS loss_name,
+                SUM(CASE WHEN mslos.loss_category_code <> '1' THEN det.berat_loss ELSE 0 END) AS berat_loss_produksi,
+                SUM(CASE WHEN mslos.loss_category_code = '1' THEN det.berat_loss ELSE 0 END) AS berat_loss_kebutuhan
+            FROM tdProduct_Assembly AS asy
+            INNER JOIN tdProduct_Assembly_Loss AS det ON asy.id = det.product_assembly_id
+            INNER JOIN msLossInfure AS mslos ON det.loss_infure_id = mslos.id
+            INNER JOIN msLossClass AS mslosCls ON mslos.loss_class_id = mslosCls.id
+            INNER JOIN msMachine AS mac ON asy.machine_id = mac.id
+            WHERE asy.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
+            GROUP BY mac.id, det.loss_infure_id
+        ");
+
+        // list mesin
+        $listMachine = array_reduce($data, function ($carry, $item) {
+            $carry[$item->machine_no] = [
+                'machine_no' => $item->machine_no,
+                'machine_name' => $item->machine_name
+            ];
+            return $carry;
+        }, []);
+
+        // list klasifikasi
+        $listLossClass = array_reduce($data, function ($carry, $item) {
+            $carry[$item->machine_no][$item->loss_class_name] = $item->loss_class_name;
+            return $carry;
+        }, []);
+
+        $dataFilter = array_reduce($data, function ($carry, $item) {
+            // Periksa apakah machine_no sudah ada
+            if (!isset($carry[$item->machine_no])) {
+                $carry[$item->machine_no] = [];
+            }
+
+            // Periksa apakah loss_class_name sudah ada di machine_no tersebut
+            if (!isset($carry[$item->machine_no][$item->loss_class_name])) {
+                $carry[$item->machine_no][$item->loss_class_name] = [
+                    'loss_class_name' => $item->loss_class_name,
+                    'losses' => []  // Buat array untuk menampung beberapa loss_name
+                ];
+            }
+
+            // Tambahkan loss_name ke dalam array 'losses'
+            $carry[$item->machine_no][$item->loss_class_name]['losses'][] = [
+                'loss_code' => $item->loss_code,
+                'loss_name' => $item->loss_name,
+                'berat_loss_produksi' => $item->berat_loss_produksi,
+                'berat_loss_kebutuhan' => $item->berat_loss_kebutuhan
+            ];
+
+            return $carry;
+        }, []);
+
+
+        // index
+        $startColumnItem = 'B';
+        $endColumnItem = $columnHeaderEnd;
+        $startColumnItemData = 'D';
+        $columnLossClass = 'B';
+        $columnLossClassName = 'C';
+        $startRowItem = 4;
+        $rowItem = $startRowItem;
+        // daftar departemen
+        foreach ($listMachine as $machine) {
+            // Menulis data departemen
+            $activeWorksheet->setCellValue($startColumnItem . $rowItem, $machine['machine_name']);
+            $spreadsheet->getActiveSheet()->mergeCells($startColumnItem . $rowItem . ':' . $endColumnItem . $rowItem);
+            phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $rowItem, true, 9, 'Calibri');
+            $rowItem++;
+            $startRowItemSum = $rowItem;
+            // daftar mesin
+            foreach ($listLossClass[$machine['machine_no']] as $lossClass) {
+                // Menulis data mesin
+                $spreadsheet->getActiveSheet()->mergeCells($columnLossClass . $rowItem . ':' . $columnLossClassName . $rowItem);
+                $spreadsheet->getActiveSheet()->setCellValue($columnLossClass . $rowItem, $lossClass);
+                // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
+
+                // memasukkan data
+                $dataItem = $dataFilter[$machine['machine_no']][$lossClass] ?? [
+                    'loss_class_name' => $lossClass,
+                    'losses' => [
+                        [
+                            'loss_code' => '',
+                            'loss_name' => '',
+                            'berat_loss_produksi' => 0,
+                            'berat_loss_kebutuhan' => 0
+                        ]
+                    ]
+                ];
+
+                foreach ($dataItem['losses'] as $item) {
+                    $spreadsheet->getActiveSheet()->mergeCells($columnLossClass . $rowItem . ':' . $columnLossClassName . $rowItem);
+                    $columnItem = $startColumnItemData;
+                    // kode loss
+                    $activeWorksheet->setCellValue($columnItem . $rowItem, $item['loss_code'] ?? '');
+                    phpspreadsheet::textAlignCenter($spreadsheet, $columnItem . $rowItem);
+                    $columnItem++;
+                    // nama loss
+                    $activeWorksheet->setCellValue($columnItem . $rowItem, $item['loss_name'] ?? '');
+                    $columnItem++;
+                    // loss produksi
+                    $activeWorksheet->setCellValue($columnItem . $rowItem, $item['berat_loss_produksi']);
+                    if ($item['berat_loss_produksi'] == 0) {
+                        $activeWorksheet->getStyle($columnItem . $rowItem)->getNumberFormat()->setFormatCode('0;-0;"-"');
+                    } else {
+                        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                    }
+                    $columnItem++;
+                    // loss kebutuhan
+                    $activeWorksheet->setCellValue($columnItem . $rowItem, $item['berat_loss_kebutuhan']);
+                    if ($item['berat_loss_kebutuhan'] == 0) {
+                        $activeWorksheet->getStyle($columnItem . $rowItem)->getNumberFormat()->setFormatCode('0;-0;"-"');
+                    } else {
+                        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                    }
+                    // Terapkan custom format untuk mengganti tampilan 0 dengan -
+                    phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
+                    $columnItem++;
+
+                    phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem, false, 8, 'Calibri');
+                    $rowItem++;
+                }
+            }
+            // perhitungan jumlah berdasarkan departemen
+            $spreadsheet->getActiveSheet()->mergeCells($columnLossClass . $rowItem . ':' . 'E' . $rowItem);
+            $activeWorksheet->setCellValue($columnLossClass . $rowItem, 'Total');
+            $columnItem = $startColumnItemData;
+            $columnItem++;
+            // loss produksi
+            $columnItem++;
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // loss kebutuhan
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            phpspreadsheet::addFullBorder($spreadsheet, $columnLossClass . $rowItem . ':' . $columnItem . $rowItem);
+            phpspreadsheet::styleFont($spreadsheet, $columnLossClass . $rowItem . ':' . $columnItem . $rowItem, true, 8, 'Calibri');
+            $columnItem++;
+
+            $rowItem++;
+            $rowItem++;
+        }
+
+        // Grand total
+        $rowGrandTotal = $rowItem;
+        $spreadsheet->getActiveSheet()->mergeCells($columnLossClass . $rowGrandTotal . ':' . 'E' . $rowGrandTotal);
+        $spreadsheet->getActiveSheet()->setCellValue($columnLossClass . $rowGrandTotal, 'GRAND TOTAL');
+        phpspreadsheet::styleFont($spreadsheet, $columnLossClass . $rowGrandTotal . ':' . $columnHeaderEnd . $rowGrandTotal, true, 8, 'Calibri');
+        // $this->addFullBorder($spreadsheet, $columnLossClass . $rowGrandTotal . ':' . $columnValueAvg . $rowGrandTotal);
+
+        $grandTotal = [
+            'berat_loss_produksi' => 0,
+            'berat_loss_kebutuhan' => 0,
+        ];
+
+        foreach ($dataFilter as $machineNo => $lossClasses) {
+            foreach ($listLossClass[$machineNo] as $lossClass => $lossClassName) {
+                if (isset($lossClasses[$lossClass])) {
+                    $dataItem = $lossClasses[$lossClass];
+                    foreach ($dataItem['losses'] as $item) {
+                        $grandTotal['berat_loss_produksi'] += $item['berat_loss_produksi'];
+                        $grandTotal['berat_loss_kebutuhan'] += $item['berat_loss_kebutuhan'];
+                    }
+                } else {
+                    // Tambahkan default value jika $lossClass tidak ditemukan
+                    $grandTotal['berat_loss_produksi'] += 0;
+                    $grandTotal['berat_loss_kebutuhan'] += 0;
+                }
+            }
+        }
+
+        $columnItem = $startColumnItemData;
+        $columnItem++;
+        $columnItem++;
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_loss_produksi']);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_loss_kebutuhan']);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        phpspreadsheet::addFullBorder($spreadsheet, $columnLossClass . $rowGrandTotal . ':' . $columnItem . $rowGrandTotal);
+        phpspreadsheet::addFullBorder($spreadsheet, $columnLossClass . $rowGrandTotal . ':' . $columnItem . $rowGrandTotal);
+        $columnItem++;
+
+        $activeWorksheet->getStyle($columnMesin . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart)->getAlignment()->setWrapText(true);
+
+        // size auto
+        $endColumnItem++;
+        while ($startColumnItemData !== $endColumnItem) {
+            $spreadsheet->getActiveSheet()->getColumnDimension($startColumnItemData)->setAutoSize(true);
+            $startColumnItemData++;
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
+        $writer->save($filename);
+        return $filename;
+    }
+
+    public function daftarLossPerMesinSeitai($tglMasuk, $tglKeluar)
+    {
+        $spreadsheet = new Spreadsheet();
+        $activeWorksheet = $spreadsheet->getActiveSheet();
+        $activeWorksheet->setShowGridlines(false);
+
+        // Judul
+        $activeWorksheet->setCellValue('B1', 'DAFTAR LOSS PER MESIN SEITAI');
+        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        // Style Judul
+        phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
+
+        // Header
+        $columnMesin = 'B';
+        $columnMesinEnd = 'C';
+        $spreadsheet->getActiveSheet()->mergeCells($columnMesin . '3:' . $columnMesinEnd . '3');
+        $activeWorksheet->setCellValue('B3', 'Klasifikasi');
+
+        // header
+        $rowHeaderStart = 3;
+        $columnHeaderStart = 'D';
+        $columnHeaderEnd = 'D';
+        $header = [
+            'Kode Loss',
+            'Nama Loss',
+            'Loss Produksi (Kg)',
+            'Loss Kebutuhan (Kg)',
+        ];
+
+        foreach ($header as $key => $value) {
+            $activeWorksheet->setCellValue($columnHeaderEnd . $rowHeaderStart, $value);
+            $columnHeaderEnd++;
+        }
+        $columnHeaderEnd = chr(ord($columnHeaderEnd) - 1);
+
+        // style header
+        phpspreadsheet::addFullBorder($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
+        phpspreadsheet::styleFont($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart, true, 9, 'Calibri');
+        phpspreadsheet::textAlignCenter($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
+
+        $data = DB::select("
+            SELECT
+                max(mac.machineNo) AS machine_no,
+                max(mac.machineNo || ' : ' || mac.machineName) AS machine_name,
+                max(mslosCls.name) AS loss_class_name,
+                max(mslos.code) AS loss_code,
+                max(mslos.name) AS loss_name,
+                SUM(CASE WHEN mslos.loss_category_code <> '1' THEN det.berat_loss ELSE 0 END) AS berat_loss_produksi,
+                SUM(CASE WHEN mslos.loss_category_code = '1' THEN det.berat_loss ELSE 0 END) AS berat_loss_kebutuhan
+            FROM tdProduct_Goods AS good
+            INNER JOIN tdProduct_Goods_Loss AS det ON good.id = det.product_goods_id
+            INNER JOIN msLossSeitai AS mslos ON det.loss_seitai_id = mslos.id
+            INNER JOIN msLossClass AS mslosCls ON mslos.loss_class_id = mslosCls.id
+            INNER JOIN msMachine AS mac ON good.machine_id = mac.id
+            WHERE good.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
+            GROUP BY mac.id, det.loss_seitai_id
+        ");
+
+        // list mesin
+        $listMachine = array_reduce($data, function ($carry, $item) {
+            $carry[$item->machine_no] = [
+                'machine_no' => $item->machine_no,
+                'machine_name' => $item->machine_name
+            ];
+            return $carry;
+        }, []);
+
+        // list klasifikasi
+        $listLossClass = array_reduce($data, function ($carry, $item) {
+            $carry[$item->machine_no][$item->loss_class_name] = $item->loss_class_name;
+            return $carry;
+        }, []);
+
+        $dataFilter = array_reduce($data, function ($carry, $item) {
+            // Periksa apakah machine_no sudah ada
+            if (!isset($carry[$item->machine_no])) {
+                $carry[$item->machine_no] = [];
+            }
+
+            // Periksa apakah loss_class_name sudah ada di machine_no tersebut
+            if (!isset($carry[$item->machine_no][$item->loss_class_name])) {
+                $carry[$item->machine_no][$item->loss_class_name] = [
+                    'loss_class_name' => $item->loss_class_name,
+                    'losses' => []  // Buat array untuk menampung beberapa loss_name
+                ];
+            }
+
+            // Tambahkan loss_name ke dalam array 'losses'
+            $carry[$item->machine_no][$item->loss_class_name]['losses'][] = [
+                'loss_code' => $item->loss_code,
+                'loss_name' => $item->loss_name,
+                'berat_loss_produksi' => $item->berat_loss_produksi,
+                'berat_loss_kebutuhan' => $item->berat_loss_kebutuhan
+            ];
+
+            return $carry;
+        }, []);
+
+
+        // index
+        $startColumnItem = 'B';
+        $endColumnItem = $columnHeaderEnd;
+        $startColumnItemData = 'D';
+        $columnLossClass = 'B';
+        $columnLossClassName = 'C';
+        $startRowItem = 4;
+        $rowItem = $startRowItem;
+        // daftar departemen
+        foreach ($listMachine as $machine) {
+            // Menulis data departemen
+            $activeWorksheet->setCellValue($startColumnItem . $rowItem, $machine['machine_name']);
+            $spreadsheet->getActiveSheet()->mergeCells($startColumnItem . $rowItem . ':' . $endColumnItem . $rowItem);
+            phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $rowItem, true, 9, 'Calibri');
+            $rowItem++;
+            $startRowItemSum = $rowItem;
+            // daftar mesin
+            foreach ($listLossClass[$machine['machine_no']] as $lossClass) {
+                // Menulis data mesin
+                $spreadsheet->getActiveSheet()->mergeCells($columnLossClass . $rowItem . ':' . $columnLossClassName . $rowItem);
+                $spreadsheet->getActiveSheet()->setCellValue($columnLossClass . $rowItem, $lossClass);
+                // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
+
+                // memasukkan data
+                $dataItem = $dataFilter[$machine['machine_no']][$lossClass] ?? [
+                    'loss_class_name' => $lossClass,
+                    'losses' => [
+                        [
+                            'loss_code' => '',
+                            'loss_name' => '',
+                            'berat_loss_produksi' => 0,
+                            'berat_loss_kebutuhan' => 0
+                        ]
+                    ]
+                ];
+
+                foreach ($dataItem['losses'] as $item) {
+                    $spreadsheet->getActiveSheet()->mergeCells($columnLossClass . $rowItem . ':' . $columnLossClassName . $rowItem);
+                    $columnItem = $startColumnItemData;
+                    // kode loss
+                    $activeWorksheet->setCellValue($columnItem . $rowItem, $item['loss_code'] ?? '');
+                    phpspreadsheet::textAlignCenter($spreadsheet, $columnItem . $rowItem);
+                    $columnItem++;
+                    // nama loss
+                    $activeWorksheet->setCellValue($columnItem . $rowItem, $item['loss_name'] ?? '');
+                    $columnItem++;
+                    // loss produksi
+                    $activeWorksheet->setCellValue($columnItem . $rowItem, $item['berat_loss_produksi']);
+                    if ($item['berat_loss_produksi'] == 0) {
+                        $activeWorksheet->getStyle($columnItem . $rowItem)->getNumberFormat()->setFormatCode('0;-0;"-"');
+                    } else {
+                        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                    }
+                    $columnItem++;
+                    // loss kebutuhan
+                    $activeWorksheet->setCellValue($columnItem . $rowItem, $item['berat_loss_kebutuhan']);
+                    if ($item['berat_loss_kebutuhan'] == 0) {
+                        $activeWorksheet->getStyle($columnItem . $rowItem)->getNumberFormat()->setFormatCode('0;-0;"-"');
+                    } else {
+                        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                    }
+                    // Terapkan custom format untuk mengganti tampilan 0 dengan -
+                    phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
+                    $columnItem++;
+
+                    phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem, false, 8, 'Calibri');
+                    $rowItem++;
+                }
+            }
+            // perhitungan jumlah berdasarkan departemen
+            $spreadsheet->getActiveSheet()->mergeCells($columnLossClass . $rowItem . ':' . 'E' . $rowItem);
+            $activeWorksheet->setCellValue($columnLossClass . $rowItem, 'Total');
+            $columnItem = $startColumnItemData;
+            $columnItem++;
+            // loss produksi
+            $columnItem++;
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // loss kebutuhan
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            phpspreadsheet::addFullBorder($spreadsheet, $columnLossClass . $rowItem . ':' . $columnItem . $rowItem);
+            phpspreadsheet::styleFont($spreadsheet, $columnLossClass . $rowItem . ':' . $columnItem . $rowItem, true, 8, 'Calibri');
+            $columnItem++;
+
+            $rowItem++;
+            $rowItem++;
+        }
+
+        // Grand total
+        $rowGrandTotal = $rowItem;
+        $spreadsheet->getActiveSheet()->mergeCells($columnLossClass . $rowGrandTotal . ':' . 'E' . $rowGrandTotal);
+        $spreadsheet->getActiveSheet()->setCellValue($columnLossClass . $rowGrandTotal, 'GRAND TOTAL');
+        phpspreadsheet::styleFont($spreadsheet, $columnLossClass . $rowGrandTotal . ':' . $columnHeaderEnd . $rowGrandTotal, true, 8, 'Calibri');
+        // $this->addFullBorder($spreadsheet, $columnLossClass . $rowGrandTotal . ':' . $columnValueAvg . $rowGrandTotal);
+
+        $grandTotal = [
+            'berat_loss_produksi' => 0,
+            'berat_loss_kebutuhan' => 0,
+        ];
+
+        foreach ($dataFilter as $machineNo => $lossClasses) {
+            foreach ($listLossClass[$machineNo] as $lossClass => $lossClassName) {
+                if (isset($lossClasses[$lossClass])) {
+                    $dataItem = $lossClasses[$lossClass];
+                    foreach ($dataItem['losses'] as $item) {
+                        $grandTotal['berat_loss_produksi'] += $item['berat_loss_produksi'];
+                        $grandTotal['berat_loss_kebutuhan'] += $item['berat_loss_kebutuhan'];
+                    }
+                } else {
+                    // Tambahkan default value jika $lossClass tidak ditemukan
+                    $grandTotal['berat_loss_produksi'] += 0;
+                    $grandTotal['berat_loss_kebutuhan'] += 0;
+                }
+            }
+        }
+
+        $columnItem = $startColumnItemData;
+        $columnItem++;
+        $columnItem++;
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_loss_produksi']);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_loss_kebutuhan']);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        phpspreadsheet::addFullBorder($spreadsheet, $columnLossClass . $rowGrandTotal . ':' . $columnItem . $rowGrandTotal);
+        phpspreadsheet::addFullBorder($spreadsheet, $columnLossClass . $rowGrandTotal . ':' . $columnItem . $rowGrandTotal);
+        $columnItem++;
+
+        $activeWorksheet->getStyle($columnMesin . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart)->getAlignment()->setWrapText(true);
 
         // size auto
         $endColumnItem++;
