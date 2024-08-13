@@ -54,7 +54,7 @@
                                         <div class="col-xxl-12">
                                             <div>
                                                 <label for="machineno" class="form-label">Nomor Machine</label>
-                                                <input type="number"
+                                                <input type="text"
                                                     class="form-control @error('machineno') is-invalid @enderror"
                                                     id="machineno" wire:model.defer="machineno"
                                                     placeholder="Kode/Nomor">
@@ -86,9 +86,9 @@
                                                     <option value="" selected>
                                                         Silahkan Pilih
                                                     </option>
-                                                    @foreach (\App\Models\MsDepartment::select('id', 'name')->get() as $department)
+                                                    @foreach (\App\Models\MsDepartment::whereIn('id', [10, 11, 12, 13, 15, 16])->select('id', 'name', 'code')->get() as $department)
                                                         <option value="{{ $department->id }}">
-                                                            {{ $department->name }}
+                                                            {{ $department->name }} , {{ $department->code }}
                                                         </option>
                                                     @endforeach
                                                 </select>
@@ -237,7 +237,7 @@
                                                     <option value="" selected>
                                                         Silahkan Pilih
                                                     </option>
-                                                    @foreach (\App\Models\MsDepartment::select('id', 'name')->get() as $department)
+                                                    @foreach (\App\Models\MsDepartment::whereIn('id', [10, 11, 12, 13, 15, 16])->select('id', 'name')->get() as $department)
                                                         <option value="{{ $department->id }}">
                                                             {{ $department->name }}
                                                         </option>
