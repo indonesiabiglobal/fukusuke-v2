@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Kenpin;
 use Livewire\Component;
 use App\Models\TdOrder;
 use App\Models\MsEmployee;
+use App\Models\MsLossKenpin;
 use App\Models\TdKenpinAssembly;
 use App\Models\TdKenpinAssemblyDetail;
 use App\Models\TdOrderLpk;
@@ -33,12 +34,15 @@ class AddKenpinInfureController extends Component
     public $namapetugas;
     public $berat_loss;
     public $orderid;
+    public $msLossKenpin;
+    public $code_loss;
 
     public function mount()
     {
         $this->kenpin_date = Carbon::now()->format('Y-m-d');
         $today = Carbon::now();
         $this->kenpin_no = $today->format('ym').'-001';
+        $this->msLossKenpin = MsLossKenpin::get();
     }
 
     public function addGentan()
@@ -126,8 +130,12 @@ class AddKenpinInfureController extends Component
     public function render()
     {
         if(isset($this->lpk_no) && $this->lpk_no != ''){
+            $prefix = substr($this->lpk_no, 0, 6);
+            $suffix = substr($this->lpk_no, -3);
+
             $tdorderlpk = DB::table('tdorderlpk as tolp')
             ->select(
+                'tolp.lpk_no',
                 'tolp.id',
                 'tolp.lpk_date',
                 'tolp.panjang_lpk',                
@@ -140,7 +148,9 @@ class AddKenpinInfureController extends Component
                 'tolp.qty_gentan'
             )
             ->join('msproduct as mp', 'mp.id', '=', 'tolp.product_id')
-            ->where('tolp.lpk_no', $this->lpk_no)
+            // ->where('tolp.lpk_no', $this->lpk_no)
+            ->whereRaw("LEFT(lpk_no, 6) ILIKE ?", ["{$prefix}"])
+            ->whereRaw("RIGHT(lpk_no, 3) ILIKE ?", ["{$suffix}"])
             ->first();
 
             if($tdorderlpk == null){
@@ -151,6 +161,7 @@ class AddKenpinInfureController extends Component
                 $this->code = $tdorderlpk->code;
                 $this->name = $tdorderlpk->name;
                 $this->lpk_id = $tdorderlpk->id;
+                $this->lpk_no = $tdorderlpk->lpk_no;
 
                 $this->details = DB::table('tdproduct_assembly AS tdpa')
                 ->select(
@@ -184,13 +195,25 @@ class AddKenpinInfureController extends Component
             }
         }
 
-        if(isset($this->employeeno) && $this->employeeno != ''){
-            $msemployee=MsEmployee::where('employeeno', $this->employeeno)->first();
+        if(isset($this->employeeno) && $this->employeeno != '' && strlen($this->employeeno) >= 3){
+            $msemployee=MsEmployee::where('employeeno', 'ilike', '%'. $this->employeeno .'%')->first();
 
             if($msemployee == null){
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
             } else {
+                $this->employeeno = $msemployee->employeeno;
                 $this->empname = $msemployee->empname;
+            }
+        }
+
+        if(isset($this->code_loss) && $this->code_loss != ''){
+            $mskenpin=MsLossKenpin::where('code', $this->code_loss)->first();
+
+            if($mskenpin == null){
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->code_loss . ' Tidak Terdaftar']);
+            } else {
+                $this->code_loss = $mskenpin->code;
+                $this->remark = $mskenpin->name;
             }
         }
 

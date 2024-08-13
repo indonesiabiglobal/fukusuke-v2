@@ -275,6 +275,9 @@
                                             <a href="/menu-loss-seitai" class="nav-link" data-key="t-simple-page"> Loss Seitai </a>
                                         </li>
                                         <li class="nav-item">
+                                            <a href="/menu-loss-kenpin" class="nav-link" data-key="t-simple-page"> Loss Kenpin </a>
+                                        </li>
+                                        <li class="nav-item">
                                             <a href="/menu-loss-klasifikasi" class="nav-link" data-key="t-settings"> Loss Klasifikasi </a>
                                         </li>
                                         <li class="nav-item">
