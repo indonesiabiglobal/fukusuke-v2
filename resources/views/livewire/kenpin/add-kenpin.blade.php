@@ -24,7 +24,7 @@
 				<div class="form-group">
 					<div class="input-group">
 						<label class="control-label col-12 col-lg-6">Nomor LPK</label>
-						<input type="text" class="form-control" placeholder="000000-00" wire:model.live="lpk_no" />
+						<input type="text" class="form-control @error('lpk_no') is-invalid @enderror" placeholder="000000-00" wire:model.live="lpk_no" />
 						@error('lpk_no')
 							<span class="invalid-feedback">{{ $message }}</span>
 						@enderror
@@ -35,7 +35,7 @@
 				<div class="form-group">
 					<div class="input-group">
 						<label class="control-label col-12 col-lg-5">Tanggal LPK</label>
-						<input class="form-control readonly datepicker-input" readonly="readonly" type="date" wire:model.defer="lpk_date" placeholder="yyyy/mm/dd"/>
+						<input class="form-control readonly datepicker-input bg-light" readonly="readonly" type="date" wire:model.defer="lpk_date" placeholder="yyyy/mm/dd"/>
 					</div>
 				</div>
 			</div>
@@ -43,7 +43,7 @@
 				<div class="form-group">                            
 					<div class="input-group">
 						<label class="control-label col-12 col-lg-5">Panjang LPK</label>
-						<input type="text" placeholder="-" class="form-control readonly" readonly="readonly" wire:model="panjang_lpk" />
+						<input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="panjang_lpk" />
 					</div>
 				</div>
 			</div>
@@ -51,7 +51,7 @@
 				<div class="form-group">
 					<div class="input-group">
 						<label class="control-label col-12 col-lg-6">Nomor Order</label>
-						<input type="text" placeholder="-" class="form-control readonly" readonly="readonly" wire:model="code" />
+						<input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="code" />
 					</div>
 				</div>
 			</div>
@@ -59,7 +59,7 @@
 				<div class="form-group">                            
 					<div class="input-group">
 						<label class="control-label"></label>
-						<input type="text" placeholder="-" class="form-control readonly" readonly="readonly" wire:model="name" />
+						<input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="name" />
 					</div>
 				</div>
 			</div>                    
@@ -67,7 +67,7 @@
 				<div class="form-group">
 					<div class="input-group">
 						<label class="control-label col-12 col-lg-6">Petugas</label>
-						<input type="text" placeholder="-" class="form-control" wire:model.live="employeeno" />
+						<input type="text" placeholder="-" class="form-control @error('employeeno') is-invalid @enderror" wire:model.live.debounce.500ms="employeeno" />
 						@error('employeeno')
 							<span class="invalid-feedback">{{ $message }}</span>
 						@enderror
@@ -78,15 +78,23 @@
 				<div class="form-group">
 					<div class="input-group">
 						<label class="control-label"></label>
-						<input type="text" placeholder="-" class="form-control readonly" readonly="readonly" wire:model="empname" />
+						<input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="empname" />
 					</div>
 				</div>
 			</div>
-			<div class="col-12 col-lg-12 mt-1">
+			<div class="col-12 col-lg-4 mt-1">
 				<div class="form-group">
 					<div class="input-group">
-						<label class="control-label col-12 col-lg-2">NG</label>
-						<input type="text" class="form-control" wire:model="remark" />
+						<label class="control-label col-12 col-lg-6">NG</label>
+						<input type="text" placeholder="-" class="form-control" wire:model.live.debounce.500ms="code_loss" />
+					</div>
+				</div>
+			</div>
+            <div class="col-12 col-lg-8 mt-1">
+				<div class="form-group">
+					<div class="input-group">
+						<label class="control-label"></label>
+						<input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="remark" />
 					</div>
 				</div>
 			</div>
@@ -94,12 +102,15 @@
 				<div class="form-group">
 					<div class="input-group">
 						<label class="control-label col-12 col-lg-2">Status</label>
-						<select wire:model="status_kenpin" class="form-control" placeholder="- all -">
+						<select wire:model="status_kenpin" class="form-control @error('status_kenpin') is-invalid @enderror" placeholder="- all -">
 							<option value="">- all -</option>
 							<option value="1">Proses</option>
 							<option value="2">Finish</option>
 						</select>
 					</div>
+                    @error('status_kenpin')
+                        <span class="invalid-feedback">{{ $message }}</span>
+                    @enderror
 				</div>
 			</div>
         </div>
@@ -115,9 +126,21 @@
                     <button type="button" class="btn btn-warning" wire:click="cancel">
                         <i class="ri-close-line"></i> Close
                     </button>
-                    <button type="submit" class="btn btn-success">
-                        <i class="ri-save-3-line"></i> Save
-                    </button>
+                    <button wire:click="save" type="button" class="btn btn-success w-lg">
+						<span wire:loading.remove wire:target="save">
+							<i class="ri-save-3-line"></i> Save
+						</span>
+						<div wire:loading wire:target="save">
+							<span class="d-flex align-items-center">
+								<span class="spinner-border flex-shrink-0" role="status">
+									<span class="visually-hidden">Loading...</span>
+								</span>
+								<span class="flex-grow-1 ms-1">
+									Loading...
+								</span>
+							</span>
+						</div>
+					</button>
                     <button type="button" class="btn btn-success btn-print" disabled="disabled">
                         <i class="bx bx-printer"></i> Print
                     </button>
