@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\MasterTabel\Loss;
 
+use App\Models\MsLossCategory;
 use App\Models\MsLossClass;
 use Livewire\Component;
 use Carbon\Carbon;
@@ -46,7 +47,7 @@ class MenuLossKatagoriController extends Component
         DB::beginTransaction();
         try {
             $statusActive = 1;
-            $data = MsLossClass::create([
+            $data = MsLossCategory::create([
                 'code' => $this->code,
                 'name' => $this->name,
                 'status' => $statusActive,
@@ -68,7 +69,7 @@ class MenuLossKatagoriController extends Component
 
     public function edit($id)
     {
-        $data = MsLossClass::where('id', $id)->first();
+        $data = MsLossCategory::where('id', $id)->first();
         $this->idUpdate = $id;
         $this->code = $data->code;
         $this->name = $data->name;
@@ -83,7 +84,7 @@ class MenuLossKatagoriController extends Component
         DB::beginTransaction();
         try {
             $statusActive = 1;
-            $data = MsLossClass::where('id', $this->idUpdate)->first();
+            $data = MsLossCategory::where('id', $this->idUpdate)->first();
             $data->code = $this->code;
             $data->name = $this->name;
             $data->status = $statusActive;
@@ -113,7 +114,7 @@ class MenuLossKatagoriController extends Component
         DB::beginTransaction();
         try {
             $statusInactive = 0;
-            $data = MsLossClass::where('id', $this->idDelete)->first();
+            $data = MsLossCategory::where('id', $this->idDelete)->first();
             $data->status = $statusInactive;
             $data->updated_by = Auth::user()->username;
             $data->updated_on = Carbon::now();
@@ -137,7 +138,7 @@ class MenuLossKatagoriController extends Component
 
     public function render()
     {
-        $result = MsLossClass::where('status', 1);
+        $result = MsLossCategory::where('status', 1);
         
         if (isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined") {
             $result = $result->where(function ($query) {
