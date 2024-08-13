@@ -416,6 +416,15 @@ class GeneralReportController extends Component
                     return response()->download($file);
                 }
                 break;
+            case 'Kapasitas Produksi':
+                if ($this->nipon == 'Infure') {
+                    $file = $this->kapasitasProduksiInfure($tglMasuk, $tglKeluar);
+                    return response()->download($file);
+                } else {
+                    $file = $this->kapasitasProduksiSeitai($tglMasuk, $tglKeluar);
+                    return response()->download($file);
+                }
+                break;
         }
     }
 
@@ -2016,7 +2025,7 @@ class GeneralReportController extends Component
         $startRowItem = 4;
         $rowItem = $startRowItem;
         // daftar departemen
-        foreach ($listProductGroup as $productGroupCode => $productGroup) {
+        foreach ($listProductType as $productGroupCode => $productGroup) {
             // daftar mesin
             $columnItem = $startColumnItemData;
 
@@ -5990,49 +5999,64 @@ class GeneralReportController extends Component
         phpspreadsheet::textAlignCenter($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
 
         $data = DB::select("
-            SELECT
-                max(dep.name) AS department_name,
-                max(dep.id) AS department_id,
-                max(mac.employeeNo) AS employeeNo,
-                max(mac.empName) AS empname,
-                SUM(asy.berat_produksi) AS berat_produksi,
-                SUM(asy.infure_berat_loss) AS infure_berat_loss,
-                COALESCE(SUM(loss.berat_loss_katagae), 0) AS berat_loss_katagae,
-                COALESCE(SUM(loss.berat_loss_tachiage), 0) AS berat_loss_tachiage,
-                COALESCE(SUM(loss.berat_loss_kualitas), 0) AS berat_loss_kualitas,
-                COALESCE(SUM(loss.berat_loss_printing), 0) AS berat_loss_printing,
-                COALESCE(SUM(loss.berat_loss_mesin), 0) AS berat_loss_mesin,
-                COALESCE(SUM(loss.berat_loss_orang), 0) AS berat_loss_orang,
-                COALESCE(SUM(loss.berat_loss_lainlain), 0) AS berat_loss_lainlain,
-                COALESCE(MAX(loss_sitai.infure_berat_loss), 0) AS seitai_infure_berat_loss
-            FROM tdProduct_Assembly AS asy
-            LEFT JOIN LATERAL (
+            WITH loss_summary AS (
                 SELECT
-                    SUM(CASE WHEN mslosCls.code = '01' THEN los_.berat_loss ELSE 0 END) AS berat_loss_katagae,
-                    SUM(CASE WHEN mslosCls.code = '03' THEN los_.berat_loss ELSE 0 END) AS berat_loss_kualitas,
-                    SUM(CASE WHEN mslosCls.code = '09' THEN los_.berat_loss ELSE 0 END) AS berat_loss_lainlain,
-                    SUM(CASE WHEN mslosCls.code = '07' THEN los_.berat_loss ELSE 0 END) AS berat_loss_mesin,
-                    SUM(CASE WHEN mslosCls.code = '08' THEN los_.berat_loss ELSE 0 END) AS berat_loss_orang,
-                    SUM(CASE WHEN mslosCls.code = '05' THEN los_.berat_loss ELSE 0 END) AS berat_loss_printing,
-                    SUM(CASE WHEN mslosCls.code = '02' THEN los_.berat_loss ELSE 0 END) AS berat_loss_tachiage
-                FROM tdProduct_Assembly_Loss AS los_
-                INNER JOIN msLossInfure AS mslos ON los_.loss_infure_id = mslos.id
-                INNER JOIN msLossClass AS mslosCls ON mslos.loss_class_id = mslosCls.id
-                WHERE asy.id = los_.product_assembly_id
-                GROUP BY los_.product_assembly_id
-            ) AS loss ON true
-            LEFT JOIN (
+                    los_.product_assembly_id,
+                    SUM ( CASE WHEN mslosCls.code = '01' THEN los_.berat_loss ELSE 0 END ) AS berat_loss_katagae,
+                    SUM ( CASE WHEN mslosCls.code = '03' THEN los_.berat_loss ELSE 0 END ) AS berat_loss_kualitas,
+                    SUM ( CASE WHEN mslosCls.code = '09' THEN los_.berat_loss ELSE 0 END ) AS berat_loss_lainlain,
+                    SUM ( CASE WHEN mslosCls.code = '07' THEN los_.berat_loss ELSE 0 END ) AS berat_loss_mesin,
+                    SUM ( CASE WHEN mslosCls.code = '08' THEN los_.berat_loss ELSE 0 END ) AS berat_loss_orang,
+                    SUM ( CASE WHEN mslosCls.code = '05' THEN los_.berat_loss ELSE 0 END ) AS berat_loss_printing,
+                    SUM ( CASE WHEN mslosCls.code = '02' THEN los_.berat_loss ELSE 0 END ) AS berat_loss_tachiage
+                FROM
+                    tdProduct_Assembly_Loss AS los_
+                    INNER JOIN msLossInfure AS mslos ON los_.loss_infure_id = mslos.
+                    ID INNER JOIN msLossClass AS mslosCls ON mslos.loss_class_id = mslosCls.ID
+                GROUP BY
+                    los_.product_assembly_id
+                ),
+                loss_sitai_summary AS (
                 SELECT
                     good.employee_id_infure,
-                    SUM(good.infure_berat_loss) AS infure_berat_loss
-                FROM tdProduct_Goods AS good
-                WHERE (good.production_date BETWEEN '$tglMasuk' AND '$tglKeluar')
-                GROUP BY good.employee_id_infure
-            ) AS loss_sitai ON asy.employee_id = loss_sitai.employee_id_infure
-            INNER JOIN msEmployee AS mac ON asy.employee_id = mac.id
-            INNER JOIN msDepartment AS dep ON mac.department_id = dep.id
-            WHERE asy.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
-            GROUP BY dep.id, asy.employee_id
+                    SUM ( good.infure_berat_loss ) AS infure_berat_loss
+                FROM
+                    tdProduct_Goods AS good
+                WHERE
+                    good.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
+                GROUP BY
+                    good.employee_id_infure
+                ) SELECT
+                dep.NAME AS department_name,
+                dep.id AS department_id,
+                mac.employeeNo,
+                mac.empName,
+                SUM ( asy.berat_produksi ) AS berat_produksi,
+                SUM ( asy.infure_berat_loss ) AS infure_berat_loss,
+                COALESCE ( SUM ( loss_summary.berat_loss_katagae ), 0 ) AS berat_loss_katagae,
+                COALESCE ( SUM ( loss_summary.berat_loss_kualitas ), 0 ) AS berat_loss_kualitas,
+                COALESCE ( SUM ( loss_summary.berat_loss_lainlain ), 0 ) AS berat_loss_lainlain,
+                COALESCE ( SUM ( loss_summary.berat_loss_mesin ), 0 ) AS berat_loss_mesin,
+                COALESCE ( SUM ( loss_summary.berat_loss_orang ), 0 ) AS berat_loss_orang,
+                COALESCE ( SUM ( loss_summary.berat_loss_printing ), 0 ) AS berat_loss_printing,
+                COALESCE ( SUM ( loss_summary.berat_loss_tachiage ), 0 ) AS berat_loss_tachiage,
+                COALESCE ( SUM ( loss_sitai_summary.infure_berat_loss ), 0 ) AS seitai_infure_berat_loss
+            FROM
+                tdProduct_Assembly AS asy
+                LEFT JOIN loss_summary ON asy.ID = loss_summary.product_assembly_id
+                LEFT JOIN loss_sitai_summary ON asy.employee_id = loss_sitai_summary.employee_id_infure
+                INNER JOIN msEmployee AS mac ON asy.employee_id = mac.
+                ID INNER JOIN msDepartment AS dep ON mac.department_id = dep.ID
+            WHERE
+                asy.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
+            GROUP BY
+                dep.NAME,
+                dep.id,
+                mac.employeeNo,
+                mac.empName
+            ORDER BY
+                dep.NAME,
+                mac.employeeNo;
         ");
 
         $listDepartment = array_reduce($data, function ($carry, $item) {
@@ -6420,20 +6444,9 @@ class GeneralReportController extends Component
         phpspreadsheet::textAlignCenter($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
 
         $data = DB::select("
-            SELECT
-                max(dep.name) AS department_name,
-                max(dep.id) AS department_id,
-                max(mac.employeeNo) AS employeeNo,
-                max(mac.empName) AS empName,
-                sum(good.qty_produksi * prd.unit_weight * 0.001) AS berat_produksi,
-                sum(good.seitai_berat_loss) AS seitai_berat_loss,
-                COALESCE(SUM(loss.berat_loss_katanuki), 0) AS berat_loss_katanuki,
-                COALESCE(SUM(loss.berat_loss_kualitas), 0) AS berat_loss_kualitas,
-                COALESCE(SUM(loss.berat_loss_mesin), 0) AS berat_loss_mesin,
-                COALESCE(SUM(loss.berat_loss_lainlain), 0) AS berat_loss_lainlain
-            FROM tdProduct_Goods AS good
-            LEFT JOIN LATERAL (
+            WITH LossAggregates AS (
                 SELECT
+                    los_.product_goods_id,
                     SUM(CASE WHEN mslosCls.code = '24' THEN los_.berat_loss ELSE 0 END) AS berat_loss_katanuki,
                     SUM(CASE WHEN mslosCls.code = '03' THEN los_.berat_loss ELSE 0 END) AS berat_loss_kualitas,
                     SUM(CASE WHEN mslosCls.code = '07' THEN los_.berat_loss ELSE 0 END) AS berat_loss_mesin,
@@ -6441,14 +6454,27 @@ class GeneralReportController extends Component
                 FROM tdProduct_Goods_Loss AS los_
                 INNER JOIN msLossSeitai AS mslos ON los_.loss_seitai_id = mslos.id
                 INNER JOIN msLossClass AS mslosCls ON mslos.loss_class_id = mslosCls.id
-                WHERE good.id = los_.product_goods_id AND mslos.id <> 1
+                WHERE mslos.id <> 1
                 GROUP BY los_.product_goods_id
-            ) AS loss ON true
+            )
+            SELECT
+                dep.name AS department_name,
+                dep.id AS department_id,
+                mac.employeeNo AS employeeNo,
+                mac.empName AS empName,
+                SUM(good.qty_produksi * prd.unit_weight * 0.001) AS berat_produksi,
+                SUM(good.seitai_berat_loss) AS seitai_berat_loss,
+                COALESCE(SUM(loss.berat_loss_katanuki), 0) AS berat_loss_katanuki,
+                COALESCE(SUM(loss.berat_loss_kualitas), 0) AS berat_loss_kualitas,
+                COALESCE(SUM(loss.berat_loss_mesin), 0) AS berat_loss_mesin,
+                COALESCE(SUM(loss.berat_loss_lainlain), 0) AS berat_loss_lainlain
+            FROM tdProduct_Goods AS good
             INNER JOIN msEmployee AS mac ON good.employee_id = mac.id
             INNER JOIN msDepartment AS dep ON mac.department_id = dep.id
             INNER JOIN msProduct AS prd ON good.product_id = prd.id
+            LEFT JOIN LossAggregates AS loss ON good.id = loss.product_goods_id
             WHERE good.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
-            GROUP BY dep.id, good.employee_id
+            GROUP BY dep.name,dep.id, mac.employeeNo, mac.empName;
         ");
 
         $listDepartment = array_reduce($data, function ($carry, $item) {
@@ -7190,6 +7216,574 @@ class GeneralReportController extends Component
             $spreadsheet->getActiveSheet()->getColumnDimension($startColumnItemData)->setAutoSize(true);
             $startColumnItemData++;
         }
+
+        $writer = new Xlsx($spreadsheet);
+        $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
+        $writer->save($filename);
+        return $filename;
+    }
+
+    public function kapasitasProduksiInfure($tglMasuk, $tglKeluar)
+    {
+        $spreadsheet = new Spreadsheet();
+        $activeWorksheet = $spreadsheet->getActiveSheet();
+        $activeWorksheet->setShowGridlines(false);
+
+        // Judul
+        $activeWorksheet->setCellValue('B1', 'KAPASITAS PRODUKSI INFURE');
+        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        // Style Judul
+        phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
+
+        // Header
+        $columnMesin = 'B';
+        $columnMesinEnd = 'C';
+        $spreadsheet->getActiveSheet()->mergeCells($columnMesin . '3:' . $columnMesinEnd . '3');
+        $activeWorksheet->setCellValue('B3', 'Mesin');
+
+        // header
+        $rowHeaderStart = 3;
+        $columnHeaderStart = 'D';
+        $columnHeaderEnd = 'D';
+        $header = [
+            'Hari Kerja (Hari)',
+            'Kapasitas (Kg)',
+            'Produksi (Kg)',
+            'Rasio Produksi (%)',
+            'Kapasitas (Meter)',
+            'Produksi (Meter)',
+            'Rasio Produksi (%)',
+        ];
+
+        foreach ($header as $key => $value) {
+            $activeWorksheet->setCellValue($columnHeaderEnd . $rowHeaderStart, $value);
+            $columnHeaderEnd++;
+        }
+        $columnHeaderEnd = chr(ord($columnHeaderEnd) - 1);
+
+        // style header
+        phpspreadsheet::addFullBorder($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
+        phpspreadsheet::styleFont($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart, true, 9, 'Calibri');
+        phpspreadsheet::textAlignCenter($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
+
+        $data = DB::select("
+            SELECT
+                max(prGrp.code) AS product_group_code,
+                max(prGrp.name) AS product_group_name,
+                MAX(mac.machineNo) AS machine_no,
+                MAX(mac.machineName) AS machine_name,
+                SUM(asy.panjang_produksi) AS panjang_produksi,
+                SUM(asy.berat_produksi) AS berat_produksi,
+                MAX(mac.capacity_kg) AS capacity_kg,
+                MAX(mac.capacity_lembar) AS capacity_lembar--,
+                --@day AS seq_no
+            FROM tdProduct_Assembly AS asy
+            INNER JOIN msProduct AS prd ON asy.product_id = prd.id
+            INNER JOIN msProduct_type AS prTip ON prd.product_type_id = prTip.id
+            INNER JOIN msProduct_group AS prGrp ON prTip.product_group_id = prGrp.id
+            INNER JOIN msMachine AS mac ON asy.machine_id = mac.id
+            WHERE asy.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
+            GROUP BY prGrp.id, asy.machine_id
+        ");
+
+        // list group produk
+        $listProductGroup = array_reduce($data, function ($carry, $item) {
+            $carry[$item->product_group_code] = [
+                'product_group_code' => $item->product_group_code,
+                'product_group_name' => $item->product_group_name
+            ];
+            return $carry;
+        }, []);
+
+        // list mesin berdasarkan tanggal pertama dan departemen
+        $listMachine = array_reduce($data, function ($carry, $item) {
+            if (!isset($carry[$item->product_group_code])) {
+                $carry[$item->product_group_code] = [];
+            }
+            $carry[$item->product_group_code][$item->machine_no] = $item->machine_name;
+            return $carry;
+        }, []);
+
+        $dataFilter = array_reduce($data, function ($carry, $item) {
+            $carry[$item->machine_no] = $item;
+            return $carry;
+        }, []);
+
+        // index
+        $startColumnItem = 'B';
+        $endColumnItem = $columnHeaderEnd;
+        $startColumnItemData = 'D';
+        $columnMachineNo = 'B';
+        $columnMachineName = 'C';
+        $startRowItem = 4;
+        $rowItem = $startRowItem;
+        // daftar departemen
+        foreach ($listProductGroup as $productGroup) {
+            // Menulis data departemen
+            $activeWorksheet->setCellValue($startColumnItem . $rowItem, $productGroup['product_group_name']);
+            $spreadsheet->getActiveSheet()->mergeCells($startColumnItem . $rowItem . ':' . $endColumnItem . $rowItem);
+            phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $rowItem, true, 9, 'Calibri');
+            $rowItem++;
+            // daftar mesin
+            foreach ($listMachine[$productGroup['product_group_code']] as $machineNo => $machineName) {
+                $columnItem = $startColumnItemData;
+
+                // Menulis data mesin
+                $spreadsheet->getActiveSheet()->setCellValue($columnMachineNo . $rowItem, $machineNo);
+                $spreadsheet->getActiveSheet()->setCellValue($columnMachineName . $rowItem, $machineName);
+                // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
+
+                // memasukkan data
+                $dataItem = $dataFilter[$machineNo] ?? (object)[
+                    'machine_no' => $machineNo,
+                    'machine_name' => $machineName,
+                    'panjang_produksi' => 0,
+                    'berat_produksi' => 0,
+                    'capacity_kg' => 0,
+                    'capacity_lembar' => 0
+                ];
+                // hari kerja
+                $hariKerja = $tglMasuk->diffInDays($tglKeluar) + 1;
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $hariKerja);
+                $columnItem++;
+                // kapasitas (kg)
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->capacity_kg);
+                phpSpreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
+                $columnItem++;
+                // produksi (kg)
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->berat_produksi);
+                phpSpreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
+                $columnItem++;
+                // rasio produksi (%)
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->capacity_kg > 0 ? $dataItem->berat_produksi / $dataItem->capacity_kg : 0);
+                if ($dataItem->capacity_kg == 0) {
+                    $activeWorksheet->getStyle($columnItem . $rowItem)->getNumberFormat()->setFormatCode('0;-0;"-"');
+                } else {
+                    phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowItem);
+                }
+                $columnItem++;
+                // kapasitas (meter)
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->capacity_lembar);
+                phpSpreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
+                $columnItem++;
+                // produksi (meter)
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->panjang_produksi);
+                phpSpreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
+                $columnItem++;
+                // rasio produksi (%)
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->capacity_lembar > 0 ? $dataItem->panjang_produksi / $dataItem->capacity_lembar : 0);
+                if ($dataItem->capacity_lembar == 0) {
+                    $activeWorksheet->getStyle($columnItem . $rowItem)->getNumberFormat()->setFormatCode('0;-0;"-"');
+                } else {
+                    phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowItem);
+                }
+                phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
+                $columnItem++;
+
+                phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem, false, 8, 'Calibri');
+                $rowItem++;
+            }
+            // perhitungan jumlah berdasarkan departemen
+            $spreadsheet->getActiveSheet()->mergeCells($columnMachineNo . $rowItem . ':' . $columnMachineName . $rowItem);
+            // $activeWorksheet->setCellValue($columnMachineNo . $rowItem, 'Total ' . $department['department_name']);
+            $columnItem = $startColumnItemData;
+            $columnItemEnd = chr(ord($columnItem) + count($header) - 1);
+            // hari kerja
+            $columnItem++;
+            // kapasitas (kg)
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productGroup['product_group_code']])) . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpSpreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // produksi (kg)
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productGroup['product_group_code']])) . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpSpreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // rasio produksi (%)
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productGroup['product_group_code']])) . ':' . $columnItem . ($rowItem - 1) . ')/COUNTIF(' . $columnItem . ($rowItem - count($listMachine[$productGroup['product_group_code']])) . ':' . $columnItem . ($rowItem - 1) . ', "<>0")');
+            phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // kapasitas (meter)
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productGroup['product_group_code']])) . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpSpreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // produksi (meter)
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productGroup['product_group_code']])) . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpSpreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // rasio produksi (%)
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productGroup['product_group_code']])) . ':' . $columnItem . ($rowItem - 1) . ')/COUNTIF(' . $columnItem . ($rowItem - count($listMachine[$productGroup['product_group_code']])) . ':' . $columnItem . ($rowItem - 1) . ', "<>0")');
+            phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowItem);
+            phpspreadsheet::addFullBorder($spreadsheet, $columnMachineNo . $rowItem . ':' . $columnItem . $rowItem);
+            phpspreadsheet::styleFont($spreadsheet, $columnMachineNo . $rowItem . ':' . $columnItem . $rowItem, true, 8, 'Calibri');
+            $columnItem++;
+
+
+            $rowItem++;
+            $rowItem++;
+        }
+
+        // Grand total
+        $rowGrandTotal = $rowItem;
+        $spreadsheet->getActiveSheet()->mergeCells($columnMachineNo . $rowGrandTotal . ':' . $columnMachineName . $rowGrandTotal);
+        $spreadsheet->getActiveSheet()->setCellValue($columnMachineNo . $rowGrandTotal, 'GRAND TOTAL');
+        phpspreadsheet::styleFont($spreadsheet, $columnMachineNo . $rowGrandTotal . ':' . $columnHeaderEnd . $rowGrandTotal, true, 8, 'Calibri');
+        // $this->addFullBorder($spreadsheet, $columnMachineNo . $rowGrandTotal . ':' . $columnValueAvg . $rowGrandTotal);
+
+        $grandTotal = array_reduce(array_keys($dataFilter), function ($carry, $item) use ($dataFilter) {
+            $dataItem = $dataFilter[$item] ?? (object)[
+                'panjang_produksi' => 0,
+                'berat_produksi' => 0,
+                'capacity_kg' => 0,
+                'capacity_lembar' => 0
+            ];
+            $carry['panjang_produksi'] += $dataItem->panjang_produksi;
+            $carry['berat_produksi'] += $dataItem->berat_produksi;
+            $carry['capacity_kg'] += $dataItem->capacity_kg;
+            $carry['capacity_lembar'] += $dataItem->capacity_lembar;
+            return $carry;
+        }, [
+            'panjang_produksi' => 0,
+            'berat_produksi' => 0,
+            'capacity_kg' => 0,
+            'capacity_lembar' => 0
+        ]);
+
+        $columnItem = $startColumnItemData;
+        $columnItemEnd = chr(ord($columnItem) + count($header) - 1);
+        // hari kerja
+        $columnItem++;
+        // kapasitas (kg)
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['capacity_kg']);
+        phpSpreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
+        $columnItem++;
+        // produksi (kg)
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_produksi']);
+        phpSpreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
+        $columnItem++;
+        // rasio produksi (%)
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['capacity_kg'] > 0 ? $grandTotal['berat_produksi'] / $grandTotal['capacity_kg'] : 0);
+        if ($grandTotal['capacity_kg'] == 0) {
+            $activeWorksheet->getStyle($columnItem . $rowGrandTotal)->getNumberFormat()->setFormatCode('0;-0;"-"');
+        } else {
+            phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowGrandTotal);
+        }
+        $columnItem++;
+        // kapasitas (meter)
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['capacity_lembar']);
+        phpSpreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
+        $columnItem++;
+        // produksi (meter)
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['panjang_produksi']);
+        phpSpreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
+        $columnItem++;
+        // rasio produksi (%)
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['capacity_lembar'] > 0 ? $grandTotal['panjang_produksi'] / $grandTotal['capacity_lembar'] : 0);
+        if ($grandTotal['capacity_lembar'] == 0) {
+            $activeWorksheet->getStyle($columnItem . $rowGrandTotal)->getNumberFormat()->setFormatCode('0;-0;"-"');
+        } else {
+            phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowGrandTotal);
+        }
+        phpspreadsheet::addFullBorder($spreadsheet, $columnMachineNo . $rowGrandTotal . ':' . $columnItem . $rowGrandTotal);
+        $columnItem++;
+
+        $activeWorksheet->getStyle($columnMesin . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart)->getAlignment()->setWrapText(true);
+
+        // auto size
+        $spreadsheet->getActiveSheet()->getColumnDimension('C')->setAutoSize(true);
+        $spreadsheet->getActiveSheet()->getColumnDimension('F')->setAutoSize(true);
+        $spreadsheet->getActiveSheet()->getColumnDimension('I')->setAutoSize(true);
+
+        $writer = new Xlsx($spreadsheet);
+        $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
+        $writer->save($filename);
+        return $filename;
+    }
+
+    public function kapasitasProduksiSeitai($tglMasuk, $tglKeluar)
+    {
+        $spreadsheet = new Spreadsheet();
+        $activeWorksheet = $spreadsheet->getActiveSheet();
+        $activeWorksheet->setShowGridlines(false);
+
+        // Judul
+        $activeWorksheet->setCellValue('B1', 'KAPASITAS PRODUKSI SEITAI');
+        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        // Style Judul
+        phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
+
+        // Header
+        $columnMesin = 'B';
+        $columnMesinEnd = 'C';
+        $spreadsheet->getActiveSheet()->mergeCells($columnMesin . '3:' . $columnMesinEnd . '3');
+        $activeWorksheet->setCellValue('B3', 'Mesin');
+
+        // header
+        $rowHeaderStart = 3;
+        $columnHeaderStart = 'D';
+        $columnHeaderEnd = 'D';
+        $header = [
+            'Hari Kerja (Hari)',
+            'Kapasitas (Kg)',
+            'Produksi (Kg)',
+            'Rasio Produksi (%)',
+            'Kapasitas (Lembar)',
+            'Produksi (Lembar)',
+            'Rasio Produksi (%)',
+        ];
+
+        foreach ($header as $key => $value) {
+            $activeWorksheet->setCellValue($columnHeaderEnd . $rowHeaderStart, $value);
+            $columnHeaderEnd++;
+        }
+        $columnHeaderEnd = chr(ord($columnHeaderEnd) - 1);
+
+        // style header
+        phpspreadsheet::addFullBorder($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
+        phpspreadsheet::styleFont($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart, true, 9, 'Calibri');
+        phpspreadsheet::textAlignCenter($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
+
+        $data = DB::select("
+            SELECT
+                MAX(prGrp.code) AS product_group_code,
+                MAX(prGrp.name) AS product_group_name,
+                MAX(mac.machineNo) AS machine_no,
+                MAX(mac.machineName) AS machine_name,
+                SUM(good.qty_produksi) AS qty_produksi,
+                SUM(good.qty_produksi * prd.unit_weight * 0.001) AS berat_produksi,
+                MAX(mac.capacity_kg) AS capacity_kg,
+                MAX(mac.capacity_lembar) AS capacity_lembar--,
+                --@day AS seq_no
+            FROM tdProduct_Goods AS good
+            INNER JOIN msProduct AS prd ON good.product_id = prd.id
+            INNER JOIN msProduct_type AS prT ON prd.product_type_id = prT.id
+            INNER JOIN msProduct_group AS prGrp ON prT.product_group_id = prGrp.id
+            INNER JOIN msMachine AS mac ON good.machine_id = mac.id
+            WHERE good.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
+            GROUP BY prGrp.name, good.machine_id;
+        ");
+
+        // list group produk
+        $listProductGroup = array_reduce($data, function ($carry, $item) {
+            $carry[$item->product_group_code] = [
+                'product_group_code' => $item->product_group_code,
+                'product_group_name' => $item->product_group_name
+            ];
+            return $carry;
+        }, []);
+
+        // list mesin berdasarkan tanggal pertama dan departemen
+        $listMachine = array_reduce($data, function ($carry, $item) {
+            if (!isset($carry[$item->product_group_code])) {
+                $carry[$item->product_group_code] = [];
+            }
+            $carry[$item->product_group_code][$item->machine_no] = $item->machine_name;
+            return $carry;
+        }, []);
+
+        $dataFilter = array_reduce($data, function ($carry, $item) {
+            $carry[$item->machine_no] = $item;
+            return $carry;
+        }, []);
+
+        // index
+        $startColumnItem = 'B';
+        $endColumnItem = $columnHeaderEnd;
+        $startColumnItemData = 'D';
+        $columnMachineNo = 'B';
+        $columnMachineName = 'C';
+        $startRowItem = 4;
+        $rowItem = $startRowItem;
+        // daftar departemen
+        foreach ($listProductGroup as $productGroup) {
+            // Menulis data departemen
+            $activeWorksheet->setCellValue($startColumnItem . $rowItem, $productGroup['product_group_name']);
+            $spreadsheet->getActiveSheet()->mergeCells($startColumnItem . $rowItem . ':' . $endColumnItem . $rowItem);
+            phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $rowItem, true, 9, 'Calibri');
+            $rowItem++;
+            // daftar mesin
+            foreach ($listMachine[$productGroup['product_group_code']] as $machineNo => $machineName) {
+                $columnItem = $startColumnItemData;
+
+                // Menulis data mesin
+                $spreadsheet->getActiveSheet()->setCellValue($columnMachineNo . $rowItem, $machineNo);
+                $spreadsheet->getActiveSheet()->setCellValue($columnMachineName . $rowItem, $machineName);
+                // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
+
+                // memasukkan data
+                $dataItem = $dataFilter[$machineNo] ?? (object)[
+                    'machine_no' => $machineNo,
+                    'machine_name' => $machineName,
+                    'qty_produksi' => 0,
+                    'berat_produksi' => 0,
+                    'capacity_kg' => 0,
+                    'capacity_lembar' => 0
+                ];
+                // hari kerja
+                $hariKerja = $tglMasuk->diffInDays($tglKeluar) + 1;
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $hariKerja);
+                $columnItem++;
+                // kapasitas (kg)
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->capacity_kg);
+                $activeWorksheet->getStyle($columnItem . $rowItem)->getNumberFormat()->setFormatCode('#,##0;-#,##0;"-"');
+                $columnItem++;
+                // produksi (kg)
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->berat_produksi);
+                $activeWorksheet->getStyle($columnItem . $rowItem)->getNumberFormat()->setFormatCode('#,##0;-#,##0;"-"');
+                $columnItem++;
+                // rasio produksi (%)
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->capacity_kg > 0 ? $dataItem->berat_produksi / $dataItem->capacity_kg : 0);
+                if ($dataItem->capacity_kg == 0) {
+                    $activeWorksheet->getStyle($columnItem . $rowItem)->getNumberFormat()->setFormatCode('0;-0;"-"');
+                } else {
+                    phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowItem);
+                }
+                $columnItem++;
+                // kapasitas (lembar)
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->capacity_lembar);
+                $activeWorksheet->getStyle($columnItem . $rowItem)->getNumberFormat()->setFormatCode('#,##0;-#,##0;"-"');
+                $columnItem++;
+                // produksi (lembar)
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->qty_produksi);
+                $activeWorksheet->getStyle($columnItem . $rowItem)->getNumberFormat()->setFormatCode('#,##0;-#,##0;"-"');
+                $columnItem++;
+                // rasio produksi (%)
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->capacity_lembar > 0 ? $dataItem->qty_produksi / $dataItem->capacity_lembar : 0);
+                if ($dataItem->capacity_lembar == 0) {
+                    $activeWorksheet->getStyle($columnItem . $rowItem)->getNumberFormat()->setFormatCode('0;-0;"-"');
+                } else {
+                    phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowItem);
+                }
+                phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
+                $columnItem++;
+
+                phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem, false, 8, 'Calibri');
+                $rowItem++;
+            }
+            // perhitungan jumlah berdasarkan departemen
+            $spreadsheet->getActiveSheet()->mergeCells($columnMachineNo . $rowItem . ':' . $columnMachineName . $rowItem);
+            // $activeWorksheet->setCellValue($columnMachineNo . $rowItem, 'Total ' . $department['department_name']);
+            $columnItem = $startColumnItemData;
+            $columnItemEnd = chr(ord($columnItem) + count($header) - 1);
+            // hari kerja
+            $columnItem++;
+            // kapasitas (kg)
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productGroup['product_group_code']])) . ':' . $columnItem . ($rowItem - 1) . ')');
+            $activeWorksheet->getStyle($columnItem . $rowItem)->getNumberFormat()->setFormatCode('#,##0;-#,##0;"-"');
+            $columnItem++;
+            // produksi (kg)
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productGroup['product_group_code']])) . ':' . $columnItem . ($rowItem - 1) . ')');
+            $activeWorksheet->getStyle($columnItem . $rowItem)->getNumberFormat()->setFormatCode('#,##0;-#,##0;"-"');
+            $columnItem++;
+            // rasio produksi (%)
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productGroup['product_group_code']])) . ':' . $columnItem . ($rowItem - 1) . ')/COUNTIF(' . $columnItem . ($rowItem - count($listMachine[$productGroup['product_group_code']])) . ':' . $columnItem . ($rowItem - 1) . ', "<>0")');
+            phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // kapasitas (lembar)
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productGroup['product_group_code']])) . ':' . $columnItem . ($rowItem - 1) . ')');
+            $activeWorksheet->getStyle($columnItem . $rowItem)->getNumberFormat()->setFormatCode('#,##0;-#,##0;"-"');
+            $columnItem++;
+            // produksi (lembar)
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productGroup['product_group_code']])) . ':' . $columnItem . ($rowItem - 1) . ')');
+            $activeWorksheet->getStyle($columnItem . $rowItem)->getNumberFormat()->setFormatCode('#,##0;-#,##0;"-"');
+            $columnItem++;
+            // rasio produksi (%)
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productGroup['product_group_code']])) . ':' . $columnItem . ($rowItem - 1) . ')/COUNTIF(' . $columnItem . ($rowItem - count($listMachine[$productGroup['product_group_code']])) . ':' . $columnItem . ($rowItem - 1) . ', "<>0")');
+            phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowItem);
+            phpspreadsheet::addFullBorder($spreadsheet, $columnMachineNo . $rowItem . ':' . $columnItem . $rowItem);
+            phpspreadsheet::styleFont($spreadsheet, $columnMachineNo . $rowItem . ':' . $columnItem . $rowItem, true, 8, 'Calibri');
+            $columnItem++;
+
+
+            $rowItem++;
+            $rowItem++;
+        }
+
+        // Grand total
+        $rowGrandTotal = $rowItem;
+        $spreadsheet->getActiveSheet()->mergeCells($columnMachineNo . $rowGrandTotal . ':' . $columnMachineName . $rowGrandTotal);
+        $spreadsheet->getActiveSheet()->setCellValue($columnMachineNo . $rowGrandTotal, 'GRAND TOTAL');
+        phpspreadsheet::styleFont($spreadsheet, $columnMachineNo . $rowGrandTotal . ':' . $columnHeaderEnd . $rowGrandTotal, true, 8, 'Calibri');
+        // $this->addFullBorder($spreadsheet, $columnMachineNo . $rowGrandTotal . ':' . $columnValueAvg . $rowGrandTotal);
+
+        $grandTotal = array_reduce(array_keys($dataFilter), function ($carry, $item) use ($dataFilter) {
+            $dataItem = $dataFilter[$item] ?? (object)[
+                'qty_produksi' => 0,
+                'berat_produksi' => 0,
+                'capacity_kg' => 0,
+                'capacity_lembar' => 0
+            ];
+            $carry['qty_produksi'] += $dataItem->qty_produksi;
+            $carry['berat_produksi'] += $dataItem->berat_produksi;
+            $carry['capacity_kg'] += $dataItem->capacity_kg;
+            $carry['capacity_lembar'] += $dataItem->capacity_lembar;
+            return $carry;
+        }, [
+            'qty_produksi' => 0,
+            'berat_produksi' => 0,
+            'capacity_kg' => 0,
+            'capacity_lembar' => 0
+        ]);
+
+        $columnItem = $startColumnItemData;
+        $columnItemEnd = chr(ord($columnItem) + count($header) - 1);
+        // hari kerja
+        $columnItem++;
+        // kapasitas (kg)
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['capacity_kg']);
+        if  ($grandTotal['capacity_kg'] == 0) {
+            $activeWorksheet->getStyle($columnItem . $rowGrandTotal)->getNumberFormat()->setFormatCode('0;-0;"-"');
+        } else {
+            phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        }
+        $columnItem++;
+        // produksi (kg)
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_produksi']);
+        if ($grandTotal['berat_produksi'] == 0) {
+            $activeWorksheet->getStyle($columnItem . $rowGrandTotal)->getNumberFormat()->setFormatCode('0;-0;"-"');
+        } else {
+            phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        }
+        $columnItem++;
+        // rasio produksi (%)
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['capacity_kg'] > 0 ? $grandTotal['berat_produksi'] / $grandTotal['capacity_kg'] : 0);
+        if ($grandTotal['capacity_kg'] == 0) {
+            $activeWorksheet->getStyle($columnItem . $rowGrandTotal)->getNumberFormat()->setFormatCode('0;-0;"-"');
+        } else {
+            phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowGrandTotal);
+        }
+        $columnItem++;
+        // kapasitas (lembar)
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['capacity_lembar']);
+        if ($grandTotal['capacity_lembar'] == 0) {
+            $activeWorksheet->getStyle($columnItem . $rowGrandTotal)->getNumberFormat()->setFormatCode('0;-0;"-"');
+        } else {
+            phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        }
+        $columnItem++;
+        // produksi (lembar)
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['qty_produksi']);
+        if ($grandTotal['qty_produksi'] == 0) {
+            $activeWorksheet->getStyle($columnItem . $rowGrandTotal)->getNumberFormat()->setFormatCode('0;-0;"-"');
+        } else {
+            phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        }
+        $columnItem++;
+        // rasio produksi (%)
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['capacity_lembar'] > 0 ? $grandTotal['qty_produksi'] / $grandTotal['capacity_lembar'] : 0);
+        if ($grandTotal['capacity_lembar'] == 0) {
+            $activeWorksheet->getStyle($columnItem . $rowGrandTotal)->getNumberFormat()->setFormatCode('0;-0;"-"');
+        } else {
+            phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowGrandTotal);
+        }
+        phpspreadsheet::addFullBorder($spreadsheet, $columnMachineNo . $rowGrandTotal . ':' . $columnItem . $rowGrandTotal);
+        $columnItem++;
+
+        $activeWorksheet->getStyle($columnMesin . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart)->getAlignment()->setWrapText(true);
+
+        // auto size
+        $spreadsheet->getActiveSheet()->getColumnDimension('C')->setAutoSize(true);
+        $spreadsheet->getActiveSheet()->getColumnDimension('F')->setAutoSize(true);
+        $spreadsheet->getActiveSheet()->getColumnDimension('I')->setAutoSize(true);
 
         $writer = new Xlsx($spreadsheet);
         $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
