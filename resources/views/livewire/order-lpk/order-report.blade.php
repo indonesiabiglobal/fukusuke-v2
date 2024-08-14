@@ -9,13 +9,13 @@
                     <div class="form-group">
                         <div class="input-group">
                             <span class="input-group-addon col-3 fw-bold">Awal: </span>
-                            <input wire:model.defer="tglMasuk" type="text" class="form-control" style="padding:0.44rem"
+                            <input wire:model.defer="tglAwal" type="text" class="form-control" style="padding:0.44rem"
                                 data-provider="flatpickr" data-date-format="Y-m-d">
                             <span class="input-group-text py-0">
                                 <i class="ri-calendar-event-fill fs-4"></i>
                             </span>
 
-                            <select wire:ignore wire:model.defer="jamMasuk" class="form-control"
+                            <select wire:ignore wire:model.defer="jamAwal" class="form-control"
                                 placeholder="- pilih jam kerja -">
                                 @foreach ($workingShiftHour as $item)
                                     <option value="{{ $item->work_hour_from }}">{{ $item->work_hour_from }}</option>
@@ -34,13 +34,13 @@
                     <div class="form-group">
                         <div class="input-group">
                             <span class="input-group-addon col-3 fw-bold">Akhir: </span>
-                            <input wire:model.defer="tglKeluar" type="text" class="form-control" style="padding:0.44rem"
+                            <input wire:model.defer="tglAkhir" type="text" class="form-control" style="padding:0.44rem"
                                 data-provider="flatpickr" data-date-format="Y-m-d">
                             <span class="input-group-text py-0">
                                 <i class="ri-calendar-event-fill fs-4"></i>
                             </span>
 
-                            <select wire:ignore wire:model.defer="jamKeluar" class="form-control"
+                            <select wire:ignore wire:model.defer="jamAkhir" class="form-control"
                                 placeholder="- pilih jam kerja -">
                                 @foreach ($workingShiftHour as $item)
                                     <option value="{{ $item->work_hour_till }}">{{ $item->work_hour_till }}</option>
