@@ -7813,7 +7813,7 @@ class GeneralReportController extends Component
 
         /**
          * Header
-         */
+        */
         $rowHeaderStart = 3;
         $rowHeaderEnd = 4;
         $columnHeaderStart = 'B';
@@ -7844,10 +7844,10 @@ class GeneralReportController extends Component
         $spreadsheet->getActiveSheet()->mergeCells($columnHeaderEnd . $rowHeaderStart . ':' . $columnHeaderProductionQuantity . $rowHeaderStart);
         $activeWorksheet->setCellValue($columnHeaderEnd . $rowHeaderStart, 'Production Quantity');
         // production quantity lembar
-        $activeWorksheet->setCellValue($columnHeaderEnd . $rowHeaderEnd, 'Lembar');
+        $activeWorksheet->setCellValue($columnHeaderEnd . 4, 'Lembar');
         $columnHeaderEnd++;
         // production quantity box
-        $activeWorksheet->setCellValue($columnHeaderProductionQuantity . $rowHeaderEnd, 'Box');
+        $activeWorksheet->setCellValue($columnHeaderProductionQuantity . 4, 'Box');
         $columnHeaderEnd++;
         // on kenpin process
         $columnHeaderKenpinProcess = $columnHeaderEnd;
@@ -7964,8 +7964,8 @@ class GeneralReportController extends Component
         $endColumnItem = $columnHeaderEnd;
         $startColumnItemData = 'D';
         $columnNoLPK = 'B';
-        $columnNoPalet = 'E';
-        $startRowItem = 4;
+        $columnNoPalet = 'C';
+        $startRowItem = 5;
         $rowItem = $startRowItem;
         // daftar departemen
         foreach ($listProduct as $productCode => $productName) {
@@ -8007,7 +8007,7 @@ class GeneralReportController extends Component
                         phpspreadsheet::textAlignCenter($spreadsheet, $columnItem . $rowItem);
                         $columnItem++;
                         // kode shift
-                        $activeWorksheet->setCellValue($columnItem . $rowItem, $item->loss_code ?? '');
+                        $activeWorksheet->setCellValue($columnItem . $rowItem, $item->work_shift ?? '');
                         phpspreadsheet::textAlignCenter($spreadsheet, $columnItem . $rowItem);
                         $columnItem++;
                         // nomor lot
@@ -8070,6 +8070,8 @@ class GeneralReportController extends Component
             $activeWorksheet->setCellValue($startColumnItem . $rowItem, 'Total');
             $columnItem = $startColumnItemData;
             $columnItem++;
+            $columnItem++;
+            $columnItem++;
             /**
              * Prodction quantity
              */
@@ -8122,46 +8124,81 @@ class GeneralReportController extends Component
             $rowItem++;
         }
 
-        // // Grand total
-        // $rowGrandTotal = $rowItem;
-        // $spreadsheet->getActiveSheet()->mergeCells($startColumnItem . $rowGrandTotal . ':' . 'E' . $rowGrandTotal);
-        // $spreadsheet->getActiveSheet()->setCellValue($startColumnItem . $rowGrandTotal, 'GRAND TOTAL');
-        // phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $rowGrandTotal . ':' . $columnHeaderEnd . $rowGrandTotal, true, 8, 'Calibri');
-        // // $this->addFullBorder($spreadsheet, $startColumnItem . $rowGrandTotal . ':' . $columnValueAvg . $rowGrandTotal);
+        // Grand total
+        $rowGrandTotal = $rowItem;
+        $spreadsheet->getActiveSheet()->mergeCells($startColumnItem . $rowGrandTotal . ':' . 'E' . $rowGrandTotal);
+        $spreadsheet->getActiveSheet()->setCellValue($startColumnItem . $rowGrandTotal, 'GRAND TOTAL');
+        phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $rowGrandTotal . ':' . $columnHeaderEnd . $rowGrandTotal, true, 8, 'Calibri');
+        // $this->addFullBorder($spreadsheet, $startColumnItem . $rowGrandTotal . ':' . $columnValueAvg . $rowGrandTotal);
 
-        // $grandTotal = [
-        //     'berat_loss_produksi' => 0,
-        //     'berat_loss_kebutuhan' => 0,
-        // ];
+        $grandTotal = [
+            'qty_produksi' => 0,
+            'qty_produksi_box' => 0,
+            'kenpin_qty_loss_proses' => 0,
+            'kenpin_qty_box_proses' => 0,
+            'kenpin_qty_loss' => 0,
+            'kenpin_qty_box' => 0,
+            'qty_produksi' => 0,
+            'qty_produksi_box' => 0
+        ];
 
-        // foreach ($dataFilter as $departmentId => $lossClasses) {
-        //     foreach ($listProductGroup[$departmentId] as $productGroup) {
-        //         foreach ($listLossClass[$departmentId][$productGroup] as $lossClass => $lossClassName) {
-        //             if (isset($lossClasses[$productGroup])) {
-        //                 $dataItem = $lossClasses[$productGroup][$lossClass];
-        //                 foreach ($dataItem['losses'] as $item) {
-        //                     $grandTotal['berat_loss_produksi'] += $item['berat_loss_produksi'];
-        //                     $grandTotal['berat_loss_kebutuhan'] += $item['berat_loss_kebutuhan'];
-        //                 }
-        //             } else {
-        //                 // Tambahkan default value jika $lossClass tidak ditemukan
-        //                 $grandTotal['berat_loss_produksi'] += 0;
-        //                 $grandTotal['berat_loss_kebutuhan'] += 0;
-        //             }
-        //         }
-        //     }
-        // }
+        foreach ($listProduct as $product_code => $product_name) {
+            foreach ($listLpk[$product_code] as $lpkNo) {
+                foreach ($listPalet[$product_code][$lpkNo] as $nomor_palet) {
+                    if (isset($dataFilter[$product_code][$lpkNo][$nomor_palet])) {
+                        $dataItem = $dataFilter[$product_code][$lpkNo][$nomor_palet];
+                        foreach ($dataItem as $item) {
+                            $grandTotal['qty_produksi'] += $item->qty_produksi;
+                            $grandTotal['qty_produksi_box'] += $item->qty_produksi_box;
+                            $grandTotal['kenpin_qty_loss_proses'] += $item->kenpin_qty_loss_proses;
+                            $grandTotal['kenpin_qty_box_proses'] += $item->kenpin_qty_box_proses;
+                            $grandTotal['kenpin_qty_loss'] += $item->kenpin_qty_loss;
+                            $grandTotal['kenpin_qty_box'] += $item->kenpin_qty_box;
+                        }
+                    } else {
+                        $dataItem = (object)[
+                            'qty_produksi' => 0,
+                            'qty_produksi_box' => 0,
+                            'kenpin_qty_loss_proses' => 0,
+                            'kenpin_qty_box_proses' => 0,
+                            'kenpin_qty_loss' => 0,
+                            'kenpin_qty_box' => 0,
+                            'qty_produksi' => 0,
+                            'qty_produksi_box' => 0
+                        ];
+                    }
+                }
+            }
+        }
 
-        // $columnItem = $startColumnItemData;
-        // $columnItem++;
-        // $columnItem++;
-        // $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_loss_produksi']);
-        // phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
-        // $columnItem++;
-        // $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_loss_kebutuhan']);
-        // phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
-        // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowGrandTotal . ':' . $columnItem . $rowGrandTotal);
-        // $columnItem++;
+        $columnItem = $startColumnItemData;
+        $columnItem++;
+        $columnItem++;
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['qty_produksi']);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['qty_produksi_box']);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['kenpin_qty_loss_proses']);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['kenpin_qty_box_proses']);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['kenpin_qty_loss']);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['kenpin_qty_box']);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['qty_produksi']);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['qty_produksi_box']);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowGrandTotal . ':' . $columnItem . $rowGrandTotal);
+        $columnItem++;
 
         $activeWorksheet->getStyle($columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart)->getAlignment()->setWrapText(true);
 
