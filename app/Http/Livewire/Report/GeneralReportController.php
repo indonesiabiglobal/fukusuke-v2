@@ -304,6 +304,11 @@ class GeneralReportController extends Component
             return;
         }
 
+        if ($this->tglAwal > $this->tglAkhir) {
+            session()->flash('error', 'Tanggal akhir tidak boleh kurang dari tanggal awal');
+            return;
+        }
+
         $tglMasuk = Carbon::parse($this->tglMasuk . ' ' . $this->jamMasuk);
         $tglKeluar = Carbon::parse($this->tglKeluar . ' ' . $this->jamKeluar);
 

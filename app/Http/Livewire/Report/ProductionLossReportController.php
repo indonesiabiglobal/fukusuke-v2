@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Report;
 use App\Exports\GeneralReportExport;
 use App\Models\MsDepartment;
 use App\Models\MsMachine;
+use App\Models\MsWorkingShift;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
@@ -17,13 +18,18 @@ class ProductionLossReportController extends Component
     public $jenisreport;
     public $tglAwal;
     public $tglAkhir;
+    public $jamAwal;
+    public $jamAkhir;
     public $nipon = 'infure';
-
+    public $workingShiftHour;
 
     public function mount()
     {
-        $this->tglAwal = Carbon::now()->subYear()->format('Y-m');
-        $this->tglAkhir = Carbon::now()->format('Y-m');
+        $this->tglAwal = Carbon::now()->subYear()->format('Y-m-d');
+        $this->tglAkhir = Carbon::now()->format('Y-m-d');
+        $this->workingShiftHour = MsWorkingShift::select('work_hour_from', 'work_hour_till')->where('status', 1)->orderBy('work_hour_from', 'ASC')->get();
+        $this->jamAwal = $this->workingShiftHour[0]->work_hour_from;
+        $this->jamAkhir = $this->workingShiftHour[count($this->workingShiftHour) - 1]->work_hour_till;
     }
 
     public function export()
@@ -33,8 +39,8 @@ class ProductionLossReportController extends Component
             return;
         }
 
-        $filterDateStart = Carbon::parse($this->tglAwal)->format('Y-m-d 00:00:00');
-        $filterDateEnd = Carbon::parse($this->tglAkhir)->endOfMonth()->format('Y-m-d 23:59:59');
+        $filterDateStart = Carbon::parse($this->tglAwal . ' ' . $this->jamAwal);
+        $filterDateEnd = Carbon::parse($this->tglAkhir . ' ' . $this->jamAkhir);
         if ($this->nipon == 'infure') {
             $divisionCodeInfure = MsDepartment::where('name', 'INFURE')->first()->division_code;
             $data = DB::select(
@@ -115,6 +121,7 @@ class ProductionLossReportController extends Component
             // list mesin berdasarkan tanggal pertama dan departemen
             $listMachine = MsMachine::where('status', 1)
                 ->whereIn('department_id', array_keys($listDepartment))
+                ->orderBy('machineno')
                 ->get()
                 ->groupBy('department_id')
                 ->map(function ($item) {
@@ -207,6 +214,7 @@ class ProductionLossReportController extends Component
             // list mesin berdasarkan tanggal pertama dan departemen
             $listMachine = MsMachine::where('status', 1)
                 ->whereIn('department_id', array_keys($listDepartment))
+                ->orderBy('machineno')
                 ->get()
                 ->groupBy('department_id')
                 ->map(function ($item) {
@@ -219,7 +227,7 @@ class ProductionLossReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'REPORT PRODUKSI DAN LOSS MESIN' . ($this->nipon == 'infure' ? ' INFURE' : 'SEITAI'));
-        $activeWorksheet->setCellValue('B2', 'Periode : ' . $this->tglAwal . ' s/d ' . $this->tglAkhir);
+        $activeWorksheet->setCellValue('B2', 'Periode : ' . $filterDateStart . ' s/d ' . $filterDateEnd);
         // Style Judul
         $this->styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
 
