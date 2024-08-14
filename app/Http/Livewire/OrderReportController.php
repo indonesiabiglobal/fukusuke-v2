@@ -13,24 +13,28 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class OrderReportController extends Component
 {
-    public $tglMasuk;
-    public $tglKeluar;
+    public $tglAwal;
+    public $tglAkhir;
+    public $jamAwal;
+    public $jamAkhir;
     public $buyer;
     public $buyer_id;
     public $filter;
 
     public function mount()
     {
-        $this->tglMasuk = Carbon::now()->format('Y-m-d');
-        $this->tglKeluar = Carbon::now()->format('Y-m-d');
-        $this->buyer = MsBuyer::get();      
+        $this->tglAwal = Carbon::now()->format('Y-m-d');
+        $this->tglAkhir = Carbon::now()->format('Y-m-d');
+        $this->buyer = MsBuyer::get();
+        $this->jamAwal = $this->workingShiftHour[0]->work_hour_from;
+        $this->jamAkhir = $this->workingShiftHour[count($this->workingShiftHour) - 1]->work_hour_till;
     }
 
     public function export()
     {
         return Excel::download(new OrderReportExport(
-            $this->tglMasuk, 
-            $this->tglKeluar, 
+            $this->tglAwal,
+            $this->tglAkhir,
             $this->buyer_id,
             $this->filter,
         ), 'order_report.xlsx');
