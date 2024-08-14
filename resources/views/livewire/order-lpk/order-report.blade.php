@@ -4,11 +4,11 @@
 		<div class="col-lg-6">
             {{-- Filter tanggal awal --}}
             <div class="form-group">
-                <label class="control-label col-md-4 col-xs-12">Tanggal Periode</label>
+                <label class="control-label col-md-4 col-xs-12 fw-bold">Tanggal Periode</label>
                 <div class="col-12 mt-1">
                     <div class="form-group">
                         <div class="input-group">
-                            <span class="input-group-addon col-12 col-lg-2 text-muted">Awal: </span>
+                            <span class="input-group-addon col-3 fw-bold">Awal: </span>
                             <input wire:model.defer="tglMasuk" type="text" class="form-control" style="padding:0.44rem"
                                 data-provider="flatpickr" data-date-format="Y-m-d">
                             <span class="input-group-text py-0">
@@ -33,7 +33,7 @@
                 <div class="col-12">
                     <div class="form-group">
                         <div class="input-group">
-                            <span class="input-group-addon col-12 col-lg-2 text-muted">Akhir: </span>
+                            <span class="input-group-addon col-3 fw-bold">Akhir: </span>
                             <input wire:model.defer="tglKeluar" type="text" class="form-control" style="padding:0.44rem"
                                 data-provider="flatpickr" data-date-format="Y-m-d">
                             <span class="input-group-text py-0">
