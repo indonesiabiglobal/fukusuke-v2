@@ -425,6 +425,14 @@ class GeneralReportController extends Component
                     return response()->download($file);
                 }
                 break;
+            case 'Daftar Produksi Per Palet':
+                if ($this->nipon == 'Seitai') {
+                    $file = $this->daftarProduksiPerPaletSeitai($tglMasuk, $tglKeluar);
+                    return response()->download($file);
+                } else {
+                    $this->dispatch('notification', ['type' => 'warning', 'message' => 'Pilih Nipon Seitai.']);
+                }
+                break;
         }
     }
 
@@ -7784,6 +7792,387 @@ class GeneralReportController extends Component
         $spreadsheet->getActiveSheet()->getColumnDimension('C')->setAutoSize(true);
         $spreadsheet->getActiveSheet()->getColumnDimension('F')->setAutoSize(true);
         $spreadsheet->getActiveSheet()->getColumnDimension('I')->setAutoSize(true);
+
+        $writer = new Xlsx($spreadsheet);
+        $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
+        $writer->save($filename);
+        return $filename;
+    }
+
+    public function daftarProduksiPerPaletSeitai($tglMasuk, $tglKeluar)
+    {
+        $spreadsheet = new Spreadsheet();
+        $activeWorksheet = $spreadsheet->getActiveSheet();
+        $activeWorksheet->setShowGridlines(false);
+
+        // Judul
+        $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER PALET SEITAI');
+        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        // Style Judul
+        phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
+
+        /**
+         * Header
+         */
+        $rowHeaderStart = 3;
+        $rowHeaderEnd = 4;
+        $columnHeaderStart = 'B';
+        $columnHeaderEnd = 'B';
+        // Nomor LPK
+        $spreadsheet->getActiveSheet()->mergeCells($columnHeaderEnd . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderEnd);
+        $activeWorksheet->setCellValue($columnHeaderEnd . $rowHeaderStart, 'Nomor LPK');
+        $columnHeaderEnd++;
+        // Nomor Palet
+        $spreadsheet->getActiveSheet()->mergeCells($columnHeaderEnd . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderEnd);
+        $activeWorksheet->setCellValue($columnHeaderEnd . $rowHeaderStart, 'Nomor Palet');
+        $columnHeaderEnd++;
+        // Tanggal Produksi
+        $spreadsheet->getActiveSheet()->mergeCells($columnHeaderEnd . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderEnd);
+        $activeWorksheet->setCellValue($columnHeaderEnd . $rowHeaderStart, 'Tanggal Produksi');
+        $columnHeaderEnd++;
+        // Kode shift
+        $spreadsheet->getActiveSheet()->mergeCells($columnHeaderEnd . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderEnd);
+        $activeWorksheet->setCellValue($columnHeaderEnd . $rowHeaderStart, 'Kode Shift');
+        $columnHeaderEnd++;
+        // nomor lot
+        $spreadsheet->getActiveSheet()->mergeCells($columnHeaderEnd . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderEnd);
+        $activeWorksheet->setCellValue($columnHeaderEnd . $rowHeaderStart, 'Nomor Lot');
+        $columnHeaderEnd++;
+        // production quantity
+        $columnHeaderProductionQuantity = $columnHeaderEnd;
+        $columnHeaderProductionQuantity++;
+        $spreadsheet->getActiveSheet()->mergeCells($columnHeaderEnd . $rowHeaderStart . ':' . $columnHeaderProductionQuantity . $rowHeaderStart);
+        $activeWorksheet->setCellValue($columnHeaderEnd . $rowHeaderStart, 'Production Quantity');
+        // production quantity lembar
+        $activeWorksheet->setCellValue($columnHeaderEnd . $rowHeaderEnd, 'Lembar');
+        $columnHeaderEnd++;
+        // production quantity box
+        $activeWorksheet->setCellValue($columnHeaderProductionQuantity . $rowHeaderEnd, 'Box');
+        $columnHeaderEnd++;
+        // on kenpin process
+        $columnHeaderKenpinProcess = $columnHeaderEnd;
+        $columnHeaderKenpinProcess++;
+        $spreadsheet->getActiveSheet()->mergeCells($columnHeaderEnd . $rowHeaderStart . ':' . $columnHeaderKenpinProcess . $rowHeaderStart);
+        $activeWorksheet->setCellValue($columnHeaderEnd . $rowHeaderStart, 'On Kenpin Process');
+        // on kenpin process lembar
+        $activeWorksheet->setCellValue($columnHeaderEnd . $rowHeaderEnd, 'Lembar');
+        $columnHeaderEnd++;
+        // on kenpin process box
+        $activeWorksheet->setCellValue($columnHeaderKenpinProcess . $rowHeaderEnd, 'Box');
+        $columnHeaderEnd++;
+        // kenpin loss
+        $columnHeaderKenpinLoss = $columnHeaderEnd;
+        $columnHeaderKenpinLoss++;
+        $spreadsheet->getActiveSheet()->mergeCells($columnHeaderEnd . $rowHeaderStart . ':' . $columnHeaderKenpinLoss . $rowHeaderStart);
+        $activeWorksheet->setCellValue($columnHeaderEnd . $rowHeaderStart, 'Kenpin Loss');
+        // kenpin loss lembar
+        $activeWorksheet->setCellValue($columnHeaderEnd . $rowHeaderEnd, 'Lembar');
+        $columnHeaderEnd++;
+        // kenpin loss box
+        $activeWorksheet->setCellValue($columnHeaderKenpinLoss . $rowHeaderEnd, 'Box');
+        $columnHeaderEnd++;
+        // actual quantity
+        $columnHeaderActualQuantity = $columnHeaderEnd;
+        $columnHeaderActualQuantity++;
+        $spreadsheet->getActiveSheet()->mergeCells($columnHeaderEnd . $rowHeaderStart . ':' . $columnHeaderActualQuantity . $rowHeaderStart);
+        $activeWorksheet->setCellValue($columnHeaderEnd . $rowHeaderStart, 'Actual Quantity');
+        // actual quantity lembar
+        $activeWorksheet->setCellValue($columnHeaderEnd . $rowHeaderEnd, 'Lembar');
+        $columnHeaderEnd++;
+        // actual quantity box
+        $activeWorksheet->setCellValue($columnHeaderActualQuantity . $rowHeaderEnd, 'Box');
+
+        // style header
+        phpspreadsheet::addFullBorder($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderEnd);
+        phpspreadsheet::styleFont($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderEnd, true, 9, 'Calibri');
+        phpspreadsheet::textAlignCenter($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderEnd);
+
+        $data = DB::select("
+            SELECT
+                prd.code AS product_code,
+                prd.code || ' ' || prd.code_alias || ' ' || prd.name AS product_name,
+                lpk.lpk_no,
+                good.nomor_palet,
+                good.production_date,
+                good.work_shift,
+                good.nomor_lot,
+                (good.qty_produksi * prd.unit_weight * 0.001) AS berat_produksi,
+                good.qty_produksi,
+                (good.qty_produksi / prd.case_box_count) AS qty_produksi_box,
+                good.kenpin_qty_loss_proses,
+                (good.kenpin_qty_loss_proses / prd.case_box_count) AS kenpin_qty_box_proses,
+                good.kenpin_qty_loss,
+                (good.kenpin_qty_loss / prd.case_box_count) AS kenpin_qty_box,
+                (good.kenpin_qty_loss_proses * prd.unit_weight * 0.001) AS kenpin_qty_berat_proses,
+                (good.kenpin_qty_loss * prd.unit_weight * 0.001) AS kenpin_qty_berat
+            FROM tdProduct_Goods AS good
+            INNER JOIN tdOrderLpk AS lpk ON good.lpk_id = lpk.id
+            INNER JOIN msProduct AS prd ON good.product_id = prd.id
+            WHERE good.production_date BETWEEN '$tglMasuk' AND '$tglKeluar';
+        ");
+
+        // list produk
+        $listProduct = array_reduce($data, function ($carry, $item) {
+            $carry[$item->product_code] = $item->product_name;
+            return $carry;
+        }, []);
+
+        // nomor lpk
+        $listLpk = array_reduce($data, function ($carry, $item) {
+            $carry[$item->product_code][$item->lpk_no] = $item->lpk_no;
+            return $carry;
+        }, []);
+
+        // nomor palet
+        $listPalet = array_reduce($data, function ($carry, $item) {
+            $carry[$item->product_code][$item->lpk_no][$item->nomor_palet] = $item->nomor_palet;
+            return $carry;
+        }, []);
+
+        $dataFilter = array_reduce($data, function ($carry, $item) {
+            if (!isset($carry[$item->product_code])) {
+                $carry[$item->product_code] = [];
+            }
+
+            if (!isset($carry[$item->product_code][$item->lpk_no])) {
+                $carry[$item->product_code][$item->lpk_no] = [];
+            }
+
+            if (!isset($carry[$item->product_code][$item->lpk_no][$item->nomor_palet])) {
+                $carry[$item->product_code][$item->lpk_no][$item->nomor_palet] = [];
+            }
+
+            $carry[$item->product_code][$item->lpk_no][$item->nomor_palet][$item->production_date] = (object)[
+                // 'product_code' => $item->product_code,
+                'production_date' => $item->production_date,
+                'work_shift' => $item->work_shift,
+                'nomor_lot' => $item->nomor_lot,
+                'qty_produksi' => $item->qty_produksi,
+                'qty_produksi_box' => $item->qty_produksi_box,
+                'kenpin_qty_loss_proses' => $item->kenpin_qty_loss_proses,
+                'kenpin_qty_box_proses' => $item->kenpin_qty_box_proses,
+                'kenpin_qty_loss' => $item->kenpin_qty_loss,
+                'kenpin_qty_box' => $item->kenpin_qty_box,
+
+            ];
+
+            return $carry;
+        }, []);
+
+        // index
+        $startColumnItem = 'B';
+        $endColumnItem = $columnHeaderEnd;
+        $startColumnItemData = 'D';
+        $columnNoLPK = 'B';
+        $columnNoPalet = 'E';
+        $startRowItem = 4;
+        $rowItem = $startRowItem;
+        // daftar departemen
+        foreach ($listProduct as $productCode => $productName) {
+            // Menulis data produk
+            $activeWorksheet->setCellValue($startColumnItem . $rowItem, $productName);
+            $spreadsheet->getActiveSheet()->mergeCells($startColumnItem . $rowItem . ':' . $endColumnItem . $rowItem);
+            phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $rowItem, true, 9, 'Calibri');
+            $rowItem++;
+            $startRowItemSum = $rowItem;
+            foreach ($listLpk[$productCode] as $noLPK) {
+                // Menulis data no lpk
+                $activeWorksheet->setCellValue($columnNoLPK . $rowItem, $noLPK);
+                // $spreadsheet->getActiveSheet()->mergeCells($columnNoLPK . $rowItem . ':' . $columnNoLPKEnd . $rowItem);
+                // phpspreadsheet::styleFont($spreadsheet, $columnNoLPK . $rowItem, true, 9, 'Calibri');
+                // $rowItem++;
+                // daftar palet
+                foreach ($listPalet[$productCode][$noLPK] as $palet) {
+                    // Menulis data palet
+                    $spreadsheet->getActiveSheet()->setCellValue($columnNoPalet . $rowItem, $palet);
+                    // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
+
+                    // memasukkan data
+                    $dataItem = $dataFilter[$productCode][$noLPK][$palet] ?? (object)[
+                        'product_code' => $productCode,
+                        'work_shift' => '',
+                        'nomor_lot' => '',
+                        'qty_produksi' => 0,
+                        'qty_produksi_box' => 0,
+                        'kenpin_qty_loss_proses' => 0,
+                        'kenpin_qty_box_proses' => 0,
+                        'kenpin_qty_loss' => 0,
+                        'kenpin_qty_box' => 0,
+                    ];
+                    foreach ($dataItem as $item) {
+                        // $spreadsheet->getActiveSheet()->mergeCells($columnProductGroup . $rowItem . ':' . $columnProductGroupEnd . $rowItem);
+                        $columnItem = $startColumnItemData;
+                        // tanggal produksi
+                        $activeWorksheet->setCellValue($columnItem . $rowItem, $item->production_date);
+                        phpspreadsheet::textAlignCenter($spreadsheet, $columnItem . $rowItem);
+                        $columnItem++;
+                        // kode shift
+                        $activeWorksheet->setCellValue($columnItem . $rowItem, $item->loss_code ?? '');
+                        phpspreadsheet::textAlignCenter($spreadsheet, $columnItem . $rowItem);
+                        $columnItem++;
+                        // nomor lot
+                        $activeWorksheet->setCellValue($columnItem . $rowItem, $item->nomor_lot ?? '');
+                        phpspreadsheet::textAlignCenter($spreadsheet, $columnItem . $rowItem);
+                        $columnItem++;
+                        /**
+                         * Prodction quantity
+                         */
+                        // lembar
+                        $activeWorksheet->setCellValue($columnItem . $rowItem, $item->qty_produksi ?? '');
+                        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
+                        $columnItem++;
+                        // box
+                        $activeWorksheet->setCellValue($columnItem . $rowItem, $item->qty_produksi_box ?? '');
+                        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
+                        $columnItem++;
+                        /**
+                         * On Kenpin Process
+                         */
+                        // lembar
+                        $activeWorksheet->setCellValue($columnItem . $rowItem, $item->kenpin_qty_loss_proses ?? '');
+                        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
+                        $columnItem++;
+                        // box
+                        $activeWorksheet->setCellValue($columnItem . $rowItem, $item->kenpin_qty_box_proses ?? '');
+                        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
+                        $columnItem++;
+                        /**
+                         * Kenpin Loss
+                         */
+                        // lembar
+                        $activeWorksheet->setCellValue($columnItem . $rowItem, $item->kenpin_qty_loss ?? '');
+                        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
+                        $columnItem++;
+                        // box
+                        $activeWorksheet->setCellValue($columnItem . $rowItem, $item->kenpin_qty_box ?? '');
+                        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
+                        $columnItem++;
+                        /**
+                         * Actual quantity
+                         */
+                        // lembar
+                        $activeWorksheet->setCellValue($columnItem . $rowItem, $item->qty_produksi ?? '');
+                        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
+                        $columnItem++;
+                        // box
+                        $activeWorksheet->setCellValue($columnItem . $rowItem, $item->qty_produksi_box ?? '');
+                        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
+                        phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
+                        $columnItem++;
+                    }
+
+                    phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem, false, 8, 'Calibri');
+                    $rowItem++;
+                }
+            }
+            // perhitungan jumlah berdasarkan produk
+            $spreadsheet->getActiveSheet()->mergeCells($startColumnItem . $rowItem . ':' . 'F' . $rowItem);
+            $activeWorksheet->setCellValue($startColumnItem . $rowItem, 'Total');
+            $columnItem = $startColumnItemData;
+            $columnItem++;
+            /**
+             * Prodction quantity
+             */
+            // lembar
+            $activeWorksheet->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // box
+            $activeWorksheet->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            /**
+             * On Kenpin Process
+             */
+            // lembar
+            $activeWorksheet->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // box
+            $activeWorksheet->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            /**
+             * Kenpin Loss
+             */
+            // lembar
+            $activeWorksheet->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // box
+            $activeWorksheet->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            /**
+             * Actual Quantity
+             */
+            // lembar
+            $activeWorksheet->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // box
+            $activeWorksheet->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
+            phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem, true, 8, 'Calibri');
+            $columnItem++;
+
+            $rowItem++;
+            $rowItem++;
+        }
+
+        // // Grand total
+        // $rowGrandTotal = $rowItem;
+        // $spreadsheet->getActiveSheet()->mergeCells($startColumnItem . $rowGrandTotal . ':' . 'E' . $rowGrandTotal);
+        // $spreadsheet->getActiveSheet()->setCellValue($startColumnItem . $rowGrandTotal, 'GRAND TOTAL');
+        // phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $rowGrandTotal . ':' . $columnHeaderEnd . $rowGrandTotal, true, 8, 'Calibri');
+        // // $this->addFullBorder($spreadsheet, $startColumnItem . $rowGrandTotal . ':' . $columnValueAvg . $rowGrandTotal);
+
+        // $grandTotal = [
+        //     'berat_loss_produksi' => 0,
+        //     'berat_loss_kebutuhan' => 0,
+        // ];
+
+        // foreach ($dataFilter as $departmentId => $lossClasses) {
+        //     foreach ($listProductGroup[$departmentId] as $productGroup) {
+        //         foreach ($listLossClass[$departmentId][$productGroup] as $lossClass => $lossClassName) {
+        //             if (isset($lossClasses[$productGroup])) {
+        //                 $dataItem = $lossClasses[$productGroup][$lossClass];
+        //                 foreach ($dataItem['losses'] as $item) {
+        //                     $grandTotal['berat_loss_produksi'] += $item['berat_loss_produksi'];
+        //                     $grandTotal['berat_loss_kebutuhan'] += $item['berat_loss_kebutuhan'];
+        //                 }
+        //             } else {
+        //                 // Tambahkan default value jika $lossClass tidak ditemukan
+        //                 $grandTotal['berat_loss_produksi'] += 0;
+        //                 $grandTotal['berat_loss_kebutuhan'] += 0;
+        //             }
+        //         }
+        //     }
+        // }
+
+        // $columnItem = $startColumnItemData;
+        // $columnItem++;
+        // $columnItem++;
+        // $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_loss_produksi']);
+        // phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        // $columnItem++;
+        // $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_loss_kebutuhan']);
+        // phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowGrandTotal . ':' . $columnItem . $rowGrandTotal);
+        // $columnItem++;
+
+        $activeWorksheet->getStyle($columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart)->getAlignment()->setWrapText(true);
+
+        // size auto
+        $columnHeaderEnd = $columnHeaderStart;
+        $endColumnItem++;
+        $columnHeaderEnd++;
+        while ($columnHeaderEnd !== $endColumnItem) {
+            $spreadsheet->getActiveSheet()->getColumnDimension($columnHeaderEnd)->setAutoSize(true);
+            $columnHeaderEnd++;
+        }
 
         $writer = new Xlsx($spreadsheet);
         $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
