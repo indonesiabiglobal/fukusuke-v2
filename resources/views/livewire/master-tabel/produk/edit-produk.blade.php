@@ -745,7 +745,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group mt-1">
+                    {{-- <div class="form-group mt-1">
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-6">Jenis Seal Seitai</label>
                             <div class="col-12 col-lg-6" wire:ignore>
@@ -766,10 +766,10 @@
                                 @enderror
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
                 <div class="col-12 col-lg-5">
-                    <div class="form-group">
+                    <div class="form-group" wire:ignore>
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-3">Kode Gasio</label>
                             <div class="col-12 col-lg-9" wire:ignore>

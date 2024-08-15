@@ -37,8 +37,9 @@ class OrderLpkController extends Component
     public $sortField = 'id';
     public $sortDirection = 'asc';
 
-    public function sortBy($field){
-        if($this->sortField === $field){
+    public function sortBy($field)
+    {
+        if ($this->sortField === $field) {
             $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
         } else {
             $this->sortField = $field;
@@ -54,7 +55,8 @@ class OrderLpkController extends Component
         $this->tglKeluar = Carbon::now()->format('d-m-Y');
     }
 
-    public function search(){
+    public function search()
+    {
         $this->resetPage();
         $this->render();
     }
@@ -99,16 +101,29 @@ class OrderLpkController extends Component
 
     public function render()
     {
+        // dd($this->idBuyer);
         $data = DB::table('tdorder AS tod')
-            ->select('tod.id', 'tod.po_no', 'mp.name AS produk_name', 'tod.product_code',
-                     'mbu.name AS buyer_name', 'tod.order_qty', 'tod.order_date',
-                     'tod.stufingdate', 'tod.etddate', 'tod.etadate',
-                     'tod.processdate', 'tod.processseq', 'tod.updated_by', 'tod.updated_on')
+            ->select(
+                'tod.id',
+                'tod.po_no',
+                'mp.name AS produk_name',
+                'tod.product_code',
+                'mbu.name AS buyer_name',
+                'tod.order_qty',
+                'tod.order_date',
+                'tod.stufingdate',
+                'tod.etddate',
+                'tod.etadate',
+                'tod.processdate',
+                'tod.processseq',
+                'tod.updated_by',
+                'tod.updated_on'
+            )
             ->leftjoin('msproduct AS mp', 'mp.id', '=', 'tod.product_id')
             ->leftjoin('msbuyer AS mbu', 'mbu.id', '=', 'tod.buyer_id')
             ->orderBy($this->sortField, $this->sortDirection);
 
-        if($this->transaksi == 2){
+        if ($this->transaksi == 2) {
             if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
                 $data = $data->where('tod.order_date', '>=', $this->tglMasuk);
             }
@@ -127,22 +142,22 @@ class OrderLpkController extends Component
         }
 
         if (isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined") {
-            $data = $data->where(function($query) {
+            $data = $data->where(function ($query) {
                 $query->where('mp.name', 'ilike', "%{$this->searchTerm}%")
-                      ->orWhere('mbu.name', 'ilike', "%{$this->searchTerm}%")
-                      ->orWhere('tod.po_no', 'ilike', "%{$this->searchTerm}%");
+                    ->orWhere('mbu.name', 'ilike', "%{$this->searchTerm}%")
+                    ->orWhere('tod.po_no', 'ilike', "%{$this->searchTerm}%");
             });
         }
 
-        if (isset($this->idProduct) && $this->idProduct['value'] != "" && $this->idProduct != "undefined") {
+        if (isset($this->idProduct) && $this->idProduct != "" && $this->idProduct != "undefined") {
             $data = $data->where('mp.id', $this->idProduct);
         }
 
-        if (isset($this->idBuyer) && $this->idBuyer['value'] != "" && $this->idBuyer != "undefined") {
+        if (isset($this->idBuyer) && $this->idBuyer != "" && $this->idBuyer != "undefined") {
             $data = $data->where('tod.buyer_id', $this->idBuyer);
         }
 
-        if (isset($this->status) && $this->status['value'] != "" && $this->status != "undefined") {
+        if (isset($this->status) && $this->status != "" && $this->status != "undefined") {
             $data = $data->where('tod.status_order', $this->status);
         }
         $data = $data->paginate(8);
