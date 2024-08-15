@@ -22,8 +22,8 @@
                         <div class="mb-1" wire:ignore>
                             <select class="form-control"  wire:model.defer="product_type_id" id="productType" name="productType" data-choices data-choices-sorting-false data-choices-removeItem>
                                 <option value="">- All -</option>
-                                @foreach (\App\Models\MsProductType::select('id', 'name')->get() as $item)
-                                    <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                @foreach (\App\Models\MsProductType::select('id', 'name', 'code')->get() as $item)
+                                    <option value="{{ $item->id }}">{{ $item->name }} , {{ $item->code }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -166,7 +166,7 @@
                         </td>
                         <td>{{ $item->product_name }}</td>
                         <td>{{ $item->product_code }}</td>
-                        <td>{{ $item->product_type_id }}</td>
+                        <td>{{ $item->product_type_code }}</td>
                         <td>{{ $item->product_type_name }}</td>
                         <td>{{ $item->dimensi }}</td>
                         <td>{{ $item->unit_weight }}</td>

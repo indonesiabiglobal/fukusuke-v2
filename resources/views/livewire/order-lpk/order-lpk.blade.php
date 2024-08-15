@@ -32,7 +32,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="col-12 col-lg-3">
                 <label class="form-label text-muted fw-bold">Search</label>
             </div>
@@ -43,6 +42,7 @@
             </div>
         </div>
     </div>
+    
     <div class="col-12 col-lg-5">
         <div class="row">
             <div class="col-12 col-lg-2">
@@ -50,21 +50,22 @@
             </div>
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
-                    <select class="form-control"  wire:model.defer="idProduct" id="product" name="product" data-choices data-choices-sorting-false data-choices-removeItem>
-                        <option value="">- All -</option>
+                    <select class="form-control select2" id="idProduct" name="idProduct">
+                        <option></option>
                         @foreach ($products as $item)
                             <option value="{{ $item->id }}">{{ $item->name }}</option>
                         @endforeach
                     </select>
                 </div>
             </div>
+
             <div class="col-12 col-lg-2">
                 <label for="buyer" class="form-label text-muted fw-bold">Buyer</label>
             </div>
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
-                    <select class="form-control" wire:model.defer="idBuyer" data-choices data-choices-sorting-false data-choices-removeItem>
-                        <option value="">- All -</option>
+                    <select class="form-control select2" id="idBuyer" name="idBuyer">
+                        <option></option>
                         @foreach ($buyer as $item)
                             <option value="{{ $item->id }}">{{ $item->name }}</option>
                         @endforeach
@@ -72,12 +73,13 @@
                 </div>
             </div>
             <div class="col-12 col-lg-2">
-                <label for="status" class="form-label text-muted fw-bold">Status</label>
+                <label for="idStatus" class="form-label text-muted fw-bold">Status</label>
             </div>
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
-                    <select class="form-control" wire:model.defer="status" data-choices data-choices-sorting-false data-choices-removeItem>
-                        <option value="">- All -</option>
+                    <select class="form-control" wire:model.defer="status" id="status" name="status" data-choices
+                        data-choices-sorting-false data-choices-removeItem>
+                        <option></option>
                         <option value="0">Belum LPK</option>
                         <option value="1">Sudah LPK</option>
                     </select>
@@ -88,7 +90,7 @@
     <div class="col-lg-12 mt-2">
         <div class="row">
             <div class="col-12 col-lg-6">
-                <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1">
+                <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1" id="filterBtn">
                     <span wire:loading.remove wire:target="search">
                         <i class="ri-search-line"></i> Filter
                     </span>
@@ -285,4 +287,15 @@
     </div>
     
     {{-- <livewire:tdorder/> --}}
+    @push('scripts')
+    <script>
+        $(function() {
+            $('#filterBtn').on('click', function () {
+                var idProduct = $('#idProduct').val();
+
+                @this.set('idProduct', idProduct);
+            });
+        });
+    </script>
+    @endpush
 </div>
