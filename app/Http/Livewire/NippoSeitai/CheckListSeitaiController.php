@@ -97,8 +97,37 @@ class CheckListSeitaiController extends Component
 
         $data = collect(
             DB::select("
-                SELECT
-                    tdpg.id AS id,
+                WITH goodasy AS (
+                    SELECT
+                        tpga.product_goods_id,
+                        tdpa.gentan_no || '-' || tpga.gentan_line AS gentannomor,
+                        tdpa.panjang_produksi,
+                        tdpa.production_date AS tglproduksi,
+                        tdpa.work_shift,
+                        tdpa.work_hour,
+                        msm.machineno AS nomesin,
+                        tdpa.nomor_han,
+                        mse.employeeno AS nik,
+                        mse.empname AS namapetugas,
+                        msd.NAME AS deptpetugas 
+                    FROM
+                        tdproduct_goods_assembly AS tpga
+                        INNER JOIN tdproduct_assembly AS tdpa ON tdpa.ID = tpga.product_assembly_id
+                        INNER JOIN msmachine AS msm ON msm.ID = tdpa.machine_id
+                        INNER JOIN msemployee AS mse ON mse.ID = tdpa.employee_id
+                        INNER JOIN msDepartment AS msd ON msd.ID = mse.department_id 
+                    ),
+                    lossgoods AS (
+                    SELECT
+                        tpgl.product_goods_id,
+                        msls.code,
+                        msls.NAME AS namaloss,
+                        tpgl.berat_loss 
+                    FROM
+                        tdproduct_goods_loss AS tpgl
+                        INNER JOIN mslossseitai AS msls ON msls.ID = tpgl.loss_seitai_id 
+                    ) SELECT
+                    tdpg.ID,
                     tdpg.production_no AS production_no,
                     tdpg.production_date AS tglproduksi,
                     tdpg.created_on AS tglproses,
@@ -106,7 +135,8 @@ class CheckListSeitaiController extends Component
                     maPetugas.empname AS namapetugas,
                     maPetugas.employeeno AS nikpetugas,
                     maInfure.employeeno AS nikpetugasinfure,
-                    tdpg.work_shift AS shift,
+                    msd.NAME AS deptpetugas,
+                    tdpg.work_shift AS work_shift,
                     tdpg.work_hour AS work_hour,
                     tdpg.machine_id AS machine_id,
                     mm.machineno AS mesinno,
@@ -121,14 +151,30 @@ class CheckListSeitaiController extends Component
                     tdpg.infure_berat_loss AS infure_berat_loss,
                     tdpg.nomor_palet AS nomor_palet,
                     tdpg.nomor_lot AS nomor_lot,
-                    tdpg.seq_no AS noproses
+                    tdpg.seq_no AS noproses,
+                    lossgoods.code,
+                    lossgoods.namaloss,
+                    lossgoods.berat_loss,
+                    goodasy.gentannomor,
+                    goodasy.panjang_produksi,
+                    goodasy.tglproduksi AS tglproduksiasy,
+                    goodasy.work_shift AS work_shiftasy,
+                    goodasy.work_hour AS work_hourasy,
+                    goodasy.nomesin AS nomesinasy,
+                    goodasy.nomor_han,
+                    goodasy.nik AS nikasy,
+                    goodasy.namapetugas AS namapetugasasy,
+                    goodasy.deptpetugas AS deptpetugasasy 
                 FROM
-                    tdproduct_goods AS tdpg
-                    LEFT JOIN tdorderLpk AS tdol ON tdpg.lpk_id = tdol.ID
-                    LEFT JOIN msemployee AS maPetugas ON tdpg.employee_id = maPetugas.ID
-                    LEFT JOIN msemployee AS maInfure ON tdpg.employee_id_infure = maInfure.ID
-                    LEFT JOIN msmachine AS mm ON tdpg.machine_id = mm.ID
-                    LEFT JOIN msproduct AS mp ON tdpg.product_id = mp.ID
+                    tdProduct_Goods AS tdpg
+                    LEFT JOIN goodasy ON tdpg.ID = goodasy.product_goods_id
+                    LEFT JOIN lossgoods ON tdpg.ID = lossgoods.product_goods_id
+                    INNER JOIN tdOrderLpk AS tdol ON tdpg.lpk_id = tdol.
+                    ID INNER JOIN msmachine AS mm ON mm.ID = tdpg.machine_id
+                    INNER JOIN msemployee AS maPetugas ON maPetugas.ID = tdpg.employee_id
+                    LEFT JOIN msemployee AS maInfure ON tdpg.employee_id_infure = maInfure.
+                    ID INNER JOIN msDepartment AS msd ON msd.ID = maPetugas.department_id
+                    INNER JOIN msProduct AS mp ON mp.ID = tdpg.product_id
                 WHERE
                     $filterDate
                     $filterNoproses
