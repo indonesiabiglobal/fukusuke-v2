@@ -250,6 +250,7 @@ class OrderReportController extends Component
             // eta date
             $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, Carbon::parse($item->etadate)->translatedFormat('d-M-Y'));
             phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItemEnd);
+            phpspreadsheet::addFullBorder($spreadsheet, $columnItemStart . $rowItemEnd . ':' . $columnItemEnd . $rowItemEnd);
             $columnItemEnd++;
 
             $rowItemEnd++;
@@ -260,9 +261,9 @@ class OrderReportController extends Component
         // size auto
         $columnSizeStart = $columnItemStart;
         $columnSizeStart++;
-        while ($columnItemStart !== $columnItemEnd) {
-            $spreadsheet->getActiveSheet()->getColumnDimension($columnItemStart)->setAutoSize(true);
-            $columnItemStart++;
+        while ($columnSizeStart !== $columnItemEnd) {
+            $spreadsheet->getActiveSheet()->getColumnDimension($columnSizeStart)->setAutoSize(true);
+            $columnSizeStart++;
         }
 
         $writer = new Xlsx($spreadsheet);
