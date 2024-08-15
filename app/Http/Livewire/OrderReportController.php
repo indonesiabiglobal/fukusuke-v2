@@ -104,8 +104,13 @@ class OrderReportController extends Component
 
         switch ($this->jenisReport) {
             case 'Daftar Order':
-                $file = $this->daftarOrder($tglAwal, $tglAkhir);
-                return response()->download($file);
+                $response = $this->daftarOrder($tglAwal, $tglAkhir);
+                if ($response['status'] == 'success') {
+                    return response()->download($response['filename']);
+                } else if ($response['status'] == 'error') {
+                    $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                    return;
+                }
                 break;
             case 'Daftar Order Per Buyer Per Tipe':
                 $response = $this->daftarPerBuyerPerType($tglAwal, $tglAkhir);
