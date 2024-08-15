@@ -61,8 +61,8 @@
                             <div class="input-group" wire:ignore>
                                 <span class="input-group-addon col-3 fw-bold">Filter:&nbsp;</span>
                                 <select class="form-control" wire:model.defer="filter">
-                                    <option selected value="Tanggal Order">Tanggal Order</option>
-                                    <option value="Tanggal Proses">Tanggal Proses</option>
+                                    <option selected value="Order">Tanggal Order</option>
+                                    <option value="Proses">Tanggal Proses</option>
                                 </select>
                             </div>
                         </div>

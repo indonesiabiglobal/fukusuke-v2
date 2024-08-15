@@ -46,7 +46,7 @@ class OrderReportController extends Component
         $this->workingShiftHour = MsWorkingShift::select('work_hour_from', 'work_hour_till')->where('status', 1)->orderBy('work_hour_from', 'ASC')->get();
         $this->jamAwal = $this->workingShiftHour[0]->work_hour_from;
         $this->jamAkhir = $this->workingShiftHour[count($this->workingShiftHour) - 1]->work_hour_till;
-        $this->filter = 'Tanggal Order';
+        $this->filter = 'Order';
         $this->jenisReport = 'Daftar Order';
     }
 
@@ -162,7 +162,7 @@ class OrderReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('A1', 'ORDER LIST');
-        $activeWorksheet->setCellValue('A2', 'Periode Order: ' . $tglAwal->translatedFormat('d-M-Y H:i') . ' s/d ' . $tglAkhir->translatedFormat('d-M-Y H:i') . ' - Buyer: ' . ($this->buyer_id != null ? MsBuyer::find($this->buyer_id)->name : 'all'));
+        $activeWorksheet->setCellValue('A2', 'Periode ' . $this->filter . ': ' . $tglAwal->translatedFormat('d-M-Y H:i') . ' s/d ' . $tglAkhir->translatedFormat('d-M-Y H:i') . ' - Buyer: ' . ($this->buyer_id != null ? MsBuyer::find($this->buyer_id)->name : 'all'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'A1:A2', true, 11, 'Calibri');
 
@@ -173,11 +173,11 @@ class OrderReportController extends Component
 
         // filter tanggal
         $filterDate = '';
-        if ($this->filter == 'Tanggal Order') {
+        if ($this->filter == 'Order') {
             $fieldDate = 'tod.order_date';
             $filterDate = 'tod.order_date BETWEEN :tglAwal AND :tglAkhir';
             $headerDate = 'Order Date';
-        } else if ($this->filter == 'Tanggal Proses') {
+        } else if ($this->filter == 'Proses') {
             $fieldDate = 'tod.processdate';
             $filterDate = 'tod.processdate BETWEEN :tglAwal AND :tglAkhir';
             $headerDate = 'Process Date';
@@ -337,7 +337,7 @@ class OrderReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('A1', 'ORDER LIST PER TYPE');
-        $activeWorksheet->setCellValue('A2', 'Periode Order: ' . $tglAwal->translatedFormat('d-M-Y  H:i') . ' s/d ' . $tglAkhir->translatedFormat('d-M-Y H:i') . ' - Buyer: ' . ($this->buyer_id != null ? MsBuyer::find($this->buyer_id)->name : 'all'));
+        $activeWorksheet->setCellValue('A2', 'Periode ' . $this->filter . ': ' . $tglAwal->translatedFormat('d-M-Y  H:i') . ' s/d ' . $tglAkhir->translatedFormat('d-M-Y H:i') . ' - Buyer: ' . ($this->buyer_id != null ? MsBuyer::find($this->buyer_id)->name : 'all'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'A1:A2', true, 11, 'Calibri');
 
@@ -348,13 +348,13 @@ class OrderReportController extends Component
 
         // filter tanggal
         $filterDate = '';
-        if ($this->filter == 'Tanggal Order') {
-            $fieldDate = 'tod.order_date';
-            $filterDate = 'tod.order_date BETWEEN :tglAwal AND :tglAkhir';
+        if ($this->filter == 'Order') {
+            $fieldDate = 'a.order_date';
+            $filterDate = 'a.order_date BETWEEN :tglAwal AND :tglAkhir';
             $headerDate = 'Order Date';
-        } else if ($this->filter == 'Tanggal Proses') {
-            $fieldDate = 'tod.processdate';
-            $filterDate = 'tod.processdate BETWEEN :tglAwal AND :tglAkhir';
+        } else if ($this->filter == 'Proses') {
+            $fieldDate = 'a.processdate';
+            $filterDate = 'a.processdate BETWEEN :tglAwal AND :tglAkhir';
             $headerDate = 'Process Date';
         }
 
@@ -381,38 +381,33 @@ class OrderReportController extends Component
         // filter buyer
         $filterBuyer = '';
         if ($this->buyer_id != null) {
-            $filterBuyer = 'AND tod.buyer_id = ' . $this->buyer_id;
+            $filterBuyer = 'AND a.buyer_id = ' . $this->buyer_id;
         }
 
         // query masih belum bener
-        $data = collect(DB::select(
+        $data = DB::select(
             "
                 SELECT
-                    tod.id,
-                    $fieldDate AS field_date,
-                    tod.po_no,
-                    mp.code,
-                    mp.name AS produk_name,
-                    tod.product_code,
-                    tod.order_qty,
-                    tod.order_unit,
-                    tod.stufingdate,
-                    tod.etddate,
-                    tod.etadate,
-                    mbu.NAME AS buyer_name
-                FROM
-                    tdorder AS tod
-                INNER JOIN msproduct AS mp ON mp.id = tod.product_id
-                INNER JOIN msbuyer AS mbu ON mbu.id = tod.buyer_id
+                    MAX(byr.name) AS buyer_name,
+                    MAX(prdType.name) AS product_type_name,
+                    MAX(msProduct_group.name) AS product_group_name,
+                    SUM(a.order_qty) AS order_qty,
+                    SUM(a.order_qty * prd.unit_weight * 0.001) AS order_berat
+                FROM tdOrder AS a
+                INNER JOIN msBuyer AS byr ON a.buyer_id = byr.id
+                INNER JOIN msProduct AS prd ON a.product_id = prd.id
+                INNER JOIN msProduct_type AS prdType ON prd.product_type_id = prdType.id
+                INNER JOIN msProduct_group ON prdType.product_group_id = msProduct_group.id
                 WHERE
-                    $filterDate
-                    $filterBuyer
+                $filterDate
+                $filterBuyer
+                GROUP BY a.buyer_id, prdType.product_group_id, prdType.id;
                 ",
             [
                 'tglAwal' => $tglAwal->format('Y-m-d'),
                 'tglAkhir' => $tglAkhir->format('Y-m-d'),
             ]
-        ));
+        );
 
         if (count($data) == 0) {
             $response = [
@@ -423,69 +418,106 @@ class OrderReportController extends Component
             return $response;
         }
 
-        // $rowItemStart = $rowHeaderStart + 1;
-        // $rowItemEnd = $rowItemStart;
-        // $columnItemStart = 'A';
-        // $columnItemEnd = $columnItemStart;
-        // $iteration = 1;
-        // foreach ($data as $item) {
-        //     $columnItemEnd = $columnItemStart;
-        //     // mo
-        //     $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $iteration);
-        //     phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItemEnd);
-        //     $iteration++;
-        //     $columnItemEnd++;
-        //     // field date
-        //     $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, Carbon::parse($item->field_date)->translatedFormat('d-M-Y'));
-        //     phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItemEnd);
-        //     $columnItemEnd++;
-        //     // po no
-        //     $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $item->po_no);
-        //     $columnItemEnd++;
-        //     // order no
-        //     $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $item->id);
-        //     $columnItemEnd++;
-        //     // product name
-        //     $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $item->produk_name);
-        //     $columnItemEnd++;
-        //     // type code
-        //     $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $item->product_code);
-        //     phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItemEnd);
-        //     $columnItemEnd++;
-        //     // order qty
-        //     $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $item->order_qty);
-        //     phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItemEnd . $rowItemEnd);
-        //     $columnItemEnd++;
-        //     // order unit
-        //     $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $item->order_unit);
-        //     phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItemEnd);
-        //     $columnItemEnd++;
-        //     // stufing date
-        //     $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, Carbon::parse($item->stufingdate)->translatedFormat('d-M-Y'));
-        //     phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItemEnd);
-        //     $columnItemEnd++;
-        //     // etd date
-        //     $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, Carbon::parse($item->etddate)->translatedFormat('d-M-Y'));
-        //     phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItemEnd);
-        //     $columnItemEnd++;
-        //     // eta date
-        //     $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, Carbon::parse($item->etadate)->translatedFormat('d-M-Y'));
-        //     phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItemEnd);
-        //     phpspreadsheet::addFullBorder($spreadsheet, $columnItemStart . $rowItemEnd . ':' . $columnItemEnd . $rowItemEnd);
-        //     $columnItemEnd++;
+        $listBuyer = array_reduce($data, function ($carry, $item) {
+            $carry[$item->buyer_name] = $item->buyer_name;
+            return $carry;
+        }, []);
 
-        //     $rowItemEnd++;
-        // }
+        $listProductGroup = array_reduce($data, function ($carry, $item) {
+            $carry[$item->buyer_name][$item->product_group_name] = $item->product_group_name;
+            return $carry;
+        }, []);
+
+        $dataFilter = array_reduce($data, function ($carry, $item) {
+            $carry[$item->buyer_name][$item->product_group_name][$item->product_type_name] = $item;
+
+            return $carry;
+        }, []);
+
+        $rowItemStart = 4;
+        $rowItem = $rowItemStart;
+        $columnItemStart = 'A';
+        $columnItemBuyer = 'B';
+        $columnItemProductGroup = 'C';
+        $columnItem = 'D';
+        $iteration = 1;
+        foreach ($listBuyer as $buyer) {
+            // no
+            $activeWorksheet->setCellValue($columnItemStart . $rowItem, $iteration);
+            phpspreadsheet::textAlignCenter($spreadsheet, $columnItemBuyer . $rowItem);
+            $iteration++;
+            // buyer
+            $activeWorksheet->setCellValue($columnItemBuyer . $rowItem, $buyer);
+            // phpspreadsheet::textAlignCenter($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            foreach ($listProductGroup[$buyer] as $productGroup) {
+                // product classification
+                $activeWorksheet->setCellValue($columnItemProductGroup . $rowItem, $productGroup);
+                $columnItem++;
+                foreach ($dataFilter[$buyer][$productGroup] as $productType) {
+                    $columnItem = 'D';
+                    // product type
+                    $activeWorksheet->setCellValue($columnItem . $rowItem, $productType->product_type_name);
+                    $columnItem++;
+                    // order qty
+                    $activeWorksheet->setCellValue($columnItem . $rowItem, $productType->order_qty);
+                    phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
+                    $columnItem++;
+                    // order weight
+                    $activeWorksheet->setCellValue($columnItem . $rowItem, $productType->order_berat);
+                    phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
+                    phpspreadsheet::addFullBorder($spreadsheet, $columnItemStart . $rowItem . ':' . $columnItem . $rowItem);
+                    $columnItem++;
+
+                    $rowItem++;
+                }
+            }
+            // total
+            $rowGrandTotal = $rowItem;
+            $spreadsheet->getActiveSheet()->mergeCells('B' . $rowGrandTotal . ':D' . $rowGrandTotal);
+            $activeWorksheet->setCellValue('B' . $rowGrandTotal, 'Total');
+            $columnItem = 'E';
+            $activeWorksheet->setCellValue($columnItem . $rowGrandTotal, '=SUM(E' . $rowItemStart . ':E' . ($rowItem - 1) . ')');
+            phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowGrandTotal);
+            $columnItem++;
+            $activeWorksheet->setCellValue($columnItem . $rowGrandTotal, '=SUM(F' . $rowItemStart . ':F' . ($rowItem - 1) . ')');
+            phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowGrandTotal);
+            phpspreadsheet::addFullBorder($spreadsheet, 'B' . $rowGrandTotal . ':' . $columnItem . $rowGrandTotal);
+            $columnItem++;
+
+            $rowItem++;
+            $rowItem++;
+        }
+
+        // total
+        $rowGrandTotal = $rowItem;
+        $spreadsheet->getActiveSheet()->mergeCells('A' . $rowGrandTotal . ':D' . $rowGrandTotal);
+        $activeWorksheet->setCellValue('A' . $rowGrandTotal, 'Grand Total');
+        $columnItem = 'E';
+        $grandTotalOrderQuantity = array_reduce($data, function ($carry, $item) {
+            $carry += $item->order_qty;
+            return $carry;
+        }, 0);
+        $activeWorksheet->setCellValue($columnItem . $rowGrandTotal, $grandTotalOrderQuantity);
+        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        $grandTotalOrderWeight = array_reduce($data, function ($carry, $item) {
+            $carry += $item->order_qty * $item->order_berat;
+            return $carry;
+        }, 0);
+        $activeWorksheet->setCellValue($columnItem . $rowGrandTotal, $grandTotalOrderWeight);
+        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
 
         $activeWorksheet->getStyle($columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart)->getAlignment()->setWrapText(true);
 
         // size auto
-        // $columnSizeStart = $columnItemStart;
-        // $columnSizeStart++;
-        // while ($columnSizeStart !== $columnItemEnd) {
-        //     $spreadsheet->getActiveSheet()->getColumnDimension($columnSizeStart)->setAutoSize(true);
-        //     $columnSizeStart++;
-        // }
+        $columnSizeStart = $columnItemStart;
+        $columnSizeStart++;
+        while ($columnSizeStart !== $columnHeaderEnd) {
+            $spreadsheet->getActiveSheet()->getColumnDimension($columnSizeStart)->setAutoSize(true);
+            $columnSizeStart++;
+        }
 
         $writer = new Xlsx($spreadsheet);
         $filename = $this->jenisReport . '.xlsx';
@@ -978,7 +1010,7 @@ class OrderReportController extends Component
 
         // second header
         $activeWorksheet->setCellValue($columnHeaderProgressMeter . $rowHeaderStart, 'INFURE PROGRESS (Meter)');
-        $spreadsheet->getActiveSheet()->mergeCells($columnHeaderProgressMeter . $rowHeaderStart . ':O' . $rowHeaderStart );
+        $spreadsheet->getActiveSheet()->mergeCells($columnHeaderProgressMeter . $rowHeaderStart . ':O' . $rowHeaderStart);
         $activeWorksheet->setCellValue($columnHeaderProgressPcs . $rowHeaderStart, 'INFURE PROGRESS (Meter)');
         $spreadsheet->getActiveSheet()->mergeCells($columnHeaderProgressPcs . $rowHeaderStart . ':S' . $rowHeaderStart);
 
