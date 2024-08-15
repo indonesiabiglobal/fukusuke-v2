@@ -59,10 +59,13 @@
                     <div class="col-12">
                         <div class="form-group">
                             <div class="input-group" wire:ignore>
-                                <span class="input-group-addon col-3 fw-bold">Filter:&nbsp;</span>
+                                <span class="input-group-addon col-3 fw-bold">Filter {{ $jenisReport }}:&nbsp;</span>
                                 <select class="form-control" wire:model.defer="filter">
-                                    <option selected value="Order">Tanggal Order</option>
+                                    <option selected="selected" value="Order">Tanggal Order</option>
                                     <option value="Proses">Tanggal Proses</option>
+                                    @if ($jenisReport == 'CheckList LPK')
+                                        <option value="LPK">Tanggal LPK</option>
+                                    @endif
                                 </select>
                             </div>
                         </div>
@@ -86,9 +89,9 @@
                 <div class="form-group mt-1">
                     <div class="col-12">
                         <div class="form-group">
-                            <div class="input-group" wire:ignore>
+                            <div class="input-group">
                                 <span class="input-group-addon col-3 fw-bold">Jenis Report</span>
-                                <select class="form-control" wire:model.defer="jenisReport">
+                                <select class="form-control" wire:model.live="jenisReport">
                                     <option value="Daftar Order" selected>Daftar Order</option>
                                     <option value="Daftar Order Per Buyer Per Tipe">Daftar Order Per Buyer Per Tipe
                                     </option>
