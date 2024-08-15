@@ -129,9 +129,22 @@ class OrderReportController extends Component
         $rowHeaderStart = 3;
         $columnHeaderStart = 'A';
         $columnHeaderEnd = 'A';
+
+        // filter tanggal
+        $filterDate = '';
+        if ($this->filter == 'Tanggal Order') {
+            $fieldDate = 'tod.order_date';
+            $filterDate = 'tod.order_date BETWEEN :tglAwal AND :tglAkhir';
+            $headerDate = 'Order Date';
+        } else if ($this->filter == 'Tanggal Proses') {
+            $fieldDate = 'tod.processdate';
+            $filterDate = 'tod.processdate BETWEEN :tglAwal AND :tglAkhir';
+            $headerDate = 'Process Date';
+        }
+
         $header = [
             'No',
-            'Order Data',
+            $headerDate,
             'PO Number',
             'Order No',
             'Product Name',
@@ -154,30 +167,103 @@ class OrderReportController extends Component
         phpspreadsheet::styleFont($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart, true, 9, 'Calibri');
         phpspreadsheet::textAlignCenter($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
 
-        $data = collect(DB::select("
-            SELECT
-                tod.id,
-                tod.order_date,
-                tod.po_no,
-                mp.code,
-                mp.name AS produk_name,
-                tod.product_code,
-                tod.order_qty,
-                tod.order_unit,
-                tod.stufingdate,
-                tod.etddate,
-                tod.etadate,
-                mbu.NAME AS buyer_name
-            FROM
-                tdorder AS tod
-            INNER JOIN msproduct AS mp ON mp.id = tod.product_id
-            INNER JOIN msbuyer AS mbu ON mbu.id = tod.buyer_id
-            "));
-        // $tglMasuk
-        // $tglKeluar
-        // $buyer_id
+        // filter buyer
+        $filterBuyer = '';
+        if ($this->buyer_id != null) {
+            $filterBuyer = 'AND tod.buyer_id = '. $this->buyer_id;
+        }
+
+        $data = collect(DB::select(
+            "
+                SELECT
+                    tod.id,
+                    $fieldDate AS field_date,
+                    tod.po_no,
+                    mp.code,
+                    mp.name AS produk_name,
+                    tod.product_code,
+                    tod.order_qty,
+                    tod.order_unit,
+                    tod.stufingdate,
+                    tod.etddate,
+                    tod.etadate,
+                    mbu.NAME AS buyer_name
+                FROM
+                    tdorder AS tod
+                INNER JOIN msproduct AS mp ON mp.id = tod.product_id
+                INNER JOIN msbuyer AS mbu ON mbu.id = tod.buyer_id
+                WHERE
+                    $filterDate
+                    $filterBuyer
+                ",
+            [
+                'tglAwal' => $tglAwal->format('Y-m-d'),
+                'tglAkhir' => $tglAkhir->format('Y-m-d'),
+            ]
+        ));
+
+        $rowItemStart = $rowHeaderStart + 1;
+        $rowItemEnd = $rowItemStart;
+        $columnItemStart = 'A';
+        $columnItemEnd = $columnItemStart;
+        $iteration = 1;
+        foreach ($data as $item) {
+            $columnItemEnd = $columnItemStart;
+            // mo
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $iteration );
+            phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItemEnd);
+            $iteration++;
+            $columnItemEnd++;
+            // field date
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, Carbon::parse($item->field_date)->translatedFormat('d-M-Y'));
+            phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItemEnd);
+            $columnItemEnd++;
+            // po no
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $item->po_no);
+            $columnItemEnd++;
+            // order no
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $item->id);
+            $columnItemEnd++;
+            // product name
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $item->produk_name);
+            $columnItemEnd++;
+            // type code
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $item->product_code);
+            phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItemEnd);
+            $columnItemEnd++;
+            // order qty
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $item->order_qty);
+            phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItemEnd . $rowItemEnd);
+            $columnItemEnd++;
+            // order unit
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $item->order_unit);
+            phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItemEnd);
+            $columnItemEnd++;
+            // stufing date
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, Carbon::parse($item->stufingdate)->translatedFormat('d-M-Y'));
+            phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItemEnd);
+            $columnItemEnd++;
+            // etd date
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, Carbon::parse($item->etddate)->translatedFormat('d-M-Y'));
+            phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItemEnd);
+            $columnItemEnd++;
+            // eta date
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, Carbon::parse($item->etadate)->translatedFormat('d-M-Y'));
+            phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItemEnd);
+            $columnItemEnd++;
+
+            $rowItemEnd++;
+        }
 
         $activeWorksheet->getStyle($columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart)->getAlignment()->setWrapText(true);
+
+        // size auto
+        $columnSizeStart = $columnItemStart;
+        $columnSizeStart++;
+        while ($columnItemStart !== $columnItemEnd) {
+            $spreadsheet->getActiveSheet()->getColumnDimension($columnItemStart)->setAutoSize(true);
+            $columnItemStart++;
+        }
 
         $writer = new Xlsx($spreadsheet);
         $filename = 'Order-List.xlsx';
