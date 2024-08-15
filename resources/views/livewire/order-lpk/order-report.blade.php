@@ -36,7 +36,8 @@
                             <div class="input-group">
                                 <span class="input-group-addon col-3 fw-bold">Akhir: </span>
                                 <input wire:model.defer="tglAkhir" type="text" class="form-control"
-                                    style="padding:0.44rem" data-provider="flatpickr" data-date-format="Y-m-d" data-maxDate={{ now() }}>
+                                    style="padding:0.44rem" data-provider="flatpickr" data-date-format="Y-m-d"
+                                    data-maxDate={{ now() }}>
                                 <span class="input-group-text py-0">
                                     <i class="ri-calendar-event-fill fs-4"></i>
                                 </span>
@@ -58,11 +59,29 @@
                 <div class="form-group mt-1">
                     <div class="col-12">
                         <div class="form-group">
-                            <div class="input-group" wire:ignore>
-                                <span class="input-group-addon col-3 fw-bold">Filter:&nbsp;</span>
+                            <div class="input-group">
+                                <span class="input-group-addon col-3 fw-bold">Jenis Report</span>
+                                <select class="form-control" wire:model.live="jenisReport">
+                                    <option value="Daftar Order" selected>Daftar Order</option>
+                                    <option value="Daftar Order Per Buyer Per Tipe">Daftar Order Per Buyer Per Tipe
+                                    </option>
+                                    <option value="CheckList Order">CheckList Order</option>
+                                    <option value="CheckList LPK">CheckList LPK</option>
+                                    <option value="Progress Order">Progress Order</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group mt-1">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <span class="input-group-addon col-3 fw-bold">Filter {{ $jenisReport }}:&nbsp;</span>
                                 <select class="form-control" wire:model.defer="filter">
-                                    <option selected value="Order">Tanggal Order</option>
+                                    <option selected="selected" value="Order">Tanggal Order</option>
                                     <option value="Proses">Tanggal Proses</option>
+                                    <option value="LPK">Tanggal LPK</option>
                                 </select>
                             </div>
                         </div>
@@ -78,23 +97,6 @@
                                     @foreach ($buyer as $item)
                                         <option value="{{ $item->id }}">{{ $item->name }}</option>
                                     @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group mt-1">
-                    <div class="col-12">
-                        <div class="form-group">
-                            <div class="input-group" wire:ignore>
-                                <span class="input-group-addon col-3 fw-bold">Jenis Report</span>
-                                <select class="form-control" wire:model.defer="jenisReport">
-                                    <option value="Daftar Order" selected>Daftar Order</option>
-                                    <option value="Daftar Order Per Buyer Per Tipe">Daftar Order Per Buyer Per Tipe
-                                    </option>
-                                    <option value="CheckList Order">CheckList Order</option>
-                                    <option value="CheckList LPK">CheckList LPK</option>
-                                    <option value="Progress Order">Progress Order</option>
                                 </select>
                             </div>
                         </div>
