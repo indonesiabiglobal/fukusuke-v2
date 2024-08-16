@@ -69,7 +69,9 @@
                     <div class="collapse menu-dropdown" id="orderlpk">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="order-lpk" class="nav-link" data-key="t-order-lpk"> Order Entry </a>
+                                <a href="order-lpk" class="nav-link" data-key="t-order-lpk" 
+                                {{-- onclick="return confirm('Are you sure you want to proceed to Order Entry?');" --}}
+                                > Order Entry </a>
                             </li>
                             <li class="nav-item">
                                 <a href="lpk-entry" class="nav-link" data-key="t-lpk-entry"> LPK Entry </a>
