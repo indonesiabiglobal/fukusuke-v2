@@ -1403,8 +1403,8 @@ class OrderReportController extends Component
             $columnItem++;
 
             $rowItemEnd++;
+            $rowItemEnd++;
         }
-        $rowItemEnd++;
 
         // Grand Total
         $spreadsheet->getActiveSheet()->mergeCells('A' . $rowItemEnd . ':G' . $rowItemEnd);
