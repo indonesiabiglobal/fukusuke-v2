@@ -43,6 +43,7 @@ class OrderReportController extends Component
         $this->tglAwal = Carbon::now()->format('Y-m-d');
         $this->tglAkhir = Carbon::now()->format('Y-m-d');
         $this->buyer = MsBuyer::get();
+        dd($this->buyer);
         $this->workingShiftHour = MsWorkingShift::select('work_hour_from', 'work_hour_till')->where('status', 1)->orderBy('work_hour_from', 'ASC')->get();
         $this->jamAwal = $this->workingShiftHour[0]->work_hour_from;
         $this->jamAkhir = $this->workingShiftHour[count($this->workingShiftHour) - 1]->work_hour_till;
@@ -62,38 +63,6 @@ class OrderReportController extends Component
 
     public function export()
     {
-        $rules = [
-            'tglAwal' => 'required',
-            'tglAkhir' => 'required',
-            'jamAwal' => 'required',
-            'jamAkhir' => 'required',
-            'filter' => 'required',
-            'jenisReport' => 'required',
-        ];
-
-        $messages = [
-            'tglAwal.required' => 'Tanggal Awal tidak boleh kosong',
-            'tglAkhir.required' => 'Tanggal Akhir tidak boleh kosong',
-            'jamAwal.required' => 'Jam Awal tidak boleh kosong',
-            'jamAkhir.required' => 'Jam Akhir tidak boleh kosong',
-            'filter.required' => 'Filter tidak boleh kosong',
-            'jenisReport.required' => 'Jenis Report tidak boleh kosong',
-        ];
-
-        $validate = Validator::make([
-            'tglAwal' => $this->tglAwal,
-            'tglAkhir' => $this->tglAkhir,
-            'jamAwal' => $this->jamAwal,
-            'jamAkhir' => $this->jamAkhir,
-            'filter' => $this->filter,
-            'jenisReport' => $this->jenisReport,
-        ], $rules, $messages);
-
-        if ($validate->fails()) {
-            $this->dispatch('notification', ['type' => 'warning', 'message' => $validate->errors()->first()]);
-            return;
-        }
-
         if ($this->tglAwal > $this->tglAkhir) {
             $this->dispatch('notification', ['type' => 'warning', 'message' => 'Tanggal akhir tidak boleh kurang dari tanggal awal']);
             return;
@@ -1082,19 +1051,23 @@ class OrderReportController extends Component
 
         // filter tanggal
         $filterDate = '';
-        if ($this->filter == 'Tanggal Order') {
-            $fieldDate = 'tod.order_date';
-            $filterDate = 'tod.order_date BETWEEN :tglAwal AND :tglAkhir';
+        if ($this->filter == 'Order') {
+            $fieldDate = 'ord.order_date as filter_date';
+            $filterDate = 'ord.order_date BETWEEN :tglAwal AND :tglAkhir';
             $headerDate = 'Order Date';
-        } else if ($this->filter == 'Tanggal Proses') {
-            $fieldDate = 'tod.processdate';
-            $filterDate = 'tod.processdate BETWEEN :tglAwal AND :tglAkhir';
+        } else if ($this->filter == 'Proses') {
+            $fieldDate = 'ord.processdate as filter_date';
+            $filterDate = 'ord.processdate BETWEEN :tglAwal AND :tglAkhir';
             $headerDate = 'Process Date';
+        } else if ($this->filter == 'LPK') {
+            $fieldDate = 'lpk.lpk_date as filter_date';
+            $filterDate = 'lpk.lpk_date BETWEEN :tglAwal AND :tglAkhir';
+            $headerDate = 'LPK Date';
         }
 
         $header = [
             'No',
-            'Daftar Date',
+            $headerDate,
             'PO Number',
             'Stufing Date',
             'ETD',
@@ -1105,11 +1078,6 @@ class OrderReportController extends Component
             'LPK Quantity (pcs)',
             'LPK Quantity (meter)',
         ];
-
-        // $headerProgressFirst = [
-        //     'INFURE PROGRESS (Meter)',
-        //     'INFURE PROGRESS (Pcs)',
-        // ];
 
         $headerProgressSecond = [
             'Production Total',
@@ -1152,29 +1120,61 @@ class OrderReportController extends Component
         // filter buyer
         $filterBuyer = '';
         if ($this->buyer_id != null) {
-            $filterBuyer = 'AND tod.buyer_id = ' . $this->buyer_id;
+            $filterBuyer = 'AND ord.buyer_id = ' . $this->buyer_id;
         }
 
         // query belum benar
-        $data = collect(DB::select(
+        $data = DB::select(
             "
                 SELECT
-                    tod.id,
-                    $fieldDate AS field_date,
-                    tod.po_no,
-                    mp.code,
-                    mp.name AS produk_name,
-                    tod.product_code,
-                    tod.order_qty,
-                    tod.order_unit,
-                    tod.stufingdate,
-                    tod.etddate,
-                    tod.etadate,
-                    mbu.NAME AS buyer_name
-                FROM
-                    tdorder AS tod
-                INNER JOIN msproduct AS mp ON mp.id = tod.product_id
-                INNER JOIN msbuyer AS mbu ON mbu.id = tod.buyer_id
+                    byr.id AS buyer_id,
+                    byr.name AS buyer_name,
+                    $fieldDate,
+                    ord.order_date,
+                    ord.po_no,
+                    ord.stufingdate,
+                    ord.etddate,
+                    ord.etadate,
+                    prd.code AS product_code,
+                    prd.name AS product_name,
+                    ord.order_qty,
+                    ord.order_qty * prd.unit_weight * 0.001 AS order_berat,
+                    lpk.lpk_no,
+                    lpk.qty_lpk,
+                    lpk.lpk_date,
+                    lpk.panjang_lpk,
+                    lpk.total_assembly_line,
+                    lpk.total_assembly_qty,
+                    COALESCE(asy.panjang_produksi, 0) AS panjang_produksi,
+                    COALESCE(asy.kenpin_meter_loss, 0) AS kenpin_meter_loss,
+                    COALESCE(asy.kenpin_meter_loss_proses, 0) AS kenpin_meter_loss_proses,
+                    COALESCE(gds.qty_produksi, 0) AS qty_produksi,
+                    COALESCE(gds.kenpin_qty_loss, 0) AS kenpin_qty_loss,
+                    COALESCE(gds.kenpin_qty_loss_proses, 0) AS kenpin_qty_loss_proses
+                FROM tdOrder AS ord
+                INNER JOIN tdOrderLPK AS lpk ON ord.id = lpk.order_id
+                CROSS JOIN LATERAL
+                (
+                    SELECT
+                        SUM(panjang_produksi) AS panjang_produksi,
+                        SUM(kenpin_meter_loss) AS kenpin_meter_loss,
+                        SUM(kenpin_meter_loss_proses) AS kenpin_meter_loss_proses
+                    FROM tdProduct_Assembly AS asyx
+                    WHERE lpk.id = asyx.lpk_id
+                ) asy
+                LEFT JOIN LATERAL
+                (
+                    SELECT
+                        SUM(qty_produksi) AS qty_produksi,
+                        SUM(kenpin_qty_loss) AS kenpin_qty_loss,
+                        SUM(kenpin_qty_loss_proses) AS kenpin_qty_loss_proses
+                    FROM tdProduct_Goods AS gdsx
+                    WHERE lpk.id = gdsx.lpk_id
+                ) gds ON TRUE
+                INNER JOIN msBuyer AS byr ON ord.buyer_id = byr.id
+                INNER JOIN msProduct AS prd ON ord.product_id = prd.id
+                INNER JOIN msProduct_type AS prdType ON prd.product_type_id = prdType.id
+                INNER JOIN msProduct_group ON prdType.product_group_id = msProduct_group.id
                 WHERE
                     $filterDate
                     $filterBuyer
@@ -1183,7 +1183,7 @@ class OrderReportController extends Component
                 'tglAwal' => $tglAwal->format('Y-m-d'),
                 'tglAkhir' => $tglAkhir->format('Y-m-d'),
             ]
-        ));
+        );
 
         if (count($data) == 0) {
             $response = [
@@ -1194,69 +1194,333 @@ class OrderReportController extends Component
             return $response;
         }
 
-        // $rowItemStart = $rowHeaderStart + 1;
-        // $rowItemEnd = $rowItemStart;
-        // $columnItemStart = 'A';
-        // $columnItemEnd = $columnItemStart;
-        // $iteration = 1;
-        // foreach ($data as $item) {
-        //     $columnItemEnd = $columnItemStart;
-        //     // mo
-        //     $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $iteration);
-        //     phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItemEnd);
-        //     $iteration++;
-        //     $columnItemEnd++;
-        //     // field date
-        //     $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, Carbon::parse($item->field_date)->translatedFormat('d-M-Y'));
-        //     phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItemEnd);
-        //     $columnItemEnd++;
-        //     // po no
-        //     $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $item->po_no);
-        //     $columnItemEnd++;
-        //     // order no
-        //     $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $item->id);
-        //     $columnItemEnd++;
-        //     // product name
-        //     $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $item->produk_name);
-        //     $columnItemEnd++;
-        //     // type code
-        //     $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $item->product_code);
-        //     phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItemEnd);
-        //     $columnItemEnd++;
-        //     // order qty
-        //     $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $item->order_qty);
-        //     phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItemEnd . $rowItemEnd);
-        //     $columnItemEnd++;
-        //     // order unit
-        //     $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $item->order_unit);
-        //     phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItemEnd);
-        //     $columnItemEnd++;
-        //     // stufing date
-        //     $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, Carbon::parse($item->stufingdate)->translatedFormat('d-M-Y'));
-        //     phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItemEnd);
-        //     $columnItemEnd++;
-        //     // etd date
-        //     $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, Carbon::parse($item->etddate)->translatedFormat('d-M-Y'));
-        //     phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItemEnd);
-        //     $columnItemEnd++;
-        //     // eta date
-        //     $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, Carbon::parse($item->etadate)->translatedFormat('d-M-Y'));
-        //     phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItemEnd);
-        //     phpspreadsheet::addFullBorder($spreadsheet, $columnItemStart . $rowItemEnd . ':' . $columnItemEnd . $rowItemEnd);
-        //     $columnItemEnd++;
+        $listBuyer = array_reduce($data, function ($carry, $item) {
+            $carry[$item->buyer_id] = $item->buyer_name;
+            return $carry;
+        }, []);
 
-        //     $rowItemEnd++;
-        // }
+        $listPoNo = array_reduce($data, function ($carry, $item) {
+            $carry[$item->buyer_id][$item->po_no] = [
+                'filter_date' => $item->filter_date,
+                'po_no' => $item->po_no,
+                'stufingdate' => $item->stufingdate,
+                'etddate' => $item->etddate,
+                'product_code' => $item->product_code,
+                'product_name' => $item->product_name,
+                'order_qty' => $item->order_qty,
+                'order_berat' => $item->order_berat,
+            ];
+            return $carry;
+        }, []);
+
+        $dataFilter = array_reduce($data, function ($carry, $item) {
+            $carry[$item->buyer_id][$item->po_no][$item->lpk_no] = $item;
+            return $carry;
+        }, []);
+
+        $rowItemStart = 5;
+        $rowItemEnd = $rowItemStart;
+        $columnItemStart = 'A';
+        $columnLPKStart = 'I';
+        $columnLProgresstart = 'I';
+        $columnMergeLPKStart = 'B';
+        $columnMergeLPKEnd = 'H';
+        #R
+        $columnItemEnd = $columnItemStart;
+        foreach ($listBuyer as $buyerId => $buyerName) {
+            $iteration = 1;
+            $columnItemEnd = $columnItemStart;
+            $spreadsheet->getActiveSheet()->mergeCells('A' . $rowItemEnd . ':S' . $rowItemEnd);
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $buyerName);
+            phpspreadsheet::styleFont($spreadsheet, $columnItemEnd . $rowItemEnd, true, 9, 'Calibri');
+            $rowItemEnd++;
+            foreach ($listPoNo[$buyerId] as $poNo => $itemPO) {
+                $columnItemEnd = $columnItemStart;
+                // no
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $iteration);
+                phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItemEnd);
+                $iteration++;
+                $columnItemEnd++;
+                // filter date
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, Carbon::parse($itemPO['filter_date'])->translatedFormat('d-M-Y'));
+                phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItemEnd);
+                $columnItemEnd++;
+                // po no
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $itemPO['po_no']);
+                $columnItemEnd++;
+                // stufing date
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, Carbon::parse($itemPO['stufingdate'])->translatedFormat('d-M-Y'));
+                phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItemEnd);
+                $columnItemEnd++;
+                // etd date
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, Carbon::parse($itemPO['etddate'])->translatedFormat('d-M-Y'));
+                phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItemEnd);
+                $columnItemEnd++;
+                // order no
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $itemPO['product_code']);
+                $columnItemEnd++;
+                // product name
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $itemPO['product_name']);
+                $columnItemEnd++;
+                // order qty
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $itemPO['order_qty']);
+                phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItemEnd . $rowItemEnd);
+                $columnItemEnd++;
+
+                $skipIteration = true;
+
+                // LPK
+                $dataItem = $dataFilter[$buyerId][$poNo];
+                foreach ($dataItem as $item) {
+                    $columnItemEnd = $columnLPKStart;
+                    // $rowItemEnd++;
+                    // no
+                    if (!$skipIteration) {
+                        $activeWorksheet->setCellValue($columnItemStart . $rowItemEnd, $iteration);
+                        phpspreadsheet::textAlignCenter($spreadsheet, $columnItemStart . $rowItemEnd);
+                        $iteration++;
+
+                        // merge cell
+                        $spreadsheet->getActiveSheet()->mergeCells($columnMergeLPKStart . $rowItemEnd . ':' . $columnMergeLPKEnd . $rowItemEnd);
+                    }
+                    $skipIteration = false;
+                    // lpk no
+                    $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $item->lpk_no);
+                    $columnItemEnd++;
+                    // lpk qty
+                    $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $item->qty_lpk);
+                    phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItemEnd . $rowItemEnd);
+                    $columnItemEnd++;
+                    // lpk meter
+                    $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $item->total_assembly_line);
+                    phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItemEnd . $rowItemEnd);
+                    $columnItemEnd++;
+                    /**
+                     * INFURE PROGRESS (Meter)
+                     */
+                    // production total
+                    $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $item->panjang_produksi);
+                    phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItemEnd . $rowItemEnd);
+                    $columnItemEnd++;
+                    // kenpin on process
+                    $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $item->kenpin_meter_loss_proses);
+                    phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItemEnd . $rowItemEnd);
+                    $columnItemEnd++;
+                    // kenpin loss
+                    $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $item->kenpin_meter_loss);
+                    phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItemEnd . $rowItemEnd);
+                    $columnItemEnd++;
+                    // product ready
+                    $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $item->panjang_produksi);
+                    phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItemEnd . $rowItemEnd);
+                    $columnItemEnd++;
+
+                    /**
+                     * SEITAI PROGRESS (PCS)
+                     */
+                    // production total
+                    $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $item->qty_produksi);
+                    phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItemEnd . $rowItemEnd);
+                    $columnItemEnd++;
+                    // kenpin on process
+                    $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $item->kenpin_qty_loss_proses);
+                    phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItemEnd . $rowItemEnd);
+                    $columnItemEnd++;
+                    // kenpin loss
+                    $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $item->kenpin_qty_loss);
+                    phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItemEnd . $rowItemEnd);
+                    $columnItemEnd++;
+                    // product ready
+                    $activeWorksheet->setCellValue($columnItemEnd . $rowItemEnd, $item->qty_produksi);
+                    phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItemEnd . $rowItemEnd);
+                    phpspreadsheet::addFullBorder($spreadsheet, $columnItemStart . $rowItemEnd . ':' . $columnItemEnd . $rowItemEnd);
+                    $columnItemEnd++;
+
+                    phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItemEnd . ':' . $columnItemEnd . $rowItemEnd, false, 8, 'Calibri');
+                    $rowItemEnd++;
+                }
+            }
+
+            // Total
+            $spreadsheet->getActiveSheet()->mergeCells('A' . $rowItemEnd . ':G' . $rowItemEnd);
+            $activeWorksheet->setCellValue('A' . $rowItemEnd, 'Total');
+            $columnItem = 'H';
+            // total order qty
+            $activeWorksheet->setCellValue($columnItem . $rowItemEnd, '=SUM(H' . $rowItemStart . ':H' . ($rowItemEnd - 1) . ')');
+            phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItemEnd);
+            $columnItem++;
+            $columnItem++;
+
+            // total LPK qty
+            $activeWorksheet->setCellValue($columnItem . $rowItemEnd, '=SUM(J' . $rowItemStart . ':J' . ($rowItemEnd - 1) . ')');
+            phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItemEnd);
+            $columnItem++;
+            // total LPK meter
+            $activeWorksheet->setCellValue($columnItem . $rowItemEnd, '=SUM(K' . $rowItemStart . ':K' . ($rowItemEnd - 1) . ')');
+            phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItemEnd);
+            $columnItem++;
+
+            /**
+             * INFURE PROGRESS (Meter)
+             */
+            // production total
+            $activeWorksheet->setCellValue($columnItem . $rowItemEnd, '=SUM('.$columnItem . $rowItemStart . ':'. $columnItem . ($rowItemEnd - 1) . ')');
+            phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItemEnd);
+            $columnItem++;
+            // kenpin on process
+            $activeWorksheet->setCellValue($columnItem . $rowItemEnd, '=SUM('.$columnItem . $rowItemStart . ':'. $columnItem . ($rowItemEnd - 1) . ')');
+            phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItemEnd);
+            $columnItem++;
+            // kenpin loss
+            $activeWorksheet->setCellValue($columnItem . $rowItemEnd, '=SUM('.$columnItem . $rowItemStart . ':'. $columnItem . ($rowItemEnd - 1) . ')');
+            phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItemEnd);
+            $columnItem++;
+            // product ready
+            $activeWorksheet->setCellValue($columnItem . $rowItemEnd, '=SUM('.$columnItem . $rowItemStart . ':'. $columnItem . ($rowItemEnd - 1) . ')');
+            phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItemEnd);
+            $columnItem++;
+
+            /**
+             * SEITAI PROGRESS (PCS)
+             */
+            // production total
+            $activeWorksheet->setCellValue($columnItem . $rowItemEnd, '=SUM('.$columnItem . $rowItemStart . ':'. $columnItem . ($rowItemEnd - 1) . ')');
+            phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItemEnd);
+            $columnItem++;
+            // kenpin on process
+            $activeWorksheet->setCellValue($columnItem . $rowItemEnd, '=SUM('.$columnItem . $rowItemStart . ':'. $columnItem . ($rowItemEnd - 1) . ')');
+            phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItemEnd);
+            $columnItem++;
+            // kenpin loss
+            $activeWorksheet->setCellValue($columnItem . $rowItemEnd, '=SUM('.$columnItem . $rowItemStart . ':'. $columnItem . ($rowItemEnd - 1) . ')');
+            phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItemEnd);
+            $columnItem++;
+            // product ready
+            $activeWorksheet->setCellValue($columnItem . $rowItemEnd, '=SUM('.$columnItem . $rowItemStart . ':'. $columnItem . ($rowItemEnd - 1) . ')');
+            phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItemEnd);
+            phpspreadsheet::addFullBorder($spreadsheet, 'A' . $rowItemEnd . ':' . $columnItem . $rowItemEnd);
+            phpspreadsheet::styleFont($spreadsheet, 'A' . $rowItemEnd . ':' . $columnItem . $rowItemEnd, true, 9, 'Calibri');
+            $columnItem++;
+
+            $rowItemEnd++;
+        }
+        $rowItemEnd++;
+
+        // Grand Total
+        $spreadsheet->getActiveSheet()->mergeCells('A' . $rowItemEnd . ':G' . $rowItemEnd);
+        $activeWorksheet->setCellValue('A' . $rowItemEnd, 'Grand Total');
+
+        $columnItem = 'H';
+        // total order qty
+        $totalOrderQty = array_reduce($data, function ($carry, $item) {
+            $carry += $item->order_qty;
+            return $carry;
+        }, 0);
+        $activeWorksheet->setCellValue($columnItem . $rowItemEnd, $totalOrderQty);
+        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItemEnd);
+        $columnItem++;
+        $columnItem++;
+
+        // total LPK qty
+        $totalLPKQty = array_reduce($data, function ($carry, $item) {
+            $carry += $item->qty_lpk;
+            return $carry;
+        }, 0);
+        $activeWorksheet->setCellValue($columnItem . $rowItemEnd, $totalLPKQty);
+        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItemEnd);
+        $columnItem++;
+        // total LPK meter
+        $totalLPKMeter = array_reduce($data, function ($carry, $item) {
+            $carry += $item->total_assembly_line;
+            return $carry;
+        }, 0);
+        $activeWorksheet->setCellValue($columnItem . $rowItemEnd, $totalLPKMeter);
+        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItemEnd);
+        $columnItem++;
+
+        /**
+         * INFURE PROGRESS (Meter)
+         */
+        // production total
+        $totalProductionTotal = array_reduce($data, function ($carry, $item) {
+            $carry += $item->panjang_produksi;
+            return $carry;
+        }, 0);
+        $activeWorksheet->setCellValue($columnItem . $rowItemEnd, $totalProductionTotal);
+        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItemEnd);
+        $columnItem++;
+        // kenpin on process
+        $totalKenpinOnProcess = array_reduce($data, function ($carry, $item) {
+            $carry += $item->kenpin_meter_loss_proses;
+            return $carry;
+        }, 0);
+        $activeWorksheet->setCellValue($columnItem . $rowItemEnd, $totalKenpinOnProcess);
+        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItemEnd);
+        $columnItem++;
+        // kenpin loss
+        $totalKenpinLoss = array_reduce($data, function ($carry, $item) {
+            $carry += $item->kenpin_meter_loss;
+            return $carry;
+        }, 0);
+        $activeWorksheet->setCellValue($columnItem . $rowItemEnd, $totalKenpinLoss);
+        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItemEnd);
+        $columnItem++;
+        // product ready
+        $totalProductReady = array_reduce($data, function ($carry, $item) {
+            $carry += $item->panjang_produksi;
+            return $carry;
+        }, 0);
+        $activeWorksheet->setCellValue($columnItem . $rowItemEnd, $totalProductReady);
+        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItemEnd);
+        $columnItem++;
+
+        /**
+         * SEITAI PROGRESS (PCS)
+         */
+        // production total
+        $totalProductionTotal = array_reduce($data, function ($carry, $item) {
+            $carry += $item->qty_produksi;
+            return $carry;
+        }, 0);
+        $activeWorksheet->setCellValue($columnItem . $rowItemEnd, $totalProductionTotal);
+        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItemEnd);
+        $columnItem++;
+        // kenpin on process
+        $totalKenpinOnProcess = array_reduce($data, function ($carry, $item) {
+            $carry += $item->kenpin_qty_loss_proses;
+            return $carry;
+        }, 0);
+        $activeWorksheet->setCellValue($columnItem . $rowItemEnd, $totalKenpinOnProcess);
+        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItemEnd);
+        $columnItem++;
+        // kenpin loss
+        $totalKenpinLoss = array_reduce($data, function ($carry, $item) {
+            $carry += $item->kenpin_qty_loss;
+            return $carry;
+        }, 0);
+        $activeWorksheet->setCellValue($columnItem . $rowItemEnd, $totalKenpinLoss);
+        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItemEnd);
+        $columnItem++;
+        // product ready
+        $totalProductReady = array_reduce($data, function ($carry, $item) {
+            $carry += $item->qty_produksi;
+            return $carry;
+        }, 0);
+        $activeWorksheet->setCellValue($columnItem . $rowItemEnd, $totalProductReady);
+        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItemEnd);
+        phpspreadsheet::addFullBorder($spreadsheet, 'A' . $rowItemEnd . ':' . $columnItem . $rowItemEnd);
+        phpspreadsheet::styleFont($spreadsheet, 'A' . $rowItemEnd . ':' . $columnItem . $rowItemEnd, true, 9, 'Calibri');
+        $columnItem++;
 
         $activeWorksheet->getStyle($columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderProgressMeter . $rowHeaderSecond)->getAlignment()->setWrapText(true);
 
-        // // size auto
-        // $columnSizeStart = $columnItemStart;
-        // $columnSizeStart++;
-        // while ($columnSizeStart !== $columnItemEnd) {
-        //     $spreadsheet->getActiveSheet()->getColumnDimension($columnSizeStart)->setAutoSize(true);
-        //     $columnSizeStart++;
-        // }
+        // size auto
+        $columnSizeStart = $columnItemStart;
+        $columnSizeStart++;
+        while ($columnSizeStart !== $columnItemEnd) {
+            $spreadsheet->getActiveSheet()->getColumnDimension($columnSizeStart)->setAutoSize(true);
+            $columnSizeStart++;
+        }
 
         $writer = new Xlsx($spreadsheet);
         $filename = $this->jenisReport . '.xlsx';
