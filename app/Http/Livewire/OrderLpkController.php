@@ -14,18 +14,26 @@ use Livewire\WithFileUploads;
 use Maatwebsite\Excel\Facades\Excel;
 use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
+use Livewire\Attributes\Session;
 
 class OrderLpkController extends Component
 {
     protected $paginationTheme = 'bootstrap';
     public $products;
     public $buyer;
+    #[Session]
     public $tglMasuk;
+    #[Session]
     public $tglKeluar;
+    #[Session]
     public $searchTerm;
+    #[Session]
     public $idProduct;
+    #[Session]
     public $idBuyer;
+    #[Session]
     public $transaksi;
+    #[Session]
     public $status;
 
     use WithFileUploads;
@@ -51,30 +59,14 @@ class OrderLpkController extends Component
     {
         $this->products = MsProduct::get();
         $this->buyer = MsBuyer::get();
+
         // mengambil data dari session terlebih dahulu jika ada
         $this->tglMasuk = session('tglMasuk', Carbon::now()->format('d-m-Y'));
         $this->tglKeluar = session('tglKeluar', Carbon::now()->format('d-m-Y'));
-        $this->searchTerm = session('searchTerm', '');
-        $this->idProduct = session('idProduct', null);
-        $this->idBuyer = session('idBuyer', null);
-        $this->status = session('status', null);
-        $this->transaksi = session('transaksi', '');
-    }
-
-    public function sessionData()
-    {
-        session()->put('tglMasuk', $this->tglMasuk);
-        session()->put('tglKeluar', $this->tglKeluar);
-        session()->put('searchTerm', $this->searchTerm);
-        session()->put('idProduct', $this->idProduct);
-        session()->put('idBuyer', $this->idBuyer);
-        session()->put('status', $this->status);
-        session()->put('transaksi', $this->transaksi);
     }
 
     public function search()
     {
-        $this->sessionData();
         $this->resetPage();
         $this->render();
     }
