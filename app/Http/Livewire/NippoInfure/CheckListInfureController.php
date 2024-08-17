@@ -46,56 +46,6 @@ class CheckListInfureController extends Component
         $this->department = MsDepartment::get();
     }
 
-    public function printReport()
-    {
-        $this->validate([
-            'tglMasuk' => 'required',
-            'tglKeluar' => 'required',
-            'jenisReport' => 'required',
-            'transaksi' => 'required',
-        ]);
-
-        return redirect()->route('nippo-infure-print', [
-            'tglMasuk' => $this->tglMasuk,
-            'tglKeluar' => $this->tglKeluar,
-            'jenisReport' => $this->jenisReport,
-            'noprosesawal' => $this->noprosesawal,
-            'noprosesakhir' => $this->noprosesakhir,
-            'lpk_no' => $this->lpk_no,
-            'code' => $this->code,
-            'departemenId' => $this->departemenId,
-            'machineId' => $this->machineId,
-            'nomor_han' => $this->nomor_han,
-            'transaksi' => $this->transaksi,
-        ]);
-    }
-
-    public function exportOld()
-    {
-        if ($this->jenisReport == 2) {
-            return Excel::download(new LossInfureExport(
-                $this->tglMasuk,
-                $this->tglKeluar,
-                $this->noprosesawal,
-                $this->noprosesakhir,
-                $this->lpk_no,
-                $this->code,
-            ), 'LossInfure-Checklist.xlsx');
-        } else {
-            return Excel::download(new NippoInfureExport(
-                $this->tglMasuk,
-                $this->tglKeluar,
-                $this->noprosesawal,
-                $this->noprosesakhir,
-                $this->lpk_no,
-                $this->code,
-                $this->departemenId,
-                $this->machineId,
-                $this->nomor_han,
-            ), 'NippoInfure-Checklist.xlsx');
-        }
-    }
-
     public function export()
     {
 
@@ -146,25 +96,13 @@ class CheckListInfureController extends Component
         $tglAwal = Carbon::parse($this->tglAwal . ' ' . $this->jamAwal);
         $tglAkhir = Carbon::parse($this->tglAkhir . ' ' . $this->jamAkhir);
 
-        // if ($this->jenisReport == 1) {
-            // checklist
-            $response = $this->checklistInfure($tglAwal, $tglAkhir);
-            if ($response['status'] == 'success') {
-                return response()->download($response['filename']);
-            } else if ($response['status'] == 'error') {
-                $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
-                return;
-            }
-        // } else if ($this->jenisReport == 2) {
-        //     // loss
-        //     $response = $this->reportSeitai($tglAwal, $tglAkhir);
-        //     if ($response['status'] == 'success') {
-        //         return response()->download($response['filename']);
-        //     } else if ($response['status'] == 'error') {
-        //         $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
-        //         return;
-        //     }
-        // }
+        $response = $this->checklistInfure($tglAwal, $tglAkhir);
+        if ($response['status'] == 'success') {
+            return response()->download($response['filename']);
+        } else if ($response['status'] == 'error') {
+            $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+            return;
+        }
     }
 
     public function checklistInfure($tglAwal, $tglAkhir)
