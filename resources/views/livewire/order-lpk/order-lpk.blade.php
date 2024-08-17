@@ -42,7 +42,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="col-12 col-lg-5">
         <div class="row">
             <div class="col-12 col-lg-2">
@@ -53,7 +53,7 @@
                     <select class="form-control"  wire:model.defer="idProduct" id="product" name="product" data-choices data-choices-sorting-false data-choices-removeItem>
                         <option value="">- All -</option>
                         @foreach ($products as $item)
-                            <option value="{{ $item->id }}">{{ $item->name }}</option>
+                            <option value="{{ $item->id }}" @if ($item->id == $idProduct) selected @endif>{{ $item->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -67,7 +67,7 @@
                     <select class="form-control" wire:model.defer="idBuyer" data-choices data-choices-sorting-false data-choices-removeItem>
                         <option value="">- All -</option>
                         @foreach ($buyer as $item)
-                            <option value="{{ $item->id }}">{{ $item->name }}</option>
+                            <option value="{{ $item->id }}" @if ($item->id == $idBuyer) selected @endif>{{ $item->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -79,8 +79,8 @@
                 <div class="mb-1" wire:ignore>
                     <select class="form-control" wire:model.defer="status" data-choices data-choices-sorting-false data-choices-removeItem>
                         <option value="">- All -</option>
-                        <option value="0">Belum LPK</option>
-                        <option value="1">Sudah LPK</option>
+                        <option value="0" @if ($status == 0) selected @endif>Belum LPK</option>
+                        <option value="1" @if ($status == 1) selected @endif>Sudah LPK</option>
                     </select>
                 </div>
             </div>
@@ -104,9 +104,9 @@
                         </span>
                     </div>
                 </button>
-                
+
                 <button
-                    type="button" 
+                    type="button"
                     class="btn btn-success w-lg p-1"
                     onclick="window.location.href='/add-order'"
                     >
@@ -164,8 +164,8 @@
             </div>
         </div>
     </div>
-    
-    <div class="col text-end dropdown" x-data="{ 
+
+    <div class="col text-end dropdown" x-data="{
         po_no:true, na_pr:true, ko_pr:true, bu:true, qt:true, tgo:true, stf:false, etd:true, eta:false, tgp:true, num:true, up_by: false, up_dt: false
         }">
         <button type="button" data-bs-toggle="dropdown" aria-expanded="false" class="btn btn-soft-primary btn-icon fs-14 mb-4">
@@ -173,59 +173,59 @@
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
             <li @click="po_no = !po_no; $refs.checkbox.checked = po_no" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="po_no = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="po_no"> 
+                <input x-ref="checkbox" @change="po_no = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="po_no">
                 PO Number
             </li>
             <li @click="na_pr = !na_pr; $refs.checkbox.checked = na_pr" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="na_pr = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="na_pr"> 
+                <input x-ref="checkbox" @change="na_pr = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="na_pr">
                 Nama Produk
             </li>
             <li @click="ko_pr = !ko_pr; $refs.checkbox.checked = ko_pr" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="ko_pr = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="ko_pr"> 
+                <input x-ref="checkbox" @change="ko_pr = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="ko_pr">
                 Kode Produk
             </li>
             <li @click="bu = !bu; $refs.checkbox.checked = bu" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="bu = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="bu"> 
+                <input x-ref="checkbox" @change="bu = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="bu">
                 Buyer
             </li>
             <li @click="qt = !qt; $refs.checkbox.checked = qt" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="qt = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="qt"> 
+                <input x-ref="checkbox" @change="qt = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="qt">
                 Quantity
             </li>
             <li @click="tgo = !tgo; $refs.checkbox.checked = tgo" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="tgo = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="tgo"> 
+                <input x-ref="checkbox" @change="tgo = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="tgo">
                 Tgl Order
             </li>
             <li @click="stf = !stf; $refs.checkbox.checked = stf" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="stf = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="stf"> 
+                <input x-ref="checkbox" @change="stf = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="stf">
                 Stuffing
             </li>
             <li @click="etd = !etd; $refs.checkbox.checked = etd" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="etd = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="etd"> 
+                <input x-ref="checkbox" @change="etd = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="etd">
                 Etd
             </li>
             <li @click="eta = !eta; $refs.checkbox.checked = eta" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="eta = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="eta"> 
+                <input x-ref="checkbox" @change="eta = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="eta">
                 Eta
             </li>
             <li @click="tgp = !tgp; $refs.checkbox.checked = tgp" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="tgp = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="tgp"> 
+                <input x-ref="checkbox" @change="tgp = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="tgp">
                 Tgl Proses
             </li>
             <li @click="num = !num; $refs.checkbox.checked = num" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="num = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="num"> 
+                <input x-ref="checkbox" @change="num = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="num">
                 No.
             </li>
             <li @click="up_by = !up_by; $refs.checkbox.checked = up_by" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="up_by = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="up_by"> 
+                <input x-ref="checkbox" @change="up_by = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="up_by">
                 Update By
             </li>
             <li @click="up_dt = !up_dt; $refs.checkbox.checked = up_dt" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="up_dt = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="up_dt"> 
+                <input x-ref="checkbox" @change="up_dt = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="up_dt">
                 UpdateDt
             </li>
         </ul>
-    
+
         <div class="table-responsive table-card">
             <table class="table table-bordered align-middle dt-responsive mdl-data-table" style="overflow-x: :scroll">
                 <thead class="table-light">
@@ -240,9 +240,9 @@
                         <th x-show="stf">Stuffing</th>
                         <th x-show="etd">Etd</th>
                         <th x-show="eta">Eta</th>
-                        <th x-show="tgp">Tgl Proses</th>            
-                        <th x-show="num">No.</th>                
-                        <th x-show="up_by">Update By</th>               
+                        <th x-show="tgp">Tgl Proses</th>
+                        <th x-show="num">No.</th>
+                        <th x-show="up_by">Update By</th>
                         <th x-show="up_dt">Update On</th>
                     </tr>
                 </thead>
@@ -267,8 +267,8 @@
                             <td x-show="etd">{{ $item->etddate }}</td>
                             <td x-show="eta">{{ $item->etadate }}</td>
                             <td x-show="tgp">{{ $item->processdate }}</td>
-                            <td x-show="num">{{ $no++ }}</td>    
-                            <td x-show="up_by">{{ $item->updated_by }}</td>  
+                            <td x-show="num">{{ $no++ }}</td>
+                            <td x-show="up_by">{{ $item->updated_by }}</td>
                             <td x-show="up_dt">{{ $item->updated_on }}</td>
                         </tr>
                     @empty
