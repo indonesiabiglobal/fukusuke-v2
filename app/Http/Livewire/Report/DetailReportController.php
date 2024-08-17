@@ -14,6 +14,8 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PHPUnit\TextUI\Configuration\Merger;
+use PHPUnit\TextUI\Configuration\Php;
 
 class DetailReportController extends Component
 {
@@ -92,7 +94,7 @@ class DetailReportController extends Component
                 $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                 return;
             }
-        } else if ($this->nippo == 'Seitai'){
+        } else if ($this->nippo == 'Seitai') {
             $response = $this->reportSeitai($tglAwal, $tglAkhir);
             if ($response['status'] == 'success') {
                 return response()->download($response['filename']);
@@ -114,7 +116,7 @@ class DetailReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('A1', 'DETAIL PRODUKSI INFURE');
-        $activeWorksheet->setCellValue('A2', 'Periode: ' . $tglAwal->translatedFormat('d-M-Y H:i') . ' s/d ' . $tglAkhir->translatedFormat('d-M-Y H:i'));
+        $activeWorksheet->setCellValue('A2', 'Periode: ' . $tglAwal->translatedFormat('d-M-Y H:i') . ' s/d ' . $tglAkhir->translatedFormat('d-M-Y H:i') . ' - Mesin: ' . $this->machineId);
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'A1:A2', true, 11, 'Calibri');
 
@@ -144,6 +146,8 @@ class DetailReportController extends Component
             $activeWorksheet->setCellValue($columnHeaderEnd . $rowHeaderStart, $value);
             $columnHeaderEnd++;
         }
+
+        $activeWorksheet->freezePane('A4');
         $columnHeaderEnd = chr(ord($columnHeaderEnd) - 1);
 
         // style header
@@ -162,7 +166,7 @@ class DetailReportController extends Component
         $filterNomorHan = $this->nomorHan ? " AND (tdpa.nomor_han = '$this->nomorHan')" : '';
 
         // qeury belum bener
-        $data = collect(DB::select(
+        $data = DB::select(
             "
                 SELECT
                     tdpa.production_date AS tglproduksi,
@@ -202,8 +206,9 @@ class DetailReportController extends Component
                     $nomorOrder
                     $filterDepartment
                     $filterMachine
-                    $filterNomorHan",
-        ));
+                    $filterNomorHan
+                ORDER BY tdpa.production_date ASC",
+        );
 
         if (count($data) == 0) {
             $response = [
@@ -214,18 +219,185 @@ class DetailReportController extends Component
             return $response;
         }
 
+        $listProduct = array_reduce($data, function ($carry, $item) {
+            $carry[$item->product_id] = $item->produkcode . ' - ' . $item->namaproduk;
+            return $carry;
+        }, []);
+
+        $listProductionDate = array_reduce($data, function ($carry, $item) {
+            $carry[$item->product_id][$item->tglproduksi] = $item->tglproduksi;
+            return $carry;
+        }, []);
+
+        $listWorkHour = array_reduce($data, function ($carry, $item) {
+            $carry[$item->product_id][$item->tglproduksi][$item->jam] = [
+                'tglproduksi' => $item->tglproduksi,
+                'shift' => $item->shift,
+                'jam' => $item->jam,
+                'nik' => $item->nik,
+                'nama_petugas' => $item->namapetugas,
+                'dept_petugas' => $item->deptpetugas,
+                'nama_mesin' => $item->nomesin . ' - ' . $item->namamesin,
+                'lpk_no' => $item->lpk_no,
+                'gentan_no' => $item->gentan_no,
+                'nomor_han' => $item->nomor_han,
+                'panjang_produksi' => $item->panjang_produksi,
+                'berat_produksi' => $item->berat_produksi,
+                'losscode' => $item->losscode,
+                'lossname' => $item->lossname,
+            ];
+            return $carry;
+        }, []);
+
+        $dataFiltered = array_reduce($data, function ($carry, $item) {
+            $carry[$item->product_id][$item->tglproduksi][$item->jam][$item->losscode] = (object)[
+                'lossname' => $item->lossname,
+                'berat_loss' => $item->berat_loss,
+            ];
+            return $carry;
+        }, []);
+
+        // index
+        $rowItemStart = 4;
+        $columnItemStart = 'A';
+        $columnLossStart = 'N';
+        $rowItem = $rowItemStart;
+        foreach ($listProduct as $productId => $productName) {
+            // Menulis data produk
+            $activeWorksheet->setCellValue($columnItemStart . $rowItem, $productName);
+            // $spreadsheet->getActiveSheet()->mergeCells($columnItemStart . $rowItem . ':' . $endColumnItem . $rowItem);
+            phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItem, true, 9, 'Calibri');
+            $columnItemEnd = $columnItemStart;
+            $rowItem++;
+            foreach ($listProductionDate[$productId] as $productionDate) {
+                foreach ($listWorkHour[$productId][$productionDate] as $WorkHour => $itemWorkHour) {
+                    $columnItemEnd = $columnItemStart;
+                    // tanggal produksi
+                    $activeWorksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($itemWorkHour['tglproduksi'])->translatedFormat('d-M-Y'));
+                    phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
+                    $columnItemEnd++;
+                    // shift
+                    $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemWorkHour['shift']);
+                    phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
+                    $columnItemEnd++;
+                    // jam
+                    $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemWorkHour['jam']);
+                    phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
+                    $columnItemEnd++;
+                    // nik
+                    $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemWorkHour['nik']);
+                    phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
+                    $columnItemEnd++;
+                    // nama petugas
+                    $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemWorkHour['nama_petugas']);
+                    phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
+                    $columnItemEnd++;
+                    // dept petugas
+                    $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemWorkHour['dept_petugas']);
+                    phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
+                    $columnItemEnd++;
+                    // mesin
+                    $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemWorkHour['nama_mesin']);
+                    $columnItemEnd++;
+                    // no lpk
+                    $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemWorkHour['lpk_no']);
+                    phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
+                    $columnItemEnd++;
+                    // nomor gentan
+                    $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemWorkHour['gentan_no']);
+                    phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
+                    $columnItemEnd++;
+                    // nomor han
+                    $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemWorkHour['nomor_han']);
+                    phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
+                    $columnItemEnd++;
+                    // panjang produksi
+                    $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemWorkHour['panjang_produksi']);
+                    phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItemEnd . $rowItem);
+                    $columnItemEnd++;
+                    // berat produksi
+                    $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemWorkHour['berat_produksi']);
+                    phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItemEnd . $rowItem);
+                    $columnItemEnd++;
+
+                    // Loss
+                    $dataItem = $dataFiltered[$productId][$productionDate][$WorkHour];
+                    foreach ($dataItem as $losscode => $item) {
+                        $columnLoss = 'M';
+                        if ($losscode == '') {
+                            $columnLoss++;
+                            phpspreadsheet::addFullBorder($spreadsheet, $columnItemStart . $rowItem . ':' . $columnLoss . $rowItem);
+                            break;
+                        }
+
+                        $activeWorksheet->setCellValue($columnLoss . $rowItem, $item->lossname);
+                        $columnLoss++;
+                        $activeWorksheet->setCellValue($columnLoss . $rowItem, $item->berat_loss);
+                        phpspreadsheet::addFullBorder($spreadsheet, $columnItemStart . $rowItem . ':' . $columnLoss . $rowItem);
+                        $columnLoss++;
+                        phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItem . ':' . $columnLoss . $rowItem, false, 8, 'Calibri');
+                        $rowItem++;
+                        $columnItemEnd = $columnLoss;
+                    }
+
+                    $columnItemEnd++;
+                    phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItem . ':' . $columnItemEnd . $rowItem, false, 8, 'Calibri');
+
+                    $rowItem++;
+                }
+            }
+            $rowItem++;
+        }
+
+        // grand total
+        $columnItemEnd = 'J';
+        $spreadsheet->getActiveSheet()->mergeCells($columnItemStart . $rowItem . ':' . $columnItemEnd . $rowItem);
+        $activeWorksheet->setCellValue($columnItemStart . $rowItem, 'GRAND TOTAL');
+        phpSpreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItem, true, 9, 'Calibri');
+        $columnItemEnd++;
+
+        // panjang produksi
+        $totalPanjangProduksi = array_reduce($data, function ($carry, $item) {
+            $carry += $item->panjang_produksi;
+            return $carry;
+        }, 0);
+        $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $totalPanjangProduksi);
+        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItemEnd . $rowItem);
+        $columnItemEnd++;
+
+        // berat produksi
+        $totalBeratProduksi = array_reduce($data, function ($carry, $item) {
+            $carry += $item->berat_produksi;
+            return $carry;
+        }, 0);
+        $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $totalBeratProduksi);
+        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItemEnd . $rowItem);
+        $columnItemEnd++;
+
+        // Loss
+        $columnItemEnd = 'O';
+        $totalLoss = array_reduce($data, function ($carry, $item) {
+            $carry += $item->berat_loss;
+            return $carry;
+        }, 0);
+        $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $totalLoss);
+        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItemEnd . $rowItem);
+        phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItem . ':' . $columnItemEnd . $rowItem, true, 8, 'Calibri');
+        phpspreadsheet::addFullBorder($spreadsheet, $columnItemStart . $rowItem . ':' . $columnItemEnd . $rowItem);
+        $columnItemEnd++;
+
         $activeWorksheet->getStyle($columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart)->getAlignment()->setWrapText(true);
 
         // size auto
-        // $columnSizeStart = $columnItemStart;
-        // $columnSizeStart++;
-        // while ($columnSizeStart !== $columnItemEnd) {
-        //     $spreadsheet->getActiveSheet()->getColumnDimension($columnSizeStart)->setAutoSize(true);
-        //     $columnSizeStart++;
-        // }
+        $columnSizeStart = $columnItemStart;
+        $columnSizeStart++;
+        while ($columnSizeStart !== $columnItemEnd) {
+            $spreadsheet->getActiveSheet()->getColumnDimension($columnSizeStart)->setAutoSize(true);
+            $columnSizeStart++;
+        }
 
         $writer = new Xlsx($spreadsheet);
-        $filename = 'Detail-Produksi-'. $this->nippo . '.xlsx';
+        $filename = 'Detail-Produksi-' . $this->nippo . '.xlsx';
         $writer->save($filename);
         $response = [
             'status' => 'success',
@@ -343,7 +515,7 @@ class DetailReportController extends Component
         // }
 
         $writer = new Xlsx($spreadsheet);
-        $filename = 'Detail-Produksi-'. $this->nippo . '.xlsx';
+        $filename = 'Detail-Produksi-' . $this->nippo . '.xlsx';
         $writer->save($filename);
         $response = [
             'status' => 'success',
