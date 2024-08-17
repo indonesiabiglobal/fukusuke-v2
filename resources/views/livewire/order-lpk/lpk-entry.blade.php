@@ -91,11 +91,11 @@
                     <select class="form-control" wire:model.defer="status" id="status" name="status" data-choices
                         data-choices-sorting-false data-choices-removeItem>
                         <option value="">- All -</option>
-                        <option value="0" @if (($status['value'] ?? null) == 0) selected @endif>Un-Print</option>
-                        <option value="1" @if (($status['value'] ?? null) == 1) selected @endif>Printed</option>
-                        <option value="2" @if (($status['value'] ?? null) == 2) selected @endif>Re-Print</option>
-                        <option value="3" @if (($status['value'] ?? null) == 3) selected @endif>Belum Produksi</option>
-                        <option value="4" @if (($status['value'] ?? null) == 4) selected @endif>Sudah Produksi</option>
+                        <option value="0" @if (($status['value'] ?? '') == 0) selected @endif>Un-Print</option>
+                        <option value="1" @if (($status['value'] ?? '') == 1) selected @endif>Printed</option>
+                        <option value="2" @if (($status['value'] ?? '') == 2) selected @endif>Re-Print</option>
+                        <option value="3" @if (($status['value'] ?? '') == 3) selected @endif>Belum Produksi</option>
+                        <option value="4" @if (($status['value'] ?? '') == 4) selected @endif>Sudah Produksi</option>
                     </select>
                 </div>
             </div>
