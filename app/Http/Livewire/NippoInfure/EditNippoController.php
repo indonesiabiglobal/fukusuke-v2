@@ -56,68 +56,78 @@ class EditNippoController extends Component
 
     // data LPK
     public $orderLPK;
-    public $statusEditLoss=false;
+    public $statusEditLoss = false;
+
+    public $tglAwal;
+    public $tglKeluar;
 
     public function mount(Request $request)
     {
         $data = DB::table('tdproduct_assembly AS tda')
-        ->join('tdorderlpk AS tdol', 'tda.lpk_id', '=', 'tdol.id')
-        ->join('msmachine AS msm', 'msm.id', '=', 'tda.machine_id')
-        ->join('msemployee AS mse', 'mse.id', '=', 'tda.employee_id')
-        ->join('msproduct AS msp', 'msp.id', '=', 'tda.product_id')
-        ->join('tdorder AS tdo', 'tdol.order_id', '=', 'tdo.id')
-        ->leftJoin('tdproduct_goods as tdpg', 'tdpg.lpk_id', '=', 'tdol.id')
-        ->select(
-            'tda.id AS id',
-            'tda.production_no AS production_no',
-            'tda.production_date AS production_date',
-            'tda.employee_id AS employee_id',
-            'tda.work_shift AS work_shift',
-            'tda.work_hour AS work_hour',
-            'tda.machine_id AS machine_id',
-            'tda.lpk_id AS lpk_id',
-            'tda.product_id AS product_id',
-            'tda.panjang_produksi AS panjang_produksi',
-            'tda.panjang_printing_inline AS panjang_printing_inline',
-            'tda.berat_standard AS berat_standard',
-            'tda.berat_produksi AS berat_produksi',
-            'tda.nomor_han AS nomor_han',
-            'tda.gentan_no AS gentan_no',
-            'tda.seq_no AS seq_no',
-            'tda.status_production AS status_production',
-            'tda.status_kenpin AS status_kenpin',
-            'tda.infure_cost AS infure_cost',
-            'tda.infure_cost_printing AS infure_cost_printing',
-            'tda.infure_berat_loss AS infure_berat_loss',
-            'tda.kenpin_berat_loss AS kenpin_berat_loss',
-            'tda.kenpin_meter_loss AS kenpin_meter_loss',
-            'tda.kenpin_meter_loss_proses AS kenpin_meter_loss_proses',
-            'tda.created_by AS created_by',
-            'tda.created_on AS created_on',
-            'tda.updated_by AS updated_by',
-            'tda.updated_on AS updated_on',
-            'tdol.order_id AS order_id',
-            'tdol.lpk_no AS lpk_no',
-            'tdol.lpk_date AS lpk_date',
-            'tdol.panjang_lpk AS panjang_lpk',
-            'tdol.qty_gentan AS qty_gentan',
-            'tdol.qty_gulung AS qty_gulung',
-            'tdol.qty_lpk AS qty_lpk',
-            'tdol.total_assembly_line AS total_assembly_line',
-            'tdol.total_assembly_qty AS total_assembly_qty',
-            'msm.machineno',
-            'msm.machinename',
-            'tdo.product_code',
-            'mse.employeeno',
-            'mse.empname',
-            'msp.code',
-            'msp.name',
-            DB::raw("CASE WHEN tdpg.id IS NOT NULL THEN 1 ELSE 0 END as tdpg")
-        )
-        ->where('tda.id', $request->query('orderId'))
-        ->first();
+            ->join('tdorderlpk AS tdol', 'tda.lpk_id', '=', 'tdol.id')
+            ->join('msmachine AS msm', 'msm.id', '=', 'tda.machine_id')
+            ->join('msemployee AS mse', 'mse.id', '=', 'tda.employee_id')
+            ->join('msproduct AS msp', 'msp.id', '=', 'tda.product_id')
+            ->join('tdorder AS tdo', 'tdol.order_id', '=', 'tdo.id')
+            ->leftJoin('tdproduct_goods as tdpg', 'tdpg.lpk_id', '=', 'tdol.id')
+            ->select(
+                'tda.id AS id',
+                'tda.production_no AS production_no',
+                'tda.production_date AS production_date',
+                'tda.employee_id AS employee_id',
+                'tda.work_shift AS work_shift',
+                'tda.work_hour AS work_hour',
+                'tda.machine_id AS machine_id',
+                'tda.lpk_id AS lpk_id',
+                'tda.product_id AS product_id',
+                'tda.panjang_produksi AS panjang_produksi',
+                'tda.panjang_printing_inline AS panjang_printing_inline',
+                'tda.berat_standard AS berat_standard',
+                'tda.berat_produksi AS berat_produksi',
+                'tda.nomor_han AS nomor_han',
+                'tda.gentan_no AS gentan_no',
+                'tda.seq_no AS seq_no',
+                'tda.status_production AS status_production',
+                'tda.status_kenpin AS status_kenpin',
+                'tda.infure_cost AS infure_cost',
+                'tda.infure_cost_printing AS infure_cost_printing',
+                'tda.infure_berat_loss AS infure_berat_loss',
+                'tda.kenpin_berat_loss AS kenpin_berat_loss',
+                'tda.kenpin_meter_loss AS kenpin_meter_loss',
+                'tda.kenpin_meter_loss_proses AS kenpin_meter_loss_proses',
+                'tda.created_by AS created_by',
+                'tda.created_on AS created_on',
+                'tda.updated_by AS updated_by',
+                'tda.updated_on AS updated_on',
+                'tdol.order_id AS order_id',
+                'tdol.lpk_no AS lpk_no',
+                'tdol.lpk_date AS lpk_date',
+                'tdol.panjang_lpk AS panjang_lpk',
+                'tdol.qty_gentan AS qty_gentan',
+                'tdol.qty_gulung AS qty_gulung',
+                'tdol.qty_lpk AS qty_lpk',
+                'tdol.total_assembly_line AS total_assembly_line',
+                'tdol.total_assembly_qty AS total_assembly_qty',
+                'msm.machineno',
+                'msm.machinename',
+                'tdo.product_code',
+                'mse.employeeno',
+                'mse.empname',
+                'msp.code',
+                'msp.name',
+                DB::raw("CASE WHEN tdpg.id IS NOT NULL THEN 1 ELSE 0 END as tdpg")
+            )
+            ->where('tda.id', $request->query('orderId'))
+            ->first();
 
         $this->statusEditLoss = $request->query('status');
+
+        // History
+        $this->tglAwal = $request->query('tglAwal');
+        $this->tglKeluar = $request->query('tglKeluar');
+        // $this->lpk_no = $request->query('lpk_no');
+        // $this->tglKeluar = $request->query('tglKeluar');
+
         $this->statusSeitai = $data->tdpg;
         $this->orderId = $request->query('orderId');
         $this->production_no = $data->production_no;
@@ -262,7 +272,7 @@ class EditNippoController extends Component
                 $this->orderLPK->buyer_name = $this->orderLPK->buyer_name;
                 $this->orderLPK->product_name = $this->orderLPK->product_name;
                 $this->orderLPK->no_order = $this->orderLPK->code;
-                $this->orderLPK->dimensi = $this->orderLPK->ketebalan.'x'.$this->orderLPK->diameterlipat.'x'.$this->orderLPK->productlength;
+                $this->orderLPK->dimensi = $this->orderLPK->ketebalan . 'x' . $this->orderLPK->diameterlipat . 'x' . $this->orderLPK->productlength;
                 $this->orderLPK->productlength = $this->orderLPK->productlength;
                 $this->orderLPK->remark = $this->orderLPK->remark;
                 $this->orderLPK->defaultgulung = number_format($this->orderLPK->defaultgulung, 0, ',', '.');
@@ -299,8 +309,8 @@ class EditNippoController extends Component
             $products = MsProduct::where('code', $this->code)->first();
 
             $maxGentan = TdProductAssembly::where('lpk_id', $lpkid->id)
-            ->orderBy('gentan_no', 'DESC')
-            ->first();
+                ->orderBy('gentan_no', 'DESC')
+                ->first();
 
             $product = TdProductAssembly::findOrFail($this->orderId);
             $product->production_date = $this->production_date;
@@ -310,7 +320,7 @@ class EditNippoController extends Component
             $product->work_shift = $this->work_shift;
             $product->work_hour = $this->work_hour;
             $product->lpk_id = $lpkid->id;
-            if($this->gentan_no == 0){
+            if ($this->gentan_no == 0) {
                 $this->gentan_no = $maxGentan->gentan_no + 1;
             }
             $product->gentan_no = $this->gentan_no;
@@ -332,11 +342,11 @@ class EditNippoController extends Component
             ");
             $product->save();
 
-            TdProductAssemblyLoss::where('lpk_id',$lpkid->id)->update([
+            TdProductAssemblyLoss::where('lpk_id', $lpkid->id)->update([
                 'product_assembly_id' => $product->id,
             ]);
 
-            TdOrderLpk::where('id',$lpkid->id)->update([
+            TdOrderLpk::where('id', $lpkid->id)->update([
                 'total_assembly_line' => $totalAssembly[0]->c1,
             ]);
 
@@ -388,7 +398,13 @@ class EditNippoController extends Component
 
     public function cancel()
     {
-        return redirect()->route('nippo-infure');
+        return redirect()->route(
+            'nippo-infure',
+            [
+                'tglAwal' => $this->tglAwal,
+                'tglKeluar' => $this->tglKeluar
+            ]
+        );
     }
 
     public function destroy()
@@ -414,32 +430,32 @@ class EditNippoController extends Component
 
     public function render()
     {
-        if(isset($this->lpk_no) && $this->lpk_no != ''){
+        if (isset($this->lpk_no) && $this->lpk_no != '') {
             $prefix = substr($this->lpk_no, 0, 6);
             $suffix = substr($this->lpk_no, -3);
 
             $tdorderlpk = DB::table('tdorderlpk as tolp')
-            ->select(
-                'tolp.lpk_no',
-                'tolp.id',
-                'tolp.lpk_date',
-                'tolp.panjang_lpk',
-                'tolp.created_on',
-                'mp.code',
-                'mp.name',
-                'mp.ketebalan',
-                'mp.diameterlipat',
-                'tolp.qty_gulung',
-                'tolp.qty_gentan'
-            )
-            ->join('msproduct as mp', 'mp.id', '=', 'tolp.product_id')
-            ->join('tdproduct_assembly as tda', 'tda.lpk_id', '=', 'tolp.id')
-            // ->where('tolp.lpk_no', $this->lpk_no)
-            ->whereRaw("LEFT(lpk_no, 6) ILIKE ?", ["{$prefix}"])
-            ->whereRaw("RIGHT(lpk_no, 3) ILIKE ?", ["{$suffix}"])
-            ->first();
+                ->select(
+                    'tolp.lpk_no',
+                    'tolp.id',
+                    'tolp.lpk_date',
+                    'tolp.panjang_lpk',
+                    'tolp.created_on',
+                    'mp.code',
+                    'mp.name',
+                    'mp.ketebalan',
+                    'mp.diameterlipat',
+                    'tolp.qty_gulung',
+                    'tolp.qty_gentan'
+                )
+                ->join('msproduct as mp', 'mp.id', '=', 'tolp.product_id')
+                ->join('tdproduct_assembly as tda', 'tda.lpk_id', '=', 'tolp.id')
+                // ->where('tolp.lpk_no', $this->lpk_no)
+                ->whereRaw("LEFT(lpk_no, 6) ILIKE ?", ["{$prefix}"])
+                ->whereRaw("RIGHT(lpk_no, 3) ILIKE ?", ["{$suffix}"])
+                ->first();
 
-            if($tdorderlpk == null){
+            if ($tdorderlpk == null) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor LPK ' . $this->lpk_no . ' Tidak Terdaftar']);
             } else {
                 $this->lpk_date = Carbon::parse($tdorderlpk->lpk_date)->format('Y-m-d');
@@ -447,39 +463,39 @@ class EditNippoController extends Component
                 $this->created_on = Carbon::parse($tdorderlpk->created_on)->format('Y-m-d');
                 $this->code = $tdorderlpk->code;
                 $this->name = $tdorderlpk->name;
-                $this->dimensiinfure = $tdorderlpk->ketebalan.'x'.$tdorderlpk->diameterlipat;
+                $this->dimensiinfure = $tdorderlpk->ketebalan . 'x' . $tdorderlpk->diameterlipat;
                 $this->qty_gulung = $tdorderlpk->qty_gulung;
                 $this->qty_gentan = $tdorderlpk->qty_gentan;
                 $this->lpk_no = $tdorderlpk->lpk_no;
                 // $this->gentan_no= $tdorderlpk->gentan_no;
 
                 $this->details = DB::table('tdproduct_assembly_loss as tal')
-                ->select(
-                    'tal.loss_infure_id',
-                    'tal.berat_loss',
-                    'tal.id',
-                    'msi.name as name_infure'
-                )
-                ->join('mslossinfure as msi', 'msi.id', '=', 'tal.loss_infure_id')
-                ->where('tal.lpk_id', $tdorderlpk->id)
-                ->get();
+                    ->select(
+                        'tal.loss_infure_id',
+                        'tal.berat_loss',
+                        'tal.id',
+                        'msi.name as name_infure'
+                    )
+                    ->join('mslossinfure as msi', 'msi.id', '=', 'tal.loss_infure_id')
+                    ->where('tal.lpk_id', $tdorderlpk->id)
+                    ->get();
             }
         }
 
-        if(isset($this->loss_infure_id) && $this->loss_infure_id != ''){
-            $lossinfure=MsLossInfure::where('id', $this->loss_infure_id)->first();
+        if (isset($this->loss_infure_id) && $this->loss_infure_id != '') {
+            $lossinfure = MsLossInfure::where('id', $this->loss_infure_id)->first();
 
-            if($lossinfure == null){
+            if ($lossinfure == null) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->loss_infure_id . ' Tidak Terdaftar']);
             } else {
                 $this->name_infure = $lossinfure->name;
             }
         }
 
-        if(isset($this->machineno) && $this->machineno != ''){
-            $machine=MsMachine::where('machineno', 'ilike', '%'. $this->machineno .'%')->whereIn('department_id', [10, 12, 15, 2, 4, 10])->first();
+        if (isset($this->machineno) && $this->machineno != '') {
+            $machine = MsMachine::where('machineno', 'ilike', '%' . $this->machineno . '%')->whereIn('department_id', [10, 12, 15, 2, 4, 10])->first();
 
-            if($machine == null){
+            if ($machine == null) {
                 $this->dispatch('notification', ['type' => 'error', 'message' => 'Machine ' . $this->machineno . ' Tidak Terdaftar']);
             } else {
                 $this->machineno = $machine->machineno;
@@ -487,18 +503,18 @@ class EditNippoController extends Component
             }
         }
 
-        if(isset($this->employeeno) && $this->employeeno != ''){
-            $msemployee=MsEmployee::where('employeeno', $this->employeeno)->first();
+        if (isset($this->employeeno) && $this->employeeno != '') {
+            $msemployee = MsEmployee::where('employeeno', $this->employeeno)->first();
 
-            if($msemployee == null){
+            if ($msemployee == null) {
                 $this->dispatch('notification', ['type' => 'error', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
             } else {
                 $this->empname = $msemployee->empname;
             }
         }
 
-        if(isset($this->nomor_barcode) && $this->nomor_barcode != ''){
-            if($this->code != $this->nomor_barcode){
+        if (isset($this->nomor_barcode) && $this->nomor_barcode != '') {
+            if ($this->code != $this->nomor_barcode) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Barcode ' . $this->nomor_barcode . ' Tidak Terdaftar']);
             }
         }
@@ -506,4 +522,3 @@ class EditNippoController extends Component
         return view('livewire.nippo-infure.edit-nippo')->extends('layouts.master');
     }
 }
-

@@ -50,8 +50,8 @@
             </div>
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
-                    <select class="form-control select2" id="idProduct" name="idProduct">
-                        <option></option>
+                    <select class="form-control"  wire:model.defer="idProduct" id="product" name="product" data-choices data-choices-sorting-false data-choices-removeItem>
+                        <option value="">- All -</option>
                         @foreach ($products as $item)
                             <option value="{{ $item->id }}">{{ $item->name }}</option>
                         @endforeach
@@ -64,8 +64,8 @@
             </div>
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
-                    <select class="form-control select2" id="idBuyer" name="idBuyer">
-                        <option></option>
+                    <select class="form-control" wire:model.defer="idBuyer" data-choices data-choices-sorting-false data-choices-removeItem>
+                        <option value="">- All -</option>
                         @foreach ($buyer as $item)
                             <option value="{{ $item->id }}">{{ $item->name }}</option>
                         @endforeach
@@ -77,9 +77,8 @@
             </div>
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
-                    <select class="form-control" wire:model.defer="status" id="status" name="status" data-choices
-                        data-choices-sorting-false data-choices-removeItem>
-                        <option></option>
+                    <select class="form-control" wire:model.defer="status" data-choices data-choices-sorting-false data-choices-removeItem>
+                        <option value="">- All -</option>
                         <option value="0">Belum LPK</option>
                         <option value="1">Sudah LPK</option>
                     </select>
@@ -285,17 +284,5 @@
             {{ $data->links(data: ['scrollTo' => false]) }}
         </div>
     </div>
-    
     {{-- <livewire:tdorder/> --}}
-    @push('scripts')
-    <script>
-        $(function() {
-            $('#filterBtn').on('click', function () {
-                var idProduct = $('#idProduct').val();
-
-                @this.set('idProduct', idProduct);
-            });
-        });
-    </script>
-    @endpush
 </div>
