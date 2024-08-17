@@ -66,12 +66,11 @@
                     <label for="product" class="form-label text-muted">Departemen</label>
                 </div>
                 <div class="col-12 col-lg-9">
-                    <div class="mb-1" wire:ignore>
-                        <select class="form-control" wire:model.defer="departmentId" data-choices
-                            data-choices-sorting-false data-choices-removeItem>
+                    <div class="mb-1">
+                        <select class="form-control" wire:model.live="nippo">
                             <option value="">- All -</option>
                             @foreach ($department as $item)
-                                <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                <option value="{{ $item->name }}">{{ $item->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -85,9 +84,21 @@
             </div>
         </div>
         <div class="form-group mt-1">
-            <div class="input-group">
-                <span class="input-group-addon col-12 col-lg-3">Nomor Order </span>
-                <input type="text" class="form-control" placeholder=".." wire:model.defer="noorder">
+            <div class="row">
+                <div class="col-12 col-lg-3">
+                    <label for="product" class="form-label text-muted">Nomor Order</label>
+                </div>
+                <div class="col-12 col-lg-9">
+                    <div class="mb-1" wire:ignore>
+                        <select class="form-control" wire:model.defer="productId" data-choices
+                            data-choices-sorting-false data-choices-removeItem>
+                            <option value="">- All -</option>
+                            @foreach ($product as $item)
+                                <option value="{{ $item->id }}">{{ $item->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="form-group mt-1">
@@ -96,12 +107,32 @@
                 <input type="text" class="form-control" placeholder="_____-_____" wire:model.defer="nomorKenpin">
             </div>
         </div>
-        <div class="form-group mt-1">
-            <div class="input-group">
-                <span class="input-group-addon col-12 col-lg-3">Nomor Han </span>
-                <input type="text" class="form-control" placeholder="00-00-00A" wire:model.defer="nomorHan">
+        {{-- Nomor Han --}}
+        @if ($nippo == 'INFURE')
+            <div class="form-group mt-1">
+                <div class="input-group">
+                    <span class="input-group-addon col-12 col-lg-3">Nomor Han</span>
+                    <input type="text" class="form-control" placeholder="00-00-00A"
+                        wire:model.defer="nomorHan" />
+                </div>
             </div>
-        </div>
+        @elseif ($nippo == 'SEITAI')
+        {{-- nomor Palet --}}
+            <div class="form-group mt-1">
+                <div class="input-group">
+                    <span class="input-group-addon col-12 col-lg-3">Nomor Palet</span>
+                    <input type="text" class="form-control" placeholder="A0000-000000"
+                        wire:model.defer="nomorPalet" />
+                </div>
+            </div>
+            {{-- nomor LOT --}}
+            <div class="form-group mt-1">
+                <div class="input-group">
+                    <span class="input-group-addon col-12 col-lg-3">Nomor LOT</span>
+                    <input type="text" class="form-control" placeholder="---" wire:model.defer="nomorLot" />
+                </div>
+            </div>
+        @endif
         <div class="form-group mt-1">
             <div class="input-group">
                 <span class="input-group-addon col-12 col-lg-3">Status</span>
