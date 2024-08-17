@@ -55,9 +55,9 @@ class OrderLpkController extends Component
         $this->tglMasuk = session('tglMasuk', Carbon::now()->format('d-m-Y'));
         $this->tglKeluar = session('tglKeluar', Carbon::now()->format('d-m-Y'));
         $this->searchTerm = session('searchTerm', '');
-        $this->idProduct = is_array(session('idProduct', null)) ? session('idProduct', null)['value'] : session('idProduct', null);
-        $this->idBuyer = session('idBuyer', null) ? session('idBuyer', null)['value'] : session('idBuyer', null);
-        $this->status = session('status', null) ? session('status', null)['value'] : session('status', null);
+        $this->idProduct = session('idProduct', null);
+        $this->idBuyer = session('idBuyer', null);
+        $this->status = session('status', null);
         $this->transaksi = session('transaksi', '');
     }
 

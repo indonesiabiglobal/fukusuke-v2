@@ -45,9 +45,10 @@ class LpkEntryController extends Component
         $this->tglKeluar = session('tglKeluar', Carbon::now()->format('d-m-Y'));
         $this->searchTerm = session('searchTerm', '');
         $this->lpk_no = session('lpk_no', '');
-        $this->idProduct = session('idProduct', ['value' => '']);
-        $this->idBuyer = session('idBuyer', ['value' => '']);
-        $this->status = session('status', ['value' => '']);
+        $this->idProduct = session('idProduct', null);
+        $this->idBuyer = session('idBuyer', null);
+        $this->status = session('status', null);
+        // dd($this->status);
     }
 
     public function sessionData()
@@ -59,6 +60,7 @@ class LpkEntryController extends Component
         session()->put('idProduct', $this->idProduct);
         session()->put('idBuyer', $this->idBuyer);
         session()->put('status', $this->status);
+
     }
 
     public function search()

@@ -64,7 +64,7 @@
                         data-choices-removeItem>
                         <option value="">- All -</option>
                         @foreach ($products as $item)
-                            <option value="{{ $item->id }}">{{ $item->name }}</option>
+                            <option value="{{ $item->id }}" @if ($item->id == ($idProduct['value'] ?? null)) selected @endif>{{ $item->name }}
                         @endforeach
                     </select>
                 </div>
@@ -78,7 +78,7 @@
                         data-choices-sorting-false data-choices-removeItem>
                         <option value="">- All -</option>
                         @foreach ($buyer as $item)
-                            <option value="{{ $item->id }}">{{ $item->name }}</option>
+                            <option value="{{ $item->id }}" @if ($item->id == ($idBuyer['value'] ?? null)) selected @endif>{{ $item->name }}
                         @endforeach
                     </select>
                 </div>
@@ -91,11 +91,11 @@
                     <select class="form-control" wire:model.defer="status" id="status" name="status" data-choices
                         data-choices-sorting-false data-choices-removeItem>
                         <option value="">- All -</option>
-                        <option value="0">Un-Print</option>
-                        <option value="1">Printed</option>
-                        <option value="2">Re-Print</option>
-                        <option value="3">Belum Produksi</option>
-                        <option value="4">Sudah Produksi</option>
+                        <option value="0" @if (($status['value'] ?? null) == 0) selected @endif>Un-Print</option>
+                        <option value="1" @if (($status['value'] ?? null) == 1) selected @endif>Printed</option>
+                        <option value="2" @if (($status['value'] ?? null) == 2) selected @endif>Re-Print</option>
+                        <option value="3" @if (($status['value'] ?? null) == 3) selected @endif>Belum Produksi</option>
+                        <option value="4" @if (($status['value'] ?? null) == 4) selected @endif>Sudah Produksi</option>
                     </select>
                 </div>
             </div>
@@ -193,7 +193,7 @@
         </div>
     </div>
 
-    <div class="col text-end dropdown" x-data="{ 
+    <div class="col text-end dropdown" x-data="{
         lpk_date:true, lpk_panjang:true, lpk_jumlah:true, gentan_jumlah:true, gulung_meter:true, selisih:false, infure_progress:true, seitai_progress:true, produk_nama:false, produk_kode:true, mesin:false, buyer:false, proses_tanggal: true, seq: false, by_update: false, updated: false
         }">
         <button type="button" data-bs-toggle="dropdown" aria-expanded="false" class="btn btn-soft-primary btn-icon fs-14 mb-4">
@@ -201,71 +201,71 @@
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
             <li @click="lpk_date = !lpk_date; $refs.checkbox.checked = lpk_date" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="lpk_date = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="lpk_date"> 
+                <input x-ref="checkbox" @change="lpk_date = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="lpk_date">
                 Tanggal LPK
             </li>
             <li @click="lpk_panjang = !lpk_panjang; $refs.checkbox.checked = lpk_panjang" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="lpk_panjang = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="lpk_panjang"> 
+                <input x-ref="checkbox" @change="lpk_panjang = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="lpk_panjang">
                 Panjang LPK
             </li>
             <li @click="lpk_jumlah = !lpk_jumlah; $refs.checkbox.checked = lpk_jumlah" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="lpk_jumlah = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="lpk_jumlah"> 
+                <input x-ref="checkbox" @change="lpk_jumlah = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="lpk_jumlah">
                 Jumlah LPK
             </li>
             <li @click="gentan_jumlah = !gentan_jumlah; $refs.checkbox.checked = gentan_jumlah" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="gentan_jumlah = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="gentan_jumlah"> 
+                <input x-ref="checkbox" @change="gentan_jumlah = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="gentan_jumlah">
                 Jumlah Gentan
             </li>
             <li @click="gulung_meter = !gulung_meter; $refs.checkbox.checked = gulung_meter" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="gulung_meter = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="gulung_meter"> 
+                <input x-ref="checkbox" @change="gulung_meter = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="gulung_meter">
                 Meter Gulung
             </li>
             <li @click="selisih = !selisih; $refs.checkbox.checked = selisih" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="selisih = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="selisih"> 
+                <input x-ref="checkbox" @change="selisih = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="selisih">
                 Selisih
             </li>
             <li @click="infure_progress = !infure_progress; $refs.checkbox.checked = infure_progress" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="infure_progress = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="infure_progress"> 
+                <input x-ref="checkbox" @change="infure_progress = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="infure_progress">
                 Progress Infure
             </li>
             <li @click="seitai_progress = !seitai_progress; $refs.checkbox.checked = seitai_progress" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="seitai_progress = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="seitai_progress"> 
+                <input x-ref="checkbox" @change="seitai_progress = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="seitai_progress">
                 Progress Seitai
             </li>
             <li @click="produk_nama = !produk_nama; $refs.checkbox.checked = produk_nama" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="produk_nama = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="produk_nama"> 
+                <input x-ref="checkbox" @change="produk_nama = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="produk_nama">
                 Nama Produk
             </li>
             <li @click="produk_kode = !produk_kode; $refs.checkbox.checked = produk_kode" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="produk_kode = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="produk_kode"> 
+                <input x-ref="checkbox" @change="produk_kode = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="produk_kode">
                 Kode Produk
             </li>
             <li @click="mesin = !mesin; $refs.checkbox.checked = mesin" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="mesin = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="mesin"> 
+                <input x-ref="checkbox" @change="mesin = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="mesin">
                 Mesin
             </li>
             <li @click="buyer = !buyer; $refs.checkbox.checked = buyer" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="buyer = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="buyer"> 
+                <input x-ref="checkbox" @change="buyer = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="buyer">
                 Buyer
             </li>
             <li @click="proses_tanggal = !proses_tanggal; $refs.checkbox.checked = proses_tanggal" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="proses_tanggal = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="proses_tanggal"> 
+                <input x-ref="checkbox" @change="proses_tanggal = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="proses_tanggal">
                 Tanggal Proses
             </li>
             <li @click="seq = !seq; $refs.checkbox.checked = seq" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="seq = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="seq"> 
+                <input x-ref="checkbox" @change="seq = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="seq">
                 Seq
             </li>
             <li @click="by_update = !by_update; $refs.checkbox.checked = by_update" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="by_update = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="by_update"> 
+                <input x-ref="checkbox" @change="by_update = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="by_update">
                 Update By
             </li>
             <li @click="updated = !updated; $refs.checkbox.checked = updated" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="updated = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="updated"> 
+                <input x-ref="checkbox" @change="updated = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="updated">
                 Updated
             </li>
         </ul>
-    
+
         <div class="table-responsive table-card">
             <table class="table align-middle">
                 <thead class="table-light">

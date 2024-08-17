@@ -53,7 +53,7 @@
                     <select class="form-control"  wire:model.defer="idProduct" id="product" name="product" data-choices data-choices-sorting-false data-choices-removeItem>
                         <option value="">- All -</option>
                         @foreach ($products as $item)
-                            <option value="{{ $item->id }}" @if ($item->id == $idProduct) selected @endif>{{ $item->name }}</option>
+                            <option value="{{ $item->id }}" @if ($item->id == ($idProduct['value'] ?? null)) selected @endif>{{ $item->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -67,7 +67,7 @@
                     <select class="form-control" wire:model.defer="idBuyer" data-choices data-choices-sorting-false data-choices-removeItem>
                         <option value="">- All -</option>
                         @foreach ($buyer as $item)
-                            <option value="{{ $item->id }}" @if ($item->id == $idBuyer) selected @endif>{{ $item->name }}</option>
+                            <option value="{{ $item->id }}" @if ($item->id == ($idBuyer['value'] ?? null)) selected @endif>{{ $item->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -79,8 +79,8 @@
                 <div class="mb-1" wire:ignore>
                     <select class="form-control" wire:model.defer="status" data-choices data-choices-sorting-false data-choices-removeItem>
                         <option value="">- All -</option>
-                        <option value="0" @if ($status == 0) selected @endif>Belum LPK</option>
-                        <option value="1" @if ($status == 1) selected @endif>Sudah LPK</option>
+                        <option value="0" @if (($status['value'] ?? null) == 0) selected @endif>Belum LPK</option>
+                        <option value="1" @if (($status['value'] ?? null) == 1) selected @endif>Sudah LPK</option>
                     </select>
                 </div>
             </div>
