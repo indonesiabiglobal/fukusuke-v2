@@ -259,7 +259,14 @@
                     @forelse ($data as $item)
                         <tr>
                             <td>
-                                <a href="/edit-nippo?orderId={{ $item->id }}" class="link-success fs-15 p-1 bg-primary rounded">
+                                <a href="/edit-nippo?orderId={{ $item->id }}
+                                    &tglAwal={{ $tglMasuk }}
+                                    &tglKeluar={{ $tglKeluar }}
+                                    &lpk_no={{ $lpk_no }}
+                                    &searchTerm={{ $searchTerm }}
+                                    &idProduct={{ $idProduct }}
+                                    &machineId={{ $machineId }}
+                                    &status={{ $status }}" class="link-success fs-15 p-1 bg-primary rounded">
                                     <i class="ri-edit-box-line text-white"></i>
                                 </a>
                             </td>
