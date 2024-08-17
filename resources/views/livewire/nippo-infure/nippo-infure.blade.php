@@ -60,7 +60,7 @@
                     <select class="form-control" wire:model.defer="idProduct" data-choices data-choices-sorting-false data-choices-removeItem>
                         <option value="">- All -</option>
                         @foreach ($products as $item)
-                            <option value="{{ $item->id }}">{{ $item->name }}</option>
+                            <option value="{{ $item->id }}" @if ($item->id == ($idProduct['value'] ?? null)) selected @endif>{{ $item->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -73,7 +73,7 @@
                     <select class="form-control" wire:model.defer="machineId" data-choices data-choices-sorting-false data-choices-removeItem>
                         <option value="">- All -</option>
                         @foreach ($machine as $item)
-                            <option value="{{ $item->id }}">{{ $item->machineno }}</option>
+                            <option value="{{ $item->id }}" @if ($item->id == ($machineId['value'] ?? null)) selected @endif>{{ $item->machineno }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -85,9 +85,9 @@
                 <div class="mb-1" wire:ignore>
                     <select class="form-control" wire:model.defer="status" id="status" name="status" data-choices data-choices-sorting-false data-choices-removeItem>
                         <option value="">- all -</option>
-                        <option value="0">Open </option>
-                        <option value="1">Seitai</option>
-                        <option value="2">Kenpin</option>
+                        <option value="0" @if (($status['value'] ?? null) == 0) selected @endif>Open</option>
+                        <option value="1" @if (($status['value'] ?? null) == 1) selected @endif>Seitai</option>
+                        <option value="2" @if (($status['value'] ?? null) == 2) selected @endif>Kenpin</option>
                     </select>
                 </div>
             </div>
@@ -259,14 +259,7 @@
                     @forelse ($data as $item)
                         <tr>
                             <td>
-                                <a href="/edit-nippo?orderId={{ $item->id }}
-                                    &tglAwal={{ $tglMasuk }}
-                                    &tglKeluar={{ $tglKeluar }}
-                                    &lpk_no={{ $lpk_no }}
-                                    &searchTerm={{ $searchTerm }}
-                                    &idProduct={{ $idProduct }}
-                                    &machineId={{ $machineId }}
-                                    &status={{ $status }}" class="link-success fs-15 p-1 bg-primary rounded">
+                                <a href="/edit-nippo?orderId={{ $item->id }}" class="link-success fs-15 p-1 bg-primary rounded">
                                     <i class="ri-edit-box-line text-white"></i>
                                 </a>
                             </td>

@@ -304,7 +304,7 @@ class GeneralReportController extends Component
             return;
         }
 
-        if ($this->tglAwal > $this->tglAkhir) {
+        if ($this->tglMasuk > $this->tglKeluar) {
             session()->flash('error', 'Tanggal akhir tidak boleh kurang dari tanggal awal');
             return;
         }
@@ -7743,7 +7743,7 @@ class GeneralReportController extends Component
         $columnItem++;
         // kapasitas (kg)
         $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['capacity_kg']);
-        if  ($grandTotal['capacity_kg'] == 0) {
+        if ($grandTotal['capacity_kg'] == 0) {
             $activeWorksheet->getStyle($columnItem . $rowGrandTotal)->getNumberFormat()->setFormatCode('0;-0;"-"');
         } else {
             phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
@@ -7818,7 +7818,7 @@ class GeneralReportController extends Component
 
         /**
          * Header
-        */
+         */
         $rowHeaderStart = 3;
         $rowHeaderEnd = 4;
         $columnHeaderStart = 'B';

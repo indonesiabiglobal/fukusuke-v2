@@ -13,6 +13,7 @@ use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
 use Livewire\WithFileUploads;
 use Illuminate\Http\Request;
+use Livewire\Attributes\Session;
 
 class NippoInfureController extends Component
 {
@@ -21,13 +22,20 @@ class NippoInfureController extends Component
     public $products;
     public $buyer;
     public $machine;
+    #[Session]
     public $tglMasuk;
+    #[Session]
     public $tglKeluar;
     public $transaksi;
+    #[Session]
     public $machineId;
+    #[Session]
     public $status;
+    #[Session]
     public $lpk_no;
+    #[Session]
     public $searchTerm;
+    #[Session]
     public $idProduct;
 
     use WithFileUploads;
@@ -35,21 +43,17 @@ class NippoInfureController extends Component
 
     use WithPagination, WithoutUrlPagination;
 
-    public function mount(Request $request)
+    public function mount()
     {
         $this->products = MsProduct::get();
         $this->tdOrderLpk = TdOrderLpk::get();
         $this->buyer = MsBuyer::get();
         $this->machine = MsMachine::whereIn('department_id', [10, 12, 15, 2, 4, 10])->get();
-
-        $this->tglMasuk = Carbon::now()->format('d-m-Y');
-        if (!empty($request->query('tglAwal'))) {
-            $this->tglMasuk = $request->query('tglAwal');
+        if (empty($this->tglMasuk)) {
+            $this->tglMasuk = Carbon::now()->format('d-m-Y');
         }
-
-        $this->tglKeluar = Carbon::now()->format('d-m-Y');
-        if (!empty($request->query('tglKeluar'))) {
-            $this->tglKeluar = $request->query('tglKeluar');
+        if (empty($this->tglKeluar)) {
+            $this->tglKeluar = Carbon::now()->format('d-m-Y');
         }
     }
 
