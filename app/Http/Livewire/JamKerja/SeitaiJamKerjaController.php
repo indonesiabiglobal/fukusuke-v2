@@ -60,44 +60,7 @@ class SeitaiJamKerjaController extends Component
 
     public function search()
     {
-        // $tglMasuk = '';
-        // if (isset($this->tglMasuk) && $this->tglMasuk != '') {
-        //     $tglMasuk = "WHERE tdjkm.working_date >= '" . $this->tglMasuk . "'";
-        // }
-        // $tglKeluar = '';
-        // if (isset($this->tglKeluar) && $this->tglKeluar != '') {
-        //     $tglKeluar = "AND tdjkm.working_date <= '" . $this->tglKeluar . "'";
-        // }
-        // $searchTerm = '';
-        // if (isset($this->searchTerm) && $this->searchTerm != '') {
-        //     $searchTerm = "AND (tdol.lpk_no ilike '%" . $this->searchTerm .
-        //     "%' OR tdpg.production_no ilike '%" . $this->searchTerm .
-        //     "%' OR tdpg.product_id ilike '%" . $this->searchTerm .
-        //     "%' OR tdpg.machine_id ilike '%" . $this->searchTerm .
-        //     "%')";
-        // }
-
-        // $jamkerja = DB::select("
-        // SELECT
-        //     tdjkm.ID AS ID,
-        //     tdjkm.working_date AS working_date,
-        //     tdjkm.work_shift AS work_shift,
-        //     tdjkm.machine_id AS machine_id,
-        //     tdjkm.department_id AS department_id,
-        //     tdjkm.employee_id AS employee_id,
-        //     tdjkm.work_hour AS work_hour,
-        //     tdjkm.off_hour AS off_hour,
-        //     tdjkm.on_hour AS on_hour,
-        //     tdjkm.created_by AS created_by,
-        //     tdjkm.created_on AS created_on,
-        //     tdjkm.updated_by AS updated_by,
-        //     tdjkm.updated_on AS updated_on
-        // FROM
-        //     tdJamKerjaMesin AS tdjkm
-        // $tglMasuk
-        // $tglKeluar
-        // LIMIT 5
-        // ");
+        $this->resetPage();
         $this->render();
     }
 

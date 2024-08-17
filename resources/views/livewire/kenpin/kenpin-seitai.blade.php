@@ -53,7 +53,7 @@
                     <select class="form-control" style="padding:0.44rem" wire:model.defer="idProduct" data-choices data-choices-sorting-false data-choices-removeItem>
                         <option value="">- All -</option>
                         @foreach ($products as $item)
-                            <option value="{{ $item->id }}">{{ $item->name }}</option>
+                            <option value="{{ $item->id }}" @if ($item->id == ($idProduct['value'] ?? null)) selected @endif>{{ $item->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -77,8 +77,8 @@
                 <div wire:ignore>
                     <select class="form-control" style="padding:0.44rem" wire:model.defer="status" id="status" name="status" data-choices data-choices-sorting-false data-choices-removeItem>
                         <option value="">- all -</option>
-                        <option value="1">Proses</option>
-                        <option value="2">Finish</option>
+                        <option value="1" @if (($status['value'] ?? null) == 1) selected @endif>Proses</option>
+                        <option value="2" @if (($status['value'] ?? null) == 2) selected @endif>Finish</option>
                     </select>
                 </div>
             </div>

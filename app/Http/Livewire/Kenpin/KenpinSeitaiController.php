@@ -8,27 +8,44 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\DB;
 use Livewire\WithoutUrlPagination;
+use Livewire\Attributes\Session;
 
 class KenpinSeitaiController extends Component
 {
     use WithPagination, WithoutUrlPagination;
 
     public $products;
+    #[Session]
     public $tglMasuk;
+    #[Session]
     public $tglKeluar;
+    #[Session]
     public $status;
+    #[Session]
     public $searchTerm;
+    #[Session]
     public $idProduct;
+    #[Session]
     public $lpk_no;
+    #[Session]
+    public $nomor_palet;
+    #[Session]
+    public $nomor_lot;
+
 
     public function mount()
     {
-        $this->products = MsProduct::limit(10)->get();
-        $this->tglMasuk = Carbon::now()->format('Y-m-d');
-        $this->tglKeluar = Carbon::now()->format('Y-m-d');
+        $this->products = MsProduct::get();
+        if (empty($this->tglMasuk)) {
+            $this->tglMasuk = Carbon::now()->format('d-m-Y');
+        }
+        if (empty($this->tglKeluar)) {
+            $this->tglKeluar = Carbon::now()->format('d-m-Y');
+        }
     }
 
-    public function search(){
+    public function search()
+    {
         $this->render();
         // $tglMasuk = '';
         // if (isset($this->tglMasuk) && $this->tglMasuk != '') {
@@ -91,33 +108,35 @@ class KenpinSeitaiController extends Component
     public function render()
     {
         $data = DB::table('tdkenpin_goods AS tdkg')
-        ->join(
-            DB::raw("(SELECT DISTINCT tdkgd.kenpin_goods_id AS kenpin_goods_id 
+            ->join(
+                DB::raw("(SELECT DISTINCT tdkgd.kenpin_goods_id AS kenpin_goods_id 
                       FROM tdkenpin_goods_detail AS tdkgd 
                       INNER JOIN tdproduct_goods AS tdpg ON tdkgd.product_goods_id = tdpg.id 
                       INNER JOIN tdorderlpk AS tdol ON tdpg.lpk_id = tdol.id 
                       ) AS distinct1"),
-            'tdkg.id', '=', 'distinct1.kenpin_goods_id'
-        )
-        ->join('msproduct AS msp', 'tdkg.product_id', '=', 'msp.id')
-        ->join('msemployee AS mse', 'mse.id', '=', 'tdkg.employee_id')
-        ->select(
-            'tdkg.id',
-            'tdkg.kenpin_no',
-            'tdkg.kenpin_date',
-            'tdkg.employee_id',
-            'tdkg.product_id',
-            'tdkg.qty_loss',
-            'tdkg.remark',
-            'tdkg.status_kenpin',
-            'tdkg.created_by',
-            'tdkg.created_on',
-            'tdkg.updated_by',
-            'tdkg.updated_on',
-            'msp.code',
-            'msp.name AS namaproduk',
-            'mse.empname AS namapetugas'
-        );
+                'tdkg.id',
+                '=',
+                'distinct1.kenpin_goods_id'
+            )
+            ->join('msproduct AS msp', 'tdkg.product_id', '=', 'msp.id')
+            ->join('msemployee AS mse', 'mse.id', '=', 'tdkg.employee_id')
+            ->select(
+                'tdkg.id',
+                'tdkg.kenpin_no',
+                'tdkg.kenpin_date',
+                'tdkg.employee_id',
+                'tdkg.product_id',
+                'tdkg.qty_loss',
+                'tdkg.remark',
+                'tdkg.status_kenpin',
+                'tdkg.created_by',
+                'tdkg.created_on',
+                'tdkg.updated_by',
+                'tdkg.updated_on',
+                'msp.code',
+                'msp.name AS namaproduk',
+                'mse.empname AS namapetugas'
+            );
         if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
             $data = $data->where('tdkg.kenpin_date', '>=', $this->tglMasuk);
         }
@@ -138,7 +157,7 @@ class KenpinSeitaiController extends Component
         }
         $data = $data->paginate();
 
-        return view('livewire.kenpin.kenpin-seitai',[
+        return view('livewire.kenpin.kenpin-seitai', [
             'data' => $data
         ])->extends('layouts.master');
     }
