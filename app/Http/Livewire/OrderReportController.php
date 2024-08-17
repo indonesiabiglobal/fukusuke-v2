@@ -43,7 +43,6 @@ class OrderReportController extends Component
         $this->tglAwal = Carbon::now()->format('Y-m-d');
         $this->tglAkhir = Carbon::now()->format('Y-m-d');
         $this->buyer = MsBuyer::get();
-        dd($this->buyer);
         $this->workingShiftHour = MsWorkingShift::select('work_hour_from', 'work_hour_till')->where('status', 1)->orderBy('work_hour_from', 'ASC')->get();
         $this->jamAwal = $this->workingShiftHour[0]->work_hour_from;
         $this->jamAkhir = $this->workingShiftHour[count($this->workingShiftHour) - 1]->work_hour_till;
@@ -1346,17 +1345,17 @@ class OrderReportController extends Component
             $activeWorksheet->setCellValue('A' . $rowItemEnd, 'Total');
             $columnItem = 'H';
             // total order qty
-            $activeWorksheet->setCellValue($columnItem . $rowItemEnd, '=SUM(H' . $rowItemStart . ':H' . ($rowItemEnd - 1) . ')');
+            $activeWorksheet->setCellValue($columnItem . $rowItemEnd, '=SUM('.$columnItem . $rowItemStart . ':'.$columnItem . ($rowItemEnd - 1) . ')');
             phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItemEnd);
             $columnItem++;
             $columnItem++;
 
             // total LPK qty
-            $activeWorksheet->setCellValue($columnItem . $rowItemEnd, '=SUM(J' . $rowItemStart . ':J' . ($rowItemEnd - 1) . ')');
+            $activeWorksheet->setCellValue($columnItem . $rowItemEnd, '=SUM('.$columnItem . $rowItemStart . ':'.$columnItem . ($rowItemEnd - 1) . ')');
             phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItemEnd);
             $columnItem++;
             // total LPK meter
-            $activeWorksheet->setCellValue($columnItem . $rowItemEnd, '=SUM(K' . $rowItemStart . ':K' . ($rowItemEnd - 1) . ')');
+            $activeWorksheet->setCellValue($columnItem . $rowItemEnd, '=SUM('.$columnItem . $rowItemStart . ':'.$columnItem . ($rowItemEnd - 1) . ')');
             phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItemEnd);
             $columnItem++;
 

@@ -51,7 +51,7 @@
         <div class="form-group mt-1">
             <div class="input-group">
                 <label class="control-label col-12 col-lg-2 fw-bold"></label>
-                <button type="button" class="btn btn-success btn-print" wire:click="print">
+                <button type="button" class="btn btn-success btn-print" wire:click="print" {{ !$lpk_id ? 'disabled' : '' }}>
                     <span wire:loading.remove wire:target="print">
                         <i class="ri-printer-line"></i> Print
                     </span>
