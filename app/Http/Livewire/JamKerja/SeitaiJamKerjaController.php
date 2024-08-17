@@ -11,11 +11,14 @@ use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
+use Livewire\Attributes\Session;
 
 class SeitaiJamKerjaController extends Component
 {
     protected $paginationTheme = 'bootstrap';
+    #[Session]
     public $tglMasuk;
+    #[Session]
     public $tglKeluar;
     // public $jamkerja = [];
     public $machinename;
@@ -27,73 +30,83 @@ class SeitaiJamKerjaController extends Component
     public $working_date;
     public $empname;
     public $work_shift;
+    #[Session]
     public $machine_id;
+    #[Session]
+    public $work_shift_filter;
     public $employee_id;
     public $work_hour;
     public $off_hour;
     public $on_hour;
     public $orderid;
     public $workShift;
+    #[Session]
+    public $searchTerm;
 
     use WithPagination, WithoutUrlPagination;
 
     public function mount()
     {
-        $this->tglMasuk = Carbon::now()->format('d-m-Y');
-        $this->tglKeluar = Carbon::now()->format('d-m-Y');
+        if (empty($this->tglMasuk)) {
+            $this->tglMasuk = Carbon::now()->format('d-m-Y');
+        }
+        if (empty($this->tglKeluar)) {
+            $this->tglKeluar = Carbon::now()->format('d-m-Y');
+        }
         $this->machine  = MsMachine::limit(10)->get();
         $this->working_date = Carbon::now()->format('d-m-Y');
         $this->workShift  = MsWorkingShift::where('status', 1)->get();
     }
 
-    public function search(){
-            // $tglMasuk = '';
-            // if (isset($this->tglMasuk) && $this->tglMasuk != '') {
-            //     $tglMasuk = "WHERE tdjkm.working_date >= '" . $this->tglMasuk . "'";
-            // }
-            // $tglKeluar = '';
-            // if (isset($this->tglKeluar) && $this->tglKeluar != '') {
-            //     $tglKeluar = "AND tdjkm.working_date <= '" . $this->tglKeluar . "'";
-            // }
-            // $searchTerm = '';
-            // if (isset($this->searchTerm) && $this->searchTerm != '') {
-            //     $searchTerm = "AND (tdol.lpk_no ilike '%" . $this->searchTerm .
-            //     "%' OR tdpg.production_no ilike '%" . $this->searchTerm .
-            //     "%' OR tdpg.product_id ilike '%" . $this->searchTerm .
-            //     "%' OR tdpg.machine_id ilike '%" . $this->searchTerm .
-            //     "%')";
-            // }
+    public function search()
+    {
+        // $tglMasuk = '';
+        // if (isset($this->tglMasuk) && $this->tglMasuk != '') {
+        //     $tglMasuk = "WHERE tdjkm.working_date >= '" . $this->tglMasuk . "'";
+        // }
+        // $tglKeluar = '';
+        // if (isset($this->tglKeluar) && $this->tglKeluar != '') {
+        //     $tglKeluar = "AND tdjkm.working_date <= '" . $this->tglKeluar . "'";
+        // }
+        // $searchTerm = '';
+        // if (isset($this->searchTerm) && $this->searchTerm != '') {
+        //     $searchTerm = "AND (tdol.lpk_no ilike '%" . $this->searchTerm .
+        //     "%' OR tdpg.production_no ilike '%" . $this->searchTerm .
+        //     "%' OR tdpg.product_id ilike '%" . $this->searchTerm .
+        //     "%' OR tdpg.machine_id ilike '%" . $this->searchTerm .
+        //     "%')";
+        // }
 
-            // $jamkerja = DB::select("
-            // SELECT
-            //     tdjkm.ID AS ID,
-            //     tdjkm.working_date AS working_date,
-            //     tdjkm.work_shift AS work_shift,
-            //     tdjkm.machine_id AS machine_id,
-            //     tdjkm.department_id AS department_id,
-            //     tdjkm.employee_id AS employee_id,
-            //     tdjkm.work_hour AS work_hour,
-            //     tdjkm.off_hour AS off_hour,
-            //     tdjkm.on_hour AS on_hour,
-            //     tdjkm.created_by AS created_by,
-            //     tdjkm.created_on AS created_on,
-            //     tdjkm.updated_by AS updated_by,
-            //     tdjkm.updated_on AS updated_on
-            // FROM
-            //     tdJamKerjaMesin AS tdjkm
-            // $tglMasuk
-            // $tglKeluar
-            // LIMIT 5
-            // ");
+        // $jamkerja = DB::select("
+        // SELECT
+        //     tdjkm.ID AS ID,
+        //     tdjkm.working_date AS working_date,
+        //     tdjkm.work_shift AS work_shift,
+        //     tdjkm.machine_id AS machine_id,
+        //     tdjkm.department_id AS department_id,
+        //     tdjkm.employee_id AS employee_id,
+        //     tdjkm.work_hour AS work_hour,
+        //     tdjkm.off_hour AS off_hour,
+        //     tdjkm.on_hour AS on_hour,
+        //     tdjkm.created_by AS created_by,
+        //     tdjkm.created_on AS created_on,
+        //     tdjkm.updated_by AS updated_by,
+        //     tdjkm.updated_on AS updated_on
+        // FROM
+        //     tdJamKerjaMesin AS tdjkm
+        // $tglMasuk
+        // $tglKeluar
+        // LIMIT 5
+        // ");
         $this->render();
     }
 
     public function edit($orderid)
     {
         $item = TdJamKerjaMesin::find($orderid);
-        if($item){
-            $machine=MsMachine::where('id', $item->machine_id)->first();
-            $msemployee=MsEmployee::where('id', $item->employee_id)->first();
+        if ($item) {
+            $machine = MsMachine::where('id', $item->machine_id)->first();
+            $msemployee = MsEmployee::where('id', $item->employee_id)->first();
 
             $this->orderid = $item->id;
             $this->working_date = $item->working_date;
@@ -104,7 +117,7 @@ class SeitaiJamKerjaController extends Component
             $this->empname = $msemployee->empname;
             $this->work_hour = Carbon::parse($item->work_hour)->format('H:i');
             $this->off_hour = Carbon::parse($item->off_hour)->format('H:i');
-        }else{
+        } else {
             return redirect()->to('jam-kerja/seitai');
         }
     }
@@ -124,7 +137,8 @@ class SeitaiJamKerjaController extends Component
         $this->off_hour = '';
     }
 
-    public function save(){
+    public function save()
+    {
         $validatedData = $this->validate([
             'working_date' => 'required',
             'work_shift' => 'required',
@@ -143,11 +157,11 @@ class SeitaiJamKerjaController extends Component
             $interval = $workHour->diff($offHour);
             $onHour = $interval->format('%H:%I');
 
-            if(isset($this->orderid)){
-                $machine=MsMachine::where('machineno', $this->machineno)->first();
-                $msemployee=MsEmployee::where('employeeno', $this->employeeno)->first();
+            if (isset($this->orderid)) {
+                $machine = MsMachine::where('machineno', $this->machineno)->first();
+                $msemployee = MsEmployee::where('employeeno', $this->employeeno)->first();
 
-                TdJamKerjaMesin::where('id',$this->orderid)->update([
+                TdJamKerjaMesin::where('id', $this->orderid)->update([
                     'working_date' => $this->working_date,
                     'work_shift' => $this->work_shift,
                     'machine_id' => $machine->id,
@@ -158,9 +172,9 @@ class SeitaiJamKerjaController extends Component
                 ]);
                 $this->reset(['employeeno', 'empname', 'machineno', 'machinename', 'working_date', 'work_shift']);
                 $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
-            }else {
-                $machine=MsMachine::where('machineno', $this->machineno)->first();
-                $msemployee=MsEmployee::where('employeeno', $this->employeeno)->first();
+            } else {
+                $machine = MsMachine::where('machineno', $this->machineno)->first();
+                $msemployee = MsEmployee::where('employeeno', $this->employeeno)->first();
 
                 $orderlpk = new TdJamKerjaMesin();
                 $orderlpk->working_date = $this->working_date;
@@ -184,70 +198,72 @@ class SeitaiJamKerjaController extends Component
 
     public function render()
     {
-        if(isset($this->machineno) && $this->machineno != ''){
-            $machine=MsMachine::where('machineno', $this->machineno)->first();
+        if (isset($this->machineno) && $this->machineno != '') {
+            $machine = MsMachine::where('machineno', $this->machineno)->first();
 
-            if($machine == null){
+            if ($machine == null) {
                 $this->dispatch('notification', ['type' => 'error', 'message' => 'Machine ' . $this->machineno . ' Tidak Terdaftar']);
             } else {
                 $this->machinename = $machine->machinename;
             }
         }
 
-        if(isset($this->employeeno) && $this->employeeno != ''){
-            $msemployee=MsEmployee::where('employeeno', $this->employeeno)->first();
+        if (isset($this->employeeno) && $this->employeeno != '') {
+            $msemployee = MsEmployee::where('employeeno', $this->employeeno)->first();
 
-            if($msemployee == null){
+            if ($msemployee == null) {
                 $this->dispatch('notification', ['type' => 'error', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
             } else {
                 $this->empname = $msemployee->empname;
             }
         }
 
-        // $jamkerja = DB::select("
-        // SELECT
-        //     tdjkm.id AS orderid,
-        //     tdjkm.working_date AS working_date,
-        //     tdjkm.work_shift AS work_shift,
-        //     tdjkm.machine_id AS machine_id,
-        //     tdjkm.department_id AS department_id,
-        //     tdjkm.employee_id AS employee_id,
-        //     tdjkm.work_hour AS work_hour,
-        //     tdjkm.off_hour AS off_hour,
-        //     tdjkm.on_hour AS on_hour,
-        //     tdjkm.created_by AS created_by,
-        //     tdjkm.created_on AS created_on,
-        //     tdjkm.updated_by AS updated_by,
-        //     tdjkm.updated_on AS updated_on
-        // FROM
-        //     tdJamKerjaMesin AS tdjkm
-        // WHERE tdjkm.working_date >= '$this->tglMasuk 00:00'
-        // AND tdjkm.working_date <= '$this->tglKeluar 23:59'
-        // ");
+        $data = DB::table('tdjamkerjamesin AS tdjkm')
+            ->select(
+                'tdjkm.id as orderid',
+                'tdjkm.working_date',
+                'tdjkm.work_shift',
+                'tdjkm.machine_id',
+                'tdjkm.department_id',
+                'tdjkm.employee_id',
+                'tdjkm.work_hour',
+                'tdjkm.off_hour',
+                'tdjkm.on_hour',
+                'tdjkm.created_by',
+                'tdjkm.created_on',
+                'tdjkm.updated_by',
+                'tdjkm.updated_on',
+                'msm.machineno',
+                'msm.machinename'
+            )
+            ->join('msmachine AS msm', 'msm.id', '=', 'tdjkm.machine_id');
 
-        $jamkerja = TdJamKerjaMesin::select(
-            'id as orderid',
-            'working_date',
-            'work_shift',
-            'machine_id',
-            'department_id',
-            'employee_id',
-            'work_hour',
-            'off_hour',
-            'on_hour',
-            'created_by',
-            'created_on',
-            'updated_by',
-            'updated_on'
-        )
-        ->whereBetween('working_date', [
-            $this->tglMasuk . ' 00:00:00',
-            $this->tglKeluar . ' 23:59:59'
-        ])
-        ->paginate(8);
+        if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
+            $data = $data->where('tdjkm.working_date', '>=', $this->tglMasuk);
+        }
 
-        return view('livewire.jam-kerja.seitai',
-            ['data' => $jamkerja]
+        if (isset($this->tglKeluar) && $this->tglKeluar != "" && $this->tglKeluar != "undefined") {
+            $data = $data->where('tdjkm.working_date', '<=', $this->tglKeluar);
+        }
+
+        if (isset($this->machine_id) && $this->machine_id['value'] != "" && $this->machine_id != "undefined") {
+            $data = $data->where('tdjkm.machine_id', $this->machine_id['value']);
+        }
+        if (isset($this->work_shift_filter) && $this->work_shift_filter['value'] != "" && $this->work_shift_filter != "undefined") {
+            $data = $data->where('tdjkm.work_shift', $this->work_shift_filter);
+        }
+        if (isset($this->searchTerm) && $this->searchTerm != '') {
+            $data = $data->where(function ($query) {
+                $query->where('msm.machineno', 'ilike', '%' . $this->searchTerm . '%')
+                    ->orWhere('msm.machinename', 'ilike', '%' . $this->searchTerm . '%');
+            });
+        }
+
+        $data = $data->paginate(8);
+
+        return view(
+            'livewire.jam-kerja.seitai',
+            ['data' => $data]
         )->extends('layouts.master');
     }
 }

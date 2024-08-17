@@ -11,11 +11,14 @@ use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
+use Livewire\Attributes\Session;
 
 class InfureJamKerjaController extends Component
 {
     protected $paginationTheme = 'bootstrap';
+    #[Session]
     public $tglMasuk;
+    #[Session]
     public $tglKeluar;
     // public $jamkerja = [];
     public $machinename;
@@ -27,7 +30,9 @@ class InfureJamKerjaController extends Component
     public $working_date;
     public $empname;
     public $work_shift;
+    #[Session]
     public $work_shift_filter;
+    #[Session]
     public $machine_id;
     public $employee_id;
     public $work_hour;
@@ -35,13 +40,19 @@ class InfureJamKerjaController extends Component
     public $on_hour;
     public $orderid;
     public $workShift;
+    #[Session]
+    public $searchTerm;
 
     use WithPagination, WithoutUrlPagination;
 
     public function mount()
     {
-        $this->tglMasuk = Carbon::now()->format('d-m-Y');
-        $this->tglKeluar = Carbon::now()->format('d-m-Y');
+        if (empty($this->tglMasuk)) {
+            $this->tglMasuk = Carbon::now()->format('d-m-Y');
+        }
+        if (empty($this->tglKeluar)) {
+            $this->tglKeluar = Carbon::now()->format('d-m-Y');
+        }
         $this->machine  = MsMachine::get();
         $this->workShift  = MsWorkingShift::where('status', 1)->get();
         $this->working_date = Carbon::now()->format('d-m-Y');
@@ -183,8 +194,11 @@ class InfureJamKerjaController extends Component
                 'tdjkm.created_by',
                 'tdjkm.created_on',
                 'tdjkm.updated_by',
-                'tdjkm.updated_on'
-            );
+                'tdjkm.updated_on',
+                'msm.machineno',
+                'msm.machinename'
+            )
+            ->join('msmachine AS msm', 'msm.id', '=', 'tdjkm.machine_id');
 
         if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
             $data = $data->where('tdjkm.working_date', '>=', $this->tglMasuk);
@@ -199,6 +213,12 @@ class InfureJamKerjaController extends Component
         }
         if (isset($this->work_shift_filter) && $this->work_shift_filter['value'] != "" && $this->work_shift_filter != "undefined") {
             $data = $data->where('tdjkm.work_shift', $this->work_shift_filter);
+        }
+        if (isset($this->searchTerm) && $this->searchTerm != '') {
+            $data = $data->where(function ($query) {
+                $query->where('msm.machineno', 'ilike', '%' . $this->searchTerm . '%')
+                    ->orWhere('msm.machinename', 'ilike', '%' . $this->searchTerm . '%');
+            });
         }
 
         $data = $data->paginate(8);

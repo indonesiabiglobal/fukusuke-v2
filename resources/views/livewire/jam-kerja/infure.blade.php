@@ -46,7 +46,7 @@
                     <select class="form-control" wire:model.defer="machine_id" data-choices data-choices-sorting-false data-choices-removeItem>
                         <option value="">- All -</option>
                         @foreach ($machine as $item)
-                            <option value="{{ $item->id }}">{{ $item->machineno }}</option>
+                            <option value="{{ $item->id }}" @if ($item->id == ($machine_id['value'] ?? null)) selected @endif>{{ $item->machineno }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -59,7 +59,7 @@
                     <select class="form-control" wire:model.defer="work_shift_filter" data-choices data-choices-sorting-false data-choices-removeItem>
                         <option value="">- All -</option>
                         @foreach ($workShift as $item)
-                            <option value="{{ $item->id }}">{{ $item->work_shift }}</option>
+                            <option value="{{ $item->id }}" @if ($item->id == ($work_shift_filter['value'] ?? null)) selected @endif>{{ $item->work_shift }}</option>
                         @endforeach
                     </select>
                 </div>
