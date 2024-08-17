@@ -20,7 +20,7 @@ class CetakLpkController extends Component
     public function print()
     {
         $lpk_id= $this->lpk_id;
-        if ($lpk_id == null) {
+        if (!(isset($this->lpk_id) && $this->lpk_id != '')) {
             $this->dispatch('notification', ['type' => 'warning', 'message' => 'No LPK Tidak Terdaftar']);
             return;
         }
