@@ -2,14 +2,16 @@
 
 namespace App\Http\Livewire\Report;
 
-use App\Exports\DetailReportExport;
-use App\Helpers\phpspreadsheet;
-use App\Models\MsWorkingShift;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 use Livewire\Component;
+use App\Models\MsMachine;
+use App\Models\MsDepartment;
+use App\Models\MsWorkingShift;
+use App\Helpers\phpspreadsheet;
+use Illuminate\Support\Facades\DB;
+use App\Exports\DetailReportExport;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -21,6 +23,15 @@ class DetailReportController extends Component
     public $jamAkhir;
     public $workingShiftHour;
     public $nippo = 'Infure';
+    public $lpk_no;
+    public $code;
+    public $department;
+    public $departemenId;
+    public $machine;
+    public $machineId;
+    public $nomor_han;
+    public $nomorPalet;
+    public $nomorLot;
 
     public function mount()
     {
@@ -29,14 +40,12 @@ class DetailReportController extends Component
         $this->workingShiftHour = MsWorkingShift::select('work_hour_from', 'work_hour_till')->where('status', 1)->orderBy('work_hour_from', 'ASC')->get();
         $this->jamAwal = $this->workingShiftHour[0]->work_hour_from;
         $this->jamAkhir = $this->workingShiftHour[count($this->workingShiftHour) - 1]->work_hour_till;
+        $this->machine = MsMachine::get();
+        $this->department = MsDepartment::get();
     }
 
     public function export()
     {
-        // return Excel::download(new DetailReportExport(
-        //     $this->tglAwal,
-        //     $this->tglAkhir
-        // ), 'Detail_Report.xlsx');
 
         $rules = [
             'tglAwal' => 'required',
