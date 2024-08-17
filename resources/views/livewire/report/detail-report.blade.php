@@ -76,7 +76,7 @@
             <div class="form-group mt-1">
                 <div class="input-group">
                     <span class="input-group-addon col-12 col-lg-3">Nomor Order </span>
-                    <input type="text" class="form-control" placeholder="..." wire:model.defer="code">
+                    <input type="text" class="form-control" placeholder="..." wire:model.defer="nomorOrder">
                 </div>
             </div>
             {{-- departemen --}}
@@ -87,7 +87,7 @@
                     </div>
                     <div class="col-12 col-lg-9">
                         <div class="mb-1" wire:ignore>
-                            <select class="form-control" wire:model.defer="departemenId" data-choices
+                            <select class="form-control" wire:model.defer="departmentId" data-choices
                                 data-choices-sorting-false data-choices-removeItem>
                                 <option value="">- All -</option>
                                 @foreach ($department as $item)
@@ -123,7 +123,7 @@
                     <div class="input-group">
                         <span class="input-group-addon col-12 col-lg-3 text-muted">Nomor Han</span>
                         <input type="text" class="form-control" placeholder="00-00-00A"
-                            wire:model.defer="nomor_han" />
+                            wire:model.defer="nomorHan" />
                     </div>
                 </div>
             @elseif ($nippo == 'Seitai')

@@ -24,12 +24,12 @@ class DetailReportController extends Component
     public $workingShiftHour;
     public $nippo = 'Infure';
     public $lpk_no;
-    public $code;
+    public $nomorOrder;
     public $department;
-    public $departemenId;
+    public $departmentId;
     public $machine;
     public $machineId;
-    public $nomor_han;
+    public $nomorHan;
     public $nomorPalet;
     public $nomorLot;
 
@@ -151,25 +151,58 @@ class DetailReportController extends Component
         phpspreadsheet::styleFont($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart, true, 9, 'Calibri');
         phpspreadsheet::textAlignCenter($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
 
+        // Filter Query
+        $filterDate = "tdpa.production_date BETWEEN '$tglAwal' AND '$tglAkhir'";
+        $filterNoLPK = $this->lpk_no ? " AND (tdol.lpk_no = '$this->lpk_no')" : '';
+        $nomorOrder = $this->nomorOrder ? " AND (msp.code = '$this->nomorOrder')" : '';
+        $this->departmentId = $this->departmentId ? (is_array($this->departmentId) ? $this->departmentId['value'] : $this->departmentId) : '';
+        $filterDepartment = $this->departmentId ? " AND (msd.id = '$this->departmentId')" : '';
+        $this->machineId = $this->machineId ? (is_array($this->machineId) ? $this->machineId['value'] : $this->machineId) : '';
+        $filterMachine = $this->machineId ? " AND (tdpa.machine_id = '$this->machineId')" : '';
+        $filterNomorHan = $this->nomorHan ? " AND (tdpa.nomor_han = '$this->nomorHan')" : '';
+
         // qeury belum bener
         $data = collect(DB::select(
             "
                 SELECT
-                    tod.id,
-                    tod.po_no,
-                    mp.code,
-                    mp.name AS produk_name,
-                    tod.product_code,
-                    tod.order_qty,
-                    tod.order_unit,
-                    tod.stufingdate,
-                    tod.etddate,
-                    tod.etadate,
-                    mbu.NAME AS buyer_name
+                    tdpa.production_date AS tglproduksi,
+                    tdpa.work_shift AS shift,
+                    tdpa.work_hour AS jam,
+                    tdpa.employee_id AS employee_id,
+                    mse.employeeno AS nik,
+                    mse.empname AS namapetugas,
+                    msd.NAME AS deptpetugas,
+                    tdpa.machine_id AS machine_id,
+                    msm.machineno AS nomesin,
+                    msm.machinename AS namamesin,
+                    tdpa.product_id AS product_id,
+                    msp.code AS produkcode,
+                    msp.NAME AS namaproduk,
+                    tdol.lpk_no AS lpk_no,
+                    tdpa.nomor_han AS nomor_han,
+                    tdpa.gentan_no AS gentan_no,
+                    tdpa.panjang_produksi AS panjang_produksi,
+                    tdpa.panjang_printing_inline AS panjang_printing_inline,
+                    tdpa.berat_produksi AS berat_produksi,
+                    msli.code AS losscode,
+                    msli.NAME AS lossname,
+                    tdpal.berat_loss
                 FROM
-                    tdorder AS tod
-                INNER JOIN msproduct AS mp ON mp.id = tod.product_id
-                INNER JOIN msbuyer AS mbu ON mbu.id = tod.buyer_id",
+                    tdProduct_Assembly AS tdpa
+                    INNER JOIN tdOrderLpk AS tdol ON tdpa.lpk_id = tdol.id
+                    INNER JOIN msEmployee AS mse ON mse.ID = tdpa.employee_id
+                    INNER JOIN msMachine AS msm ON msm.ID = tdpa.machine_id
+                    INNER JOIN msProduct AS msp ON msp.ID = tdpa.product_id
+                    INNER JOIN msDepartment AS msd ON msd.ID = mse.department_id
+                    LEFT JOIN tdProduct_Assembly_Loss AS tdpal ON tdpal.product_assembly_id = tdpa.
+                    ID LEFT JOIN msLossInfure AS msli ON msli.ID = tdpal.loss_infure_id
+                WHERE
+                    $filterDate
+                    $filterNoLPK
+                    $nomorOrder
+                    $filterDepartment
+                    $filterMachine
+                    $filterNomorHan",
         ));
 
         if (count($data) == 0) {
@@ -257,6 +290,17 @@ class DetailReportController extends Component
         phpspreadsheet::addFullBorder($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
         phpspreadsheet::styleFont($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart, true, 9, 'Calibri');
         phpspreadsheet::textAlignCenter($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
+
+        // Filter Query
+        $filterDate = "tdpg.created_on BETWEEN '$tglAwal' AND '$tglAkhir'";
+        $filterNoLPK = $this->lpk_no ? " AND (tdol.lpk_no = '$this->lpk_no')" : '';
+        $nomorOrder = $this->nomorOrder ? " AND (mp.code = '$this->nomorOrder')" : '';
+        $this->departmentId = $this->departmentId ? (is_array($this->departmentId) ? $this->departmentId['value'] : $this->departmentId) : '';
+        $filterDepartment = $this->departmentId ? " AND (mm.department_id = '$this->departmentId')" : '';
+        $this->machineId = $this->machineId ? (is_array($this->machineId) ? $this->machineId['value'] : $this->machineId) : '';
+        $filterMachine = $this->machineId ? " AND (tdpg.machine_id = '$this->machineId')" : '';
+        $filterNomorPalet = $this->nomorPalet ? " AND (tdpg.nomor_palet = '$this->nomorPalet')" : '';
+        $filterNomorLot = $this->nomorLot ? " AND (tdpg.nomor_lot = '$this->nomorLot')" : '';
 
         // qeury belum bener
         $data = collect(DB::select(

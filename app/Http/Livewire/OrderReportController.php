@@ -1346,17 +1346,17 @@ class OrderReportController extends Component
             $activeWorksheet->setCellValue('A' . $rowItemEnd, 'Total');
             $columnItem = 'H';
             // total order qty
-            $activeWorksheet->setCellValue($columnItem . $rowItemEnd, '=SUM(H' . $rowItemStart . ':H' . ($rowItemEnd - 1) . ')');
+            $activeWorksheet->setCellValue($columnItem . $rowItemEnd, '=SUM('.$columnItem . $rowItemStart . ':'.$columnItem . ($rowItemEnd - 1) . ')');
             phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItemEnd);
             $columnItem++;
             $columnItem++;
 
             // total LPK qty
-            $activeWorksheet->setCellValue($columnItem . $rowItemEnd, '=SUM(J' . $rowItemStart . ':J' . ($rowItemEnd - 1) . ')');
+            $activeWorksheet->setCellValue($columnItem . $rowItemEnd, '=SUM('.$columnItem . $rowItemStart . ':'.$columnItem . ($rowItemEnd - 1) . ')');
             phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItemEnd);
             $columnItem++;
             // total LPK meter
-            $activeWorksheet->setCellValue($columnItem . $rowItemEnd, '=SUM(K' . $rowItemStart . ':K' . ($rowItemEnd - 1) . ')');
+            $activeWorksheet->setCellValue($columnItem . $rowItemEnd, '=SUM('.$columnItem . $rowItemStart . ':'.$columnItem . ($rowItemEnd - 1) . ')');
             phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItemEnd);
             $columnItem++;
 
