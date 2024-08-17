@@ -21,9 +21,9 @@ class OrderLpkController extends Component
     protected $paginationTheme = 'bootstrap';
     public $products;
     public $buyer;
-    #[Session]
+    #[Session('tglMasuk')]
     public $tglMasuk;
-    #[Session]
+    #[Session('tglKeluar')]
     public $tglKeluar;
     #[Session]
     public $searchTerm;

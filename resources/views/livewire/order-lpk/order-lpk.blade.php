@@ -79,8 +79,8 @@
                 <div class="mb-1" wire:ignore>
                     <select class="form-control" wire:model.defer="status" data-choices data-choices-sorting-false data-choices-removeItem>
                         <option value="">- All -</option>
-                        <option value="0" @if (($status['value'] ?? null) == 0) selected @endif>Belum LPK</option>
-                        <option value="1" @if (($status['value'] ?? null) == 1) selected @endif>Sudah LPK</option>
+                        <option value="0" @if (($status['value'] ?? '') == 0) selected @endif>Belum LPK</option>
+                        <option value="1" @if (($status['value'] ?? '') == 1) selected @endif>Sudah LPK</option>
                     </select>
                 </div>
             </div>
