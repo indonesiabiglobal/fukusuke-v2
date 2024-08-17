@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use App\Models\MsProduct;
 use App\Models\MsBuyer;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Locked;
 use Livewire\WithPagination;
 use Maatwebsite\Excel\Facades\Excel;
 use Livewire\WithFileUploads;
@@ -38,12 +39,31 @@ class LpkEntryController extends Component
     {
         $this->products = MsProduct::get();
         $this->buyer = MsBuyer::get();
-        $this->tglMasuk = Carbon::now()->format('d-m-Y');
-        $this->tglKeluar = Carbon::now()->format('d-m-Y');
+
+        // mengambil data dari session terlebih dahulu jika ada
+        $this->tglMasuk = session('tglMasuk', Carbon::now()->format('d-m-Y'));
+        $this->tglKeluar = session('tglKeluar', Carbon::now()->format('d-m-Y'));
+        $this->searchTerm = session('searchTerm', '');
+        $this->lpk_no = session('lpk_no', '');
+        $this->idProduct = session('idProduct', ['value' => '']);
+        $this->idBuyer = session('idBuyer', ['value' => '']);
+        $this->status = session('status', ['value' => '']);
+    }
+
+    public function sessionData()
+    {
+        session()->put('tglMasuk', $this->tglMasuk);
+        session()->put('tglKeluar', $this->tglKeluar);
+        session()->put('searchTerm', $this->searchTerm);
+        session()->put('lpk_no', $this->lpk_no);
+        session()->put('idProduct', $this->idProduct);
+        session()->put('idBuyer', $this->idBuyer);
+        session()->put('status', $this->status);
     }
 
     public function search()
     {
+        $this->sessionData();
         $this->resetPage();
         $this->render();
     }
