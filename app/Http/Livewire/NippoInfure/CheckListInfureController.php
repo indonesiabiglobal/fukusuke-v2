@@ -42,8 +42,8 @@ class CheckListInfureController extends Component
         $this->workingShiftHour = MsWorkingShift::select('id', 'work_hour_from', 'work_hour_till')->where('status', 1)->orderBy('work_hour_from', 'ASC')->get();
         $this->jamAwal = $this->workingShiftHour[0]->work_hour_from;
         $this->jamAkhir = $this->workingShiftHour[count($this->workingShiftHour) - 1]->work_hour_till;
-        $this->machine = MsMachine::get();
-        $this->department = MsDepartment::get();
+        $this->machine = MsMachine::where('machineno',  'LIKE', '00I%')->get();
+        $this->department = MsDepartment::where('division_code', 10)->get();
     }
 
     public function export()
@@ -313,8 +313,8 @@ class CheckListInfureController extends Component
             }
 
             // Data Loss
-            if (!isset($dataLoss[$tglProduksi][$item->losscode])) {
-                $dataLoss[$tglProduksi][$item->losscode] = (object)[
+            if (!isset($dataLoss[$tglProduksi][$item->seq_no][$item->losscode])) {
+                $dataLoss[$tglProduksi][$item->seq_no][$item->losscode] = (object)[
                     'lossname' => $item->lossname,
                     'berat_loss' => $item->berat_loss,
                 ];
@@ -393,7 +393,7 @@ class CheckListInfureController extends Component
             $columnItemEnd++;
 
             // Loss
-            foreach ($dataLoss[$productionDate] as $losscode => $item) {
+            foreach ($dataLoss[$productionDate][$dataItem['seq_no']] as $losscode => $item) {
                 $columnLoss = 'Q';
                 if ($losscode == '') {
                     $columnLoss++;
