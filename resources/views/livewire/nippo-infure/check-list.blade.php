@@ -66,8 +66,8 @@
 			<div class="input-group">
 				<span class="input-group-addon col-12 col-lg-3 text-muted fw-bold">Jenis Report </span>
 				<select wire:model="jenisReport" class="form-control" placeholder="- pilih jenis report -">
-					<option value="1" selected>Check List</option>
-					<option value="2">Loss Infure</option>
+					<option value="Checklist" selected>Check List</option>
+					<option value="Loss">Loss Infure</option>
 				</select>
 			</div>
 		</div>

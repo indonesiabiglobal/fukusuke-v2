@@ -29,7 +29,7 @@ class CheckListInfureController extends Component
     public $lpk_no;
     public $nomorOrder;
     public $department;
-    public $jenisReport = 1;
+    public $jenisReport = "Checklist";
     public $departmentId;
     public $machineId;
     public $nomorHan;
@@ -146,7 +146,7 @@ class CheckListInfureController extends Component
         $tglAwal = Carbon::parse($this->tglAwal . ' ' . $this->jamAwal);
         $tglAkhir = Carbon::parse($this->tglAkhir . ' ' . $this->jamAkhir);
 
-        if ($this->jenisReport == 1) {
+        // if ($this->jenisReport == 1) {
             // checklist
             $response = $this->checklistInfure($tglAwal, $tglAkhir);
             if ($response['status'] == 'success') {
@@ -155,16 +155,16 @@ class CheckListInfureController extends Component
                 $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                 return;
             }
-        } else if ($this->jenisReport == 2) {
-            // loss
-            $response = $this->reportSeitai($tglAwal, $tglAkhir);
-            if ($response['status'] == 'success') {
-                return response()->download($response['filename']);
-            } else if ($response['status'] == 'error') {
-                $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
-                return;
-            }
-        }
+        // } else if ($this->jenisReport == 2) {
+        //     // loss
+        //     $response = $this->reportSeitai($tglAwal, $tglAkhir);
+        //     if ($response['status'] == 'success') {
+        //         return response()->download($response['filename']);
+        //     } else if ($response['status'] == 'error') {
+        //         $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+        //         return;
+        //     }
+        // }
     }
 
     public function checklistInfure($tglAwal, $tglAkhir)
@@ -177,7 +177,7 @@ class CheckListInfureController extends Component
         Carbon::setLocale('id');
 
         // Judul
-        $activeWorksheet->setCellValue('A1', 'CHECKLIST NIPPO INFURE');
+        $activeWorksheet->setCellValue('A1', ($this->jenisReport == 'Checklist' ? 'CHECKLIST ' : 'LOSS ') . 'NIPPO INFURE');
         $activeWorksheet->setCellValue('A2', 'Periode: ' . $tglAwal->translatedFormat('d-M-Y H:i') . ' s/d ' . $tglAkhir->translatedFormat('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'A1:A2', true, 11, 'Calibri');
@@ -238,52 +238,101 @@ class CheckListInfureController extends Component
         $filterMachine = $this->machineId ? " AND (tdpa.machine_id = '$this->machineId')" : '';
         $filterNomorHan = $this->nomorHan ? " AND (tdpa.nomor_han = '$this->nomorHan')" : '';
 
-        $data = DB::select(
-            "
-                SELECT
-                    tdpa.production_date AS tglproduksi,
-                    tdpa.created_on AS tanggal_proses,
-                    tdpa.seq_no,
-                    tdpa.work_shift AS shift,
-                    tdpa.work_hour AS jam,
-                    tdpa.employee_id AS employee_id,
-                    mse.employeeno AS nik,
-                    mse.empname AS namapetugas,
-                    msd.NAME AS deptpetugas,
-                    tdpa.machine_id AS machine_id,
-                    msm.machineno AS nomesin,
-                    msm.machinename AS namamesin,
-                    tdpa.product_id AS product_id,
-                    msp.code AS produkcode,
-                    msp.NAME AS nama_produk,
-                    tdol.lpk_no AS lpk_no,
-                    tdpa.nomor_han AS nomor_han,
-                    tdpa.gentan_no AS gentan_no,
-                    tdpa.panjang_produksi AS panjang_produksi,
-                    tdpa.panjang_printing_inline AS panjang_printing_inline,
-                    tdpa.berat_produksi AS berat_produksi,
-                    tdpa.berat_standard,
-                    msli.code AS losscode,
-                    msli.NAME AS lossname,
-                    tdpal.berat_loss
-                FROM
-                    tdProduct_Assembly AS tdpa
-                    INNER JOIN tdOrderLpk AS tdol ON tdpa.lpk_id = tdol.id
-                    INNER JOIN msEmployee AS mse ON mse.ID = tdpa.employee_id
-                    INNER JOIN msMachine AS msm ON msm.ID = tdpa.machine_id
-                    INNER JOIN msProduct AS msp ON msp.ID = tdpa.product_id
-                    INNER JOIN msDepartment AS msd ON msd.ID = mse.department_id
-                    LEFT JOIN tdProduct_Assembly_Loss AS tdpal ON tdpal.product_assembly_id = tdpa.
-                    ID LEFT JOIN msLossInfure AS msli ON msli.ID = tdpal.loss_infure_id
-                WHERE
-                    $filterDate
-                    $filterNoLPK
-                    $nomorOrder
-                    $filterDepartment
-                    $filterMachine
-                    $filterNomorHan
-                ",
-        );
+        if ($this->jenisReport == 'Checklist') {
+            $data = DB::select(
+                "
+                    SELECT
+                        tdpa.production_date AS tglproduksi,
+                        tdpa.created_on AS tanggal_proses,
+                        tdpa.seq_no,
+                        tdpa.work_shift AS shift,
+                        tdpa.work_hour AS jam,
+                        tdpa.employee_id AS employee_id,
+                        mse.employeeno AS nik,
+                        mse.empname AS namapetugas,
+                        msd.NAME AS deptpetugas,
+                        tdpa.machine_id AS machine_id,
+                        msm.machineno AS nomesin,
+                        msm.machinename AS namamesin,
+                        tdpa.product_id AS product_id,
+                        msp.code AS produkcode,
+                        msp.NAME AS nama_produk,
+                        tdol.lpk_no AS lpk_no,
+                        tdpa.nomor_han AS nomor_han,
+                        tdpa.gentan_no AS gentan_no,
+                        tdpa.panjang_produksi AS panjang_produksi,
+                        tdpa.panjang_printing_inline AS panjang_printing_inline,
+                        tdpa.berat_produksi AS berat_produksi,
+                        tdpa.berat_standard,
+                        msli.code AS losscode,
+                        msli.NAME AS lossname,
+                        tdpal.berat_loss
+                    FROM
+                        tdProduct_Assembly AS tdpa
+                        INNER JOIN tdOrderLpk AS tdol ON tdpa.lpk_id = tdol.id
+                        INNER JOIN msEmployee AS mse ON mse.ID = tdpa.employee_id
+                        INNER JOIN msMachine AS msm ON msm.ID = tdpa.machine_id
+                        INNER JOIN msProduct AS msp ON msp.ID = tdpa.product_id
+                        INNER JOIN msDepartment AS msd ON msd.ID = mse.department_id
+                        LEFT JOIN tdProduct_Assembly_Loss AS tdpal ON tdpal.product_assembly_id = tdpa.
+                        ID LEFT JOIN msLossInfure AS msli ON msli.ID = tdpal.loss_infure_id
+                    WHERE
+                        $filterDate
+                        $filterNoLPK
+                        $nomorOrder
+                        $filterDepartment
+                        $filterMachine
+                        $filterNomorHan
+                    ",
+            );
+        } else if ($this->jenisReport == 'Loss') {
+            $data = DB::select(
+                "
+                    SELECT
+                        tdpa.production_date AS tglproduksi,
+                        tdpa.created_on AS tanggal_proses,
+                        tdpa.seq_no,
+                        tdpa.work_shift AS shift,
+                        tdpa.work_hour AS jam,
+                        tdpa.employee_id AS employee_id,
+                        mse.employeeno AS nik,
+                        mse.empname AS namapetugas,
+                        msd.NAME AS deptpetugas,
+                        tdpa.machine_id AS machine_id,
+                        msm.machineno AS nomesin,
+                        msm.machinename AS namamesin,
+                        tdpa.product_id AS product_id,
+                        msp.code AS produkcode,
+                        msp.NAME AS nama_produk,
+                        tdol.lpk_no AS lpk_no,
+                        tdpa.nomor_han AS nomor_han,
+                        tdpa.gentan_no AS gentan_no,
+                        tdpa.panjang_produksi AS panjang_produksi,
+                        tdpa.panjang_printing_inline AS panjang_printing_inline,
+                        tdpa.berat_produksi AS berat_produksi,
+                        tdpa.berat_standard,
+                        msli.code AS losscode,
+                        msli.NAME AS lossname,
+                        tdpal.berat_loss
+                    FROM
+                        tdProduct_Assembly AS tdpa
+                        INNER JOIN tdOrderLpk AS tdol ON tdpa.lpk_id = tdol.id
+                        INNER JOIN msEmployee AS mse ON mse.ID = tdpa.employee_id
+                        INNER JOIN msMachine AS msm ON msm.ID = tdpa.machine_id
+                        INNER JOIN msProduct AS msp ON msp.ID = tdpa.product_id
+                        INNER JOIN msDepartment AS msd ON msd.ID = mse.department_id
+                        INNER JOIN tdProduct_Assembly_Loss AS tdpal ON tdpal.product_assembly_id = tdpa.id
+                        LEFT JOIN msLossInfure AS msli ON msli.ID = tdpal.loss_infure_id
+                    WHERE
+                        $filterDate
+                        $filterNoLPK
+                        $nomorOrder
+                        $filterDepartment
+                        $filterMachine
+                        $filterNomorHan
+                    ",
+            );
+        }
 
         if (count($data) == 0) {
             $response = [
@@ -337,7 +386,6 @@ class CheckListInfureController extends Component
         // index
         $rowItemStart = 4;
         $columnItemStart = 'A';
-        $columnLossStart = 'N';
         $rowItem = $rowItemStart;
         foreach ($dataFiltered as $productionDate => $dataItem) {
             $columnItemEnd = $columnItemStart;
@@ -489,7 +537,7 @@ class CheckListInfureController extends Component
         }
 
         $writer = new Xlsx($spreadsheet);
-        $filename = 'NippoInfure-Checklist' . '.xlsx';
+        $filename = 'NippoInfure-' . $this->jenisReport . '.xlsx';
         $writer->save($filename);
         $response = [
             'status' => 'success',
