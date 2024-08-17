@@ -15,20 +15,20 @@
 				<div class="form-group">
 					<div class="input-group">
 						<span class="input-group-addon col-12 col-lg-2 text-muted fw-bold">Awal: </span>
-						<input wire:model.defer="tglMasuk" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="Y-m-d">
+						<input wire:model.defer="tglAwal" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="Y-m-d">
 						<span class="input-group-text py-0">
 							<i class="ri-calendar-event-fill fs-4"></i>
 						</span>
 
 						<div class="mb-1" wire:ignore>
-							<select class="form-control" wire:model.defer="jamMasuk" data-choices data-choices-sorting-false data-choices-removeItem>
+							<select class="form-control" wire:model.defer="jamAwal" data-choices data-choices-sorting-false data-choices-removeItem>
 								<option value="">- All -</option>
-								@foreach ($jamMasuk as $item)
-									<option value="{{ $item->id }}">{{ $item->work_hour_from }}</option>
+								@foreach ($workingShiftHour as $item)
+									<option value="{{ $item->work_hour_from }}" @if ($jamAwal == $item->work_hour_from) selected @endif>{{ $item->work_hour_from }}</option>
 								@endforeach
 							</select>
 						</div>
-						{{-- <input wire:model.defer="jamMasuk" type="text" class="form-control" data-provider="timepickr" data-time-hrs="true" id="timepicker-24hrs"> --}}
+						{{-- <input wire:model.defer="jamAwal" type="text" class="form-control" data-provider="timepickr" data-time-hrs="true" id="timepicker-24hrs"> --}}
 						<span class="input-group-text py-0">
 							<i class="ri-time-line fs-4"></i>
 						</span>
@@ -41,20 +41,20 @@
 				<div class="form-group">
 					<div class="input-group">
 						<span class="input-group-addon col-12 col-lg-2 text-muted fw-bold">Akhir: </span>
-						<input wire:model.defer="tglKeluar" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="Y-m-d">
+						<input wire:model.defer="tglAkhir" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="Y-m-d">
 						<span class="input-group-text py-0">
 							<i class="ri-calendar-event-fill fs-4"></i>
 						</span>
 
 						<div class="mb-1" wire:ignore>
-							<select class="form-control" wire:model.defer="jamKeluar" data-choices data-choices-sorting-false data-choices-removeItem>
+							<select class="form-control" wire:model.defer="jamAkhir" data-choices data-choices-sorting-false data-choices-removeItem>
 								<option value="">- All -</option>
-								@foreach ($jamMasuk as $item)
-									<option value="{{ $item->id }}">{{ $item->work_hour_till }}</option>
+								@foreach ($workingShiftHour as $item)
+									<option value="{{ $item->work_hour_till }}" @if ($jamAkhir == $item->work_hour_till) selected @endif>{{ $item->work_hour_till }}</option>
 								@endforeach
 							</select>
 						</div>
-						{{-- <input wire:model.defer="jamKeluar" type="text" class="form-control" data-provider="timepickr" data-time-hrs="true" id="timepicker-24hrs"> --}}
+						{{-- <input wire:model.defer="jamAkhir" type="text" class="form-control" data-provider="timepickr" data-time-hrs="true" id="timepicker-24hrs"> --}}
 						<span class="input-group-text py-0">
 							<i class="ri-time-line fs-4"></i>
 						</span>
@@ -90,7 +90,7 @@
 		<div class="form-group mt-1">
 			<div class="input-group">
 				<span class="input-group-addon col-12 col-lg-3 text-muted fw-bold">Nomor Order </span>
-				<input type="text" class="form-control" placeholder=".." wire:model.defer="code">
+				<input type="text" class="form-control" placeholder=".." wire:model.defer="nomorOrder">
 			</div>
 		</div>
         <div class="form-group mt-1">
@@ -130,7 +130,7 @@
 		<div class="form-group mt-1">
 			<div class="input-group">
 				<span class="input-group-addon col-12 col-lg-3 text-muted fw-bold">Nomor Han</span>
-				<input type="text" class="form-control" placeholder="00-00-00A" wire:model.defer="nomor_han" />
+				<input type="text" class="form-control" placeholder="00-00-00A" wire:model.defer="nomorHan" />
 			</div>
 		</div>
 		<hr />

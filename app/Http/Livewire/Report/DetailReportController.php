@@ -165,7 +165,6 @@ class DetailReportController extends Component
         $filterMachine = $this->machineId ? " AND (tdpa.machine_id = '$this->machineId')" : '';
         $filterNomorHan = $this->nomorHan ? " AND (tdpa.nomor_han = '$this->nomorHan')" : '';
 
-        // qeury belum bener
         $data = DB::select(
             "
                 SELECT
@@ -476,7 +475,6 @@ class DetailReportController extends Component
 
         // Filter Query
 
-        // qeury belum bener
         $data = DB::select(
             "
             WITH goodasy AS (
