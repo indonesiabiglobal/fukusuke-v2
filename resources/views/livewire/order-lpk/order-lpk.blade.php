@@ -290,7 +290,7 @@
                                 </a>
                             </td>
                             <td x-show="po_no">{{ $item->po_no }}</td>
-                            <td x-show="na_pr">{{ $item->produk_name }}</td>
+                            <td x-show="na_pr" class="text-start">{{ $item->produk_name }}</td>
                             <td x-show="ko_pr">{{ $item->product_code }}</td>
                             <td x-show="bu">{{ $item->buyer_name }}</td>
                             <td x-show="qt">{{ $item->order_qty }}</td>

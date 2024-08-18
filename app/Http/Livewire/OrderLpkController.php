@@ -159,16 +159,16 @@ class OrderLpkController extends Component
             });
         }
 
-        if (isset($this->idProduct) && $this->idProduct != "" && $this->idProduct != "undefined") {
-            $data = $data->where('mp.id', $this->idProduct);
+        if (isset($this->idProduct) && $this->idProduct['value'] != "" && $this->idProduct != "undefined") {
+            $data = $data->where('mp.id', $this->idProduct['value']);
         }
 
-        if (isset($this->idBuyer) && $this->idBuyer != "" && $this->idBuyer != "undefined") {
-            $data = $data->where('tod.buyer_id', $this->idBuyer);
+        if (isset($this->idBuyer) && $this->idBuyer['value'] != "" && $this->idBuyer != "undefined") {
+            $data = $data->where('tod.buyer_id', $this->idBuyer['value']);
         }
 
-        if (isset($this->status) && $this->status != "" && $this->status != "undefined") {
-            $data = $data->where('tod.status_order', $this->status);
+        if (isset($this->status) && $this->status['value'] != "" && $this->status != "undefined") {
+            $data = $data->where('tod.status_order', $this->status['value']);
         }
         $data = $data->paginate(8);
 
