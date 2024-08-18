@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class TdOrders extends Model
 {
     use HasFactory;
-    // public $timestamps = false;
+    public $timestamps = false;
     protected $table = "tdorder";
     protected $fillable = [
         'po_no',
