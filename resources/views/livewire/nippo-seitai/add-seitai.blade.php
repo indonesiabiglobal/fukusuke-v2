@@ -528,7 +528,7 @@
                                 </div>
                                 <div class="col-lg-12 mb-1">
                                     <div class="form-group">
-                                        <label>Berat Loss </label>
+                                        <label>Berat </label>
                                         <div class="input-group col-md-9 col-xs-8">
                                             <input class="form-control" type="text" wire:model.defer="berat_fr" placeholder="0" />
                                             @error('berat')
@@ -539,7 +539,7 @@
                                 </div>
                                 <div class="col-lg-12 mb-1">
                                     <div class="form-group">
-                                        <label>Berat Loss </label>
+                                        <label>Frekuensi </label>
                                         <div class="input-group col-md-9 col-xs-8">
                                             <input class="form-control" type="text" wire:model.defer="frekuensi_fr" placeholder="0" />
                                             @error('frekuensi')
