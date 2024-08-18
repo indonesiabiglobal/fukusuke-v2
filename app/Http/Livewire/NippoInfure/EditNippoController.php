@@ -117,7 +117,7 @@ class EditNippoController extends Component
                 'mse.empname',
                 'msp.code',
                 'msp.name',
-                DB::raw("CASE WHEN tdpg.id IS NOT NULL THEN 1 ELSE 0 END as tdpg")
+                // DB::raw("CASE WHEN tdpg.id IS NOT NULL THEN 1 ELSE 0 END as tdpg")
             )
             ->where('tda.id', $request->query('orderId'))
             ->first();
@@ -130,7 +130,7 @@ class EditNippoController extends Component
         // $this->lpk_no = $request->query('lpk_no');
         // $this->tglKeluar = $request->query('tglKeluar');
 
-        $this->statusSeitai = $data->tdpg;
+        $this->statusSeitai = $data->status_production;
         $this->orderId = $request->query('orderId');
         $this->production_no = $data->production_no;
         $this->production_date = Carbon::parse($data->production_date)->format('Y-m-d');

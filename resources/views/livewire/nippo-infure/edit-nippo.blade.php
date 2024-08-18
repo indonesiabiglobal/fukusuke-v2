@@ -287,10 +287,10 @@
                 </button>
 
                 @if ($statusSeitai)
-                    <h3 class="text-danger">Gentan sudah di produksi di Seitai!</h3>
+                    <h3 class="text-danger">Data sudah di Seitai!</h3>
                 @endif
             </div>
-            
+
             <div class="col-lg-5">
                 <div class="toolbar float-end">
                     <button type="button" class="btn btn-warning" wire:click="cancel">
@@ -325,6 +325,7 @@
                             </div>
                         </button>
                     @else
+                        @if (!$statusSeitai)
                         <button type="button" class="btn btn-danger" wire:click="destroy">
                             <span wire:loading.remove wire:target="destroy">
                                 <i class="ri-delete-bin-line"> </i> delete
@@ -340,6 +341,7 @@
                                 </span>
                             </div>
                         </button>
+                        @endif
                         @if (empty($statusSeitai))
                             <button type="button" class="btn btn-success" wire:click="save">
                                 <span wire:loading.remove wire:target="save">
@@ -357,12 +359,13 @@
                                 </div>
                             </button>
                         @endif
-                        
+                        @if (!$statusSeitai)
                         <button type="button" class="btn btn-success btn-print" wire:click="print">
                             <i class="bx bx-printer"></i> Print
                         </button>
+                        @endif
                     @endif
-                    
+
                 </div>
             </div>
         </div>
