@@ -408,8 +408,14 @@ class GeneralReportController extends Component
                     $file = $this->daftarLossPerPetugasInfure($tglMasuk, $tglKeluar);
                     return response()->download($file);
                 } else {
-                    $file = $this->daftarLossPerPetugasSeitai($tglMasuk, $tglKeluar);
-                    return response()->download($file);
+                    $response = $this->daftarLossPerPetugasSeitai($tglMasuk, $tglKeluar);
+                    if ($response['status'] == 'success') {
+                        return response()->download($response['filename']);
+                    } else if ($response['status'] == 'error') {
+                        $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                        return;
+                    }
+                    // return response()->download($file);
                 }
                 break;
             case 'Daftar Loss Per Mesin':
@@ -6498,6 +6504,15 @@ class GeneralReportController extends Component
             GROUP BY dep.name,dep.id, mac.employeeNo, mac.empName;
         ");
 
+        if (count($data) == 0) {
+            $response = [
+                'status' => 'error',
+                'message' => "Data pada periode tanggal tersebut tidak ditemukan"
+            ];
+
+            return $response;
+        }
+
         $listDepartment = array_reduce($data, function ($carry, $item) {
             $carry[$item->department_id] = [
                 'department_id' => $item->department_id,
@@ -6753,7 +6768,11 @@ class GeneralReportController extends Component
         $writer = new Xlsx($spreadsheet);
         $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
         $writer->save($filename);
-        return $filename;
+        $response = [
+            'status' => 'success',
+            'filename' => $filename
+        ];
+        return $response;
     }
 
     public function daftarLossPerMesinInfure($tglMasuk, $tglKeluar)
