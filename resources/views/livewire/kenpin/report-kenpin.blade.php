@@ -6,7 +6,7 @@
             <div class="col-12 mt-1">
                 <div class="form-group">
                     <div class="input-group">
-                        <span class="input-group-addon col-12 col-lg-2">Awal: </span>
+                        <span class="input-group-addon col-12 col-lg-3">Awal: </span>
                         <input wire:model.defer="tglAwal" type="text" class="form-control" style="padding:0.44rem"
                             data-provider="flatpickr" data-date-format="Y-m-d">
                         <span class="input-group-text py-0">
@@ -35,7 +35,7 @@
             <div class="col-12">
                 <div class="form-group">
                     <div class="input-group">
-                        <span class="input-group-addon col-12 col-lg-2">Akhir: </span>
+                        <span class="input-group-addon col-12 col-lg-3">Akhir: </span>
                         <input wire:model.defer="tglAkhir" type="text" class="form-control" style="padding:0.44rem"
                             data-provider="flatpickr" data-date-format="Y-m-d">
                         <span class="input-group-text py-0">
@@ -61,19 +61,14 @@
             </div>
         </div>
         <div class="form-group mt-1">
-            <div class="row">
-                <div class="col-12 col-lg-3">
-                    <label for="product" class="form-label text-muted">Departemen</label>
-                </div>
-                <div class="col-12 col-lg-9">
-                    <div class="mb-1">
-                        <select class="form-control" wire:model.live="nippo">
-                            <option value="">- All -</option>
-                            @foreach ($department as $item)
-                                <option value="{{ $item->name }}">{{ $item->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+            <div class="input-group">
+                <span class="input-group-addon col-12 col-lg-3">Departemen </span>
+                <div class="col-12 col-lg-9" wire:ignore>
+                    <select class="form-select" wire:model.live="nippo" data-choices data-choices-search-false>
+                        @foreach ($department as $item)
+                            <option value="{{ $item->name }}">{{ $item->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
         </div>
@@ -84,20 +79,16 @@
             </div>
         </div>
         <div class="form-group mt-1">
-            <div class="row">
-                <div class="col-12 col-lg-3">
-                    <label for="product" class="form-label text-muted">Nomor Order</label>
-                </div>
-                <div class="col-12 col-lg-9">
-                    <div class="mb-1" wire:ignore>
-                        <select class="form-control" wire:model.defer="productId" data-choices
-                            data-choices-sorting-false data-choices-removeItem>
-                            <option value="">- All -</option>
-                            @foreach ($product as $item)
-                                <option value="{{ $item->id }}">{{ $item->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+            <div class="input-group">
+                <span class="input-group-addon col-12 col-lg-3">Nomor Order</span>
+                <div class="col-12 col-lg-9" wire:ignore>
+                    <select class="form-control" wire:model.defer="productId" data-choices data-choices-sorting-false
+                        data-choices-removeItem>
+                        <option value="">- All -</option>
+                        @foreach ($product as $item)
+                            <option value="{{ $item->id }}">{{ $item->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
         </div>
@@ -112,12 +103,11 @@
             <div class="form-group mt-1">
                 <div class="input-group">
                     <span class="input-group-addon col-12 col-lg-3">Nomor Han</span>
-                    <input type="text" class="form-control" placeholder="00-00-00A"
-                        wire:model.defer="nomorHan" />
+                    <input type="text" class="form-control" placeholder="00-00-00A" wire:model.defer="nomorHan" />
                 </div>
             </div>
         @elseif ($nippo == 'SEITAI')
-        {{-- nomor Palet --}}
+            {{-- nomor Palet --}}
             <div class="form-group mt-1">
                 <div class="input-group">
                     <span class="input-group-addon col-12 col-lg-3">Nomor Palet</span>

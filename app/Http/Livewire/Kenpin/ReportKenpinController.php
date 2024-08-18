@@ -44,7 +44,7 @@ class ReportKenpinController extends Component
         $this->jamAkhir = $this->workingShiftHour[count($this->workingShiftHour) - 1]->work_hour_till;
         $this->product = MsProduct::get();
         $this->department = MsDepartment::whereIn('id', [2, 7])->get();
-        $this->nippo = $this->department[0]->name;
+        $this->nippo['value'] = $this->department[0]->name;
     }
 
     public function export()
@@ -86,7 +86,7 @@ class ReportKenpinController extends Component
         $tglAwal = Carbon::parse($this->tglAwal . ' ' . $this->jamAwal);
         $tglAkhir = Carbon::parse($this->tglAkhir . ' ' . $this->jamAkhir);
 
-        if ($this->nippo == 'INFURE') {
+        if ($this->nippo['value'] == 'INFURE') {
             $response = $this->reportInfure($tglAwal, $tglAkhir);
             if ($response['status'] == 'success') {
                 return response()->download($response['filename']);
@@ -94,7 +94,7 @@ class ReportKenpinController extends Component
                 $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                 return;
             }
-        } else if ($this->nippo == 'SEITAI') {
+        } else if ($this->nippo['value'] == 'SEITAI') {
             $response = $this->reportSeitai($tglAwal, $tglAkhir);
             if ($response['status'] == 'success') {
                 return response()->download($response['filename']);
@@ -389,7 +389,7 @@ class ReportKenpinController extends Component
         }
 
         $writer = new Xlsx($spreadsheet);
-        $filename = 'Kenpin-' . $this->nippo . '.xlsx';
+        $filename = 'Kenpin-' . $this->nippo['value'] . '.xlsx';
         $writer->save($filename);
         $response = [
             'status' => 'success',
@@ -681,7 +681,7 @@ class ReportKenpinController extends Component
         }
 
         $writer = new Xlsx($spreadsheet);
-        $filename = 'Kenpin-' . $this->nippo . '.xlsx';
+        $filename = 'Kenpin-' . $this->nippo['value'] . '.xlsx';
         $writer->save($filename);
         $response = [
             'status' => 'success',
