@@ -46,6 +46,8 @@ class EditNippoController extends Component
     public $loss_infure_id;
     public $name_infure;
     public $berat_loss;
+    public $berat;
+    public $frekuensi;
     public $statusSeitai;
 
     // data master produk
@@ -381,6 +383,8 @@ class EditNippoController extends Component
         $datas = new TdProductAssemblyLoss();
         $datas->loss_infure_id = $this->loss_infure_id;
         $datas->berat_loss = $this->berat_loss;
+        $datas->berat = $this->berat;
+        $datas->frekuensi = $this->frekuensi;
         $datas->lpk_id = $lpkid->id;
 
         $datas->save();
@@ -474,6 +478,8 @@ class EditNippoController extends Component
                         'tal.loss_infure_id',
                         'tal.berat_loss',
                         'tal.id',
+                        'tal.berat',
+                        'tal.frekuensi',
                         'msi.name as name_infure'
                     )
                     ->join('mslossinfure as msi', 'msi.id', '=', 'tal.loss_infure_id')

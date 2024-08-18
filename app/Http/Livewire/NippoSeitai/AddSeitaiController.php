@@ -56,6 +56,10 @@ class AddSeitaiController extends Component
     public $loss_seitai_id;
     public $berat_loss;
     public $namaloss;
+    public $berat;
+    public $frekuensi;
+    public $berat_fr;
+    public $frekuensi_fr;
 
     // data master produk
     public $masterKatanuki;
@@ -198,7 +202,7 @@ class AddSeitaiController extends Component
                 $this->orderLPK->buyer_name = $this->orderLPK->buyer_name;
                 $this->orderLPK->product_name = $this->orderLPK->product_name;
                 $this->orderLPK->no_order = $this->orderLPK->code;
-                $this->orderLPK->dimensi = $this->orderLPK->ketebalan.'x'.$this->orderLPK->diameterlipat.'x'.$this->orderLPK->productlength;
+                $this->orderLPK->dimensi = $this->orderLPK->ketebalan . 'x' . $this->orderLPK->diameterlipat . 'x' . $this->orderLPK->productlength;
                 $this->orderLPK->productlength = $this->orderLPK->productlength;
                 $this->orderLPK->remark = $this->orderLPK->remark;
                 $this->orderLPK->defaultgulung = number_format($this->orderLPK->defaultgulung, 0, ',', '.');
@@ -246,13 +250,14 @@ class AddSeitaiController extends Component
         $validatedData = $this->validate([
             'lpk_no' => 'required',
             'nomor_palet' => 'required',
-            'nomor_lot' => 'required'
+            'nomor_lot' => 'required',
+            'infure_berat_loss' => 'required'
         ]);
 
         try {
-            $lastSeq = TdProductAssembly::whereDate('created_on', Carbon::today())
-                    ->orderBy('seq_no', 'desc')
-                    ->first();
+            $lastSeq = TdProductGoods::whereDate('created_on', Carbon::today())
+                ->orderBy('seq_no', 'desc')
+                ->first();
             $lpkid = TdOrderLpk::where('lpk_no', $this->lpk_no)->first();
             $machine = MsMachine::where('machineno', $this->machineno)->first();
             $employe = MsEmployee::where('employeeno', $this->employeeno)->first();
@@ -260,21 +265,21 @@ class AddSeitaiController extends Component
             $products = MsProduct::where('code', $this->code)->first();
 
             $lastQty = TdProductGoods::where('lpk_id', $lpkid->id)
-                    // ->whereDate('created_on', Carbon::today())
-                    ->sum('qty_produksi');
+                // ->whereDate('created_on', Carbon::today())
+                ->sum('qty_produksi');
 
             $seqno = 1;
-            if(!empty($lastSeq)){
+            if (!empty($lastSeq)) {
                 $seqno = $lastSeq->seq_no + 1;
             }
             $today = Carbon::now();
             // dd($today->format('dmy').'-'.$seqno);
 
             $data = new TdProductGoods();
-            $data->production_no = $today->format('dmy').'-'.$seqno;
+            $data->production_no = $today->format('dmy') . '-' . $seqno;
             $data->production_date = $this->production_date;
             $data->employee_id = $employe->id;
-            if(isset($this->employeenoinfure)){
+            if (isset($this->employeenoinfure)) {
                 $data->employee_id_infure = $employeinfure->id;
             }
             $data->work_shift = $this->work_shift;
@@ -291,15 +296,15 @@ class AddSeitaiController extends Component
 
             $data->save();
 
-            TdOrderLpk::where('id',$lpkid->id)->update([
+            TdOrderLpk::where('id', $lpkid->id)->update([
                 'total_assembly_qty' => $lastQty + $this->qty_produksi,
             ]);
 
-            TdProductGoodsAssembly::where('lpk_id',$lpkid->id)->update([
+            TdProductGoodsAssembly::where('lpk_id', $lpkid->id)->update([
                 'product_goods_id' => $data->id,
             ]);
 
-            TdProductGoodsLoss::where('lpk_id',$lpkid->id)->update([
+            TdProductGoodsLoss::where('lpk_id', $lpkid->id)->update([
                 'product_goods_id' => $data->id,
             ]);
 
@@ -321,12 +326,14 @@ class AddSeitaiController extends Component
     {
         $lpkid = TdOrderLpk::where('lpk_no', $this->lpk_no)->first();
         $assembly = TdProductAssembly::where('lpk_id', $lpkid->id)
-                    ->first();
+            ->first();
 
         $datas = new TdProductGoodsAssembly();
         // $datas->product_goods_id = $this->product_goods_id;
         $datas->product_assembly_id = $assembly->id;
         $datas->gentan_line = $this->gentan_line;
+        $datas->berat = $this->berat;
+        $datas->frekuensi = $this->frekuensi;
         $datas->lpk_id = $lpkid->id;
 
         $datas->save();
@@ -339,12 +346,14 @@ class AddSeitaiController extends Component
     {
         $lpkid = TdOrderLpk::where('lpk_no', $this->lpk_no)->first();
         $loss = MsLossSeitai::where('code', $this->loss_seitai_id)
-                    ->first();
+            ->first();
 
         $datas = new TdProductGoodsLoss();
         // $datas->product_goods_id = $this->product_goods_id;
         $datas->loss_seitai_id = $loss->id;
         $datas->berat_loss = $this->berat_loss;
+        $datas->berat = $this->berat_fr;
+        $datas->frekuensi = $this->frekuensi_fr;
         $datas->lpk_id = $lpkid->id;
 
         $datas->save();
@@ -387,26 +396,26 @@ class AddSeitaiController extends Component
 
     public function render()
     {
-        if(isset($this->lpk_no) && $this->lpk_no != ''){
+        if (isset($this->lpk_no) && $this->lpk_no != '') {
             $tdorderlpk = DB::table('tdorderlpk as tolp')
-            ->select(
-                'tolp.id',
-                'tolp.lpk_date',
-                'tolp.panjang_lpk',
-                'tolp.created_on',
-                'tolp.qty_lpk',
-                'mp.code',
-                'mp.name',
-                'mp.ketebalan',
-                'mp.diameterlipat',
-                'tolp.qty_gulung',
-                'tolp.qty_gentan'
-            )
-            ->join('msproduct as mp', 'mp.id', '=', 'tolp.product_id')
-            ->where('tolp.lpk_no', $this->lpk_no)
-            ->first();
+                ->select(
+                    'tolp.id',
+                    'tolp.lpk_date',
+                    'tolp.panjang_lpk',
+                    'tolp.created_on',
+                    'tolp.qty_lpk',
+                    'mp.code',
+                    'mp.name',
+                    'mp.ketebalan',
+                    'mp.diameterlipat',
+                    'tolp.qty_gulung',
+                    'tolp.qty_gentan'
+                )
+                ->join('msproduct as mp', 'mp.id', '=', 'tolp.product_id')
+                ->where('tolp.lpk_no', $this->lpk_no)
+                ->first();
 
-            if($tdorderlpk == null){
+            if ($tdorderlpk == null) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor LPK ' . $this->lpk_no . ' Tidak Terdaftar']);
             } else {
                 $this->lpk_date = Carbon::parse($tdorderlpk->lpk_date)->format('Y-m-d');
@@ -414,46 +423,46 @@ class AddSeitaiController extends Component
                 $this->created_on = Carbon::parse($tdorderlpk->created_on)->format('Y-m-d');
                 $this->code = $tdorderlpk->code;
                 $this->name = $tdorderlpk->name;
-                $this->dimensiinfure = $tdorderlpk->ketebalan.'x'.$tdorderlpk->diameterlipat;
+                $this->dimensiinfure = $tdorderlpk->ketebalan . 'x' . $tdorderlpk->diameterlipat;
                 $this->qty_gulung = $tdorderlpk->qty_gulung;
                 $this->qty_gentan = $tdorderlpk->qty_gentan;
                 $this->qty_lpk = $tdorderlpk->qty_lpk;
 
                 $this->detailsGentan = DB::table('tdproduct_assembly as tdpa')
-                ->join('tdproduct_goods_assembly as tga', 'tga.product_assembly_id', '=', 'tdpa.id')
-                ->leftJoin('msmachine as mm', 'mm.id', '=', 'tdpa.machine_id')
-                ->leftJoin('msemployee as mse', 'mse.id', '=', 'tdpa.employee_id')
-                ->select(
-                    'tga.id',
-                    'tdpa.gentan_no',
-                    'tga.gentan_line',
-                    'mm.machineno',
-                    'tdpa.work_shift',
-                    'mse.empname',
-                    'tdpa.production_date',
-                    'tdpa.berat_produksi'
-                )
-                ->where('tdpa.lpk_id', $tdorderlpk->id)
-                ->whereNull('tga.product_goods_id')
-                ->get();
+                    ->join('tdproduct_goods_assembly as tga', 'tga.product_assembly_id', '=', 'tdpa.id')
+                    ->leftJoin('msmachine as mm', 'mm.id', '=', 'tdpa.machine_id')
+                    ->leftJoin('msemployee as mse', 'mse.id', '=', 'tdpa.employee_id')
+                    ->select(
+                        'tga.id',
+                        'tdpa.gentan_no',
+                        'tga.gentan_line',
+                        'mm.machineno',
+                        'tdpa.work_shift',
+                        'mse.empname',
+                        'tdpa.production_date',
+                        'tdpa.berat_produksi'
+                    )
+                    ->where('tdpa.lpk_id', $tdorderlpk->id)
+                    ->whereNull('tga.product_goods_id')
+                    ->get();
 
                 $this->detailsLoss = DB::table('tdproduct_goods_loss as tgl')
-                ->join('mslossseitai as mss', 'mss.id', '=', 'tgl.loss_seitai_id')
-                ->select(
-                    'tgl.id',
-                    'mss.code',
-                    'mss.name',
-                    'tgl.berat_loss'
-                )
-                ->where('tgl.lpk_id', $tdorderlpk->id)
-                ->whereNull('tgl.product_goods_id')
-                ->get();
+                    ->join('mslossseitai as mss', 'mss.id', '=', 'tgl.loss_seitai_id')
+                    ->select(
+                        'tgl.id',
+                        'mss.code',
+                        'mss.name',
+                        'tgl.berat_loss'
+                    )
+                    ->where('tgl.lpk_id', $tdorderlpk->id)
+                    ->whereNull('tgl.product_goods_id')
+                    ->get();
             }
         }
 
-        if(isset($this->machineno) && $this->machineno != ''){
-            $machine=MsMachine::where('machineno', 'ilike', '%'. $this->machineno .'%')->first();
-            if($machine == null){
+        if (isset($this->machineno) && $this->machineno != '') {
+            $machine = MsMachine::where('machineno', 'ilike', '%' . $this->machineno . '%')->first();
+            if ($machine == null) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Machine ' . $this->machineno . ' Tidak Terdaftar']);
             } else {
                 $this->machineno = $machine->machineno;
@@ -461,42 +470,42 @@ class AddSeitaiController extends Component
             }
         }
 
-        if(isset($this->employeeno) && $this->employeeno != ''){
-            $msemployee=MsEmployee::where('employeeno', $this->employeeno)->first();
+        if (isset($this->employeeno) && $this->employeeno != '') {
+            $msemployee = MsEmployee::where('employeeno', $this->employeeno)->first();
 
-            if($msemployee == null){
+            if ($msemployee == null) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
             } else {
                 $this->empname = $msemployee->empname;
             }
         }
 
-        if(isset($this->employeenoinfure) && $this->employeenoinfure != ''){
-            $msemployeeinfure=MsEmployee::where('employeeno', $this->employeenoinfure)->first();
+        if (isset($this->employeenoinfure) && $this->employeenoinfure != '') {
+            $msemployeeinfure = MsEmployee::where('employeeno', $this->employeenoinfure)->first();
 
-            if($msemployeeinfure == null){
+            if ($msemployeeinfure == null) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->employeenoinfure . ' Tidak Terdaftar']);
             } else {
                 $this->empnameinfure = $msemployeeinfure->empname;
             }
         }
 
-        if(isset($this->gentan_no) && $this->gentan_no != ''){
+        if (isset($this->gentan_no) && $this->gentan_no != '') {
             $lpkid = TdOrderLpk::where('lpk_no', $this->lpk_no)->first();
             // $tdProduct=TdProductAssembly::where('gentan_no', $this->gentan_no)->where('lpk_id', $lpkid->id)->first();
             $tdProduct = DB::table('tdproduct_assembly as tdpa')
-                        ->leftJoin('msmachine as mm', 'mm.id', '=', 'tdpa.machine_id')
-                        ->leftJoin('msemployee as mse', 'mse.id', '=', 'tdpa.employee_id')
-                        ->select(
-                            'mm.machineno',
-                            'mse.empname',
-                            'tdpa.berat_produksi'
-                        )
-                        ->where('lpk_id', $lpkid->id)
-                        ->where('gentan_no', $this->gentan_no)
-                        ->first();
+                ->leftJoin('msmachine as mm', 'mm.id', '=', 'tdpa.machine_id')
+                ->leftJoin('msemployee as mse', 'mse.id', '=', 'tdpa.employee_id')
+                ->select(
+                    'mm.machineno',
+                    'mse.empname',
+                    'tdpa.berat_produksi'
+                )
+                ->where('lpk_id', $lpkid->id)
+                ->where('gentan_no', $this->gentan_no)
+                ->first();
 
-            if($tdProduct == null){
+            if ($tdProduct == null) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Gentan ' . $this->gentan_no . ' Tidak Terdaftar']);
                 $this->resetGentan();
             } else {
@@ -506,10 +515,10 @@ class AddSeitaiController extends Component
             }
         }
 
-        if(isset($this->loss_seitai_id) && $this->loss_seitai_id != ''){
+        if (isset($this->loss_seitai_id) && $this->loss_seitai_id != '') {
             $lossSeitai = MsLossSeitai::where('code', $this->loss_seitai_id)->first();
 
-            if($lossSeitai == null){
+            if ($lossSeitai == null) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Kode Loss ' . $this->employeenoinfure . ' Tidak Terdaftar']);
                 $this->resetSeitai();
             } else {
@@ -532,4 +541,3 @@ class AddSeitaiController extends Component
         return view('livewire.nippo-seitai.add-seitai')->extends('layouts.master');
     }
 }
-

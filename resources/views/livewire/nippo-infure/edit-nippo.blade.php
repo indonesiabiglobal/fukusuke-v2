@@ -408,6 +408,28 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="col-lg-12 mb-1">
+                                    <div class="form-group">
+                                        <label>Berat </label>
+                                        <div class="input-group col-md-9 col-xs-8">
+                                            <input class="form-control" type="text" wire:model.defer="berat" placeholder="0" />
+                                            @error('berat')
+                                                <span class="invalid-feedback">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 mb-1">
+                                    <div class="form-group">
+                                        <label>Frekuensi </label>
+                                        <div class="input-group col-md-9 col-xs-8">
+                                            <input class="form-control" type="text" wire:model.defer="frekuensi" placeholder="0" />
+                                            @error('frekuensi')
+                                                <span class="invalid-feedback">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>                                
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -429,7 +451,9 @@
                                 <th class="border-0 rounded-start">Action</th>
                                 <th class="border-0">Kode</th>
                                 <th class="border-0">Nama Loss</th>
-                                <th class="border-0 rounded-end">Berat (kg)</th>
+                                <th class="border-0">Berat (kg)</th>
+                                <th class="border-0">Berat</th>
+                                <th class="border-0 rounded-end">Loss</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -452,6 +476,12 @@
                                     <td>
                                         {{ $item->berat_loss }}
                                     </td>
+                                    <td>
+                                        {{ $item->berat }}
+                                    </td>
+                                    <td>
+                                        {{ $item->frekuensi }}
+                                    </td>
                                 </tr>
                                 @php
                                     $total += $item->berat_loss;
@@ -462,7 +492,7 @@
                                 </tr>
                             @endforelse
                             <tr>
-                                <td colspan="3" class="text-end">Berat Loss Total (kg):</td>
+                                <td colspan="5" class="text-end">Berat Loss Total (kg):</td>
                                 <td colspan="1" class="text-center">{{ $total }}</td>
                             </tr>
                         </tbody>

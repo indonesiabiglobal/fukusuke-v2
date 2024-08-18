@@ -11,10 +11,35 @@ crossorigin="anonymous">
     //     });
     // });
     $(function() {
-        // Memicu pencetakan segera setelah halaman dimuat
+        var hasPrinted = false;
+
+        window.onbeforeprint = function() {
+            hasPrinted = false;
+        };
+
+        window.onafterprint = function() {
+            hasPrinted = true;
+            tryToCloseWindow();
+        };
+
+        function tryToCloseWindow() {
+            if (hasPrinted) {
+                setTimeout(function() {
+                    window.close();
+                    // Jika window.close() tidak berhasil, coba metode alternatif
+                    setTimeout(function() {
+                        if (!window.closed) {
+                            alert("Pencetakan selesai. Silakan tutup jendela ini secara manual.");
+                        }
+                    }, 1000);
+                }, 100);
+            }
+        }
+
+        // Memicu pencetakan
         setTimeout(function() {
             window.print();
-        }, 1000);  // Delay 1 detik untuk memastikan halaman telah dimuat sepenuhnya
+        }, 1000);
     });
 </script>
 <head>
