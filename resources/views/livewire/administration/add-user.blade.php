@@ -23,7 +23,7 @@
                 </div>
                 <div class="input-group mb-1">
                     <label class="control-label col-12 col-lg-3 fw-bold text-muted">Password</label>
-                    <input type="text" class="form-control @error('password') is-invalid @enderror" wire:model="password" required/>
+                    <input type="password" class="form-control @error('password') is-invalid @enderror" wire:model="password" required/>
                     @error('password')
                         <div class="invalid-feedback">
                             {{ $message }}
@@ -38,7 +38,7 @@
                             <h6 class="fs-15">User Roles</h6>
                             
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="" id="selectAll">
+                                <input class="form-check-input" type="checkbox" value="" wire:model.live="selectAll" id="selectAll" wire>
                                 <label class="form-check-label" for="selectAll">
                                     Select All
                                 </label>
@@ -47,33 +47,55 @@
                             <div class="row">
                                 <div class="col-12 col-lg-4">
                                     <div class="form-check d-flex align-items-center">
-                                        <input class="form-check-input" type="checkbox" value="" id="isAdmin">
-                                        <label class="form-check-label" for="isAdmin">
+                                        <input class="form-check-input" type="checkbox" value="" wire:model.defer="admin" id="isAdministrator">
+                                        <label class="form-check-label" for="isAdministrator">
                                             Administrator
                                         </label>
                                         <select wire:model.defer="isAdministrator" class="ms-auto">
+                                            <option value="Read">Read</option>
+                                            <option value="Write">Write</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-check d-flex align-items-center">
+                                        <input class="form-check-input" type="checkbox" value="" wire:model.defer="dashboard" id="isDashboard">
+                                        <label class="form-check-label" for="isDashboard">
+                                            Dashboard
+                                        </label>
+                                        <select wire:model.defer="isDashboard" class="ms-auto">
                                             <option value="1">Read</option>
                                             <option value="2">Write</option>
                                         </select>
                                     </div>
 
                                     <div class="form-check d-flex align-items-center">
-                                        <input class="form-check-input" type="checkbox" value="" id="isKenpin">
-                                        <label class="form-check-label" for="isKenpin">
-                                            Kenpin
+                                        <input class="form-check-input" type="checkbox" value="" wire:model.defer="dashboardSeitai" id="isDashboardSeitai">
+                                        <label class="form-check-label" for="isDashboardSeitai">
+                                            Dashboard Seitai
                                         </label>
-                                        <select wire:model.defer="isKenpin" class="ms-auto">
+                                        <select wire:model.defer="isDashboardSeitai" class="ms-auto">
                                             <option value="1">Read</option>
                                             <option value="2">Write</option>
                                         </select>
                                     </div>
 
                                     <div class="form-check d-flex align-items-center">
-                                        <input class="form-check-input" type="checkbox" value="" id="isNippoInfure">
-                                        <label class="form-check-label" for="isNippoInfure">
-                                            Nippo Infure
+                                        <input class="form-check-input" type="checkbox" value="" wire:model.defer="dashboardInfure" id="isDashboardInfure">
+                                        <label class="form-check-label" for="isDashboardInfure">
+                                            Dashboard Infure
                                         </label>
-                                        <select wire:model.defer="isNippoInfure" class="ms-auto">
+                                        <select wire:model.defer="isDashboardInfure" class="ms-auto">
+                                            <option value="1">Read</option>
+                                            <option value="2">Write</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-check d-flex align-items-center">
+                                        <input class="form-check-input" type="checkbox" value="" wire:model.defer="dashboardPpic" id="isDashboardPpic">
+                                        <label class="form-check-label" for="isDashboardPpic">
+                                            Dashboard PPIC
+                                        </label>
+                                        <select wire:model.defer="isDashboardPpic" class="ms-auto">
                                             <option value="1">Read</option>
                                             <option value="2">Write</option>
                                         </select>
@@ -82,7 +104,18 @@
 
                                 <div class="col-12 col-lg-4">
                                     <div class="form-check d-flex align-items-center">
-                                        <input class="form-check-input" type="checkbox" value="" id="isOrder">
+                                        <input class="form-check-input" type="checkbox" value="" wire:model.defer="dashboardQc" id="isDashboardQc">
+                                        <label class="form-check-label" for="isDashboardQc">
+                                            Dashboard QC
+                                        </label>
+                                        <select wire:model.defer="isDashboardQc" class="ms-auto">
+                                            <option value="1">Read</option>
+                                            <option value="2">Write</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-check d-flex align-items-center">
+                                        <input class="form-check-input" type="checkbox" value="" wire:model.defer="order" id="isOrder">
                                         <label class="form-check-label" for="isOrder">
                                             Order Transaction
                                         </label>
@@ -93,7 +126,54 @@
                                     </div>
 
                                     <div class="form-check d-flex align-items-center">
-                                        <input class="form-check-input" type="checkbox" value="" id="isWarehouse">
+                                        <input class="form-check-input" type="checkbox" value="" wire:model.defer="nippoInfure" id="isNippoInfure">
+                                        <label class="form-check-label" for="isNippoInfure">
+                                            Nippo Infure
+                                        </label>
+                                        <select wire:model.defer="isNippoInfure" class="ms-auto">
+                                            <option value="1">Read</option>
+                                            <option value="2">Write</option>
+                                        </select>
+                                    </div>
+
+                                    
+                                    <div class="form-check d-flex align-items-center">
+                                        <input class="form-check-input" type="checkbox" value="" wire:model.defer="nippoSeitai" id="isNippoSeitai">
+                                        <label class="form-check-label" for="isNippoSeitai">
+                                            Nippo Seitai
+                                        </label>
+                                        <select wire:model.defer="isNippoSeitai" class="ms-auto">
+                                            <option value="1">Read</option>
+                                            <option value="2">Write</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-check d-flex align-items-center">
+                                        <input class="form-check-input" type="checkbox" value="" wire:model.defer="jamKerja" id="isJamKerja">
+                                        <label class="form-check-label" for="isJamKerja">
+                                            Jam Kerja
+                                        </label>
+                                        <select wire:model.defer="isJamKerja" class="ms-auto">
+                                            <option value="1">Read</option>
+                                            <option value="2">Write</option>
+                                        </select>
+                                    </div>                              
+                                </div>
+
+                                <div class="col-12 col-lg-4">
+                                    <div class="form-check d-flex align-items-center">
+                                        <input class="form-check-input" type="checkbox" value="" wire:model.defer="kenpin" id="isKenpin">
+                                        <label class="form-check-label" for="isKenpin">
+                                            Kenpin
+                                        </label>
+                                        <select wire:model.defer="isKenpin" class="ms-auto">
+                                            <option value="1">Read</option>
+                                            <option value="2">Write</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-check d-flex align-items-center">
+                                        <input class="form-check-input" type="checkbox" value="" wire:model.defer="warehouse" id="isWarehouse">
                                         <label class="form-check-label" for="isWarehouse">
                                             Warehouse
                                         </label>
@@ -104,20 +184,18 @@
                                     </div>
 
                                     <div class="form-check d-flex align-items-center">
-                                        <input class="form-check-input" type="checkbox" value="" id="isJamKerja">
-                                        <label class="form-check-label" for="isJamKerja">
-                                            Jam Kerja
+                                        <input class="form-check-input" type="checkbox" value="" wire:model.defer="report" id="isReport">
+                                        <label class="form-check-label" for="isReport">
+                                            Report
                                         </label>
-                                        <select wire:model.defer="isJamKerja" class="ms-auto">
+                                        <select wire:model.defer="isReport" class="ms-auto">
                                             <option value="1">Read</option>
                                             <option value="2">Write</option>
                                         </select>
                                     </div>
-                                </div>
 
-                                <div class="col-12 col-lg-4">
                                     <div class="form-check d-flex align-items-center">
-                                        <input class="form-check-input" type="checkbox" value="" id="isMasterTable">
+                                        <input class="form-check-input" type="checkbox" value="" wire:model.defer="masterTable" id="isMasterTable">
                                         <label class="form-check-label" for="isMasterTable">
                                             Master Table
                                         </label>
@@ -126,28 +204,6 @@
                                             <option value="2">Write</option>
                                         </select>
                                     </div>
-
-                                    <div class="form-check d-flex align-items-center">
-                                        <input class="form-check-input" type="checkbox" value="" id="isNippoSeitai">
-                                        <label class="form-check-label" for="isNippoSeitai">
-                                            Warehouse
-                                        </label>
-                                        <select wire:model.defer="isNippoSeitai" class="ms-auto">
-                                            <option value="1">Read</option>
-                                            <option value="2">Write</option>
-                                        </select>
-                                    </div>
-
-                                    {{-- <div class="form-check d-flex align-items-center">
-                                        <input class="form-check-input" type="checkbox" value="" id="isJamKerja">
-                                        <label class="form-check-label" for="isJamKerja">
-                                            Jam Kerja
-                                        </label>
-                                        <select wire:model.defer="isJamKerja" class="ms-auto">
-                                            <option value="1">Read</option>
-                                            <option value="2">Write</option>
-                                        </select>
-                                    </div> --}}
                                 </div>
                             </div>
                         </div>
@@ -170,7 +226,7 @@
                     </span>                    
                 </div>
             </button>
-            <button type="submit" class="btn btn-success">
+            <button type="button" wire:click="save" class="btn btn-success">
                 <span wire:loading.remove wire:target="save">
                     <i class="ri-save-3-line"></i> Save
                 </span>

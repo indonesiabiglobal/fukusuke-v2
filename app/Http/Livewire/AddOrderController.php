@@ -269,7 +269,7 @@ class AddOrderController extends Component
                 $this->dimensi = $product->ketebalan . 'x' . $product->diameterlipat . 'x' . $product->productlength;
             }
         }
-        if(isset($this->order_date) && $this->order_date != ''){
+        if (isset($this->order_date) && $this->order_date != '') {
             $this->stufingdate = $this->order_date;
             $this->etddate = $this->order_date;
             $this->etadate = $this->order_date;
