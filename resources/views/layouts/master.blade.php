@@ -5,14 +5,14 @@
     <meta charset="utf-8" />
     <!-- PWA  -->
     <meta name="theme-color" content="#6777ef"/>
-    {{-- <link rel="apple-touch-icon" href="{{ asset('logo.png') }}"> --}}
+    <link rel="apple-touch-icon" href="{{ asset('logo.png') }}">
     <link rel="manifest" href="{{ asset('/manifest.json') }}">
     <title> Fukusuke Kogyo Indonesia </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
     <meta content="Themesbrand" name="author" />
     <!-- App favicon -->
-    {{-- <link rel="shortcut icon" href="{{ URL::asset('build/images/favicon.ico') }}"> --}}
+    <link rel="shortcut icon" href="{{ URL::asset('build/images/fukusuke.ico') }}">
     {{-- @section('css') --}}
     <link href="{{ URL::asset('build/libs/jsvectormap/css/jsvectormap.min.css')}}" rel="stylesheet" type="text/css" />
     <link href="{{ URL::asset('build/libs/swiper/swiper-bundle.min.css')}}" rel="stylesheet" type="text/css" />

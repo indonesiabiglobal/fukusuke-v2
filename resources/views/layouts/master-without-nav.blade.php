@@ -8,7 +8,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="Hybrix Laravel Admin & Dashboard Template" name="description" />
     <meta content="Themesbrand" name="author" />
-     <meta name="keywords" content="hybrix,hybrix laravel,admin,dashboard,vite,livewire,livewire admin,laravel vite">
+    <meta name="keywords" content="hybrix,hybrix laravel,admin,dashboard,vite,livewire,livewire admin,laravel vite">
+
+    <link rel="shortcut icon" href="{{ URL::asset('build/images/fukusuke.ico') }}">
      
     <!-- App favicon -->
     {{-- <link rel="shortcut icon" href="{{ URL::asset('build/images/favicon.ico') }}"> --}}
