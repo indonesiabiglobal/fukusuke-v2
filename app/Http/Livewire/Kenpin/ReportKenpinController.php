@@ -264,7 +264,6 @@ class ReportKenpinController extends Component
             phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItem, true, 8, 'Calibri');
             $columnItemEnd = $columnItemStart;
             $rowItem++;
-            $rowItemSumStart = $rowItem;
             foreach ($itemProduct['kenpin'] as $kenpinNo => $itemKenpin) {
                 $columnItemEnd = $columnItemStart;
                 // nomor kenpin
@@ -290,6 +289,7 @@ class ReportKenpinController extends Component
                 // ng
                 $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['remark']);
                 $columnItemEnd++;
+                $rowItemSumStart = $rowItem;
 
                 foreach ($itemKenpin['gentan'] as $gentanNo => $itemGentan) {
                     $columnItemEnd = $columnGentanStart;
@@ -327,28 +327,28 @@ class ReportKenpinController extends Component
 
                     $rowItem++;
                 }
+                // Total
+                $columnTotalEnd = 'K';
+                $spreadsheet->getActiveSheet()->mergeCells($columnItemStart . $rowItem . ':' . $columnTotalEnd . $rowItem);
+                $activeWorksheet->setCellValue($columnItemStart . $rowItem, 'TOTAL');
+                $columnTotalEnd++;
+
+                // panjang infure
+                $activeWorksheet->setCellValue($columnTotalEnd . $rowItem, '=SUM(' . $columnTotalEnd . $rowItemSumStart . ':' . $columnTotalEnd . ($rowItem - 1) . ')');
+                phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnTotalEnd . $rowItem);
+                $columnTotalEnd++;
+
+                // berat loss
+                $activeWorksheet->setCellValue($columnTotalEnd . $rowItem, '=SUM(' . $columnTotalEnd . $rowItemSumStart . ':' . $columnTotalEnd . ($rowItem - 1) . ')');
+                phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnTotalEnd . $rowItem);
+                phpspreadsheet::addFullBorder($spreadsheet, $columnItemStart . $rowItem . ':' . $columnTotalEnd . $rowItem);
+                $columnTotalEnd++;
+                phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItem . ':' . $columnTotalEnd . $rowItem, true, 8, 'Calibri');
+
+                $rowItem++;
+                $rowItem++;
             }
 
-            // Total
-            $columnTotalEnd = 'K';
-            $spreadsheet->getActiveSheet()->mergeCells($columnItemStart . $rowItem . ':' . $columnTotalEnd . $rowItem);
-            $activeWorksheet->setCellValue($columnItemStart . $rowItem, 'TOTAL');
-            $columnTotalEnd++;
-
-            // panjang infure
-            $activeWorksheet->setCellValue($columnTotalEnd . $rowItem, '=SUM(' . $columnTotalEnd . $rowItemSumStart . ':' . $columnTotalEnd . ($rowItem - 1) . ')');
-            phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnTotalEnd . $rowItem);
-            $columnTotalEnd++;
-
-            // berat loss
-            $activeWorksheet->setCellValue($columnTotalEnd . $rowItem, '=SUM(' . $columnTotalEnd . $rowItemSumStart . ':' . $columnTotalEnd . ($rowItem - 1) . ')');
-            phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnTotalEnd . $rowItem);
-            phpspreadsheet::addFullBorder($spreadsheet, $columnItemStart . $rowItem . ':' . $columnTotalEnd . $rowItem);
-            $columnTotalEnd++;
-            phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItem . ':' . $columnTotalEnd . $rowItem, true, 8, 'Calibri');
-
-            $rowItem++;
-            $rowItem++;
         }
 
         // grand total
