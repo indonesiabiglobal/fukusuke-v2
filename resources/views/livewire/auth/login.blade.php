@@ -80,7 +80,7 @@
                                     <label for="email" class="form-label">Email <span
                                             class="text-danger">*</span></label>
                                     <input id="email" type="email"
-                                        class="form-control @error('email') is-invalid @enderror" wire:model.live="email" required autocomplete="email" autofocus placeholder="Enter your email">
+                                        class="form-control @error('email') is-invalid @enderror" wire:model.defer="email" required autocomplete="email" autofocus placeholder="Enter your email">
                                     @error('email')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
@@ -94,7 +94,7 @@
                                     <div class="position-relative auth-pass-inputgroup mb-3">
                                         <input id="password" type="password"
                                             class="form-control pe-5 password-input @error('password') is-invalid @enderror"
-                                            wire:model.live="password" id="password-input" required value=""
+                                            wire:model.defer="password" id="password-input" required value=""
                                             autocomplete="current-password" placeholder="Enter your password">
                                         <button
                                             class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted password-addon"
