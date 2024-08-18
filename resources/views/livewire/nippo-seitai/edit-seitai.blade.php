@@ -15,7 +15,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5">Nomor Produksi</label>
-                                <input type="text" class="form-control readonly" readonly="readonly" wire:model="production_no" />
+                                <input type="text" class="form-control readonly bg-light" readonly="readonly" wire:model="production_no" />
                                 @error('lpk_no')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -26,7 +26,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5">Tanggal Proses</label>
-                                <input class="form-control datepicker-input" readonly="readonly" type="date" wire:model.defer="created_on" placeholder="yyyy/mm/dd"/>
+                                <input class="form-control datepicker-input readonly bg-light" readonly="readonly" type="date" wire:model.defer="created_on" placeholder="yyyy/mm/dd"/>
                             </div>
                         </div>
                     </div>
@@ -39,7 +39,7 @@
                                         Nomor LPK
                                     </a>
                                 </label>
-                                <input type="text" class="form-control readonly" readonly="readonly"  wire:model="lpk_no" />
+                                <input type="text" class="form-control readonly bg-light" readonly="readonly"  wire:model="lpk_no" />
                             </div>
                         </div>
                     </div>
@@ -47,7 +47,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label pe-2">Tanggal LPK</label>
-                                <input class="form-control readonly datepicker-input" readonly="readonly" type="date" wire:model.defer="lpk_date" placeholder="yyyy/mm/dd"/>
+                                <input class="form-control readonly datepicker-input bg-light" readonly="readonly" type="date" wire:model.defer="lpk_date" placeholder="yyyy/mm/dd"/>
                             </div>
                         </div>
                     </div>
@@ -55,7 +55,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label pe-2">Jumlah LPK</label>
-                                <input type="text" placeholder="-" class="form-control readonly" readonly="readonly" wire:model="qty_lpk" />
+                                <input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="qty_lpk" />
                             </div>
                         </div>
                     </div>
@@ -67,7 +67,7 @@
                                         Nomor Order
                                     </a>
                                 </label>
-                                <input type="text" placeholder="-" class="form-control readonly" readonly="readonly" wire:model="code" />
+                                <input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="code" />
                             </div>
                         </div>
                     </div>
@@ -75,7 +75,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label"></label>
-                                <input type="text" placeholder="-" class="form-control readonly" readonly="readonly" wire:model="name" />
+                                <input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="name" />
                             </div>
                         </div>
                     </div>
@@ -91,7 +91,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label"></label>
-                                <input type="text" placeholder="-" class="form-control readonly" readonly="readonly" wire:model="machinename" />
+                                <input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="machinename" />
                             </div>
                         </div>
                     </div>
@@ -107,7 +107,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label"></label>
-                                <input type="text" placeholder="-" class="form-control readonly" readonly="readonly" wire:model="empname" />
+                                <input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="empname" />
                             </div>
                         </div>
                     </div>
@@ -126,7 +126,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5">Total Produksi</label>
-                                <input type="text" placeholder="-" class="form-control readonly" readonly="readonly" wire:model="total_produksi" />
+                                <input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="total_produksi" />
                                 <span class="input-group-text">
                                     lbr
                                 </span>
@@ -137,7 +137,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-3">Selisih</label>
-                                <input type="text" class="form-control readonly" readonly="readonly" wire:model="selisih" />
+                                <input type="text" class="form-control readonly bg-light" readonly="readonly" wire:model="selisih" />
                                 <span class="input-group-text">
                                     lbr
                                 </span>
@@ -158,7 +158,7 @@
                                 <label class="control-label col-3">Nomor LOT</label>
                                 <input type="text" placeholder="----------" class="form-control" wire:model="nomor_lot" />
 
-                                <input type="text" class="form-control readonly" readonly="readonly" wire:model="selisih" />
+                                <input type="text" class="form-control readonly bg-light" readonly="readonly" wire:model="selisih" />
                             </div>
                         </div>
                     </div>
@@ -180,7 +180,7 @@
                                 <label class="control-label col-3">Petugas Infure</label>
                                 <input type="text" placeholder="..." class="form-control" wire:model="employeenoinfure" />
 
-                                <input type="text" placeholder="-" class="form-control readonly" readonly="readonly" wire:model="empnameinfure" />
+                                <input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="empnameinfure" />
                             </div>
                         </div>
                     </div>
@@ -196,7 +196,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-2">Shift Kerja</label>
-                                <input type="text" class="form-control readonly" readonly="readonly" wire:model="work_shift" />
+                                <input type="text" class="form-control readonly bg-light" readonly="readonly" wire:model="work_shift" />
                             </div>
                         </div>
                     </div>
@@ -256,7 +256,7 @@
                             </span>
                         </div>
                     </button>
-                    <button type="submit" class="btn btn-success">
+                    <button type="button" wire:click="save" class="btn btn-success">
                         <span wire:loading.remove wire:target="save">
                             <i class="ri-save-3-line"></i> Save
                         </span>
@@ -440,7 +440,7 @@
                                     <div class="form-group">
                                         <label>Nomor Mesin </label>
                                         <div class="input-group col-md-9 col-xs-8">
-                                            <input class="form-control readonly" readonly="readonly" type="text" wire:model.defer="machine_no" placeholder="..." />
+                                            <input class="form-control readonly bg-light" readonly="readonly" type="text" wire:model.defer="machine_no" placeholder="..." />
                                         </div>
                                     </div>
                                 </div>
@@ -448,7 +448,7 @@
                                     <div class="form-group">
                                         <label>Petugas </label>
                                         <div class="input-group col-md-9 col-xs-8">
-                                            <input class="form-control readonly" readonly="readonly" type="text" wire:model.defer="petugas" placeholder="..." />
+                                            <input class="form-control readonly bg-light" readonly="readonly" type="text" wire:model.defer="petugas" placeholder="..." />
                                         </div>
                                     </div>
                                 </div>
@@ -456,7 +456,7 @@
                                     <div class="form-group">
                                         <label>Berat Produksi</label>
                                         <div class="input-group col-md-9 col-xs-8">
-                                            <input class="form-control readonly" readonly="readonly" type="text" wire:model.defer="berat_produksi" placeholder="..." />
+                                            <input class="form-control readonly bg-light" readonly="readonly" type="text" wire:model.defer="berat_produksi" placeholder="..." />
                                         </div>
                                     </div>
                                 </div>
@@ -468,6 +468,22 @@
                                             @error('gentan_line')
                                                 <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 mb-1">
+                                    <div class="form-group">
+                                        <label>Berat</label>
+                                        <div class="input-group col-md-9 col-xs-8">
+                                            <input class="form-control" type="text" wire:model.defer="berat" placeholder="..." />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 mb-1">
+                                    <div class="form-group">
+                                        <label>Frekuensi</label>
+                                        <div class="input-group col-md-9 col-xs-8">
+                                            <input class="form-control" type="text" wire:model.defer="frekuensi" placeholder="..." />
                                         </div>
                                     </div>
                                 </div>
@@ -506,7 +522,7 @@
                                     <div class="form-group">
                                         <label>Nama Loss </label>
                                         <div class="input-group col-md-9 col-xs-8">
-                                            <input class="form-control readonly" readonly="readonly" type="text" wire:model.defer="namaloss" placeholder="..." />
+                                            <input class="form-control readonly bg-light" readonly="readonly" type="text" wire:model.defer="namaloss" placeholder="..." />
                                         </div>
                                     </div>
                                 </div>
@@ -516,6 +532,28 @@
                                         <div class="input-group col-md-9 col-xs-8">
                                             <input class="form-control" type="text" wire:model.defer="berat_loss" placeholder="0" />
                                             @error('berat_loss')
+                                                <span class="invalid-feedback">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 mb-1">
+                                    <div class="form-group">
+                                        <label>Berat </label>
+                                        <div class="input-group col-md-9 col-xs-8">
+                                            <input class="form-control" type="text" wire:model.defer="berat_fr" placeholder="0" />
+                                            @error('berat_fr')
+                                                <span class="invalid-feedback">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 mb-1">
+                                    <div class="form-group">
+                                        <label>Frekuensi </label>
+                                        <div class="input-group col-md-9 col-xs-8">
+                                            <input class="form-control" type="text" wire:model.defer="frekuensi" placeholder="0" />
+                                            @error('frekuensi')
                                                 <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror
                                         </div>
@@ -1114,7 +1152,7 @@
                                     <div class="form-group mt-1">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-3 fw-bold text-muted">Nomor Order</label>
-                                            <input type="text" class="form-control readonly" readonly="readonly" value="{{ $orderLPK->no_order ?? '' }}" />
+                                            <input type="text" class="form-control readonly bg-light" readonly="readonly" value="{{ $orderLPK->no_order ?? '' }}" />
                                         </div>
                                     </div>
                                     <div class="form-group mt-1">
@@ -1153,7 +1191,7 @@
                                     <div class="form-group mt-1">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-3 fw-bold text-muted">Panjang LPK</label>
-                                            <input type="text" class="form-control readonly" readonly="readonly" value="{{ $orderLPK->panjang_lpk ?? '' }}" />
+                                            <input type="text" class="form-control readonly bg-light" readonly="readonly" value="{{ $orderLPK->panjang_lpk ?? '' }}" />
                                             <span class="input-group-text">
                                                 meter
                                             </span>
@@ -1163,7 +1201,7 @@
                                     <div class="form-group mt-1">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-3 fw-bold text-muted">Warna LPK</label>
-                                            <input type="text" class="form-control readonly" readonly="readonly" value="{{ $orderLPK->warnalpkid ?? '' }}" />
+                                            <input type="text" class="form-control readonly bg-light" readonly="readonly" value="{{ $orderLPK->warnalpkid ?? '' }}" />
                                         </div>
                                     </div>
 
@@ -1183,31 +1221,31 @@
                                     <div class="form-group mt-1">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-3 fw-bold text-muted">Tanggal PO</label>
-                                            <input class="form-control datepicker-input readonly" readonly="readonly" type="date" value="{{ $orderLPK->order_date ?? '' }}" placeholder="yyyy/mm/dd"/>
+                                            <input class="form-control datepicker-input readonly bg-light" readonly="readonly" type="date" value="{{ $orderLPK->order_date ?? '' }}" placeholder="yyyy/mm/dd"/>
                                         </div>
                                     </div>
                                     <div class="form-group mt-1">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-3 fw-bold text-muted">Buyer</label>
-                                            <input type="text" class="form-control readonly"  readonly="readonly" value="{{ $orderLPK->buyer_name ?? '' }}" />
+                                            <input type="text" class="form-control readonly bg-light"  readonly="readonly" value="{{ $orderLPK->buyer_name ?? '' }}" />
                                         </div>
                                     </div>
                                     <div class="form-group mt-1">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-3 fw-bold text-muted">Nama Produk</label>
-                                            <input type="text" class="form-control readonly" readonly="readonly" value="{{ $orderLPK->product_name ?? '' }}" />
+                                            <input type="text" class="form-control readonly bg-light" readonly="readonly" value="{{ $orderLPK->product_name ?? '' }}" />
                                         </div>
                                     </div>
                                     <div class="form-group mt-1">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-3 fw-bold text-muted">Nama Mesin</label>
-                                            <input type="text" class="form-control readonly" readonly="readonly" value="{{ $orderLPK->machinename ?? '' }}" />
+                                            <input type="text" class="form-control readonly bg-light" readonly="readonly" value="{{ $orderLPK->machinename ?? '' }}" />
                                         </div>
                                     </div>
                                     <div class="form-group mt-1">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-3 fw-bold text-muted">Panjang Total</label>
-                                            <input type="text" class="form-control readonly"  readonly="readonly" value="{{ $orderLPK->total_assembly_line ?? '' }}" />
+                                            <input type="text" class="form-control readonly bg-light"  readonly="readonly" value="{{ $orderLPK->total_assembly_line ?? '' }}" />
                                             <span class="input-group-text">
                                                 meter
                                             </span>
@@ -1216,13 +1254,13 @@
                                     <div class="form-group mt-1">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-3 fw-bold text-muted">Dimensi (TxLxP)</label>
-                                            <input type="text" class="form-control readonly" readonly="readonly" value="{{ $orderLPK->dimensi ?? '' }}" />
+                                            <input type="text" class="form-control readonly bg-light" readonly="readonly" value="{{ $orderLPK->dimensi ?? '' }}" />
                                         </div>
                                     </div>
                                     <div class="form-group mt-1">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-3 fw-bold text-muted">Default Gulung</label>
-                                            <input type="text" class="form-control readonly"  readonly="readonly" value="{{ $orderLPK->defaultgulung ?? '' }}" />
+                                            <input type="text" class="form-control readonly bg-light"  readonly="readonly" value="{{ $orderLPK->defaultgulung ?? '' }}" />
                                             <span class="input-group-text" id="basic-addon2">
                                                 meter
                                             </span>
@@ -1231,7 +1269,7 @@
                                     <div class="form-group mt-1">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-3 fw-bold text-muted">Selisih Kurang</label>
-                                            <input type="text" class="form-control readonly"  readonly="readonly" value="{{ $orderLPK->selisihKurang ?? '' }}" />
+                                            <input type="text" class="form-control readonly bg-light"  readonly="readonly" value="{{ $orderLPK->selisihKurang ?? '' }}" />
                                             <span class="input-group-text">
                                                 meter
                                             </span>
@@ -1256,7 +1294,7 @@
                                             <div class="form-group mt-1">
                                                 <div class="input-group">
                                                     <label class="control-label col-12 col-lg-3 text-muted">INFURE:</label>
-                                                    <input type="text" class="form-control readonly" readonly="readonly" value="{{ $orderLPK->progressInfure ?? '' }}" />
+                                                    <input type="text" class="form-control readonly bg-light" readonly="readonly" value="{{ $orderLPK->progressInfure ?? '' }}" />
                                                     <span class="input-group-text">
                                                         meter
                                                     </span>
@@ -1267,7 +1305,7 @@
                                             <div class="form-group mt-1">
                                                 <div class="input-group">
                                                     <label class="control-label col-12 col-lg-3 text-muted">{{ $orderLPK != null ? ($orderLPK->progressInfureSelisih < 0 ? 'Kurang' : 'Lebih') : '' }}:</label>
-                                                    <input type="text" class="form-control readonly {{ $orderLPK != null ? ($orderLPK->progressInfureSelisih < 0 ? 'text-danger' : 'text-info') : '' }}" readonly="readonly" value="{{ $orderLPK->progressInfureSelisih ?? 0 }}" />
+                                                    <input type="text" class="form-control readonly bg-light {{ $orderLPK != null ? ($orderLPK->progressInfureSelisih < 0 ? 'text-danger' : 'text-info') : '' }}" readonly="readonly" value="{{ $orderLPK->progressInfureSelisih ?? 0 }}" />
                                                     <span class="input-group-text">
                                                         meter
                                                     </span>
@@ -1280,7 +1318,7 @@
                                             <div class="form-group mt-1">
                                                 <div class="input-group">
                                                     <label class="control-label col-12 col-lg-3 mt-1 text-muted">SEITAI:</label>
-                                                    <input type="text" class="form-control readonly" readonly="readonly" value="{{ $orderLPK->progressSeitai ?? '' }}" />
+                                                    <input type="text" class="form-control readonly bg-light" readonly="readonly" value="{{ $orderLPK->progressSeitai ?? '' }}" />
                                                     <span class="input-group-text">
                                                         lbr
                                                     </span>
@@ -1291,7 +1329,7 @@
                                             <div class="form-group mt-1">
                                                 <div class="input-group">
                                                     <label class="control-label col-12 col-lg-3 mt-1 text-muted">{{ $orderLPK != null ? ($orderLPK->progressSeitaiSelisih < 0 ? 'Kurang' : 'Lebih') : '' }}:</label>
-                                                    <input type="text" class="form-control readonly {{ $orderLPK != null ? ($orderLPK->progressSeitaiSelisih < 0 ? 'text-danger' : 'text-info') : '' }}" readonly="readonly" value="{{ $orderLPK->progressSeitaiSelisih ?? '' }}" />
+                                                    <input type="text" class="form-control readonly bg-light {{ $orderLPK != null ? ($orderLPK->progressSeitaiSelisih < 0 ? 'text-danger' : 'text-info') : '' }}" readonly="readonly" value="{{ $orderLPK->progressSeitaiSelisih ?? '' }}" />
                                                     <span class="input-group-text">
                                                         lbr
                                                     </span>
