@@ -20,10 +20,10 @@ class PenarikanPaletController extends Component
 
     public function mount()
     {
-        $this->products = MsProduct::limit(10)->get();
-        $this->machine = MsMachine::limit(10)->get();
+        $this->products = MsProduct::get();
+        $this->machine = MsMachine::get();
         $this->tglMasuk = Carbon::now()->format('Y-m-d');
-        $this->tglKeluar = Carbon::now()->format('Y-m-d'); 
+        $this->tglKeluar = Carbon::now()->format('Y-m-d');
     }
 
     public function search(){
@@ -41,10 +41,10 @@ class PenarikanPaletController extends Component
             // // status
             // $searchTerm = '';
             // if (isset($this->searchTerm) && $this->searchTerm != '') {
-            //     $searchTerm = "AND (tdol.lpk_no ilike '%" . $this->searchTerm . 
-            //     "%' OR tdpg.production_no ilike '%" . $this->searchTerm . 
+            //     $searchTerm = "AND (tdol.lpk_no ilike '%" . $this->searchTerm .
+            //     "%' OR tdpg.production_no ilike '%" . $this->searchTerm .
             //     "%' OR tdpg.product_id ilike '%" . $this->searchTerm .
-            //     "%' OR tdpg.machine_id ilike '%" . $this->searchTerm . 
+            //     "%' OR tdpg.machine_id ilike '%" . $this->searchTerm .
             //     "%')";
             // }
 
@@ -81,10 +81,10 @@ class PenarikanPaletController extends Component
             //     tdol.qty_gentan AS qty_gentan,
             //     tdol.qty_gulung AS qty_gulung,
             //     tdol.qty_lpk AS qty_lpk,
-            //     tdol.total_assembly_qty AS total_assembly_qty 
+            //     tdol.total_assembly_qty AS total_assembly_qty
             // FROM
             //     tdProduct_Goods AS tdpg
-            //     INNER JOIN tdOrderLpk AS tdol ON tdpg.lpk_id = tdol.ID 
+            //     INNER JOIN tdOrderLpk AS tdol ON tdpg.lpk_id = tdol.ID
             // $tglMasuk
             // $tglKeluar
             // $searchTerm
@@ -114,7 +114,7 @@ class PenarikanPaletController extends Component
                 X.product_id,
                 X.nomor_palet,
                 X.code,
-                X.name 
+                X.name
             FROM
                 (
                 SELECT DISTINCT
@@ -123,12 +123,12 @@ class PenarikanPaletController extends Component
                     msp.code,
                     msp.name
                 FROM
-                    tdProduct_Goods AS tdpg 
+                    tdProduct_Goods AS tdpg
                     INNER JOIN msproduct as msp on msp.id = tdpg.product_id
                 $tglMasuk
                 $tglKeluar
                 $product_id
-                ) AS X 
+                ) AS X
                 LIMIT 5
             ");
         // }

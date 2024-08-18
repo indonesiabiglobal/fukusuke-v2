@@ -20,9 +20,9 @@ class PengembalianPaletController extends Component
 
     public function mount()
     {
-        $this->products = MsProduct::limit(10)->get();
+        $this->products = MsProduct::get();
         $this->tglMasuk = Carbon::now()->format('Y-m-d');
-        $this->tglKeluar = Carbon::now()->format('Y-m-d'); 
+        $this->tglKeluar = Carbon::now()->format('Y-m-d');
     }
 
     public function search(){
@@ -45,7 +45,7 @@ class PengembalianPaletController extends Component
             X.product_id,
             X.nomor_palet,
             X.code,
-            X.name 
+            X.name
         FROM
             (
             SELECT DISTINCT
@@ -54,7 +54,7 @@ class PengembalianPaletController extends Component
                 msp.code,
                 msp.name
             FROM
-                tdProduct_Goods AS tdpg 
+                tdProduct_Goods AS tdpg
                 INNER JOIN msproduct as msp on msp.id = tdpg.product_id
             $nomor_palet
             $product_id

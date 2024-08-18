@@ -8,7 +8,7 @@
                 <div class="input-group col-md-9 col-xs-8">
                     <input wire:model.defer="nomor_palet" class="form-control" type="text" placeholder="A0000-000000" />
                 </div>
-            </div>            
+            </div>
         </div>
     </div>
     <div class="col-12 col-lg-6">
@@ -21,11 +21,11 @@
                     <select class="form-control"  wire:model.defer="idProduct" id="product" name="product" data-choices data-choices-sorting-false data-choices-removeItem>
                         <option value="">- All -</option>
                         @foreach ($products as $item)
-                            <option value="{{ $item->id }}">{{ $item->name }}</option>
+                            <option data-custom-properties='{"code": "{{ $item->code }}"}' value="{{ $item->id }}">{{ $item->name }}</option>
                         @endforeach
                     </select>
                 </div>
-            </div>            
+            </div>
         </div>
     </div>
 
