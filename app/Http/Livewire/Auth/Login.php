@@ -7,20 +7,20 @@ use Illuminate\Support\Facades\Auth;
 
 class Login extends Component
 {
-    public $email = "bigi@gmail.com";
-    public $password = "secret";
+    public $email;
+    public $password;
 
     protected $rules = [
         'email' => 'required|string|email|max:255',
         'password' => 'required',
     ];
 
-   public function mount()
-   {
-       if (auth()->user()) {
-           return redirect()->intended('/');
-       }
-   }
+    public function mount()
+    {
+        if (auth()->user()) {
+            return redirect()->intended('/');
+        }
+    }
 
     public function submit()
     {
@@ -36,7 +36,7 @@ class Login extends Component
             return redirect()->intended('/');
         } else {
             $this->addError('email', trans('auth.failed'));
-           return redirect()->back();
+            return redirect()->back();
         }
     }
 

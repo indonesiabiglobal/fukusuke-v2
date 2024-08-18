@@ -5,14 +5,14 @@
     <meta charset="utf-8" />
     <!-- PWA  -->
     <meta name="theme-color" content="#6777ef"/>
-    {{-- <link rel="apple-touch-icon" href="{{ asset('logo.png') }}"> --}}
+    <link rel="apple-touch-icon" href="{{ asset('logo.png') }}">
     <link rel="manifest" href="{{ asset('/manifest.json') }}">
     <title> Fukusuke Kogyo Indonesia </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
     <meta content="Themesbrand" name="author" />
     <!-- App favicon -->
-    {{-- <link rel="shortcut icon" href="{{ URL::asset('build/images/favicon.ico') }}"> --}}
+    <link rel="shortcut icon" href="{{ URL::asset('build/images/fukusuke.ico') }}">
     {{-- @section('css') --}}
     <link href="{{ URL::asset('build/libs/jsvectormap/css/jsvectormap.min.css')}}" rel="stylesheet" type="text/css" />
     <link href="{{ URL::asset('build/libs/swiper/swiper-bundle.min.css')}}" rel="stylesheet" type="text/css" />
@@ -20,12 +20,12 @@
     @include('layouts.head-css')
     @livewireStyles
 
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
+    {{-- <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> --}}
 
     {{-- toastr --}}
-    {{-- <script src="https://code.jquery.com/jquery-3.5.0.min.js"></script> --}}
+    <script src="https://code.jquery.com/jquery-3.5.0.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
     {{-- @powerGridStyles --}}
 </head>
@@ -91,7 +91,7 @@
       }
     </script>
 
-    <script>
+    {{-- <script>
         $(function() {
             $('.select2').select2({
                 placeholder: "select an option",
@@ -99,7 +99,7 @@
             })
         })
     </script>
-    @stack('scripts')
+    @stack('scripts') --}}
 </body>
 
 </html>

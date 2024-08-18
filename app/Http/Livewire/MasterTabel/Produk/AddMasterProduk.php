@@ -109,7 +109,9 @@ class AddMasterProduk extends Component
 
     public function mount()
     {
-        $this->masterProductType = DB::table('msproduct_type')->get(['id', 'code', 'name']);
+        $this->masterProductType = DB::table('msproduct_type')
+            ->select('id', 'code', DB::raw("CONCAT(name, ', ', code) as name"))
+            ->get();
         $this->masterMaterial = DB::table('msmaterial')->get(['id', 'code', 'name']);
         $this->masterEmbossed = DB::table('msembossedclassification')->get(['id', 'code', 'name']);
         $this->masterSurface = DB::table('mssurfaceclassification')->get(['id', 'code', 'name']);
@@ -296,9 +298,9 @@ class AddMasterProduk extends Component
             $product->case_inner_count_unit = isset($this->case_inner_count_unit) ? $this->case_inner_count_unit['value'] : null;;
             $product->lakbanseitaiid = isset($this->lakbanseitaiid) ? $this->lakbanseitaiid['value'] : null;;
             $product->lakbaninfureid = isset($this->lakbaninfureid) ? $this->lakbaninfureid['value'] : null;;
-            $product->stampelseitaiid = isset($this->stampelseitaiid) ? $this->stampelseitaiid['value'] : null;;
-            $product->hagataseitaiid = isset($this->hagataseitaiid) ? $this->hagataseitaiid['value'] : null;;
-            $product->jenissealseitaiid = isset($this->jenissealseitaiid) ? $this->jenissealseitaiid['value'] : null;;
+            $product->stampelseitaiid = isset($this->stampelseitaiid) ? $this->stampelseitaiid : null;;
+            $product->hagataseitaiid = isset($this->hagataseitaiid) ? $this->hagataseitaiid : null;;
+            // $product->jenissealseitaiid = isset($this->jenissealseitaiid) ? $this->jenissealseitaiid['value'] : null;;
             $product->status = 1;
             $product->created_by = auth()->user()->username;
             $product->created_on = Carbon::now();

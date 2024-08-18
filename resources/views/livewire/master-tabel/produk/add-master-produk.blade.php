@@ -35,7 +35,7 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterProductType as $item)
-                                        <option value="{{ $item->id }}">
+                                        <option value="{{ $item->id }}" data-custom-properties='{"code": "{{ $item->code }}"}'>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -703,7 +703,7 @@
                     <div class="form-group mt-1">
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-6">Stempel Seitai</label>
-                            <div class="col-12 col-lg-6" wire:ignore>
+                            {{-- <div class="col-12 col-lg-6" wire:ignore>
                                 <select data-choices data-choices-sorting="true"
                                     class="form-select @error('stampelseitaiid') is-invalid @enderror"
                                     wire:model="stampelseitaiid" placeholder="">
@@ -719,13 +719,18 @@
                                 @error('stampelseitaiid')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
-                            </div>
+                            </div> --}}
+                            <input required type="text" class="form-control @error('stampelseitaiid') is-invalid @enderror" wire:model="stampelseitaiid"
+                                placeholder="..." />
+                            @error('stampelseitaiid')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
                         </div>
                     </div>
                     <div class="form-group mt-1">
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-6">Hagata Seitai</label>
-                            <div class="col-12 col-lg-6" wire:ignore>
+                            {{-- <div class="col-12 col-lg-6" wire:ignore>
                                 <select data-choices data-choices-sorting="true"
                                     class="form-select @error('hagataseitaiid') is-invalid @enderror"
                                     wire:model="hagataseitaiid" placeholder="">
@@ -741,10 +746,15 @@
                                 @error('hagataseitaiid')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
-                            </div>
+                            </div> --}}
+                            <input required type="text" class="form-control @error('hagataseitaiid') is-invalid @enderror" wire:model="hagataseitaiid"
+                                placeholder="..." />
+                            @error('hagataseitaiid')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
                         </div>
                     </div>
-                    <div class="form-group mt-1">
+                    {{-- <div class="form-group mt-1">
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-6">Jenis Seal Seitai</label>
                             <div class="col-12 col-lg-6" wire:ignore>
@@ -765,7 +775,7 @@
                                 @enderror
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
                 <div class="col-12 col-lg-5">
                     <div class="form-group">
@@ -779,7 +789,7 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterPackagingGaiso as $item)
-                                        <option value="{{ $item->id }}">
+                                        <option value="{{ $item->id }}" data-custom-properties='{"code": "{{ $item->code }}"}'>
                                             {{ $item->code }}, {{ $item->box_class == 1 ? 'Standar' : 'Khusus' }},
                                             {{ $item->name }}
                                         </option>
@@ -802,7 +812,7 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterPackagingBox as $item)
-                                        <option value="{{ $item->id }}">
+                                        <option value="{{ $item->id }}" data-custom-properties='{"code": "{{ $item->code }}"}'>
                                             {{ $item->code }}, {{ $item->box_class == 1 ? 'Standar' : 'Khusus' }},
                                             {{ $item->name }}
                                         </option>
@@ -825,7 +835,7 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterPackagingInner as $item)
-                                        <option value="{{ $item->id }}">
+                                        <option value="{{ $item->id }}" data-custom-properties='{"code": "{{ $item->code }}"}'>
                                             {{ $item->code }}, {{ $item->box_class == 1 ? 'Standar' : 'Khusus' }},
                                             {{ $item->name }}
                                         </option>
@@ -844,7 +854,7 @@
                                 <select data-choices data-choices-sorting="true"
                                     class="form-select @error('pack_layer_id') is-invalid @enderror"
                                     wire:model="pack_layer_id" placeholder="">
-                                    <option value="" selected>
+                                    <option value="" selected data-custom-properties='{"code": "{{ $item->code }}"}'>
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterPackagingLayer as $item)
@@ -957,7 +967,7 @@
                             </span>
                         </div>
                     </button>
-                    <button id="btnCreate" type="submit" class="btn btn-success w-lg">
+                    <button type="button" wire:click="store" class="btn btn-success w-lg">
                         <span wire:loading.remove wire:target="store">
                             <i class="ri-save-3-line"></i> Save
                         </span>
