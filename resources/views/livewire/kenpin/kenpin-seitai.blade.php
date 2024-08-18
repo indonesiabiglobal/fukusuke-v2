@@ -53,7 +53,7 @@
                     <select class="form-control" style="padding:0.44rem" wire:model.defer="idProduct" data-choices data-choices-sorting-false data-choices-removeItem>
                         <option value="">- All -</option>
                         @foreach ($products as $item)
-                            <option value="{{ $item->id }}" @if ($item->id == ($idProduct['value'] ?? null)) selected @endif>{{ $item->name }}</option>
+                            <option data-custom-properties='{"code": "{{ $item->code }}"}' value="{{ $item->id }}" @if ($item->id == ($idProduct['value'] ?? null)) selected @endif>{{ $item->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -102,9 +102,9 @@
                         </span>
                     </div>
                 </button>
-                
+
                 <button
-                    type="button" 
+                    type="button"
                     class="btn btn-success w-lg p-1"
                     onclick="window.location.href='/add-kenpin-seitai'"
                     >
@@ -114,7 +114,7 @@
         </div>
     </div>
 
-    <div class="col text-end dropdown" x-data="{ 
+    <div class="col text-end dropdown" x-data="{
         tgl_kenpin:true, no_kenpin:true, nama_produk:false, no_order:true, petugas:true, jumlah_loss:true, status:true, update_by:false, updated: false
         }">
         <button type="button" data-bs-toggle="dropdown" aria-expanded="false" class="btn btn-soft-primary btn-icon fs-14 mb-4">
@@ -122,43 +122,43 @@
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
             <li @click="tgl_kenpin = !tgl_kenpin; $refs.checkbox.checked = tgl_kenpin" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="tgl_kenpin = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="tgl_kenpin"> 
+                <input x-ref="checkbox" @change="tgl_kenpin = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="tgl_kenpin">
                 Tgl. Kenpin
             </li>
             <li @click="no_kenpin = !no_kenpin; $refs.checkbox.checked = no_kenpin" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="no_kenpin = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="no_kenpin"> 
+                <input x-ref="checkbox" @change="no_kenpin = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="no_kenpin">
                 No Kenpin
             </li>
             <li @click="nama_produk = !nama_produk; $refs.checkbox.checked = nama_produk" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="nama_produk = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="nama_produk"> 
+                <input x-ref="checkbox" @change="nama_produk = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="nama_produk">
                 Nama Produk
             </li>
             <li @click="no_order = !no_order; $refs.checkbox.checked = no_order" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="no_order = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="no_order"> 
+                <input x-ref="checkbox" @change="no_order = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="no_order">
                 No Order
             </li>
             <li @click="petugas = !petugas; $refs.checkbox.checked = petugas" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="petugas = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="petugas"> 
+                <input x-ref="checkbox" @change="petugas = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="petugas">
                 Petugas
             </li>
             <li @click="jumlah_loss = !jumlah_loss; $refs.checkbox.checked = jumlah_loss" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="jumlah_loss = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="jumlah_loss"> 
+                <input x-ref="checkbox" @change="jumlah_loss = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="jumlah_loss">
                 Jumlah Loss
             </li>
             <li @click="status = !status; $refs.checkbox.checked = status" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="status = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="status"> 
+                <input x-ref="checkbox" @change="status = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="status">
                 Jumlah Loss
             </li>
             <li @click="update_by = !update_by; $refs.checkbox.checked = update_by" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="update_by = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="update_by"> 
+                <input x-ref="checkbox" @change="update_by = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="update_by">
                 Update By
             </li>
             <li @click="updated = !updated; $refs.checkbox.checked = updated" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="updated = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="updated"> 
+                <input x-ref="checkbox" @change="updated = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="updated">
                 Updated
             </li>
         </ul>
-    
+
         <div class="table-responsive table-card">
             <table class="table align-middle">
                 <thead class="table-light">
