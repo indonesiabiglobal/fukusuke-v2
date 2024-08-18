@@ -106,25 +106,21 @@
         </div>
         <hr />
         <div class="form-group">
-            <label class="control-label col-md-4 col-xs-12"></label>
-            <div class="input-group col-md-8 col-xs-12">
-                <button type="button" class="btn btn-success btn-print" wire:click="export" style="width:99%">
-                    <span wire:loading.remove wire:target="export">
-                        <i class="ri-printer-line"></i> Generate Report
-                    </span>
-                    <div wire:loading wire:target="export">
-                        <span class="d-flex align-items-center">
-                            <span class="spinner-border flex-shrink-0" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </span>
-                            <span class="flex-grow-1 ms-1">
-                                Loading...
-                            </span>
+            <button type="button" class="btn btn-success btn-print" wire:click="export" style="width:99%">
+                <span wire:loading.remove wire:target="export">
+                    <i class="ri-printer-line"></i> Generate Report
+                </span>
+                <div wire:loading wire:target="export">
+                    <span class="d-flex align-items-center">
+                        <span class="spinner-border flex-shrink-0" role="status">
+                            <span class="visually-hidden">Loading...</span>
                         </span>
-                    </div>
-                </button>
-                {{-- <button type="button" class="btn btn-success btn-print" wire:click="export" style="width:99%"><i class="ri-printer-line"></i> Generate Report</button> --}}
-            </div>
+                        <span class="flex-grow-1 ms-1">
+                            Loading...
+                        </span>
+                    </span>
+                </div>
+            </button>
         </div>
     </div>
     <div class="col-lg-4"></div>
