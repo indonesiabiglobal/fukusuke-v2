@@ -32,7 +32,7 @@
 				<div class="form-group">                            
 					<div class="input-group">
 						<label class="control-label"></label>
-						<input type="text" placeholder="-" class="form-control col-8 readonly" readonly="readonly" wire:model="name" />
+						<input type="text" placeholder="-" class="form-control col-8 readonly bg-light" readonly="readonly" wire:model="name" />
 					</div>
 				</div>
 			</div>
@@ -51,7 +51,7 @@
 				<div class="form-group">
 					<div class="input-group">
 						<label class="control-label"></label>
-						<input type="text" placeholder="-" class="form-control readonly" readonly="readonly" wire:model="empname" />
+						<input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="empname" />
 					</div>
 				</div>
 			</div>
@@ -156,7 +156,7 @@
                                     <div class="form-group">
                                         <label>Nomor Palet </label>
                                         <div class="input-group col-md-9 col-xs-8">
-                                            <input class="form-control readonly" readonly="readonly" type="text" wire:model.defer="no_palet" placeholder="..." />
+                                            <input class="form-control readonly bg-light" readonly="readonly" type="text" wire:model.defer="no_palet" placeholder="..." />
                                             @error('no_palet')
                                                 <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror
@@ -167,7 +167,7 @@
                                     <div class="form-group">
                                         <label>Nomor Lot </label>
                                         <div class="input-group col-md-9 col-xs-8">
-                                            <input class="form-control readonly" readonly="readonly" type="text" wire:model.defer="no_lot" placeholder="..." />
+                                            <input class="form-control readonly bg-light" readonly="readonly" type="text" wire:model.defer="no_lot" placeholder="..." />
                                             @error('no_lot')
                                                 <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror
@@ -178,7 +178,7 @@
                                     <div class="form-group">
                                         <label>No LPK </label>
                                         <div class="input-group col-md-9 col-xs-8">
-                                            <input class="form-control readonly" readonly="readonly" type="text" wire:model.defer="no_lpk" placeholder="..." />
+                                            <input class="form-control readonly bg-light" readonly="readonly" type="text" wire:model.defer="no_lpk" placeholder="..." />
                                             @error('no_lpk')
                                                 <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror
@@ -189,7 +189,7 @@
                                     <div class="form-group">
                                         <label>Quantity </label>
                                         <div class="input-group col-md-9 col-xs-8">
-                                            <input class="form-control readonly" readonly="readonly" type="text" wire:model.defer="quantity" placeholder="..." />
+                                            <input class="form-control readonly bg-light" readonly="readonly" type="text" wire:model.defer="quantity" placeholder="..." />
                                             @error('quantity')
                                                 <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror
@@ -235,7 +235,7 @@
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-centered table-nowrap mb-0 rounded">
-                        <thead class="thead-light">
+                        <thead class="table-light">
                             <tr>
                                 <th class="border-0 rounded-start">Action</th>
                                 <th class="border-0">Nomor Palet</th>

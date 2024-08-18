@@ -35,7 +35,7 @@
 				<div class="form-group">
 					<div class="input-group">
 						<label class="control-label col-12 col-lg-5">Tanggal LPK</label>
-						<input class="form-control readonly datepicker-input" readonly="readonly" type="date" wire:model.defer="lpk_date" placeholder="yyyy/mm/dd"/>
+						<input class="form-control readonly datepicker-input bg-light" readonly="readonly" type="date" wire:model.defer="lpk_date" placeholder="yyyy/mm/dd"/>
 					</div>
 				</div>
 			</div>
@@ -43,7 +43,7 @@
 				<div class="form-group">                            
 					<div class="input-group">
 						<label class="control-label col-12 col-lg-5">Panjang LPK</label>
-						<input type="text" placeholder="-" class="form-control readonly" readonly="readonly" wire:model="panjang_lpk" />
+						<input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="panjang_lpk" />
 					</div>
 				</div>
 			</div>
@@ -51,7 +51,7 @@
 				<div class="form-group">
 					<div class="input-group">
 						<label class="control-label col-12 col-lg-6">Nomor Order</label>
-						<input type="text" placeholder="-" class="form-control readonly" readonly="readonly" wire:model="code" />
+						<input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="code" />
 					</div>
 				</div>
 			</div>
@@ -59,7 +59,7 @@
 				<div class="form-group">                            
 					<div class="input-group">
 						<label class="control-label"></label>
-						<input type="text" placeholder="-" class="form-control readonly" readonly="readonly" wire:model="name" />
+						<input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="name" />
 					</div>
 				</div>
 			</div>                    
@@ -78,7 +78,7 @@
 				<div class="form-group">
 					<div class="input-group">
 						<label class="control-label"></label>
-						<input type="text" placeholder="-" class="form-control readonly" readonly="readonly" wire:model="empname" />
+						<input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="empname" />
 					</div>
 				</div>
 			</div>
@@ -163,7 +163,7 @@
                                 <div class="form-group">
                                     <label>Nomor Mesin </label>
                                     <div class="input-group col-md-9 col-xs-8">
-                                        <input class="form-control readonly" readonly="readonly" type="text" wire:model.defer="machineno" placeholder="..." />
+                                        <input class="form-control readonly bg-light" readonly="readonly" type="text" wire:model.defer="machineno" placeholder="..." />
                                     </div>
                                 </div>
                             </div>
@@ -171,7 +171,7 @@
                                 <div class="form-group">
                                     <label>Petugas </label>
                                     <div class="input-group col-md-9 col-xs-8">
-                                        <input class="form-control readonly" readonly="readonly" type="text" wire:model.defer="namapetugas" placeholder="..." />
+                                        <input class="form-control readonly bg-light" readonly="readonly" type="text" wire:model.defer="namapetugas" placeholder="..." />
                                     </div>
                                 </div>
                             </div>
@@ -181,6 +181,28 @@
                                     <div class="input-group col-md-9 col-xs-8">
                                         <input class="form-control" type="text" wire:model.defer="berat_loss" placeholder="0" />
                                         @error('berat_loss')
+                                            <span class="invalid-feedback">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 mb-1">
+                                <div class="form-group">
+                                    <label>Berat </label>
+                                    <div class="input-group col-md-9 col-xs-8">
+                                        <input class="form-control" type="text" wire:model.defer="berat" placeholder="0" />
+                                        @error('berat')
+                                            <span class="invalid-feedback">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 mb-1">
+                                <div class="form-group">
+                                    <label>Frekuensi </label>
+                                    <div class="input-group col-md-9 col-xs-8">
+                                        <input class="form-control" type="text" wire:model.defer="frekuensi" placeholder="0" />
+                                        @error('frekuensi')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror
                                     </div>

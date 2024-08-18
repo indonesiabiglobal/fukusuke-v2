@@ -141,9 +141,6 @@
 							</span>
 						</div>
 					</button>
-                    <button type="button" class="btn btn-success btn-print" disabled="disabled">
-                        <i class="bx bx-printer"></i> Print
-                    </button>
                 </div>
             </div>
         </div>
@@ -189,6 +186,28 @@
                                     <div class="input-group col-md-9 col-xs-8">
                                         <input class="form-control" type="text" wire:model.defer="berat_loss" placeholder="0" />
                                         @error('berat_loss')
+                                            <span class="invalid-feedback">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 mb-1">
+                                <div class="form-group">
+                                    <label>Berat </label>
+                                    <div class="input-group col-md-9 col-xs-8">
+                                        <input class="form-control" type="text" wire:model.defer="berat" placeholder="0" />
+                                        @error('berat')
+                                            <span class="invalid-feedback">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 mb-1">
+                                <div class="form-group">
+                                    <label>Frekuensi </label>
+                                    <div class="input-group col-md-9 col-xs-8">
+                                        <input class="form-control" type="text" wire:model.defer="frekuensi" placeholder="0" />
+                                        @error('frekuensi')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror
                                     </div>
