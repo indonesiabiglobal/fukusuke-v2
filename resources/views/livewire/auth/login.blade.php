@@ -94,7 +94,7 @@
                                     <div class="position-relative auth-pass-inputgroup mb-3">
                                         <input id="password" type="password"
                                             class="form-control pe-5 password-input @error('password') is-invalid @enderror"
-                                            wire:model.live="password" id="password-input" required value="12345678"
+                                            wire:model.live="password" id="password-input" required value=""
                                             autocomplete="current-password" placeholder="Enter your password">
                                         <button
                                             class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted password-addon"

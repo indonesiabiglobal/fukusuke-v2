@@ -110,7 +110,9 @@ class EditProduk extends Component
 
     public function mount(Request $request)
     {
-        $this->masterProductType = DB::table('msproduct_type')->get(['id', 'code', 'name']);
+        $this->masterProductType = DB::table('msproduct_type')
+            ->select('id', 'code', DB::raw("CONCAT(name, ', ', code) as name"))
+            ->get();
         $this->masterMaterial = DB::table('msmaterial')->get(['id', 'code', 'name']);
         $this->masterEmbossed = DB::table('msembossedclassification')->get(['id', 'code', 'name']);
         $this->masterSurface = DB::table('mssurfaceclassification')->get(['id', 'code', 'name']);
@@ -202,8 +204,8 @@ class EditProduk extends Component
         $this->case_inner_count_unit['value'] = $this->product->case_inner_count_unit;
         $this->lakbanseitaiid['value'] = $this->product->lakbanseitaiid;
         $this->lakbaninfureid['value'] = $this->product->lakbaninfureid;
-        $this->stampelseitaiid['value'] = $this->product->stampelseitaiid;
-        $this->hagataseitaiid['value'] = $this->product->hagataseitaiid;
+        $this->stampelseitaiid = $this->product->stampelseitaiid;
+        $this->hagataseitaiid = $this->product->hagataseitaiid;
         $this->jenissealseitaiid['value'] = $this->product->jenissealseitaiid;
     }
 
@@ -372,9 +374,9 @@ class EditProduk extends Component
             $product->case_inner_count_unit = isset($this->case_inner_count_unit) ? $this->case_inner_count_unit['value'] : null;;
             $product->lakbanseitaiid = isset($this->lakbanseitaiid) ? $this->lakbanseitaiid['value'] : null;;
             $product->lakbaninfureid = isset($this->lakbaninfureid) ? $this->lakbaninfureid['value'] : null;;
-            $product->stampelseitaiid = isset($this->stampelseitaiid) ? $this->stampelseitaiid['value'] : null;;
-            $product->hagataseitaiid = isset($this->hagataseitaiid) ? $this->hagataseitaiid['value'] : null;;
-            $product->jenissealseitaiid = isset($this->jenissealseitaiid) ? $this->jenissealseitaiid['value'] : null;;
+            $product->stampelseitaiid = isset($this->stampelseitaiid) ? $this->stampelseitaiid : null;;
+            $product->hagataseitaiid = isset($this->hagataseitaiid) ? $this->hagataseitaiid : null;;
+            // $product->jenissealseitaiid = isset($this->jenissealseitaiid) ? $this->jenissealseitaiid : null;
             $product->status = 1;
             $product->updated_by = auth()->user()->username;
             $product->updated_on = Carbon::now();
