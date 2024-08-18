@@ -315,98 +315,203 @@ class GeneralReportController extends Component
         switch ($this->jenisreport) {
             case 'Daftar Produksi Per Mesin':
                 if ($this->nipon == 'Infure') {
-                    $file = $this->daftarProduksiPerMesinInfure($tglMasuk, $tglKeluar);
-                    return response()->download($file);
+                    $response = $this->daftarProduksiPerMesinInfure($tglMasuk, $tglKeluar);
+                    if ($response['status'] == 'success') {
+                        return response()->download($response['filename']);
+                    } else if ($response['status'] == 'error') {
+                        $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                        return;
+                    }
                 } else {
-                    $file = $this->daftarProduksiPerMesinSeitai($tglMasuk, $tglKeluar);
-                    return response()->download($file);
+                    $response = $this->daftarProduksiPerMesinSeitai($tglMasuk, $tglKeluar);
+                    if ($response['status'] == 'success') {
+                        return response()->download($response['filename']);
+                    } else if ($response['status'] == 'error') {
+                        $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                        return;
+                    }
                 }
                 break;
             case 'Daftar Produksi Per Tipe Per Mesin':
                 if ($this->nipon == 'Infure') {
-                    $file = $this->daftarProduksiPerTipePerMesinInfure($tglMasuk, $tglKeluar);
-                    return response()->download($file);
+                    $response = $this->daftarProduksiPerTipePerMesinInfure($tglMasuk, $tglKeluar);
+                    if ($response['status'] == 'success') {
+                        return response()->download($response['filename']);
+                    } else if ($response['status'] == 'error') {
+                        $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                        return;
+                    }
                 } else {
-                    $file = $this->daftarProduksiPerTipePerMesinSeitai($tglMasuk, $tglKeluar);
-                    return response()->download($file);
+                    $response = $this->daftarProduksiPerTipePerMesinSeitai($tglMasuk, $tglKeluar);
+                    if ($response['status'] == 'success') {
+                        return response()->download($response['filename']);
+                    } else if ($response['status'] == 'error') {
+                        $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                        return;
+                    }
                 }
                 break;
             case 'Daftar Produksi Per Jenis':
                 if ($this->nipon == 'Infure') {
-                    $file = $this->daftarProduksiPerJenisInfure($tglMasuk, $tglKeluar);
-                    return response()->download($file);
+                    $response = $this->daftarProduksiPerJenisInfure($tglMasuk, $tglKeluar);
+                    if ($response['status'] == 'success') {
+                        return response()->download($response['filename']);
+                    } else if ($response['status'] == 'error') {
+                        $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                        return;
+                    }
                 } else {
-                    $file = $this->daftarProduksiPerJenisSeitai($tglMasuk, $tglKeluar);
-                    return response()->download($file);
+                    $response = $this->daftarProduksiPerJenisSeitai($tglMasuk, $tglKeluar);
+                    if ($response['status'] == 'success') {
+                        return response()->download($response['filename']);
+                    } else if ($response['status'] == 'error') {
+                        $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                        return;
+                    }
                 }
                 break;
             case 'Daftar Produksi Per Tipe':
                 if ($this->nipon == 'Infure') {
-                    $file = $this->daftarProduksiPerTipeInfure($tglMasuk, $tglKeluar);
-                    return response()->download($file);
+                    $response = $this->daftarProduksiPerTipeInfure($tglMasuk, $tglKeluar);
+                    if ($response['status'] == 'success') {
+                        return response()->download($response['filename']);
+                    } else if ($response['status'] == 'error') {
+                        $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                        return;
+                    }
                 } else {
-                    $file = $this->daftarProduksiPerTipeSeitai($tglMasuk, $tglKeluar);
-                    return response()->download($file);
+                    $response = $this->daftarProduksiPerTipeSeitai($tglMasuk, $tglKeluar);
+                    if ($response['status'] == 'success') {
+                        return response()->download($response['filename']);
+                    } else if ($response['status'] == 'error') {
+                        $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                        return;
+                    }
                 }
                 break;
             case 'Daftar Produksi Per Produk':
                 if ($this->nipon == 'Infure') {
-                    $file = $this->daftarProduksiPerProdukInfure($tglMasuk, $tglKeluar);
-                    return response()->download($file);
+                    $response = $this->daftarProduksiPerProdukInfure($tglMasuk, $tglKeluar);
+                    if ($response['status'] == 'success') {
+                        return response()->download($response['filename']);
+                    } else if ($response['status'] == 'error') {
+                        $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                        return;
+                    }
                 } else {
-                    $file = $this->daftarProduksiPerProdukSeitai($tglMasuk, $tglKeluar);
-                    return response()->download($file);
+                    $response = $this->daftarProduksiPerProdukSeitai($tglMasuk, $tglKeluar);
+                    if ($response['status'] == 'success') {
+                        return response()->download($response['filename']);
+                    } else if ($response['status'] == 'error') {
+                        $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                        return;
+                    }
                 }
                 break;
             case 'Daftar Produksi Per Departemen Per Jenis':
                 if ($this->nipon == 'Infure') {
-                    $file = $this->daftarProduksiPerDepartemenPerJenisInfure($tglMasuk, $tglKeluar);
-                    return response()->download($file);
+                    $response = $this->daftarProduksiPerDepartemenPerJenisInfure($tglMasuk, $tglKeluar);
+                    if ($response['status'] == 'success') {
+                        return response()->download($response['filename']);
+                    } else if ($response['status'] == 'error') {
+                        $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                        return;
+                    }
                 } else {
-                    $file = $this->daftarProduksiPerDepartemenPerJenisSeitai($tglMasuk, $tglKeluar);
-                    return response()->download($file);
+                    $response = $this->daftarProduksiPerDepartemenPerJenisSeitai($tglMasuk, $tglKeluar);
+                    if ($response['status'] == 'success') {
+                        return response()->download($response['filename']);
+                    } else if ($response['status'] == 'error') {
+                        $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                        return;
+                    }
                 }
                 break;
             case 'Daftar Produksi Per Departemen & Tipe':
                 if ($this->nipon == 'Infure') {
-                    $file = $this->daftarProduksiPerDepartemenPerTypeInfure($tglMasuk, $tglKeluar);
-                    return response()->download($file);
+                    $response = $this->daftarProduksiPerDepartemenPerTypeInfure($tglMasuk, $tglKeluar);
+                    if ($response['status'] == 'success') {
+                        return response()->download($response['filename']);
+                    } else if ($response['status'] == 'error') {
+                        $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                        return;
+                    }
                 } else {
-                    $file = $this->daftarProduksiPerDepartemenPerTypeSeitai($tglMasuk, $tglKeluar);
-                    return response()->download($file);
+                    $response = $this->daftarProduksiPerDepartemenPerTypeSeitai($tglMasuk, $tglKeluar);
+                    if ($response['status'] == 'success') {
+                        return response()->download($response['filename']);
+                    } else if ($response['status'] == 'error') {
+                        $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                        return;
+                    }
                 }
                 break;
             case 'Daftar Produksi Per Departemen & Petugas':
                 if ($this->nipon == 'Infure') {
-                    $file = $this->daftarProduksiPerDepartemenPerPetugasInfure($tglMasuk, $tglKeluar);
-                    return response()->download($file);
+                    $response = $this->daftarProduksiPerDepartemenPerPetugasInfure($tglMasuk, $tglKeluar);
+                    if ($response['status'] == 'success') {
+                        return response()->download($response['filename']);
+                    } else if ($response['status'] == 'error') {
+                        $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                        return;
+                    }
                 } else {
-                    $file = $this->daftarProduksiPerDepartemenPerPetugasSeitai($tglMasuk, $tglKeluar);
-                    return response()->download($file);
+                    $response = $this->daftarProduksiPerDepartemenPerPetugasSeitai($tglMasuk, $tglKeluar);
+                    if ($response['status'] == 'success') {
+                        return response()->download($response['filename']);
+                    } else if ($response['status'] == 'error') {
+                        $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                        return;
+                    }
                 }
                 break;
             case 'Daftar Loss Per Departemen':
                 if ($this->nipon == 'Infure') {
-                    $file = $this->daftarLossPerDepartemenInfure($tglMasuk, $tglKeluar);
-                    return response()->download($file);
+                    $response = $this->daftarLossPerDepartemenInfure($tglMasuk, $tglKeluar);
+                    if ($response['status'] == 'success') {
+                        return response()->download($response['filename']);
+                    } else if ($response['status'] == 'error') {
+                        $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                        return;
+                    }
                 } else {
-                    $file = $this->daftarLossPerDepartemenSeitai($tglMasuk, $tglKeluar);
-                    return response()->download($file);
+                    $response = $this->daftarLossPerDepartemenSeitai($tglMasuk, $tglKeluar);
+                    if ($response['status'] == 'success') {
+                        return response()->download($response['filename']);
+                    } else if ($response['status'] == 'error') {
+                        $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                        return;
+                    }
                 }
                 break;
             case 'Daftar Loss Per Departemen & Jenis':
                 if ($this->nipon == 'Infure') {
-                    $file = $this->daftarLossPerDepartemenPerJenisInfure($tglMasuk, $tglKeluar);
-                    return response()->download($file);
+                    $response = $this->daftarLossPerDepartemenPerJenisInfure($tglMasuk, $tglKeluar);
+                    if ($response['status'] == 'success') {
+                        return response()->download($response['filename']);
+                    } else if ($response['status'] == 'error') {
+                        $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                        return;
+                    }
                 } else {
-                    $file = $this->daftarLossPerDepartemenPerJenisSeitai($tglMasuk, $tglKeluar);
-                    return response()->download($file);
+                    $response = $this->daftarLossPerDepartemenPerJenisSeitai($tglMasuk, $tglKeluar);
+                    if ($response['status'] == 'success') {
+                        return response()->download($response['filename']);
+                    } else if ($response['status'] == 'error') {
+                        $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                        return;
+                    }
                 }
                 break;
             case 'Daftar Loss Per Petugas':
                 if ($this->nipon == 'Infure') {
-                    $file = $this->daftarLossPerPetugasInfure($tglMasuk, $tglKeluar);
-                    return response()->download($file);
+                    $response = $this->daftarLossPerPetugasInfure($tglMasuk, $tglKeluar);
+                    if ($response['status'] == 'success') {
+                        return response()->download($response['filename']);
+                    } else if ($response['status'] == 'error') {
+                        $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                        return;
+                    }
                 } else {
                     $response = $this->daftarLossPerPetugasSeitai($tglMasuk, $tglKeluar);
                     if ($response['status'] == 'success') {
@@ -415,42 +520,76 @@ class GeneralReportController extends Component
                         $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                         return;
                     }
-                    // return response()->download($file);
                 }
                 break;
             case 'Daftar Loss Per Mesin':
                 if ($this->nipon == 'Infure') {
-                    $file = $this->daftarLossPerMesinInfure($tglMasuk, $tglKeluar);
-                    return response()->download($file);
+                    $response = $this->daftarLossPerMesinInfure($tglMasuk, $tglKeluar);
+                    if ($response['status'] == 'success') {
+                        return response()->download($response['filename']);
+                    } else if ($response['status'] == 'error') {
+                        $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                        return;
+                    }
                 } else {
-                    $file = $this->daftarLossPerMesinSeitai($tglMasuk, $tglKeluar);
-                    return response()->download($file);
+                    $response = $this->daftarLossPerMesinSeitai($tglMasuk, $tglKeluar);
+                    if ($response['status'] == 'success') {
+                        return response()->download($response['filename']);
+                    } else if ($response['status'] == 'error') {
+                        $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                        return;
+                    }
                 }
                 break;
             case 'Kapasitas Produksi':
                 if ($this->nipon == 'Infure') {
-                    $file = $this->kapasitasProduksiInfure($tglMasuk, $tglKeluar);
-                    return response()->download($file);
+                    $response = $this->kapasitasProduksiInfure($tglMasuk, $tglKeluar);
+                    if ($response['status'] == 'success') {
+                        return response()->download($response['filename']);
+                    } else if ($response['status'] == 'error') {
+                        $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                        return;
+                    }
                 } else {
-                    $file = $this->kapasitasProduksiSeitai($tglMasuk, $tglKeluar);
-                    return response()->download($file);
+                    $response = $this->kapasitasProduksiSeitai($tglMasuk, $tglKeluar);
+                    if ($response['status'] == 'success') {
+                        return response()->download($response['filename']);
+                    } else if ($response['status'] == 'error') {
+                        $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                        return;
+                    }
                 }
                 break;
             case 'Daftar Produksi Per Palet':
                 if ($this->nipon == 'Seitai') {
-                    $file = $this->daftarProduksiPerPaletSeitai($tglMasuk, $tglKeluar);
-                    return response()->download($file);
+                    $response = $this->daftarProduksiPerPaletSeitai($tglMasuk, $tglKeluar);
+                    if ($response['status'] == 'success') {
+                        return response()->download($response['filename']);
+                    } else if ($response['status'] == 'error') {
+                        $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                        return;
+                    }
                 } else {
                     $this->dispatch('notification', ['type' => 'warning', 'message' => 'Pilih Nipon Seitai.']);
                 }
                 break;
             case 'Daftar Produksi Per Mesin Per Produk':
                 if ($this->nipon == 'Infure') {
-                    $file = $this->daftarProduksiPerMesinPerProdukInfure($tglMasuk, $tglKeluar);
-                    return response()->download($file);
+                    $response = $this->daftarProduksiPerMesinPerProdukInfure($tglMasuk, $tglKeluar);
+                    if ($response['status'] == 'success') {
+                        return response()->download($response['filename']);
+                    } else if ($response['status'] == 'error') {
+                        $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                        return;
+                    }
                 } else {
-                    $file = $this->daftarProduksiPerMesinPerProdukSeitai($tglMasuk, $tglKeluar);
-                    return response()->download($file);
+                    $response = $this->daftarProduksiPerMesinPerProdukSeitai($tglMasuk, $tglKeluar);
+                    if ($response['status'] == 'success') {
+                        return response()->download($response['filename']);
+                    } else if ($response['status'] == 'error') {
+                        $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                        return;
+                    }
                 }
         }
     }
@@ -535,6 +674,15 @@ class GeneralReportController extends Component
             WHERE asy.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
             GROUP BY asy.machine_id
         ");
+
+        if (count($data) == 0) {
+            $response = [
+                'status' => 'error',
+                'message' => "Data pada periode tanggal tersebut tidak ditemukan"
+            ];
+
+            return $response;
+        }
 
         $listDepartment = array_reduce($data, function ($carry, $item) {
             $carry[$item->department_id] = [
@@ -816,7 +964,11 @@ class GeneralReportController extends Component
         $writer = new Xlsx($spreadsheet);
         $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
         $writer->save($filename);
-        return $filename;
+        $response = [
+            'status' => 'success',
+            'filename' => $filename
+        ];
+        return $response;
     }
 
     public function daftarProduksiPerMesinSeitai($tglMasuk, $tglKeluar)
@@ -907,6 +1059,15 @@ class GeneralReportController extends Component
             WHERE good.production_date BETWEEN  '$tglMasuk' AND '$tglKeluar'
             GROUP BY good.machine_id
         ");
+
+        if (count($data) == 0) {
+            $response = [
+                'status' => 'error',
+                'message' => "Data pada periode tanggal tersebut tidak ditemukan"
+            ];
+
+            return $response;
+        }
 
         $listDepartment = array_reduce($data, function ($carry, $item) {
             $carry[$item->department_id] = [
@@ -1212,7 +1373,11 @@ class GeneralReportController extends Component
         $writer = new Xlsx($spreadsheet);
         $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
         $writer->save($filename);
-        return $filename;
+        $response = [
+            'status' => 'success',
+            'filename' => $filename
+        ];
+        return $response;
     }
 
     public function daftarProduksiPerTipePerMesinInfure($tglMasuk, $tglKeluar)
@@ -1288,6 +1453,15 @@ class GeneralReportController extends Component
             WHERE asy.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
             GROUP BY dep.id, asy.machine_id, prTip.id
         ");
+
+        if (count($data) == 0) {
+            $response = [
+                'status' => 'error',
+                'message' => "Data pada periode tanggal tersebut tidak ditemukan"
+            ];
+
+            return $response;
+        }
 
         $listDepartment = array_reduce($data, function ($carry, $item) {
             $carry[$item->department_id] = [
@@ -1605,7 +1779,11 @@ class GeneralReportController extends Component
         $writer = new Xlsx($spreadsheet);
         $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
         $writer->save($filename);
-        return $filename;
+        $response = [
+            'status' => 'success',
+            'filename' => $filename
+        ];
+        return $response;
     }
 
     public function daftarProduksiPerTipePerMesinSeitai($tglMasuk, $tglKeluar)
@@ -1686,6 +1864,15 @@ class GeneralReportController extends Component
             WHERE good.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
             GROUP BY dep.id, prT.name, good.machine_id
         ");
+
+        if (count($data) == 0) {
+            $response = [
+                'status' => 'error',
+                'message' => "Data pada periode tanggal tersebut tidak ditemukan"
+            ];
+
+            return $response;
+        }
 
         $listDepartment = array_reduce($data, function ($carry, $item) {
             $carry[$item->department_id] = [
@@ -1962,7 +2149,11 @@ class GeneralReportController extends Component
         $writer = new Xlsx($spreadsheet);
         $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
         $writer->save($filename);
-        return $filename;
+        $response = [
+            'status' => 'success',
+            'filename' => $filename
+        ];
+        return $response;
     }
 
     public function daftarProduksiPerJenisInfure($tglMasuk, $tglKeluar)
@@ -2028,6 +2219,15 @@ class GeneralReportController extends Component
             WHERE asy.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
             GROUP BY prGrp.id
         ");
+
+        if (count($data) == 0) {
+            $response = [
+                'status' => 'error',
+                'message' => "Data pada periode tanggal tersebut tidak ditemukan"
+            ];
+
+            return $response;
+        }
 
         // list jenis produk
         $listProductType = array_reduce($data, function ($carry, $item) {
@@ -2188,7 +2388,11 @@ class GeneralReportController extends Component
         $writer = new Xlsx($spreadsheet);
         $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
         $writer->save($filename);
-        return $filename;
+        $response = [
+            'status' => 'success',
+            'filename' => $filename
+        ];
+        return $response;
     }
 
     public function daftarProduksiPerJenisSeitai($tglMasuk, $tglKeluar)
@@ -2259,6 +2463,15 @@ class GeneralReportController extends Component
             WHERE good.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
             GROUP BY prGrp.name
         ");
+
+        if (count($data) == 0) {
+            $response = [
+                'status' => 'error',
+                'message' => "Data pada periode tanggal tersebut tidak ditemukan"
+            ];
+
+            return $response;
+        }
 
         // list jenis produk
         $listProductGroup = array_reduce($data, function ($carry, $item) {
@@ -2405,7 +2618,11 @@ class GeneralReportController extends Component
         $writer = new Xlsx($spreadsheet);
         $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
         $writer->save($filename);
-        return $filename;
+        $response = [
+            'status' => 'success',
+            'filename' => $filename
+        ];
+        return $response;
     }
 
     public function daftarProduksiPerTipeInfure($tglMasuk, $tglKeluar)
@@ -2471,6 +2688,15 @@ class GeneralReportController extends Component
             WHERE asy.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
             GROUP BY prTip.id
         ");
+
+        if (count($data) == 0) {
+            $response = [
+                'status' => 'error',
+                'message' => "Data pada periode tanggal tersebut tidak ditemukan"
+            ];
+
+            return $response;
+        }
 
         // list jenis produk
         $listProductGroup = array_reduce($data, function ($carry, $item) {
@@ -2633,7 +2859,11 @@ class GeneralReportController extends Component
         $writer = new Xlsx($spreadsheet);
         $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
         $writer->save($filename);
-        return $filename;
+        $response = [
+            'status' => 'success',
+            'filename' => $filename
+        ];
+        return $response;
     }
 
     public function daftarProduksiPerTipeSeitai($tglMasuk, $tglKeluar)
@@ -2703,6 +2933,15 @@ class GeneralReportController extends Component
             WHERE good.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
             GROUP BY prT.id
         ");
+
+        if (count($data) == 0) {
+            $response = [
+                'status' => 'error',
+                'message' => "Data pada periode tanggal tersebut tidak ditemukan"
+            ];
+
+            return $response;
+        }
 
         // list jenis produk
         $listProductGroup = array_reduce($data, function ($carry, $item) {
@@ -2851,7 +3090,11 @@ class GeneralReportController extends Component
         $writer = new Xlsx($spreadsheet);
         $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
         $writer->save($filename);
-        return $filename;
+        $response = [
+            'status' => 'success',
+            'filename' => $filename
+        ];
+        return $response;
     }
 
     public function daftarProduksiPerProdukInfure($tglMasuk, $tglKeluar)
@@ -2917,6 +3160,15 @@ class GeneralReportController extends Component
             GROUP BY prd.id
             ORDER BY prd.name
         ");
+
+        if (count($data) == 0) {
+            $response = [
+                'status' => 'error',
+                'message' => "Data pada periode tanggal tersebut tidak ditemukan"
+            ];
+
+            return $response;
+        }
 
         // list jenis produk
         $listProduct = array_reduce($data, function ($carry, $item) {
@@ -3079,7 +3331,11 @@ class GeneralReportController extends Component
         $writer = new Xlsx($spreadsheet);
         $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
         $writer->save($filename);
-        return $filename;
+        $response = [
+            'status' => 'success',
+            'filename' => $filename
+        ];
+        return $response;
     }
 
     public function daftarProduksiPerProdukSeitai($tglMasuk, $tglKeluar)
@@ -3151,6 +3407,15 @@ class GeneralReportController extends Component
             ORDER BY prd.name
         ");
 
+        if (count($data) == 0) {
+            $response = [
+                'status' => 'error',
+                'message' => "Data pada periode tanggal tersebut tidak ditemukan"
+            ];
+
+            return $response;
+        }
+
         // list jenis produk
         $listProduct = array_reduce($data, function ($carry, $item) {
             $carry[$item->product_code] = [
@@ -3298,7 +3563,11 @@ class GeneralReportController extends Component
         $writer = new Xlsx($spreadsheet);
         $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
         $writer->save($filename);
-        return $filename;
+        $response = [
+            'status' => 'success',
+            'filename' => $filename
+        ];
+        return $response;
     }
 
     public function daftarProduksiPerDepartemenPerJenisInfure($tglMasuk, $tglKeluar)
@@ -3370,6 +3639,14 @@ class GeneralReportController extends Component
             GROUP BY dep.id, prGrp.id
         ");
 
+        if (count($data) == 0) {
+            $response = [
+                'status' => 'error',
+                'message' => "Data pada periode tanggal tersebut tidak ditemukan"
+            ];
+
+            return $response;
+        }
         $listDepartment = array_reduce($data, function ($carry, $item) {
             $carry[$item->department_id] = [
                 'department_id' => $item->department_id,
@@ -3573,7 +3850,11 @@ class GeneralReportController extends Component
         $writer = new Xlsx($spreadsheet);
         $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
         $writer->save($filename);
-        return $filename;
+        $response = [
+            'status' => 'success',
+            'filename' => $filename
+        ];
+        return $response;
     }
 
     public function daftarProduksiPerDepartemenPerJenisSeitai($tglMasuk, $tglKeluar)
@@ -3648,6 +3929,15 @@ class GeneralReportController extends Component
             WHERE good.production_date BETWEEN '$this->tglMasuk' AND '$this->tglKeluar'
             GROUP BY dep.id, prGrp.id
         ");
+
+        if (count($data) == 0) {
+            $response = [
+                'status' => 'error',
+                'message' => "Data pada periode tanggal tersebut tidak ditemukan"
+            ];
+
+            return $response;
+        }
 
         $listDepartment = array_reduce($data, function ($carry, $item) {
             $carry[$item->department_id] = [
@@ -3845,7 +4135,11 @@ class GeneralReportController extends Component
         $writer = new Xlsx($spreadsheet);
         $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
         $writer->save($filename);
-        return $filename;
+        $response = [
+            'status' => 'success',
+            'filename' => $filename
+        ];
+        return $response;
     }
 
     public function daftarProduksiPerDepartemenPerTypeInfure($tglMasuk, $tglKeluar)
@@ -3915,6 +4209,15 @@ class GeneralReportController extends Component
             WHERE asy.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
             GROUP BY dep.id, prTip.id
         ");
+
+        if (count($data) == 0) {
+            $response = [
+                'status' => 'error',
+                'message' => "Data pada periode tanggal tersebut tidak ditemukan"
+            ];
+
+            return $response;
+        }
 
         $listDepartment = array_reduce($data, function ($carry, $item) {
             $carry[$item->department_id] = [
@@ -4127,7 +4430,11 @@ class GeneralReportController extends Component
         $writer = new Xlsx($spreadsheet);
         $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
         $writer->save($filename);
-        return $filename;
+        $response = [
+            'status' => 'success',
+            'filename' => $filename
+        ];
+        return $response;
     }
 
     public function daftarProduksiPerDepartemenPerTypeSeitai($tglMasuk, $tglKeluar)
@@ -4201,6 +4508,15 @@ class GeneralReportController extends Component
             WHERE good.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
             GROUP BY dep.id, prT.id
         ");
+
+        if (count($data) == 0) {
+            $response = [
+                'status' => 'error',
+                'message' => "Data pada periode tanggal tersebut tidak ditemukan"
+            ];
+
+            return $response;
+        }
 
         $listDepartment = array_reduce($data, function ($carry, $item) {
             $carry[$item->department_id] = [
@@ -4399,7 +4715,11 @@ class GeneralReportController extends Component
         $writer = new Xlsx($spreadsheet);
         $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
         $writer->save($filename);
-        return $filename;
+        $response = [
+            'status' => 'success',
+            'filename' => $filename
+        ];
+        return $response;
     }
 
     public function daftarProduksiPerDepartemenPerPetugasInfure($tglMasuk, $tglKeluar)
@@ -4467,6 +4787,15 @@ class GeneralReportController extends Component
             WHERE asy.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
             GROUP BY dep.id, asy.employee_id
         ");
+
+        if (count($data) == 0) {
+            $response = [
+                'status' => 'error',
+                'message' => "Data pada periode tanggal tersebut tidak ditemukan"
+            ];
+
+            return $response;
+        }
 
         $listDepartment = array_reduce($data, function ($carry, $item) {
             $carry[$item->department_id] = [
@@ -4680,7 +5009,11 @@ class GeneralReportController extends Component
         $writer = new Xlsx($spreadsheet);
         $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
         $writer->save($filename);
-        return $filename;
+        $response = [
+            'status' => 'success',
+            'filename' => $filename
+        ];
+        return $response;
     }
 
     public function daftarProduksiPerDepartemenPerPetugasSeitai($tglMasuk, $tglKeluar)
@@ -4754,6 +5087,15 @@ class GeneralReportController extends Component
             WHERE good.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
             GROUP BY dep.id, good.employee_id
         ");
+
+        if (count($data) == 0) {
+            $response = [
+                'status' => 'error',
+                'message' => "Data pada periode tanggal tersebut tidak ditemukan"
+            ];
+
+            return $response;
+        }
 
         $listDepartment = array_reduce($data, function ($carry, $item) {
             $carry[$item->department_id] = [
@@ -4952,7 +5294,11 @@ class GeneralReportController extends Component
         $writer = new Xlsx($spreadsheet);
         $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
         $writer->save($filename);
-        return $filename;
+        $response = [
+            'status' => 'success',
+            'filename' => $filename
+        ];
+        return $response;
     }
 
     public function daftarLossPerDepartemenInfure($tglMasuk, $tglKeluar)
@@ -5013,6 +5359,15 @@ class GeneralReportController extends Component
             WHERE asy.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
             GROUP BY dep.id, det.loss_infure_id
         ");
+
+        if (count($data) == 0) {
+            $response = [
+                'status' => 'error',
+                'message' => "Data pada periode tanggal tersebut tidak ditemukan"
+            ];
+
+            return $response;
+        }
 
         $listDepartment = array_reduce($data, function ($carry, $item) {
             $carry[$item->department_id] = [
@@ -5196,7 +5551,11 @@ class GeneralReportController extends Component
         $writer = new Xlsx($spreadsheet);
         $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
         $writer->save($filename);
-        return $filename;
+        $response = [
+            'status' => 'success',
+            'filename' => $filename
+        ];
+        return $response;
     }
 
     public function daftarLossPerDepartemenSeitai($tglMasuk, $tglKeluar)
@@ -5259,6 +5618,15 @@ class GeneralReportController extends Component
             ORDER BY loss_code ASC
         ");
 
+        if (count($data) == 0) {
+            $response = [
+                'status' => 'error',
+                'message' => "Data pada periode tanggal tersebut tidak ditemukan"
+            ];
+
+            return $response;
+        }
+
         $listDepartment = array_reduce($data, function ($carry, $item) {
             $carry[$item->department_id] = [
                 'department_id' => $item->department_id,
@@ -5441,7 +5809,11 @@ class GeneralReportController extends Component
         $writer = new Xlsx($spreadsheet);
         $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
         $writer->save($filename);
-        return $filename;
+        $response = [
+            'status' => 'success',
+            'filename' => $filename
+        ];
+        return $response;
     }
 
     public function daftarLossPerDepartemenPerJenisInfure($tglMasuk, $tglKeluar)
@@ -5507,6 +5879,15 @@ class GeneralReportController extends Component
             WHERE asy.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
             GROUP BY dep.id, prGrp.id, det.loss_infure_id
         ");
+
+        if (count($data) == 0) {
+            $response = [
+                'status' => 'error',
+                'message' => "Data pada periode tanggal tersebut tidak ditemukan"
+            ];
+
+            return $response;
+        }
 
         $listDepartment = array_reduce($data, function ($carry, $item) {
             $carry[$item->department_id] = [
@@ -5708,7 +6089,11 @@ class GeneralReportController extends Component
         $writer = new Xlsx($spreadsheet);
         $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
         $writer->save($filename);
-        return $filename;
+        $response = [
+            'status' => 'success',
+            'filename' => $filename
+        ];
+        return $response;
     }
 
     public function daftarLossPerDepartemenPerJenisSeitai($tglMasuk, $tglKeluar)
@@ -5774,6 +6159,15 @@ class GeneralReportController extends Component
             WHERE good.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
             GROUP BY dep.id, prGrp.id, det.loss_seitai_id
         ");
+
+        if (count($data) == 0) {
+            $response = [
+                'status' => 'error',
+                'message' => "Data pada periode tanggal tersebut tidak ditemukan"
+            ];
+
+            return $response;
+        }
 
         $listDepartment = array_reduce($data, function ($carry, $item) {
             $carry[$item->department_id] = [
@@ -5975,7 +6369,11 @@ class GeneralReportController extends Component
         $writer = new Xlsx($spreadsheet);
         $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
         $writer->save($filename);
-        return $filename;
+        $response = [
+            'status' => 'success',
+            'filename' => $filename
+        ];
+        return $response;
     }
 
     public function daftarLossPerPetugasInfure($tglMasuk, $tglKeluar)
@@ -6085,6 +6483,15 @@ class GeneralReportController extends Component
                 dep.NAME,
                 mac.employeeNo;
         ");
+
+        if (count($data) == 0) {
+            $response = [
+                'status' => 'error',
+                'message' => "Data pada periode tanggal tersebut tidak ditemukan"
+            ];
+
+            return $response;
+        }
 
         $listDepartment = array_reduce($data, function ($carry, $item) {
             $carry[$item->department_id] = [
@@ -6424,7 +6831,11 @@ class GeneralReportController extends Component
         $writer = new Xlsx($spreadsheet);
         $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
         $writer->save($filename);
-        return $filename;
+        $response = [
+            'status' => 'success',
+            'filename' => $filename
+        ];
+        return $response;
     }
 
     public function daftarLossPerPetugasSeitai($tglMasuk, $tglKeluar)
@@ -6833,6 +7244,15 @@ class GeneralReportController extends Component
             GROUP BY mac.id, det.loss_infure_id
         ");
 
+        if (count($data) == 0) {
+            $response = [
+                'status' => 'error',
+                'message' => "Data pada periode tanggal tersebut tidak ditemukan"
+            ];
+
+            return $response;
+        }
+
         // list mesin
         $listMachine = array_reduce($data, function ($carry, $item) {
             $carry[$item->machine_no] = [
@@ -7016,7 +7436,11 @@ class GeneralReportController extends Component
         $writer = new Xlsx($spreadsheet);
         $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
         $writer->save($filename);
-        return $filename;
+        $response = [
+            'status' => 'success',
+            'filename' => $filename
+        ];
+        return $response;
     }
 
     public function daftarLossPerMesinSeitai($tglMasuk, $tglKeluar)
@@ -7077,6 +7501,15 @@ class GeneralReportController extends Component
             GROUP BY mac.id, det.loss_seitai_id
         ");
 
+        if (count($data) == 0) {
+            $response = [
+                'status' => 'error',
+                'message' => "Data pada periode tanggal tersebut tidak ditemukan"
+            ];
+
+            return $response;
+        }
+
         // list mesin
         $listMachine = array_reduce($data, function ($carry, $item) {
             $carry[$item->machine_no] = [
@@ -7260,7 +7693,11 @@ class GeneralReportController extends Component
         $writer = new Xlsx($spreadsheet);
         $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
         $writer->save($filename);
-        return $filename;
+        $response = [
+            'status' => 'success',
+            'filename' => $filename
+        ];
+        return $response;
     }
 
     public function kapasitasProduksiInfure($tglMasuk, $tglKeluar)
@@ -7325,6 +7762,15 @@ class GeneralReportController extends Component
             WHERE asy.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
             GROUP BY prGrp.id, asy.machine_id
         ");
+
+        if (count($data) == 0) {
+            $response = [
+                'status' => 'error',
+                'message' => "Data pada periode tanggal tersebut tidak ditemukan"
+            ];
+
+            return $response;
+        }
 
         // list group produk
         $listProductGroup = array_reduce($data, function ($carry, $item) {
@@ -7536,7 +7982,11 @@ class GeneralReportController extends Component
         $writer = new Xlsx($spreadsheet);
         $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
         $writer->save($filename);
-        return $filename;
+        $response = [
+            'status' => 'success',
+            'filename' => $filename
+        ];
+        return $response;
     }
 
     public function kapasitasProduksiSeitai($tglMasuk, $tglKeluar)
@@ -7601,6 +8051,15 @@ class GeneralReportController extends Component
             WHERE good.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
             GROUP BY prGrp.name, good.machine_id;
         ");
+
+        if (count($data) == 0) {
+            $response = [
+                'status' => 'error',
+                'message' => "Data pada periode tanggal tersebut tidak ditemukan"
+            ];
+
+            return $response;
+        }
 
         // list group produk
         $listProductGroup = array_reduce($data, function ($carry, $item) {
@@ -7828,7 +8287,11 @@ class GeneralReportController extends Component
         $writer = new Xlsx($spreadsheet);
         $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
         $writer->save($filename);
-        return $filename;
+        $response = [
+            'status' => 'success',
+            'filename' => $filename
+        ];
+        return $response;
     }
 
     public function daftarProduksiPerPaletSeitai($tglMasuk, $tglKeluar)
@@ -7942,6 +8405,15 @@ class GeneralReportController extends Component
             INNER JOIN msProduct AS prd ON good.product_id = prd.id
             WHERE good.production_date BETWEEN '$tglMasuk' AND '$tglKeluar';
         ");
+
+        if (count($data) == 0) {
+            $response = [
+                'status' => 'error',
+                'message' => "Data pada periode tanggal tersebut tidak ditemukan"
+            ];
+
+            return $response;
+        }
 
         // list produk
         $listProduct = array_reduce($data, function ($carry, $item) {
@@ -8246,7 +8718,11 @@ class GeneralReportController extends Component
         $writer = new Xlsx($spreadsheet);
         $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
         $writer->save($filename);
-        return $filename;
+        $response = [
+            'status' => 'success',
+            'filename' => $filename
+        ];
+        return $response;
     }
 
     public function daftarProduksiPerMesinPerProdukInfure($tglMasuk, $tglKeluar)
@@ -8330,6 +8806,15 @@ class GeneralReportController extends Component
                 asy.machine_id,
                 asy.product_id
         ");
+
+        if (count($data) == 0) {
+            $response = [
+                'status' => 'error',
+                'message' => "Data pada periode tanggal tersebut tidak ditemukan"
+            ];
+
+            return $response;
+        }
 
         $listDepartment = array_reduce($data, function ($carry, $item) {
             $carry[$item->department_id] = [
@@ -8576,7 +9061,11 @@ class GeneralReportController extends Component
         $writer = new Xlsx($spreadsheet);
         $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
         $writer->save($filename);
-        return $filename;
+        $response = [
+            'status' => 'success',
+            'filename' => $filename
+        ];
+        return $response;
     }
 
     public function daftarProduksiPerMesinPerProdukSeitai($tglMasuk, $tglKeluar)
@@ -8661,6 +9150,15 @@ class GeneralReportController extends Component
             AND (dep.division_code = '$divisionCodeSeitai')
             GROUP BY dep.id, good.machine_id, prd.name;
         ");
+
+        if (count($data) == 0) {
+            $response = [
+                'status' => 'error',
+                'message' => "Data pada periode tanggal tersebut tidak ditemukan"
+            ];
+
+            return $response;
+        }
 
         $listDepartment = array_reduce($data, function ($carry, $item) {
             $carry[$item->department_id] = [
@@ -8877,7 +9375,11 @@ class GeneralReportController extends Component
         $writer = new Xlsx($spreadsheet);
         $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
         $writer->save($filename);
-        return $filename;
+        $response = [
+            'status' => 'success',
+            'filename' => $filename
+        ];
+        return $response;
     }
 
     public function render()
