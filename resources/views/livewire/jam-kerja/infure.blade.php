@@ -153,7 +153,7 @@
                                         <div class="col-lg-12 mb-1">
                                             <label for="">Jam Kerja</label>
                                             <div class="form-group" style="margin-left:1px; white-space:nowrap">
-                                                <input class="form-control" wire:model="work_hour" type="time" placeholder="hh:mm">
+                                                <input class="form-control" wire:model="work_hour" type="time" placeholder="hh:mm" wire:change="validateWorkHour" max="08:00">
                                                 @error('work_hour')
                                                     <span class="invalid-feedback">{{ $message }}</span>
                                                 @enderror
@@ -253,7 +253,7 @@
                                         <div class="col-lg-12 mb-1">
                                             <label for="">Jam Kerja</label>
                                             <div class="form-group" style="margin-left:1px; white-space:nowrap">
-                                                <input class="form-control" wire:model="work_hour" type="time" placeholder="hh:mm">
+                                                <input class="form-control" wire:model="work_hour" type="time" placeholder="hh:mm" wire:change="validateWorkHour" max="08:00">
                                                 @error('work_hour')
                                                     <span class="invalid-feedback">{{ $message }}</span>
                                                 @enderror
@@ -299,7 +299,7 @@
         </div>
     </div>
 
-    <div class="col text-end dropdown" x-data="{ 
+    <div class="col text-end dropdown" x-data="{
         tanggal:true, shift:true, nomor_mesin:true, nik:true, petugas:true, jam_kerja:true, jam_mati:true, jam_jalan:true, update_by:false, updated: false
         }">
         <button type="button" data-bs-toggle="dropdown" aria-expanded="false" class="btn btn-soft-primary btn-icon fs-14 mt-2 mb-4">
@@ -307,47 +307,47 @@
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
             <li @click="tanggal = !tanggal; $refs.checkbox.checked = tanggal" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="tanggal = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="tanggal"> 
+                <input x-ref="checkbox" @change="tanggal = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="tanggal">
                 Tanggal
             </li>
             <li @click="shift = !shift; $refs.checkbox.checked = shift" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="shift = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="shift"> 
+                <input x-ref="checkbox" @change="shift = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="shift">
                 Shift
             </li>
             <li @click="nomor_mesin = !nomor_mesin; $refs.checkbox.checked = nomor_mesin" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="nomor_mesin = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="nomor_mesin"> 
+                <input x-ref="checkbox" @change="nomor_mesin = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="nomor_mesin">
                 Nomor Mesin
             </li>
             <li @click="nik = !nik; $refs.checkbox.checked = nik" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="nik = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="nik"> 
+                <input x-ref="checkbox" @change="nik = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="nik">
                 NIK
             </li>
             <li @click="petugas = !petugas; $refs.checkbox.checked = petugas" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="petugas = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="petugas"> 
+                <input x-ref="checkbox" @change="petugas = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="petugas">
                 Petugas
             </li>
             <li @click="jam_kerja = !jam_kerja; $refs.checkbox.checked = jam_kerja" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="jam_kerja = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="jam_kerja"> 
+                <input x-ref="checkbox" @change="jam_kerja = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="jam_kerja">
                 Jam Kerja
             </li>
             <li @click="jam_mati = !jam_mati; $refs.checkbox.checked = jam_mati" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="jam_mati = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="jam_mati"> 
+                <input x-ref="checkbox" @change="jam_mati = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="jam_mati">
                 Jam Mati
             </li>
             <li @click="jam_jalan = !jam_jalan; $refs.checkbox.checked = jam_jalan" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="jam_jalan = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="jam_jalan"> 
+                <input x-ref="checkbox" @change="jam_jalan = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="jam_jalan">
                 Jam Jalan
             </li>
             <li @click="update_by = !update_by; $refs.checkbox.checked = update_by" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="update_by = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="update_by"> 
+                <input x-ref="checkbox" @change="update_by = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="update_by">
                 Update By
             </li>
             <li @click="updated = !updated; $refs.checkbox.checked = updated" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="updated = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="updated"> 
+                <input x-ref="checkbox" @change="updated = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="updated">
                 Updated
             </li>
         </ul>
-    
+
         <div class="table-responsive table-card">
             <table class="table align-middle">
                 <thead class="table-light">

@@ -99,6 +99,15 @@ class InfureJamKerjaController extends Component
         $this->off_hour = '';
     }
 
+    public function validateWorkHour()
+    {
+        if ($this->work_hour > '08:00') {
+            $this->work_hour = '08:00';
+            $this->dispatch('notification', ['type' => 'warning', 'message' => 'Jam Kerja Tidak Boleh Lebih Dari 8 Jam']);
+        }
+    }
+
+
     public function save()
     {
         $validatedData = $this->validate([
