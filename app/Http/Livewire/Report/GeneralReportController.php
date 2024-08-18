@@ -8280,8 +8280,8 @@ class GeneralReportController extends Component
 
         // style header
         phpspreadsheet::addFullBorder($spreadsheet, $columnTipeProduk . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
-        phpspreadsheet::styleFont($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart, true, 9, 'Calibri');
-        phpspreadsheet::textAlignCenter($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
+        phpspreadsheet::styleFont($spreadsheet, $columnTipeProduk . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart, true, 9, 'Calibri');
+        phpspreadsheet::textAlignCenter($spreadsheet, $columnTipeProduk . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
 
         $data = DB::select("
             SELECT MAX
@@ -8607,9 +8607,10 @@ class GeneralReportController extends Component
 
         // style header
         phpspreadsheet::addFullBorder($spreadsheet, $columnTipeProduk . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
-        phpspreadsheet::styleFont($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart, true, 9, 'Calibri');
-        phpspreadsheet::textAlignCenter($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
+        phpspreadsheet::styleFont($spreadsheet, $columnTipeProduk . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart, true, 9, 'Calibri');
+        phpspreadsheet::textAlignCenter($spreadsheet, $columnTipeProduk . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
 
+        $divisionCodeSeitai = '20';
         $data = DB::select("
             SELECT
                 MAX(dep.name) AS department_name,
@@ -8637,7 +8638,8 @@ class GeneralReportController extends Component
             INNER JOIN msDepartment AS dep ON mac.department_id = dep.id
             INNER JOIN msProduct AS prd ON good.product_id = prd.id
             INNER JOIN msProduct_type AS prT ON prd.product_type_id = prT.id
-            WHERE good.production_date BETWEEN '2018-07-04 00:00:00' AND '2024-07-04 23:59:00'
+            WHERE good.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
+            AND (dep.division_code = '$divisionCodeSeitai')
             GROUP BY dep.id, good.machine_id, prd.name;
         ");
 
