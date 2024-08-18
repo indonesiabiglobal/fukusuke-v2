@@ -252,6 +252,8 @@ class EditOrderController extends Component
             $order->etadate = $this->etadate;
             $order->order_unit = $this->unit_id;
             $order->buyer_id = $this->buyer_id['value'];
+            $order->updated_by = auth()->user()->id;
+            $order->updated_on = Carbon::now();
             $order->save();
 
             DB::commit();

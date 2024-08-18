@@ -237,6 +237,10 @@ class AddOrderController extends Component
             $order->stufingdate = $this->stufingdate;
             $order->etddate = $this->etddate;
             $order->etadate = $this->etadate;
+            $order->created_on = Carbon::now();
+            $order->created_by = auth()->user()->username;
+            $order->updated_on = Carbon::now();
+            $order->updated_by = auth()->user()->username;
             $order->save();
 
             DB::commit();

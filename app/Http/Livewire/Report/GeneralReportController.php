@@ -5328,6 +5328,7 @@ class GeneralReportController extends Component
             'Nama Loss',
             'Loss Produksi (Kg)',
             'Loss Kebutuhan (Kg)',
+            'Frekuensi'
         ];
 
         foreach ($header as $key => $value) {
@@ -5349,7 +5350,8 @@ class GeneralReportController extends Component
                 max(mslos.code) AS loss_code,
                 max(mslos.name) AS loss_name,
                 SUM(CASE WHEN mslos.loss_category_code <> '1' THEN det.berat_loss ELSE 0 END) AS berat_loss_produksi,
-                SUM(CASE WHEN mslos.loss_category_code = '1' THEN det.berat_loss ELSE 0 END) AS berat_loss_kebutuhan
+                SUM(CASE WHEN mslos.loss_category_code = '1' THEN det.berat_loss ELSE 0 END) AS berat_loss_kebutuhan,
+                SUM(det.frekuensi) AS frekuensi
             FROM tdProduct_Assembly AS asy
             INNER JOIN tdProduct_Assembly_Loss AS det ON asy.id = det.product_assembly_id
             INNER JOIN msLossInfure AS mslos ON det.loss_infure_id = mslos.id
@@ -5402,7 +5404,8 @@ class GeneralReportController extends Component
                 'loss_code' => $item->loss_code,
                 'loss_name' => $item->loss_name,
                 'berat_loss_produksi' => $item->berat_loss_produksi,
-                'berat_loss_kebutuhan' => $item->berat_loss_kebutuhan
+                'berat_loss_kebutuhan' => $item->berat_loss_kebutuhan,
+                'frekuensi' => $item->frekuensi
             ];
 
             return $carry;
@@ -5440,7 +5443,8 @@ class GeneralReportController extends Component
                             'loss_code' => '',
                             'loss_name' => '',
                             'berat_loss_produksi' => 0,
-                            'berat_loss_kebutuhan' => 0
+                            'berat_loss_kebutuhan' => 0,
+                            'frekuensi' => 0
                         ]
                     ]
                 ];
@@ -5470,6 +5474,10 @@ class GeneralReportController extends Component
                     } else {
                         phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                     }
+                    $columnItem++;
+                    // frekuensi
+                    $activeWorksheet->setCellValue($columnItem . $rowItem, $item['frekuensi']);
+                    phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
                     // Terapkan custom format untuk mengganti tampilan 0 dengan -
                     phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
                     $columnItem++;
@@ -5491,6 +5499,10 @@ class GeneralReportController extends Component
             // loss kebutuhan
             $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
             phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // frekuensi
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpSpreadsheet::numberFormatThousands($spreadsheet, $columnItem . $rowItem);
             phpspreadsheet::addFullBorder($spreadsheet, $columnLossClass . $rowItem . ':' . $columnItem . $rowItem);
             phpspreadsheet::styleFont($spreadsheet, $columnLossClass . $rowItem . ':' . $columnItem . $rowItem, true, 8, 'Calibri');
             $columnItem++;
@@ -5509,6 +5521,7 @@ class GeneralReportController extends Component
         $grandTotal = [
             'berat_loss_produksi' => 0,
             'berat_loss_kebutuhan' => 0,
+            'frekuensi' => 0
         ];
 
         foreach ($dataFilter as $departmentId => $lossClasses) {
@@ -5518,11 +5531,13 @@ class GeneralReportController extends Component
                     foreach ($dataItem['losses'] as $item) {
                         $grandTotal['berat_loss_produksi'] += $item['berat_loss_produksi'];
                         $grandTotal['berat_loss_kebutuhan'] += $item['berat_loss_kebutuhan'];
+                        $grandTotal['frekuensi'] += $item['frekuensi'];
                     }
                 } else {
                     // Tambahkan default value jika $lossClass tidak ditemukan
                     $grandTotal['berat_loss_produksi'] += 0;
                     $grandTotal['berat_loss_kebutuhan'] += 0;
+                    $grandTotal['frekuensi'] += 0;
                 }
             }
         }
@@ -5530,11 +5545,17 @@ class GeneralReportController extends Component
         $columnItem = $startColumnItemData;
         $columnItem++;
         $columnItem++;
+        // berat loss produksi
         $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_loss_produksi']);
         phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
         $columnItem++;
+        // berat loss kebutuhan
         $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_loss_kebutuhan']);
         phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        // frekuensi
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['frekuensi']);
+        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowGrandTotal);
         phpspreadsheet::addFullBorder($spreadsheet, $columnLossClass . $rowGrandTotal . ':' . $columnItem . $rowGrandTotal);
         phpspreadsheet::addFullBorder($spreadsheet, $columnLossClass . $rowGrandTotal . ':' . $columnItem . $rowGrandTotal);
         $columnItem++;
@@ -5585,6 +5606,7 @@ class GeneralReportController extends Component
             'Nama Loss',
             'Loss Produksi (Kg)',
             'Loss Kebutuhan (Kg)',
+            'Frekuensi'
         ];
 
         foreach ($header as $key => $value) {
@@ -5606,7 +5628,8 @@ class GeneralReportController extends Component
                 max(mslos.code) AS loss_code,
                 max(mslos.name) AS loss_name,
                 SUM(CASE WHEN mslos.loss_category_code <> '1' THEN det.berat_loss ELSE 0 END) AS berat_loss_produksi,
-                SUM(CASE WHEN mslos.loss_category_code = '1' THEN det.berat_loss ELSE 0 END) AS berat_loss_kebutuhan
+                SUM(CASE WHEN mslos.loss_category_code = '1' THEN det.berat_loss ELSE 0 END) AS berat_loss_kebutuhan,
+                SUM(det.frekuensi) AS frekuensi
             FROM tdProduct_Goods AS good
             INNER JOIN tdProduct_Goods_Loss AS det ON good.id = det.product_goods_id
             INNER JOIN msLossSeitai AS mslos ON det.loss_seitai_id = mslos.id
@@ -5660,7 +5683,8 @@ class GeneralReportController extends Component
                 'loss_code' => $item->loss_code,
                 'loss_name' => $item->loss_name,
                 'berat_loss_produksi' => $item->berat_loss_produksi,
-                'berat_loss_kebutuhan' => $item->berat_loss_kebutuhan
+                'berat_loss_kebutuhan' => $item->berat_loss_kebutuhan,
+                'frekuensi' => $item->frekuensi
             ];
 
             return $carry;
@@ -5698,7 +5722,8 @@ class GeneralReportController extends Component
                             'loss_code' => '',
                             'loss_name' => '',
                             'berat_loss_produksi' => 0,
-                            'berat_loss_kebutuhan' => 0
+                            'berat_loss_kebutuhan' => 0,
+                            'frekuensi' => 0
                         ]
                     ]
                 ];
@@ -5728,6 +5753,10 @@ class GeneralReportController extends Component
                     } else {
                         phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                     }
+                    $columnItem++;
+                    // frekuensi
+                    $activeWorksheet->setCellValue($columnItem . $rowItem, $item['frekuensi']);
+                    phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
                     // Terapkan custom format untuk mengganti tampilan 0 dengan -
                     phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
                     $columnItem++;
@@ -5749,6 +5778,10 @@ class GeneralReportController extends Component
             // loss kebutuhan
             $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
             phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // frekuensi
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpSpreadsheet::numberFormatThousands($spreadsheet, $columnItem . $rowItem);
             phpspreadsheet::addFullBorder($spreadsheet, $columnLossClass . $rowItem . ':' . $columnItem . $rowItem);
             phpspreadsheet::styleFont($spreadsheet, $columnLossClass . $rowItem . ':' . $columnItem . $rowItem, true, 8, 'Calibri');
             $columnItem++;
@@ -5767,6 +5800,7 @@ class GeneralReportController extends Component
         $grandTotal = [
             'berat_loss_produksi' => 0,
             'berat_loss_kebutuhan' => 0,
+            'frekuensi' => 0
         ];
 
         foreach ($dataFilter as $departmentId => $lossClasses) {
@@ -5776,11 +5810,13 @@ class GeneralReportController extends Component
                     foreach ($dataItem['losses'] as $item) {
                         $grandTotal['berat_loss_produksi'] += $item['berat_loss_produksi'];
                         $grandTotal['berat_loss_kebutuhan'] += $item['berat_loss_kebutuhan'];
+                        $grandTotal['frekuensi'] += $item['frekuensi'];
                     }
                 } else {
                     // Tambahkan default value jika $lossClass tidak ditemukan
                     $grandTotal['berat_loss_produksi'] += 0;
                     $grandTotal['berat_loss_kebutuhan'] += 0;
+                    $grandTotal['frekuensi'] += 0;
                 }
             }
         }
@@ -5793,6 +5829,10 @@ class GeneralReportController extends Component
         $columnItem++;
         $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_loss_kebutuhan']);
         phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        // frekuensi
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['frekuensi']);
+        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowGrandTotal);
         phpspreadsheet::addFullBorder($spreadsheet, $columnLossClass . $rowGrandTotal . ':' . $columnItem . $rowGrandTotal);
         phpspreadsheet::addFullBorder($spreadsheet, $columnLossClass . $rowGrandTotal . ':' . $columnItem . $rowGrandTotal);
         $columnItem++;
@@ -5844,6 +5884,7 @@ class GeneralReportController extends Component
             'Nama Loss',
             'Loss Produksi (Kg)',
             'Loss Kebutuhan (Kg)',
+            'Frekuensi'
         ];
 
         foreach ($header as $key => $value) {
@@ -5866,7 +5907,8 @@ class GeneralReportController extends Component
                 max(mslos.code) AS loss_code,
                 max(mslos.name) AS loss_name,
                 SUM(CASE WHEN mslos.loss_category_code <> '1' THEN det.berat_loss ELSE 0 END) AS berat_loss_produksi,
-                SUM(CASE WHEN mslos.loss_category_code = '1' THEN det.berat_loss ELSE 0 END) AS berat_loss_kebutuhan
+                SUM(CASE WHEN mslos.loss_category_code = '1' THEN det.berat_loss ELSE 0 END) AS berat_loss_kebutuhan,
+                SUM(det.frekuensi) AS frekuensi
             FROM tdProduct_Assembly AS asy
             INNER JOIN tdProduct_Assembly_Loss AS det ON asy.id = det.product_assembly_id
             INNER JOIN msLossInfure AS mslos ON det.loss_infure_id = mslos.id
@@ -5933,7 +5975,8 @@ class GeneralReportController extends Component
                 'loss_code' => $item->loss_code,
                 'loss_name' => $item->loss_name,
                 'berat_loss_produksi' => $item->berat_loss_produksi,
-                'berat_loss_kebutuhan' => $item->berat_loss_kebutuhan
+                'berat_loss_kebutuhan' => $item->berat_loss_kebutuhan,
+                'frekuensi' => $item->frekuensi
             ];
 
             return $carry;
@@ -5976,7 +6019,8 @@ class GeneralReportController extends Component
                                 'loss_code' => '',
                                 'loss_name' => '',
                                 'berat_loss_produksi' => 0,
-                                'berat_loss_kebutuhan' => 0
+                                'berat_loss_kebutuhan' => 0,
+                                'frekuensi' => 0
                             ]
                         ]
                     ];
@@ -6006,6 +6050,10 @@ class GeneralReportController extends Component
                         } else {
                             phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                         }
+                        $columnItem++;
+                        // frekuensi
+                        $activeWorksheet->setCellValue($columnItem . $rowItem, $item['frekuensi']);
+                        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
                         // Terapkan custom format untuk mengganti tampilan 0 dengan -
                         phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
                         $columnItem++;
@@ -6028,6 +6076,10 @@ class GeneralReportController extends Component
             // loss kebutuhan
             $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
             phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // frekuensi
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpSpreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
             phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
             phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem, true, 8, 'Calibri');
             $columnItem++;
@@ -6046,6 +6098,7 @@ class GeneralReportController extends Component
         $grandTotal = [
             'berat_loss_produksi' => 0,
             'berat_loss_kebutuhan' => 0,
+            'frekuensi' => 0
         ];
 
         foreach ($dataFilter as $departmentId => $lossClasses) {
@@ -6056,11 +6109,13 @@ class GeneralReportController extends Component
                         foreach ($dataItem['losses'] as $item) {
                             $grandTotal['berat_loss_produksi'] += $item['berat_loss_produksi'];
                             $grandTotal['berat_loss_kebutuhan'] += $item['berat_loss_kebutuhan'];
+                            $grandTotal['frekuensi'] += $item['frekuensi'];
                         }
                     } else {
                         // Tambahkan default value jika $lossClass tidak ditemukan
                         $grandTotal['berat_loss_produksi'] += 0;
                         $grandTotal['berat_loss_kebutuhan'] += 0;
+                        $grandTotal['frekuensi'] += 0;
                     }
                 }
             }
@@ -6072,8 +6127,13 @@ class GeneralReportController extends Component
         $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_loss_produksi']);
         phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
         $columnItem++;
+        // loss kebutuhan
         $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_loss_kebutuhan']);
         phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        // frekuensi
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['frekuensi']);
+        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowGrandTotal);
         phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowGrandTotal . ':' . $columnItem . $rowGrandTotal);
         $columnItem++;
 
@@ -6124,6 +6184,7 @@ class GeneralReportController extends Component
             'Nama Loss',
             'Loss Produksi (Kg)',
             'Loss Kebutuhan (Kg)',
+            'Frekuensi'
         ];
 
         foreach ($header as $key => $value) {
@@ -6146,7 +6207,8 @@ class GeneralReportController extends Component
                 max(mslos.code) AS loss_code,
                 max(mslos.name) AS loss_name,
                 SUM(CASE WHEN mslos.loss_category_code <> '1' THEN det.berat_loss ELSE 0 END) AS berat_loss_produksi,
-                SUM(CASE WHEN mslos.loss_category_code = '1' THEN det.berat_loss ELSE 0 END) AS berat_loss_kebutuhan
+                SUM(CASE WHEN mslos.loss_category_code = '1' THEN det.berat_loss ELSE 0 END) AS berat_loss_kebutuhan,
+                SUM(det.frekuensi) AS frekuensi
             FROM tdProduct_Goods AS good
             INNER JOIN tdProduct_Goods_Loss AS det ON good.id = det.product_goods_id
             INNER JOIN msLossSeitai AS mslos ON det.loss_seitai_id = mslos.id
@@ -6213,7 +6275,8 @@ class GeneralReportController extends Component
                 'loss_code' => $item->loss_code,
                 'loss_name' => $item->loss_name,
                 'berat_loss_produksi' => $item->berat_loss_produksi,
-                'berat_loss_kebutuhan' => $item->berat_loss_kebutuhan
+                'berat_loss_kebutuhan' => $item->berat_loss_kebutuhan,
+                'frekuensi' => $item->frekuensi
             ];
 
             return $carry;
@@ -6256,7 +6319,8 @@ class GeneralReportController extends Component
                                 'loss_code' => '',
                                 'loss_name' => '',
                                 'berat_loss_produksi' => 0,
-                                'berat_loss_kebutuhan' => 0
+                                'berat_loss_kebutuhan' => 0,
+                                'frekuensi' => 0
                             ]
                         ]
                     ];
@@ -6286,6 +6350,10 @@ class GeneralReportController extends Component
                         } else {
                             phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                         }
+                        $columnItem++;
+                        // frekuensi
+                        $activeWorksheet->setCellValue($columnItem . $rowItem, $item['frekuensi']);
+                        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
                         // Terapkan custom format untuk mengganti tampilan 0 dengan -
                         phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
                         $columnItem++;
@@ -6308,6 +6376,10 @@ class GeneralReportController extends Component
             // loss kebutuhan
             $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
             phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // frekuensi
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpSpreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
             phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
             phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem, true, 8, 'Calibri');
             $columnItem++;
@@ -6326,6 +6398,7 @@ class GeneralReportController extends Component
         $grandTotal = [
             'berat_loss_produksi' => 0,
             'berat_loss_kebutuhan' => 0,
+            'frekuensi' => 0
         ];
 
         foreach ($dataFilter as $departmentId => $lossClasses) {
@@ -6336,11 +6409,13 @@ class GeneralReportController extends Component
                         foreach ($dataItem['losses'] as $item) {
                             $grandTotal['berat_loss_produksi'] += $item['berat_loss_produksi'];
                             $grandTotal['berat_loss_kebutuhan'] += $item['berat_loss_kebutuhan'];
+                            $grandTotal['frekuensi'] += $item['frekuensi'];
                         }
                     } else {
                         // Tambahkan default value jika $lossClass tidak ditemukan
                         $grandTotal['berat_loss_produksi'] += 0;
                         $grandTotal['berat_loss_kebutuhan'] += 0;
+                        $grandTotal['frekuensi'] += 0;
                     }
                 }
             }
@@ -6349,11 +6424,17 @@ class GeneralReportController extends Component
         $columnItem = $startColumnItemData;
         $columnItem++;
         $columnItem++;
+        // loss produksi
         $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_loss_produksi']);
         phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
         $columnItem++;
+        // loss kebutuhan
         $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_loss_kebutuhan']);
         phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        // frekuensi
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['frekuensi']);
+        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowGrandTotal);
         phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowGrandTotal . ':' . $columnItem . $rowGrandTotal);
         $columnItem++;
 
@@ -6410,6 +6491,7 @@ class GeneralReportController extends Component
             'Printing (Kg)',
             'Tachiage (Kg)',
             'Loss Infure di Seitai (Kg)',
+            'Frekuensi'
         ];
 
         foreach ($header as $key => $value) {
@@ -6433,7 +6515,8 @@ class GeneralReportController extends Component
                     SUM ( CASE WHEN mslosCls.code = '07' THEN los_.berat_loss ELSE 0 END ) AS berat_loss_mesin,
                     SUM ( CASE WHEN mslosCls.code = '08' THEN los_.berat_loss ELSE 0 END ) AS berat_loss_orang,
                     SUM ( CASE WHEN mslosCls.code = '05' THEN los_.berat_loss ELSE 0 END ) AS berat_loss_printing,
-                    SUM ( CASE WHEN mslosCls.code = '02' THEN los_.berat_loss ELSE 0 END ) AS berat_loss_tachiage
+                    SUM ( CASE WHEN mslosCls.code = '02' THEN los_.berat_loss ELSE 0 END ) AS berat_loss_tachiage,
+                    SUM ( los_.frekuensi ) AS frekuensi
                 FROM
                     tdProduct_Assembly_Loss AS los_
                     INNER JOIN msLossInfure AS mslos ON los_.loss_infure_id = mslos.
@@ -6465,7 +6548,8 @@ class GeneralReportController extends Component
                 COALESCE ( SUM ( loss_summary.berat_loss_orang ), 0 ) AS berat_loss_orang,
                 COALESCE ( SUM ( loss_summary.berat_loss_printing ), 0 ) AS berat_loss_printing,
                 COALESCE ( SUM ( loss_summary.berat_loss_tachiage ), 0 ) AS berat_loss_tachiage,
-                COALESCE ( SUM ( loss_sitai_summary.infure_berat_loss ), 0 ) AS seitai_infure_berat_loss
+                COALESCE ( SUM ( loss_sitai_summary.infure_berat_loss ), 0 ) AS seitai_infure_berat_loss,
+                COALESCE ( SUM ( loss_summary.frekuensi ), 0 ) AS frekuensi
             FROM
                 tdProduct_Assembly AS asy
                 LEFT JOIN loss_summary ON asy.ID = loss_summary.product_assembly_id
@@ -6527,7 +6611,8 @@ class GeneralReportController extends Component
                     'berat_loss_mesin' => $item->berat_loss_mesin,
                     'berat_loss_orang' => $item->berat_loss_orang,
                     'berat_loss_lainlain' => $item->berat_loss_lainlain,
-                    'seitai_infure_berat_loss' => $item->seitai_infure_berat_loss
+                    'seitai_infure_berat_loss' => $item->seitai_infure_berat_loss,
+                    'frekuensi' => $item->frekuensi
                 ];
             }
 
@@ -6573,7 +6658,8 @@ class GeneralReportController extends Component
                     'berat_loss_mesin' => 0,
                     'berat_loss_orang' => 0,
                     'berat_loss_lainlain' => 0,
-                    'seitai_infure_berat_loss' => 0
+                    'seitai_infure_berat_loss' => 0,
+                    'frekuensi' => 0
                 ];
 
                 // $spreadsheet->getActiveSheet()->mergeCells($columnEmployee . $rowItem . ':' . $columnEmployeeName . $rowItem);
@@ -6656,6 +6742,10 @@ class GeneralReportController extends Component
                 } else {
                     phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                 }
+                $columnItem++;
+                // frekuensi
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem['frekuensi']);
+                phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
                 // Terapkan custom format untuk mengganti tampilan 0 dengan -
                 phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
                 $columnItem++;
@@ -6711,6 +6801,10 @@ class GeneralReportController extends Component
             // loss infure di seitai
             $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
             phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // frekuensi
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpSpreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
             phpspreadsheet::addFullBorder($spreadsheet, $columnEmployee . $rowItem . ':' . $columnItem . $rowItem);
             phpspreadsheet::styleFont($spreadsheet, $columnEmployee . $rowItem . ':' . $columnItem . $rowItem, true, 8, 'Calibri');
             $columnItem++;
@@ -6736,7 +6830,8 @@ class GeneralReportController extends Component
             'berat_loss_mesin' => 0,
             'berat_loss_orang' => 0,
             'berat_loss_lainlain' => 0,
-            'seitai_infure_berat_loss' => 0
+            'seitai_infure_berat_loss' => 0,
+            'frekuensi' => 0
         ];
 
         foreach ($dataFilter as $departmentId => $Employeees) {
@@ -6753,6 +6848,7 @@ class GeneralReportController extends Component
                     $grandTotal['berat_loss_orang'] += $dataItem['berat_loss_orang'];
                     $grandTotal['berat_loss_lainlain'] += $dataItem['berat_loss_lainlain'];
                     $grandTotal['seitai_infure_berat_loss'] += $dataItem['seitai_infure_berat_loss'];
+                    $grandTotal['frekuensi'] += $dataItem['frekuensi'];
                 } else {
                     // Tambahkan default value jika $Employee tidak ditemukan
                     $grandTotal['berat_produksi'] += 0;
@@ -6765,6 +6861,7 @@ class GeneralReportController extends Component
                     $grandTotal['berat_loss_orang'] += 0;
                     $grandTotal['berat_loss_lainlain'] += 0;
                     $grandTotal['seitai_infure_berat_loss'] += 0;
+                    $grandTotal['frekuensi'] += 0;
                 }
             }
         }
@@ -6814,7 +6911,10 @@ class GeneralReportController extends Component
         // loss infure di seitai
         $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['seitai_infure_berat_loss']);
         phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
-
+        $columnItem++;
+        // frekuensi
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['frekuensi']);
+        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowGrandTotal);
         phpspreadsheet::addFullBorder($spreadsheet, $columnEmployee . $rowGrandTotal . ':' . $columnItem . $rowGrandTotal);
         $columnItem++;
 
@@ -6868,6 +6968,7 @@ class GeneralReportController extends Component
             'Kualitas (Kg)',
             'Mesin (Kg)',
             'Lain-lain (Kg)',
+            'Frekuensi'
         ];
 
         foreach ($header as $key => $value) {
@@ -6888,7 +6989,8 @@ class GeneralReportController extends Component
                     SUM(CASE WHEN mslosCls.code = '24' THEN los_.berat_loss ELSE 0 END) AS berat_loss_katanuki,
                     SUM(CASE WHEN mslosCls.code = '03' THEN los_.berat_loss ELSE 0 END) AS berat_loss_kualitas,
                     SUM(CASE WHEN mslosCls.code = '07' THEN los_.berat_loss ELSE 0 END) AS berat_loss_mesin,
-                    SUM(CASE WHEN mslosCls.code = '09' THEN los_.berat_loss ELSE 0 END) AS berat_loss_lainlain
+                    SUM(CASE WHEN mslosCls.code = '09' THEN los_.berat_loss ELSE 0 END) AS berat_loss_lainlain,
+                    SUM(los_.frekuensi) AS frekuensi
                 FROM tdProduct_Goods_Loss AS los_
                 INNER JOIN msLossSeitai AS mslos ON los_.loss_seitai_id = mslos.id
                 INNER JOIN msLossClass AS mslosCls ON mslos.loss_class_id = mslosCls.id
@@ -6905,7 +7007,8 @@ class GeneralReportController extends Component
                 COALESCE(SUM(loss.berat_loss_katanuki), 0) AS berat_loss_katanuki,
                 COALESCE(SUM(loss.berat_loss_kualitas), 0) AS berat_loss_kualitas,
                 COALESCE(SUM(loss.berat_loss_mesin), 0) AS berat_loss_mesin,
-                COALESCE(SUM(loss.berat_loss_lainlain), 0) AS berat_loss_lainlain
+                COALESCE(SUM(loss.berat_loss_lainlain), 0) AS berat_loss_lainlain,
+                COALESCE(SUM(loss.frekuensi), 0) AS frekuensi
             FROM tdProduct_Goods AS good
             INNER JOIN msEmployee AS mac ON good.employee_id = mac.id
             INNER JOIN msDepartment AS dep ON mac.department_id = dep.id
@@ -6955,6 +7058,7 @@ class GeneralReportController extends Component
                     'berat_loss_kualitas' => $item->berat_loss_kualitas,
                     'berat_loss_mesin' => $item->berat_loss_mesin,
                     'berat_loss_lainlain' => $item->berat_loss_lainlain,
+                    'frekuensi' => $item->frekuensi
                 ];
             }
 
@@ -6997,6 +7101,7 @@ class GeneralReportController extends Component
                     'berat_loss_kualitas' => 0,
                     'berat_loss_mesin' => 0,
                     'berat_loss_lainlain' => 0,
+                    'frekuensi' => 0
                 ];
 
                 // $spreadsheet->getActiveSheet()->mergeCells($columnEmployee . $rowItem . ':' . $columnEmployeeName . $rowItem);
@@ -7047,6 +7152,10 @@ class GeneralReportController extends Component
                 } else {
                     phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                 }
+                $columnItem++;
+                // frekuensi
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem['frekuensi']);
+                phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
                 // Terapkan custom format untuk mengganti tampilan 0 dengan -
                 phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
                 $columnItem++;
@@ -7086,6 +7195,10 @@ class GeneralReportController extends Component
             // lain-lain
             $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
             phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // frekuensi
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpSpreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
             phpspreadsheet::addFullBorder($spreadsheet, $columnEmployee . $rowItem . ':' . $columnItem . $rowItem);
             phpspreadsheet::styleFont($spreadsheet, $columnEmployee . $rowItem . ':' . $columnItem . $rowItem, true, 8, 'Calibri');
             $columnItem++;
@@ -7108,6 +7221,7 @@ class GeneralReportController extends Component
             'berat_loss_kualitas' => 0,
             'berat_loss_mesin' => 0,
             'berat_loss_lainlain' => 0,
+            'frekuensi' => 0
         ];
 
         foreach ($dataFilter as $departmentId => $Employeees) {
@@ -7120,6 +7234,7 @@ class GeneralReportController extends Component
                     $grandTotal['berat_loss_kualitas'] += $dataItem['berat_loss_kualitas'];
                     $grandTotal['berat_loss_mesin'] += $dataItem['berat_loss_mesin'];
                     $grandTotal['berat_loss_lainlain'] += $dataItem['berat_loss_lainlain'];
+                    $grandTotal['frekuensi'] += $dataItem['frekuensi'];
                 } else {
                     // Tambahkan default value jika $Employee tidak ditemukan
                     $grandTotal['berat_produksi'] += 0;
@@ -7128,6 +7243,7 @@ class GeneralReportController extends Component
                     $grandTotal['berat_loss_kualitas'] += 0;
                     $grandTotal['berat_loss_mesin'] += 0;
                     $grandTotal['berat_loss_lainlain'] += 0;
+                    $grandTotal['frekuensi'] += 0;
                 }
             }
         }
@@ -7162,6 +7278,9 @@ class GeneralReportController extends Component
         $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_loss_lainlain']);
         phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
         $columnItem++;
+        // frekuensi
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['frekuensi']);
+        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowGrandTotal);
 
         phpspreadsheet::addFullBorder($spreadsheet, $columnEmployee . $rowGrandTotal . ':' . $columnItem . $rowGrandTotal);
         $columnItem++;
@@ -7213,6 +7332,7 @@ class GeneralReportController extends Component
             'Nama Loss',
             'Loss Produksi (Kg)',
             'Loss Kebutuhan (Kg)',
+            'Frekuensi'
         ];
 
         foreach ($header as $key => $value) {
@@ -7234,7 +7354,8 @@ class GeneralReportController extends Component
                 max(mslos.code) AS loss_code,
                 max(mslos.name) AS loss_name,
                 SUM(CASE WHEN mslos.loss_category_code <> '1' THEN det.berat_loss ELSE 0 END) AS berat_loss_produksi,
-                SUM(CASE WHEN mslos.loss_category_code = '1' THEN det.berat_loss ELSE 0 END) AS berat_loss_kebutuhan
+                SUM(CASE WHEN mslos.loss_category_code = '1' THEN det.berat_loss ELSE 0 END) AS berat_loss_kebutuhan,
+                SUM(det.frekuensi) AS frekuensi
             FROM tdProduct_Assembly AS asy
             INNER JOIN tdProduct_Assembly_Loss AS det ON asy.id = det.product_assembly_id
             INNER JOIN msLossInfure AS mslos ON det.loss_infure_id = mslos.id
@@ -7287,7 +7408,8 @@ class GeneralReportController extends Component
                 'loss_code' => $item->loss_code,
                 'loss_name' => $item->loss_name,
                 'berat_loss_produksi' => $item->berat_loss_produksi,
-                'berat_loss_kebutuhan' => $item->berat_loss_kebutuhan
+                'berat_loss_kebutuhan' => $item->berat_loss_kebutuhan,
+                'frekuensi' => $item->frekuensi
             ];
 
             return $carry;
@@ -7325,7 +7447,8 @@ class GeneralReportController extends Component
                             'loss_code' => '',
                             'loss_name' => '',
                             'berat_loss_produksi' => 0,
-                            'berat_loss_kebutuhan' => 0
+                            'berat_loss_kebutuhan' => 0,
+                            'frekuensi' => 0
                         ]
                     ]
                 ];
@@ -7355,6 +7478,10 @@ class GeneralReportController extends Component
                     } else {
                         phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                     }
+                    $columnItem++;
+                    // frekuensi
+                    $activeWorksheet->setCellValue($columnItem . $rowItem, $item['frekuensi']);
+                    phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
                     // Terapkan custom format untuk mengganti tampilan 0 dengan -
                     phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
                     $columnItem++;
@@ -7376,6 +7503,10 @@ class GeneralReportController extends Component
             // loss kebutuhan
             $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
             phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // frekuensi
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpSpreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
             phpspreadsheet::addFullBorder($spreadsheet, $columnLossClass . $rowItem . ':' . $columnItem . $rowItem);
             phpspreadsheet::styleFont($spreadsheet, $columnLossClass . $rowItem . ':' . $columnItem . $rowItem, true, 8, 'Calibri');
             $columnItem++;
@@ -7394,6 +7525,7 @@ class GeneralReportController extends Component
         $grandTotal = [
             'berat_loss_produksi' => 0,
             'berat_loss_kebutuhan' => 0,
+            'frekuensi' => 0
         ];
 
         foreach ($dataFilter as $machineNo => $lossClasses) {
@@ -7403,11 +7535,13 @@ class GeneralReportController extends Component
                     foreach ($dataItem['losses'] as $item) {
                         $grandTotal['berat_loss_produksi'] += $item['berat_loss_produksi'];
                         $grandTotal['berat_loss_kebutuhan'] += $item['berat_loss_kebutuhan'];
+                        $grandTotal['frekuensi'] += $item['frekuensi'];
                     }
                 } else {
                     // Tambahkan default value jika $lossClass tidak ditemukan
                     $grandTotal['berat_loss_produksi'] += 0;
                     $grandTotal['berat_loss_kebutuhan'] += 0;
+                    $grandTotal['frekuensi'] += 0;
                 }
             }
         }
@@ -7420,6 +7554,10 @@ class GeneralReportController extends Component
         $columnItem++;
         $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_loss_kebutuhan']);
         phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        // frekuensi
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['frekuensi']);
+        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowGrandTotal);
         phpspreadsheet::addFullBorder($spreadsheet, $columnLossClass . $rowGrandTotal . ':' . $columnItem . $rowGrandTotal);
         phpspreadsheet::addFullBorder($spreadsheet, $columnLossClass . $rowGrandTotal . ':' . $columnItem . $rowGrandTotal);
         $columnItem++;
@@ -7470,6 +7608,7 @@ class GeneralReportController extends Component
             'Nama Loss',
             'Loss Produksi (Kg)',
             'Loss Kebutuhan (Kg)',
+            'Frekuensi'
         ];
 
         foreach ($header as $key => $value) {
@@ -7491,7 +7630,8 @@ class GeneralReportController extends Component
                 max(mslos.code) AS loss_code,
                 max(mslos.name) AS loss_name,
                 SUM(CASE WHEN mslos.loss_category_code <> '1' THEN det.berat_loss ELSE 0 END) AS berat_loss_produksi,
-                SUM(CASE WHEN mslos.loss_category_code = '1' THEN det.berat_loss ELSE 0 END) AS berat_loss_kebutuhan
+                SUM(CASE WHEN mslos.loss_category_code = '1' THEN det.berat_loss ELSE 0 END) AS berat_loss_kebutuhan,
+                SUM(det.frekuensi) AS frekuensi
             FROM tdProduct_Goods AS good
             INNER JOIN tdProduct_Goods_Loss AS det ON good.id = det.product_goods_id
             INNER JOIN msLossSeitai AS mslos ON det.loss_seitai_id = mslos.id
@@ -7544,7 +7684,8 @@ class GeneralReportController extends Component
                 'loss_code' => $item->loss_code,
                 'loss_name' => $item->loss_name,
                 'berat_loss_produksi' => $item->berat_loss_produksi,
-                'berat_loss_kebutuhan' => $item->berat_loss_kebutuhan
+                'berat_loss_kebutuhan' => $item->berat_loss_kebutuhan,
+                'frekuensi' => $item->frekuensi
             ];
 
             return $carry;
@@ -7582,7 +7723,8 @@ class GeneralReportController extends Component
                             'loss_code' => '',
                             'loss_name' => '',
                             'berat_loss_produksi' => 0,
-                            'berat_loss_kebutuhan' => 0
+                            'berat_loss_kebutuhan' => 0,
+                            'frekuensi' => 0
                         ]
                     ]
                 ];
@@ -7612,6 +7754,10 @@ class GeneralReportController extends Component
                     } else {
                         phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                     }
+                    $columnItem++;
+                    // frekuensi
+                    $activeWorksheet->setCellValue($columnItem . $rowItem, $item['frekuensi']);
+                    phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
                     // Terapkan custom format untuk mengganti tampilan 0 dengan -
                     phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
                     $columnItem++;
@@ -7633,6 +7779,10 @@ class GeneralReportController extends Component
             // loss kebutuhan
             $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
             phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // frekuensi
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpSpreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
             phpspreadsheet::addFullBorder($spreadsheet, $columnLossClass . $rowItem . ':' . $columnItem . $rowItem);
             phpspreadsheet::styleFont($spreadsheet, $columnLossClass . $rowItem . ':' . $columnItem . $rowItem, true, 8, 'Calibri');
             $columnItem++;
@@ -7651,6 +7801,7 @@ class GeneralReportController extends Component
         $grandTotal = [
             'berat_loss_produksi' => 0,
             'berat_loss_kebutuhan' => 0,
+            'frekuensi' => 0
         ];
 
         foreach ($dataFilter as $machineNo => $lossClasses) {
@@ -7660,11 +7811,13 @@ class GeneralReportController extends Component
                     foreach ($dataItem['losses'] as $item) {
                         $grandTotal['berat_loss_produksi'] += $item['berat_loss_produksi'];
                         $grandTotal['berat_loss_kebutuhan'] += $item['berat_loss_kebutuhan'];
+                        $grandTotal['frekuensi'] += $item['frekuensi'];
                     }
                 } else {
                     // Tambahkan default value jika $lossClass tidak ditemukan
                     $grandTotal['berat_loss_produksi'] += 0;
                     $grandTotal['berat_loss_kebutuhan'] += 0;
+                    $grandTotal['frekuensi'] += 0;
                 }
             }
         }
@@ -7677,6 +7830,10 @@ class GeneralReportController extends Component
         $columnItem++;
         $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_loss_kebutuhan']);
         phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        // frekuensi
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['frekuensi']);
+        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowGrandTotal);
         phpspreadsheet::addFullBorder($spreadsheet, $columnLossClass . $rowGrandTotal . ':' . $columnItem . $rowGrandTotal);
         phpspreadsheet::addFullBorder($spreadsheet, $columnLossClass . $rowGrandTotal . ':' . $columnItem . $rowGrandTotal);
         $columnItem++;

@@ -219,7 +219,7 @@
                     </div>
                 </button>
 
-                <button type="submit" class="btn btn-success w-md">
+                <button type="button" class="btn btn-success w-md" wire:click="save">
                     <span wire:loading.remove wire:target="save">
                         <i class="ri-save-3-line"></i> Save
                     </span>

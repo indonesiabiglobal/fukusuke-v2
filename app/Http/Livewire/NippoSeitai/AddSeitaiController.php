@@ -300,6 +300,11 @@ class AddSeitaiController extends Component
                 'total_assembly_qty' => $lastQty + $this->qty_produksi,
             ]);
 
+            TdProductAssembly::where('lpk_id', $lpkid->id)->orderBy('seq_no', 'ASC')
+            ->update([
+                'status_production' => 1,
+            ]);
+
             TdProductGoodsAssembly::where('lpk_id', $lpkid->id)->update([
                 'product_goods_id' => $data->id,
             ]);
