@@ -5606,6 +5606,7 @@ class GeneralReportController extends Component
             'Nama Loss',
             'Loss Produksi (Kg)',
             'Loss Kebutuhan (Kg)',
+            'Frekuensi'
         ];
 
         foreach ($header as $key => $value) {
@@ -5627,7 +5628,8 @@ class GeneralReportController extends Component
                 max(mslos.code) AS loss_code,
                 max(mslos.name) AS loss_name,
                 SUM(CASE WHEN mslos.loss_category_code <> '1' THEN det.berat_loss ELSE 0 END) AS berat_loss_produksi,
-                SUM(CASE WHEN mslos.loss_category_code = '1' THEN det.berat_loss ELSE 0 END) AS berat_loss_kebutuhan
+                SUM(CASE WHEN mslos.loss_category_code = '1' THEN det.berat_loss ELSE 0 END) AS berat_loss_kebutuhan,
+                SUM(det.frekuensi) AS frekuensi
             FROM tdProduct_Goods AS good
             INNER JOIN tdProduct_Goods_Loss AS det ON good.id = det.product_goods_id
             INNER JOIN msLossSeitai AS mslos ON det.loss_seitai_id = mslos.id
@@ -5681,7 +5683,8 @@ class GeneralReportController extends Component
                 'loss_code' => $item->loss_code,
                 'loss_name' => $item->loss_name,
                 'berat_loss_produksi' => $item->berat_loss_produksi,
-                'berat_loss_kebutuhan' => $item->berat_loss_kebutuhan
+                'berat_loss_kebutuhan' => $item->berat_loss_kebutuhan,
+                'frekuensi' => $item->frekuensi
             ];
 
             return $carry;
@@ -5719,7 +5722,8 @@ class GeneralReportController extends Component
                             'loss_code' => '',
                             'loss_name' => '',
                             'berat_loss_produksi' => 0,
-                            'berat_loss_kebutuhan' => 0
+                            'berat_loss_kebutuhan' => 0,
+                            'frekuensi' => 0
                         ]
                     ]
                 ];
@@ -5749,6 +5753,10 @@ class GeneralReportController extends Component
                     } else {
                         phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                     }
+                    $columnItem++;
+                    // frekuensi
+                    $activeWorksheet->setCellValue($columnItem . $rowItem, $item['frekuensi']);
+                    phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
                     // Terapkan custom format untuk mengganti tampilan 0 dengan -
                     phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
                     $columnItem++;
@@ -5770,6 +5778,10 @@ class GeneralReportController extends Component
             // loss kebutuhan
             $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
             phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // frekuensi
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpSpreadsheet::numberFormatThousands($spreadsheet, $columnItem . $rowItem);
             phpspreadsheet::addFullBorder($spreadsheet, $columnLossClass . $rowItem . ':' . $columnItem . $rowItem);
             phpspreadsheet::styleFont($spreadsheet, $columnLossClass . $rowItem . ':' . $columnItem . $rowItem, true, 8, 'Calibri');
             $columnItem++;
@@ -5788,6 +5800,7 @@ class GeneralReportController extends Component
         $grandTotal = [
             'berat_loss_produksi' => 0,
             'berat_loss_kebutuhan' => 0,
+            'frekuensi' => 0
         ];
 
         foreach ($dataFilter as $departmentId => $lossClasses) {
@@ -5797,11 +5810,13 @@ class GeneralReportController extends Component
                     foreach ($dataItem['losses'] as $item) {
                         $grandTotal['berat_loss_produksi'] += $item['berat_loss_produksi'];
                         $grandTotal['berat_loss_kebutuhan'] += $item['berat_loss_kebutuhan'];
+                        $grandTotal['frekuensi'] += $item['frekuensi'];
                     }
                 } else {
                     // Tambahkan default value jika $lossClass tidak ditemukan
                     $grandTotal['berat_loss_produksi'] += 0;
                     $grandTotal['berat_loss_kebutuhan'] += 0;
+                    $grandTotal['frekuensi'] += 0;
                 }
             }
         }
@@ -5814,6 +5829,10 @@ class GeneralReportController extends Component
         $columnItem++;
         $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_loss_kebutuhan']);
         phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        $columnItem++;
+        // frekuensi
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['frekuensi']);
+        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowGrandTotal);
         phpspreadsheet::addFullBorder($spreadsheet, $columnLossClass . $rowGrandTotal . ':' . $columnItem . $rowGrandTotal);
         phpspreadsheet::addFullBorder($spreadsheet, $columnLossClass . $rowGrandTotal . ':' . $columnItem . $rowGrandTotal);
         $columnItem++;
