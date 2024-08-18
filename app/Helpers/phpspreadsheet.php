@@ -72,6 +72,11 @@ class phpspreadsheet
             ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
     }
 
+    public static function numberFormatCommaThousandsOrZero($spreadsheet, $range)
+    {
+        $spreadsheet->getActiveSheet()->getStyle($range)->getNumberFormat()->setFormatCode('#,##0.00;-#,##0.00;"-"');
+    }
+
     public static function numberFormatThousands($spreadsheet, $range)
     {
         $spreadsheet->getActiveSheet()->getStyle($range)
