@@ -17,12 +17,14 @@
                         <div class="col-9">
                             <div class="form-group">
                                 <div class="input-group">
-                                    <input wire:model.defer="tglMasuk" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
+                                    <input wire:model.defer="tglMasuk" type="text" class="form-control"
+                                        style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
                                     <span class="input-group-text py-0">
                                         <i class="ri-calendar-event-fill fs-4"></i>
                                     </span>
 
-                                    <input wire:model.defer="tglKeluar" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
+                                    <input wire:model.defer="tglKeluar" type="text" class="form-control"
+                                        style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
                                     <span class="input-group-text py-0">
                                         <i class="ri-calendar-event-fill fs-4"></i>
                                     </span>
@@ -37,7 +39,8 @@
             </div>
             <div class="col-12 col-lg-9">
                 <div class="input-group">
-                    <input wire:model.defer="searchTerm" class="form-control"style="padding:0.44rem" type="text" placeholder="search nomor PO, nama produk" />
+                    <input wire:model.defer="searchTerm" class="form-control"style="padding:0.44rem" type="text"
+                        placeholder="search nomor PO, nama produk" />
                 </div>
             </div>
         </div>
@@ -50,10 +53,12 @@
             </div>
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
-                    <select class="form-control"  wire:model.defer="idProduct" id="product" name="product" data-choices data-choices-sorting-false data-choices-removeItem>
+                    <select class="form-control" wire:model.defer="idProduct" id="product" name="product" data-choices
+                        data-choices-sorting-false data-choices-removeItem >
                         <option value="">- All -</option>
                         @foreach ($products as $item)
-                            <option value="{{ $item->id }}" @if ($item->id == ($idProduct['value'] ?? null)) selected @endif>{{ $item->name }}</option>
+                            <option data-custom-properties='{"code": "{{ $item->code }}"}' value="{{ $item->id }}" @if ($item->id == ($idProduct['value'] ?? null)) selected @endif>
+                                {{ $item->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -64,10 +69,12 @@
             </div>
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
-                    <select class="form-control" wire:model.defer="idBuyer" data-choices data-choices-sorting-false data-choices-removeItem>
+                    <select class="form-control" wire:model.defer="idBuyer" data-choices data-choices-sorting-false
+                        data-choices-removeItem>
                         <option value="">- All -</option>
                         @foreach ($buyer as $item)
-                            <option value="{{ $item->id }}" @if ($item->id == ($idBuyer['value'] ?? null)) selected @endif>{{ $item->name }}</option>
+                            <option value="{{ $item->id }}" @if ($item->id == ($idBuyer['value'] ?? null)) selected @endif>
+                                {{ $item->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -77,7 +84,8 @@
             </div>
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
-                    <select class="form-control" wire:model.defer="status" data-choices data-choices-sorting-false data-choices-removeItem>
+                    <select class="form-control" wire:model.defer="status" data-choices data-choices-sorting-false
+                        data-choices-removeItem>
                         <option value="">- All -</option>
                         <option value="0" @if (($status['value'] ?? '') == 0) selected @endif>Belum LPK</option>
                         <option value="1" @if (($status['value'] ?? '') == 1) selected @endif>Sudah LPK</option>
@@ -105,17 +113,14 @@
                     </div>
                 </button>
 
-                <button
-                    type="button"
-                    class="btn btn-success w-lg p-1"
-                    onclick="window.location.href='/add-order'"
-                    >
+                <button type="button" class="btn btn-success w-lg p-1" onclick="window.location.href='/add-order'">
                     <i class="ri-add-line"> </i> Add
                 </button>
             </div>
             <div class="col-12 col-lg-6 d-none d-sm-block">
                 <input type="file" id="fileInput" wire:model="file" style="display: none;">
-                <button class="btn btn-success w-lg p-1" type="button" onclick="document.getElementById('fileInput').click()">
+                <button class="btn btn-success w-lg p-1" type="button"
+                    onclick="document.getElementById('fileInput').click()">
                     <span wire:loading.remove wire:target="file">
                         <i class="ri-upload-2-fill"> </i> Upload Excel
                     </span>
@@ -166,62 +171,88 @@
     </div>
 
     <div class="col text-end dropdown" x-data="{
-        po_no:true, na_pr:true, ko_pr:true, bu:true, qt:true, tgo:true, stf:false, etd:true, eta:false, tgp:true, num:true, up_by: false, up_dt: false
-        }">
-        <button type="button" data-bs-toggle="dropdown" aria-expanded="false" class="btn btn-soft-primary btn-icon fs-14 mb-4">
+        po_no: true,
+        na_pr: true,
+        ko_pr: true,
+        bu: true,
+        qt: true,
+        tgo: true,
+        stf: false,
+        etd: true,
+        eta: false,
+        tgp: true,
+        num: true,
+        up_by: false,
+        up_dt: false
+    }">
+        <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
+            class="btn btn-soft-primary btn-icon fs-14 mb-4">
             <i class="ri-grid-fill"></i>
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
             <li @click="po_no = !po_no; $refs.checkbox.checked = po_no" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="po_no = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="po_no">
+                <input x-ref="checkbox" @change="po_no = $refs.checkbox.checked" class="form-check-input fs-15 ms-2"
+                    type="checkbox" :checked="po_no">
                 PO Number
             </li>
             <li @click="na_pr = !na_pr; $refs.checkbox.checked = na_pr" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="na_pr = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="na_pr">
+                <input x-ref="checkbox" @change="na_pr = $refs.checkbox.checked" class="form-check-input fs-15 ms-2"
+                    type="checkbox" :checked="na_pr">
                 Nama Produk
             </li>
             <li @click="ko_pr = !ko_pr; $refs.checkbox.checked = ko_pr" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="ko_pr = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="ko_pr">
+                <input x-ref="checkbox" @change="ko_pr = $refs.checkbox.checked" class="form-check-input fs-15 ms-2"
+                    type="checkbox" :checked="ko_pr">
                 Kode Produk
             </li>
             <li @click="bu = !bu; $refs.checkbox.checked = bu" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="bu = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="bu">
+                <input x-ref="checkbox" @change="bu = $refs.checkbox.checked" class="form-check-input fs-15 ms-2"
+                    type="checkbox" :checked="bu">
                 Buyer
             </li>
             <li @click="qt = !qt; $refs.checkbox.checked = qt" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="qt = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="qt">
+                <input x-ref="checkbox" @change="qt = $refs.checkbox.checked" class="form-check-input fs-15 ms-2"
+                    type="checkbox" :checked="qt">
                 Quantity
             </li>
             <li @click="tgo = !tgo; $refs.checkbox.checked = tgo" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="tgo = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="tgo">
+                <input x-ref="checkbox" @change="tgo = $refs.checkbox.checked" class="form-check-input fs-15 ms-2"
+                    type="checkbox" :checked="tgo">
                 Tgl Order
             </li>
             <li @click="stf = !stf; $refs.checkbox.checked = stf" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="stf = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="stf">
+                <input x-ref="checkbox" @change="stf = $refs.checkbox.checked" class="form-check-input fs-15 ms-2"
+                    type="checkbox" :checked="stf">
                 Stuffing
             </li>
             <li @click="etd = !etd; $refs.checkbox.checked = etd" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="etd = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="etd">
+                <input x-ref="checkbox" @change="etd = $refs.checkbox.checked" class="form-check-input fs-15 ms-2"
+                    type="checkbox" :checked="etd">
                 Etd
             </li>
             <li @click="eta = !eta; $refs.checkbox.checked = eta" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="eta = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="eta">
+                <input x-ref="checkbox" @change="eta = $refs.checkbox.checked" class="form-check-input fs-15 ms-2"
+                    type="checkbox" :checked="eta">
                 Eta
             </li>
             <li @click="tgp = !tgp; $refs.checkbox.checked = tgp" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="tgp = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="tgp">
+                <input x-ref="checkbox" @change="tgp = $refs.checkbox.checked" class="form-check-input fs-15 ms-2"
+                    type="checkbox" :checked="tgp">
                 Tgl Proses
             </li>
             <li @click="num = !num; $refs.checkbox.checked = num" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="num = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="num">
+                <input x-ref="checkbox" @change="num = $refs.checkbox.checked" class="form-check-input fs-15 ms-2"
+                    type="checkbox" :checked="num">
                 No.
             </li>
             <li @click="up_by = !up_by; $refs.checkbox.checked = up_by" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="up_by = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="up_by">
+                <input x-ref="checkbox" @change="up_by = $refs.checkbox.checked" class="form-check-input fs-15 ms-2"
+                    type="checkbox" :checked="up_by">
                 Update By
             </li>
             <li @click="up_dt = !up_dt; $refs.checkbox.checked = up_dt" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="up_dt = $refs.checkbox.checked" class="form-check-input fs-15 ms-2" type="checkbox" :checked="up_dt">
+                <input x-ref="checkbox" @change="up_dt = $refs.checkbox.checked" class="form-check-input fs-15 ms-2"
+                    type="checkbox" :checked="up_dt">
                 UpdateDt
             </li>
         </ul>
@@ -253,7 +284,8 @@
                     @forelse ($data as $item)
                         <tr>
                             <td>
-                                <a href="/edit-order?orderId={{ $item->id }}" class="link-success fs-15 p-1 bg-primary rounded">
+                                <a href="/edit-order?orderId={{ $item->id }}"
+                                    class="link-success fs-15 p-1 bg-primary rounded">
                                     <i class="ri-edit-box-line text-white"></i>
                                 </a>
                             </td>
@@ -274,7 +306,9 @@
                     @empty
                         <tr>
                             <td colspan="10" class="text-center">
-                                <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
+                                <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                                    colors="primary:#121331,secondary:#08a88a"
+                                    style="width:40px;height:40px"></lord-icon>
                                 <h5 class="mt-2">Sorry! No Result Found</h5>
                             </td>
                         </tr>
@@ -286,3 +320,6 @@
     </div>
     {{-- <livewire:tdorder/> --}}
 </div>
+
+@script
+@endscript
