@@ -5,10 +5,16 @@ integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
 crossorigin="anonymous">
 </script>
 <script>
+    // $(function() {
+    //     $('#button').on('click', function() {
+    //         window.print();
+    //     });
+    // });
     $(function() {
-        $('#button').on('click', function() {
+        // Memicu pencetakan segera setelah halaman dimuat
+        setTimeout(function() {
             window.print();
-        });
+        }, 1000);  // Delay 1 detik untuk memastikan halaman telah dimuat sepenuhnya
     });
 </script>
 <head>
