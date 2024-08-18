@@ -90,16 +90,17 @@
                             >
                                 9. Daftar Produksi Per Palet
                             </option>
+                            <option value="Daftar Produksi Per Mesin Per Produk">10. Daftar Produksi Per Mesin Per Produk</option>
                     </optgroup>
                     <optgroup label="Daftar Loss">
-                        <option value="Daftar Loss Per Departemen">10. Daftar Loss Per Departemen</option>
-                        <option value="Daftar Loss Per Departemen & Jenis">11. Daftar Loss Per Departemen & Jenis
+                        <option value="Daftar Loss Per Departemen">11. Daftar Loss Per Departemen</option>
+                        <option value="Daftar Loss Per Departemen & Jenis">12. Daftar Loss Per Departemen & Jenis
                         </option>
-                        <option value="Daftar Loss Per Petugas">12. Daftar Loss Per Petugas</option>
-                        <option value="Daftar Loss Per Mesin">13. Daftar Loss Per Mesin</option>
+                        <option value="Daftar Loss Per Petugas">13. Daftar Loss Per Petugas</option>
+                        <option value="Daftar Loss Per Mesin">14. Daftar Loss Per Mesin</option>
                     </optgroup>
                     <optgroup label="Kapasitas">
-                        <option value="Kapasitas Produksi">14. Kapasitas Produksi</option>
+                        <option value="Kapasitas Produksi">15. Kapasitas Produksi</option>
                     </optgroup>
                 </select>
             </div>
