@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Validator;
 use Livewire\Component;
 use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class ReportKenpinController extends Component
 {
@@ -152,56 +153,58 @@ class ReportKenpinController extends Component
         phpspreadsheet::textAlignCenter($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
 
         // Filter Query
-        $filterDate = "tdpa.production_date BETWEEN '$tglAwal' AND '$tglAkhir'";
+        $filterDate = "tdka.kenpin_date BETWEEN '$tglAwal' AND '$tglAkhir'";
         $filterNoLPK = $this->lpk_no ? " AND (tdol.lpk_no = '$this->lpk_no')" : '';
-        $filterProduct = $this->productId ? " AND (msp.id = '$this->productId')" : '';
-        $filterNomorKenpin = $this->nomorKenpin ? " AND (tdpa.nomor_kenpin = '$this->nomorKenpin')" : '';
-        $filterStatus = $this->status ? " AND (tdpa.status = '$this->status')" : '';
+        $filterProduct = $this->productId ? " AND (tdpa.product_id = '$this->productId')" : '';
+        $filterNomorKenpin = $this->nomorKenpin ? " AND (tdka.kenpin_no = '$this->nomorKenpin')" : '';
+        $filterStatus = $this->status ? " AND (tdka.status_kenpin = '$this->status')" : '';
         $filterNomorHan = $this->nomorHan ? " AND (tdpa.nomor_han = '$this->nomorHan')" : '';
 
         // query masih salah
         $data = DB::select(
             "
                 SELECT
-                    tdpa.production_date AS tglproduksi,
-                    tdpa.work_shift AS shift,
-                    tdpa.work_hour AS jam,
-                    tdpa.employee_id AS employee_id,
-                    mse.employeeno AS nik,
-                    mse.empname AS namapetugas,
-                    msd.NAME AS deptpetugas,
-                    tdpa.machine_id AS machine_id,
-                    msm.machineno AS nomesin,
-                    msm.machinename AS namamesin,
-                    tdpa.product_id AS product_id,
-                    msp.code AS produkcode,
-                    msp.NAME AS namaproduk,
+                    tdka.ID AS ID,
+                    tdka.kenpin_no AS kenpin_no,
+                    tdka.kenpin_date AS kenpin_date,
+                    tdka.employee_id AS employee_id,
+                    tdka.lpk_id AS lpk_id,
+                    tdka.berat_loss AS berat_loss,
+                    tdka.remark AS remark,
+                    tdka.status_kenpin AS status_kenpin,
+                    tdka.created_by AS created_by,
+                    tdka.created_on AS created_on,
+                    tdka.updated_by AS updated_by,
+                    tdka.updated_on AS updated_on,
                     tdol.lpk_no AS lpk_no,
-                    tdpa.nomor_han AS nomor_han,
+                    tdkad.berat_loss AS berat_loss1,
+                    tdpa.product_id AS product_id,
+                    msp.code as produkcode,
+                    msp.NAME AS namaproduk,
+                    mse.empname AS nama_petugas,
                     tdpa.gentan_no AS gentan_no,
                     tdpa.panjang_produksi AS panjang_produksi,
-                    tdpa.panjang_printing_inline AS panjang_printing_inline,
-                    tdpa.berat_produksi AS berat_produksi,
-                    msli.code AS losscode,
-                    msli.NAME AS lossname,
-                    tdpal.berat_loss
+                    tdpa.machine_id AS machine_id,
+                    msm.machineno AS nomesin,
+                    tdpa.production_date AS production_date,
+                    tdpa.work_shift AS work_shift,
+                    tdpa.nomor_han AS nomor_han
                 FROM
-                    tdProduct_Assembly AS tdpa
-                    INNER JOIN tdOrderLpk AS tdol ON tdpa.lpk_id = tdol.id
-                    INNER JOIN msEmployee AS mse ON mse.ID = tdpa.employee_id
-                    INNER JOIN msMachine AS msm ON msm.ID = tdpa.machine_id
-                    INNER JOIN msProduct AS msp ON msp.ID = tdpa.product_id
-                    INNER JOIN msDepartment AS msd ON msd.ID = mse.department_id
-                    LEFT JOIN tdProduct_Assembly_Loss AS tdpal ON tdpal.product_assembly_id = tdpa.
-                    ID LEFT JOIN msLossInfure AS msli ON msli.ID = tdpal.loss_infure_id
+                    tdKenpin_Assembly AS tdka
+                    INNER JOIN tdKenpin_Assembly_Detail AS tdkad ON tdka.ID = tdkad.kenpin_assembly_id
+                    INNER JOIN tdProduct_Assembly AS tdpa ON tdkad.product_assembly_id = tdpa.
+                    ID INNER JOIN tdOrderLpk AS tdol ON tdka.lpk_id = tdol.
+                    ID INNER JOIN msProduct AS msp ON tdpa.product_id = msp.
+                    ID INNER JOIN msemployee AS mse ON mse.ID = tdka.employee_id
+                    INNER JOIN msmachine AS msm ON msm.ID = tdpa.machine_id
                 WHERE
                     $filterDate
                     $filterNoLPK
-                    $nomorOrder
-                    $filterDepartment
-                    $filterMachine
+                    $filterProduct
+                    $filterNomorKenpin
+                    $filterStatus
                     $filterNomorHan
-                ORDER BY tdpa.production_date ASC",
+                ORDER BY tdka.kenpin_date ASC",
         );
 
         if (count($data) == 0) {
@@ -213,126 +216,108 @@ class ReportKenpinController extends Component
             return $response;
         }
 
-        $listProduct = array_reduce($data, function ($carry, $item) {
-            $carry[$item->product_id] = $item->produkcode . ' - ' . $item->namaproduk;
-            return $carry;
-        }, []);
+        $dataFiltered = [];
+        foreach ($data as $item) {
+            if (!isset($dataFiltered[$item->product_id])) {
+                $dataFiltered[$item->product_id] = [
+                    'produkcode' => $item->produkcode,
+                    'namaproduk' => $item->namaproduk,
+                    'kenpin' => [],
+                ];
+            }
 
-        $listProductionDate = array_reduce($data, function ($carry, $item) {
-            $carry[$item->product_id][$item->tglproduksi] = $item->tglproduksi;
-            return $carry;
-        }, []);
+            // Tambahkan data kenpin ke dalam array
+            if (!isset($dataFiltered[$item->product_id]['kenpin'][$item->kenpin_no])) {
+                $dataFiltered[$item->product_id]['kenpin'][$item->kenpin_no] = [
+                    'kenpin_no' => $item->kenpin_no,
+                    'status_kenpin' => $item->status_kenpin,
+                    'kenpin_date' => $item->kenpin_date,
+                    'nama_petugas' => $item->nama_petugas,
+                    'lpk_no' => $item->lpk_no,
+                    'remark' => $item->remark,
+                    'gentan' => [],
+                ];
+            }
 
-        $listWorkHour = array_reduce($data, function ($carry, $item) {
-            $carry[$item->product_id][$item->tglproduksi][$item->jam] = [
-                'tglproduksi' => $item->tglproduksi,
-                'shift' => $item->shift,
-                'jam' => $item->jam,
-                'nik' => $item->nik,
-                'nama_petugas' => $item->namapetugas,
-                'dept_petugas' => $item->deptpetugas,
-                'nama_mesin' => $item->nomesin . ' - ' . $item->namamesin,
-                'lpk_no' => $item->lpk_no,
+            $dataFiltered[$item->product_id]['kenpin'][$item->kenpin_no]['gentan'][$item->gentan_no] = [
                 'gentan_no' => $item->gentan_no,
+                'nomesin' => $item->nomesin,
                 'nomor_han' => $item->nomor_han,
+                'production_date' => $item->production_date,
+                'work_shift' => $item->work_shift,
                 'panjang_produksi' => $item->panjang_produksi,
-                'berat_produksi' => $item->berat_produksi,
-                'losscode' => $item->losscode,
-                'lossname' => $item->lossname,
-            ];
-            return $carry;
-        }, []);
-
-        $dataFiltered = array_reduce($data, function ($carry, $item) {
-            $carry[$item->product_id][$item->tglproduksi][$item->jam][$item->losscode] = (object)[
-                'lossname' => $item->lossname,
                 'berat_loss' => $item->berat_loss,
             ];
-            return $carry;
-        }, []);
+        }
 
         // index
         $rowItemStart = 4;
         $columnItemStart = 'A';
-        $columnLossStart = 'N';
+        $columnGentanStart = 'G';
         $rowItem = $rowItemStart;
-        foreach ($listProduct as $productId => $productName) {
+        foreach ($dataFiltered as $productId => $itemProduct) {
             // Menulis data produk
-            $activeWorksheet->setCellValue($columnItemStart . $rowItem, $productName);
+            $activeWorksheet->setCellValue($columnItemStart . $rowItem, $itemProduct['produkcode'] . ' - ' . $itemProduct['namaproduk']);
             // $spreadsheet->getActiveSheet()->mergeCells($columnItemStart . $rowItem . ':' . $endColumnItem . $rowItem);
-            phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItem, true, 9, 'Calibri');
+            phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItem, true, 8, 'Calibri');
             $columnItemEnd = $columnItemStart;
             $rowItem++;
-            foreach ($listProductionDate[$productId] as $productionDate) {
-                foreach ($listWorkHour[$productId][$productionDate] as $WorkHour => $itemWorkHour) {
-                    $columnItemEnd = $columnItemStart;
-                    // tanggal produksi
-                    $activeWorksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($itemWorkHour['tglproduksi'])->translatedFormat('d-M-Y'));
-                    phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
-                    $columnItemEnd++;
-                    // shift
-                    $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemWorkHour['shift']);
-                    phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
-                    $columnItemEnd++;
-                    // jam
-                    $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemWorkHour['jam']);
-                    phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
-                    $columnItemEnd++;
-                    // nik
-                    $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemWorkHour['nik']);
-                    phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
-                    $columnItemEnd++;
-                    // nama petugas
-                    $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemWorkHour['nama_petugas']);
-                    phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
-                    $columnItemEnd++;
-                    // dept petugas
-                    $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemWorkHour['dept_petugas']);
-                    phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
-                    $columnItemEnd++;
-                    // mesin
-                    $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemWorkHour['nama_mesin']);
-                    $columnItemEnd++;
-                    // no lpk
-                    $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemWorkHour['lpk_no']);
-                    phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
-                    $columnItemEnd++;
+            foreach ($itemProduct['kenpin'] as $kenpinNo => $itemKenpin) {
+                $columnItemEnd = $columnItemStart;
+                // nomor kenpin
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['kenpin_no']);
+                phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
+                $columnItemEnd++;
+                // status kenpin
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['status_kenpin']);
+                phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
+                $columnItemEnd++;
+                // tanggal kenpin
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($itemKenpin['kenpin_date'])->translatedFormat('d-M-Y'));
+                phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
+                $columnItemEnd++;
+                // pic kenpin
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['nama_petugas']);
+                phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
+                $columnItemEnd++;
+                // nomor lpk
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['lpk_no']);
+                phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
+                $columnItemEnd++;
+                // ng
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['remark']);
+                $columnItemEnd++;
+
+                foreach ($itemKenpin['gentan'] as $gentanNo => $itemGentan) {
+                    $columnItemEnd = $columnGentanStart;
                     // nomor gentan
-                    $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemWorkHour['gentan_no']);
+                    $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $gentanNo);
+                    phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
+                    $columnItemEnd++;
+                    // nomor mesin
+                    $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemGentan['nomesin']);
                     phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
                     $columnItemEnd++;
                     // nomor han
-                    $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemWorkHour['nomor_han']);
+                    $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemGentan['nomor_han']);
                     phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
                     $columnItemEnd++;
-                    // panjang produksi
-                    $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemWorkHour['panjang_produksi']);
+                    // tanggal produksi
+                    $activeWorksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($itemGentan['production_date'])->translatedFormat('d-M-Y'));
+                    phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
+                    $columnItemEnd++;
+                    // kode shift
+                    $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemGentan['work_shift']);
+                    phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
+                    $columnItemEnd++;
+                    // panjang infure
+                    $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemGentan['panjang_produksi']);
                     phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItemEnd . $rowItem);
                     $columnItemEnd++;
-                    // berat produksi
-                    $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemWorkHour['berat_produksi']);
+                    // berat loss
+                    $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemGentan['berat_loss']);
                     phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItemEnd . $rowItem);
-                    $columnItemEnd++;
-
-                    // Loss
-                    $dataItem = $dataFiltered[$productId][$productionDate][$WorkHour];
-                    foreach ($dataItem as $losscode => $item) {
-                        $columnLoss = 'M';
-                        if ($losscode == '') {
-                            $columnLoss++;
-                            phpspreadsheet::addFullBorder($spreadsheet, $columnItemStart . $rowItem . ':' . $columnLoss . $rowItem);
-                            break;
-                        }
-
-                        $activeWorksheet->setCellValue($columnLoss . $rowItem, $item->lossname);
-                        $columnLoss++;
-                        $activeWorksheet->setCellValue($columnLoss . $rowItem, $item->berat_loss);
-                        phpspreadsheet::addFullBorder($spreadsheet, $columnItemStart . $rowItem . ':' . $columnLoss . $rowItem);
-                        $columnLoss++;
-                        phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItem . ':' . $columnLoss . $rowItem, false, 8, 'Calibri');
-                        $rowItem++;
-                        $columnItemEnd = $columnLoss;
-                    }
+                    phpspreadsheet::addFullBorder($spreadsheet, $columnItemStart . $rowItem . ':' . $columnItemEnd . $rowItem);
 
                     $columnItemEnd++;
                     phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItem . ':' . $columnItemEnd . $rowItem, false, 8, 'Calibri');
@@ -340,58 +325,68 @@ class ReportKenpinController extends Component
                     $rowItem++;
                 }
             }
+
+            // Total
+            $columnTotalEnd = 'K';
+            $spreadsheet->getActiveSheet()->mergeCells($columnItemStart . $rowItem . ':' . $columnTotalEnd . $rowItem);
+            $activeWorksheet->setCellValue($columnItemStart . $rowItem, 'TOTAL');
+            $columnTotalEnd++;
+
+            // panjang infure
+            $activeWorksheet->setCellValue($columnTotalEnd . $rowItem, '=SUM(' . $columnTotalEnd . ($rowItemStart + 1) . ':' . $columnTotalEnd . ($rowItem - 1) . ')');
+            phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnTotalEnd . $rowItem);
+            $columnTotalEnd++;
+
+            // berat loss
+            $activeWorksheet->setCellValue($columnTotalEnd . $rowItem, '=SUM(' . $columnTotalEnd . ($rowItemStart + 1) . ':' . $columnTotalEnd . ($rowItem - 1) . ')');
+            phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnTotalEnd . $rowItem);
+            phpspreadsheet::addFullBorder($spreadsheet, $columnItemStart . $rowItem . ':' . $columnTotalEnd . $rowItem);
+            $columnTotalEnd++;
+            phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItem . ':' . $columnTotalEnd . $rowItem, true, 8, 'Calibri');
+
+            $rowItem++;
             $rowItem++;
         }
 
         // grand total
-        $columnItemEnd = 'J';
-        $spreadsheet->getActiveSheet()->mergeCells($columnItemStart . $rowItem . ':' . $columnItemEnd . $rowItem);
+        $columnGrandTotalEnd = 'K';
+        $spreadsheet->getActiveSheet()->mergeCells($columnItemStart . $rowItem . ':' . $columnGrandTotalEnd . $rowItem);
         $activeWorksheet->setCellValue($columnItemStart . $rowItem, 'GRAND TOTAL');
         phpSpreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItem, true, 9, 'Calibri');
-        $columnItemEnd++;
+        $columnGrandTotalEnd++;
 
         // panjang produksi
         $totalPanjangProduksi = array_reduce($data, function ($carry, $item) {
             $carry += $item->panjang_produksi;
             return $carry;
         }, 0);
-        $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $totalPanjangProduksi);
-        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItemEnd . $rowItem);
-        $columnItemEnd++;
+        $activeWorksheet->setCellValue($columnGrandTotalEnd . $rowItem, $totalPanjangProduksi);
+        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnGrandTotalEnd . $rowItem);
+        $columnGrandTotalEnd++;
 
-        // berat produksi
-        $totalBeratProduksi = array_reduce($data, function ($carry, $item) {
-            $carry += $item->berat_produksi;
-            return $carry;
-        }, 0);
-        $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $totalBeratProduksi);
-        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItemEnd . $rowItem);
-        $columnItemEnd++;
-
-        // Loss
-        $columnItemEnd = 'O';
+        // berat Loss
         $totalLoss = array_reduce($data, function ($carry, $item) {
             $carry += $item->berat_loss;
             return $carry;
         }, 0);
-        $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $totalLoss);
-        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItemEnd . $rowItem);
-        phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItem . ':' . $columnItemEnd . $rowItem, true, 8, 'Calibri');
-        phpspreadsheet::addFullBorder($spreadsheet, $columnItemStart . $rowItem . ':' . $columnItemEnd . $rowItem);
-        $columnItemEnd++;
+        $activeWorksheet->setCellValue($columnGrandTotalEnd . $rowItem, $totalLoss);
+        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnGrandTotalEnd . $rowItem);
+        phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItem . ':' . $columnGrandTotalEnd . $rowItem, true, 8, 'Calibri');
+        phpspreadsheet::addFullBorder($spreadsheet, $columnItemStart . $rowItem . ':' . $columnGrandTotalEnd . $rowItem);
+        $columnGrandTotalEnd++;
 
         $activeWorksheet->getStyle($columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart)->getAlignment()->setWrapText(true);
 
         // size auto
         $columnSizeStart = $columnItemStart;
         $columnSizeStart++;
-        while ($columnSizeStart !== $columnItemEnd) {
+        while ($columnSizeStart !== $columnGrandTotalEnd) {
             $spreadsheet->getActiveSheet()->getColumnDimension($columnSizeStart)->setAutoSize(true);
             $columnSizeStart++;
         }
 
         $writer = new Xlsx($spreadsheet);
-        $filename = 'Detail-Produksi-' . $this->nippo . '.xlsx';
+        $filename = 'Kenpin-' . $this->nippo . '.xlsx';
         $writer->save($filename);
         $response = [
             'status' => 'success',
