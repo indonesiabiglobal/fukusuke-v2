@@ -4446,7 +4446,7 @@ class GeneralReportController extends Component
             SELECT
                 max(dep.name) AS department_name,
                 max(dep.id) AS department_id,
-                max(man.lossCode) AS employeeNo,
+                max(man.employeeNo) AS employeeNo,
                 max(man.empName) AS empName,
                 SUM(asy.berat_standard) AS berat_standard,
                 SUM(asy.berat_produksi) AS berat_produksi,
