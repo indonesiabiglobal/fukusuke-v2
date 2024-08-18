@@ -1,17 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script>
+        // $(function() {
+        //     $('#button').on('click', function() {
+        //         window.print();
+        //     });
+        // });
+        $(function() {
+            var hasPrinted = false;
+
+            window.onbeforeprint = function() {
+                hasPrinted = false;
+            };
+
+            window.onafterprint = function() {
+                hasPrinted = true;
+                tryToCloseWindow();
+            };
+
+            function tryToCloseWindow() {
+                if (hasPrinted) {
+                    setTimeout(function() {
+                        window.close();
+                        // Jika window.close() tidak berhasil, coba metode alternatif
+                        setTimeout(function() {
+                            if (!window.closed) {
+                                alert("Pencetakan selesai. Silakan tutup jendela ini secara manual.");
+                            }
+                        }, 1000);
+                    }, 100);
+                }
+            }
+
+            // Memicu pencetakan
+            setTimeout(function() {
+                window.print();
+            }, 1000);
+        });
+    </script>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
+
 </head>
 @php
     use Carbon\Carbon;
 
     $data = collect(
         DB::select("
-        SELECT 
+        SELECT
             tdol.lpk_no,
             msp.name,
             msp.code,
@@ -26,7 +67,7 @@
             mse.nik,
             mse.empname,
             tdpa.gentan_no
-        FROM    
+        FROM
             tdproduct_assembly AS tdpa
             INNER JOIN tdorderlpk AS tdol ON tdpa.lpk_id = tdol.ID
             INNER JOIN msproduct as msp on msp.id = tdol.product_id
@@ -34,13 +75,15 @@
             INNER JOIN msmachine as msm on msm.id = tdpa.machine_id
             INNER JOIN msemployee as mse on mse.id = tdpa.employee_id
         WHERE
-            tdpa.id = $lpk_no  
+            tdpa.id = $lpk_no
         "),
     )->first();
 @endphp
+
 <body style="background-color: #CCCCCC;margin: 0" onload="window.print()">
     <div align="center">
-        <table class="bayangprint" cellspacing="0" cellpadding="0" bgcolor="#FFFFFF" border="0" width="350" style="padding:25px">
+        <table class="bayangprint" cellspacing="0" cellpadding="0" bgcolor="#FFFFFF" border="0" width="350"
+            style="padding:25px">
             <tbody>
                 <tr>
                     <td>
@@ -74,7 +117,8 @@
                             </tr>
                         </table>
                         <hr>
-                        <table width="100%" cellspacing="0" cellpadding="0" border="0" style="border-bottom: 1px solid black;">
+                        <table width="100%" cellspacing="0" cellpadding="0" border="0"
+                            style="border-bottom: 1px solid black;">
                             <tr>
                                 <td align="center">
                                     <span>
@@ -85,7 +129,8 @@
                                 </td>
                             </tr>
                         </table>
-                        <table width="100%" cellspacing="0" cellpadding="0" border="0" style="border-bottom: 1px solid black;">
+                        <table width="100%" cellspacing="0" cellpadding="0" border="0"
+                            style="border-bottom: 1px solid black;">
                             <tr>
                                 <td width="40%">
                                     <span>
@@ -120,7 +165,8 @@
                                 </td>
                             </tr>
                         </table>
-                        <table width="100%" cellspacing="0" cellpadding="0" border="0" style="border-bottom: 1px solid black;">
+                        <table width="100%" cellspacing="0" cellpadding="0" border="0"
+                            style="border-bottom: 1px solid black;">
                             <tr>
                                 <td width="40%">
                                     <span>
@@ -186,7 +232,8 @@
                                 </td>
                             </tr>
                         </table>
-                        <table width="100%" cellspacing="0" cellpadding="0" border="0" style="border-bottom: 1px solid black;">
+                        <table width="100%" cellspacing="0" cellpadding="0" border="0"
+                            style="border-bottom: 1px solid black;">
                             <tr>
                                 <td width="40%">
                                     <span>
@@ -254,7 +301,8 @@
                                 </td>
                             </tr>
                         </table>
-                        <table width="100%" cellspacing="0" cellpadding="0" border="0" style="border-bottom: 1px solid black;">
+                        <table width="100%" cellspacing="0" cellpadding="0" border="0"
+                            style="border-bottom: 1px solid black;">
                             <tr>
                                 <td width="40%">
                                     <span>
@@ -296,4 +344,5 @@
         </table>
     </div>
 </body>
+
 </html>
