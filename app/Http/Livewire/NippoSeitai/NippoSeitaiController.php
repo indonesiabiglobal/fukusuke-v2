@@ -151,7 +151,7 @@ class NippoSeitaiController extends Component
                     tdproduct_goods_loss AS tpgl
                     INNER JOIN mslossseitai AS msls ON msls.ID = tpgl.loss_seitai_id
                 ) SELECT
-                tdpg.ID,
+                tdpg.ID as id_tdpg,
                 tdpg.production_no AS production_no,
                 tdpg.production_date AS tglproduksi,
                 tdpg.created_on AS tglproses,
@@ -219,44 +219,88 @@ class NippoSeitaiController extends Component
             return $response;
         }
 
-        $listProductionDate = array_reduce($data, function ($carry, $item) {
-            $carry[$item->tglproduksi] = $item->tglproduksi;
-            return $carry;
-        }, []);
+        $dataFiltered = [];
+        $dataLoss = [];
+        $dataGentan = [];
 
-        $dataFilter = array_reduce($data, function ($carry, $item) {
-            $carry[$item->tglproduksi][$item->noproses] = [
-                'tglproses' => $item->tglproses,
-                'noproses' => $item->noproses,
-                'tglproduksi' => $item->tglproduksi,
-                'shift' => $item->work_shift,
-                'nikpetugas' => $item->nikpetugas,
-                'namapetugas' => $item->namapetugas,
-                'mesinno' => $item->mesinno,
-                'mesinnama' => $item->mesinnama,
-                'nolpk' => $item->nolpk,
-                'namaproduk' => $item->namaproduk,
-                'noorder' => $item->noorder,
-                'qty_produksi' => $item->qty_produksi,
-                'infure_berat_loss' => $item->infure_berat_loss,
-                'nikpetugasinfure' => $item->nikpetugasinfure,
-                'nomor_palet' => $item->nomor_palet,
-                'nomor_lot' => $item->nomor_lot,
-                'gentan' => [],
-                'loss' => []
-            ];
+        foreach ($data as $item) {
+            // data utama
+            if (!isset($dataFiltered[$item->tglproduksiasy][$item->id_tdpg])) {
+                $dataFiltered[$item->tglproduksiasy][$item->id_tdpg] = [
+                    'tglproses' => $item->tglproses,
+                    'noproses' => $item->noproses,
+                    'tglproduksi' => $item->tglproduksiasy,
+                    'shift' => $item->work_shiftasy,
+                    'nikpetugas' => $item->nikasy,
+                    'namapetugas' => $item->namapetugasasy,
+                    'mesinno' => $item->nomesinasy,
+                    'mesinnama' => $item->mesinnama,
+                    'nolpk' => $item->nolpk,
+                    'namaproduk' => $item->namaproduk,
+                    'noorder' => $item->noorder,
+                    'qty_produksi' => $item->qty_produksi,
+                    'infure_berat_loss' => $item->infure_berat_loss,
+                    'nikpetugasinfure' => $item->nikpetugasinfure,
+                    'nomor_palet' => $item->nomor_palet,
+                    'nomor_lot' => $item->nomor_lot,
+                ];
+            }
 
-            $carry[$item->tglproduksi][$item->noproses]['gentan'][$item->gentannomor] = [
-                'gentannomorline' => $item->gentannomorline
-            ];
+            // data gentan
+            if (!isset($dataGentan[$item->tglproduksiasy][$item->id_tdpg][$item->gentannomor])) {
+                $dataGentan[$item->tglproduksiasy][$item->id_tdpg][$item->gentannomor] = [
+                    'gentannomorline' => $item->gentannomorline
+                ];
+            }
 
-            $carry[$item->tglproduksi][$item->noproses]['loss'][$item->losscode] = [
-                'losscode' => $item->losscode,
-                'lossname' => $item->lossname,
-                'berat_loss' => $item->berat_loss
-            ];
-            return $carry;
-        }, []);
+            // data loss
+            if (!isset($dataLoss[$item->tglproduksiasy][$item->id_tdpg][$item->losscode])) {
+                $dataLoss[$item->tglproduksiasy][$item->id_tdpg][$item->losscode] = [
+                    'losscode' => $item->losscode,
+                    'lossname' => $item->lossname,
+                    'berat_loss' => $item->berat_loss
+                ];
+            }
+        }
+
+        // $listProductionDate = array_reduce($data, function ($carry, $item) {
+        //     $carry[$item->tglproduksi] = $item->tglproduksi;
+        //     return $carry;
+        // }, []);
+
+        // $dataFilter = array_reduce($data, function ($carry, $item) {
+        //     $carry[$item->tglproduksi][$item->noproses] = [
+        //         'tglproses' => $item->tglproses,
+        //         'noproses' => $item->noproses,
+        //         'tglproduksi' => $item->tglproduksi,
+        //         'shift' => $item->work_shift,
+        //         'nikpetugas' => $item->nikpetugas,
+        //         'namapetugas' => $item->namapetugas,
+        //         'mesinno' => $item->mesinno,
+        //         'mesinnama' => $item->mesinnama,
+        //         'nolpk' => $item->nolpk,
+        //         'namaproduk' => $item->namaproduk,
+        //         'noorder' => $item->noorder,
+        //         'qty_produksi' => $item->qty_produksi,
+        //         'infure_berat_loss' => $item->infure_berat_loss,
+        //         'nikpetugasinfure' => $item->nikpetugasinfure,
+        //         'nomor_palet' => $item->nomor_palet,
+        //         'nomor_lot' => $item->nomor_lot,
+        //         'gentan' => [],
+        //         'loss' => []
+        //     ];
+
+        //     $carry[$item->tglproduksi][$item->noproses]['gentan'][$item->gentannomor] = [
+        //         'gentannomorline' => $item->gentannomorline
+        //     ];
+
+        //     $carry[$item->tglproduksi][$item->noproses]['loss'][$item->losscode] = [
+        //         'losscode' => $item->losscode,
+        //         'lossname' => $item->lossname,
+        //         'berat_loss' => $item->berat_loss
+        //     ];
+        //     return $carry;
+        // }, []);
 
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
@@ -374,8 +418,8 @@ class NippoSeitaiController extends Component
          *  */
         $rowItemStart = 5;
         $rowItemEnd = 6;
-        foreach ($listProductionDate as $productionDate => $dataItem) {
-            foreach ($dataFilter[$productionDate] as $noproses => $item) {
+        foreach ($dataFiltered as $productionDate => $dataItem) {
+            foreach ($dataItem as $id_tdpg => $item) {
                 // Tanggal Proses
                 $activeWorksheet->setCellValue($startColumn . $rowItemStart, Carbon::parse($item['tglproses'])->format('d-M-Y'));
                 phpspreadsheet::styleFont($spreadsheet, $startColumn . $rowItemStart, false, 8, 'Calibri');
@@ -441,7 +485,7 @@ class NippoSeitaiController extends Component
 
                 // Nomor Gentan
                 $rowGentan = $rowItemStart;
-                foreach ($item['gentan'] as $gentanNo => $gentan) {
+                foreach ($dataGentan[$productionDate][$id_tdpg] as $gentan) {
                     $activeWorksheet->setCellValue($columnGentan . $rowGentan, $gentan['gentannomorline']);
                     phpspreadsheet::styleFont($spreadsheet, $columnGentan . $rowGentan, false, 8, 'Calibri');
                     phpspreadsheet::textAlignCenter($spreadsheet, $columnGentan . $rowGentan);
@@ -450,7 +494,7 @@ class NippoSeitaiController extends Component
 
                 // Nama Loss
                 $rowLoss = $rowItemStart;
-                foreach ($item['loss'] as $losscode => $itemLoss) {
+                foreach ($dataLoss[$productionDate][$id_tdpg] as $itemLoss) {
                     $activeWorksheet->setCellValue($columnNamaLoss . $rowLoss, $itemLoss['losscode'] . '. ' . $itemLoss['lossname']);
                     phpspreadsheet::styleFont($spreadsheet, $columnNamaLoss . $rowLoss, false, 8, 'Calibri');
                     // Berat
@@ -477,13 +521,19 @@ class NippoSeitaiController extends Component
 
         // total quantity
         // dd(array_sum(array_column($data, 'qty_produksi')));
-        $totalQty = array_sum(array_column($dataFilter, 'qty_produksi'));
+        $totalQty = array_reduce($dataFiltered, function ($carry, $item) {
+            $carry += array_sum(array_column($item, 'qty_produksi'));
+            return $carry;
+        }, 0);
         $activeWorksheet->setCellValue($columnQty . $rowGrandTotal, $totalQty);
         phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnQty . $rowGrandTotal);
         $columnGrandTotalEnd++;
 
         // total loss
-        $totalLoss = array_sum(array_column($data, 'infure_berat_loss'));
+        $totalLoss = array_reduce($dataFiltered, function ($carry, $item) {
+            $carry += array_sum(array_column($item, 'infure_berat_loss'));
+            return $carry;
+        }, 0);
         $activeWorksheet->setCellValue($columnLoss . $rowGrandTotal, $totalLoss);
         phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnQty . $rowGrandTotal);
         $columnGrandTotalEnd++;

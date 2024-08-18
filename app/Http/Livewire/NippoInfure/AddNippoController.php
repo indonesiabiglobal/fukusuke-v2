@@ -260,7 +260,11 @@ class AddNippoController extends Component
             $product->lpk_id = $lpkid->id;
             $product->seq_no = $seqno;
             if ($this->gentan_no == 0) {
-                $this->gentan_no = $maxGentan->gentan_no + 1;
+                if ($maxGentan == null) {
+                    $this->gentan_no = 1;
+                } else {
+                    $this->gentan_no = $maxGentan->gentan_no + 1;
+                }
             }
             $product->gentan_no = $this->gentan_no;
             $product->nomor_han = $this->nomor_han;
