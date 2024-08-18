@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
-
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" 
+integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" 
+crossorigin="anonymous">
+</script>
+<script>
+    $(function() {
+        $('#button').on('click', function() {
+            window.print();
+        });
+    });
+</script>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -86,8 +96,8 @@
                 mp.case_box_count as seitai_isibox,
                 mpg.code as seitai_kodegaiso ,mpg.name as seitai_namagaiso,mp.case_gaiso_count as seitai_isigaiso,
                 mpi.code as seitai_kodeinner, mpi.name as seitai_namainner,mp.case_inner_count as seitai_isiinner,
-                mpl.code as seitai_kodelayer,mpl.name as seitai_namalayer,mhs.code as kodehagata,mhs.name as namahagata,
-                mls.code as seitai_kodelakban,mls.name as seitai_namalakban,mss.name as seitai_stample,'' as jenis,'' as kodeplate,
+                mpl.code as seitai_kodelayer,mpl.name as seitai_namalayer,mp.hagataseitaiid as namahagata,
+                mls.code as seitai_kodelakban,mls.name as seitai_namalakban,mp.stampelseitaiid as seitai_stample,'' as jenis,'' as kodeplate,
                 mp.manufacturing_summary as seitai_catatan, tdol.total_assembly_line
                 from tdorderlpk as tdol
                 left join tdorder as tdo on tdo.id=tdol.order_id
@@ -102,23 +112,21 @@
                 left join mswarnalpk as mwl on mwl.id=tdol.warnalpkid
                 left join mslakbaninfure as mli on mli.id=mp.lakbaninfureid
                 left join mslakbanseitai as mls on mls.id=mp.lakbanseitaiid
-                left join msstampleseitai as mss on mss.id=mp.stampelseitaiid
-                left join mshagataseitai as mhs on mhs.id=mp.hagataseitaiid
                 where tdol.id='$lpk_id'
         "),
     )->first();
 @endphp
 
-<body style="background-color: #CCCCCC;margin: 0" onload="window.print()">
+<body style="background-color: #CCCCCC;margin: 0">
     <div align="center">
         <table class="bayangprint" cellspacing="0" cellpadding="0" bgcolor="#FFFFFF" border="0" width="950"
             style="padding:25px">
-            <tbody>
+            <tbody>                
                 <tr>
                     <td>
                         <table width="100%" cellspacing="0" border="0" cellpadding="3">
                             <tr>
-
+                                <button type="button" name="button" id="button">Print</button>
                                 <td width="60%">
                                     <h1>LPK {{ $data->lpk_no }}</h1>
                                 </td>
@@ -524,8 +532,8 @@
                                 <td style="padding: 3px;border: 1px solid black;">
                                     <span>
                                         Kode Hagata <br>
-                                        <font style="font-size: 18px;font-weight: bold;">{{ $data->kodehagata }}
-                                        </font>
+                                        {{-- <font style="font-size: 18px;font-weight: bold;">{{ $data->kodehagata }}
+                                        </font> --}}
                                     </span>
                                 </td>
                             </tr>
