@@ -3,10 +3,12 @@
 namespace App\Http\Livewire\MasterTabel\Produk;
 
 use App\Models\MsBuyer;
+use App\Models\MsLakbanSeitai;
 use App\Models\MsProduct;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use Livewire\Component;
 
 class AddMasterProduk extends Component
@@ -86,6 +88,7 @@ class AddMasterProduk extends Component
     public $endless_printing;
     public $winding_direction_of_the_web;
     public $seal_classification;
+    public $custom_seal_classification;
     public $from_seal_design;
     public $lower_sealing_length;
     public $palet_jumlah_baris;
@@ -102,10 +105,71 @@ class AddMasterProduk extends Component
     public $case_inner_count;
     public $case_inner_count_unit;
     public $lakbanseitaiid;
+    public $custom_lakban_seitai;
     public $lakbaninfureid;
     public $stampelseitaiid;
     public $hagataseitaiid;
     public $jenissealseitaiid;
+
+    protected $rules = [
+        'code' => 'required',
+        'name' => 'required',
+        'product_unit' => 'required',
+        'product_type_id' => 'required',
+        'ketebalan' => 'required',
+        'diameterlipat' => 'required',
+        'productlength' => 'required',
+        'unit_weight' => 'required',
+        'one_winding_m_number' => 'required',
+        'inflation_thickness' => 'required',
+        'inflation_fold_diameter' => 'required',
+        'gazette_dimension_a' => 'required',
+        'gazette_dimension_b' => 'required',
+        'gazette_dimension_c' => 'required',
+        'gazette_dimension_d' => 'required',
+        'number_of_color' => 'required',
+        'back_color_number' => 'required',
+        'from_seal_design' => 'required',
+        'lower_sealing_length' => 'required',
+        'extracted_dimension_a' => 'required',
+        'extracted_dimension_b' => 'required',
+        'extracted_dimension_c' => 'required',
+        'case_box_count' => 'required',
+        'case_gaiso_count' => 'required',
+        'case_inner_count' => 'required',
+        'palet_jumlah_baris' => 'required',
+        'palet_isi_baris' => 'required',
+    ];
+
+    protected $messages = [
+        'code.required' => 'Kode Produk tidak boleh kosong.',
+        'name.required' => 'Nama Produk tidak boleh kosong.',
+        'product_unit.required' => 'Satuan Produk tidak boleh kosong.',
+        'product_type_id.required' => 'Tipe Produk tidak boleh kosong.',
+        'ketebalan.required' => 'Ketebalan tidak boleh kosong.',
+        'diameterlipat.required' => 'Diameter Lipat tidak boleh kosong.',
+        'productlength.required' => 'Panjang Produk tidak boleh kosong.',
+        'unit_weight.required' => 'Berat Satuan tidak boleh kosong.',
+        'inflation_thickness.required' => 'Ketebalan Inflasi tidak boleh kosong.',
+        'inflation_fold_diameter.required' => 'Diameter Lipat Inflasi tidak boleh kosong.',
+        'gazette_dimension_a.required' => 'Dimensi A tidak boleh kosong.',
+        'gazette_dimension_b.required' => 'Dimensi B tidak boleh kosong.',
+        'gazette_dimension_c.required' => 'Dimensi C tidak boleh kosong.',
+        'gazette_dimension_d.required' => 'Dimensi D tidak boleh kosong.',
+        'number_of_color.required' => 'Warna Depan tidak boleh kosong.',
+        'back_color_number.required' => 'Warna Belakang tidak boleh kosong.',
+        'from_seal_design.required' => 'Jarak Seal dari Pola tidak boleh kosong.',
+        'lower_sealing_length.required' => 'Jarak Seal Bawah tidak boleh kosong.',
+        'extracted_dimension_a.required' => 'Dimensi A Ekstraksi tidak boleh kosong.',
+        'extracted_dimension_b.required' => 'Dimensi B Ekstraksi tidak boleh kosong.',
+        'extracted_dimension_c.required' => 'Dimensi C Ekstraksi tidak boleh kosong.',
+        'case_box_count.required' => 'Jumlah Box tidak boleh kosong.',
+        'case_gaiso_count.required' => 'Jumlah Gaiso tidak boleh kosong.',
+        'case_inner_count.required' => 'Jumlah Inner tidak boleh kosong.',
+        'one_winding_m_number.required' => 'Panjang Gulung tidak boleh kosong.',
+        'palet_jumlah_baris.required' => 'Jumlah Baris Palet tidak boleh kosong.',
+        'palet_isi_baris.required' => 'Isi Baris Palet tidak boleh kosong.',
+    ];
 
     public function mount()
     {
@@ -137,35 +201,13 @@ class AddMasterProduk extends Component
 
     public function store()
     {
-        $validatedData = $this->validate([
-            'code' => 'required',
-            'name' => 'required',
-            'product_unit' => 'required',
-            'product_type_id' => 'required',
-            'ketebalan' => 'required',
-            'diameterlipat' => 'required',
-            'productlength' => 'required',
-            'unit_weight' => 'required',
-            'inflation_thickness' => 'required',
-            'inflation_fold_diameter' => 'required',
-            'gazette_dimension_a' => 'required',
-            'gazette_dimension_b' => 'required',
-            'gazette_dimension_c' => 'required',
-            'gazette_dimension_d' => 'required',
-            'number_of_color' => 'required',
-            'back_color_number' => 'required',
-            'from_seal_design' => 'required',
-            'lower_sealing_length' => 'required',
-            'extracted_dimension_a' => 'required',
-            'extracted_dimension_b' => 'required',
-            'extracted_dimension_c' => 'required',
-            'case_box_count' => 'required',
-            'case_gaiso_count' => 'required',
-            'case_inner_count' => 'required',
-            'one_winding_m_number' => 'required',
-            'palet_jumlah_baris' => 'required',
-            'palet_isi_baris' => 'required',
-        ]);
+        try {
+
+            $validatedData = $this->validate();
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $this->dispatch('notification', ['type' => 'error', 'message' => $e->validator->errors()->first()]);
+            return;
+        }
 
         try {
             DB::beginTransaction();
@@ -276,9 +318,25 @@ class AddMasterProduk extends Component
             }
 
             if (isset($this->seal_classification)) {
-                $sealClassification = DB::table('msklasifikasiseal')->where('id', $this->seal_classification['value'])->first();
-                $product->seal_classification_id = $sealClassification->id;
-                $product->seal_classification = $sealClassification->code;
+                if ($this->seal_classification['value'] == 'lainnya') {
+                    // insert new seal classification
+                    $maxCode = DB::table('msklasifikasiseal')->max('code');
+                    $sealClassification = DB::table('msklasifikasiseal')->insertGetId([
+                        'code' => $maxCode + 1,
+                        'name' => $this->custom_seal_classification,
+                        'status' => 1,
+                        'created_by' => auth()->user()->username,
+                        'created_on' => Carbon::now(),
+                        'updated_by' => auth()->user()->username,
+                        'updated_on' => Carbon::now(),
+                    ]);
+                    $product->seal_classification_id = $sealClassification;
+                    $product->seal_classification = $sealClassification;
+                } else {
+                    $sealClassification = DB::table('msklasifikasiseal')->where('id', $this->seal_classification['value'])->first();
+                    $product->seal_classification_id = $sealClassification->id;
+                    $product->seal_classification = $sealClassification->code;
+                }
             }
 
             $product->from_seal_design = isset($this->from_seal_design) ? $this->from_seal_design : null;
@@ -296,7 +354,26 @@ class AddMasterProduk extends Component
             $product->case_box_count_unit = isset($this->case_box_count_unit) ? $this->case_box_count_unit['value'] : null;;
             $product->case_inner_count = isset($this->case_inner_count) ? $this->case_inner_count : null;
             $product->case_inner_count_unit = isset($this->case_inner_count_unit) ? $this->case_inner_count_unit['value'] : null;;
-            $product->lakbanseitaiid = isset($this->lakbanseitaiid) ? $this->lakbanseitaiid['value'] : null;;
+
+            // lakban seitai
+            if (isset($this->lakbanseitaiid) && $this->lakbanseitaiid['value'] != null) {
+                if ($this->lakbanseitaiid['value'] == 'lainnya') {
+                    // insert new seal classification
+                    $maxCode = MsLakbanSeitai::max('code');
+                    $lakbanSeitai = MsLakbanSeitai::insertGetId([
+                        'code' => str_pad($maxCode + 1, 2, '0', STR_PAD_LEFT),
+                        'name' => $this->custom_lakban_seitai,
+                        'status' => 1,
+                        'created_by' => auth()->user()->username,
+                        'created_on' => Carbon::now(),
+                        'updated_by' => auth()->user()->username,
+                        'updated_on' => Carbon::now(),
+                    ]);
+                    $product->lakbanseitaiid = $lakbanSeitai;
+                } else {
+                    $product->lakbanseitaiid = $this->lakbanseitaiid['value'];
+                }
+            }
             $product->lakbaninfureid = isset($this->lakbaninfureid) ? $this->lakbaninfureid['value'] : null;;
             $product->stampelseitaiid = isset($this->stampelseitaiid) ? $this->stampelseitaiid : null;;
             $product->hagataseitaiid = isset($this->hagataseitaiid) ? $this->hagataseitaiid : null;;

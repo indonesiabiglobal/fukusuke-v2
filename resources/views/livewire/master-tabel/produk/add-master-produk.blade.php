@@ -8,7 +8,7 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Nomor Order</label>
                             <input type="text" class="form-control col-12 col-lg-8" wire:model="code"
-                                placeholder="KODE" required />
+                                placeholder="KODE" required style="text-transform: uppercase;" />
                             @error('code')
                                 <span class="invalid-feedback">{{ $message }}</span>
                             @enderror
@@ -35,7 +35,8 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterProductType as $item)
-                                        <option value="{{ $item->id }}" data-custom-properties='{"code": "{{ $item->code }}"}'>
+                                        <option value="{{ $item->id }}"
+                                            data-custom-properties='{"code": "{{ $item->code }}"}'>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -634,7 +635,7 @@
                             <div class="col-12 col-lg-6" wire:ignore>
                                 <select data-choices data-choices-sorting="true"
                                     class="form-select @error('seal_classification') is-invalid @enderror"
-                                    wire:model="seal_classification" placeholder="">
+                                    wire:model.live="seal_classification">
                                     <option value="" selected>
                                         Silahkan Pilih
                                     </option>
@@ -643,11 +644,24 @@
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
+                                    <option value="lainnya">
+                                        Lainnya
+                                    </option>
                                 </select>
-                                @error('seal_classification')
-                                    <span class="invalid-feedback">{{ $message }}</span>
-                                @enderror
                             </div>
+                            @if (($seal_classification['value'] ?? '') === 'lainnya')
+                                <input required type="text" class="form-control mt-2"
+                                    wire:model="custom_seal_classification"
+                                    placeholder="Masukkan klasifikasi seal lainnya" />
+                            @endif
+
+                            @error('seal_classification')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
+                            @error('custom_seal_classification')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
+
                         </div>
                     </div>
                     <div class="form-group mt-1">
@@ -682,9 +696,9 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-6">Lakban Seitai</label>
                             <div class="col-12 col-lg-6" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
+                                <select data-choices data-choices-sorting-false
                                     class="form-select @error('lakbanseitaiid') is-invalid @enderror"
-                                    wire:model="lakbanseitaiid" placeholder="">
+                                    wire:model.live="lakbanseitaiid" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
                                     </option>
@@ -693,11 +707,22 @@
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
+                                    <option value="lainnya">
+                                        Lainnya
+                                    </option>
                                 </select>
-                                @error('lakbanseitaiid')
-                                    <span class="invalid-feedback">{{ $message }}</span>
-                                @enderror
                             </div>
+                            @if (($lakbanseitaiid['value'] ?? '') === 'lainnya')
+                                <input required type="text" class="form-control mt-2"
+                                    wire:model="custom_lakban_seitai"
+                                    placeholder="Masukkan lakban seitai lainnya" />
+                            @endif
+                            @error('lakbanseitaiid')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
+                            @error('custom_lakban_seitai')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
                         </div>
                     </div>
                     <div class="form-group mt-1">
@@ -720,8 +745,9 @@
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
                             </div> --}}
-                            <input required type="text" class="form-control @error('stampelseitaiid') is-invalid @enderror" wire:model="stampelseitaiid"
-                                placeholder="..." />
+                            <input required type="text"
+                                class="form-control @error('stampelseitaiid') is-invalid @enderror"
+                                wire:model="stampelseitaiid" placeholder="..." />
                             @error('stampelseitaiid')
                                 <span class="invalid-feedback">{{ $message }}</span>
                             @enderror
@@ -747,8 +773,9 @@
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
                             </div> --}}
-                            <input required type="text" class="form-control @error('hagataseitaiid') is-invalid @enderror" wire:model="hagataseitaiid"
-                                placeholder="..." />
+                            <input required type="text"
+                                class="form-control @error('hagataseitaiid') is-invalid @enderror"
+                                wire:model="hagataseitaiid" placeholder="..." />
                             @error('hagataseitaiid')
                                 <span class="invalid-feedback">{{ $message }}</span>
                             @enderror
@@ -789,7 +816,8 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterPackagingGaiso as $item)
-                                        <option value="{{ $item->id }}" data-custom-properties='{"code": "{{ $item->code }}"}'>
+                                        <option value="{{ $item->id }}"
+                                            data-custom-properties='{"code": "{{ $item->code }}"}'>
                                             {{ $item->code }}, {{ $item->box_class == 1 ? 'Standar' : 'Khusus' }},
                                             {{ $item->name }}
                                         </option>
@@ -812,7 +840,8 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterPackagingBox as $item)
-                                        <option value="{{ $item->id }}" data-custom-properties='{"code": "{{ $item->code }}"}'>
+                                        <option value="{{ $item->id }}"
+                                            data-custom-properties='{"code": "{{ $item->code }}"}'>
                                             {{ $item->code }}, {{ $item->box_class == 1 ? 'Standar' : 'Khusus' }},
                                             {{ $item->name }}
                                         </option>
@@ -835,7 +864,8 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterPackagingInner as $item)
-                                        <option value="{{ $item->id }}" data-custom-properties='{"code": "{{ $item->code }}"}'>
+                                        <option value="{{ $item->id }}"
+                                            data-custom-properties='{"code": "{{ $item->code }}"}'>
                                             {{ $item->code }}, {{ $item->box_class == 1 ? 'Standar' : 'Khusus' }},
                                             {{ $item->name }}
                                         </option>
@@ -854,7 +884,8 @@
                                 <select data-choices data-choices-sorting="true"
                                     class="form-select @error('pack_layer_id') is-invalid @enderror"
                                     wire:model="pack_layer_id" placeholder="">
-                                    <option value="" selected data-custom-properties='{"code": "{{ $item->code }}"}'>
+                                    <option value="" selected
+                                        data-custom-properties='{"code": "{{ $item->code }}"}'>
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterPackagingLayer as $item)
