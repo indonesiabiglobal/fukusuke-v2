@@ -54,10 +54,11 @@
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
                     <select class="form-control" wire:model.defer="idProduct" id="product" name="product" data-choices
-                        data-choices-sorting-false data-choices-removeItem >
+                        data-choices-sorting-false data-choices-removeItem>
                         <option value="">- All -</option>
                         @foreach ($products as $item)
-                            <option data-custom-properties='{"code": "{{ $item->code }}"}' value="{{ $item->id }}" @if ($item->id == ($idProduct['value'] ?? null)) selected @endif>
+                            <option data-custom-properties='{"code": "{{ $item->code }}"}' value="{{ $item->id }}"
+                                @if ($item->id == ($idProduct['value'] ?? null)) selected @endif>
                                 {{ $item->name }}</option>
                         @endforeach
                     </select>
@@ -73,7 +74,8 @@
                         data-choices-removeItem>
                         <option value="">- All -</option>
                         @foreach ($buyer as $item)
-                            <option data-custom-properties='{"code": "{{ $item->code }}"}' value="{{ $item->id }}" @if ($item->id == ($idBuyer['value'] ?? null)) selected @endif>
+                            <option data-custom-properties='{"code": "{{ $item->code }}"}' value="{{ $item->id }}"
+                                @if ($item->id == ($idBuyer['value'] ?? null)) selected @endif>
                                 {{ $item->name }}</option>
                         @endforeach
                     </select>
@@ -185,6 +187,19 @@
         up_by: false,
         up_dt: false
     }">
+    {{-- show paginate --}}
+    <div class="d-flex justify-content-between mt-3">
+        <div class="d-flex align-items-center mb-4">
+            <span class="me-2">Show</span>
+            <select wire:model.live="paginate" class="form-select form-select-sm me-2" style="width: auto;">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="all">All</option>
+            </select>
+            <span>Entries</span>
+        </div>
         <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
             class="btn btn-soft-primary btn-icon fs-14 mb-4">
             <i class="ri-grid-fill"></i>
@@ -256,6 +271,7 @@
                 UpdateDt
             </li>
         </ul>
+    </div>
 
         <div class="table-responsive table-card">
             <table class="table table-bordered align-middle dt-responsive mdl-data-table" style="overflow-x: :scroll">

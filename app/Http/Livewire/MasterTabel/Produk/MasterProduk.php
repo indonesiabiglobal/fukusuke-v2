@@ -86,6 +86,7 @@ class MasterProduk extends Component
             ->when(isset($this->product_type_id) && $this->product_type_id != "" && $this->product_type_id != "undefined", function ($query) {
                 $query->where('msp.product_type_id', $this->product_type_id);
             })
+            // paginate
             ->when($this->paginate != 'all', function ($query) {
                 return $query->paginate($this->paginate);
             }, function ($query) {

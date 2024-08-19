@@ -41,7 +41,7 @@ class OrderLpkController extends Component
 
     use WithPagination, WithoutUrlPagination;
     public $searchParam = '';
-    public $perPage = 10;
+    public $paginate = 10;
     public $sortField = 'id';
     public $sortDirection = 'asc';
 
@@ -170,7 +170,13 @@ class OrderLpkController extends Component
         if (isset($this->status) && $this->status['value'] != "" && $this->status != "undefined") {
             $data = $data->where('tod.status_order', $this->status['value']);
         }
-        $data = $data->paginate(8);
+        // paginate
+        $data = $data->when($this->paginate != 'all', function ($query) {
+            return $query->paginate($this->paginate);
+        }, function ($query) {
+            $count = $query->count();
+            return $query->paginate($count);
+        });
 
         return view('livewire.order-lpk.order-lpk', [
             'data' => $data,
