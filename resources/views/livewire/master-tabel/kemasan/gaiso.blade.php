@@ -5,7 +5,7 @@
                 <button type="button" class="btn btn-success w-lg p-1" wire:click="showModalCreate">
                     <i class="ri-add-line"> </i> Add
                 </button>
-                {{-- modal add buyer --}}
+                {{-- modal add gaiso --}}
                 <div class="modal fade" id="modal-add" tabindex="-1" aria-labelledby="modal-addLabel" aria-modal="true"
                     wire:ignore.self>
                     <div class="modal-dialog">
@@ -125,7 +125,8 @@
                         </div>
                     </div>
                 </div>
-                
+
+                {{-- modal edit gaiso --}}
                 <div class="modal fade" id="modal-edit" tabindex="-1" aria-labelledby="modal-editLabel"
                     aria-modal="true" wire:ignore.self>
                     <div class="modal-dialog">
@@ -160,7 +161,7 @@
                                                 @enderror
                                             </div>
                                         </div>
-                                        <div class="col-xxl-12">
+                                        {{-- <div class="col-xxl-12">
                                             <div wire:ignore>
                                                 <label for="name" class="form-label">Klasifikasi</label>
                                                 <select class="form-control @error('box_class') is-invalid @enderror" wire:model.defer="box_class" data-choices data-choices-sorting-false data-choices-removeItem>
@@ -172,7 +173,7 @@
                                                     <span class="invalid-feedback">{{ $message }}</span>
                                                 @enderror
                                             </div>
-                                        </div>
+                                        </div> --}}
                                         <div class="col-xxl-12">
                                             <div class="form-group">
                                                 <label for="panjang" class="form-label">Panjang</label>
@@ -246,13 +247,13 @@
                         </div>
                     </div>
                 </div>
-                {{-- end modal buyer --}}
-                <div id="removeBuyerModal" class="modal fade zoomIn" tabindex="-1" aria-hidden="true">
+                {{-- end modal gaiso --}}
+                <div id="removeGaisoModal" class="modal fade zoomIn" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-                                    id="close-removeBuyerModal"></button>
+                                    id="close-removeGaisoModal"></button>
                             </div>
                             <div class="modal-body">
                                 <div class="mt-2 text-center">
@@ -336,7 +337,7 @@
                                 data-bs-target="#modal-edit" wire:click="edit({{ $item->id }})">
                                 <i class="ri-edit-box-line text-white"></i>
                             </button>
-                            <button type="button" class="btn fs-15 p-1 bg-danger rounded removeBuyerModal"
+                            <button type="button" class="btn fs-15 p-1 bg-danger rounded removeGaisoModal"
                                 wire:click="delete({{ $item->id }})">
                                 <i class="ri-delete-bin-line text-white"></i>
                             </button>
@@ -377,24 +378,24 @@
         $wire.on('showModalCreate', () => {
             $('#modal-add').modal('show');
         });
-        // close modal create buyer
+        // close modal create gaiso
         $wire.on('closeModalCreate', () => {
             $('#modal-add').modal('hide');
         });
 
-        // close modal update buyer
+        // close modal update gaiso
         $wire.on('closeModalUpdate', () => {
             $('#modal-edit').modal('hide');
         });
 
-        // show modal delete buyer
+        // show modal delete gaiso
         $wire.on('showModalDelete', () => {
-            $('#removeBuyerModal').modal('show');
+            $('#removeGaisoModal').modal('show');
         });
 
-        // close modal delete buyer
+        // close modal delete gaiso
         $wire.on('closeModalDelete', () => {
-            $('#removeBuyerModal').modal('hide');
+            $('#removeGaisoModal').modal('hide');
         });
     </script>
 @endscript

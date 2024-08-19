@@ -31,7 +31,6 @@ class GaisoController extends Component
         'box_class' => 'required',
         'panjang' => 'required',
         'lebar' => 'required',
-        'tinggi' => 'required',
     ];
 
     public function resetFields()
@@ -62,7 +61,7 @@ class GaisoController extends Component
                 'box_class' => $this->box_class['value'],
                 'panjang' => $this->panjang,
                 'lebar' => $this->lebar,
-                'tinggi' => $this->tinggi,
+                'tinggi' => $this->tinggi == '' ? 0 : ($this->tinggi ?? 0),
                 'status' => $statusActive,
                 'created_by' => Auth::user()->username,
                 'created_on' => Carbon::now(),
@@ -106,7 +105,7 @@ class GaisoController extends Component
             $data->box_class = $this->box_class['value'];
             $data->panjang = $this->panjang;
             $data->lebar = $this->lebar;
-            $data->tinggi = $this->tinggi;
+            $data->tinggi = $this->tinggi ?? 0;
             $data->status = $statusActive;
             $data->updated_by = Auth::user()->username;
             $data->updated_on = Carbon::now();
