@@ -70,13 +70,13 @@ class GaisoController extends Component
                 'updated_on' => Carbon::now(),
             ]);
 
-            DB::commit();            
+            DB::commit();
             $this->dispatch('closeModalCreate');
-            $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Layer saved successfully.']);
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Gaiso saved successfully.']);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Failed to save master Layer: ' . $e->getMessage());
-            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the Layer: ' . $e->getMessage()]);
+            Log::error('Failed to save master Gaiso: ' . $e->getMessage());
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the Gaiso: ' . $e->getMessage()]);
         }
     }
 
@@ -114,12 +114,12 @@ class GaisoController extends Component
 
             DB::commit();
             $this->dispatch('closeModalUpdate');
-            $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Layer updated successfully.']);
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Gaiso updated successfully.']);
             $this->search();
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Failed to update master Layer: ' . $e->getMessage());
-            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to update the Layer: ' . $e->getMessage()]);
+            Log::error('Failed to update master Gaiso: ' . $e->getMessage());
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to update the Gaiso: ' . $e->getMessage()]);
         }
     }
 
@@ -139,27 +139,27 @@ class GaisoController extends Component
             $data->updated_by = Auth::user()->username;
             $data->updated_on = Carbon::now();
             $data->save();
-            
+
             DB::commit();
             $this->dispatch('closeModalDelete');
-            $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Layer deleted successfully.']);
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Gaiso deleted successfully.']);
             $this->search();
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Failed to delete master Layer: ' . $e->getMessage());
-            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to delete the Layer: ' . $e->getMessage()]);
+            Log::error('Failed to delete master Gaiso: ' . $e->getMessage());
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to delete the Gaiso: ' . $e->getMessage()]);
         }
     }
 
     public function search()
-    {        
+    {
         $this->render();
     }
 
     public function render()
     {
         $result = MsPackagingGaiso::where('status', 1);
-        
+
         if (isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined") {
             $result = $result->where(function ($query) {
                 $query->where('code', 'ilike', "%{$this->searchTerm}%")

@@ -58,7 +58,7 @@ class LayerController extends Component
             if(isset($this->tinggi) && $this->tinggi != ""){
                 $tinggi=$this->tinggi;
             }
-            
+
             $statusActive = 1;
             $data = MsPackagingLayer::create([
                 'code' => $this->code,
@@ -74,7 +74,7 @@ class LayerController extends Component
                 'updated_on' => Carbon::now(),
             ]);
 
-            DB::commit();            
+            DB::commit();
             $this->dispatch('closeModalCreate');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Layer saved successfully.']);
         } catch (\Exception $e) {
@@ -143,7 +143,7 @@ class LayerController extends Component
             $data->updated_by = Auth::user()->username;
             $data->updated_on = Carbon::now();
             $data->save();
-            
+
             DB::commit();
             $this->dispatch('closeModalDelete');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Layer deleted successfully.']);
@@ -156,14 +156,14 @@ class LayerController extends Component
     }
 
     public function search()
-    {        
+    {
         $this->render();
     }
 
     public function render()
     {
         $result = MsPackagingLayer::where('status', 1);
-        
+
         if (isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined") {
             $result = $result->where(function ($query) {
                 $query->where('code', 'ilike', "%{$this->searchTerm}%")

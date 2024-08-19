@@ -71,13 +71,13 @@ class BoxController extends Component
                 'updated_on' => Carbon::now(),
             ]);
 
-            DB::commit();            
+            DB::commit();
             $this->dispatch('closeModalCreate');
-            $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Buyer saved successfully.']);
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Box saved successfully.']);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Failed to save master buyer: ' . $e->getMessage());
-            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the buyer: ' . $e->getMessage()]);
+            Log::error('Failed to save master Box: ' . $e->getMessage());
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the Box: ' . $e->getMessage()]);
         }
     }
 
@@ -137,7 +137,7 @@ class BoxController extends Component
             $data->updated_by = Auth::user()->username;
             $data->updated_on = Carbon::now();
             $data->save();
-            
+
             DB::commit();
             $this->dispatch('closeModalDelete');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Box deleted successfully.']);
@@ -150,14 +150,14 @@ class BoxController extends Component
     }
 
     public function search()
-    {        
+    {
         $this->render();
     }
 
     public function render()
     {
         $result = MsPackagingBox::where('status', 1);
-        
+
         if (isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined") {
             $result = $result->where(function ($query) {
                 $query->where('code', 'ilike', "%{$this->searchTerm}%")

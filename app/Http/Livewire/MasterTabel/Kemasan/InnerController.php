@@ -71,7 +71,7 @@ class InnerController extends Component
                 'updated_on' => Carbon::now(),
             ]);
 
-            DB::commit();            
+            DB::commit();
             $this->dispatch('closeModalCreate');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Inner saved successfully.']);
         } catch (\Exception $e) {
@@ -115,12 +115,12 @@ class InnerController extends Component
 
             DB::commit();
             $this->dispatch('closeModalUpdate');
-            $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Box updated successfully.']);
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Inner updated successfully.']);
             $this->search();
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Failed to update master Box: ' . $e->getMessage());
-            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to update the Box: ' . $e->getMessage()]);
+            Log::error('Failed to update master Inner: ' . $e->getMessage());
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to update the Inner: ' . $e->getMessage()]);
         }
     }
 
@@ -140,27 +140,27 @@ class InnerController extends Component
             $data->updated_by = Auth::user()->username;
             $data->updated_on = Carbon::now();
             $data->save();
-            
+
             DB::commit();
             $this->dispatch('closeModalDelete');
-            $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Box deleted successfully.']);
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Inner deleted successfully.']);
             $this->search();
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Failed to delete master Box: ' . $e->getMessage());
-            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to delete the Box: ' . $e->getMessage()]);
+            Log::error('Failed to delete master Inner: ' . $e->getMessage());
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to delete the Inner: ' . $e->getMessage()]);
         }
     }
 
     public function search()
-    {        
+    {
         $this->render();
     }
-    
+
     public function render()
     {
         $result = MsPackagingInner::where('status', 1);
-        
+
         if (isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined") {
             $result = $result->where(function ($query) {
                 $query->where('code', 'ilike', "%{$this->searchTerm}%")
