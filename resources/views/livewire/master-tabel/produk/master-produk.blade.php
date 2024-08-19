@@ -132,22 +132,22 @@
         </div>
     </div>
     <div class="table-responsive table-card mt-3 mb-1">
-        <table class="table align-middle table-nowrap" id="customerTable" style="width:100%">
+        <table class="table align-middle">
             <thead class="table-light">
                 <tr>
-                    <th>Action</th>
-                    <th class="sort">Nama Produk</th>
-                    <th class="sort">Nomor Order</th>
-                    <th class="sort">Kode Tipe</th>
-                    <th class="sort">Jenis Tipe</th>
-                    <th class="sort">Dimensi (T*L*P)</th>
-                    <th class="sort">Berat Satuan</th>
-                    <th class="sort">Katanuki</th>
-                    <th class="sort">Warna Font</th>
-                    <th class="sort">Warna Back</th>
-                    <th class="sort">Status</th>
-                    <th class="sort">Updated By</th>
-                    <th class="sort">Updated</th>
+                    <th style="width: 100px">Action</th>
+                    <th>Nama Produk</th>
+                    <th>Nomor Order</th>
+                    <th>Kode Tipe</th>
+                    <th>Jenis Tipe</th>
+                    <th>Dimensi (T*L*P)</th>
+                    <th>Berat Satuan</th>
+                    <th>Katanuki</th>
+                    <th>Warna Font</th>
+                    <th>Warna Back</th>
+                    <th>Status</th>
+                    <th>Updated By</th>
+                    <th>Updated</th>
                 </tr>
             </thead>
             <tbody class="list form-check-all">
