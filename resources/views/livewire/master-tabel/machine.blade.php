@@ -88,7 +88,7 @@
                                                     </option>
                                                     @foreach (\App\Models\MsDepartment::whereIn('id', [10, 11, 12, 13, 15, 16])->select('id', 'name', 'code')->get() as $department)
                                                         <option value="{{ $department->id }}">
-                                                            {{ $department->name }} , {{ $department->code }}
+                                                            {{ $department->name }}
                                                         </option>
                                                     @endforeach
                                                 </select>
@@ -238,7 +238,7 @@
                                                         Silahkan Pilih
                                                     </option>
                                                     @foreach (\App\Models\MsDepartment::whereIn('id', [10, 11, 12, 13, 15, 16])->select('id', 'name')->get() as $department)
-                                                        <option value="{{ $department->id }}">
+                                                        <option value="{{ $department->id }}" {{ $department_id == $department->id ? 'selected' : '' }}>
                                                             {{ $department->name }}
                                                         </option>
                                                     @endforeach

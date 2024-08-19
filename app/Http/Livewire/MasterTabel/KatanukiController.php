@@ -2,13 +2,14 @@
 
 namespace App\Http\Livewire\MasterTabel;
 
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Livewire\Attributes\Validate;
 use Livewire\Component;
-use Livewire\WithFileUploads;
+use Illuminate\Support\Str;
 use Livewire\WithPagination;
+use Livewire\WithFileUploads;
+use Livewire\Attributes\Validate;
+use Illuminate\Support\Facades\DB;
 use Livewire\WithoutUrlPagination;
+use Illuminate\Support\Facades\Log;
 
 class KatanukiController extends Component
 {
@@ -63,16 +64,21 @@ class KatanukiController extends Component
         try {
             $statusActive = 1;
             // menyimpan file image ke storage
-            if(isset($this->photo)){
-                $filename = $this->photo->getClientOriginalName();
+            if (isset($this->photo)) {
+                // Membuat nama file custom, misalnya menambahkan timestamp atau ID unik
+                // $originalName = pathinfo($this->photo->getClientOriginalName(), PATHINFO_FILENAME);
+                // $extension = $this->photo->getClientOriginalExtension();
+                $filename = Str::random(20) . '.' . $this->photo->getClientOriginalExtension();
+
+                // Menyimpan file dengan nama custom
                 $this->filename = $this->photo->storeAs('katanuki', $filename, 'public');
             }
-            
+
             // menyimpan data ke database
             DB::table('mskatanuki')->insert([
                 'code' => $this->code,
                 'name' => strtoupper($this->name),
-                'filename' => $this->filename,
+                'filename' => $this->filename ?? null,
                 'status' => $statusActive,
                 'created_by' => auth()->user()->username,
                 'created_on' => now(),
@@ -212,6 +218,5 @@ class KatanukiController extends Component
         return view('livewire.master-tabel.katanuki', [
             'data' => $data
         ])->extends('layouts.master');
-
     }
 }
