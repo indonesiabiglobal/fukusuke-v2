@@ -108,7 +108,7 @@ class AddOrderController extends Component
     public $jenissealseitaiid;
 
     protected $rules = [
-        'po_no' => 'required',
+        'po_no' => 'required|unique:tdorder,po_no',
         'order_qty' => 'required|integer',
         'order_date' => 'required',
         'stufingdate' => 'required',
@@ -117,6 +117,20 @@ class AddOrderController extends Component
         'product_id' => 'required',
         'buyer_id' => 'required',
         'unit_id' => 'required'
+    ];
+
+    protected $messages = [
+        'po_no.required' => 'PO Number tidak boleh kosong',
+        'po_no.unique' => 'PO Number sudah terdaftar',
+        'order_qty.required' => 'Jumlah order tidak boleh kosong',
+        'order_qty.integer' => 'Jumlah order harus berupa angka',
+        'order_date.required' => 'Tanggal order tidak boleh kosong',
+        'stufingdate.required' => 'Tanggal stufing tidak boleh kosong',
+        'etddate.required' => 'Tanggal ETD tidak boleh kosong',
+        'etadate.required' => 'Tanggal ETA tidak boleh kosong',
+        'product_id.required' => 'Nomor Order tidak boleh kosong',
+        'buyer_id.required' => 'Buyer tidak boleh kosong',
+        'unit_id.required' => 'Satuan tidak boleh kosong'
     ];
 
     public function mount()

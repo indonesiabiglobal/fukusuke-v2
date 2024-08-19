@@ -8,7 +8,7 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Nomor Order</label>
                             <input type="text" class="form-control col-12 col-lg-8" wire:model="code"
-                                placeholder="KODE" required style="text-transform: uppercase;" />
+                                placeholder="KODE" required style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()"/>
                             @error('code')
                                 <span class="invalid-feedback">{{ $message }}</span>
                             @enderror

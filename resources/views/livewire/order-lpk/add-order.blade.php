@@ -44,7 +44,7 @@
                             Nomor Order
                         </a>
                     </label>
-					<input type="text" class="form-control @error('product_id') is-invalid @enderror" wire:model.live.debounce.300ms="product_id" />
+					<input type="text" class="form-control text-uppercase @error('product_id') is-invalid @enderror" wire:model.live.debounce.300ms="product_id" oninput="this.value = this.value.toUpperCase()" />
 					@error('product_id')
 						<span class="invalid-feedback">{{ $message }}</span>
 					@enderror
@@ -133,7 +133,7 @@
                                 <option value="{{ $item->id }}">{{ $item->name }}</option>
                             @endforeach
 						</select>
-						
+
 					</div>
                     @error('buyer_id')
 							<span class="invalid-feedback">{{ $message }}</span>
