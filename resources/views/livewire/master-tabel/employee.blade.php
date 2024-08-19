@@ -170,7 +170,7 @@
                                         <div class="col-xxl-12">
                                             <div>
                                                 <label for="empname" class="form-label">Status</label>
-                                                <select data-choices data-choices-sorting="true" class="form-select" wire:model="status">                                                
+                                                <select data-choices data-choices-sorting="true" class="form-select" wire:model="status">
                                                     <option value="0" {{ $status == '0' ? 'selected' : '' }}>Inactive</option>
                                                     <option value="1" {{ $status == '1' ? 'selected' : '' }}>Active</option>
                                                 </select>
@@ -301,6 +301,20 @@
             </div>
         </div>
     </div>
+    <div class="d-flex justify-content-between mt-3">
+        <div class="d-flex align-items-center">
+            <span class="me-2">Show</span>
+            <select wire:model.live="paginate" class="form-select form-select-sm me-2" style="width: auto;">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="all">All</option>
+            </select>
+            <span>Entries</span>
+        </div>
+    </div>
+
     <div class="table-responsive table-card mt-3 mb-1">
         <table class="table align-middle table-nowrap" id="customerTable" style="width:100%">
             <thead class="table-light">

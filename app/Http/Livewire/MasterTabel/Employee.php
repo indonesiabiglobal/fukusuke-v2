@@ -20,6 +20,7 @@ class Employee extends Component
     public $idUpdate;
     public $idDelete;
     public $status;
+    public $paginate = 10;
 
     public function mount()
     {
@@ -169,7 +170,7 @@ class Employee extends Component
                         ->orWhere('msd.name', 'ilike', "%" . $this->searchTerm . "%");
                 });
             })
-            ->paginate(10);
+            ->paginate($this->paginate);
 
         return view('livewire.master-tabel.employee', [
             'data' => $data,
