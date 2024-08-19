@@ -20,6 +20,7 @@ class MasterProduk extends Component
     public $product_type_id;
     public $idUpdate;
     public $idDelete;
+    public $paginate = 10;
 
     public function search()
     {
@@ -85,7 +86,12 @@ class MasterProduk extends Component
             ->when(isset($this->product_type_id) && $this->product_type_id != "" && $this->product_type_id != "undefined", function ($query) {
                 $query->where('msp.product_type_id', $this->product_type_id);
             })
-            ->paginate(10);
+            ->when($this->paginate != 'all', function ($query) {
+                return $query->paginate($this->paginate);
+            }, function ($query) {
+                $count = $query->count();
+                return $query->paginate($count);
+            });
 
         return view('livewire.master-tabel.produk.master-produk', [
             'data' => $data

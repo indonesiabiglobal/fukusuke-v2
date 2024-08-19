@@ -162,10 +162,10 @@ class MenuLossInfureController extends Component
             ->select('mslossinfure.*', 'mlc.name as category_name', 'mlcl.name as class_name')
             ->where('mslossinfure.status', 1)
             ->when(isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined", function ($query) {
-                $query->where('mslossinfure.code', 'like', '%' . $this->searchTerm . '%')
-                    ->orWhere('mslossinfure.name', 'like', '%' . $this->searchTerm . '%')
-                    ->orWhere('mlc.name', 'like', '%' . $this->searchTerm . '%')
-                    ->orWhere('mlcl.name', 'like', '%' . $this->searchTerm . '%');
+                $query->where('mslossinfure.code', 'ilike', '%' . $this->searchTerm . '%')
+                    ->orWhere('mslossinfure.name', 'ilike', '%' . $this->searchTerm . '%')
+                    ->orWhere('mlc.name', 'ilike', '%' . $this->searchTerm . '%')
+                    ->orWhere('mlcl.name', 'ilike', '%' . $this->searchTerm . '%');
             })
             ->paginate(10);
 

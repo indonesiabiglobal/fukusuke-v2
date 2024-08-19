@@ -241,7 +241,12 @@ class TipeProduk extends Component
                     ->orWhere('mspt.product_group_id', 'ilike', '%' . $this->searchTerm . '%');
             })
             ->where('mspt.status', 1)
-            ->paginate($this->paginate);
+            ->when($this->paginate != 'all', function ($query) {
+                return $query->paginate($this->paginate);
+            }, function ($query) {
+                $count = $query->count();
+                return $query->paginate($count);
+            });
 
         $productGroups = DB::select("SELECT id, name FROM msproduct_group");
 

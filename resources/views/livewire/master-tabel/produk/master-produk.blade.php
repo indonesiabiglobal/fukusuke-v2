@@ -1,56 +1,7 @@
 <div class="row">
     <div class="col-lg-12 mt-2">
         <div class="row">
-            <div class="col-12 col-lg-7">
-                <div class="row">
-                    <div class="col-12 col-lg-3">
-                        <label class="form-label text-muted fw-bold">Search</label>
-                    </div>
-                    <div class="col-12 col-lg-9">
-                        <div class="input-group">
-                            <input wire:model.defer="searchTerm" class="form-control"style="padding:0.44rem" type="text" placeholder="search nama produk, nomor order" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 col-lg-5">
-                <div class="row">
-                    <div class="col-12 col-lg-2">
-                        <label for="productType" class="form-label text-muted fw-bold">Tipe Produk</label>
-                    </div>
-                    <div class="col-12 col-lg-10">
-                        <div class="mb-1" wire:ignore>
-                            <select class="form-control"  wire:model.defer="product_type_id" id="productType" name="productType" data-choices data-choices-sorting-false data-choices-removeItem>
-                                <option value="">- All -</option>
-                                @foreach (\App\Models\MsProductType::select('id', 'name', 'code')->get() as $item)
-                                    <option value="{{ $item->id }}">{{ $item->name }} , {{ $item->code }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <div class="col-12 col-lg-6">
-                <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1">
-                    <span wire:loading.remove wire:target="search">
-                        <i class="ri-search-line"></i> Filter
-                    </span>
-                    <div wire:loading wire:target="search">
-                        <span class="d-flex align-items-center">
-                            <span class="spinner-border flex-shrink-0" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </span>
-                            <span class="flex-grow-1 ms-1">
-                                Loading...
-                            </span>
-                        </span>
-                    </div>
-                </button>
-                {{-- Button Add product --}}
-                <button type="button" class="btn btn-success w-lg p-1" onclick="window.location.href='{{ route('add-master-product') }}'">
-                    <i class="ri-add-line"> </i> Add
-                </button>
-
                 {{-- start modal delete product --}}
                 <div id="modal-delete" class="modal fade zoomIn" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered">
@@ -97,6 +48,63 @@
                 </div>
                 {{-- end modal delete product --}}
             </div>
+            <form wire:submit.prevent="search" class="row">
+                <div class="col-12 col-lg-7">
+                    <div class="row">
+                        <div class="col-12 col-lg-3">
+                            <label class="form-label text-muted fw-bold">Search</label>
+                        </div>
+                        <div class="col-12 col-lg-9">
+                            <div class="input-group">
+                                <input wire:model.defer="searchTerm" class="form-control"style="padding:0.44rem"
+                                    type="text" placeholder="search nama produk, nomor order" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-5">
+                    <div class="row">
+                        <div class="col-12 col-lg-2">
+                            <label for="productType" class="form-label text-muted fw-bold">Tipe Produk</label>
+                        </div>
+                        <div class="col-12 col-lg-10">
+                            <div class="mb-1" wire:ignore>
+                                <select class="form-control" wire:model.defer="product_type_id" id="productType"
+                                    name="productType" data-choices data-choices-sorting-false data-choices-removeItem>
+                                    <option value="">- All -</option>
+                                    @foreach (\App\Models\MsProductType::select('id', 'name', 'code')->get() as $item)
+                                        <option value="{{ $item->id }}" data-custom-properties='{"code": "{{ $item->code }}"}'>{{ $item->name }} , {{ $item->code }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6">
+                    <button wire:click="search" type="submit" class="btn btn-primary btn-load w-lg p-1">
+                        <span wire:loading.remove wire:target="search">
+                            <i class="ri-search-line"></i> Filter
+                        </span>
+                        <div wire:loading wire:target="search">
+                            <span class="d-flex align-items-center">
+                                <span class="spinner-border flex-shrink-0" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </span>
+                                <span class="flex-grow-1 ms-1">
+                                    Loading...
+                                </span>
+                            </span>
+                        </div>
+                    </button>
+                    {{-- Button Add product --}}
+                    <button type="button" class="btn btn-success w-lg p-1"
+                        onclick="window.location.href='{{ route('add-master-product') }}'">
+                        <i class="ri-add-line"> </i> Add
+                    </button>
+
+                </div>
+            </form>
             {{-- <div class="col-12 col-lg-6 text-end">
                 <button class="btn btn-primary w-lg p-1" wire:click="download" type="button">
                     <span wire:loading.remove wire:target="download">
@@ -129,6 +137,20 @@
                     </div>
                 </button>
             </div> --}}
+        </div>
+    </div>
+    {{-- show paginate --}}
+    <div class="d-flex justify-content-between mt-3">
+        <div class="d-flex align-items-center">
+            <span class="me-2">Show</span>
+            <select wire:model.live="paginate" class="form-select form-select-sm me-2" style="width: auto;">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="all">All</option>
+            </select>
+            <span>Entries</span>
         </div>
     </div>
     <div class="table-responsive table-card mt-3 mb-1">
