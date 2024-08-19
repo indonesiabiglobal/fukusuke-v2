@@ -9,8 +9,7 @@ class MsLossCategory extends Model
 {
     use HasFactory;
     protected $table = "mslosscategory";
-    protected $fillable = [];
-    protected $guarded = [];
+    protected $guarded = ['id'];
     public $timestamps = false;
     // protected $fillable = [
     //     'title',
