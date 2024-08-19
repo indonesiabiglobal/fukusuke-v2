@@ -138,7 +138,7 @@
 
                 <button class="btn btn-primary w-lg p-1" wire:click="download" type="button">
                     <span wire:loading.remove wire:target="download">
-                        <i class="ri-download-cloud-2-line"> </i> Download
+                        <i class="ri-download-cloud-2-line"> </i> Download Template
                     </span>
                     <div wire:loading wire:target="download">
                         <span class="d-flex align-items-center">

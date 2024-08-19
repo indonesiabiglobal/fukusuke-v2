@@ -5,7 +5,7 @@
             <div class="col-12 col-lg-6">
                 {{-- <button class="btn btn-primary w-lg p-1" wire:click="download" type="button">
                     <span wire:loading.remove wire:target="download">
-                        <i class="ri-download-cloud-2-line"> </i> Download
+                        <i class="ri-download-cloud-2-line"> </i> Download Template
                     </span>
                     <div wire:loading wire:target="download">
                         <span class="d-flex align-items-center">
@@ -339,7 +339,7 @@
                         <td>{!! $item->status == 1
                             ? '<span class="badge text-success bg-success-subtle">Active</span>'
                             : '<span class="badge text-bg-danger">Non Active</span>' !!}</td>
-                        <td>{{ $item->updated_by }}</td>  
+                        <td>{{ $item->updated_by }}</td>
                         <td>{{ $item->updated_on }}</td>
                     </tr>
                 @empty
@@ -358,9 +358,9 @@
         {{ $data->links() }}
     </div>
 
-    {{-- <div class="col text-end dropdown" x-data="{ 
+    {{-- <div class="col text-end dropdown" x-data="{
         po_no:true, na_pr:true, ko_pr:true, bu:true, qt:true, up_by: true, up_dt: false
-        }">    
+        }">
         <div class="table-responsive table-card">
             <table class="table table-bordered align-middle dt-responsive mdl-data-table">
                 <thead class="table-light">
@@ -397,7 +397,7 @@
                             <td x-show="qt" style="width: 60px;">{!! $item->status == 1
                                 ? '<span class="badge text-success bg-success-subtle">Active</span>'
                                 : '<span class="badge text-bg-danger">Non Active</span>' !!}</td>
-                            <td x-show="up_by" style="width: 50px;">{{ $item->updated_by }}</td>  
+                            <td x-show="up_by" style="width: 50px;">{{ $item->updated_by }}</td>
                             <td x-show="up_dt" style="width: 50px;">{{ $item->updated_on }}</td>
                         </tr>
                     @empty
@@ -414,7 +414,7 @@
             {{-- {{ $buyers->links() }}
         </div>
     </div> --}}
-    
+
     {{-- <livewire:tdorder/> --}}
 </div>
 
