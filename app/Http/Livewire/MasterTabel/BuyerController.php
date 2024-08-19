@@ -13,6 +13,7 @@ use Livewire\WithoutUrlPagination;
 
 class BuyerController extends Component
 {
+    use WithPagination, WithoutUrlPagination;
     protected $paginationTheme = 'bootstrap';
     public $buyers;
     public $searchTerm;
@@ -24,20 +25,7 @@ class BuyerController extends Component
     public $idUpdate;
     public $idDelete;
 
-    use WithPagination, WithoutUrlPagination;
-    // public $searchParam = '';
     public $perPage = 10;
-    public $sortField = 'id';
-    public $sortDirection = 'asc';
-
-    public function sortBy($field){
-        if($this->sortField === $field){
-            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
-        } else {
-            $this->sortField = $field;
-            $this->sortDirection = 'desc';
-        }
-    }
 
     protected $rules = [
         'code' => 'required',
@@ -187,24 +175,23 @@ class BuyerController extends Component
     public function render()
     {
         $data = DB::table('msbuyer AS mb')
-            ->select('mb.id', 'mb.code', 'mb.name', 'mb.address', 'mb.country', 'mb.status', 'mb.updated_by', 'mb.updated_on')
-            ->orderBy($this->sortField, $this->sortDirection);
+            ->select('mb.id', 'mb.code', 'mb.name', 'mb.address', 'mb.country', 'mb.status', 'mb.updated_by', 'mb.updated_on');
 
-            if (isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined") {
-                $data = $data->where(function($query) {
-                    $query->where('mb.code', 'ilike', "%{$this->searchTerm}%")
-                          ->orWhere('mb.name', 'ilike', "%{$this->searchTerm}%")
-                          ->orWhere('mb.address', 'ilike', "%{$this->searchTerm}%")
-                          ->orWhere('mb.country', 'ilike', "%{$this->searchTerm}%");
-                });
-            }  
+        if (isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined") {
+            $data = $data->where(function ($query) {
+                $query->where('mb.code', 'ilike', "%{$this->searchTerm}%")
+                    ->orWhere('mb.name', 'ilike', "%{$this->searchTerm}%")
+                    ->orWhere('mb.address', 'ilike', "%{$this->searchTerm}%")
+                    ->orWhere('mb.country', 'ilike', "%{$this->searchTerm}%");
+            });
+        }
 
-            $data = $data->paginate(8);  
-            
-            return view('livewire.master-tabel.buyer', [
-                'buyers' => $data,
-            ])->extends('layouts.master');
-        
+        $data = $data->paginate(8);
+
+        return view('livewire.master-tabel.buyer', [
+            'data' => $data,
+        ])->extends('layouts.master');
+
 
         // return view('livewire.master-tabel.buyer')->extends('layouts.master');
     }

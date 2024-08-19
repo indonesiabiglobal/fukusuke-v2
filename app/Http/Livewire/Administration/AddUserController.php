@@ -41,6 +41,8 @@ class AddUserController extends Component
     public $isWarehouse;
     public $isReport;
     public $report;
+    public $masterTable;
+    public $isMasterTable;
 
     public function cancel()
     {

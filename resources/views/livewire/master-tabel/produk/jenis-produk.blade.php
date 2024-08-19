@@ -259,7 +259,7 @@
                 </tr>
             </thead>
             <tbody class="list form-check-all">
-                @forelse ($groupProducts as $item)
+                @forelse ($data as $item)
                     <tr>
                         <td>
                             <button type="button" class="btn fs-15 p-1 bg-primary rounded" data-bs-toggle="modal"
@@ -295,7 +295,7 @@
                 @endforelse
             </tbody>
         </table>
-        {{-- {{ $groupProducts->links() }} --}}
+        {{ $data->links() }}
     </div>
     {{-- <livewire:tdorder/> --}}
 </div>

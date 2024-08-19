@@ -6,9 +6,13 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Livewire\Component;
+use Livewire\WithPagination;
+use Livewire\WithoutUrlPagination;
 
 class JenisProduk extends Component
 {
+    use WithPagination, WithoutUrlPagination;
+    protected $paginationTheme = 'bootstrap';
     public $groupProducts;
     public $searchTerm;
     public $code;
@@ -132,7 +136,12 @@ class JenisProduk extends Component
 
     public function search()
     {
-        $this->groupProducts = DB::table('msproduct_group')
+        $this->render();
+    }
+
+    public function render()
+    {
+        $data = DB::table('msproduct_group')
             ->when(isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined", function ($query) {
                 $query->where(function ($queryWhere) {
                     $queryWhere->where('code', 'ilike', "%" . $this->searchTerm . "%")
@@ -140,13 +149,10 @@ class JenisProduk extends Component
                 });
             })
             ->where('status', 1)
-            ->get(['id', 'code', 'name', 'status', 'updated_by', 'updated_on']);
+            ->paginate(8);
 
-        $this->render();
-    }
-
-    public function render()
-    {
-        return view('livewire.master-tabel.produk.jenis-produk')->extends('layouts.master');
+        return view('livewire.master-tabel.produk.jenis-produk', [
+            'data' => $data
+        ])->extends('layouts.master');
     }
 }
