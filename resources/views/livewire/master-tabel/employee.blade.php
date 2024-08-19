@@ -301,6 +301,7 @@
             </div>
         </div>
     </div>
+    {{-- paginate --}}
     <div class="d-flex justify-content-between mt-3">
         <div class="d-flex align-items-center">
             <span class="me-2">Show</span>

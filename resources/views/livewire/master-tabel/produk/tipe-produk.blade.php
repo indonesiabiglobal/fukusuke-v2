@@ -115,7 +115,7 @@
                                                         Infure</label>
                                                 </div>
                                                 <div class="col-7">
-                                                    <input type="number"
+                                                    <input type="number" step="0.001"
                                                         class="form-control @error('harga_sat_infure') is-invalid @enderror"
                                                         id="harga_sat_infure" wire:model.defer="harga_sat_infure"
                                                         placeholder="Harga Satuan Infure">
@@ -133,7 +133,7 @@
                                                         Loss Infure</label>
                                                 </div>
                                                 <div class="col-7">
-                                                    <input type="number"
+                                                    <input type="number" step="0.001"
                                                         class="form-control @error('harga_sat_infure_loss') is-invalid @enderror"
                                                         id="harga_sat_infure_loss"
                                                         wire:model.defer="harga_sat_infure_loss"
@@ -152,7 +152,7 @@
                                                         Inline</label>
                                                 </div>
                                                 <div class="col-7">
-                                                    <input type="number"
+                                                    <input type="number" step="0.001"
                                                         class="form-control @error('harga_sat_inline') is-invalid @enderror"
                                                         id="harga_sat_inline" wire:model.defer="harga_sat_inline"
                                                         placeholder="Harga Satuan Inline">
@@ -170,7 +170,7 @@
                                                         cetak</label>
                                                 </div>
                                                 <div class="col-7">
-                                                    <input type="text"
+                                                    <input type="text" step="0.001"
                                                         class="form-control @error('harga_sat_cetak') is-invalid @enderror"
                                                         id="harga_sat_cetak" wire:model.defer="harga_sat_cetak"
                                                         placeholder="Harga Satuan cetak">
@@ -188,7 +188,7 @@
                                                         seitai</label>
                                                 </div>
                                                 <div class="col-7">
-                                                    <input type="text"
+                                                    <input type="text" step="0.001"
                                                         class="form-control @error('harga_sat_seitai') is-invalid @enderror"
                                                         id="harga_sat_seitai" wire:model.defer="harga_sat_seitai"
                                                         placeholder="Harga Satuan seitai">
@@ -206,7 +206,7 @@
                                                         Seitai Loss</label>
                                                 </div>
                                                 <div class="col-7">
-                                                    <input type="text"
+                                                    <input type="text" step="0.001"
                                                         class="form-control @error('harga_sat_seitai_loss') is-invalid @enderror"
                                                         id="harga_sat_seitai_loss"
                                                         wire:model.defer="harga_sat_seitai_loss"
@@ -224,7 +224,7 @@
                                                     <label for="berat_jenis" class="form-label">Berat Jenis</label>
                                                 </div>
                                                 <div class="col-7">
-                                                    <input type="text"
+                                                    <input type="text" step="0.001"
                                                         class="form-control @error('berat_jenis') is-invalid @enderror"
                                                         id="berat_jenis" wire:model.defer="berat_jenis"
                                                         placeholder="Berat Jenis">
@@ -556,6 +556,20 @@
                     </button>
                 </div>
             </div>
+        </div>
+    </div>
+    {{-- paginate --}}
+    <div class="d-flex justify-content-between mt-3">
+        <div class="d-flex align-items-center">
+            <span class="me-2">Show</span>
+            <select wire:model.live="paginate" class="form-select form-select-sm me-2" style="width: auto;">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="all">All</option>
+            </select>
+            <span>Entries</span>
         </div>
     </div>
     <div class="table-responsive table-card mt-3 mb-1">

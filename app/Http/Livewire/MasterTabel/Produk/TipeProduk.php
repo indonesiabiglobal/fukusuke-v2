@@ -30,6 +30,7 @@ class TipeProduk extends Component
     public $status;
     public $idUpdate;
     public $idDelete;
+    public $paginate = 10;
 
     public $rules = [
         'code' => 'required|numeric|unique:msproduct_type,code',
@@ -240,7 +241,7 @@ class TipeProduk extends Component
                     ->orWhere('mspt.product_group_id', 'ilike', '%' . $this->searchTerm . '%');
             })
             ->where('mspt.status', 1)
-            ->paginate(10);
+            ->paginate($this->paginate);
 
         $productGroups = DB::select("SELECT id, name FROM msproduct_group");
 
