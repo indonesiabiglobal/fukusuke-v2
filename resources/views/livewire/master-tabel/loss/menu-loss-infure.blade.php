@@ -68,7 +68,7 @@
                                                 @enderror
                                             </div>
                                         </div>
-                                        
+
                                         {{-- button --}}
                                         <div class="col-lg-12">
                                             <div class="hstack gap-2 justify-content-end">
@@ -144,7 +144,7 @@
                                                     @foreach ($class as $item)
                                                         <option value="{{ $item->id }}" {{ $item->id == $loss_class_id ? 'selected' : '' }}>
                                                             {{ $item->name }}
-                                                        </option>                      
+                                                        </option>
                                                     @endforeach
                                                 </select>
                                                 @error('loss_class_id')
@@ -293,8 +293,8 @@
                         </td>
                         <td>{{ $item->name }}</td>
                         <td>{{ $item->code }}</td>
-                        <td>{{ $item->loss_class_id }}</td>
-                        <td>{{ $item->loss_category_code }}</td>
+                        <td>{{ $item->class_name }}</td>
+                        <td>{{ $item->category_name }}</td>
                         <td>
                             {!! $item->status == 1
                                 ? '<span class="badge text-success bg-success-subtle">Active</span>'

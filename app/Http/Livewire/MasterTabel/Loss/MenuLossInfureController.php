@@ -31,16 +31,17 @@ class MenuLossInfureController extends Component
         'name' => 'required',
     ];
 
-    public function mount(){
-        $this->class = MsLossClass::get();    
+    public function mount()
+    {
+        $this->class = MsLossClass::get();
     }
 
     public function resetFields()
     {
         $this->code = '';
         $this->name = '';
-        $this->loss_class_id = '';
-        $this->loss_category_code = '';
+        $this->loss_class_id = null;
+        $this->loss_category_code = null;
     }
 
     public function showModalCreate()
@@ -56,6 +57,10 @@ class MenuLossInfureController extends Component
         DB::beginTransaction();
         try {
             $statusActive = 1;
+            if (MsLossInfure::where('code', $this->code)->exists()) {
+                $this->dispatch('notification', ['type' => 'error', 'message' => 'Kode Loss sudah ada.']);
+                return;
+            }
             $data = MsLossInfure::create([
                 'code' => $this->code,
                 'name' => $this->name,
@@ -68,7 +73,8 @@ class MenuLossInfureController extends Component
                 'updated_on' => Carbon::now(),
             ]);
 
-            DB::commit();            
+            DB::commit();
+            $this->resetFields();
             $this->dispatch('closeModalCreate');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Loss Infure saved successfully.']);
         } catch (\Exception $e) {
@@ -132,7 +138,7 @@ class MenuLossInfureController extends Component
             $data->updated_by = Auth::user()->username;
             $data->updated_on = Carbon::now();
             $data->save();
-            
+
             DB::commit();
             $this->dispatch('closeModalDelete');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Loss Infure deleted successfully.']);
@@ -145,15 +151,25 @@ class MenuLossInfureController extends Component
     }
 
     public function search()
-    {        
+    {
         $this->render();
     }
 
     public function render()
     {
-        $result = MsLossInfure::where('status', 1)->paginate(10);
+        $result = MsLossInfure::join('mslosscategory as mlc', 'mslossinfure.loss_category_code', '=', 'mlc.code')
+            ->join('mslossclass as mlcl', 'mslossinfure.loss_class_id', '=', 'mlcl.id')
+            ->select('mslossinfure.*', 'mlc.name as category_name', 'mlcl.name as class_name')
+            ->where('mslossinfure.status', 1)
+            ->when(isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined", function ($query) {
+                $query->where('mslossinfure.code', 'like', '%' . $this->searchTerm . '%')
+                    ->orWhere('mslossinfure.name', 'like', '%' . $this->searchTerm . '%')
+                    ->orWhere('mlc.name', 'like', '%' . $this->searchTerm . '%')
+                    ->orWhere('mlcl.name', 'like', '%' . $this->searchTerm . '%');
+            })
+            ->paginate(10);
 
-        return view('livewire.master-tabel.loss.menu-loss-infure',[
+        return view('livewire.master-tabel.loss.menu-loss-infure', [
             'result' => $result
         ])->extends('layouts.master');
     }
