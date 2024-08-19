@@ -40,6 +40,7 @@ class LpkEntryController extends Component
     #[Session]
     public $idProduct;
     public $checkListLPK = [];
+    public $paginate = 10;
 
     use WithFileUploads, WithoutUrlPagination;
     public $file;
@@ -188,7 +189,12 @@ class LpkEntryController extends Component
             }
         }
 
-        $data = $data->paginate(8);
+        $data = $data->when($this->paginate != 'all', function ($query) {
+            return $query->paginate($this->paginate);
+        }, function ($query) {
+            $count = $query->count();
+            return $query->paginate($count);
+        });
 
         return view('livewire.order-lpk.lpk-entry', [
             'data' => $data,
