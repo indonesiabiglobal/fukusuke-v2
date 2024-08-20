@@ -240,7 +240,10 @@ class AddLpkController extends Component
 
             $qty_gentan = (int)str_replace(',', '', $this->total_assembly_line) / (int)str_replace(',', '', $this->defaultgulung);
             $this->qty_gentan = (round(round($qty_gentan) / 2)) * 2;
-
+            // dd($this->qty_gentan);
+            if ($this->qty_gentan < 2) {
+                $this->qty_gentan = 2;
+            }
             $qty_gulung = floor((int)str_replace(',', '', $this->total_assembly_line) / (int)str_replace(',', '', $this->qty_gentan) / 10) * 10;
             $this->qty_gulung = $qty_gulung;
         }
@@ -256,14 +259,6 @@ class AddLpkController extends Component
         if (isset($this->panjang_lpk) && isset($this->total_assembly_line)) {
             $this->selisihkurang = (int)str_replace(',', '', $this->total_assembly_line) - (int)str_replace(',', '', $this->panjang_lpk);
         }
-
-        // if(isset($this->qty_lpk) && isset($this->productlength)){
-            // $this->total_assembly_line = $this->qty_lpk * $this->productlength;
-            // $this->qty_gentan = $this->productlength / $this->defaultgulung;
-            // $this->qty_gulung = $this->productlength * $this->qty_gentan;
-            // $this->panjang_lpk = $this->qty_gentan * $this->qty_gulung;
-            //
-        // }
 
         return view('livewire.order-lpk.add-lpk')->extends('layouts.master');
     }

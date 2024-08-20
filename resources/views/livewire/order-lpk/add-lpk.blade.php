@@ -54,7 +54,7 @@
                 <div class="form-group mt-1">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-3 fw-bold text-muted">Jumlah LPK</label>
-                        <input type="text" class="form-control @error('qty_lpk') is-invalid @enderror" wire:model.live="qty_lpk"   oninput="this.value = window.formatNumber(this.value)" />
+                        <input type="text" class="form-control @error('qty_lpk') is-invalid @enderror" wire:model.live.debounce.600ms="qty_lpk"   oninput="this.value = window.formatNumber(this.value)" />
                         <span class="input-group-text">
                             Lembar
                         </span>
