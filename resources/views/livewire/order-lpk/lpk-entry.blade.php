@@ -346,7 +346,7 @@
                         <th x-show="produk_kode">Kode Produk</th>
                         <th x-show="mesin">Mesin</th>
                         <th x-show="buyer">Buyer</th>
-                        <th>Warna LPK</th>
+                        {{-- <th>Warna LPK</th> --}}
                         <th x-show="proses_tanggal">Tanggal Proses</th>
                         <th x-show="seq">seq</th>
                         <th x-show="by_update">Update By</th>

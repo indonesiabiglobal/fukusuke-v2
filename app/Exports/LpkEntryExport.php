@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Illuminate\Support\Collection;
@@ -15,8 +16,8 @@ class LpkEntryExport implements FromCollection, WithHeadings
     {
         return new Collection([
             [
-                'TG_PROSES' => '05102018', 
-                'TG_LPK' => '05102018', 
+                'TG_PROSES' => Carbon::now()->format('d/m/Y'),
+                'TG_LPK' => Carbon::now()->format('d/m/Y'),
                 'Nomor_LPK' => '181005-001',
                 'PO_NUMBER' => 'N17JSZ21osa-1',
                 'Nomor_Mesin' => '00I07',
