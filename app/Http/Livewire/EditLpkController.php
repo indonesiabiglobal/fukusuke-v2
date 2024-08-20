@@ -155,14 +155,14 @@ class EditLpkController extends Component
             $orderlpk->order_id = $orderlpk->id;
             $orderlpk->product_id = $orderlpk->product_id;
             $orderlpk->machine_id = $machine->id;
-            $orderlpk->qty_lpk = $this->qty_lpk;
+            $orderlpk->qty_lpk = (int)str_replace(',', '', $this->qty_lpk);
             if (isset($this->remark)) {
                 $orderlpk->remark = $this->remark;
             }
-            $orderlpk->qty_gentan = $this->qty_gentan;
-            $orderlpk->panjang_lpk = $this->panjang_lpk;
-            $orderlpk->total_assembly_line = $this->total_assembly_line;
-            $orderlpk->qty_gulung = $this->qty_gulung;
+            $orderlpk->qty_gentan = (int)str_replace(',', '', $this->qty_gentan);
+            $orderlpk->panjang_lpk = (int)str_replace(',', '', $this->panjang_lpk);
+            $orderlpk->total_assembly_line = (int)str_replace(',', '', $this->total_assembly_line);
+            $orderlpk->qty_gulung = (int)str_replace(',', '', $this->qty_gulung);
             // $orderlpk->warnalpkid = $this->warnalpkid['value'];
             $orderlpk->updated_by = auth()->user()->username;
             $orderlpk->updated_on = Carbon::now()->format('Y-m-d H:i:s');

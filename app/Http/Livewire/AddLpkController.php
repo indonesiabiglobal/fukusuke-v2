@@ -155,7 +155,7 @@ class AddLpkController extends Component
             $orderlpk->order_id = $order->id;
             $orderlpk->product_id = $order->product_id;
             $orderlpk->machine_id = $machine->id;
-            $orderlpk->qty_lpk = $this->qty_lpk;
+            $orderlpk->qty_lpk = (int)str_replace(',', '', $this->qty_lpk);
             if (isset($this->remark)) {
                 $orderlpk->remark = $this->remark;
             }
