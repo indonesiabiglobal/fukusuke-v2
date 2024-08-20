@@ -55,7 +55,7 @@
     {{-- @include('layouts.customizer') --}}
     <!-- JAVASCRIPT -->
     @include('layouts.vendor-scripts')
-
+    @stack('scripts')
     {{-- toastr --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" ></script>
 

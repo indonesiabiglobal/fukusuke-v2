@@ -170,12 +170,7 @@ class Employee extends Component
                         ->orWhere('msd.name', 'ilike', "%" . $this->searchTerm . "%");
                 });
             })
-            ->when($this->paginate != 'all', function ($query) {
-                return $query->paginate($this->paginate);
-            }, function ($query) {
-                $count = $query->count();
-                return $query->paginate($count);
-            });
+            ->get();
 
         return view('livewire.master-tabel.employee', [
             'data' => $data,
