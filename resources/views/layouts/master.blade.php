@@ -91,6 +91,30 @@
       }
     </script>
 
+    <script>
+        // format number
+        window.formatNumber = function(value) {
+            console.log(value);
+
+            // Hapus koma jika ada
+            value = value.replace(/,/g, '');
+
+            // Hapus karakter yang bukan angka
+            value = value.replace(/[^0-9]/g, '');
+
+            // Hapus nol di depan angka
+            value = value.replace(/^0+/, '');
+
+            // Jika value adalah angka yang valid, format dengan pemisah ribuan
+            if (!isNaN(value) && value !== '') {
+                return Number(value).toLocaleString('en-US');
+            }
+
+            // Kembalikan value tanpa modifikasi jika tidak valid
+            return value;
+        };
+    </script>
+
     {{-- <script>
         $(function() {
             $('.select2').select2({

@@ -247,6 +247,7 @@ class AddSeitaiController extends Component
 
     public function save()
     {
+        $this->qty_produksi = (int)str_replace(',', '', $this->qty_produksi);
         $validatedData = $this->validate([
             'lpk_no' => 'required',
             'nomor_palet' => 'required',
