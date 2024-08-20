@@ -4218,7 +4218,7 @@ class GeneralReportController extends Component
         }, []);
 
         $dataFilter = array_reduce($data, function ($carry, $item) {
-            $carry[$item->product_type_code] = $item;
+            $carry[$item->department_id][$item->product_type_code] = $item;
             return $carry;
         }, []);
 
@@ -4247,7 +4247,7 @@ class GeneralReportController extends Component
                 // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
 
                 // memasukkan data
-                $dataItem = $dataFilter[$typeCode] ?? (object)[
+                $dataItem = $dataFilter[$department['department_id']][$typeCode] ?? (object)[
                     'berat_standard' => 0,
                     'berat_produksi' => 0,
                     'infure_cost' => 0,
@@ -4340,25 +4340,8 @@ class GeneralReportController extends Component
         phpspreadsheet::styleFont($spreadsheet, $columnTypeCode . $rowGrandTotal . ':' . $columnHeaderEnd . $rowGrandTotal, true, 8, 'Calibri');
         // $this->addFullBorder($spreadsheet, $columnTypeCode . $rowGrandTotal . ':' . $columnValueAvg . $rowGrandTotal);
 
-        $grandTotal = array_reduce(array_keys($dataFilter), function ($carry, $item) use ($dataFilter) {
-            $dataItem = $dataFilter[$item] ?? (object)[
-                'berat_standard' => 0,
-                'berat_produksi' => 0,
-                'infure_cost' => 0,
-                'infure_berat_loss' => 0,
-                'panjang_produksi' => 0,
-                'panjang_printing_inline' => 0,
-                'infure_cost_printing' => 0,
-            ];
-            $carry['berat_standard'] += $dataItem->berat_standard;
-            $carry['berat_produksi'] += $dataItem->berat_produksi;
-            $carry['infure_cost'] += $dataItem->infure_cost;
-            $carry['infure_berat_loss'] += $dataItem->infure_berat_loss;
-            $carry['panjang_produksi'] += $dataItem->panjang_produksi;
-            $carry['panjang_printing_inline'] += $dataItem->panjang_printing_inline;
-            $carry['infure_cost_printing'] += $dataItem->infure_cost_printing;
-            return $carry;
-        }, [
+        // grand total
+        $grandTotal = [
             'berat_standard' => 0,
             'berat_produksi' => 0,
             'infure_cost' => 0,
@@ -4366,7 +4349,19 @@ class GeneralReportController extends Component
             'panjang_produksi' => 0,
             'panjang_printing_inline' => 0,
             'infure_cost_printing' => 0,
-        ]);
+        ];
+
+        foreach ($dataFilter as $departmentId => $department) {
+            foreach ($department as $productTypeCode => $productType) {
+                $grandTotal['berat_standard'] += $productType->berat_standard;
+                $grandTotal['berat_produksi'] += $productType->berat_produksi;
+                $grandTotal['infure_cost'] += $productType->infure_cost;
+                $grandTotal['infure_berat_loss'] += $productType->infure_berat_loss;
+                $grandTotal['panjang_produksi'] += $productType->panjang_produksi;
+                $grandTotal['panjang_printing_inline'] += $productType->panjang_printing_inline;
+                $grandTotal['infure_cost_printing'] += $productType->infure_cost_printing;
+            }
+        }
 
         $columnItem = $startColumnItemData;
         $columnItemEnd = chr(ord($columnItem) + count($header) - 1);
@@ -4517,7 +4512,7 @@ class GeneralReportController extends Component
         }, []);
 
         $dataFilter = array_reduce($data, function ($carry, $item) {
-            $carry[$item->product_type_code] = $item;
+            $carry[$item->department_id][$item->product_type_code] = $item;
             return $carry;
         }, []);
 
@@ -4635,30 +4630,26 @@ class GeneralReportController extends Component
         phpspreadsheet::styleFont($spreadsheet, $columnTypeCode . $rowGrandTotal . ':' . $columnHeaderEnd . $rowGrandTotal, true, 8, 'Calibri');
         // $this->addFullBorder($spreadsheet, $columnTypeCode . $rowGrandTotal . ':' . $columnValueAvg . $rowGrandTotal);
 
-        $grandTotal = array_reduce(array_keys($dataFilter), function ($carry, $item) use ($dataFilter) {
-            $dataItem = $dataFilter[$item] ?? (object)[
-                'qty_produksi' => 0,
-                'berat_produksi' => 0,
-                'seitai_berat_loss' => 0,
-                'seitai_cost' => 0,
-                'seitai_berat_loss_ponsu' => 0,
-                'infure_berat_loss' => 0,
-            ];
-            $carry['qty_produksi'] += $dataItem->qty_produksi;
-            $carry['berat_produksi'] += $dataItem->berat_produksi;
-            $carry['seitai_berat_loss'] += $dataItem->seitai_berat_loss;
-            $carry['seitai_cost'] += $dataItem->seitai_cost;
-            $carry['seitai_berat_loss_ponsu'] += $dataItem->seitai_berat_loss_ponsu;
-            $carry['infure_berat_loss'] += $dataItem->infure_berat_loss;
-            return $carry;
-        }, [
+        // grand total
+        $grandTotal = [
             'qty_produksi' => 0,
             'berat_produksi' => 0,
             'seitai_berat_loss' => 0,
             'seitai_cost' => 0,
             'seitai_berat_loss_ponsu' => 0,
             'infure_berat_loss' => 0,
-        ]);
+        ];
+
+        foreach ($dataFilter as $departmentId => $department) {
+            foreach ($department as $productTypeCode => $productType) {
+                $grandTotal['qty_produksi'] += $productType->qty_produksi;
+                $grandTotal['berat_produksi'] += $productType->berat_produksi;
+                $grandTotal['seitai_berat_loss'] += $productType->seitai_berat_loss;
+                $grandTotal['seitai_cost'] += $productType->seitai_cost;
+                $grandTotal['seitai_berat_loss_ponsu'] += $productType->seitai_berat_loss_ponsu;
+                $grandTotal['infure_berat_loss'] += $productType->infure_berat_loss;
+            }
+        }
 
         $columnItem = $startColumnItemData;
         $columnItemEnd = chr(ord($columnItem) + count($header) - 1);
@@ -4796,7 +4787,7 @@ class GeneralReportController extends Component
         }, []);
 
         $dataFilter = array_reduce($data, function ($carry, $item) {
-            $carry[$item->employeeno] = $item;
+            $carry[$item->department_id][$item->employeeno] = $item;
             return $carry;
         }, []);
 
@@ -4825,7 +4816,7 @@ class GeneralReportController extends Component
                 // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
 
                 // memasukkan data
-                $dataItem = $dataFilter[$employeeno] ?? (object)[
+                $dataItem = $dataFilter[$department['department_id']][$employeeno] ?? (object)[
                     'berat_standard' => 0,
                     'berat_produksi' => 0,
                     'infure_cost' => 0,
@@ -4918,25 +4909,8 @@ class GeneralReportController extends Component
         phpspreadsheet::styleFont($spreadsheet, $columnemployeeno . $rowGrandTotal . ':' . $columnHeaderEnd . $rowGrandTotal, true, 8, 'Calibri');
         // $this->addFullBorder($spreadsheet, $columnemployeeno . $rowGrandTotal . ':' . $columnValueAvg . $rowGrandTotal);
 
-        $grandTotal = array_reduce(array_keys($dataFilter), function ($carry, $item) use ($dataFilter) {
-            $dataItem = $dataFilter[$item] ?? (object)[
-                'berat_standard' => 0,
-                'berat_produksi' => 0,
-                'infure_cost' => 0,
-                'infure_berat_loss' => 0,
-                'panjang_produksi' => 0,
-                'panjang_printing_inline' => 0,
-                'infure_cost_printing' => 0,
-            ];
-            $carry['berat_standard'] += $dataItem->berat_standard;
-            $carry['berat_produksi'] += $dataItem->berat_produksi;
-            $carry['infure_cost'] += $dataItem->infure_cost;
-            $carry['infure_berat_loss'] += $dataItem->infure_berat_loss;
-            $carry['panjang_produksi'] += $dataItem->panjang_produksi;
-            $carry['panjang_printing_inline'] += $dataItem->panjang_printing_inline;
-            $carry['infure_cost_printing'] += $dataItem->infure_cost_printing;
-            return $carry;
-        }, [
+        // grand total
+        $grandTotal = [
             'berat_standard' => 0,
             'berat_produksi' => 0,
             'infure_cost' => 0,
@@ -4944,7 +4918,19 @@ class GeneralReportController extends Component
             'panjang_produksi' => 0,
             'panjang_printing_inline' => 0,
             'infure_cost_printing' => 0,
-        ]);
+        ];
+
+        foreach ($dataFilter as $departmentId => $department) {
+            foreach ($department as $employeeno => $employee) {
+                $grandTotal['berat_standard'] += $employee->berat_standard;
+                $grandTotal['berat_produksi'] += $employee->berat_produksi;
+                $grandTotal['infure_cost'] += $employee->infure_cost;
+                $grandTotal['infure_berat_loss'] += $employee->infure_berat_loss;
+                $grandTotal['panjang_produksi'] += $employee->panjang_produksi;
+                $grandTotal['panjang_printing_inline'] += $employee->panjang_printing_inline;
+                $grandTotal['infure_cost_printing'] += $employee->infure_cost_printing;
+            }
+        }
 
         $columnItem = $startColumnItemData;
         $columnItemEnd = chr(ord($columnItem) + count($header) - 1);
@@ -5096,7 +5082,7 @@ class GeneralReportController extends Component
         }, []);
 
         $dataFilter = array_reduce($data, function ($carry, $item) {
-            $carry[$item->employeeno] = $item;
+            $carry[$item->department_id][$item->employeeno] = $item;
             return $carry;
         }, []);
 
@@ -5125,7 +5111,7 @@ class GeneralReportController extends Component
                 // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
 
                 // memasukkan data
-                $dataItem = $dataFilter[$employeeNo] ?? (object)[
+                $dataItem = $dataFilter[$department['department_id']][$employeeNo] ?? (object)[
                     'qty_produksi' => 0,
                     'berat_produksi' => 0,
                     'seitai_berat_loss' => 0,
@@ -5214,30 +5200,26 @@ class GeneralReportController extends Component
         phpspreadsheet::styleFont($spreadsheet, $columnEmployeeNo . $rowGrandTotal . ':' . $columnHeaderEnd . $rowGrandTotal, true, 8, 'Calibri');
         // $this->addFullBorder($spreadsheet, $columnEmployeeNo . $rowGrandTotal . ':' . $columnValueAvg . $rowGrandTotal);
 
-        $grandTotal = array_reduce(array_keys($dataFilter), function ($carry, $item) use ($dataFilter) {
-            $dataItem = $dataFilter[$item] ?? (object)[
-                'qty_produksi' => 0,
-                'berat_produksi' => 0,
-                'seitai_berat_loss' => 0,
-                'seitai_cost' => 0,
-                'seitai_berat_loss_ponsu' => 0,
-                'infure_berat_loss' => 0,
-            ];
-            $carry['qty_produksi'] += $dataItem->qty_produksi;
-            $carry['berat_produksi'] += $dataItem->berat_produksi;
-            $carry['seitai_berat_loss'] += $dataItem->seitai_berat_loss;
-            $carry['seitai_cost'] += $dataItem->seitai_cost;
-            $carry['seitai_berat_loss_ponsu'] += $dataItem->seitai_berat_loss_ponsu;
-            $carry['infure_berat_loss'] += $dataItem->infure_berat_loss;
-            return $carry;
-        }, [
+        // grand total
+        $grandTotal = [
             'qty_produksi' => 0,
             'berat_produksi' => 0,
             'seitai_berat_loss' => 0,
             'seitai_cost' => 0,
             'seitai_berat_loss_ponsu' => 0,
             'infure_berat_loss' => 0,
-        ]);
+        ];
+
+        foreach ($dataFilter as $departmentId => $department) {
+            foreach ($department as $employeeno => $employee) {
+                $grandTotal['qty_produksi'] += $employee->qty_produksi;
+                $grandTotal['berat_produksi'] += $employee->berat_produksi;
+                $grandTotal['seitai_cost'] += $employee->seitai_cost;
+                $grandTotal['seitai_berat_loss'] += $employee->seitai_berat_loss;
+                $grandTotal['seitai_berat_loss_ponsu'] += $employee->seitai_berat_loss_ponsu;
+                $grandTotal['infure_berat_loss'] += $employee->infure_berat_loss;
+            }
+        }
 
         $columnItem = $startColumnItemData;
         $columnItemEnd = chr(ord($columnItem) + count($header) - 1);
@@ -7932,7 +7914,7 @@ class GeneralReportController extends Component
         }, []);
 
         $dataFilter = array_reduce($data, function ($carry, $item) {
-            $carry[$item->machine_no] = $item;
+            $carry[$item->product_group_code][$item->machine_no] = $item;
             return $carry;
         }, []);
 
@@ -7961,7 +7943,7 @@ class GeneralReportController extends Component
                 // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
 
                 // memasukkan data
-                $dataItem = $dataFilter[$machineNo] ?? (object)[
+                $dataItem = $dataFilter[$productGroup['product_group_code']][$machineNo] ?? (object)[
                     'machine_no' => $machineNo,
                     'machine_name' => $machineName,
                     'panjang_produksi' => 0,
@@ -8056,24 +8038,22 @@ class GeneralReportController extends Component
         phpspreadsheet::styleFont($spreadsheet, $columnMachineNo . $rowGrandTotal . ':' . $columnHeaderEnd . $rowGrandTotal, true, 8, 'Calibri');
         // $this->addFullBorder($spreadsheet, $columnMachineNo . $rowGrandTotal . ':' . $columnValueAvg . $rowGrandTotal);
 
-        $grandTotal = array_reduce(array_keys($dataFilter), function ($carry, $item) use ($dataFilter) {
-            $dataItem = $dataFilter[$item] ?? (object)[
-                'panjang_produksi' => 0,
-                'berat_produksi' => 0,
-                'capacity_kg' => 0,
-                'capacity_lembar' => 0
-            ];
-            $carry['panjang_produksi'] += $dataItem->panjang_produksi;
-            $carry['berat_produksi'] += $dataItem->berat_produksi;
-            $carry['capacity_kg'] += $dataItem->capacity_kg;
-            $carry['capacity_lembar'] += $dataItem->capacity_lembar;
-            return $carry;
-        }, [
+        // grand total
+        $grandTotal = [
             'panjang_produksi' => 0,
             'berat_produksi' => 0,
             'capacity_kg' => 0,
             'capacity_lembar' => 0
-        ]);
+        ];
+
+        foreach ($dataFilter as $productGroupCode => $productGroup) {
+            foreach ($productGroup as $machineNo => $machine) {
+                $grandTotal['panjang_produksi'] += $machine->panjang_produksi;
+                $grandTotal['berat_produksi'] += $machine->berat_produksi;
+                $grandTotal['capacity_kg'] += $machine->capacity_kg;
+                $grandTotal['capacity_lembar'] += $machine->capacity_lembar;
+            }
+        }
 
         $columnItem = $startColumnItemData;
         $columnItemEnd = chr(ord($columnItem) + count($header) - 1);
@@ -8221,7 +8201,7 @@ class GeneralReportController extends Component
         }, []);
 
         $dataFilter = array_reduce($data, function ($carry, $item) {
-            $carry[$item->machine_no] = $item;
+            $carry[$item->product_group_code][$item->machine_no] = $item;
             return $carry;
         }, []);
 
@@ -8250,7 +8230,7 @@ class GeneralReportController extends Component
                 // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
 
                 // memasukkan data
-                $dataItem = $dataFilter[$machineNo] ?? (object)[
+                $dataItem = $dataFilter[$productGroup['product_group_code']][$machineNo] ?? (object)[
                     'machine_no' => $machineNo,
                     'machine_name' => $machineName,
                     'qty_produksi' => 0,
@@ -8345,24 +8325,22 @@ class GeneralReportController extends Component
         phpspreadsheet::styleFont($spreadsheet, $columnMachineNo . $rowGrandTotal . ':' . $columnHeaderEnd . $rowGrandTotal, true, 8, 'Calibri');
         // $this->addFullBorder($spreadsheet, $columnMachineNo . $rowGrandTotal . ':' . $columnValueAvg . $rowGrandTotal);
 
-        $grandTotal = array_reduce(array_keys($dataFilter), function ($carry, $item) use ($dataFilter) {
-            $dataItem = $dataFilter[$item] ?? (object)[
-                'qty_produksi' => 0,
-                'berat_produksi' => 0,
-                'capacity_kg' => 0,
-                'capacity_lembar' => 0
-            ];
-            $carry['qty_produksi'] += $dataItem->qty_produksi;
-            $carry['berat_produksi'] += $dataItem->berat_produksi;
-            $carry['capacity_kg'] += $dataItem->capacity_kg;
-            $carry['capacity_lembar'] += $dataItem->capacity_lembar;
-            return $carry;
-        }, [
-            'qty_produksi' => 0,
+        // grand total
+        $grandTotal = [
+            'panjang_produksi' => 0,
             'berat_produksi' => 0,
             'capacity_kg' => 0,
             'capacity_lembar' => 0
-        ]);
+        ];
+
+        foreach ($dataFilter as $productGroupCode => $productGroup) {
+            foreach ($productGroup as $machineNo => $machine) {
+                $grandTotal['panjang_produksi'] += $machine->panjang_produksi;
+                $grandTotal['berat_produksi'] += $machine->berat_produksi;
+                $grandTotal['capacity_kg'] += $machine->capacity_kg;
+                $grandTotal['capacity_lembar'] += $machine->capacity_lembar;
+            }
+        }
 
         $columnItem = $startColumnItemData;
         $columnItemEnd = chr(ord($columnItem) + count($header) - 1);
