@@ -293,6 +293,7 @@ class EditNippoController extends Component
 
     public function save()
     {
+        $this->panjang_produksi = (int)str_replace(',', '', $this->panjang_produksi);
         // $validatedData = $this->validate([
         //     'production_date' => 'required',
         //     'created_on' => 'required',

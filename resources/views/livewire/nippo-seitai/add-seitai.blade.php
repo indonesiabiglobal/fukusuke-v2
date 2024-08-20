@@ -107,7 +107,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-12 col-md-3 col-lg-5">Jumlah Produksi</label>
-                                <input type="number" placeholder="-" class="form-control" wire:model="qty_produksi" />
+                                <input type="text" placeholder="-" class="form-control" wire:model="qty_produksi" oninput="this.value = window.formatNumber(this.value)"/>
                                 <span class="input-group-text">
                                     lbr
                                 </span>

@@ -186,7 +186,8 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5">Panjang Produksi</label>
-                                <input type="number" placeholder="-" class="form-control @error('panjang_produksi') is-invalid @enderror" wire:model="panjang_produksi" />
+                                <input type="text" placeholder="-" class="form-control @error('panjang_produksi') is-invalid @enderror" wire:model="panjang_produksi"
+                                    oninput="this.value = window.formatNumber(this.value)"/>
                                 <span class="input-group-text">
                                     m
                                 </span>
@@ -200,7 +201,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-6">Total Panjang Produksi</label>
-                                <input type="text" placeholder="0" class="form-control readonly bg-light" readonly="readonly" wire:model="total_assembly_qty" />
+                                <input type="text" placeholder="0" class="form-control readonly bg-light" readonly="readonly" wire:model="total_assembly_qty"/>
                                 <span class="input-group-text">
                                     m
                                 </span>
@@ -1300,6 +1301,27 @@
 </div>
 @script
 <script>
+    // format number
+    window.formatNumber = function(value) {
+        console.log(value);
+
+        // Hapus koma jika ada
+        value = value.replace(/,/g, '');
+
+        // Hapus karakter yang bukan angka
+        value = value.replace(/[^0-9]/g, '');
+
+        // Hapus nol di depan angka
+        value = value.replace(/^0+/, '');
+
+        // Jika value adalah angka yang valid, format dengan pemisah ribuan
+        if (!isNaN(value) && value !== '') {
+            return Number(value).toLocaleString('en-US');
+        }
+
+        // Kembalikan value tanpa modifikasi jika tidak valid
+        return value;
+    };
     $wire.on('showModal', () => {
 
       $('#modal-add').modal('show');
