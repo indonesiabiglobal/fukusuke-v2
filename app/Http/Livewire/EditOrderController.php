@@ -129,7 +129,7 @@ class EditOrderController extends Component
         $this->orderId = $order->id;
         $this->po_no = $order->po_no;
         $this->product_code = $order->product_code;
-        $this->order_qty = $order->order_qty;
+        $this->order_qty = number_format($order->order_qty);
         $this->process_date = Carbon::parse($order->processdate)->format('Y-m-d');
         $this->order_date = Carbon::parse($order->order_date)->format('Y-m-d');
         $this->stufingdate = Carbon::parse($order->stufingdate)->format('Y-m-d');

@@ -309,7 +309,7 @@
                             <td x-show="na_pr" class="text-start">{{ $item->produk_name }}</td>
                             <td x-show="ko_pr">{{ $item->product_code }}</td>
                             <td x-show="bu">{{ $item->buyer_name }}</td>
-                            <td x-show="qt">{{ $item->order_qty }}</td>
+                            <td x-show="qt">{{ number_format($item->order_qty) }}</td>
                             <td x-show="tgo">{{ $item->order_date }}</td>
                             <td x-show="stf">{{ $item->stufingdate }}</td>
                             <td x-show="etd">{{ $item->etddate }}</td>

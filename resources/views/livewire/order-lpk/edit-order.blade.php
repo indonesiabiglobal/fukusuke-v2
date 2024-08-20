@@ -69,7 +69,7 @@
             <div class="form-group mt-1">
                 <div class="input-group">
                     <label class="control-label col-12 col-lg-3 fw-bold text-muted">Jumlah Order</label>
-                    <input type="number" class="form-control @error('order_qty') is-invalid @enderror"
+                    <input type="text" class="form-control @error('order_qty') is-invalid @enderror"
                         wire:model="order_qty" oninput="this.value = window.formatNumber(this.value)" />
                     @error('order_qty')
                         <span class="invalid-feedback">{{ $message }}</span>
