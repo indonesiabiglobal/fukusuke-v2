@@ -382,7 +382,7 @@
                             <td x-show="produk_kode">{{ $item->product_code }}</td>
                             <td x-show="mesin">{{ $item->machine_no }}</td>
                             <td x-show="buyer">{{ $item->buyer_name }}</td>
-                            <td>{{ $item->warnalpk }}</td>
+                            {{-- <td>{{ $item->warnalpk }}</td> --}}
                             <td x-show="proses_tanggal">{{ $item->tglproses }}</td>
                             <td x-show="seq">{{ $item->seq_no }}</td>
                             <td x-show="by_update">{{ $item->updated_by }}</td>
