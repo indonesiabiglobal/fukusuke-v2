@@ -43,6 +43,7 @@ class EditLpkController extends Component
     public $warnalpkid;
     public $case_box_count;
     public $status_lpk;
+    public $seq_no;
 
     public $masterWarnaLPK;
 
@@ -53,7 +54,7 @@ class EditLpkController extends Component
     public $katanuki_id;
 
     protected $rules = [
-        'lpk_date' => 'required',
+        // 'lpk_date' => 'required',
         'lpk_no' => 'required',
         'po_no' => 'required',
         'order_id' => 'required',
@@ -103,7 +104,8 @@ class EditLpkController extends Component
                 'mm.machinename',
                 'mbu.id as buyer_id',
                 'mbu.name as buyer_name',
-                'tolp.created_on as tglproses',
+                // 'tolp.created_on as tglproses',
+                DB::raw("tolp.created_on || ' - Nomor: ' || tolp.seq_no as tglproses"),
                 'mp.productlength',
                 'tolp.seq_no',
                 'tolp.updated_by',
@@ -128,7 +130,7 @@ class EditLpkController extends Component
         $this->qty_gentan = $order->qty_gentan;
         $this->qty_gulung = $order->qty_gulung;
         $this->panjang_lpk = $order->panjang_lpk;
-        $this->processdate = Carbon::parse($order->tglproses)->format('Y-m-d');
+        $this->processdate = $order->tglproses;
         $this->order_date = Carbon::parse($order->order_date)->format('Y-m-d');
         $this->buyer_name = $order->buyer_name;
         $this->product_name = $order->product_name;
@@ -151,7 +153,7 @@ class EditLpkController extends Component
 
             $orderlpk = TdOrderLpk::findOrFail($this->orderId);
             $orderlpk->lpk_no = $this->lpk_no;
-            $orderlpk->lpk_date = $this->lpk_date;
+            // $orderlpk->lpk_date = $this->lpk_date;
             $orderlpk->order_id = $orderlpk->id;
             $orderlpk->product_id = $orderlpk->product_id;
             $orderlpk->machine_id = $machine->id;
@@ -260,10 +262,12 @@ class EditLpkController extends Component
             $tdorder = DB::table('tdorder as tod')
                 ->join('msproduct as mp', 'mp.id', '=', 'tod.product_id')
                 ->join('msbuyer as mbu', 'mbu.id', '=', 'tod.buyer_id')
+                ->join('tdorderlpk as tolp', 'tod.id', '=', 'tolp.order_id')
                 ->select(
                     'tod.id',
                     'tod.product_code',
-                    'tod.processdate',
+                    // 'tod.processdate',
+                    DB::raw("tod.processdate || ' - Nomor: ' || tolp.seq_no as processdate"),
                     'tod.order_date',
                     'mp.name as produk_name',
                     'mbu.name as buyer_name',

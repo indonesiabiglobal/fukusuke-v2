@@ -5,15 +5,21 @@
                 <div class="form-group">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-3 fw-bold text-muted">Tanggal LPK</label>
-                        <input wire:model.defer="lpk_date" type="text"
-                            class="form-control @error('lpk_date') is-invalid @enderror" style="padding:0.44rem"
+                        <input class="form-control datepicker-input readonly bg-light" readonly="readonly"
+                            type="date" wire:model.defer="lpk_date" placeholder="yyyy/mm/dd" />
+                        <span class="input-group-text py-0">
+                            <i class="ri-calendar-event-fill fs-4"></i>
+                        </span>
+
+                        {{-- <input wire:model.defer="lpk_date" type="text"
+                            class="form-control @error('lpk_date') is-invalid @enderror readonly" readonly="readonly" style="padding:0.44rem"
                             data-provider="flatpickr" data-date-format="d/m/Y">
                         <span class="input-group-text py-0">
                             <i class="ri-calendar-event-fill fs-4"></i>
                         </span>
                         @error('lpk_date')
                             <span class="invalid-feedback">{{ $message }}</span>
-                        @enderror
+                        @enderror --}}
                     </div>
                 </div>
                 <div class="form-group mt-1">
@@ -61,8 +67,8 @@
                 <div class="form-group mt-1">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-3 fw-bold text-muted">Jumlah LPK</label>
-                        <input type="number" class="form-control @error('qty_lpk') is-invalid @enderror"
-                            wire:model.live="qty_lpk" />
+                        <input type="text" class="form-control @error('qty_lpk') is-invalid @enderror"
+                            wire:model.live="qty_lpk" oninput="this.value = window.formatNumber(this.value)" />
                         <span class="input-group-text">
                             Lembar
                         </span>
@@ -74,8 +80,8 @@
                 <div class="form-group mt-1">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-3 fw-bold text-muted">Jumlah Gentan</label>
-                        <input type="number" class="form-control @error('qty_gentan') is-invalid @enderror"
-                            wire:model.live="qty_gentan" />
+                        <input type="text" class="form-control @error('qty_gentan') is-invalid @enderror"
+                            wire:model.live="qty_gentan" oninput="this.value = window.formatNumber(this.value)" />
                         <span class="input-group-text">
                             roll
                         </span>
@@ -87,8 +93,8 @@
                 <div class="form-group mt-1">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-3 fw-bold text-muted">Meter Gulung</label>
-                        <input type="number" class="form-control @error('qty_gulung') is-invalid @enderror"
-                            wire:model.live="qty_gulung" />
+                        <input type="text" class="form-control @error('qty_gulung') is-invalid @enderror"
+                            wire:model.live="qty_gulung" oninput="this.value = window.formatNumber(this.value)" />
                         <span class="input-group-text">
                             meter
                         </span>
@@ -100,9 +106,9 @@
                 <div class="form-group mt-1">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-3 fw-bold text-muted">Panjang LPK</label>
-                        <input type="number"
+                        <input type="text"
                             class="form-control readonly bg-light @error('panjang_lpk') is-invalid @enderror"
-                            readonly="readonly" wire:model="panjang_lpk" />
+                            readonly="readonly" wire:model="panjang_lpk" oninput="this.value = window.formatNumber(this.value)" />
                         <span class="input-group-text">
                             meter
                         </span>
@@ -146,8 +152,13 @@
                 <div class="form-group">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-3 fw-bold text-muted">Tanggal Proses</label>
-                        {{-- <input wire:model.defer="processdate" type="date" class="form-control datepicker-input @error('processdate') is-invalid @enderror" placeholder="yyyy/mm/dd" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d/m/Y"/> --}}
-                        <input wire:model.defer="processdate" type="text"
+                        {{-- <input class="form-control datepicker-input readonly bg-light" readonly="readonly"
+                            type="date" wire:model.defer="processdate" placeholder="yyyy/mm/dd" /> --}}
+                        <input type="text" class="form-control readonly bg-light" readonly="readonly" wire:model="processdate" />
+                        <span class="input-group-text py-0">
+                            <i class="ri-calendar-event-fill fs-4"></i>
+                        </span>                        
+                        {{-- <input wire:model.defer="processdate" type="text"
                             class="form-control @error('processdate') is-invalid @enderror" style="padding:0.44rem"
                             data-provider="flatpickr" data-date-format="d/m/Y">
                         <span class="input-group-text py-0">
@@ -155,7 +166,7 @@
                         </span>
                         @error('processdate')
                             <span class="invalid-feedback">{{ $message }}</span>
-                        @enderror
+                        @enderror --}}
                     </div>
                 </div>
 
@@ -191,7 +202,7 @@
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-3 fw-bold text-muted">Panjang Total</label>
                         <input type="text" class="form-control readonly bg-light" readonly="readonly"
-                            wire:model="total_assembly_line" />
+                            wire:model="total_assembly_line" oninput="this.value = window.formatNumber(this.value)" />
                         <span class="input-group-text">
                             meter
                         </span>
@@ -201,14 +212,14 @@
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-3 fw-bold text-muted">Dimensi (TxLxP)</label>
                         <input type="text" class="form-control readonly bg-light" readonly="readonly"
-                            wire:model="dimensi" />
+                            wire:model="dimensi" oninput="this.value = window.formatNumber(this.value)" />
                     </div>
                 </div>
                 <div class="form-group mt-1">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-3 fw-bold text-muted">Default Gulung</label>
                         <input type="text" class="form-control readonly bg-light" readonly="readonly"
-                            wire:model="defaultgulung" />
+                            wire:model="defaultgulung" oninput="this.value = window.formatNumber(this.value)" />
                         <span class="input-group-text">
                             meter
                         </span>
@@ -218,7 +229,7 @@
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-3 fw-bold text-muted">Selisih Kurang</label>
                         <input type="text" class="form-control readonly bg-light" readonly="readonly"
-                            wire:model="selisihkurang" />
+                            wire:model="selisihkurang" oninput="this.value = window.formatNumber(this.value)" />
                         <span class="input-group-text">
                             meter
                         </span>
@@ -250,7 +261,7 @@
                         <i class="ri-delete-bin-line"></i> Delete
                     </button>
 
-                    <button type="submit" class="btn btn-success w-lg">
+                    <button type="button" wire:click="save" class="btn btn-success w-lg">
                         <span wire:loading.remove wire:target="save">
                             <i class="ri-save-3-line"></i> Update
                         </span>
@@ -865,6 +876,28 @@
 </div>
 @script
     <script>
+        // format number
+        window.formatNumber = function(value) {
+            console.log(value);
+
+            // Hapus koma jika ada
+            value = value.replace(/,/g, '');
+
+            // Hapus karakter yang bukan angka
+            value = value.replace(/[^0-9]/g, '');
+
+            // Hapus nol di depan angka
+            value = value.replace(/^0+/, '');
+
+            // Jika value adalah angka yang valid, format dengan pemisah ribuan
+            if (!isNaN(value) && value !== '') {
+                return Number(value).toLocaleString('en-US');
+            }
+
+            // Kembalikan value tanpa modifikasi jika tidak valid
+            return value;
+        };
+
         $wire.on('redirectToPrint', (lpk_id) => {
             var printUrl = '{{ route('report-lpk') }}?lpk_id=' + lpk_id
             window.open(printUrl, '_blank');
