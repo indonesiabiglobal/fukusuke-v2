@@ -241,6 +241,7 @@ class AddOrderController extends Component
 
         DB::beginTransaction();
         try {
+            $maxProcessSeq = TdOrders::where('order_date', $this->order_date)->max('processseq');
             $product = MsProduct::where('code', $this->product_id)->first();
             $order = new TdOrders();
             $order->processdate = $this->process_date;
@@ -254,6 +255,7 @@ class AddOrderController extends Component
             $order->stufingdate = $this->stufingdate;
             $order->etddate = $this->etddate;
             $order->etadate = $this->etadate;
+            $order->processseq = $maxProcessSeq + 1;
             $order->created_on = Carbon::now();
             $order->created_by = auth()->user()->username;
             $order->updated_on = Carbon::now();

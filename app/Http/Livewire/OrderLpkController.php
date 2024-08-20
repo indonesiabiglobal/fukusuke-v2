@@ -104,9 +104,13 @@ class OrderLpkController extends Component
             'file' => 'required|mimes:xls,xlsx',
         ]);
 
-        Excel::import(new OrderEntryImport, $this->file->path());
+        try {
+            Excel::import(new OrderEntryImport, $this->file->path());
 
-        $this->dispatch('notification', ['type' => 'success', 'message' => 'Excel imported successfully.']);
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Excel imported successfully.']);
+        } catch (\Exception  $e) {
+            $this->dispatch('notification', ['type' => 'error', 'message' => $e->getMessage()]);
+        }
     }
 
     public function render()
