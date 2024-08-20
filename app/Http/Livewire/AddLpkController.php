@@ -159,11 +159,11 @@ class AddLpkController extends Component
             if (isset($this->remark)) {
                 $orderlpk->remark = $this->remark;
             }
-            $orderlpk->qty_gentan = $this->qty_gentan;
-            $orderlpk->panjang_lpk = $this->panjang_lpk;
-            $orderlpk->total_assembly_line = $this->total_assembly_line;
+            $orderlpk->qty_gentan = (int)str_replace(',', '', $this->qty_gentan);
+            $orderlpk->panjang_lpk = (int)str_replace(',', '', $this->panjang_lpk);
+            $orderlpk->total_assembly_line = (int)str_replace(',', '', $this->total_assembly_line);
             $orderlpk->seq_no = $seqno;
-            $orderlpk->qty_gulung = $this->qty_gulung;
+            $orderlpk->qty_gulung = (int)str_replace(',', '', $this->qty_gulung);
             // $orderlpk->warnalpkid = $this->warnalpkid['value'];
             $orderlpk->created_on = Carbon::now()->format('Y-m-d H:i:s');
 
