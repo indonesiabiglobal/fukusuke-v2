@@ -30,6 +30,9 @@ class CetakLpkController extends Component
     public function render()
     {
         if(isset($this->lpk_no) && $this->lpk_no != ''){
+            if (strlen($this->lpk_no) > 6) {
+                $this->lpk_no = substr_replace($this->lpk_no,'-',6,0);
+            }
             $data = DB::table('tdorderlpk as tod')
             ->leftJoin('msproduct as mp', 'mp.id', '=', 'tod.product_id')
             ->select(
