@@ -6,8 +6,10 @@ use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Illuminate\Support\Collection;
+use Maatwebsite\Excel\Concerns\WithColumnFormatting;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
-class LpkEntryExport implements FromCollection, WithHeadings
+class LpkEntryExport implements FromCollection, WithHeadings, WithColumnFormatting
 {
     /**
     * @return \Illuminate\Support\Collection
@@ -34,6 +36,14 @@ class LpkEntryExport implements FromCollection, WithHeadings
         return [
             'TG_PROSES','TG_LPK','Nomor_LPK','PO_NUMBER','Nomor_Mesin','Jumlah_LPK','Jumlah_Gentan','Meter_Gulung',
             'Note'
+        ];
+    }
+
+    public function columnFormats(): array
+    {
+        return [
+            'A' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+            'B' => NumberFormat::FORMAT_DATE_DDMMYYYY,
         ];
     }
 }
