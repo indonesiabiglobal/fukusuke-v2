@@ -66,7 +66,7 @@
                 <div class="form-group mt-1">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-3 fw-bold text-muted">Jumlah Gentan</label>
-                        <input type="text" class="form-control @error('qty_gentan') is-invalid @enderror" wire:model.live="qty_gentan" oninput="this.value = window.formatNumber(this.value)"/>
+                        <input type="text" class="form-control @error('qty_gentan') is-invalid @enderror" wire:model.live.debounce.600ms="qty_gentan" oninput="this.value = window.formatNumber(this.value)"/>
                         <span class="input-group-text">
                             roll
                         </span>
@@ -78,7 +78,7 @@
                 <div class="form-group mt-1">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-3 fw-bold text-muted">Meter Gulung</label>
-                        <input type="text" class="form-control @error('qty_gulung') is-invalid @enderror" wire:model.live="qty_gulung" oninput="this.value = window.formatNumber(this.value)" />
+                        <input type="text" class="form-control @error('qty_gulung') is-invalid @enderror" wire:model.live.debounce.600ms="qty_gulung" oninput="this.value = window.formatNumber(this.value)" />
                         <span class="input-group-text">
                             meter
                         </span>
@@ -90,7 +90,7 @@
                 <div class="form-group mt-1">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-3 fw-bold text-muted">Panjang LPK</label>
-                        <input type="text" class="form-control readonly @error('panjang_lpk') is-invalid @enderror" readonly="readonly" wire:model.live="panjang_lpk" oninput="this.value = window.formatNumber(this.value)" />
+                        <input type="text" class="form-control readonly @error('panjang_lpk') is-invalid @enderror bg-light" readonly="readonly" wire:model.live="panjang_lpk" oninput="this.value = window.formatNumber(this.value)" />
                         <span class="input-group-text">
                             meter
                         </span>
