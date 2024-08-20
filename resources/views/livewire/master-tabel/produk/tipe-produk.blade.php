@@ -115,10 +115,11 @@
                                                         Infure</label>
                                                 </div>
                                                 <div class="col-7">
-                                                    <input type="number" step="0.001"
+                                                    <input type="text" step="0.001"
                                                         class="form-control @error('harga_sat_infure') is-invalid @enderror"
                                                         id="harga_sat_infure" wire:model.defer="harga_sat_infure"
-                                                        placeholder="Harga Satuan Infure">
+                                                        placeholder="Harga Satuan Infure"
+                                                        oninput="this.value = window.formatNumberDecimal(this.value)">
                                                     @error('harga_sat_infure')
                                                         <span class="invalid-feedback">{{ $message }}</span>
                                                     @enderror
@@ -133,11 +134,12 @@
                                                         Loss Infure</label>
                                                 </div>
                                                 <div class="col-7">
-                                                    <input type="number" step="0.001"
+                                                    <input type="text" step="0.001"
                                                         class="form-control @error('harga_sat_infure_loss') is-invalid @enderror"
                                                         id="harga_sat_infure_loss"
                                                         wire:model.defer="harga_sat_infure_loss"
-                                                        placeholder="Harga Satuan Loss Infure">
+                                                        placeholder="Harga Satuan Loss Infure"
+                                                        oninput="this.value = window.formatNumberDecimal(this.value)">
                                                     @error('harga_sat_infure_loss')
                                                         <span class="invalid-feedback">{{ $message }}</span>
                                                     @enderror
@@ -152,10 +154,11 @@
                                                         Inline</label>
                                                 </div>
                                                 <div class="col-7">
-                                                    <input type="number" step="0.001"
+                                                    <input type="text" step="0.001"
                                                         class="form-control @error('harga_sat_inline') is-invalid @enderror"
                                                         id="harga_sat_inline" wire:model.defer="harga_sat_inline"
-                                                        placeholder="Harga Satuan Inline">
+                                                        placeholder="Harga Satuan Inline"
+                                                        oninput="this.value = window.formatNumberDecimal(this.value)">
                                                     @error('harga_sat_inline')
                                                         <span class="invalid-feedback">{{ $message }}</span>
                                                     @enderror
@@ -173,7 +176,8 @@
                                                     <input type="text" step="0.001"
                                                         class="form-control @error('harga_sat_cetak') is-invalid @enderror"
                                                         id="harga_sat_cetak" wire:model.defer="harga_sat_cetak"
-                                                        placeholder="Harga Satuan cetak">
+                                                        placeholder="Harga Satuan cetak"
+                                                        oninput="this.value = window.formatNumberDecimal(this.value)">
                                                     @error('harga_sat_cetak')
                                                         <span class="invalid-feedback">{{ $message }}</span>
                                                     @enderror
@@ -191,7 +195,8 @@
                                                     <input type="text" step="0.001"
                                                         class="form-control @error('harga_sat_seitai') is-invalid @enderror"
                                                         id="harga_sat_seitai" wire:model.defer="harga_sat_seitai"
-                                                        placeholder="Harga Satuan seitai">
+                                                        placeholder="Harga Satuan seitai"
+                                                        oninput="this.value = window.formatNumberDecimal(this.value)">
                                                     @error('harga_sat_seitai')
                                                         <span class="invalid-feedback">{{ $message }}</span>
                                                     @enderror
@@ -210,7 +215,8 @@
                                                         class="form-control @error('harga_sat_seitai_loss') is-invalid @enderror"
                                                         id="harga_sat_seitai_loss"
                                                         wire:model.defer="harga_sat_seitai_loss"
-                                                        placeholder="Harga Satuan seitai_loss">
+                                                        placeholder="Harga Satuan seitai_loss"
+                                                        oninput="this.value = window.formatNumberDecimal(this.value)">
                                                     @error('harga_sat_seitai_loss')
                                                         <span class="invalid-feedback">{{ $message }}</span>
                                                     @enderror
@@ -227,7 +233,8 @@
                                                     <input type="text" step="0.001"
                                                         class="form-control @error('berat_jenis') is-invalid @enderror"
                                                         id="berat_jenis" wire:model.defer="berat_jenis"
-                                                        placeholder="Berat Jenis">
+                                                        placeholder="Berat Jenis"
+                                                        oninput="this.value = window.formatNumberDecimal(this.value)">
                                                     @error('berat_jenis')
                                                         <span class="invalid-feedback">{{ $message }}</span>
                                                     @enderror
@@ -340,10 +347,10 @@
                                                         Infure</label>
                                                 </div>
                                                 <div class="col-7">
-                                                    <input type="number" step="0.001"
+                                                    <input type="text" step="0.001"
                                                         class="form-control @error('harga_sat_infure') is-invalid @enderror"
                                                         id="harga_sat_infure" wire:model.defer="harga_sat_infure"
-                                                        placeholder="Harga Satuan Infure">
+                                                        placeholder="Harga Satuan Infure" oninput="this.value = window.formatNumberDecimal(this.value)">
                                                     @error('harga_sat_infure')
                                                         <span class="invalid-feedback">{{ $message }}</span>
                                                     @enderror
@@ -358,11 +365,11 @@
                                                         Loss Infure</label>
                                                 </div>
                                                 <div class="col-7">
-                                                    <input type="number" step="0.001"
+                                                    <input type="text" step="0.001"
                                                         class="form-control @error('harga_sat_infure_loss') is-invalid @enderror"
                                                         id="harga_sat_infure_loss"
                                                         wire:model.defer="harga_sat_infure_loss"
-                                                        placeholder="Harga Satuan Loss Infure">
+                                                        placeholder="Harga Satuan Loss Infure" oninput="this.value = window.formatNumberDecimal(this.value)">
                                                     @error('harga_sat_infure_loss')
                                                         <span class="invalid-feedback">{{ $message }}</span>
                                                     @enderror
@@ -377,10 +384,10 @@
                                                         Inline</label>
                                                 </div>
                                                 <div class="col-7">
-                                                    <input type="number" step="0.001"
+                                                    <input type="text" step="0.001"
                                                         class="form-control @error('harga_sat_inline') is-invalid @enderror"
                                                         id="harga_sat_inline" wire:model.defer="harga_sat_inline"
-                                                        placeholder="Harga Satuan Inline">
+                                                        placeholder="Harga Satuan Inline" oninput="this.value = window.formatNumberDecimal(this.value)">
                                                     @error('harga_sat_inline')
                                                         <span class="invalid-feedback">{{ $message }}</span>
                                                     @enderror
@@ -395,10 +402,10 @@
                                                         cetak</label>
                                                 </div>
                                                 <div class="col-7">
-                                                    <input type="number" step="0.001"
+                                                    <input type="text" step="0.001"
                                                         class="form-control @error('harga_sat_cetak') is-invalid @enderror"
                                                         id="harga_sat_cetak" wire:model.defer="harga_sat_cetak"
-                                                        placeholder="Harga Satuan cetak">
+                                                        placeholder="Harga Satuan cetak" oninput="this.value = window.formatNumberDecimal(this.value)">
                                                     @error('harga_sat_cetak')
                                                         <span class="invalid-feedback">{{ $message }}</span>
                                                     @enderror
@@ -413,10 +420,10 @@
                                                         seitai</label>
                                                 </div>
                                                 <div class="col-7">
-                                                    <input type="number" step="0.001"
+                                                    <input type="text" step="0.001"
                                                         class="form-control @error('harga_sat_seitai') is-invalid @enderror"
                                                         id="harga_sat_seitai" wire:model.defer="harga_sat_seitai"
-                                                        placeholder="Harga Satuan seitai">
+                                                        placeholder="Harga Satuan seitai" oninput="this.value = window.formatNumberDecimal(this.value)">
                                                     @error('harga_sat_seitai')
                                                         <span class="invalid-feedback">{{ $message }}</span>
                                                     @enderror
@@ -431,11 +438,11 @@
                                                         Seitai Loss</label>
                                                 </div>
                                                 <div class="col-7">
-                                                    <input type="number" step="0.001"
+                                                    <input type="text" step="0.001"
                                                         class="form-control @error('harga_sat_seitai_loss') is-invalid @enderror"
                                                         id="harga_sat_seitai_loss"
                                                         wire:model.defer="harga_sat_seitai_loss"
-                                                        placeholder="Harga Satuan seitai_loss">
+                                                        placeholder="Harga Satuan seitai_loss" oninput="this.value = window.formatNumberDecimal(this.value)">
                                                     @error('harga_sat_seitai_loss')
                                                         <span class="invalid-feedback">{{ $message }}</span>
                                                     @enderror
@@ -449,10 +456,10 @@
                                                     <label for="berat_jenis" class="form-label">Berat Jenis</label>
                                                 </div>
                                                 <div class="col-7">
-                                                    <input type="number" step="0.001"
+                                                    <input type="text" step="0.001"
                                                         class="form-control @error('berat_jenis') is-invalid @enderror"
                                                         id="berat_jenis" wire:model.defer="berat_jenis"
-                                                        placeholder="Berat Jenis">
+                                                        placeholder="Berat Jenis" oninput="this.value = window.formatNumberDecimal(this.value)">
                                                     @error('berat_jenis')
                                                         <span class="invalid-feedback">{{ $message }}</span>
                                                     @enderror
@@ -505,7 +512,8 @@
                                         style="width:100px;height:100px"></lord-icon>
                                     <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
                                         <h4>Are you sure ?</h4>
-                                        <p class="text-muted mx-4 mb-0">Are you sure you want to remove this type product ?
+                                        <p class="text-muted mx-4 mb-0">Are you sure you want to remove this type
+                                            product ?
                                         </p>
                                     </div>
                                 </div>

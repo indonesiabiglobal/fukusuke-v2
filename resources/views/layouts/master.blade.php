@@ -113,6 +113,35 @@
             // Kembalikan value tanpa modifikasi jika tidak valid
             return value;
         };
+
+
+        window.formatNumberDecimal = function(value) {
+            // Hapus koma jika ada
+            value = value.replace(/,/g, '');
+
+            // Hapus karakter yang bukan angka atau titik desimal
+            value = value.replace(/[^0-9.]/g, '');
+
+            // Hapus nol di depan angka kecuali untuk nol yang digunakan sebelum titik desimal
+            value = value.replace(/^0+(?=\d)/, '');
+
+            // Jika ada lebih dari satu titik desimal, hapus semua kecuali yang pertama
+            let parts = value.split('.');
+            if (parts.length > 2) {
+                value = parts[0] + '.' + parts.slice(1).join('');
+            }
+
+            // Format bagian sebelum titik desimal dengan pemisah ribuan
+            if (!isNaN(value) && value !== '') {
+                parts = value.split('.');
+                parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                return parts.join('.');
+            }
+
+            // Kembalikan value tanpa modifikasi jika tidak valid
+            return value;
+        };
+
     </script>
 
     {{-- <script>
