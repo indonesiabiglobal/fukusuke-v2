@@ -66,18 +66,18 @@ class AddLpkController extends Component
         $this->processdate = Carbon::now()->format('Y-m-d');
         $today = Carbon::now();
         $lastLPK = TdOrderLpk::whereDate('lpk_date', Carbon::today())
-                    ->orderBy('lpk_no', 'desc')
-                    ->first();
-        if($lastLPK != null){
+            ->orderBy('lpk_no', 'desc')
+            ->first();
+        if ($lastLPK != null) {
             $lastNoLPK = explode('-', $lastLPK->lpk_no);
             $lastNoLPK = $lastNoLPK[1] + 1;
-            $this->lpk_no = $today->format('ymd').'-'.str_pad($lastNoLPK, 3, '0', STR_PAD_LEFT);
+            $this->lpk_no = $today->format('ymd') . '-' . str_pad($lastNoLPK, 3, '0', STR_PAD_LEFT);
         } else {
-            $this->lpk_no = $today->format('ymd').'-001';
+            $this->lpk_no = $today->format('ymd') . '-001';
         }
         $this->total_assembly_line = 0;
-        $this->productlength=1;
-        $this->defaultgulung=1;
+        $this->productlength = 1;
+        $this->defaultgulung = 1;
 
         // master warna LPK
         $this->masterWarnaLPK = DB::table('mswarnalpk')->get();
@@ -137,13 +137,13 @@ class AddLpkController extends Component
         DB::beginTransaction();
         try {
             $order = TdOrders::where('po_no', $this->po_no)->first();
-            $machine=MsMachine::where('machineno', $this->machineno)->first();
+            $machine = MsMachine::where('machineno', $this->machineno)->first();
             $lastSeq = TdOrderLpk::whereDate('lpk_date', Carbon::today())
-                    ->orderBy('seq_no', 'desc')
-                    ->first();
+                ->orderBy('seq_no', 'desc')
+                ->first();
 
             $seqno = 1;
-            if(!empty($lastSeq)){
+            if (!empty($lastSeq)) {
                 $seqno = $lastSeq->seq_no + 1;
             }
 
@@ -154,7 +154,7 @@ class AddLpkController extends Component
             $orderlpk->product_id = $order->product_id;
             $orderlpk->machine_id = $machine->id;
             $orderlpk->qty_lpk = $this->qty_lpk;
-            if(isset($this->remark)){
+            if (isset($this->remark)) {
                 $orderlpk->remark = $this->remark;
             }
             $orderlpk->qty_gentan = $this->qty_gentan;
@@ -168,9 +168,9 @@ class AddLpkController extends Component
             $orderlpk->save();
 
             TdOrders::where('po_no', $this->po_no)
-            ->update(
-                ['status_order' => 1]
-            );
+                ->update(
+                    ['status_order' => 1]
+                );
 
             DB::commit();
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
@@ -188,28 +188,28 @@ class AddLpkController extends Component
 
     public function render()
     {
-        if(isset($this->po_no) && $this->po_no != ''){
+        if (isset($this->po_no) && $this->po_no != '') {
             $tdorder = DB::table('tdorder as tod')
-            ->join('msproduct as mp', 'mp.id', '=', 'tod.product_id')
-            ->join('msbuyer as mbu', 'mbu.id', '=', 'tod.buyer_id')
-            ->select(
-                'tod.id',
-                'tod.product_code',
-                'tod.processdate',
-                'tod.order_date',
-                'mp.name as produk_name',
-                'mbu.name as buyer_name',
-                'mp.ketebalan',
-                'mp.diameterlipat',
-                'mp.productlength',
-                'mp.one_winding_m_number',
-                'mp.case_box_count'
-            )
-            ->where('po_no', $this->po_no)
-            ->first();
+                ->join('msproduct as mp', 'mp.id', '=', 'tod.product_id')
+                ->join('msbuyer as mbu', 'mbu.id', '=', 'tod.buyer_id')
+                ->select(
+                    'tod.id',
+                    'tod.product_code',
+                    'tod.processdate',
+                    'tod.order_date',
+                    'mp.name as produk_name',
+                    'mbu.name as buyer_name',
+                    'mp.ketebalan',
+                    'mp.diameterlipat',
+                    'mp.productlength',
+                    'mp.one_winding_m_number',
+                    'mp.case_box_count'
+                )
+                ->where('po_no', $this->po_no)
+                ->first();
 
 
-            if($tdorder == null){
+            if ($tdorder == null) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor PO ' . $this->po_no . ' Tidak Terdaftar']);
             } else {
                 $this->no_order = $tdorder->product_code;
@@ -220,13 +220,13 @@ class AddLpkController extends Component
                 $this->productlength = $tdorder->productlength;
                 $this->case_box_count = $tdorder->case_box_count;
                 $this->defaultgulung = $tdorder->one_winding_m_number;
-                $this->dimensi = $tdorder->ketebalan.'x'.$tdorder->diameterlipat.'x'.$tdorder->productlength;
+                $this->dimensi = $tdorder->ketebalan . 'x' . $tdorder->diameterlipat . 'x' . $tdorder->productlength;
             }
         }
 
-        if(isset($this->machineno) && $this->machineno != ''){
-            $machine=MsMachine::where('machineno', 'ilike', '%'. $this->machineno .'%')->first();
-            if($machine == null){
+        if (isset($this->machineno) && $this->machineno != '') {
+            $machine = MsMachine::where('machineno', 'ilike', '%' . $this->machineno . '%')->first();
+            if ($machine == null) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Mesin ' . $this->machineno . ' Tidak Terdaftar']);
             } else {
                 $this->machineno = $machine->machineno;
@@ -234,26 +234,29 @@ class AddLpkController extends Component
             }
         }
 
-        if(isset($this->qty_lpk)){
-            $this->total_assembly_line = ($this->qty_lpk * $this->productlength) / $this->case_box_count;
+        if (isset($this->qty_lpk) && $this->qty_lpk != '') {
+            // $this->total_assembly_line = ($this->qty_lpk * ($this->productlength / 1000)) / $this->case_box_count;
+            $this->total_assembly_line = (int)str_replace(',', '', $this->qty_lpk) * ((int)str_replace(',', '', $this->productlength) / 1000);
+
+            $qty_gentan = (int)str_replace(',', '', $this->total_assembly_line) / (int)str_replace(',', '', $this->defaultgulung);
+            $this->qty_gentan = (round(round($qty_gentan) / 2)) * 2;
+
+            $qty_gulung = floor((int)str_replace(',', '', $this->total_assembly_line) / (int)str_replace(',', '', $this->qty_gentan) / 10) * 10;
+            $this->qty_gulung = $qty_gulung;
         }
 
-        if(isset($this->qty_gentan) && isset($this->qty_gulung)){
-            $this->panjang_lpk = (int)$this->qty_gentan * (int)$this->qty_gulung;
-        }
-        if(isset($this->panjang_lpk) && isset($this->total_assembly_line)){
-            $this->selisihkurang = $this->panjang_lpk - $this->total_assembly_line;
-        }
-        
-        // if(isset($this->qty_lpk) && isset($this->productlength)){
-            // $this->total_assembly_line = $this->qty_lpk * $this->productlength;
-            // $this->qty_gentan = $this->productlength / $this->defaultgulung;
-            // $this->qty_gulung = $this->productlength * $this->qty_gentan;
-            // $this->panjang_lpk = $this->qty_gentan * $this->qty_gulung;
-            // 
+        // if (isset($this->qty_gentan) && $this->qty_gentan != '') {
+        //     $this->qty_gentan = $this->qty_lpk * ($this->productlength / 1000) / (int)$this->qty_gulung;
         // }
+
+        if (isset($this->qty_gentan) && isset($this->qty_gulung)) {
+            // $this->panjang_lpk = (int)str_replace(',', '', $this->qty_lpk) * ((int)str_replace(',', '', $this->productlength) / 1000);
+            $this->panjang_lpk = (int)str_replace(',', '', $this->qty_gentan) * (int)str_replace(',', '', (int)$this->qty_gulung);
+        }
+        if (isset($this->panjang_lpk) && isset($this->total_assembly_line)) {
+            $this->selisihkurang = (int)str_replace(',', '', $this->total_assembly_line) - (int)str_replace(',', '', $this->panjang_lpk);
+        }
 
         return view('livewire.order-lpk.add-lpk')->extends('layouts.master');
     }
 }
-
