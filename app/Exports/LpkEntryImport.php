@@ -39,19 +39,38 @@ class LpkEntryImport implements ToModel, WithHeadingRow
                 throw new \Exception('LPK dengan nomor ' . $row['nomor_lpk'] . ' sudah ada');
             }
 
+            // perhitungan
+            $total_assembly_line = (int)str_replace(',', '', $row['jumlah_lpk']) * ((int)str_replace(',', '', $order->productlength) / 1000);
+            $qty_gentan = $row['jumlah_gentan'];
+            $qty_gulung = $row['meter_gulung'];
+            $panjang_lpk = (int)str_replace(',', '', $qty_gentan) * (int)str_replace(',', '', (int)$qty_gulung);
+
+            $lastSeq = TdOrderLpk::whereDate('lpk_date', Carbon::today())
+                ->orderBy('seq_no', 'desc')
+                ->first();
+
+            $seqno = 1;
+            if (!empty($lastSeq)) {
+                $seqno = $lastSeq->seq_no + 1;
+            }
+
             // simpan data ke dalam tabel td_order_lpk
             return new TdOrderLpk([
-                'lpk_date' => $row['tg_proses'],
-                'lpk_date' => $row['tg_lpk'],
                 'lpk_no' => $row['nomor_lpk'],
+                'lpk_date' => $row['tg_lpk'],
                 'order_id' => $order->id,
                 'product_id' => $order->product_id,
                 'machine_id' => $machine->id,
                 'qty_lpk' => $row['jumlah_lpk'],
-                'qty_gentan' => $row['jumlah_gentan'],
-                'qty_gulung' => $row['meter_gulung'],
                 'remark' => $row['note'],
-                'created_on' => Carbon::now(),
+                'qty_gentan' => $qty_gentan,
+                // 'qty_gentan' => $row['jumlah_gentan'],
+                'panjang_lpk' => $panjang_lpk,
+                'total_assembly_line' => $total_assembly_line,
+                'seq_no' => $seqno,
+                'qty_gulung' => $qty_gulung,
+                // 'qty_gulung' => $row['meter_gulung'],
+                'created_on' => $row['tg_proses'],
                 'created_by' => auth()->user()->username,
                 'updated_on' => Carbon::now(),
                 'updated_by' => auth()->user()->username,
