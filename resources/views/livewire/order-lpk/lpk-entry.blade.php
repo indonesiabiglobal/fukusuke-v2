@@ -10,7 +10,7 @@
                         <div class="col-3">
                             <select class="form-select" style="padding:0.44rem" wire:model.defer="transaksi">
                                 <option value="1">Proses</option>
-                                <option value="2">Order</option>
+                                <option value="2">LPK</option>
                             </select>
                         </div>
                         <div class="col-9">

@@ -99,8 +99,13 @@
                         @enderror
                     </div>
                 </div>
-                {{-- warna LPK --}}
+                {{-- catatan --}}
                 <div class="form-group mt-1">
+                    <label for="textarea" class="control-label col-12 col-lg-3 fw-bold text-muted">Catatan</label>
+                    <textarea class="form-control" placeholder="Catatan" id="textarea" rows="2" wire:model="remark"></textarea>
+                </div>
+                {{-- warna LPK --}}
+                {{-- <div class="form-group mt-1">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-3 fw-bold text-muted">Warna LPK</label>
                         <div class="col-12 col-lg-9" wire:ignore>
@@ -121,7 +126,7 @@
                             @enderror
                         </div>
                     </div>
-                </div>
+                </div> --}}
 
             </div>
 
@@ -197,10 +202,6 @@
                         </span>
                     </div>
                 </div>
-                <div class="form-group mt-1">
-                    <label for="textarea" class="control-label col-12 col-lg-3 fw-bold text-muted">Catatan</label>
-                    <textarea class="form-control" placeholder="Catatan" id="textarea" rows="2" wire:model="remark"></textarea>
-                </div>
             </div>
         </div>
         <hr/>
@@ -250,7 +251,7 @@
                 @if ($status_lpk == 1)
                     <p class="text-secondary mb-0">Data LPK Sudah Di Produksi ! ..</p>
                 @endif
-                
+
             </div>
         </div>
 

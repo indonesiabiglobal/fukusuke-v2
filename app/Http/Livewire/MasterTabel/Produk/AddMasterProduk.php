@@ -37,6 +37,7 @@ class AddMasterProduk extends Component
     public $masterStampleSeitai;
     public $masterHagataSeitai;
     public $masterJenisSealSeitai;
+    public $masterWarnaLPK;
 
     // data add produk
     public $code;
@@ -110,6 +111,7 @@ class AddMasterProduk extends Component
     public $stampelseitaiid;
     public $hagataseitaiid;
     public $jenissealseitaiid;
+    public $warnalpkid;
 
     protected $rules = [
         'code' => 'required',
@@ -197,6 +199,7 @@ class AddMasterProduk extends Component
         $this->masterStampleSeitai = DB::table('msstampleseitai')->get(['id', 'code', 'name']);
         $this->masterHagataSeitai = DB::table('mshagataseitai')->get(['id', 'code', 'name']);
         $this->masterJenisSealSeitai = DB::table('msjenissealseitai')->get(['id', 'code', 'name']);
+        $this->masterWarnaLPK = DB::table('mswarnalpk')->get();
     }
 
     public function store()
@@ -377,6 +380,7 @@ class AddMasterProduk extends Component
             $product->lakbaninfureid = isset($this->lakbaninfureid) ? $this->lakbaninfureid['value'] : null;;
             $product->stampelseitaiid = isset($this->stampelseitaiid) ? $this->stampelseitaiid : null;;
             $product->hagataseitaiid = isset($this->hagataseitaiid) ? $this->hagataseitaiid : null;;
+            $product->warnalpkid = isset($this->warnalpkid) ? $this->warnalpkid['value'] : null;;
             // $product->jenissealseitaiid = isset($this->jenissealseitaiid) ? $this->jenissealseitaiid['value'] : null;;
             $product->status = 1;
             $product->created_by = auth()->user()->username;
