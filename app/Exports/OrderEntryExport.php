@@ -22,15 +22,15 @@ class OrderEntryExport implements FromCollection, WithHeadings, WithColumnFormat
     {
         return new Collection([
             [
-                'TG_PROSES' => Carbon::now()->format('d-m-Y'),
+                'TG_PROSES' => Carbon::now()->format('d/m/Y'),
                 'PO_NUMBER' => 'PO001',
-                'TG_ORDER' => Carbon::now()->format('d-m-Y'),
+                'TG_ORDER' => Carbon::now()->format('d/m/Y'),
                 'NO_ORDER' => 'UH244R1',
                 'QTY_ORDER' => '12',
                 'UNIT' => '1',
-                'TG_STUFING' => Carbon::now()->format('d-m-Y'),
-                'TG_ETD' => Carbon::now()->format('d-m-Y'),
-                'TG_ETA' => Carbon::now()->format('d-m-Y'),
+                'TG_STUFING' => Carbon::now()->format('d/m/Y'),
+                'TG_ETD' => Carbon::now()->format('d/m/Y'),
+                'TG_ETA' => Carbon::now()->format('d/m/Y'),
                 'KODE_BUYER' => '1001',
             ],
         ]);
