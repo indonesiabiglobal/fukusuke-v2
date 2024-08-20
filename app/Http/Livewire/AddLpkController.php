@@ -235,25 +235,20 @@ class AddLpkController extends Component
         }
 
         if (isset($this->qty_lpk) && $this->qty_lpk != '') {
-            // $this->total_assembly_line = ($this->qty_lpk * ($this->productlength / 1000)) / $this->case_box_count;
             $this->total_assembly_line = (int)str_replace(',', '', $this->qty_lpk) * ((int)str_replace(',', '', $this->productlength) / 1000);
 
             $qty_gentan = (int)str_replace(',', '', $this->total_assembly_line) / (int)str_replace(',', '', $this->defaultgulung);
             $this->qty_gentan = (round(round($qty_gentan) / 2)) * 2;
-            // dd($this->qty_gentan);
+
             if ($this->qty_gentan < 2) {
                 $this->qty_gentan = 2;
             }
+
             $qty_gulung = floor((int)str_replace(',', '', $this->total_assembly_line) / (int)str_replace(',', '', $this->qty_gentan) / 10) * 10;
             $this->qty_gulung = $qty_gulung;
         }
 
-        // if (isset($this->qty_gentan) && $this->qty_gentan != '') {
-        //     $this->qty_gentan = $this->qty_lpk * ($this->productlength / 1000) / (int)$this->qty_gulung;
-        // }
-
         if (isset($this->qty_gentan) && isset($this->qty_gulung)) {
-            // $this->panjang_lpk = (int)str_replace(',', '', $this->qty_lpk) * ((int)str_replace(',', '', $this->productlength) / 1000);
             $this->panjang_lpk = (int)str_replace(',', '', $this->qty_gentan) * (int)str_replace(',', '', (int)$this->qty_gulung);
         }
         if (isset($this->panjang_lpk) && isset($this->total_assembly_line)) {
