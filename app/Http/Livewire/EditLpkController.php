@@ -24,7 +24,9 @@ class EditLpkController extends Component
     public $machinename;
     public $qty_lpk;
     public $qty_gentan;
+    public $qty_gentan_old;
     public $qty_gulung;
+    public $qty_gulung_old;
     public $panjang_lpk;
     public $processdate;
     public $tgl_po;
@@ -299,7 +301,14 @@ class EditLpkController extends Component
             }
         }
 
-        if (isset($this->qty_lpk) && $this->qty_lpk != '') {
+        if (isset($this->qty_gentan) && $this->qty_gentan != $this->qty_gentan_old) {
+            $this->qty_gentan_old = $this->qty_gentan;
+            $qty_gulung = floor((int)str_replace(',', '', $this->total_assembly_line) / (int)str_replace(',', '', $this->qty_gentan) / 10) * 10;
+            $this->qty_gulung = $qty_gulung;
+        } else if (isset($this->qty_gulung) && $this->qty_gulung != $this->qty_gulung_old) {
+            $this->qty_gulung_old = $this->qty_gulung;
+            $this->panjang_lpk = (int)str_replace(',', '', $this->qty_gentan) * (int)str_replace(',', '', (int)$this->qty_gulung);
+        } else if (isset($this->qty_lpk) && $this->qty_lpk != '') {
             $this->total_assembly_line = (int)str_replace(',', '', $this->qty_lpk) * ((int)str_replace(',', '', $this->productlength) / 1000);
 
             $qty_gentan = (int)str_replace(',', '', $this->total_assembly_line) / (int)str_replace(',', '', $this->defaultgulung);
@@ -309,8 +318,11 @@ class EditLpkController extends Component
                 $this->qty_gentan = 2;
             }
 
+            $this->qty_gentan_old = $this->qty_gentan;
+
             $qty_gulung = floor((int)str_replace(',', '', $this->total_assembly_line) / (int)str_replace(',', '', $this->qty_gentan) / 10) * 10;
             $this->qty_gulung = $qty_gulung;
+            $this->qty_gulung_old = $this->qty_gulung;
         }
 
         if (isset($this->qty_gentan) && isset($this->qty_gulung)) {
