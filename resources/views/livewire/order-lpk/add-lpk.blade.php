@@ -54,7 +54,7 @@
                 <div class="form-group mt-1">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-3 fw-bold text-muted">Jumlah LPK</label>
-                        <input type="number" class="form-control @error('qty_lpk') is-invalid @enderror" wire:model.live="qty_lpk" />
+                        <input type="text" class="form-control @error('qty_lpk') is-invalid @enderror" wire:model.live.debounce.600ms="qty_lpk"   oninput="this.value = window.formatNumber(this.value)" />
                         <span class="input-group-text">
                             Lembar
                         </span>
@@ -66,7 +66,7 @@
                 <div class="form-group mt-1">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-3 fw-bold text-muted">Jumlah Gentan</label>
-                        <input type="number" class="form-control @error('qty_gentan') is-invalid @enderror" wire:model.live="qty_gentan" />
+                        <input type="text" class="form-control @error('qty_gentan') is-invalid @enderror" wire:model.live="qty_gentan" oninput="this.value = window.formatNumber(this.value)"/>
                         <span class="input-group-text">
                             roll
                         </span>
@@ -78,7 +78,7 @@
                 <div class="form-group mt-1">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-3 fw-bold text-muted">Meter Gulung</label>
-                        <input type="number" class="form-control @error('qty_gulung') is-invalid @enderror" wire:model.live="qty_gulung" />
+                        <input type="text" class="form-control @error('qty_gulung') is-invalid @enderror" wire:model.live="qty_gulung" oninput="this.value = window.formatNumber(this.value)" />
                         <span class="input-group-text">
                             meter
                         </span>
@@ -90,7 +90,7 @@
                 <div class="form-group mt-1">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-3 fw-bold text-muted">Panjang LPK</label>
-                        <input type="number" class="form-control readonly @error('panjang_lpk') is-invalid @enderror" readonly="readonly" wire:model.live="panjang_lpk" />
+                        <input type="text" class="form-control readonly @error('panjang_lpk') is-invalid @enderror" readonly="readonly" wire:model.live="panjang_lpk" oninput="this.value = window.formatNumber(this.value)" />
                         <span class="input-group-text">
                             meter
                         </span>
@@ -193,7 +193,7 @@
                 <div class="form-group mt-1">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-3 fw-bold text-muted">Selisih Kurang</label>
-                        <input type="text" class="form-control readonly bg-light"  readonly="readonly" wire:model="selisihkurang" />
+                        <input type="text" class="form-control readonly bg-light"  readonly="readonly" wire:model="selisihkurang" oninput="this.value = window.formatNumber(this.value)" />
                         <span class="input-group-text">
                             meter
                         </span>
@@ -785,6 +785,27 @@
 </div>
 @script
     <script>
+        window.formatNumber = function(value) {
+            console.log(value);
+
+            // Hapus koma jika ada
+            value = value.replace(/,/g, '');
+
+            // Hapus karakter yang bukan angka
+            value = value.replace(/[^0-9]/g, '');
+
+            // Hapus nol di depan angka
+            value = value.replace(/^0+/, '');
+
+            // Jika value adalah angka yang valid, format dengan pemisah ribuan
+            if (!isNaN(value) && value !== '') {
+                return Number(value).toLocaleString('en-US');
+            }
+
+            // Kembalikan value tanpa modifikasi jika tidak valid
+            return value;
+        };
+
         $wire.on('showModalNoOrder', () => {
             $('#modal-noorder-produk').modal('show');
         });
