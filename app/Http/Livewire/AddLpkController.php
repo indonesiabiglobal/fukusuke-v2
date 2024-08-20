@@ -55,7 +55,7 @@ class AddLpkController extends Component
         'qty_gentan' => 'required',
         'panjang_lpk' => 'required',
         'processdate' => 'required',
-        'warnalpkid' => 'required',
+        // 'warnalpkid' => 'required',
         'buyer_name' => 'required'
         // 'qty_gulung' => 'required'
     ];
@@ -162,7 +162,7 @@ class AddLpkController extends Component
             $orderlpk->total_assembly_line = $this->total_assembly_line;
             $orderlpk->seq_no = $seqno;
             $orderlpk->qty_gulung = $this->qty_gulung;
-            $orderlpk->warnalpkid = $this->warnalpkid['value'];
+            // $orderlpk->warnalpkid = $this->warnalpkid['value'];
             $orderlpk->created_on = Carbon::now()->format('Y-m-d H:i:s');
 
             $orderlpk->save();
@@ -244,13 +244,13 @@ class AddLpkController extends Component
         if(isset($this->panjang_lpk) && isset($this->total_assembly_line)){
             $this->selisihkurang = $this->panjang_lpk - $this->total_assembly_line;
         }
-        
+
         // if(isset($this->qty_lpk) && isset($this->productlength)){
             // $this->total_assembly_line = $this->qty_lpk * $this->productlength;
             // $this->qty_gentan = $this->productlength / $this->defaultgulung;
             // $this->qty_gulung = $this->productlength * $this->qty_gentan;
             // $this->panjang_lpk = $this->qty_gentan * $this->qty_gulung;
-            // 
+            //
         // }
 
         return view('livewire.order-lpk.add-lpk')->extends('layouts.master');

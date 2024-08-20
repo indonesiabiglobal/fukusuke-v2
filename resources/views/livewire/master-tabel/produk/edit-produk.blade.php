@@ -795,6 +795,29 @@
                             @enderror
                         </div>
                     </div>
+                    {{-- warna LPK --}}
+                    <div class="form-group mt-1">
+                        <div class="input-group">
+                            <label class="control-label col-12 col-lg-6">Warna LPK</label>
+                            <div class="col-12 col-lg-6" wire:ignore>
+                                <select required data-choices data-choices-sorting="true"
+                                    class="form-select @error('warnalpkid') is-invalid @enderror"
+                                    wire:model="warnalpkid">
+                                    <option value="" selected>
+                                        Silahkan Pilih
+                                    </option>
+                                    @foreach ($masterWarnaLPK as $item)
+                                        <option value="{{ $item->id }}" @if ($warnalpkid['value'] == $item->id) selected @endif>
+                                            {{ $item->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('warnalpkid')
+                                    <span class="invalid-feedback">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
                     {{-- <div class="form-group mt-1">
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-6">Jenis Seal Seitai</label>

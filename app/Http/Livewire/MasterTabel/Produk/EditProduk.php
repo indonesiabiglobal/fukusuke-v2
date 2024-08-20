@@ -37,6 +37,7 @@ class EditProduk extends Component
     public $masterStampleSeitai;
     public $masterHagataSeitai;
     public $masterJenisSealSeitai;
+    public $masterWarnaLPK;
 
     // data add produk
     public $product;
@@ -111,6 +112,7 @@ class EditProduk extends Component
     public $stampelseitaiid;
     public $hagataseitaiid;
     public $jenissealseitaiid;
+    public $warnalpkid;
 
     protected $rules = [
         'code' => 'required',
@@ -198,6 +200,7 @@ class EditProduk extends Component
         $this->masterStampleSeitai = DB::table('msstampleseitai')->get(['id', 'code', 'name']);
         $this->masterHagataSeitai = DB::table('mshagataseitai')->get(['id', 'code', 'name']);
         $this->masterJenisSealSeitai = DB::table('msjenissealseitai')->get(['id', 'code', 'name']);
+        $this->masterWarnaLPK = DB::table('mswarnalpk')->get();
 
         $this->product = DB::table('msproduct')->where('id', $request['productId'])->first();
 
@@ -271,6 +274,7 @@ class EditProduk extends Component
         $this->stampelseitaiid = $this->product->stampelseitaiid;
         $this->hagataseitaiid = $this->product->hagataseitaiid;
         $this->jenissealseitaiid['value'] = $this->product->jenissealseitaiid;
+        $this->warnalpkid['value'] = $this->product->warnalpkid;
     }
 
     public function update()
@@ -454,6 +458,7 @@ class EditProduk extends Component
             $product->lakbaninfureid = isset($this->lakbaninfureid) ? $this->lakbaninfureid['value'] : null;;
             $product->stampelseitaiid = isset($this->stampelseitaiid) ? $this->stampelseitaiid : null;;
             $product->hagataseitaiid = isset($this->hagataseitaiid) ? $this->hagataseitaiid : null;;
+            $product->warnalpkid = isset($this->warnalpkid) ? $this->warnalpkid['value'] : null;;
             // $product->jenissealseitaiid = isset($this->jenissealseitaiid) ? $this->jenissealseitaiid : null;
             $product->status = 1;
             $product->updated_by = auth()->user()->username;
