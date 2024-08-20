@@ -23,13 +23,13 @@ class OrderEntryImport implements ToModel, WithHeadingRow
         try {
             $poNumber = TdOrders::where('po_no', $row['po_number'])->exists();
             if ($poNumber) {
-                throw new \Exception('PO Number '. $row['po_number'] .' sudah ada');
+                throw new \Exception('PO Number ' . $row['po_number'] . ' sudah ada');
             }
-            $row['tg_order'] = Carbon::parse(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['tg_order']));
-            $row['tg_proses'] = Carbon::parse(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['tg_proses']));
-            $row['tg_stufing'] = Carbon::parse(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['tg_stufing']));
-            $row['tg_etd'] = Carbon::parse(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['tg_etd']));
-            $row['tg_eta'] = Carbon::parse(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['tg_eta']));
+            // $row['tg_order'] = Carbon::parse(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['tg_order']));
+            // $row['tg_proses'] = Carbon::parse(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['tg_proses']));
+            // $row['tg_stufing'] = Carbon::parse(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['tg_stufing']));
+            // $row['tg_etd'] = Carbon::parse(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['tg_etd']));
+            // $row['tg_eta'] = Carbon::parse(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['tg_eta']));
 
             $product = MsProduct::where('code', $row['no_order'])->first();
             $buyer = MsBuyer::where('code', $row['kode_buyer'])->first();
