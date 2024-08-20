@@ -236,6 +236,8 @@ class EditOrderController extends Component
 
     public function save()
     {
+        $this->order_qty = (int)str_replace(',', '', $this->order_qty);
+
         $this->validate();
 
         DB::beginTransaction();

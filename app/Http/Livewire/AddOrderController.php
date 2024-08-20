@@ -234,6 +234,9 @@ class AddOrderController extends Component
 
     public function save()
     {
+        // merubah format order_qty
+        $this->order_qty = (int)str_replace(',', '', $this->order_qty);
+
         $this->validate();
 
         DB::beginTransaction();
