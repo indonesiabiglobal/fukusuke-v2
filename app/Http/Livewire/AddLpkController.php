@@ -164,6 +164,8 @@ class AddLpkController extends Component
             $orderlpk->total_assembly_line = (int)str_replace(',', '', $this->total_assembly_line);
             $orderlpk->seq_no = $seqno;
             $orderlpk->qty_gulung = (int)str_replace(',', '', $this->qty_gulung);
+            $orderlpk->product_panjang = $this->productlength;
+            $orderlpk->product_panjanggulung = $this->defaultgulung;
             // $orderlpk->warnalpkid = $this->warnalpkid['value'];
             $orderlpk->created_on = Carbon::now()->format('Y-m-d H:i:s');
 
