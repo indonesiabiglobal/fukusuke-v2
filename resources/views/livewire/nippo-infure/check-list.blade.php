@@ -7,7 +7,7 @@
 				<div class="col-12 col-lg-8">
 					<select class="form-select mb-0" wire:model.defer="transaksi">
 						<option value="1" selected>Produksi</option>
-						<option value="2">Order</option>
+						<option value="2">Proses</option>
 					</select>
 				</div>
 			</div>
@@ -120,7 +120,7 @@
 						<select class="form-control" wire:model.defer="machineId" data-choices data-choices-sorting-false data-choices-removeItem>
 							<option value="">- All -</option>
 							@foreach ($machine as $item)
-							<option value="{{ $item->id }}">{{ $item->machinename }}</option>
+							<option value="{{ $item->id }}">{{ $item->machineno }} - {{ $item->machinename }}</option>
 						@endforeach
 						</select>
 					</div>
