@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class AddNippoController extends Component
 {
@@ -51,6 +52,7 @@ class AddNippoController extends Component
     public $product;
     public $photoKatanuki;
     public $katanuki_id;
+    public $currentId = 1;
 
     // data LPK
     public $orderLPK;
@@ -231,19 +233,6 @@ class AddNippoController extends Component
                 ->orderBy('gentan_no', 'DESC')
                 ->first();
 
-            $totalAssembly = DB::select("
-            SELECT
-                CASE WHEN x.A1 IS NULL THEN 0 ELSE x.A1 END AS C1
-            FROM
-                (
-                SELECT SUM(panjang_produksi) AS A1
-                FROM
-                    tdproduct_assembly AS ta
-                WHERE
-                    lpk_id = $lpkid->id
-            ) AS x
-            ");
-
             $seqno = 1;
             if (!empty($lastSeq)) {
                 $seqno = $lastSeq->seq_no + 1;
@@ -273,16 +262,39 @@ class AddNippoController extends Component
             $product->panjang_produksi = $this->panjang_produksi;
             $product->save();
 
-            TdProductAssemblyLoss::where('lpk_id', $lpkid->id)->update([
-                'product_assembly_id' => $product->id,
-            ]);
+            // TdProductAssemblyLoss::where('lpk_id', $lpkid->id)->update([
+            //     'product_assembly_id' => $product->id,
+            // ]);
+            foreach ($this->details as $item) {
+                $details = new TdProductAssemblyLoss();
+                $details->loss_infure_id = $item['loss_infure_id'];
+                $details->berat_loss = $item['berat_loss'];
+                $details->berat = $item['berat'];
+                $details->frekuensi = $item['frekuensi'];
+                $details->product_assembly_id = $product->id;
+
+                $details->save();
+            }
 
             TdOrderLpk::where('id', $lpkid->id)->update([
                 'status_lpk' => 1,
             ]);
 
+            $totalAssembly = DB::select("
+            SELECT
+                CASE WHEN x.A1 IS NULL THEN 0 ELSE x.A1 END AS C1
+            FROM
+                (
+                SELECT SUM(panjang_produksi) AS A1
+                FROM
+                    tdproduct_assembly AS ta
+                WHERE
+                    lpk_id = $lpkid->id
+            ) AS x
+            ");
+
             TdOrderLpk::where('id', $lpkid->id)->update([
-                'total_assembly_line' => $totalAssembly[0]->c1 + $this->panjang_produksi,
+                'total_assembly_line' => $totalAssembly[0]->c1,
             ]);
 
 
@@ -315,6 +327,12 @@ class AddNippoController extends Component
         ]);
 
         if ($validatedData) {
+            $this->loss_infure_id = '';
+            $this->name_infure = '';
+            $this->berat_loss = 0;
+            $this->berat = 0;
+            $this->frekuensi = 0;
+
             $this->dispatch('showModal');
         }
     }
@@ -325,14 +343,26 @@ class AddNippoController extends Component
 
         try {
             DB::beginTransaction();
-            $datas = new TdProductAssemblyLoss();
-            $datas->loss_infure_id = $this->loss_infure_id;
-            $datas->berat_loss = $this->berat_loss;
-            $datas->berat = $this->berat;
-            $datas->frekuensi = $this->frekuensi;
-            $datas->lpk_id = $lpkid->id;
 
-            $datas->save();
+            $data = [
+                'id' => $this->nextId(),
+                'loss_infure_id' => $this->loss_infure_id,
+                'berat_loss' => $this->berat_loss,
+                'berat' => $this->berat,
+                'frekuensi' => $this->frekuensi,
+                'name_infure' => $this->name_infure,
+            ];
+
+            $this->details[] = $data;
+
+            // $datas = new TdProductAssemblyLoss();
+            // $datas->loss_infure_id = $this->loss_infure_id;
+            // $datas->berat_loss = $this->berat_loss;
+            // $datas->berat = $this->berat;
+            // $datas->frekuensi = $this->frekuensi;
+            // $datas->lpk_id = $lpkid->id;
+
+            // $datas->save();
             DB::commit();
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);
             $this->dispatch('closeModal');
@@ -343,10 +373,21 @@ class AddNippoController extends Component
         }
     }
 
+    public function nextId()
+    {
+        return $this->currentId++;
+    }
+
     public function deleteInfure($orderId)
     {
-        $data = TdProductAssemblyLoss::findOrFail($orderId);
-        $data->delete();
+        // $data = TdProductAssemblyLoss::findOrFail($orderId);
+        // $data->delete();
+        // dd($orderId);
+        $index = array_search($orderId, array_column($this->details, 'id'));
+
+        if ($index !== false) {
+            array_splice($this->details, $index, 1);
+        }
 
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Hapus']);
     }
@@ -358,7 +399,11 @@ class AddNippoController extends Component
 
     public function render()
     {
-        if (isset($this->lpk_no) && $this->lpk_no != '') {
+        if (strlen($this->lpk_no) === 6 && strpos($this->lpk_no, '-') === false) {
+            $this->lpk_no = $this->lpk_no . '-';
+        }
+
+        if (strlen($this->lpk_no) >= 9) {
             $prefix = substr($this->lpk_no, 0, 6);
             $suffix = substr($this->lpk_no, -3);
 
@@ -398,18 +443,18 @@ class AddNippoController extends Component
                 // $this->qty_gentan = $tdorderlpk->qty_gentan;
                 // $this->gentan_no= $tdorderlpk->gentan_no + 1;
 
-                $this->details = DB::table('tdproduct_assembly_loss as tal')
-                    ->select(
-                        'tal.loss_infure_id',
-                        'tal.berat_loss',
-                        'tal.id',
-                        'tal.berat',
-                        'tal.frekuensi',
-                        'msi.name as name_infure'
-                    )
-                    ->join('mslossinfure as msi', 'msi.id', '=', 'tal.loss_infure_id')
-                    ->where('tal.lpk_id', $tdorderlpk->id)
-                    ->get();
+                // $this->details = DB::table('tdproduct_assembly_loss as tal')
+                //     ->select(
+                //         'tal.loss_infure_id',
+                //         'tal.berat_loss',
+                //         'tal.id',
+                //         'tal.berat',
+                //         'tal.frekuensi',
+                //         'msi.name as name_infure'
+                //     )
+                //     ->join('mslossinfure as msi', 'msi.id', '=', 'tal.loss_infure_id')
+                //     ->where('tal.lpk_id', $tdorderlpk->id)
+                //     ->get();
             }
         }
 
@@ -424,12 +469,13 @@ class AddNippoController extends Component
             }
         }
 
-        if (isset($this->employeeno) && $this->employeeno != '') {
-            $msemployee = MsEmployee::where('employeeno', $this->employeeno)->first();
+        if (isset($this->employeeno) && $this->employeeno != '' && strlen($this->employeeno) >= 3) {
+            $msemployee = MsEmployee::where('employeeno', 'ilike', '%' . $this->employeeno . '%')->first();
 
             if ($msemployee == null) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
             } else {
+                $this->employeeno = $msemployee->employeeno;
                 $this->empname = $msemployee->empname;
             }
         }
@@ -449,6 +495,8 @@ class AddNippoController extends Component
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Barcode ' . $this->nomor_barcode . ' Tidak Terdaftar']);
             }
         }
+
+        // dd($this->details);
 
         return view('livewire.nippo-infure.add-nippo')->extends('layouts.master');
     }

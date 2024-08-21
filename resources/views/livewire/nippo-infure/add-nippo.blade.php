@@ -385,7 +385,7 @@
                                     <div class="form-group">
                                         <div class="input-group">
                                             <label class="col-12 col-lg-2 fw-bold text-muted">Kode Loss </label>
-                                            <input class="form-control" type="text" wire:model.live="loss_infure_id" placeholder="..." />
+                                            <input class="form-control" type="text" wire:model.live.debounce.300ms="loss_infure_id" placeholder="..." />
                                             @error('loss_infure_id')
                                                 <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror
@@ -484,32 +484,22 @@
                             @forelse ($details as $item)
                                 <tr>
                                     <td>
-                                        <button type="button" class="btn btn-danger" wire:click="deleteInfure({{$item->id}})">
+                                        <button type="button" class="btn btn-danger" wire:click="deleteInfure({{$item['id']}})">
                                             <i class="fa fa-trash"></i> Delete
                                         </button>
                                     </td>
-                                    <td>
-                                        {{ $item->loss_infure_id }}
-                                    </td>
-                                    <td>
-                                        {{ $item->name_infure }}
-                                    </td>
-                                    <td>
-                                        {{ $item->berat_loss }}
-                                    </td>
-                                    <td>
-                                        {{ $item->berat }}
-                                    </td>
-                                    <td>
-                                        {{ $item->frekuensi }}
-                                    </td>
+                                   <td>{{ $item['loss_infure_id'] }}</td>
+                                    <td>{{ $item['name_infure'] ?? '' }}</td> {{-- Adjust if you have a 'name_infure' field --}}
+                                    <td>{{ $item['berat_loss'] }}</td>
+                                    <td>{{ $item['berat'] }}</td>
+                                    <td>{{ $item['frekuensi'] }}</td>
                                 </tr>
                                 @php
-                                    $total += $item->berat_loss;
+                                    $total += $item['berat_loss'];
                                 @endphp
                             @empty
                                 <tr>
-                                    <td colspan="4" class="text-center">No results found</td>
+                                    <td colspan="6" class="text-center">No results found</td>
                                 </tr>
                             @endforelse
                             <tr>

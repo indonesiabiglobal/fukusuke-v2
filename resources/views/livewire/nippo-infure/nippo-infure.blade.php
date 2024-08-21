@@ -36,7 +36,7 @@
             </div>
             <div class="col-12 col-lg-9 mb-1">
                 <div class="input-group">
-                    <input wire:model.defer.live.debounce.300ms="lpk_no" class="form-control"style="padding:0.44rem" type="text" placeholder="000000-000" />
+                    <input wire:model.defer.live="lpk_no" class="form-control"style="padding:0.44rem" type="text" placeholder="000000-000" />
                 </div>
             </div>
             <div class="col-12 col-lg-3">

@@ -149,6 +149,19 @@ class EditNippoController extends Component
         $this->gentan_no = $data->gentan_no;
         $this->nomor_han = $data->nomor_han;
         $this->panjang_produksi = $data->panjang_produksi;
+
+        $this->details = DB::table('tdproduct_assembly_loss as tal')
+            ->select(
+                'tal.loss_infure_id',
+                'tal.berat_loss',
+                'tal.id',
+                'tal.berat',
+                'tal.frekuensi',
+                'msi.name as name_infure'
+            )
+            ->join('mslossinfure as msi', 'msi.id', '=', 'tal.loss_infure_id')
+            ->where('tal.product_assembly_id', $this->orderId)
+            ->get();
     }
 
     public function showModalNoOrder()
@@ -373,30 +386,35 @@ class EditNippoController extends Component
         ]);
 
         if ($validatedData) {
+            $this->loss_infure_id = '';
+            $this->name_infure = '';
+            $this->berat_loss = 0;
+            $this->berat = 0;
+            $this->frekuensi = 0;
             $this->dispatch('showModal');
         }
     }
 
     public function saveInfure()
     {
-        $lpkid = TdOrderLpk::where('lpk_no', $this->lpk_no)->first();
-
         $datas = new TdProductAssemblyLoss();
+        $datas->product_assembly_id = $this->orderId;
         $datas->loss_infure_id = $this->loss_infure_id;
         $datas->berat_loss = $this->berat_loss;
         $datas->berat = $this->berat;
         $datas->frekuensi = $this->frekuensi;
-        $datas->lpk_id = $lpkid->id;
 
         $datas->save();
 
         $this->dispatch('closeModal');
     }
 
-    public function deleteInfure($orderId)
+    public function deleteInfure($loss_infure_id)
     {
-        $data = TdProductAssemblyLoss::findOrFail($orderId);
-        $data->delete();
+        $data = TdProductAssemblyLoss::where('product_assembly_id', $this->orderId)->where('loss_infure_id', $loss_infure_id)->get();
+        $data->each(function ($item) {
+            $item->delete();
+        });
 
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Hapus']);
     }
@@ -484,7 +502,7 @@ class EditNippoController extends Component
                         'msi.name as name_infure'
                     )
                     ->join('mslossinfure as msi', 'msi.id', '=', 'tal.loss_infure_id')
-                    ->where('tal.lpk_id', $tdorderlpk->id)
+                    ->where('tal.product_assembly_id', $this->orderId)
                     ->get();
             }
         }
