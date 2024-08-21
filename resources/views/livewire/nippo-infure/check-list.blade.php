@@ -3,8 +3,8 @@
 	<div class="col-lg-6">
 		<div class="form-group">
 			<div class="input-group">
-				<label class="control-label col-4 text-muted fw-bold">Tanggal Produksi</label>
-				<div class="col-12 col-lg-8">
+				<label class="control-label col-3 text-muted fw-bold">Tanggal Produksi</label>
+				<div class="col-12 col-lg-9">
 					<select class="form-select mb-0" wire:model.defer="transaksi">
 						<option value="1" selected>Produksi</option>
 						<option value="2">Proses</option>
@@ -14,7 +14,7 @@
 			<div class="col-12 mt-1">
 				<div class="form-group">
 					<div class="input-group">
-						<span class="input-group-addon col-12 col-lg-2 text-muted fw-bold">Awal: </span>
+						<span class="input-group-addon col-12 col-lg-3 text-muted fw-bold">Awal: </span>
 						<input wire:model.defer="tglAwal" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="Y-m-d">
 						<span class="input-group-text py-0">
 							<i class="ri-calendar-event-fill fs-4"></i>
@@ -40,7 +40,7 @@
 			<div class="col-12">
 				<div class="form-group">
 					<div class="input-group">
-						<span class="input-group-addon col-12 col-lg-2 text-muted fw-bold">Akhir: </span>
+						<span class="input-group-addon col-12 col-lg-3 text-muted fw-bold">Akhir: </span>
 						<input wire:model.defer="tglAkhir" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="Y-m-d">
 						<span class="input-group-text py-0">
 							<i class="ri-calendar-event-fill fs-4"></i>
@@ -127,6 +127,22 @@
 				</div>
 			</div>
 		</div>
+        {{-- Produk --}}
+        <div class="form-group mt-1">
+            <div class="input-group">
+                <span class="input-group-addon col-12 col-lg-3 text-muted fw-bold">Produk </span>
+                <div class="col-12 col-lg-9" wire:ignore>
+                    <select class="form-control" wire:model.defer="productId" data-choices data-choices-sorting-false
+                        data-choices-removeItem>
+                        <option value="">- All -</option>
+                        @foreach ($products as $item)
+                            <option data-custom-properties='{"code": "{{ $item->code }}"}' value="{{ $item->id }}">{{ $item->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+        </div>
 		<div class="form-group mt-1">
 			<div class="input-group">
 				<span class="input-group-addon col-12 col-lg-3 text-muted fw-bold">Nomor Han</span>
