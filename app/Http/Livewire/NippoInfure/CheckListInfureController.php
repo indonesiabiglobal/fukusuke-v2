@@ -142,7 +142,7 @@ class CheckListInfureController extends Component
             'Panjang Infure (meter)',
             'Berat Standard (Kg)',
             'Berat Produksi (Kg)',
-            'Loss',
+            'Nama Loss',
             'Berat Loss (Kg)',
         ];
 
@@ -152,6 +152,12 @@ class CheckListInfureController extends Component
         }
 
         $activeWorksheet->freezePane('D4');
+        // Mengatur ukuran kertas menjadi A4
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        // Mengatur orientasi menjadi landscape
+        $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+        $activeWorksheet->getStyle($columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart)->getAlignment()->setWrapText(true);
+
         $columnHeaderEnd = chr(ord($columnHeaderEnd) - 1);
 
         // style header
@@ -221,6 +227,7 @@ class CheckListInfureController extends Component
                         $filterDepartment
                         $filterMachine
                         $filterNomorHan
+                    ORDER BY nomesin ASC, tglproduksi ASC, jam ASC
                     ",
             );
         } else if ($this->jenisReport == 'Loss') {
@@ -268,6 +275,7 @@ class CheckListInfureController extends Component
                         $filterDepartment
                         $filterMachine
                         $filterNomorHan
+                    ORDER BY nomesin ASC, tglproduksi ASC, jam ASC
                     ",
             );
         }
@@ -286,10 +294,11 @@ class CheckListInfureController extends Component
 
         foreach ($data as $item) {
             $tglProduksi = $item->tglproduksi;
+            $noMesin = str_replace('00I', '', $item->nomesin);
 
             // Data Utama
-            if (!isset($dataFiltered[$tglProduksi])) {
-                $dataFiltered[$tglProduksi] = [
+            if (!isset($dataFiltered[$noMesin][$tglProduksi])) {
+                $dataFiltered[$noMesin][$tglProduksi] = [
                     'tanggal_proses' => $item->tanggal_proses,
                     'seq_no' => $item->seq_no,
                     'tglproduksi' => $item->tglproduksi,
@@ -313,8 +322,8 @@ class CheckListInfureController extends Component
             }
 
             // Data Loss
-            if (!isset($dataLoss[$tglProduksi][$item->seq_no][$item->losscode])) {
-                $dataLoss[$tglProduksi][$item->seq_no][$item->losscode] = (object)[
+            if (!isset($dataLoss[$noMesin][$tglProduksi][$item->jam][$item->losscode])) {
+                $dataLoss[$noMesin][$tglProduksi][$item->jam][$item->losscode] = (object)[
                     'lossname' => $item->lossname,
                     'berat_loss' => $item->berat_loss,
                 ];
@@ -325,96 +334,100 @@ class CheckListInfureController extends Component
         $rowItemStart = 4;
         $columnItemStart = 'A';
         $rowItem = $rowItemStart;
-        foreach ($dataFiltered as $productionDate => $dataItem) {
-            $columnItemEnd = $columnItemStart;
-            // tanggal proses
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($dataItem['tanggal_proses'])->translatedFormat('d-M-Y H:i'));
-            phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
-            $columnItemEnd++;
-            // no proses
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['seq_no']);
-            phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
-            $columnItemEnd++;
-            // tanggal produksi
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($dataItem['tglproduksi'])->translatedFormat('d-M-Y'));
-            phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
-            $columnItemEnd++;
-            // shift
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['shift']);
-            phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
-            $columnItemEnd++;
-            // jam
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['jam']);
-            phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
-            $columnItemEnd++;
-            // nik
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['nik']);
-            phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
-            $columnItemEnd++;
-            // nama petugas
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['nama_petugas']);
-            phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
-            $columnItemEnd++;
-            // nomor_mesin
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['nomor_mesin']);
-            phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
-            $columnItemEnd++;
-            // no lpk
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['lpk_no']);
-            phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
-            $columnItemEnd++;
-            // nomer order
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['produkcode']);
-            phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
-            $columnItemEnd++;
-            // nama produk
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['nama_produk']);
-            phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
-            $columnItemEnd++;
-            // nomor gentan
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['gentan_no']);
-            phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
-            $columnItemEnd++;
-            // nomor han
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['nomor_han']);
-            phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
-            $columnItemEnd++;
-            // panjang produksi
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['panjang_produksi']);
-            phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItemEnd . $rowItem);
-            $columnItemEnd++;
-            // berat standard
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['berat_standard']);
-            phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItemEnd . $rowItem);
-            $columnItemEnd++;
-            // berat produksi
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['berat_produksi']);
-            phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItemEnd . $rowItem);
-            $columnItemEnd++;
+        foreach ($dataFiltered as $nomesin => $item) {
+            foreach ($item as $productionDate => $dataItem) {
+                $columnItemEnd = $columnItemStart;
+                // tanggal proses
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($dataItem['tanggal_proses'])->translatedFormat('d-M-Y'));
+                phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
+                $columnItemEnd++;
+                // no proses
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['seq_no']);
+                phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
+                $columnItemEnd++;
+                // tanggal produksi
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($dataItem['tglproduksi'])->translatedFormat('d-M-Y'));
+                phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
+                $columnItemEnd++;
+                // shift
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['shift']);
+                phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
+                $columnItemEnd++;
+                // jam
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['jam']);
+                phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
+                $columnItemEnd++;
+                // nik
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['nik']);
+                phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
+                $columnItemEnd++;
+                // nama petugas
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['nama_petugas']);
+                // phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
+                $columnItemEnd++;
+                // nomor_mesin
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['nomor_mesin']);
+                phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
+                $columnItemEnd++;
+                // no lpk
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['lpk_no']);
+                phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
+                $columnItemEnd++;
+                // nomer order
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['produkcode']);
+                phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
+                $columnItemEnd++;
+                // nama produk
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['nama_produk']);
+                // phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
+                $columnItemEnd++;
+                // nomor gentan
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['gentan_no']);
+                phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
+                $columnItemEnd++;
+                // nomor han
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['nomor_han']);
+                phpspreadsheet::textAlignCenter($spreadsheet, $columnItemEnd . $rowItem);
+                $columnItemEnd++;
+                // panjang produksi
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['panjang_produksi']);
+                phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItemEnd . $rowItem);
+                $columnItemEnd++;
+                // berat standard
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['berat_standard']);
+                phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItemEnd . $rowItem);
+                $columnItemEnd++;
+                // berat produksi
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['berat_produksi']);
+                phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItemEnd . $rowItem);
+                phpspreadsheet::addBorderDottedHorizontal($spreadsheet, $columnItemStart . $rowItem . ':' . $columnItemEnd . $rowItem);
+                $columnItemEnd++;
 
-            // Loss
-            foreach ($dataLoss[$productionDate][$dataItem['seq_no']] as $losscode => $item) {
-                $columnLoss = 'Q';
-                if ($losscode == '') {
+                // Loss
+                foreach ($dataLoss[$nomesin][$productionDate][$dataItem['jam']] as $losscode => $item) {
+                    $columnLossStart = 'Q';
+                    $columnLoss = $columnLossStart;
+                    if ($losscode == '') {
+                        $columnLoss++;
+                        phpspreadsheet::addBorderDottedHorizontal($spreadsheet, $columnLossStart . $rowItem . ':' . $columnLoss . $rowItem);
+                        break;
+                    }
+
+                    $activeWorksheet->setCellValue($columnLoss . $rowItem, $item->lossname);
                     $columnLoss++;
-                    phpspreadsheet::addFullBorder($spreadsheet, $columnItemStart . $rowItem . ':' . $columnLoss . $rowItem);
-                    break;
+                    $activeWorksheet->setCellValue($columnLoss . $rowItem, $item->berat_loss);
+                    phpspreadsheet::addBorderDottedHorizontal($spreadsheet, $columnLossStart . $rowItem . ':' . $columnLoss . $rowItem);
+                    $columnLoss++;
+                    phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItem . ':' . $columnLoss . $rowItem, false, 8, 'Calibri');
+                    $rowItem++;
+                    $columnItemEnd = $columnLoss;
                 }
 
-                $activeWorksheet->setCellValue($columnLoss . $rowItem, $item->lossname);
-                $columnLoss++;
-                $activeWorksheet->setCellValue($columnLoss . $rowItem, $item->berat_loss);
-                phpspreadsheet::addFullBorder($spreadsheet, $columnItemStart . $rowItem . ':' . $columnLoss . $rowItem);
-                $columnLoss++;
-                phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItem . ':' . $columnLoss . $rowItem, false, 8, 'Calibri');
+                $columnItemEnd++;
+                phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItem . ':' . $columnItemEnd . $rowItem, false, 8, 'Calibri');
+
                 $rowItem++;
-                $columnItemEnd = $columnLoss;
             }
-
-            $columnItemEnd++;
-            phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItem . ':' . $columnItemEnd . $rowItem, false, 8, 'Calibri');
-
-            $rowItem++;
         }
         $rowItem++;
 
@@ -464,15 +477,39 @@ class CheckListInfureController extends Component
         phpspreadsheet::addFullBorder($spreadsheet, $columnItemStart . $rowItem . ':' . $columnItemEnd . $rowItem);
         $columnItemEnd++;
 
-        $activeWorksheet->getStyle($columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart)->getAlignment()->setWrapText(true);
+
+        // footer keterangan tanggal, jam, dan nama petugas
+        $rowFooterStart = $rowItem + 2;
+        $activeWorksheet->setCellValue('A' . $rowFooterStart, 'Dicetak pada: ' . Carbon::now()->translatedFormat('d-M-Y H:i:s') . ', oleh: ' . auth()->user()->empname);
+        phpspreadsheet::styleFont($spreadsheet, 'A' . $rowFooterStart . ':A' . ($rowFooterStart + 1), false, 9, 'Calibri');
+
+
+        // mengatur lebar kolom
+        $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(3.00);
+        $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(7.56);
+        $spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(3.78);
+        $spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(3.67);
+        $spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(7.00);
+        $spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(8.11);
+        $spreadsheet->getActiveSheet()->getColumnDimension('H')->setWidth(5.50);
+        $spreadsheet->getActiveSheet()->getColumnDimension('I')->setWidth(7.56);
+        $spreadsheet->getActiveSheet()->getColumnDimension('J')->setWidth(5.50);
+        $spreadsheet->getActiveSheet()->getColumnDimension('L')->setWidth(5.70);
+        $spreadsheet->getActiveSheet()->getColumnDimension('M')->setWidth(8.11);
+        $spreadsheet->getActiveSheet()->getColumnDimension('N')->setWidth(7.50);
+        $spreadsheet->getActiveSheet()->getColumnDimension('O')->setWidth(6.70);
+        $spreadsheet->getActiveSheet()->getColumnDimension('P')->setWidth(6.70);
+        $spreadsheet->getActiveSheet()->getColumnDimension('Q')->setWidth(6.00);
+        $spreadsheet->getActiveSheet()->getColumnDimension('R')->setWidth(5.10);
+
 
         // size auto
-        $columnSizeStart = $columnItemStart;
-        $columnSizeStart++;
-        while ($columnSizeStart !== $columnItemEnd) {
-            $spreadsheet->getActiveSheet()->getColumnDimension($columnSizeStart)->setAutoSize(true);
-            $columnSizeStart++;
-        }
+        // $columnSizeStart = $columnItemStart;
+        // $columnSizeStart++;
+        // while ($columnSizeStart !== $columnItemEnd) {
+        //     $spreadsheet->getActiveSheet()->getColumnDimension($columnSizeStart)->setAutoSize(true);
+        //     $columnSizeStart++;
+        // }
 
         $writer = new Xlsx($spreadsheet);
         $filename = 'NippoInfure-' . $this->jenisReport . '.xlsx';

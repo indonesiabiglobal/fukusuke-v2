@@ -160,8 +160,7 @@
                                                 <label for="empname" class="form-label">Nama Karyawan</label>
                                                 <input type="text"
                                                     class="form-control @error('empname') is-invalid @enderror"
-                                                    id="empname" wire:model.defer="empname"
-                                                    placeholder="Nama">
+                                                    id="empname" wire:model.defer="empname" placeholder="Nama">
                                                 @error('empname')
                                                     <span class="invalid-feedback">{{ $message }}</span>
                                                 @enderror
@@ -170,9 +169,12 @@
                                         <div class="col-xxl-12">
                                             <div>
                                                 <label for="empname" class="form-label">Status</label>
-                                                <select data-choices data-choices-sorting="true" class="form-select" wire:model="status">
-                                                    <option value="0" {{ $status == '0' ? 'selected' : '' }}>Inactive</option>
-                                                    <option value="1" {{ $status == '1' ? 'selected' : '' }}>Active</option>
+                                                <select data-choices data-choices-sorting="true" class="form-select"
+                                                    wire:model="status">
+                                                    <option value="0" {{ $status == '0' ? 'selected' : '' }}>
+                                                        Inactive</option>
+                                                    <option value="1" {{ $status == '1' ? 'selected' : '' }}>
+                                                        Active</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -301,23 +303,54 @@
             </div>
         </div>
     </div>
-    {{-- show paginate --}}
-    <div class="d-flex justify-content-between mt-3">
-        <div class="d-flex align-items-center">
-            <span class="me-2">Show</span>
-            <select wire:model.live="paginate" class="form-select form-select-sm me-2" style="width: auto;">
-                <option value="10">10</option>
-                <option value="25">25</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-                <option value="all">All</option>
-            </select>
-            <span>Entries</span>
-        </div>
-    </div>
-
+    {{-- Table employee --}}
     <div class="table-responsive table-card mt-3 mb-1">
-        <table class="table align-middle table-nowrap" id="customerTable" style="width:100%">
+        <div class="col text-end dropdown">
+            <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                class="btn btn-soft-primary btn-icon fs-14 mt-2">
+                <i class="ri-grid-fill"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                    <label style="cursor: pointer;">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="1"
+                            checked> Nama
+                    </label>
+                </li>
+                <li>
+                    <label style="cursor: pointer;">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="2"
+                            checked> NIK
+                    </label>
+                </li>
+                <li>
+                    <label style="cursor: pointer;">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="3"
+                            checked> Departemen
+                    </label>
+                </li>
+                <li>
+                    <label style="cursor: pointer;">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="4"
+                            checked> Status
+                    </label>
+                </li>
+                <li>
+                    <label style="cursor: pointer;">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="5"
+                            checked> Updated By
+                    </label>
+                </li>
+                <li>
+                    <label style="cursor: pointer;">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="6"
+                            checked> Updated
+                    </label>
+                </li>
+            </ul>
+        </div>
+
+        <table class="table align-middle table-nowrap" id="tableEmployee" style="width:100%">
             <thead class="table-light">
                 <tr>
                     <th>Action</th>
@@ -368,7 +401,7 @@
                 @endforelse
             </tbody>
         </table>
-        {{ $data->links() }}
+        {{-- {{ $data->links() }} --}}
     </div>
     {{-- <livewire:tdorder/> --}}
 </div>
@@ -403,3 +436,25 @@
         });
     </script>
 @endscript
+
+@push('scripts')
+    <script>
+        // datatable
+        const table = $('#tableEmployee').DataTable({
+            "pageLength": 10,
+            "searching": true,
+            "responsive": true,
+            "order": [
+                [1, "asc"]
+            ]
+        });
+
+        // Tambahkan event listener ke setiap checkbox
+        document.querySelectorAll('.toggle-column').forEach(function(checkbox) {
+            checkbox.addEventListener('change', function() {
+                let column = table.column($(this).attr('data-column'));
+                column.visible(!column.visible());
+            });
+        });
+    </script>
+@endpush
