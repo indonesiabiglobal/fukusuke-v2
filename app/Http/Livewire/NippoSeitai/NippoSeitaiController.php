@@ -81,6 +81,7 @@ class NippoSeitaiController extends Component
 
     public function export()
     {
+        ini_set('max_execution_time', 360);
         // pengecekan inputan jam awal dan jam akhir
         // if (is_array($this->jamMasuk)) {
         //     $this->jamMasuk = $this->jamMasuk['value'];
