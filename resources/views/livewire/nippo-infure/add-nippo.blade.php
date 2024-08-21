@@ -474,7 +474,7 @@
                                 <th class="border-0">Nama Loss</th>
                                 <th class="border-0">Berat (kg)</th>
                                 <th class="border-0">Berat</th>
-                                <th class="border-0 rounded-end">Loss</th>
+                                <th class="border-0 rounded-end">Frekuensi</th>
                             </tr>
                         </thead>
                         <tbody>

@@ -303,6 +303,7 @@
                                             <th class="border-0">Shift</th>
                                             <th class="border-0">Petugas</th>
                                             <th class="border-0">Tg. Produksi</th>
+                                            <th class="border-0">Frekuensi</th>
                                             <th class="border-0 rounded-end">Berat Produksi (kg)</th>
                                         </tr>
                                     </thead>
@@ -336,7 +337,10 @@
                                                     {{ $item->production_date }}
                                                 </td>
                                                 <td>
-                                                    {{ $item->berat_produksi }}
+                                                    {{ $item->frekuensi }}
+                                                </td>
+                                                <td>
+                                                    {{ $item->berat }}
                                                 </td>
                                             </tr>
                                         @empty
@@ -374,6 +378,7 @@
                                             <th class="border-0 rounded-start">Action</th>
                                             <th class="border-0">Kode</th>
                                             <th class="border-0">Nama Loss</th>
+                                            <th class="border-0">Frekuensi</th>
                                             <th class="border-0 rounded-end">Berat (kg)</th>
                                         </tr>
                                     </thead>
@@ -393,6 +398,9 @@
                                                 </td>
                                                 <td>
                                                     {{ $item->name }}
+                                                </td>
+                                                <td>
+                                                    {{ $item->frekuensi }}
                                                 </td>
                                                 <td>
                                                     {{ $item->berat_loss }}
@@ -552,8 +560,8 @@
                                     <div class="form-group">
                                         <label>Frekuensi </label>
                                         <div class="input-group col-md-9 col-xs-8">
-                                            <input class="form-control" type="text" wire:model.defer="frekuensi" placeholder="0" />
-                                            @error('frekuensi')
+                                            <input class="form-control" type="text" wire:model.defer="frekuensi_fr" placeholder="0" />
+                                            @error('frekuensi_fr')
                                                 <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror
                                         </div>

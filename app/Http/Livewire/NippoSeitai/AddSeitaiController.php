@@ -446,7 +446,8 @@ class AddSeitaiController extends Component
                         'tdpa.work_shift',
                         'mse.empname',
                         'tdpa.production_date',
-                        'tdpa.berat_produksi'
+                        'tdpa.berat_produksi',
+                        'tga.frekuensi'
                     )
                     ->where('tdpa.lpk_id', $tdorderlpk->id)
                     ->whereNull('tga.product_goods_id')
@@ -458,7 +459,8 @@ class AddSeitaiController extends Component
                         'tgl.id',
                         'mss.code',
                         'mss.name',
-                        'tgl.berat_loss'
+                        'tgl.berat_loss',
+                        'tgl.frekuensi'
                     )
                     ->where('tgl.lpk_id', $tdorderlpk->id)
                     ->whereNull('tgl.product_goods_id')

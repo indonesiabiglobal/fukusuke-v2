@@ -500,6 +500,7 @@ class EditSeitaiController extends Component
                         'tga.id',
                         'tdpa.gentan_no',
                         'tga.gentan_line',
+                        'tga.frekuensi',
                         'mm.machineno',
                         'tdpa.work_shift',
                         'mse.empname',
@@ -515,6 +516,7 @@ class EditSeitaiController extends Component
                         'tgl.id',
                         'mss.code',
                         'mss.name',
+                        'tgl.frekuensi',
                         'tgl.berat_loss'
                     )
                     ->where('tgl.product_goods_id', $this->tdpgId)
