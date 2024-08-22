@@ -188,7 +188,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-12 col-md-3 col-lg-7 pe-2">Jam Produksi</label>
-                                <input class="form-control col-12 col-md-9 col-lg-5" wire:model="work_hour" readonly="readonly" type="time" placeholder="hh:mm">
+                                <input class="form-control col-12 col-md-9 col-lg-5" wire:model="work_hour" type="time" placeholder="hh:mm">
                             </div>
                         </div>
                     </div>
