@@ -13,6 +13,7 @@ class LabelGentanController extends Component
     public $product_name;
     public $product_panjang;
     public $qty_gentan;
+    public $berat_produksi;
     public $product_panjanggulung;
     public $lpk_date;
     public $qty_lpk;
@@ -92,7 +93,7 @@ class LabelGentanController extends Component
                 $firstItem = $data2->first();
                 $this->produk_asemblyid = $firstItem->produk_asembly_id;
                 $this->product_panjang = $firstItem->panjang_produksi;
-                $this->qty_gentan = $firstItem->berat_produksi;
+                $this->berat_produksi = $firstItem->berat_produksi;
                 // $this->lpk_date = Carbon::parse($data->lpk_date)->format('Y-m-d');
             }
             // dd($this->produk_asembly_id);
