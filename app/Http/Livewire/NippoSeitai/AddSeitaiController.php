@@ -80,7 +80,7 @@ class AddSeitaiController extends Component
         $this->production_date = Carbon::now()->format('Y-m-d H:i:s');
         $this->created_on = Carbon::now()->format('Y-m-d H:i:s');
         $this->work_hour = Carbon::now()->format('H:i');
-        $workingShift = MsWorkingShift::where('work_hour_from', '<=', $this->work_hour)->where('work_hour_till', '>=', $this->work_hour)->first();
+        $workingShift = MsWorkingShift::where('work_hour_from', '<=', $this->work_hour)->orderBy('work_hour_from', 'DESC')->first();
         $this->work_shift = $workingShift->id;
     }
 

@@ -7,7 +7,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5">Tanggal Produksi</label>
-                                <input class="form-control datepicker-input" type="date" wire:model.defer="production_date" placeholder="yyyy/mm/dd"/>
+                                <input class="form-control datepicker-input" type="datetime-local" wire:model.defer="production_date" placeholder="yyyy/mm/dd"/>
                             </div>
                         </div>
                     </div>
@@ -26,7 +26,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5">Tanggal Proses</label>
-                                <input class="form-control datepicker-input readonly bg-light" readonly="readonly" type="date" wire:model.defer="created_on" placeholder="yyyy/mm/dd"/>
+                                <input class="form-control datepicker-input readonly bg-light" readonly="readonly" type="datetime-local" wire:model.defer="created_on" placeholder="yyyy/mm/dd"/>
                             </div>
                         </div>
                     </div>
