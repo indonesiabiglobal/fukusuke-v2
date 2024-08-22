@@ -563,7 +563,10 @@ class AddSeitaiController extends Component
         }
 
         if (isset($this->machineno) && $this->machineno != '') {
-            $machine = MsMachine::where('machineno', 'ilike', '%' . $this->machineno . '%')->first();
+            $machine = MsMachine::join('msdepartment as md', 'md.id', '=', 'msmachine.department_id')
+                ->where('msmachine.machineno', 'ilike', '%00S' . $this->machineno . '%')
+                ->where('md.division_code', 20)
+                ->first();
             if ($machine == null) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Machine ' . $this->machineno . ' Tidak Terdaftar']);
             } else {
