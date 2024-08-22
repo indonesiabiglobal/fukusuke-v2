@@ -479,7 +479,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-12 mb-1">
+                                {{-- <div class="col-lg-12 mb-1">
                                     <div class="form-group">
                                         <label>Berat</label>
                                         <div class="input-group col-md-9 col-xs-8">
@@ -494,7 +494,7 @@
                                             <input class="form-control" type="text" wire:model.defer="frekuensi" placeholder="..." />
                                         </div>
                                     </div>
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
                         <div class="modal-footer">

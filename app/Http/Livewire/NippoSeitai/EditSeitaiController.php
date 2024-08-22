@@ -369,8 +369,8 @@ class EditSeitaiController extends Component
         $datas->product_goods_id = $this->tdpgId;
         $datas->product_assembly_id = $assembly->id;
         $datas->gentan_line = $this->gentan_line;
-        $datas->berat = $this->berat;
-        $datas->frekuensi = $this->frekuensi;
+        // $datas->berat = $this->berat;
+        // $datas->frekuensi = $this->frekuensi;
         $datas->lpk_id = $lpkid->id;
 
         $datas->save();
