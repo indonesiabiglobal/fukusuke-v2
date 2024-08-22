@@ -217,7 +217,7 @@ class AddNippoController extends Component
             'machineno' => 'required',
             'employeeno' => 'required',
             'panjang_produksi' => 'required',
-            'qty_gentan' => 'required'
+            'berat_produksi' => 'required'
         ]);
 
         DB::beginTransaction();
@@ -260,7 +260,7 @@ class AddNippoController extends Component
             $product->nomor_han = $this->nomor_han;
             $product->product_id = $products->id;
             $product->panjang_produksi = $this->panjang_produksi;
-            $product->berat_produksi = $this->qty_gentan;
+            $product->berat_produksi = $this->berat_produksi;
             $product->save();
 
             // TdProductAssemblyLoss::where('lpk_id', $lpkid->id)->update([

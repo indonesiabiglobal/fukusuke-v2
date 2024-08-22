@@ -229,11 +229,11 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5">Berat Gentan</label>
-                                <input type="number" class="form-control @error('qty_gentan') is-invalid @enderror" wire:model="qty_gentan" />
+                                <input type="number" class="form-control @error('berat_produksi') is-invalid @enderror" wire:model="berat_produksi" />
                                 <span class="input-group-text">
                                     kg
                                 </span>
-                                @error('qty_gentan')
+                                @error('berat_produksi')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
                             </div>
