@@ -340,7 +340,7 @@
                                                     {{ $item->frekuensi }}
                                                 </td>
                                                 <td>
-                                                    {{ $item->berat }}
+                                                    {{ number_format($item->berat_produksi, 2) }}
                                                 </td>
                                             </tr>
                                         @empty
@@ -350,7 +350,7 @@
                                         @endforelse
                                         <tr>
                                             <td colspan="7" class="text-end">Berat Total (kg):</td>
-                                            <td colspan="1" class="text-center">0</td>
+                                            <td colspan="1" class="text-center">{{ $jumlahBeratProduksi }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -414,7 +414,7 @@
 
                                         <tr>
                                             <td colspan="3" class="text-end">Berat Loss Total (kg):</td>
-                                            <td colspan="1" class="text-center">0</td>
+                                            <td colspan="1" class="text-center">{{ number_format($jumlahBeratLoss, 2) }}</td>
                                         </tr>
                                     </tbody>
                                 </table>

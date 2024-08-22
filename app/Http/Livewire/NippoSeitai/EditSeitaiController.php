@@ -61,6 +61,8 @@ class EditSeitaiController extends Component
     public $frekuensi;
     public $berat_fr;
     public $frekuensi_fr;
+    public $jumlahBeratProduksi;
+    public $jumlahBeratLoss;
 
     // data master produk
     public $masterKatanuki;
@@ -164,6 +166,7 @@ class EditSeitaiController extends Component
             )
             ->where('tga.product_goods_id', $request->query('orderId'))
             ->get();
+        $this->jumlahBeratProduksi = $this->detailsGentan->sum('berat_produksi');
 
         $this->detailsLoss = DB::table('tdproduct_goods_loss as tgl')
             ->join('mslossseitai as mss', 'mss.id', '=', 'tgl.loss_seitai_id')
@@ -175,6 +178,7 @@ class EditSeitaiController extends Component
             )
             ->where('tgl.product_goods_id', $request->query('orderId'))
             ->get();
+        $this->jumlahBeratLoss = $this->detailsLoss->sum('berat_produksi');
     }
 
     public function showModalNoOrder()
