@@ -583,6 +583,18 @@ class NippoSeitaiController extends Component
         // $tglAwal = $this->tglMasuk;
         $tglAwal = Carbon::parse($this->tglMasuk)->format('d-m-Y 00:00:00');
         $tglAkhir = Carbon::parse($this->tglKeluar)->format('d-m-Y 23:59:59');
+        if (!str_contains($this->lpk_no, '-') && strlen($this->lpk_no) >= 6) {
+            $this->lpk_no = substr_replace($this->lpk_no, '-', 6, 0);
+        } else if (strlen($this->lpk_no) >= 9) {
+            $tdorderlpk = DB::table('tdorderlpk')
+                ->select('id')
+                ->where('lpk_no', $this->lpk_no)
+                ->first();
+
+            if ($tdorderlpk == null) {
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor LPK ' . $this->lpk_no . ' Tidak Terdaftar']);
+            }
+        }
         if ($this->transaksi == 2) {
             $data = DB::table('tdproduct_goods AS tdpg')
                 ->select(
