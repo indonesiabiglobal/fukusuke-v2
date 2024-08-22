@@ -267,7 +267,7 @@
                             <td x-show="lpk_date"> {{ $item->lpk_date }} </td>
                             <td x-show="lpk_panjang"> {{ $item->panjang_lpk }}</td>
                             <td x-show="produksi_panjang"> {{ $item->panjang_produksi }} </td>
-                            <td x-show="gentan_berat"> {{ $item->qty_gentan }} </td>
+                            <td x-show="gentan_berat"> {{ $item->berat_produksi }} </td>
                             <td x-show="gentan_nomor"> {{ $item->gentan_no }} </td>
                             <td x-show="standard_berat"> {{ $item->berat_standard }}</td>
                             <td x-show="rasio"> - </td>
