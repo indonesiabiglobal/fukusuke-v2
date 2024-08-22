@@ -129,7 +129,7 @@ class EditSeitaiController extends Component
         $this->orderId = $request->query('orderId');
         $this->tdpgId = $data->id;
         $this->production_no = $data->production_no;
-        $this->production_date = Carbon::parse($data->production_date)->format('Y-m-d H:i:s');
+        $this->production_date = Carbon::parse($data->production_date)->format('Y-m-d');
         $this->created_on = Carbon::parse($data->created_on)->format('Y-m-d H:i:s');
         $this->lpk_no = $data->lpk_no;
         $this->lpk_date = $data->lpk_date;
@@ -454,7 +454,7 @@ class EditSeitaiController extends Component
             $employeinfure = MsEmployee::where('employeeno', $this->employeenoinfure)->first();
 
             $data = TdProductGoods::findOrFail($this->orderId);
-            $data->production_date = $this->production_date;
+            $data->production_date = Carbon::parse($this->production_date . ' ' . $this->work_hour)->format('Y-m-d H:i:s');
             $data->machine_id = $machine->id;
             $data->employee_id = $employe->id;
             if (isset($this->employeenoinfure)) {

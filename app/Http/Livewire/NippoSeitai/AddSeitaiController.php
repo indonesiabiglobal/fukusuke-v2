@@ -77,7 +77,7 @@ class AddSeitaiController extends Component
 
     public function mount()
     {
-        $this->production_date = Carbon::now()->format('Y-m-d H:i:s');
+        $this->production_date = Carbon::now()->format('Y-m-d');
         $this->created_on = Carbon::now()->format('Y-m-d H:i:s');
         $this->work_hour = Carbon::now()->format('H:i');
         $workingShift = DB::select("
@@ -303,7 +303,7 @@ class AddSeitaiController extends Component
 
             $data = new TdProductGoods();
             $data->production_no = $today->format('dmy') . '-' . $seqno;
-            $data->production_date = $this->production_date;
+            $data->production_date = Carbon::parse($this->production_date . ' ' . $this->work_hour)->format('Y-m-d H:i:s');
             $data->employee_id = $employe->id;
             if (isset($this->employeenoinfure)) {
                 $data->employee_id_infure = $employeinfure->id;

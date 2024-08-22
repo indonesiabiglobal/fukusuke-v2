@@ -7,7 +7,8 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-12 col-md-3 col-lg-3 pe-2">Tanggal Produksi</label>
-                                <input class="form-control datepicker-input" type="datetime-local" wire:model.defer="production_date" />
+                                {{-- <input class="form-control datepicker-input" type="datetime-local" wire:model.defer="production_date" /> --}}
+                                <input class="form-control" type="text" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y" wire:model.defer="production_date" placeholder="yyyy/mm/dd"/>
                             </div>
                         </div>
                     </div>

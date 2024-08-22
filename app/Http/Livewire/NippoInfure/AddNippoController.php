@@ -64,7 +64,7 @@ class AddNippoController extends Component
 
     public function mount()
     {
-        $this->production_date = Carbon::now()->format('Y-m-d H:i:s');
+        $this->production_date = Carbon::now()->format('Y-m-d');
         $this->created_on = Carbon::now()->format('Y-m-d H:i:s');
         $this->work_hour = Carbon::now()->format('H:i');
 
@@ -269,7 +269,7 @@ class AddNippoController extends Component
 
             $product = new TdProductAssembly();
             $product->production_no = $today->format('dmy') . '-' . $seqno;
-            $product->production_date = $this->production_date;
+            $product->production_date = Carbon::parse($this->production_date . ' ' . $this->work_hour)->format('Y-m-d H:i:s');
             $product->created_on = $this->created_on;
             $product->machine_id = $machine->id;
             $product->employee_id = $employe->id;
