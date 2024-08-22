@@ -503,7 +503,7 @@
                                 </tr>
                             @endforelse
                             <tr>
-                                <td colspan="5" class="text-end">Berat Loss Total (kg):</td>
+                                <td colspan="4" class="text-end">Berat Loss Total (kg):</td>
                                 <td colspan="1" class="text-center">{{ $total }}</td>
                             </tr>
                         </tbody>

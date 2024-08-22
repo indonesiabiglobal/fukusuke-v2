@@ -234,8 +234,10 @@ class AddNippoController extends Component
             $machine = MsMachine::where('machineno', $this->machineno)->first();
             $employe = MsEmployee::where('employeeno', $this->employeeno)->first();
             $products = MsProduct::select('msproduct.id', 'mpt.harga_sat_infure')
-                ->join('msproduct_type mpt', 'msproduct.product_type_id', '=', 'msproduct_type.id')
-                ->where('code', $this->code)->first();
+                ->join('msproduct_type as mpt', 'msproduct.product_type_id', '=', 'mpt.id')
+                ->where('msproduct.code', $this->code)
+                ->first();
+
             $maxGentan = TdProductAssembly::where('lpk_id', $lpkid->id)
                 ->orderBy('gentan_no', 'DESC')
                 ->first();
@@ -268,11 +270,10 @@ class AddNippoController extends Component
             $product->product_id = $products->id;
             $product->panjang_produksi = $this->panjang_produksi;
             $product->berat_produksi = $this->berat_produksi;
+            $product->berat_standard = $this->berat_standard;
             $product->save();
 
-            // TdProductAssemblyLoss::where('lpk_id', $lpkid->id)->update([
-            //     'product_assembly_id' => $product->id,
-            // ]);
+            $totalBerat = 0;
             foreach ($this->details as $item) {
                 $details = new TdProductAssemblyLoss();
                 $details->loss_infure_id = $item['loss_infure_id'];
@@ -281,8 +282,13 @@ class AddNippoController extends Component
                 $details->frekuensi = $item['frekuensi'];
                 $details->product_assembly_id = $product->id;
 
+                $totalBerat += $item['berat_loss'];
                 $details->save();
             }
+
+            TdProductAssembly::where('id', $product->id)->update([
+                'infure_berat_loss' => $totalBerat,
+            ]);
 
             TdOrderLpk::where('id', $lpkid->id)->update([
                 'status_lpk' => 1,
@@ -309,7 +315,6 @@ class AddNippoController extends Component
 
 
             // $product->panjang_printing_inline = $this->panjang_printing_inline;
-            // $product->berat_standard = $this->berat_standard;
             // $product->berat_produksi = $this->berat_produksi;
             // $product->status_production = $this->status_production;
             // $product->status_kenpin = $this->status_kenpin;
@@ -454,9 +459,10 @@ class AddNippoController extends Component
                 $this->qty_gulung = $tdorderlpk->qty_gulung;
                 $this->lpk_no = $tdorderlpk->lpk_no;
                 $this->qty_gentan = $tdorderlpk->qty_gentan;
-                $this->berat_standard = $tdorderlpk->berat_standard;
+                $this->berat_standard = round($tdorderlpk->berat_standard, 2);
                 $this->total_assembly_line = $tdorderlpk->total_assembly_line;
-                $this->selisih = $tdorderlpk->total_assembly_line - $tdorderlpk->panjang_lpk;
+                $selisih = $tdorderlpk->total_assembly_line - $tdorderlpk->panjang_lpk;
+                $this->selisih = round($selisih, 2);
 
                 // $this->details = DB::table('tdproduct_assembly_loss as tal')
                 //     ->select(
@@ -512,7 +518,7 @@ class AddNippoController extends Component
         }
 
         if (isset($this->berat_produksi) && $this->berat_produksi != '') {
-            $this->rasio = ($this->berat_produksi / $this->berat_standard) * 100;
+            $this->rasio = round(($this->berat_produksi / $this->berat_standard) * 100, 2);
         }
 
         // dd($this->details);
