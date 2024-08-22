@@ -482,7 +482,7 @@ class AddSeitaiController extends Component
             }
         }
 
-        if (isset($this->employeeno) && $this->employeeno != '') {
+        if (isset($this->employeeno) && $this->employeeno != '' && strlen($this->employeeno) >= 7) {
             $msemployee = MsEmployee::where('employeeno', $this->employeeno)->first();
 
             if ($msemployee == null) {
