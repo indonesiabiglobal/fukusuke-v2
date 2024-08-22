@@ -178,7 +178,7 @@ class EditSeitaiController extends Component
             )
             ->where('tgl.product_goods_id', $request->query('orderId'))
             ->get();
-        $this->jumlahBeratLoss = $this->detailsLoss->sum('berat_produksi');
+        $this->jumlahBeratLoss = $this->detailsLoss->sum('berat_loss');
     }
 
     public function showModalNoOrder()
