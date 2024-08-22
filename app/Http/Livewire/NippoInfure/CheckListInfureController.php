@@ -323,7 +323,7 @@ class CheckListInfureController extends Component
 
             // Data Utama
             if (!isset($dataFiltered[$noMesin][$tglProduksi])) {
-                $dataFiltered[$noMesin][$tglProduksi][$item->jam] = [
+                $dataFiltered[$noMesin][$tglProduksi][$item->gentan_no] = [
                     'tanggal_proses' => $item->tanggal_proses,
                     'seq_no' => $item->seq_no,
                     'tglproduksi' => $item->tglproduksi,
@@ -347,14 +347,13 @@ class CheckListInfureController extends Component
             }
 
             // Data Loss
-            if (!isset($dataLoss[$noMesin][$tglProduksi][$item->jam][$item->losscode])) {
-                $dataLoss[$noMesin][$tglProduksi][$item->jam][$item->losscode] = (object)[
+            if (!isset($dataLoss[$noMesin][$tglProduksi][$item->gentan_no][$item->losscode])) {
+                $dataLoss[$noMesin][$tglProduksi][$item->gentan_no][$item->losscode] = (object)[
                     'lossname' => $item->lossname,
                     'berat_loss' => $item->berat_loss,
                 ];
             }
         }
-        dd($dataFiltered);
 
         // index
         $rowItemStart = 4;
@@ -362,7 +361,7 @@ class CheckListInfureController extends Component
         $rowItem = $rowItemStart;
         foreach ($dataFiltered as $nomesin => $item) {
             foreach ($item as $productionDate => $dataItemDate) {
-                foreach ($dataItemDate as $jam => $dataItem) {
+                foreach ($dataItemDate as $gentan_no => $dataItem) {
                     $columnItemEnd = $columnItemStart;
                     // tanggal proses
                     $activeWorksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($dataItem['tanggal_proses'])->translatedFormat('d-M-Y'));
@@ -431,7 +430,7 @@ class CheckListInfureController extends Component
                     $columnItemEnd++;
 
                     // Loss
-                    foreach ($dataLoss[$nomesin][$productionDate][$jam] as $losscode => $item) {
+                    foreach ($dataLoss[$nomesin][$productionDate][$gentan_no] as $losscode => $item) {
                         $columnLossStart = 'Q';
                         $columnLoss = $columnLossStart;
                         if ($losscode == '') {
