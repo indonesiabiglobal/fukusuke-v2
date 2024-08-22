@@ -248,6 +248,8 @@ class AddSeitaiController extends Component
     public function save()
     {
         $this->qty_produksi = (int)str_replace(',', '', $this->qty_produksi);
+        $this->qty_lpk = (int)str_replace(',', '', $this->qty_lpk);
+        $this->infure_berat_loss = (int)str_replace(',', '', $this->infure_berat_loss);
         $validatedData = $this->validate([
             'lpk_no' => 'required',
             'nomor_palet' => 'required',
@@ -402,11 +404,18 @@ class AddSeitaiController extends Component
 
     public function render()
     {
+        // nomer palet
+        if (isset($this->nomor_palet) && $this->nomor_palet != '') {
+            if (!str_contains($this->nomor_palet, '-') && strlen($this->nomor_palet) >= 5) {
+                $this->nomor_palet = substr_replace($this->nomor_palet,'-',5,0);
+            }
+            $this->nomor_palet = strtoupper($this->nomor_palet);
+        }
+
         if (isset($this->lpk_no) && $this->lpk_no != '') {
             if (!str_contains($this->lpk_no, '-') && strlen($this->lpk_no) >= 9) {
                 $this->lpk_no = substr_replace($this->lpk_no,'-',6,0);
             }
-            // $this->lpk_no = substr_replace($this->lpk_no,'-',6,0);
             $tdorderlpk = DB::table('tdorderlpk as tolp')
                 ->select(
                     'tolp.id',
@@ -436,7 +445,7 @@ class AddSeitaiController extends Component
                 $this->dimensiinfure = $tdorderlpk->ketebalan . 'x' . $tdorderlpk->diameterlipat;
                 $this->qty_gulung = $tdorderlpk->qty_gulung;
                 $this->qty_gentan = $tdorderlpk->qty_gentan;
-                $this->qty_lpk = $tdorderlpk->qty_lpk;
+                $this->qty_lpk = number_format($tdorderlpk->qty_lpk);
 
                 $this->detailsGentan = DB::table('tdproduct_assembly as tdpa')
                     ->join('tdproduct_goods_assembly as tga', 'tga.product_assembly_id', '=', 'tdpa.id')

@@ -118,7 +118,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-12 col-md-3 col-lg-5">Total Produksi</label>
-                                <input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="total_produksi" />
+                                <input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="total_produksi" oninput="this.value = window.formatNumber(this.value)"/>
                                 <span class="input-group-text">
                                     lbr
                                 </span>
@@ -140,7 +140,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-12 col-md-3 col-lg-5">Nomor Palet</label>
-                                <input type="text" placeholder="A0000-000000" class="form-control @error('nomor_palet') is-invalid @enderror" wire:model="nomor_palet" />
+                                <input type="text" placeholder="A0000-000000" class="form-control text-uppercase @error('nomor_palet') is-invalid @enderror" wire:model.live="nomor_palet" />
                                 @error('nomor_palet')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -164,7 +164,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-12 col-md-3 col-lg-5">Loss Infure</label>
-                                <input type="text" class="form-control @error('infure_berat_loss') is-invalid @enderror" wire:model="infure_berat_loss" />
+                                <input type="text" class="form-control @error('infure_berat_loss') is-invalid @enderror" wire:model="infure_berat_loss" oninput="this.value = window.formatNumber(this.value)"/>
                                 <span class="input-group-text">
                                     kg
                                 </span>
@@ -1177,7 +1177,7 @@
                                     <div class="form-group mt-1">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-3 fw-bold text-muted">Jumlah LPK</label>
-                                            <input type="text" class="form-control" value="{{ $orderLPK->qty_lpk ?? '' }}" />
+                                            <input type="text" class="form-control" value="{{ $orderLPK->qty_lpk ?? '' }}" oninput="this.value = window.formatNumber(this.value)"/>
                                             <span class="input-group-text">
                                                 Lembar
                                             </span>
