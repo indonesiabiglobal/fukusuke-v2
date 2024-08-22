@@ -7,7 +7,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-12 col-md-3 col-lg-3 pe-2">Tanggal Produksi</label>
-                                <input class="form-control datepicker-input col-12 col-md-9 col-lg-9" type="date" wire:model.defer="production_date" placeholder="yyyy/mm/dd"/>
+                                <input class="form-control datepicker-input col-12 col-md-9 col-lg-9" type="datetime-local" wire:model.defer="production_date" placeholder="yyyy/mm/dd"/>
                             </div>
                         </div>
                     </div>
@@ -15,7 +15,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-12 col-md-3 col-lg-3 pe-2">Tanggal Proses</label>
-                                <input class="form-control datepicker-input col-12 col-md-9 col-lg-9" type="date" wire:model.defer="created_on" placeholder="yyyy/mm/dd"/>
+                                <input class="form-control datepicker-input col-12 col-md-9 col-lg-9" type="datetime-local" wire:model.defer="created_on" placeholder="yyyy/mm/dd"/>
                             </div>
                         </div>
                     </div>
@@ -285,7 +285,7 @@
                                             <th class="border-0">Shift</th>
                                             <th class="border-0">Petugas</th>
                                             <th class="border-0">Tg. Produksi</th>
-                                            <th class="border-0">Frekuensi</th>
+                                            {{-- <th class="border-0">Frekuensi</th> --}}
                                             <th class="border-0 rounded-end">Berat Produksi (kg)</th>
                                         </tr>
                                     </thead>
@@ -296,33 +296,33 @@
                                         @forelse ($detailsGentan as $item)
                                             <tr>
                                                 <td>
-                                                    <button type="button" class="btn btn-danger" wire:click="deleteGentan({{$item->id}})">
+                                                    <button type="button" class="btn btn-danger" wire:click="deleteGentan({{$item['id']}})">
                                                         <i class="fa fa-trash"></i> Delete
                                                     </button>
                                                 </td>
                                                 <td>
-                                                    {{ $item->gentan_no }}
+                                                    {{ $item['gentan_no'] }}
                                                 </td>
                                                 <td>
-                                                    {{ $item->gentan_line }}
+                                                    {{ $item['gentan_line'] }}
                                                 </td>
                                                 <td>
-                                                    {{ $item->machineno }}
+                                                    {{ $item['machineno'] }}
                                                 </td>
                                                 <td>
-                                                    {{ $item->work_shift }}
+                                                    {{ $item['work_shift'] }}
                                                 </td>
                                                 <td>
-                                                    {{ $item->empname }}
+                                                    {{ $item['empname'] }}
                                                 </td>
                                                 <td>
-                                                    {{ $item->production_date }}
+                                                    {{ $item['production_date'] }}
                                                 </td>
+                                                {{-- <td>
+                                                    {{ $item['frekuensi'] }}
+                                                </td> --}}
                                                 <td>
-                                                    {{ $item->frekuensi }}
-                                                </td>
-                                                <td>
-                                                    {{ $item->berat }}
+                                                    {{ $item['berat'] }}
                                                 </td>
                                             </tr>
                                         @empty
@@ -332,7 +332,7 @@
                                         @endforelse
                                         <tr>
                                             <td colspan="7" class="text-end">Berat Total (kg):</td>
-                                            <td colspan="1" class="text-center">0</td>
+                                            <td colspan="1" class="text-center">{{ $jumlahBeratProduksi }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -371,21 +371,21 @@
                                         @forelse ($detailsLoss as $item)
                                             <tr>
                                                 <td>
-                                                    <button type="button" class="btn btn-danger" wire:click="deleteLoss({{$item->id}})">
+                                                    <button type="button" class="btn btn-danger" wire:click="deleteLoss({{$item['id']}})">
                                                         <i class="fa fa-trash"></i> Delete
                                                     </button>
                                                 </td>
                                                 <td>
-                                                    {{ $item->code }}
+                                                    {{ $item['code'] }}
                                                 </td>
                                                 <td>
-                                                    {{ $item->name }}
+                                                    {{ $item['name'] }}
                                                 </td>
                                                 <td>
-                                                    {{ $item->frekuensi }}
+                                                    {{ $item['frekuensi'] }}
                                                 </td>
                                                 <td>
-                                                    {{ $item->berat_loss }}
+                                                    {{ $item['berat_loss'] }}
                                                 </td>
                                             </tr>
                                         @empty
@@ -396,7 +396,7 @@
 
                                         <tr>
                                             <td colspan="3" class="text-end">Berat Loss Total (kg):</td>
-                                            <td colspan="1" class="text-center">0</td>
+                                            <td colspan="1" class="text-center">{{ $jumlahBeratLoss }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -454,7 +454,12 @@
                                     <div class="form-group">
                                         <label>Line Gentan </label>
                                         <div class="input-group col-md-9 col-xs-8">
-                                            <input class="form-control" type="text" wire:model.defer="gentan_line" placeholder="Enter A atau B" />
+                                            {{-- <input class="form-control" type="text" wire:model.defer="gentan_line" placeholder="Enter A atau B" /> --}}
+                                            <select class="form-select" wire:model.defer="gentan_line">
+                                                <option value="">Pilih Line</option>
+                                                <option value="A">A</option>
+                                                <option value="B">B</option>
+                                            </select>
                                             @error('gentan_line')
                                                 <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror

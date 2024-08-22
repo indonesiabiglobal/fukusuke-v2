@@ -63,6 +63,8 @@ class AddSeitaiController extends Component
     public $frekuensi_fr;
     public $jumlahBeratProduksi;
     public $jumlahBeratLoss;
+    public $currentLossId = 1;
+    public $currentGentanId = 1;
 
     // data master produk
     public $masterKatanuki;
@@ -75,8 +77,8 @@ class AddSeitaiController extends Component
 
     public function mount()
     {
-        $this->production_date = Carbon::now()->format('Y-m-d');
-        $this->created_on = Carbon::now()->format('Y-m-d');
+        $this->production_date = Carbon::now()->format('Y-m-d H:i:s');
+        $this->created_on = Carbon::now()->format('Y-m-d H:i:s');
         $this->work_hour = Carbon::now()->format('H:i');
         $workingShift = MsWorkingShift::where('work_hour_from', '<=', $this->work_hour)->where('work_hour_till', '>=', $this->work_hour)->first();
         $this->work_shift = $workingShift->id;
@@ -299,7 +301,12 @@ class AddSeitaiController extends Component
             $data->nomor_palet = $this->nomor_palet;
             $data->nomor_lot = $this->nomor_lot;
             $data->created_on = $this->created_on;
+            $data->created_by = auth()->user()->username;
+            $data->updated_on = $this->created_on;
+            $data->updated_by = auth()->user()->username;
 
+            // jumlah berat loss
+            $data->seitai_berat_loss = $this->jumlahBeratLoss;
             $data->save();
 
             $this->product_goods_id = $data->id;
@@ -313,13 +320,30 @@ class AddSeitaiController extends Component
                     'status_production' => 1,
                 ]);
 
-            TdProductGoodsAssembly::where('lpk_id', $lpkid->id)->update([
-                'product_goods_id' => $data->id,
-            ]);
+            // menginput data gentan
+            foreach ($this->detailsGentan as $gentan) {
+                $datas = new TdProductGoodsAssembly();
+                $datas->product_goods_id = $data->id;
+                $datas->product_assembly_id = $gentan['product_assembly_id'];
+                $datas->gentan_line = $gentan['gentan_line'];
+                $datas->berat = $gentan['berat'];
+                $datas->frekuensi = $gentan['frekuensi'];
+                $datas->lpk_id = $lpkid->id;
+                $datas->save();
+            }
 
-            TdProductGoodsLoss::where('lpk_id', $lpkid->id)->update([
-                'product_goods_id' => $data->id,
-            ]);
+
+            // menginput data loss
+            foreach ($this->detailsLoss as $loss) {
+                $datas = new TdProductGoodsLoss();
+                $datas->product_goods_id = $data->id;
+                $datas->loss_seitai_id = $loss['loss_seitai_id'];
+                $datas->berat_loss = $loss['berat_loss'];
+                $datas->berat = $loss['berat'];
+                $datas->frekuensi = $loss['frekuensi'];
+                $datas->lpk_id = $lpkid->id;
+                $datas->save();
+            }
 
             DB::commit();
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);
@@ -335,32 +359,73 @@ class AddSeitaiController extends Component
         return redirect()->route('nippo-seitai');
     }
 
+    public function nextIdGentan()
+    {
+        return $this->currentGentanId++;
+    }
+
+    public function resetGentan()
+    {
+        $this->gentan_no = '';
+        $this->gentan_line = '';
+        $this->machine_no = '';
+        $this->empname = '';
+        $this->petugas = '';
+        $this->berat_produksi = '';
+        $this->gentan_line = '';
+    }
+
     public function saveGentan()
     {
         $lpkid = TdOrderLpk::where('lpk_no', $this->lpk_no)->first();
         $assembly = TdProductAssembly::where('lpk_id', $lpkid->id)
             ->first();
 
-        $datas = new TdProductGoodsAssembly();
-        $datas->product_goods_id = $this->product_goods_id;
-        $datas->product_assembly_id = $assembly->id;
-        $datas->gentan_line = $this->gentan_line;
-        $datas->berat = $this->berat;
-        $datas->frekuensi = $this->frekuensi;
-        $datas->lpk_id = $lpkid->id;
+        // $datas = new TdProductGoodsAssembly();
+        // $datas->product_goods_id = $this->product_goods_id;
+        // $datas->product_assembly_id = $assembly->id;
+        // $datas->gentan_line = $this->gentan_line;
+        // $datas->berat = $this->berat;
+        // $datas->frekuensi = $this->frekuensi;
+        // $datas->lpk_id = $lpkid->id;
+        // $datas->save();
+        $data = [
+            'id' => $this->nextIdGentan(),
+            'gentan_no' => $this->gentan_no,
+            'gentan_line' => $this->gentan_line,
+            'machineno' => $this->machine_no,
+            'work_shift' => $this->work_shift,
+            'empname' => $this->petugas,
+            'production_date' => $this->production_date,
+            'product_goods_id' => $this->product_goods_id,
+            'product_assembly_id' => $assembly->id,
+            'berat' => $this->berat_produksi,
+            'frekuensi' => $this->frekuensi,
+            'lpk_id' => $lpkid->id,
+        ];
+        $this->jumlahBeratProduksi += $this->berat_produksi;
 
-        $datas->save();
+        $this->detailsGentan[] = $data;
+        $this->resetGentan();
+
+        // dd($this->detailsGentan);
 
         $this->dispatch('closeModalGentan');
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);
     }
 
-    public function clearLoss()
+    public function resetLoss()
     {
         $this->loss_seitai_id = '';
+        $this->namaloss = '';
         $this->berat_loss = '';
-        $this->berat_fr = '';
+        $this->berat_fr = null;
         $this->frekuensi_fr = '';
+    }
+
+    public function nextIdLoss()
+    {
+        return $this->currentLossId++;
     }
 
     public function saveLoss()
@@ -369,21 +434,31 @@ class AddSeitaiController extends Component
         $loss = MsLossSeitai::where('code', $this->loss_seitai_id)
             ->first();
 
-        $datas = new TdProductGoodsLoss();
-        $datas->product_goods_id = $this->product_goods_id;
-        $datas->loss_seitai_id = $loss->id;
-        $datas->berat_loss = $this->berat_loss;
-        $datas->berat = $this->berat_fr;
-        $datas->frekuensi = $this->frekuensi_fr;
-        $datas->lpk_id = $lpkid->id;
-        $datas->save();
+        // $datas = new TdProductGoodsLoss();
+        // $datas->product_goods_id = $this->product_goods_id;
+        // $datas->loss_seitai_id = $loss->id;
+        // $datas->berat_loss = $this->berat_loss;
+        // $datas->berat = $this->berat_fr;
+        // $datas->frekuensi = $this->frekuensi_fr;
+        // $datas->lpk_id = $lpkid->id;
+        // $datas->save();
+
+        $this->detailsLoss[] = [
+            'id' => $this->nextIdLoss(),
+            'code' => $loss->code,
+            'name' => $loss->name,
+            'product_goods_id' => $this->product_goods_id,
+            'loss_seitai_id' => $loss->id,
+            'berat_loss' => $this->berat_loss,
+            'berat' => $this->berat_fr,
+            'frekuensi' => $this->frekuensi_fr,
+            'lpk_id' => $lpkid->id,
+        ];
+        // dd($this->detailsLoss);
 
         // menambahkan ke tdproduct_goods
         $this->jumlahBeratLoss += $this->berat_loss;
-        $tdproductgoods = TdProductGoods::where('id', $this->product_goods_id)->update([
-            'seitai_berat_loss' => $this->jumlahBeratLoss
-        ]);
-        $this->clearLoss();
+        $this->resetLoss();
 
 
         $this->dispatch('closeModalLoss');
@@ -392,33 +467,27 @@ class AddSeitaiController extends Component
 
     public function deleteGentan($orderId)
     {
-        $data = TdProductGoodsAssembly::findOrFail($orderId);
-        $data->delete();
+        // delete gentan
+        $index = array_search($orderId, array_column($this->detailsGentan, 'id'));
+
+        if ($index !== false) {
+            array_splice($this->detailsGentan, $index, 1);
+        }
 
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Hapus']);
     }
 
     public function deleteLoss($orderId)
     {
-        $data = TdProductGoodsLoss::findOrFail($orderId);
-        $data->delete();
+        $index = array_search($orderId, array_column($this->detailsLoss, 'id'));
 
-        // mengurangi dari tdproduct_goods
-        $this->jumlahBeratLoss -= $data->berat_loss;
-        $tdproductgoods = TdProductGoods::where('id', $this->product_goods_id)->update([
-            'seitai_berat_loss' => $this->jumlahBeratLoss
-        ]);
+        if ($index !== false) {
+            array_splice($this->detailsLoss, $index, 1);
+            // mengurangi dari jumlah berat loss
+            $this->jumlahBeratLoss -= $this->detailsLoss[$index]['berat_loss'];
+        }
 
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Hapus']);
-    }
-
-    public function resetGentan()
-    {
-        $this->gentan_no = '';
-        $this->machine_no = '';
-        $this->petugas = '';
-        $this->berat_produksi = '';
-        $this->gentan_line = '';
     }
 
     public function resetSeitai()
@@ -472,40 +541,6 @@ class AddSeitaiController extends Component
                 $this->qty_gulung = $tdorderlpk->qty_gulung;
                 $this->qty_gentan = $tdorderlpk->qty_gentan;
                 $this->qty_lpk = number_format($tdorderlpk->qty_lpk);
-
-                $this->detailsGentan = DB::table('tdproduct_assembly as tdpa')
-                    ->join('tdproduct_goods_assembly as tga', 'tga.product_assembly_id', '=', 'tdpa.id')
-                    ->leftJoin('msmachine as mm', 'mm.id', '=', 'tdpa.machine_id')
-                    ->leftJoin('msemployee as mse', 'mse.id', '=', 'tdpa.employee_id')
-                    ->select(
-                        'tga.id',
-                        'tdpa.gentan_no',
-                        'tga.gentan_line',
-                        'mm.machineno',
-                        'tdpa.work_shift',
-                        'mse.empname',
-                        'tdpa.production_date',
-                        'tdpa.berat_produksi',
-                        'tga.frekuensi'
-                    )
-                    ->where('tdpa.lpk_id', $tdorderlpk->id)
-                    ->whereNull('tga.product_goods_id')
-                    ->get();
-                $this->jumlahBeratProduksi = $this->detailsGentan->sum('berat_produksi');
-
-                $this->detailsLoss = DB::table('tdproduct_goods_loss as tgl')
-                    ->join('mslossseitai as mss', 'mss.id', '=', 'tgl.loss_seitai_id')
-                    ->select(
-                        'tgl.id',
-                        'mss.code',
-                        'mss.name',
-                        'tgl.berat_loss',
-                        'tgl.frekuensi'
-                    )
-                    ->where('tgl.lpk_id', $tdorderlpk->id)
-                    ->whereNull('tgl.product_goods_id')
-                    ->get();
-                $this->jumlahBeratLoss = $this->detailsLoss->sum('berat_loss');
             }
         }
 

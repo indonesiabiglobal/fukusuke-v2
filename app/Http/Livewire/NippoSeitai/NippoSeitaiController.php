@@ -580,6 +580,9 @@ class NippoSeitaiController extends Component
 
     public function render()
     {
+        // $tglAwal = $this->tglMasuk;
+        $tglAwal = Carbon::parse($this->tglMasuk)->format('d-m-Y 00:00:00');
+        $tglAkhir = Carbon::parse($this->tglKeluar)->format('d-m-Y 23:59:59');
         if ($this->transaksi == 2) {
             $data = DB::table('tdproduct_goods AS tdpg')
                 ->select(
@@ -615,17 +618,21 @@ class NippoSeitaiController extends Component
                     'tdol.qty_gulung AS qty_gulung',
                     'tdol.qty_lpk AS qty_lpk',
                     'tdol.total_assembly_qty AS total_assembly_qty',
-                    'mp.name AS product_name'
+                    'mp.name AS product_name',
+                    'mc.machineno',
                 )
+                ->distinct()
                 ->join('tdorderlpk AS tdol', 'tdpg.lpk_id', '=', 'tdol.id')
                 ->leftJoin('msproduct AS mp', 'mp.id', '=', 'tdol.product_id')
                 ->leftJoin('tdproduct_goods_assembly AS tga', 'tga.product_goods_id', '=', 'tdpg.id')
+                ->leftJoin('msmachine AS mc', 'mc.id', '=', 'tdpg.machine_id')
                 ->leftJoin('tdproduct_assembly AS ta', 'ta.id', '=', 'tga.product_assembly_id');
+
             if (isset($this->tglMasuk) && $this->tglMasuk != '') {
-                $data = $data->where('tdpg.production_date', '>=', $this->tglMasuk);
+                $data = $data->where('tdpg.production_date', '>=', $tglAwal);
             }
             if (isset($this->tglKeluar) && $this->tglKeluar != '') {
-                $data = $data->where('tdpg.production_date', '<=', $this->tglKeluar);
+                $data = $data->where('tdpg.production_date', '<=', $tglAkhir);
             }
             if (isset($this->lpk_no) && $this->lpk_no != "" && $this->lpk_no != "undefined") {
                 $data = $data->where('tdol.lpk_no', 'ilike', "%{$this->lpk_no}%");
@@ -697,6 +704,7 @@ class NippoSeitaiController extends Component
                     'mp.name AS product_name',
                     'mc.machineno',
                 ])
+                ->distinct()
                 ->join('tdorderlpk AS tdol', 'tdpg.lpk_id', '=', 'tdol.id')
                 ->leftJoin('msproduct AS mp', 'mp.id', '=', 'tdol.product_id')
                 ->leftJoin('tdproduct_goods_assembly AS tga', 'tga.product_goods_id', '=', 'tdpg.id')
@@ -704,10 +712,10 @@ class NippoSeitaiController extends Component
                 ->leftJoin('msmachine AS mc', 'mc.id', '=', 'tdpg.machine_id');
 
             if (isset($this->tglMasuk) && $this->tglMasuk != '') {
-                $data = $data->where('tdpg.production_date', '>=', $this->tglMasuk);
+                $data = $data->where('tdpg.created_on', '>=', $tglAwal);
             }
             if (isset($this->tglKeluar) && $this->tglKeluar != '') {
-                $data = $data->where('tdpg.production_date', '<=', $this->tglKeluar);
+                $data = $data->where('tdpg.created_on', '<=', $tglAkhir);
             }
             if (isset($this->lpk_no) && $this->lpk_no != "" && $this->lpk_no != "undefined") {
                 $data = $data->where('tdol.lpk_no', 'ilike', "%{$this->lpk_no}%");

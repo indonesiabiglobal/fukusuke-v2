@@ -432,7 +432,7 @@ class EditSeitaiController extends Component
 
             DB::commit();
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Order Deleted successfully.']);
-            return redirect()->route('nippo-infure');
+            return redirect()->route('nippo-seitai');
         } catch (\Exception $e) {
             DB::rollBack();
             $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);

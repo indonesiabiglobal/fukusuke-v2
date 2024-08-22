@@ -274,7 +274,7 @@
                             <td x-show="order_nomor">{{ $item->order_id }}</td>
                             <td x-show="mesin">{{ $item->machineno }}</td>
                             <td x-show="produksi_tanggal">{{ $item->production_date }}</td>
-                            <td x-show="proses_Tanggal"> </td>
+                            <td x-show="proses_Tanggal">{{ $item->created_on }}</td>
                             <td x-show="jam">{{ $item->work_hour }}</td>
                             <td x-show="shift">{{ $item->work_shift }}</td>
                             <td x-show="palet_nomor">{{ $item->nomor_palet }}</td>

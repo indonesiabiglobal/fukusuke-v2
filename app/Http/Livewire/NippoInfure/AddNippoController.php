@@ -260,6 +260,7 @@ class AddNippoController extends Component
             $product->nomor_han = $this->nomor_han;
             $product->product_id = $products->id;
             $product->panjang_produksi = $this->panjang_produksi;
+            $product->berat_produksi = $this->qty_gentan;
             $product->save();
 
             // TdProductAssemblyLoss::where('lpk_id', $lpkid->id)->update([
