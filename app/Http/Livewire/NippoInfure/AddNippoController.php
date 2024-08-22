@@ -31,7 +31,6 @@ class AddNippoController extends Component
     public $machinename;
     public $empname;
     public $employeeno;
-    public $berat_produksi;
     public $qty_gulung;
     public $qty_gentan;
     public $berat_produksi;
