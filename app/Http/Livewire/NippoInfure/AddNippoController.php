@@ -290,6 +290,7 @@ class AddNippoController extends Component
             $product->panjang_produksi = $this->panjang_produksi;
             $product->berat_produksi = $this->berat_produksi;
             $product->berat_standard = $this->berat_standard;
+            $product->infure_cost = $this->berat_produksi * $products->harga_sat_infure;
             $product->save();
 
             $totalBerat = 0;
@@ -330,7 +331,6 @@ class AddNippoController extends Component
                 'total_assembly_line' => $totalAssembly[0]->c1,
             ]);
 
-            $product->infure_cost = $this->berat_produksi * $products->harga_sat_infure;
 
 
             // $product->panjang_printing_inline = $this->panjang_printing_inline;
