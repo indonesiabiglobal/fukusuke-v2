@@ -34,6 +34,7 @@ class AddNippoController extends Component
     public $berat_produksi;
     public $qty_gulung;
     public $qty_gentan;
+    public $berat_produksi;
     public $work_hour;
     public $work_shift;
     public $gentan_no = 0;
@@ -47,6 +48,10 @@ class AddNippoController extends Component
     public $orderid;
     public $nomor_barcode;
     public $panjang_produksi;
+    public $berat_standard;
+    public $total_assembly_line;
+    public $selisih;
+    public $rasio;
 
     // data master produk
     public $masterKatanuki;
@@ -248,7 +253,9 @@ class AddNippoController extends Component
             $lpkid = TdOrderLpk::where('lpk_no', $this->lpk_no)->first();
             $machine = MsMachine::where('machineno', $this->machineno)->first();
             $employe = MsEmployee::where('employeeno', $this->employeeno)->first();
-            $products = MsProduct::where('code', $this->code)->first();
+            $products = MsProduct::select('msproduct.id', 'mpt.harga_sat_infure')
+                ->join('msproduct_type mpt', 'msproduct.product_type_id', '=', 'msproduct_type.id')
+                ->where('code', $this->code)->first();
             $maxGentan = TdProductAssembly::where('lpk_id', $lpkid->id)
                 ->orderBy('gentan_no', 'DESC')
                 ->first();
@@ -317,6 +324,8 @@ class AddNippoController extends Component
             TdOrderLpk::where('id', $lpkid->id)->update([
                 'total_assembly_line' => $totalAssembly[0]->c1,
             ]);
+
+            $product->infure_cost = $this->berat_produksi * $products->harga_sat_infure;
 
 
             // $product->panjang_printing_inline = $this->panjang_printing_inline;
@@ -441,10 +450,13 @@ class AddNippoController extends Component
                     'mp.diameterlipat',
                     'tolp.qty_gulung',
                     'tolp.qty_gentan',
-                    'tda.gentan_no'
+                    'tda.gentan_no',
+                    'tolp.total_assembly_line',
+                    DB::raw("( mp.ketebalan * mp.diameterlipat * tolp.qty_gulung * 2 * mt.berat_jenis ) / 1000 AS berat_standard "),
                 )
                 ->join('msproduct as mp', 'mp.id', '=', 'tolp.product_id')
                 ->leftJoin('tdproduct_assembly as tda', 'tda.lpk_id', '=', 'tolp.id')
+                ->leftJoin('msproduct_type as mt', 'mt.id', '=', 'mp.product_type_id')
                 // ->where('tolp.lpk_no', $this->lpk_no)
                 ->whereRaw("LEFT(lpk_no, 6) ILIKE ?", ["{$prefix}"])
                 ->whereRaw("RIGHT(lpk_no, 3) ILIKE ?", ["{$suffix}"])
@@ -462,7 +474,9 @@ class AddNippoController extends Component
                 $this->qty_gulung = $tdorderlpk->qty_gulung;
                 $this->lpk_no = $tdorderlpk->lpk_no;
                 $this->qty_gentan = $tdorderlpk->qty_gentan;
-                // $this->gentan_no= $tdorderlpk->gentan_no + 1;
+                $this->berat_standard = $tdorderlpk->berat_standard;
+                $this->total_assembly_line = $tdorderlpk->total_assembly_line;
+                $this->selisih = $tdorderlpk->total_assembly_line - $tdorderlpk->panjang_lpk;
 
                 // $this->details = DB::table('tdproduct_assembly_loss as tal')
                 //     ->select(
@@ -515,6 +529,10 @@ class AddNippoController extends Component
             if ($this->code != $this->nomor_barcode) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Barcode ' . $this->nomor_barcode . ' Tidak Terdaftar']);
             }
+        }
+
+        if (isset($this->berat_produksi) && $this->berat_produksi != '') {
+            $this->rasio = ($this->berat_produksi / $this->berat_standard) * 100;
         }
 
         // dd($this->details);
