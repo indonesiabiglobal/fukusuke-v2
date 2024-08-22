@@ -178,7 +178,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-6">Total Panjang Produksi</label>
-                                <input type="text" placeholder="0" class="form-control readonly bg-light" readonly="readonly" wire:model="total_assembly_qty" />
+                                <input type="text" placeholder="0" class="form-control readonly bg-light" readonly="readonly" wire:model="total_assembly_line" />
                                 <span class="input-group-text">
                                     m
                                 </span>
@@ -200,7 +200,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5">Berat Gentan</label>
-                                <input type="number" class="form-control"  wire:model="qty_gentan" />
+                                <input type="number" class="form-control"  wire:model="berat_produksi" />
                                 <span class="input-group-text">
                                     kg
                                 </span>
