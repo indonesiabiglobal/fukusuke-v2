@@ -201,11 +201,11 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-6">Total Panjang Produksi</label>
-                                <input type="text" placeholder="0" class="form-control readonly bg-light" readonly="readonly" wire:model="total_assembly_qty"/>
+                                <input type="text" placeholder="0" class="form-control readonly bg-light" readonly="readonly" wire:model="total_assembly_line"/>
                                 <span class="input-group-text">
                                     m
                                 </span>
-                                @error('total_assembly_qty')
+                                @error('total_assembly_line')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
                             </div>
@@ -229,11 +229,11 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5">Berat Gentan</label>
-                                <input type="number" class="form-control @error('qty_gentan') is-invalid @enderror" wire:model="qty_gentan" />
+                                <input type="number" class="form-control @error('berat_produksi') is-invalid @enderror" wire:model.live.debounce.500ms="berat_produksi" />
                                 <span class="input-group-text">
                                     kg
                                 </span>
-                                @error('qty_gentan')
+                                @error('berat_produksi')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
                             </div>
@@ -257,7 +257,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-3">Rasio</label>
-                                <input type="text" placeholder="0" class="form-control readonly bg-light" readonly="readonly"  wire:model="rasio" />
+                                <input type="text" placeholder="0" class="form-control readonly bg-light" readonly="readonly" wire:model="rasio" />
                                 <span class="input-group-text">
                                     %
                                 </span>

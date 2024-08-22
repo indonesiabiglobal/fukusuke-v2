@@ -33,6 +33,7 @@ class AddNippoController extends Component
     public $employeeno;
     public $qty_gulung;
     public $qty_gentan;
+    public $berat_produksi;
     public $work_hour;
     public $work_shift;
     public $gentan_no = 0;
@@ -46,6 +47,10 @@ class AddNippoController extends Component
     public $orderid;
     public $nomor_barcode;
     public $panjang_produksi;
+    public $berat_standard;
+    public $total_assembly_line;
+    public $selisih;
+    public $rasio;
 
     // data master produk
     public $masterKatanuki;
@@ -63,8 +68,8 @@ class AddNippoController extends Component
         $this->created_on = Carbon::now()->format('Y-m-d');
         $this->work_hour = Carbon::now()->format('H:i');
 
-        $workingShift = MsWorkingShift::where('work_hour_from', '<=', $this->work_hour)->orderBy('work_hour_from', 'DESC')->first();
-        $this->work_shift = $workingShift->id;
+        // $workingShift = MsWorkingShift::where('work_hour_from', '<=', $this->work_hour)->orderBy('work_hour_from', 'DESC')->first();
+        // $this->work_shift = $workingShift->id;
     }
 
     public function showModalNoOrder()
@@ -260,7 +265,7 @@ class AddNippoController extends Component
             $product->nomor_han = $this->nomor_han;
             $product->product_id = $products->id;
             $product->panjang_produksi = $this->panjang_produksi;
-            $product->berat_produksi = $this->qty_gentan;
+            $product->berat_produksi = $this->berat_produksi;
             $product->save();
 
             // TdProductAssemblyLoss::where('lpk_id', $lpkid->id)->update([
@@ -421,10 +426,13 @@ class AddNippoController extends Component
                     'mp.diameterlipat',
                     'tolp.qty_gulung',
                     'tolp.qty_gentan',
-                    'tda.gentan_no'
+                    'tda.gentan_no',
+                    'tolp.total_assembly_line',
+                    DB::raw("( mp.ketebalan * mp.diameterlipat * tolp.qty_gulung * 2 * mt.berat_jenis ) / 1000 AS berat_standard "),
                 )
                 ->join('msproduct as mp', 'mp.id', '=', 'tolp.product_id')
                 ->leftJoin('tdproduct_assembly as tda', 'tda.lpk_id', '=', 'tolp.id')
+                ->leftJoin('msproduct_type as mt', 'mt.id', '=', 'mp.product_type_id')
                 // ->where('tolp.lpk_no', $this->lpk_no)
                 ->whereRaw("LEFT(lpk_no, 6) ILIKE ?", ["{$prefix}"])
                 ->whereRaw("RIGHT(lpk_no, 3) ILIKE ?", ["{$suffix}"])
@@ -442,7 +450,9 @@ class AddNippoController extends Component
                 $this->qty_gulung = $tdorderlpk->qty_gulung;
                 $this->lpk_no = $tdorderlpk->lpk_no;
                 $this->qty_gentan = $tdorderlpk->qty_gentan;
-                // $this->gentan_no= $tdorderlpk->gentan_no + 1;
+                $this->berat_standard = $tdorderlpk->berat_standard;
+                $this->total_assembly_line = $tdorderlpk->total_assembly_line;
+                $this->selisih = $tdorderlpk->total_assembly_line - $tdorderlpk->panjang_lpk;
 
                 // $this->details = DB::table('tdproduct_assembly_loss as tal')
                 //     ->select(
@@ -495,6 +505,10 @@ class AddNippoController extends Component
             if ($this->code != $this->nomor_barcode) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Barcode ' . $this->nomor_barcode . ' Tidak Terdaftar']);
             }
+        }
+
+        if (isset($this->berat_produksi) && $this->berat_produksi != '') {
+            $this->rasio = ($this->berat_produksi / $this->berat_standard) * 100;
         }
 
         // dd($this->details);
