@@ -272,7 +272,7 @@
                             <td x-show="loss">-</td>
                             <td x-show="produk_nama">{{ $item->product_name }}</td>
                             <td x-show="order_nomor">{{ $item->order_id }}</td>
-                            <td x-show="mesin">{{ $item->machine_id }}</td>
+                            <td x-show="mesin">{{ $item->machineno }}</td>
                             <td x-show="produksi_tanggal">{{ $item->production_date }}</td>
                             <td x-show="proses_Tanggal"> </td>
                             <td x-show="jam">{{ $item->work_hour }}</td>

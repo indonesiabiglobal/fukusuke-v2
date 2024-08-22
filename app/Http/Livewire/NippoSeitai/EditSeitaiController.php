@@ -360,6 +360,11 @@ class EditSeitaiController extends Component
         $data = TdProductGoodsLoss::findOrFail($orderId);
         $data->delete();
 
+        // mengurangi dari tdproduct_goods
+        $tdproductgoods = TdProductGoods::where('id', $this->tdpgId)->update([
+            'seitai_berat_loss' => $this->jumlahBeratLoss - $data->berat_loss
+        ]);
+
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Hapus']);
     }
 
@@ -383,6 +388,14 @@ class EditSeitaiController extends Component
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);
     }
 
+    public function clearLoss()
+    {
+        $this->loss_seitai_id = '';
+        $this->berat_loss = '';
+        $this->berat_fr = '';
+        $this->frekuensi_fr = '';
+    }
+
     public function saveLoss()
     {
         $lpkid = TdOrderLpk::where('lpk_no', $this->lpk_no)->first();
@@ -397,7 +410,14 @@ class EditSeitaiController extends Component
         $datas->frekuensi = $this->frekuensi_fr;
         $datas->lpk_id = $lpkid->id;
 
+        // menambahkan ke tdproduct_goods
+        $tdproductgoods = TdProductGoods::where('id', $this->tdpgId)->update([
+            'seitai_berat_loss' => $this->jumlahBeratLoss + $this->berat_loss
+        ]);
+
         $datas->save();
+
+        $this->clearLoss();
 
         $this->dispatch('closeModalLoss');
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);
@@ -515,6 +535,7 @@ class EditSeitaiController extends Component
                     )
                     ->where('tga.product_goods_id', $this->tdpgId)
                     ->get();
+                $this->jumlahBeratProduksi = $this->detailsGentan->sum('berat_produksi');
 
                 $this->detailsLoss = DB::table('tdproduct_goods_loss as tgl')
                     ->join('mslossseitai as mss', 'mss.id', '=', 'tgl.loss_seitai_id')
@@ -527,6 +548,7 @@ class EditSeitaiController extends Component
                     )
                     ->where('tgl.product_goods_id', $this->tdpgId)
                     ->get();
+                $this->jumlahBeratLoss = $this->detailsLoss->sum('berat_loss');
             }
         }
 
