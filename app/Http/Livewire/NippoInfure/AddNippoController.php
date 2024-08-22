@@ -222,7 +222,7 @@ class AddNippoController extends Component
             'machineno' => 'required',
             'employeeno' => 'required',
             'panjang_produksi' => 'required',
-            'qty_gentan' => 'required'
+            'berat_produksi' => 'required'
         ]);
 
         DB::beginTransaction();
