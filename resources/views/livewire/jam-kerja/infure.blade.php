@@ -59,7 +59,8 @@
                     <select class="form-control" wire:model.defer="work_shift_filter" data-choices data-choices-sorting-false data-choices-removeItem>
                         <option value="">- All -</option>
                         @foreach ($workShift as $item)
-                            <option value="{{ $item->id }}" @if ($item->id == ($work_shift_filter['value'] ?? null)) selected @endif>{{ $item->work_shift }}</option>
+                            <option value="{{ $item->id }}" @if ($item->id == ($work_shift_filter['value'] ?? null)) selected @endif>
+                                Shift-{{ $item->work_shift }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -176,7 +177,7 @@
                                     {{-- <button type="submit" class="btn btn-success" wire:click="save">
                                         Save
                                     </button> --}}
-                                    <button type="submit" class="btn btn-success" wire:click="save">
+                                    <button type="button" class="btn btn-success" wire:click="save">
                                         <span wire:loading.remove wire:target="save">
                                             <i class="ri-save-3-line"></i> Save
                                         </span>
@@ -376,8 +377,8 @@
                             <td x-show="tanggal">{{ $item->working_date }}</td>
                             <td x-show="shift">{{ $item->work_shift }}</td>
                             <td x-show="nomor_mesin">{{ $item->machine_id }}</td>
-                            <td x-show="nik"> </td>
-                            <td x-show="petugas"> </td>
+                            <td x-show="nik"> {{ $item->employeeno }}</td>
+                            <td x-show="petugas"> {{ $item->empname }}</td>
                             <td x-show="jam_kerja">{{ $item->work_hour }}</td>
                             <td x-show="jam_mati">{{ $item->off_hour }}</td>
                             <td x-show="jam_jalan">{{ $item->on_hour }}</td>

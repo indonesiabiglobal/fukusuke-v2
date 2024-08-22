@@ -59,7 +59,8 @@
                     <select class="form-control" wire:model.defer="work_shift_filter" data-choices data-choices-sorting-false data-choices-removeItem>
                         <option value="">- All -</option>
                         @foreach ($workShift as $item)
-                            <option value="{{ $item->id }}" @if ($item->id == ($work_shift_filter['value'] ?? null)) selected @endif>{{ $item->work_shift }}</option>
+                            <option value="{{ $item->id }}" @if ($item->id == ($work_shift_filter['value'] ?? null)) selected @endif>
+                                Shift-{{ $item->work_shift }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -206,7 +207,10 @@
                                     <label for="">Tanggal</label>
                                     <div class="form-group" style="margin-left:1px; white-space:nowrap">
                                         <div class="input-group">
-                                            <input class="form-control datepicker-input" type="date" wire:model.defer="working_date" placeholder="yyyy/mm/dd"/>
+                                            <input class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y" type="text" wire:model.defer="working_date" placeholder="yyyy/mm/dd"/>
+                                            <span class="input-group-text py-0">
+                                                <i class="ri-calendar-event-fill fs-4"></i>
+                                            </span>
                                             @error('working_date')
                                                 <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror
@@ -372,8 +376,8 @@
                             <td x-show="tanggal">{{ $item->working_date }}</td>
                             <td x-show="shift">{{ $item->work_shift }}</td>
                             <td x-show="nomor_mesin">{{ $item->machine_id }}</td>
-                            <td x-show="nik"> </td>
-                            <td x-show="petugas"> </td>
+                            <td x-show="nik"> {{ $item->employeeno }}</td>
+                            <td x-show="petugas"> {{ $item->empname }}</td>
                             <td x-show="jam_kerja">{{ $item->work_hour }}</td>
                             <td x-show="jam_mati">{{ $item->off_hour }}</td>
                             <td x-show="jam_jalan">{{ $item->on_hour }}</td>
