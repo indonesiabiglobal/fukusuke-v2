@@ -233,7 +233,9 @@ class AddNippoController extends Component
             $lpkid = TdOrderLpk::where('lpk_no', $this->lpk_no)->first();
             $machine = MsMachine::where('machineno', $this->machineno)->first();
             $employe = MsEmployee::where('employeeno', $this->employeeno)->first();
-            $products = MsProduct::where('code', $this->code)->first();
+            $products = MsProduct::select('msproduct.id', 'mpt.harga_sat_infure')
+                ->join('msproduct_type mpt', 'msproduct.product_type_id', '=', 'msproduct_type.id')
+                ->where('code', $this->code)->first();
             $maxGentan = TdProductAssembly::where('lpk_id', $lpkid->id)
                 ->orderBy('gentan_no', 'DESC')
                 ->first();
@@ -302,6 +304,8 @@ class AddNippoController extends Component
             TdOrderLpk::where('id', $lpkid->id)->update([
                 'total_assembly_line' => $totalAssembly[0]->c1,
             ]);
+
+            $product->infure_cost = $this->berat_produksi * $products->harga_sat_infure;
 
 
             // $product->panjang_printing_inline = $this->panjang_printing_inline;

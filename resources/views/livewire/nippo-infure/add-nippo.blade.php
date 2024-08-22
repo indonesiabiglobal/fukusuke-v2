@@ -229,7 +229,6 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5">Berat Gentan</label>
-                                <input type="number" class="form-control @error('berat_produksi') is-invalid @enderror" wire:model="berat_produksi" />
                                 <input type="number" class="form-control @error('berat_produksi') is-invalid @enderror" wire:model.live.debounce.500ms="berat_produksi" />
                                 <span class="input-group-text">
                                     kg
