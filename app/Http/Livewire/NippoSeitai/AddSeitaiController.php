@@ -403,6 +403,10 @@ class AddSeitaiController extends Component
     public function render()
     {
         if (isset($this->lpk_no) && $this->lpk_no != '') {
+            if (!str_contains($this->lpk_no, '-') && strlen($this->lpk_no) >= 9) {
+                $this->lpk_no = substr_replace($this->lpk_no,'-',6,0);
+            }
+            // $this->lpk_no = substr_replace($this->lpk_no,'-',6,0);
             $tdorderlpk = DB::table('tdorderlpk as tolp')
                 ->select(
                     'tolp.id',

@@ -72,7 +72,7 @@
                     <select class="form-control" wire:model.defer="machineid" data-choices data-choices-sorting-false data-choices-removeItem>
                         <option value="">- All -</option>
                         @foreach ($machine as $item)
-                            <option value="{{ $item->id }}" @if ($item->id == ($machineid['value'] ?? null)) selected @endif>{{ $item->machineno }}</option>
+                            <option value="{{ $item->id }}" @if ($item->id == ($machineid['value'] ?? null)) selected @endif>{{ $item->machineno }} - {{ $item->machinename }}</option>
                         @endforeach
                     </select>
                 </div>
