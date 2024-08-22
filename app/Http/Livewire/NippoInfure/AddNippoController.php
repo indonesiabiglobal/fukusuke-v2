@@ -63,8 +63,8 @@ class AddNippoController extends Component
         $this->created_on = Carbon::now()->format('Y-m-d');
         $this->work_hour = Carbon::now()->format('H:i');
 
-        $workingShift = MsWorkingShift::where('work_hour_from', '<=', $this->work_hour)->where('work_hour_till', '>=', $this->work_hour)->first();
-        $this->work_shift = $workingShift->work_shift;
+        $workingShift = MsWorkingShift::where('work_hour_from', '<=', $this->work_hour)->orderBy('work_hour_from', 'DESC')->first();
+        $this->work_shift = $workingShift->id;
     }
 
     public function showModalNoOrder()
@@ -441,7 +441,7 @@ class AddNippoController extends Component
                 $this->dimensiinfure = $tdorderlpk->ketebalan . 'x' . $tdorderlpk->diameterlipat;
                 $this->qty_gulung = $tdorderlpk->qty_gulung;
                 $this->lpk_no = $tdorderlpk->lpk_no;
-                // $this->qty_gentan = $tdorderlpk->qty_gentan;
+                $this->qty_gentan = $tdorderlpk->qty_gentan;
                 // $this->gentan_no= $tdorderlpk->gentan_no + 1;
 
                 // $this->details = DB::table('tdproduct_assembly_loss as tal')

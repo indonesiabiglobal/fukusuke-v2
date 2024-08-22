@@ -172,11 +172,11 @@
                                 @enderror
 
                                 <input type="text" class="form-control readonly bg-light" readonly="readonly" placeholder=" .. X .." />
-                                <input type="text" class="form-control readonly bg-light" readonly="readonly" wire:model="qty_gulung" />
+                                <input type="text" class="form-control readonly bg-light" readonly="readonly" wire:model="qty_gentan" />
                                 <span class="input-group-text">
                                     roll
                                 </span>
-                                @error('qty_gulung')
+                                @error('qty_gentan')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
                             </div>
@@ -414,7 +414,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-12 mb-1">
+                                {{-- <div class="col-lg-12 mb-1">
                                     <div class="form-group">
                                         <div class="input-group">
                                             <label class="col-12 col-lg-2 fw-bold text-muted">Berat </label>
@@ -424,7 +424,7 @@
                                             @enderror
                                         </div>
                                     </div>
-                                </div>
+                                </div> --}}
                                 <div class="col-lg-12 mb-1">
                                     <div class="form-group">
                                         <div class="input-group">
@@ -473,7 +473,7 @@
                                 <th class="border-0">Kode</th>
                                 <th class="border-0">Nama Loss</th>
                                 <th class="border-0">Berat (kg)</th>
-                                <th class="border-0">Berat</th>
+                                {{-- <th class="border-0">Berat</th> --}}
                                 <th class="border-0 rounded-end">Frekuensi</th>
                             </tr>
                         </thead>
@@ -491,7 +491,7 @@
                                    <td>{{ $item['loss_infure_id'] }}</td>
                                     <td>{{ $item['name_infure'] ?? '' }}</td> {{-- Adjust if you have a 'name_infure' field --}}
                                     <td>{{ $item['berat_loss'] }}</td>
-                                    <td>{{ $item['berat'] }}</td>
+                                    {{-- <td>{{ $item['berat'] }}</td> --}}
                                     <td>{{ $item['frekuensi'] }}</td>
                                 </tr>
                                 @php
