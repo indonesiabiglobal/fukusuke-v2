@@ -72,7 +72,7 @@
                     <select class="form-control" wire:model.defer="machineid" data-choices data-choices-sorting-false data-choices-removeItem>
                         <option value="">- All -</option>
                         @foreach ($machine as $item)
-                            <option value="{{ $item->id }}" @if ($item->id == ($machineid['value'] ?? null)) selected @endif>{{ $item->machineno }}</option>
+                            <option value="{{ $item->id }}" @if ($item->id == ($machineid['value'] ?? null)) selected @endif>{{ $item->machineno }} - {{ $item->machinename }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -272,7 +272,7 @@
                             <td x-show="loss">-</td>
                             <td x-show="produk_nama">{{ $item->product_name }}</td>
                             <td x-show="order_nomor">{{ $item->order_id }}</td>
-                            <td x-show="mesin">{{ $item->machine_id }}</td>
+                            <td x-show="mesin">{{ $item->machineno }}</td>
                             <td x-show="produksi_tanggal">{{ $item->production_date }}</td>
                             <td x-show="proses_Tanggal"> </td>
                             <td x-show="jam">{{ $item->work_hour }}</td>

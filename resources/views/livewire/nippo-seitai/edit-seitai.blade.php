@@ -340,7 +340,7 @@
                                                     {{ $item->frekuensi }}
                                                 </td>
                                                 <td>
-                                                    {{ $item->berat }}
+                                                    {{ number_format($item->berat_produksi, 2) }}
                                                 </td>
                                             </tr>
                                         @empty
@@ -350,7 +350,7 @@
                                         @endforelse
                                         <tr>
                                             <td colspan="7" class="text-end">Berat Total (kg):</td>
-                                            <td colspan="1" class="text-center">0</td>
+                                            <td colspan="1" class="text-center">{{ $jumlahBeratProduksi }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -414,7 +414,7 @@
 
                                         <tr>
                                             <td colspan="3" class="text-end">Berat Loss Total (kg):</td>
-                                            <td colspan="1" class="text-center">0</td>
+                                            <td colspan="1" class="text-center">{{ number_format($jumlahBeratLoss, 2) }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -479,7 +479,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-12 mb-1">
+                                {{-- <div class="col-lg-12 mb-1">
                                     <div class="form-group">
                                         <label>Berat</label>
                                         <div class="input-group col-md-9 col-xs-8">
@@ -494,7 +494,7 @@
                                             <input class="form-control" type="text" wire:model.defer="frekuensi" placeholder="..." />
                                         </div>
                                     </div>
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -545,7 +545,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-12 mb-1">
+                                {{-- <div class="col-lg-12 mb-1">
                                     <div class="form-group">
                                         <label>Berat </label>
                                         <div class="input-group col-md-9 col-xs-8">
@@ -555,7 +555,7 @@
                                             @enderror
                                         </div>
                                     </div>
-                                </div>
+                                </div> --}}
                                 <div class="col-lg-12 mb-1">
                                     <div class="form-group">
                                         <label>Frekuensi </label>

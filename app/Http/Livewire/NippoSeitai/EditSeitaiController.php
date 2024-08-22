@@ -61,6 +61,8 @@ class EditSeitaiController extends Component
     public $frekuensi;
     public $berat_fr;
     public $frekuensi_fr;
+    public $jumlahBeratProduksi;
+    public $jumlahBeratLoss;
 
     // data master produk
     public $masterKatanuki;
@@ -155,6 +157,7 @@ class EditSeitaiController extends Component
                 'tga.id',
                 'tdpa.gentan_no',
                 'tga.gentan_line',
+                'tga.frekuensi',
                 'mm.machineno',
                 'tdpa.work_shift',
                 'mse.empname',
@@ -163,6 +166,7 @@ class EditSeitaiController extends Component
             )
             ->where('tga.product_goods_id', $request->query('orderId'))
             ->get();
+        $this->jumlahBeratProduksi = $this->detailsGentan->sum('berat_produksi');
 
         $this->detailsLoss = DB::table('tdproduct_goods_loss as tgl')
             ->join('mslossseitai as mss', 'mss.id', '=', 'tgl.loss_seitai_id')
@@ -174,6 +178,7 @@ class EditSeitaiController extends Component
             )
             ->where('tgl.product_goods_id', $request->query('orderId'))
             ->get();
+        $this->jumlahBeratLoss = $this->detailsLoss->sum('berat_loss');
     }
 
     public function showModalNoOrder()
@@ -355,6 +360,11 @@ class EditSeitaiController extends Component
         $data = TdProductGoodsLoss::findOrFail($orderId);
         $data->delete();
 
+        // mengurangi dari tdproduct_goods
+        $tdproductgoods = TdProductGoods::where('id', $this->tdpgId)->update([
+            'seitai_berat_loss' => $this->jumlahBeratLoss - $data->berat_loss
+        ]);
+
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Hapus']);
     }
 
@@ -368,14 +378,22 @@ class EditSeitaiController extends Component
         $datas->product_goods_id = $this->tdpgId;
         $datas->product_assembly_id = $assembly->id;
         $datas->gentan_line = $this->gentan_line;
-        $datas->berat = $this->berat;
-        $datas->frekuensi = $this->frekuensi;
+        // $datas->berat = $this->berat;
+        // $datas->frekuensi = $this->frekuensi;
         $datas->lpk_id = $lpkid->id;
 
         $datas->save();
 
         $this->dispatch('closeModalGentan');
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);
+    }
+
+    public function clearLoss()
+    {
+        $this->loss_seitai_id = '';
+        $this->berat_loss = '';
+        $this->berat_fr = '';
+        $this->frekuensi_fr = '';
     }
 
     public function saveLoss()
@@ -392,7 +410,14 @@ class EditSeitaiController extends Component
         $datas->frekuensi = $this->frekuensi_fr;
         $datas->lpk_id = $lpkid->id;
 
+        // menambahkan ke tdproduct_goods
+        $tdproductgoods = TdProductGoods::where('id', $this->tdpgId)->update([
+            'seitai_berat_loss' => $this->jumlahBeratLoss + $this->berat_loss
+        ]);
+
         $datas->save();
+
+        $this->clearLoss();
 
         $this->dispatch('closeModalLoss');
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);
@@ -501,6 +526,7 @@ class EditSeitaiController extends Component
                         'tdpa.gentan_no',
                         'tga.gentan_line',
                         'tga.frekuensi',
+                        'tga.berat',
                         'mm.machineno',
                         'tdpa.work_shift',
                         'mse.empname',
@@ -509,6 +535,7 @@ class EditSeitaiController extends Component
                     )
                     ->where('tga.product_goods_id', $this->tdpgId)
                     ->get();
+                $this->jumlahBeratProduksi = $this->detailsGentan->sum('berat_produksi');
 
                 $this->detailsLoss = DB::table('tdproduct_goods_loss as tgl')
                     ->join('mslossseitai as mss', 'mss.id', '=', 'tgl.loss_seitai_id')
@@ -521,6 +548,7 @@ class EditSeitaiController extends Component
                     )
                     ->where('tgl.product_goods_id', $this->tdpgId)
                     ->get();
+                $this->jumlahBeratLoss = $this->detailsLoss->sum('berat_loss');
             }
         }
 

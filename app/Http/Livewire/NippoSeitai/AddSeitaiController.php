@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\DB;
 
 class AddSeitaiController extends Component
 {
+    public $product_goods_id;
     public $production_date;
     public $created_on;
     public $work_hour;
@@ -60,6 +61,8 @@ class AddSeitaiController extends Component
     public $frekuensi;
     public $berat_fr;
     public $frekuensi_fr;
+    public $jumlahBeratProduksi;
+    public $jumlahBeratLoss;
 
     // data master produk
     public $masterKatanuki;
@@ -248,6 +251,8 @@ class AddSeitaiController extends Component
     public function save()
     {
         $this->qty_produksi = (int)str_replace(',', '', $this->qty_produksi);
+        $this->qty_lpk = (int)str_replace(',', '', $this->qty_lpk);
+        $this->infure_berat_loss = (int)str_replace(',', '', $this->infure_berat_loss);
         $validatedData = $this->validate([
             'lpk_no' => 'required',
             'nomor_palet' => 'required',
@@ -297,14 +302,16 @@ class AddSeitaiController extends Component
 
             $data->save();
 
+            $this->product_goods_id = $data->id;
+
             TdOrderLpk::where('id', $lpkid->id)->update([
                 'total_assembly_qty' => $lastQty + $this->qty_produksi,
             ]);
 
             TdProductAssembly::where('lpk_id', $lpkid->id)->orderBy('seq_no', 'ASC')
-            ->update([
-                'status_production' => 1,
-            ]);
+                ->update([
+                    'status_production' => 1,
+                ]);
 
             TdProductGoodsAssembly::where('lpk_id', $lpkid->id)->update([
                 'product_goods_id' => $data->id,
@@ -335,7 +342,7 @@ class AddSeitaiController extends Component
             ->first();
 
         $datas = new TdProductGoodsAssembly();
-        // $datas->product_goods_id = $this->product_goods_id;
+        $datas->product_goods_id = $this->product_goods_id;
         $datas->product_assembly_id = $assembly->id;
         $datas->gentan_line = $this->gentan_line;
         $datas->berat = $this->berat;
@@ -348,6 +355,14 @@ class AddSeitaiController extends Component
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);
     }
 
+    public function clearLoss()
+    {
+        $this->loss_seitai_id = '';
+        $this->berat_loss = '';
+        $this->berat_fr = '';
+        $this->frekuensi_fr = '';
+    }
+
     public function saveLoss()
     {
         $lpkid = TdOrderLpk::where('lpk_no', $this->lpk_no)->first();
@@ -355,14 +370,21 @@ class AddSeitaiController extends Component
             ->first();
 
         $datas = new TdProductGoodsLoss();
-        // $datas->product_goods_id = $this->product_goods_id;
+        $datas->product_goods_id = $this->product_goods_id;
         $datas->loss_seitai_id = $loss->id;
         $datas->berat_loss = $this->berat_loss;
         $datas->berat = $this->berat_fr;
         $datas->frekuensi = $this->frekuensi_fr;
         $datas->lpk_id = $lpkid->id;
-
         $datas->save();
+
+        // menambahkan ke tdproduct_goods
+        $this->jumlahBeratLoss += $this->berat_loss;
+        $tdproductgoods = TdProductGoods::where('id', $this->product_goods_id)->update([
+            'seitai_berat_loss' => $this->jumlahBeratLoss
+        ]);
+        $this->clearLoss();
+
 
         $this->dispatch('closeModalLoss');
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);
@@ -380,6 +402,12 @@ class AddSeitaiController extends Component
     {
         $data = TdProductGoodsLoss::findOrFail($orderId);
         $data->delete();
+
+        // mengurangi dari tdproduct_goods
+        $this->jumlahBeratLoss -= $data->berat_loss;
+        $tdproductgoods = TdProductGoods::where('id', $this->product_goods_id)->update([
+            'seitai_berat_loss' => $this->jumlahBeratLoss
+        ]);
 
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Hapus']);
     }
@@ -402,7 +430,18 @@ class AddSeitaiController extends Component
 
     public function render()
     {
+        // nomer palet
+        if (isset($this->nomor_palet) && $this->nomor_palet != '') {
+            if (!str_contains($this->nomor_palet, '-') && strlen($this->nomor_palet) >= 5) {
+                $this->nomor_palet = substr_replace($this->nomor_palet, '-', 5, 0);
+            }
+            $this->nomor_palet = strtoupper($this->nomor_palet);
+        }
+
         if (isset($this->lpk_no) && $this->lpk_no != '') {
+            if (!str_contains($this->lpk_no, '-') && strlen($this->lpk_no) >= 9) {
+                $this->lpk_no = substr_replace($this->lpk_no, '-', 6, 0);
+            }
             $tdorderlpk = DB::table('tdorderlpk as tolp')
                 ->select(
                     'tolp.id',
@@ -432,7 +471,7 @@ class AddSeitaiController extends Component
                 $this->dimensiinfure = $tdorderlpk->ketebalan . 'x' . $tdorderlpk->diameterlipat;
                 $this->qty_gulung = $tdorderlpk->qty_gulung;
                 $this->qty_gentan = $tdorderlpk->qty_gentan;
-                $this->qty_lpk = $tdorderlpk->qty_lpk;
+                $this->qty_lpk = number_format($tdorderlpk->qty_lpk);
 
                 $this->detailsGentan = DB::table('tdproduct_assembly as tdpa')
                     ->join('tdproduct_goods_assembly as tga', 'tga.product_assembly_id', '=', 'tdpa.id')
@@ -452,6 +491,7 @@ class AddSeitaiController extends Component
                     ->where('tdpa.lpk_id', $tdorderlpk->id)
                     ->whereNull('tga.product_goods_id')
                     ->get();
+                $this->jumlahBeratProduksi = $this->detailsGentan->sum('berat_produksi');
 
                 $this->detailsLoss = DB::table('tdproduct_goods_loss as tgl')
                     ->join('mslossseitai as mss', 'mss.id', '=', 'tgl.loss_seitai_id')
@@ -465,6 +505,7 @@ class AddSeitaiController extends Component
                     ->where('tgl.lpk_id', $tdorderlpk->id)
                     ->whereNull('tgl.product_goods_id')
                     ->get();
+                $this->jumlahBeratLoss = $this->detailsLoss->sum('berat_loss');
             }
         }
 
@@ -478,7 +519,7 @@ class AddSeitaiController extends Component
             }
         }
 
-        if (isset($this->employeeno) && $this->employeeno != '') {
+        if (isset($this->employeeno) && $this->employeeno != '' && strlen($this->employeeno) >= 7) {
             $msemployee = MsEmployee::where('employeeno', $this->employeeno)->first();
 
             if ($msemployee == null) {

@@ -6,6 +6,7 @@ use App\Exports\SeitaiExport;
 use App\Helpers\phpspreadsheet;
 use App\Models\MsDepartment;
 use App\Models\MsMachine;
+use App\Models\MsProduct;
 use App\Models\MsWorkingShift;
 use Livewire\Component;
 use Carbon\Carbon;
@@ -33,6 +34,8 @@ class CheckListSeitaiController extends Component
     public $nomorPalet;
     public $nomorLot;
     public $jenisReport = 'CheckList';
+    public $products;
+    public $productId;
 
     public function mount()
     {
@@ -43,6 +46,7 @@ class CheckListSeitaiController extends Component
         $this->jamAkhir = $this->workingShiftHour[count($this->workingShiftHour) - 1]->work_hour_till;
         $this->machine = MsMachine::where('machineno',  'LIKE', '00S%')->get();
         $this->department = MsDepartment::where('division_code', 20)->get();
+        $this->products = MsProduct::get();
     }
 
     public function print()
@@ -95,6 +99,8 @@ class CheckListSeitaiController extends Component
         $filterMachine = $this->machineId ? " AND (tdpg.machine_id = '$this->machineId')" : '';
         $filterNomorPalet = $this->nomorPalet ? " AND (tdpg.nomor_palet = '$this->nomorPalet')" : '';
         $filterNomorLot = $this->nomorLot ? " AND (tdpg.nomor_lot = '$this->nomorLot')" : '';
+        $this->productId = $this->productId ? (is_array($this->productId) ? $this->productId['value'] : $this->productId) : '';
+        $filterProduct = $this->productId ? " AND (tdpg.product_id = '$this->productId')" : '';
 
         if ($this->jenisReport == 'CheckList') {
             $data = DB::select("
@@ -129,7 +135,7 @@ class CheckListSeitaiController extends Component
                         tdproduct_goods_loss AS tpgl
                         INNER JOIN mslossseitai AS msls ON msls.ID = tpgl.loss_seitai_id
                     ) SELECT
-                    tdpg.ID,
+                    tdpg.ID as id_tdpg,
                     tdpg.production_no AS production_no,
                     tdpg.production_date AS tglproduksi,
                     tdpg.created_on AS tglproses,
@@ -187,6 +193,7 @@ class CheckListSeitaiController extends Component
                     $filterNomorPalet
                     $filterDepartment
                     $filterNomorLot
+                    $filterProduct
                 ORDER BY $fieldDate, tdpg.seq_no
                 ");
         } else {
@@ -222,7 +229,7 @@ class CheckListSeitaiController extends Component
                         tdproduct_goods_loss AS tpgl
                         INNER JOIN mslossseitai AS msls ON msls.ID = tpgl.loss_seitai_id
                     ) SELECT
-                    tdpg.ID,
+                    tdpg.ID as id_tdpg,
                     tdpg.production_no AS production_no,
                     tdpg.production_date AS tglproduksi,
                     tdpg.created_on AS tglproses,
@@ -280,6 +287,7 @@ class CheckListSeitaiController extends Component
                     $filterNomorPalet
                     $filterDepartment
                     $filterNomorLot
+                    $filterProduct
                 ORDER BY $fieldDate, tdpg.seq_no
                 ");
         }
@@ -330,11 +338,34 @@ class CheckListSeitaiController extends Component
             }
         }
 
+        /**
+         * Mengatur halaman
+         */
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         // Menghilangkan gridline
         $activeWorksheet->setShowGridlines(false);
         $activeWorksheet->freezePane('A4');
+        // Mengatur ukuran kertas menjadi A4
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        // Mengatur orientasi menjadi landscape
+        $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+        // Mengatur agar semua kolom muat dalam satu halaman
+        $activeWorksheet->getPageSetup()->setFitToWidth(1);
+        $activeWorksheet->getPageSetup()->setFitToHeight(0); // Biarkan tinggi menyesuaikan otomatis
+
+        // Jika ingin memastikan rasio tetap terjaga
+        $activeWorksheet->getPageSetup()->setFitToPage(true);
+
+        // Mengatur margin halaman menjadi 0.75 cm di semua sisi
+        $activeWorksheet->getPageMargins()->setTop(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setBottom(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setLeft(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setRight(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setHeader(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setFooter(0.75 / 2.54);
+        // Mengatur tinggi sel agar otomatis menyesuaikan dengan konten
+        $activeWorksheet->getDefaultRowDimension()->setRowHeight(-1);
 
         // Judul
         $startColumn = 'A';
@@ -376,7 +407,6 @@ class CheckListSeitaiController extends Component
         $activeWorksheet->setCellValue($columnMesin . $rowHeaderStart, 'Nomor Mesin');
         phpspreadsheet::styleFont($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnMesin . $rowHeaderEnd, true, 9, 'Calibri');
         phpspreadsheet::textAlignCenter($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnMesin . $rowHeaderEnd);
-        $activeWorksheet->getStyle($columnMesin . $rowHeaderStart)->getAlignment()->setWrapText(true);
 
         // Nomor LPK
         $columnLpk = 'E';
@@ -398,7 +428,6 @@ class CheckListSeitaiController extends Component
         $activeWorksheet->setCellValue($columnQty . $rowHeaderStart, 'Quantity (Lembar)');
         phpspreadsheet::styleFont($spreadsheet, $columnQty . $rowHeaderStart . ':' . $columnQty . $rowHeaderEnd, true, 9, 'Calibri');
         phpspreadsheet::textAlignCenter($spreadsheet, $columnQty . $rowHeaderStart . ':' . $columnQty . $rowHeaderEnd);
-        $activeWorksheet->getStyle($columnQty . $rowHeaderStart)->getAlignment()->setWrapText(true);
 
         // Loss Infure
         $columnLoss = 'H';
@@ -406,7 +435,6 @@ class CheckListSeitaiController extends Component
         $activeWorksheet->setCellValue($columnLoss . $rowHeaderEnd, 'NIK');
         phpspreadsheet::styleFont($spreadsheet, $columnLoss . $rowHeaderStart . ':' . $columnLoss . $rowHeaderEnd, true, 9, 'Calibri');
         phpspreadsheet::textAlignCenter($spreadsheet, $columnLoss . $rowHeaderStart . ':' . $columnLoss . $rowHeaderEnd);
-        $activeWorksheet->getStyle($columnLoss . $rowHeaderStart)->getAlignment()->setWrapText(true);
 
         // Nomor palet
         $columnPalet = 'I';
@@ -421,7 +449,6 @@ class CheckListSeitaiController extends Component
         $activeWorksheet->setCellValue($columnGentan . $rowHeaderStart, 'Nomor Gentan');
         phpspreadsheet::styleFont($spreadsheet, $columnGentan . $rowHeaderStart . ':' . $columnGentan . $rowHeaderEnd, true, 9, 'Calibri');
         phpspreadsheet::textAlignCenter($spreadsheet, $columnGentan . $rowHeaderStart . ':' . $columnGentan . $rowHeaderEnd);
-        $activeWorksheet->getStyle($columnGentan . $rowHeaderStart)->getAlignment()->setWrapText(true);
 
         // Nama Loss
         $columnNamaLoss = 'K';
@@ -436,9 +463,9 @@ class CheckListSeitaiController extends Component
         $activeWorksheet->setCellValue($columnBerat . $rowHeaderStart, 'Berat (Kg)');
         phpspreadsheet::styleFont($spreadsheet, $columnBerat . $rowHeaderStart . ':' . $columnBerat . $rowHeaderEnd, true, 9, 'Calibri');
         phpspreadsheet::textAlignCenter($spreadsheet, $columnBerat . $rowHeaderStart . ':' . $columnBerat . $rowHeaderEnd);
-        $activeWorksheet->getStyle($columnBerat . $rowHeaderStart)->getAlignment()->setWrapText(true);
 
         // border header
+        $activeWorksheet->getStyle($startColumn . $rowHeaderStart . ':' . $columnBerat . $rowHeaderEnd)->getAlignment()->setWrapText(true);
         phpspreadsheet::addFullBorder($spreadsheet, $startColumn . $rowHeaderStart . ':' . $columnBerat . $rowHeaderEnd);
 
         /**
@@ -477,6 +504,7 @@ class CheckListSeitaiController extends Component
                 $activeWorksheet->setCellValue($columnMesin . $rowItemStart, $item['mesinno'] . ' - ' . $item['mesinnama']);
                 phpspreadsheet::styleFont($spreadsheet, $columnMesin . $rowItemStart, false, 8, 'Calibri');
                 phpspreadsheet::textAlignCenter($spreadsheet, $columnMesin . $rowItemStart);
+                $activeWorksheet->getStyle($columnMesin . $rowItemStart)->getAlignment()->setWrapText(true);
                 // Nomor LPK
                 $activeWorksheet->setCellValue($columnLpk . $rowItemStart, $item['nolpk']);
                 phpspreadsheet::styleFont($spreadsheet, $columnLpk . $rowItemStart, false, 8, 'Calibri');
@@ -485,6 +513,7 @@ class CheckListSeitaiController extends Component
                 $activeWorksheet->setCellValue($columnProduk . $rowItemStart, $item['namaproduk']);
                 phpspreadsheet::styleFont($spreadsheet, $columnProduk . $rowItemStart, false, 8, 'Calibri');
                 phpspreadsheet::textAlignCenter($spreadsheet, $columnProduk . $rowItemStart);
+                $activeWorksheet->getStyle($columnProduk . $rowItemStart)->getAlignment()->setWrapText(true);
                 // Nomor Order
                 $activeWorksheet->setCellValue($columnProduk . $rowItemEnd, $item['noorder']);
                 phpspreadsheet::styleFont($spreadsheet, $columnProduk . $rowItemEnd, false, 8, 'Calibri');
@@ -503,6 +532,7 @@ class CheckListSeitaiController extends Component
                 $activeWorksheet->setCellValue($columnPalet . $rowItemStart, $item['nomor_palet']);
                 phpspreadsheet::styleFont($spreadsheet, $columnPalet . $rowItemStart, false, 8, 'Calibri');
                 phpspreadsheet::textAlignCenter($spreadsheet, $columnPalet . $rowItemStart);
+                $activeWorksheet->getStyle($columnPalet . $rowItemStart)->getAlignment()->setWrapText(true);
                 // Nomor LOT
                 $activeWorksheet->setCellValue($columnPalet . $rowItemEnd, $item['nomor_lot']);
                 phpspreadsheet::styleFont($spreadsheet, $columnPalet . $rowItemEnd, false, 8, 'Calibri');
@@ -525,6 +555,8 @@ class CheckListSeitaiController extends Component
                 foreach ($dataLoss[$productionDate][$id_tdpg] as $itemLoss) {
                     $activeWorksheet->setCellValue($columnNamaLoss . $rowLoss, $itemLoss->losscode . '. ' . $itemLoss->lossname);
                     phpspreadsheet::styleFont($spreadsheet, $columnNamaLoss . $rowLoss, false, 8, 'Calibri');
+                    $activeWorksheet->getStyle($columnNamaLoss . $rowLoss)->getAlignment()->setWrapText(true);
+                    $activeWorksheet->getRowDimension($rowLoss)->setRowHeight(-1);
                     // Berat
                     $activeWorksheet->setCellValue($columnBerat . $rowLoss, $itemLoss->berat_loss);
                     phpspreadsheet::styleFont($spreadsheet, $columnBerat . $rowLoss, false, 8, 'Calibri');
@@ -578,27 +610,24 @@ class CheckListSeitaiController extends Component
 
         phpspreadsheet::styleFont($spreadsheet, 'A' . $rowGrandTotal . ':' . $columnBerat . $rowGrandTotal, true, 9, 'Calibri');
 
-        // size auto
-        while ($startColumn !== $columnBerat) {
+        // footer keterangan tanggal, jam, dan nama petugas
+        $rowFooterStart = $rowGrandTotal + 2;
+        $activeWorksheet->setCellValue('A' . $rowFooterStart, 'Dicetak pada: ' . Carbon::now()->translatedFormat('d-M-Y H:i:s') . ', oleh: ' . auth()->user()->empname);
+        phpspreadsheet::styleFont($spreadsheet, 'A' . $rowFooterStart . ':A' . ($rowFooterStart + 1), false, 9, 'Calibri');
+        $startColumn++;
 
-            switch ($startColumn) {
-                case $columnQty:
-                    $spreadsheet->getActiveSheet()->getColumnDimension($columnQty)->setWidth(90, 'px');
-                    break;
-                case $columnGentan:
-                    $spreadsheet->getActiveSheet()->getColumnDimension($columnGentan)->setWidth(54, 'px');
-                    break;
-                case $columnBerat:
-                    $spreadsheet->getActiveSheet()->getColumnDimension($columnBerat)->setWidth(80, 'px');
-                    break;
-                default:
-                    $spreadsheet->getActiveSheet()->getColumnDimension($startColumn)->setAutoSize(true);
-                    break;
-            }
-
-            $startColumn++;
-        }
-        // $spreadsheet->getActiveSheet()->getColumnDimension($columnMesin)->setWidth(72, 'px');
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(9.50);
+        $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(7.60);
+        $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(6.3);
+        $spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(11.5);
+        $spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(7.6);
+        $spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(11.3);
+        $spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(6.5);
+        $spreadsheet->getActiveSheet()->getColumnDimension('H')->setWidth(7.5);
+        $spreadsheet->getActiveSheet()->getColumnDimension('I')->setWidth(9.1);
+        $spreadsheet->getActiveSheet()->getColumnDimension('J')->setWidth(5.3);
+        $spreadsheet->getActiveSheet()->getColumnDimension('K')->setWidth(15.0);
+        $spreadsheet->getActiveSheet()->getColumnDimension('L')->setWidth(8.2);
 
         $writer = new Xlsx($spreadsheet);
         $writer->save('asset/report/NippoSeitai-' . $this->jenisReport . '.xlsx');

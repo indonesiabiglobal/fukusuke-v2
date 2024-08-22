@@ -10,6 +10,7 @@ use App\Models\MsWorkingShift;
 use App\Helpers\phpspreadsheet;
 use App\Exports\LossInfureExport;
 use App\Exports\NippoInfureExport;
+use App\Models\MsProduct;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
@@ -34,6 +35,8 @@ class CheckListInfureController extends Component
     public $machineId;
     public $nomorHan;
     public $transaksi = 1;
+    public $products;
+    public $productId;
 
     public function mount()
     {
@@ -44,6 +47,7 @@ class CheckListInfureController extends Component
         $this->jamAkhir = $this->workingShiftHour[count($this->workingShiftHour) - 1]->work_hour_till;
         $this->machine = MsMachine::where('machineno',  'LIKE', '00I%')->get();
         $this->department = MsDepartment::where('division_code', 10)->get();
+        $this->products = MsProduct::get();
     }
 
     public function export()
@@ -151,12 +155,28 @@ class CheckListInfureController extends Component
             $columnHeaderEnd++;
         }
 
+        /**
+         * Mengatur halaman
+         */
         $activeWorksheet->freezePane('D4');
         // Mengatur ukuran kertas menjadi A4
         $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
         // Mengatur orientasi menjadi landscape
         $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
         $activeWorksheet->getStyle($columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart)->getAlignment()->setWrapText(true);
+        // Mengatur agar semua kolom muat dalam satu halaman
+        $activeWorksheet->getPageSetup()->setFitToWidth(1);
+        $activeWorksheet->getPageSetup()->setFitToHeight(0); // Biarkan tinggi menyesuaikan otomatis
+
+        // Jika ingin memastikan rasio tetap terjaga
+        $activeWorksheet->getPageSetup()->setFitToPage(true);
+        // Mengatur margin halaman menjadi 0.75 cm di semua sisi
+        $activeWorksheet->getPageMargins()->setTop(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setBottom(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setLeft(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setRight(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setHeader(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setFooter(0.75 / 2.54);
 
         $columnHeaderEnd = chr(ord($columnHeaderEnd) - 1);
 
@@ -181,6 +201,8 @@ class CheckListInfureController extends Component
         $this->machineId = $this->machineId ? (is_array($this->machineId) ? $this->machineId['value'] : $this->machineId) : '';
         $filterMachine = $this->machineId ? " AND (tdpa.machine_id = '$this->machineId')" : '';
         $filterNomorHan = $this->nomorHan ? " AND (tdpa.nomor_han = '$this->nomorHan')" : '';
+        $this->productId = $this->productId ? (is_array($this->productId) ? $this->productId['value'] : $this->productId) : '';
+        $filterProduct = $this->productId ? " AND (tdpa.product_id = '$this->productId')" : '';
 
         if ($this->jenisReport == 'Checklist') {
             $data = DB::select(
@@ -227,6 +249,7 @@ class CheckListInfureController extends Component
                         $filterDepartment
                         $filterMachine
                         $filterNomorHan
+                        $filterProduct
                     ORDER BY nomesin ASC, tglproduksi ASC, jam ASC
                     ",
             );
@@ -275,6 +298,7 @@ class CheckListInfureController extends Component
                         $filterDepartment
                         $filterMachine
                         $filterNomorHan
+                        $filterProduct
                     ORDER BY nomesin ASC, tglproduksi ASC, jam ASC
                     ",
             );
@@ -432,7 +456,7 @@ class CheckListInfureController extends Component
         $rowItem++;
 
         // grand total
-        $columnItemEnd = 'N';
+        $columnItemEnd = 'M';
         $spreadsheet->getActiveSheet()->mergeCells($columnItemStart . $rowItem . ':' . $columnItemEnd . $rowItem);
         $activeWorksheet->setCellValue($columnItemStart . $rowItem, 'GRAND TOTAL');
         phpSpreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItem, true, 9, 'Calibri');
@@ -465,8 +489,8 @@ class CheckListInfureController extends Component
         phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItemEnd . $rowItem);
         $columnItemEnd++;
 
-        // Loss
-        $columnItemEnd = 'Q';
+        // Los  s
+        $columnItemEnd = 'R';
         $totalLoss = array_reduce($data, function ($carry, $item) {
             $carry += $item->berat_loss;
             return $carry;
@@ -485,21 +509,27 @@ class CheckListInfureController extends Component
 
 
         // mengatur lebar kolom
+        $spreadsheet->getActiveSheet()->getColumnDimension('C')->setAutoSize(true);
+        $spreadsheet->getActiveSheet()->getColumnDimension('F')->setAutoSize(true);
+
         $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(3.00);
-        $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(7.56);
+        $activeWorksheet->getStyle('B' . $rowItemStart . ':' . 'B' . $rowFooterStart)->getAlignment()->setWrapText(true);
         $spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(3.78);
         $spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(3.67);
-        $spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(7.00);
-        $spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(8.11);
+        $spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(8.20);
+        $activeWorksheet->getStyle('G' . $rowItemStart . ':' . 'G' . $rowFooterStart)->getAlignment()->setWrapText(true);
         $spreadsheet->getActiveSheet()->getColumnDimension('H')->setWidth(5.50);
         $spreadsheet->getActiveSheet()->getColumnDimension('I')->setWidth(7.56);
-        $spreadsheet->getActiveSheet()->getColumnDimension('J')->setWidth(5.50);
-        $spreadsheet->getActiveSheet()->getColumnDimension('L')->setWidth(5.70);
-        $spreadsheet->getActiveSheet()->getColumnDimension('M')->setWidth(8.11);
+        $spreadsheet->getActiveSheet()->getColumnDimension('J')->setWidth(5.60);
+        $spreadsheet->getActiveSheet()->getColumnDimension('K')->setWidth(12.00);
+        $activeWorksheet->getStyle('K' . $rowItemStart . ':' . 'K' . $rowFooterStart)->getAlignment()->setWrapText(true);
+        $spreadsheet->getActiveSheet()->getColumnDimension('L')->setWidth(6.70);
+        $spreadsheet->getActiveSheet()->getColumnDimension('M')->setWidth(8.25);
         $spreadsheet->getActiveSheet()->getColumnDimension('N')->setWidth(7.50);
         $spreadsheet->getActiveSheet()->getColumnDimension('O')->setWidth(6.70);
         $spreadsheet->getActiveSheet()->getColumnDimension('P')->setWidth(6.70);
         $spreadsheet->getActiveSheet()->getColumnDimension('Q')->setWidth(6.00);
+        $activeWorksheet->getStyle('Q' . $rowItemStart . ':' . 'Q' . $rowFooterStart)->getAlignment()->setWrapText(true);
         $spreadsheet->getActiveSheet()->getColumnDimension('R')->setWidth(5.10);
 
 

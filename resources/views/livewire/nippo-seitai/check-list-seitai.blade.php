@@ -132,6 +132,22 @@
                 </div>
             </div>
         </div>
+        {{-- Produk --}}
+        <div class="form-group mt-1">
+            <div class="input-group">
+                <span class="input-group-addon col-12 col-lg-3 text-muted fw-bold">Produk </span>
+                <div class="col-12 col-lg-9" wire:ignore>
+                    <select class="form-control" wire:model.defer="productId" data-choices data-choices-sorting-false
+                        data-choices-removeItem>
+                        <option value="">- All -</option>
+                        @foreach ($products as $item)
+                            <option data-custom-properties='{"code": "{{ $item->code }}"}' value="{{ $item->id }}">{{ $item->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+        </div>
         <div class="form-group mt-1">
             <div class="input-group">
                 <span class="input-group-addon col-12 col-lg-3 text-muted fw-bold">Nomor Palet</span>
