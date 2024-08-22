@@ -49,6 +49,11 @@ class EditNippoController extends Component
     public $berat;
     public $frekuensi;
     public $statusSeitai;
+    public $berat_standard;
+    public $total_assembly_line;
+    public $rasio;
+    public $selisih;
+    public $berat_produksi;
 
     // data master produk
     public $masterKatanuki;
@@ -323,6 +328,9 @@ class EditNippoController extends Component
             $machine = MsMachine::where('machineno', $this->machineno)->first();
             $employe = MsEmployee::where('employeeno', $this->employeeno)->first();
             $products = MsProduct::where('code', $this->code)->first();
+            $totalBerat = TdProductAssemblyLoss::where('product_assembly_id', $this->orderId)
+                ->sum('berat_loss');
+
 
             $maxGentan = TdProductAssembly::where('lpk_id', $lpkid->id)
                 ->orderBy('gentan_no', 'DESC')
@@ -358,9 +366,13 @@ class EditNippoController extends Component
             ");
             $product->save();
 
-            TdProductAssemblyLoss::where('lpk_id', $lpkid->id)->update([
-                'product_assembly_id' => $product->id,
+            TdProductAssembly::where('id', $this->orderId)->update([
+                'infure_berat_loss' => $totalBerat,
             ]);
+
+            // TdProductAssemblyLoss::where('lpk_id', $lpkid->id)->update([
+            //     'product_assembly_id' => $product->id,
+            // ]);
 
             TdOrderLpk::where('id', $lpkid->id)->update([
                 'total_assembly_line' => $totalAssembly[0]->c1,
@@ -469,10 +481,15 @@ class EditNippoController extends Component
                     'mp.ketebalan',
                     'mp.diameterlipat',
                     'tolp.qty_gulung',
-                    'tolp.qty_gentan'
+                    'tolp.qty_gentan',
+                    'tda.gentan_no',
+                    'tolp.total_assembly_line',
+                    'tda.berat_produksi',
+                    DB::raw("( mp.ketebalan * mp.diameterlipat * tolp.qty_gulung * 2 * mt.berat_jenis ) / 1000 AS berat_standard "),
                 )
                 ->join('msproduct as mp', 'mp.id', '=', 'tolp.product_id')
                 ->join('tdproduct_assembly as tda', 'tda.lpk_id', '=', 'tolp.id')
+                ->leftJoin('msproduct_type as mt', 'mt.id', '=', 'mp.product_type_id')
                 // ->where('tolp.lpk_no', $this->lpk_no)
                 ->whereRaw("LEFT(lpk_no, 6) ILIKE ?", ["{$prefix}"])
                 ->whereRaw("RIGHT(lpk_no, 3) ILIKE ?", ["{$suffix}"])
@@ -488,9 +505,13 @@ class EditNippoController extends Component
                 $this->name = $tdorderlpk->name;
                 $this->dimensiinfure = $tdorderlpk->ketebalan . 'x' . $tdorderlpk->diameterlipat;
                 $this->qty_gulung = $tdorderlpk->qty_gulung;
-                $this->qty_gentan = $tdorderlpk->qty_gentan;
                 $this->lpk_no = $tdorderlpk->lpk_no;
-                // $this->gentan_no= $tdorderlpk->gentan_no;
+                $this->qty_gentan = $tdorderlpk->qty_gentan;
+                $this->berat_standard = round($tdorderlpk->berat_standard, 2);
+                $this->total_assembly_line = $tdorderlpk->total_assembly_line;
+                $selisih = $tdorderlpk->total_assembly_line - $tdorderlpk->panjang_lpk;
+                $this->selisih = round($selisih, 2);
+                $this->berat_produksi = $tdorderlpk->berat_produksi;
 
                 $this->details = DB::table('tdproduct_assembly_loss as tal')
                     ->select(
@@ -542,6 +563,10 @@ class EditNippoController extends Component
             if ($this->code != $this->nomor_barcode) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Barcode ' . $this->nomor_barcode . ' Tidak Terdaftar']);
             }
+        }
+
+        if (isset($this->berat_produksi) && $this->berat_produksi != '') {
+            $this->rasio = round(($this->berat_produksi / $this->berat_standard) * 100, 2);
         }
 
         return view('livewire.nippo-infure.edit-nippo')->extends('layouts.master');
