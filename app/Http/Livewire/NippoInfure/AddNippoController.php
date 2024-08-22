@@ -64,8 +64,8 @@ class AddNippoController extends Component
 
     public function mount()
     {
-        $this->production_date = Carbon::now()->format('Y-m-d');
-        $this->created_on = Carbon::now()->format('Y-m-d');
+        $this->production_date = Carbon::now()->format('Y-m-d H:i:s');
+        $this->created_on = Carbon::now()->format('Y-m-d H:i:s');
         $this->work_hour = Carbon::now()->format('H:i');
 
         $workingShift = DB::select("

@@ -7,8 +7,8 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5">Tanggal Produksi</label>
-                                {{-- <input class="form-control datepicker-input" type="date" wire:model.defer="production_date" placeholder="yyyy/mm/dd"/> --}}
-                                <input class="form-control" type="text" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y" wire:model.defer="production_date" placeholder="yyyy/mm/dd"/>
+                                <input class="form-control datepicker-input"  style="padding:0.44rem" type="datetime-local" wire:model.defer="production_date" />
+                                {{-- <input class="form-control" type="text" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y" wire:model.defer="production_date" placeholder="yyyy/mm/dd"/> --}}
                                 @error('production_date')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -30,8 +30,8 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label pe-2">Tanggal Proses</label>
-                                {{-- <input class="form-control datepicker-input" type="date" wire:model.defer="created_on" placeholder="yyyy/mm/dd"/> --}}
-                                <input class="form-control readonly datepicker-input bg-light" readonly="readonly" type="date" wire:model.defer="created_on" placeholder="yyyy/mm/dd"/>
+                                <input class="form-control readonly bg-light datepicker-input" readonly="readonly"  style="padding:0.44rem" type="datetime-local" wire:model.defer="created_on" />
+                                {{-- <input class="form-control readonly datepicker-input bg-light" readonly="readonly" type="date" wire:model.defer="created_on" placeholder="yyyy/mm/dd"/> --}}
                                 @error('created_on')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror

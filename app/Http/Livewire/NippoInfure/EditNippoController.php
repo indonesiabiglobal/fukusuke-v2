@@ -138,8 +138,8 @@ class EditNippoController extends Component
         $this->statusSeitai = $data->status_production;
         $this->orderId = $request->query('orderId');
         $this->production_no = $data->production_no;
-        $this->production_date = Carbon::parse($data->production_date)->format('Y-m-d');
-        $this->created_on = Carbon::parse($data->created_on)->format('Y-m-d');
+        $this->production_date = Carbon::parse($data->production_date)->format('Y-m-d H:i:s');
+        $this->created_on = Carbon::parse($data->created_on)->format('Y-m-d H:i:s');
         $this->lpk_no = $data->lpk_no;
         $this->lpk_date = Carbon::parse($data->lpk_date)->format('Y-m-d');
         $this->panjang_lpk = $data->panjang_lpk;
@@ -500,7 +500,7 @@ class EditNippoController extends Component
             } else {
                 $this->lpk_date = Carbon::parse($tdorderlpk->lpk_date)->format('Y-m-d');
                 $this->panjang_lpk = $tdorderlpk->panjang_lpk;
-                $this->created_on = Carbon::parse($tdorderlpk->created_on)->format('Y-m-d');
+                $this->created_on = Carbon::parse($tdorderlpk->created_on)->format('Y-m-d H:i:s');
                 $this->code = $tdorderlpk->code;
                 $this->name = $tdorderlpk->name;
                 $this->dimensiinfure = $tdorderlpk->ketebalan . 'x' . $tdorderlpk->diameterlipat;
