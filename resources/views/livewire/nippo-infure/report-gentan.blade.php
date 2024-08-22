@@ -64,7 +64,7 @@
             tdpa.berat_produksi,
             tdpa.panjang_produksi,
             tdpa.nomor_han,
-            mse.nik,
+            mse.employeeno as nik,
             mse.empname,
             tdpa.gentan_no
         FROM

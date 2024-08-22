@@ -37,7 +37,7 @@
 		<div class="form-group mt-1">
 			<div class="input-group">
 				<label class="control-label col-12 col-lg-3 text-muted fw-bold">Berat Gentan</label>
-				<input type="text" wire:model="qty_gentan" class="form-control readonly currency" readonly="readonly" />
+				<input type="text" wire:model="berat_produksi" class="form-control readonly currency" readonly="readonly" />
 				<span class="input-group-text">
 					kg
 				</span>
@@ -46,7 +46,7 @@
 		<div class="form-group mt-1">
 			<div class="input-group">
 				<label class="control-label col-12 col-lg-3 text-muted fw-bold">Berat Standard</label>
-				<input type="text" wire:model="product_panjanggulung" class="form-control readonly currency" readonly="readonly" />
+				<input type="text" wire:model="berat_standard" class="form-control readonly currency" readonly="readonly" />
 				<span class="input-group-text">
 					kg
 				</span>
@@ -66,7 +66,7 @@
 		</div>
 		<hr />
 		<div class="form-group">
-			<div class="input-group">				
+			<div class="input-group">
 				<button type="button" class="btn btn-success btn-print" wire:click="print">
 					<i class="ri-printer-line"></i> Print
 				</button>
