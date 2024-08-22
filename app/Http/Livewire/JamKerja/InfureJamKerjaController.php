@@ -53,7 +53,7 @@ class InfureJamKerjaController extends Component
         if (empty($this->tglKeluar)) {
             $this->tglKeluar = Carbon::now()->format('d-m-Y');
         }
-        $this->machine  = MsMachine::get();
+        $this->machine  = MsMachine::whereIn('department_id', [10, 12, 15, 2, 4, 10])->get();
         $this->workShift  = MsWorkingShift::where('status', 1)->get();
         $this->working_date = Carbon::now()->format('d-m-Y');
     }
@@ -139,7 +139,11 @@ class InfureJamKerjaController extends Component
                     'employee_id' => $msemployee->id,
                     'work_hour' => $this->work_hour,
                     'off_hour' => $this->off_hour,
-                    'on_hour' => $onHour
+                    'on_hour' => $onHour,
+                    'created_on' => Carbon::now(),
+                    'created_by' => auth()->user()->username,
+                    'updated_on' => Carbon::now(),
+                    'updated_by' => auth()->user()->username,
                 ]);
                 $this->reset(['employeeno', 'empname', 'machineno', 'machinename', 'working_date', 'work_shift']);
                 $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
@@ -155,6 +159,10 @@ class InfureJamKerjaController extends Component
                 $orderlpk->work_hour = $this->work_hour;
                 $orderlpk->off_hour =  $this->off_hour;
                 $orderlpk->on_hour = $onHour;
+                $orderlpk->created_on = Carbon::now();
+                $orderlpk->created_by = auth()->user()->username;
+                $orderlpk->updated_on = Carbon::now();
+                $orderlpk->updated_by = auth()->user()->username;
 
                 $orderlpk->save();
             }
@@ -170,21 +178,23 @@ class InfureJamKerjaController extends Component
     public function render()
     {
         if (isset($this->machineno) && $this->machineno != '') {
-            $machine = MsMachine::where('machineno', $this->machineno)->first();
+            $machine = MsMachine::where('machineno', 'ilike', '%' . $this->machineno . '%')->whereIn('department_id', [10, 12, 15, 2, 4, 10])->first();
 
             if ($machine == null) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Machine ' . $this->machineno . ' Tidak Terdaftar']);
             } else {
+                $this->machineno = $machine->machineno;
                 $this->machinename = $machine->machinename;
             }
         }
 
-        if (isset($this->employeeno) && $this->employeeno != '') {
-            $msemployee = MsEmployee::where('employeeno', $this->employeeno)->first();
+        if (isset($this->employeeno) && $this->employeeno != '' && strlen($this->employeeno) >= 3) {
+            $msemployee = MsEmployee::where('employeeno', 'ilike', '%' . $this->employeeno . '%')->first();
 
             if ($msemployee == null) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
             } else {
+                $this->employeeno = $msemployee->employeeno;
                 $this->empname = $msemployee->empname;
             }
         }
@@ -205,9 +215,12 @@ class InfureJamKerjaController extends Component
                 'tdjkm.updated_by',
                 'tdjkm.updated_on',
                 'msm.machineno',
-                'msm.machinename'
+                'msm.machinename',
+                'mse.empname',
+                'mse.employeeno'
             )
-            ->join('msmachine AS msm', 'msm.id', '=', 'tdjkm.machine_id');
+            ->join('msmachine AS msm', 'msm.id', '=', 'tdjkm.machine_id')
+            ->join('msemployee AS mse', 'mse.id', '=', 'tdjkm.employee_id');
 
         if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
             $data = $data->where('tdjkm.working_date', '>=', $this->tglMasuk);
