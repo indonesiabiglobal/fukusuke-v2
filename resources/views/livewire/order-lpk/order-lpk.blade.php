@@ -172,7 +172,7 @@
         </div>
     </div>
 
-    <div class="table-responsive table-card">
+    <div class="table-responsive table-card  mt-3 mb-1">
         <div class="col text-end dropdown">
             <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
                 class="btn btn-soft-primary btn-icon fs-14 mt-2">
@@ -259,8 +259,8 @@
                 </li>
             </ul>
         </div>
-        <table id="tableOrderLPK" class="table table-bordered align-middle"
-            style="overflow-x: :scroll">
+        <table id="tableOrderLPK" class="table table-responsive table-bordered align-middle"
+            style=" width:100%">
             <thead class="table-light">
                 <tr>
                     <th></th>
@@ -333,7 +333,7 @@
             "responsive": true,
             "order": [
                 [1, "asc"]
-            ]
+            ],
         });
 
         // Tambahkan event listener ke setiap checkbox
