@@ -306,13 +306,18 @@ class EditLpkController extends Component
         }
 
         if (isset($this->qty_gentan) && $this->qty_gentan != $this->qty_gentan_old) {
-            $this->qty_gentan_old = $this->qty_gentan;
-            $qty_gulung = floor((int)str_replace(',', '', $this->total_assembly_line) / (int)str_replace(',', '', $this->qty_gentan) / 10) * 10;
-            $this->qty_gulung = $qty_gulung;
+            if ($this->qty_gentan == 0 || $this->qty_gentan == '') {
+                $this->qty_gentan = 0;
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'jumlah Gentan tidak boleh kosong']);
+            } else {
+                $this->qty_gentan_old = $this->qty_gentan;
+                $qty_gulung = floor((int)str_replace(',', '', $this->total_assembly_line) / (int)str_replace(',', '', $this->qty_gentan) / 10) * 10;
+                $this->qty_gulung = $qty_gulung;
 
-            $this->panjang_lpk = (int)str_replace(',', '', $this->qty_gentan) * (int)str_replace(',', '', (int)$this->qty_gulung);
+                $this->panjang_lpk = (int)str_replace(',', '', $this->qty_gentan) * (int)str_replace(',', '', (int)$this->qty_gulung);
 
-            $this->selisihkurang = (int)str_replace(',', '', $this->total_assembly_line) - (int)str_replace(',', '', $this->panjang_lpk);
+                $this->selisihkurang = (int)str_replace(',', '', $this->total_assembly_line) - (int)str_replace(',', '', $this->panjang_lpk);
+            }
         } else if (isset($this->qty_gulung) && $this->qty_gulung != $this->qty_gulung_old) {
             $this->qty_gulung_old = $this->qty_gulung;
 
