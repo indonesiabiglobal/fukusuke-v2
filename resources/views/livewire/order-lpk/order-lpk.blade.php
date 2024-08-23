@@ -327,21 +327,21 @@
 @push('scripts')
     <script>
         // datatable
-        const table = $('#tableOrderLPK').DataTable({
-            "pageLength": 10,
-            "searching": true,
-            "responsive": true,
-            "order": [
-                [1, "asc"]
-            ],
-        });
+        // const table = $('#tableOrderLPK').DataTable({
+        //     "pageLength": 10,
+        //     "searching": true,
+        //     "responsive": true,
+        //     "order": [
+        //         [1, "asc"]
+        //     ],
+        // });
 
-        // Tambahkan event listener ke setiap checkbox
-        document.querySelectorAll('.toggle-column').forEach(function(checkbox) {
-            checkbox.addEventListener('change', function() {
-                let column = table.column($(this).attr('data-column'));
-                column.visible(!column.visible());
-            });
-        });
+        // // Tambahkan event listener ke setiap checkbox
+        // document.querySelectorAll('.toggle-column').forEach(function(checkbox) {
+        //     checkbox.addEventListener('change', function() {
+        //         let column = table.column($(this).attr('data-column'));
+        //         column.visible(!column.visible());
+        //     });
+        // });
     </script>
 @endpush
