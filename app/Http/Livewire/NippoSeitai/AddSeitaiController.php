@@ -324,7 +324,9 @@ class AddSeitaiController extends Component
             $data->updated_by = auth()->user()->username;
 
             // jumlah berat loss
-            $data->seitai_berat_loss = $this->jumlahBeratLoss;
+            if (isset($this->jumlahBeratLoss)) {
+                $data->seitai_berat_loss = $this->jumlahBeratLoss;
+            }
             $data->save();
 
             $this->product_goods_id = $data->id;
