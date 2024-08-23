@@ -567,19 +567,19 @@ class EditSeitaiController extends Component
             }
         }
 
-        if (isset($this->employeeno) && $this->employeeno != '') {
-            $msemployee = MsEmployee::where('employeeno', $this->employeeno)->first();
+        if (isset($this->employeeno) && $this->employeeno != '' && strlen($this->employeeno) >= 3) {
+            $msemployee = MsEmployee::where('employeeno', 'ilike', '%' . $this->employeeno . '%')->first();
 
             if ($msemployee == null) {
-                // session()->flash('error', 'Nomor PO ' . $this->po_no . ' Tidak Terdaftar');
-                $this->dispatch('notification', ['type' => 'error', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
             } else {
+                $this->employeeno = $msemployee->employeeno;
                 $this->empname = $msemployee->empname;
             }
         }
 
-        if (isset($this->employeenoinfure) && $this->employeenoinfure != '') {
-            $msemployeeinfure = MsEmployee::where('employeeno', $this->employeenoinfure)->first();
+        if (isset($this->employeenoinfure) && $this->employeenoinfure != '' && strlen($this->employeenoinfure) >= 3) {
+            $msemployeeinfure = MsEmployee::where('employeeno', 'ilike', '%' . $this->employeenoinfure . '%')->first();
 
             if ($msemployeeinfure == null) {
                 // session()->flash('error', 'Nomor PO ' . $this->po_no . ' Tidak Terdaftar');

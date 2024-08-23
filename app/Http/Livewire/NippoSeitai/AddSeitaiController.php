@@ -607,12 +607,13 @@ class AddSeitaiController extends Component
             }
         }
 
-        if (isset($this->employeeno) && $this->employeeno != '' && strlen($this->employeeno) >= 7) {
-            $msemployee = MsEmployee::where('employeeno', $this->employeeno)->first();
+        if (isset($this->employeeno) && $this->employeeno != '' && strlen($this->employeeno) >= 3) {
+            $msemployee = MsEmployee::where('employeeno', 'ilike', '%' . $this->employeeno . '%')->first();
 
             if ($msemployee == null) {
-                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Karyawan ' . $this->employeeno . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
             } else {
+                $this->employeeno = $msemployee->employeeno;
                 $this->empname = $msemployee->empname;
             }
         }
