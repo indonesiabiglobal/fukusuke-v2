@@ -528,47 +528,53 @@ class AddSeitaiController extends Component
         }
 
         if (isset($this->lpk_no) && $this->lpk_no != '') {
-            if (!str_contains($this->lpk_no, '-') && strlen($this->lpk_no) >= 9) {
-                $this->lpk_no = substr_replace($this->lpk_no, '-', 6, 0);
-            }
-            $tdorderlpk = DB::table('tdorderlpk as tolp')
-                ->select(
-                    'tolp.id',
-                    'tolp.lpk_date',
-                    'tolp.panjang_lpk',
-                    'tolp.created_on',
-                    'tolp.qty_lpk',
-                    'mp.code',
-                    'mp.name',
-                    'mp.ketebalan',
-                    'mp.diameterlipat',
-                    'tolp.qty_gulung',
-                    'tolp.qty_gentan'
-                )
-                ->join('msproduct as mp', 'mp.id', '=', 'tolp.product_id')
-                ->where('tolp.lpk_no', $this->lpk_no)
-                ->first();
+            if (strlen($this->lpk_no) >= 9) {
+                if (!str_contains($this->lpk_no, '-')) {
+                    $this->lpk_no = substr_replace($this->lpk_no, '-', 6, 0);
+                }
+                $tdorderlpk = DB::table('tdorderlpk as tolp')
+                    ->select(
+                        'tolp.id',
+                        'tolp.lpk_date',
+                        'tolp.panjang_lpk',
+                        'tolp.created_on',
+                        'tolp.qty_lpk',
+                        'mp.code',
+                        'mp.name',
+                        'mp.ketebalan',
+                        'mp.diameterlipat',
+                        'tolp.qty_gulung',
+                        'tolp.qty_gentan'
+                    )
+                    ->join('msproduct as mp', 'mp.id', '=', 'tolp.product_id')
+                    ->where('tolp.lpk_no', $this->lpk_no)
+                    ->first();
 
-            if ($tdorderlpk == null) {
-                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor LPK ' . $this->lpk_no . ' Tidak Terdaftar']);
-            } else {
-                $this->lpk_date = Carbon::parse($tdorderlpk->lpk_date)->format('Y-m-d');
-                $this->panjang_lpk = $tdorderlpk->panjang_lpk;
-                $this->created_on = Carbon::parse($tdorderlpk->created_on)->format('Y-m-d');
-                $this->code = $tdorderlpk->code;
-                $this->name = $tdorderlpk->name;
-                $this->dimensiinfure = $tdorderlpk->ketebalan . 'x' . $tdorderlpk->diameterlipat;
-                $this->qty_gulung = $tdorderlpk->qty_gulung;
-                $this->qty_gentan = $tdorderlpk->qty_gentan;
-                $this->qty_lpk = number_format($tdorderlpk->qty_lpk);
+                if ($tdorderlpk == null) {
+                    $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor LPK ' . $this->lpk_no . ' Tidak Terdaftar']);
+                } else {
+                    $this->lpk_date = Carbon::parse($tdorderlpk->lpk_date)->format('Y-m-d');
+                    $this->panjang_lpk = $tdorderlpk->panjang_lpk;
+                    $this->created_on = Carbon::parse($tdorderlpk->created_on)->format('Y-m-d');
+                    $this->code = $tdorderlpk->code;
+                    $this->name = $tdorderlpk->name;
+                    $this->dimensiinfure = $tdorderlpk->ketebalan . 'x' . $tdorderlpk->diameterlipat;
+                    $this->qty_gulung = $tdorderlpk->qty_gulung;
+                    $this->qty_gentan = $tdorderlpk->qty_gentan;
+                    $this->qty_lpk = number_format($tdorderlpk->qty_lpk);
+                }
             }
         }
 
         if (isset($this->machineno) && $this->machineno != '') {
             $machine = MsMachine::join('msdepartment as md', 'md.id', '=', 'msmachine.department_id')
-                ->where('msmachine.machineno', 'ilike', '%00S' . $this->machineno . '%')
+                ->where(function ($query) {
+                    $query->where('msmachine.machineno', 'ilike', '%00S' . $this->machineno . '%')
+                        ->orWhere('msmachine.machineno', 'ilike', '%' . $this->machineno . '%');
+                })
                 ->where('md.division_code', 20)
                 ->first();
+
             if ($machine == null) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Machine ' . $this->machineno . ' Tidak Terdaftar']);
             } else {
@@ -581,7 +587,7 @@ class AddSeitaiController extends Component
             $msemployee = MsEmployee::where('employeeno', $this->employeeno)->first();
 
             if ($msemployee == null) {
-                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Karyawan ' . $this->employeeno . ' Tidak Terdaftar']);
             } else {
                 $this->empname = $msemployee->empname;
             }
@@ -591,7 +597,7 @@ class AddSeitaiController extends Component
             $msemployeeinfure = MsEmployee::where('employeeno', $this->employeenoinfure)->first();
 
             if ($msemployeeinfure == null) {
-                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->employeenoinfure . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Karyawan ' . $this->employeenoinfure . ' Tidak Terdaftar']);
             } else {
                 $this->empnameinfure = $msemployeeinfure->empname;
             }
