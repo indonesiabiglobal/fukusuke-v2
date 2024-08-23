@@ -127,7 +127,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5">Total Produksi</label>
-                                <input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="total_produksi" />
+                                <input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="total_assembly_qty" />
                                 <span class="input-group-text">
                                     lbr
                                 </span>

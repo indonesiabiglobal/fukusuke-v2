@@ -69,6 +69,8 @@ class EditSeitaiController extends Component
     public $product;
     public $photoKatanuki;
     public $katanuki_id;
+    public $total_assembly_qty;
+    public $selisih;
 
     // data LPK
     public $orderLPK;
@@ -497,7 +499,8 @@ class EditSeitaiController extends Component
                     'mp.ketebalan',
                     'mp.diameterlipat',
                     'tolp.qty_gulung',
-                    'tolp.qty_gentan'
+                    'tolp.qty_gentan',
+                    'tolp.total_assembly_qty'
                 )
                 ->join('msproduct as mp', 'mp.id', '=', 'tolp.product_id')
                 ->where('tolp.lpk_no', $this->lpk_no)
@@ -516,6 +519,8 @@ class EditSeitaiController extends Component
                 $this->qty_gulung = $tdorderlpk->qty_gulung;
                 $this->qty_gentan = $tdorderlpk->qty_gentan;
                 $this->qty_lpk = $tdorderlpk->qty_lpk;
+                $this->total_assembly_qty = $tdorderlpk->total_assembly_qty;
+                $this->selisih = $tdorderlpk->panjang_lpk - $tdorderlpk->total_assembly_qty;
 
                 $this->detailsGentan = DB::table('tdproduct_assembly as tdpa')
                     ->join('tdproduct_goods_assembly as tga', 'tga.product_assembly_id', '=', 'tdpa.id')
