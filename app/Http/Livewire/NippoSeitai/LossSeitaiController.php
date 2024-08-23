@@ -574,7 +574,7 @@ class LossSeitaiController extends Component
         if ($this->transaksi == 2) {
             $data = DB::table('tdproduct_goods AS tdpg')
                 ->select([
-                    'tdpg.ID AS ID',
+                    'tdpg.id AS id',
                     'tdpg.production_no AS production_no',
                     'tdpg.production_date AS production_date',
                     'tdpg.employee_id AS employee_id',
