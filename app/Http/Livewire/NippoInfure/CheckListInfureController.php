@@ -556,6 +556,12 @@ class CheckListInfureController extends Component
 
     public function render()
     {
+        if (isset($this->lpk_no) && $this->lpk_no != '') {
+            if (strlen($this->lpk_no) >= 9 && !str_contains($this->lpk_no, '-')) {
+                $this->lpk_no = substr_replace($this->lpk_no, '-', 6, 0);
+            }
+        }
+
         return view('livewire.nippo-infure.check-list')->extends('layouts.master');
     }
 }

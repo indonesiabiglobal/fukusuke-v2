@@ -84,7 +84,7 @@
 		<div class="form-group mt-1">
 			<div class="input-group">
 				<span class="input-group-addon col-12 col-lg-3 text-muted fw-bold">Nomor LPK </span>
-				<input type="text" class="form-control" placeholder="000000-000" wire:model.defer="lpk_no">
+				<input type="text" class="form-control" placeholder="000000-000" wire:model.live.debounce.300ms="lpk_no">
 			</div>
 		</div>
 		<div class="form-group mt-1">
