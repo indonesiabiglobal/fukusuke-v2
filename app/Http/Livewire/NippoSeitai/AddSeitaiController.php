@@ -281,6 +281,7 @@ class AddSeitaiController extends Component
         ]);
 
         try {
+            DB::beginTransaction();
             $lastSeq = TdProductGoods::whereDate('created_on', Carbon::today())
                 ->orderBy('seq_no', 'desc')
                 ->first();
@@ -399,6 +400,7 @@ class AddSeitaiController extends Component
     {
         $lpkid = TdOrderLpk::where('lpk_no', $this->lpk_no)->first();
         $assembly = TdProductAssembly::where('lpk_id', $lpkid->id)
+            ->where('gentan_no', $this->gentan_no)
             ->first();
 
         // $datas = new TdProductGoodsAssembly();
