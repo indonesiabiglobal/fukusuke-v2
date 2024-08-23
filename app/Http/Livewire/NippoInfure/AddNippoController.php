@@ -471,7 +471,7 @@ class AddNippoController extends Component
             } else {
                 $this->lpk_date = Carbon::parse($tdorderlpk->lpk_date)->format('Y-m-d');
                 $this->panjang_lpk = $tdorderlpk->panjang_lpk;
-                $this->created_on = Carbon::parse($tdorderlpk->created_on)->format('Y-m-d');
+                $this->created_on = Carbon::parse($tdorderlpk->created_on)->format('d/m/Y H:i:s');
                 $this->code = $tdorderlpk->code;
                 $this->name = $tdorderlpk->name;
                 $this->dimensiinfure = $tdorderlpk->ketebalan . 'x' . $tdorderlpk->diameterlipat;
