@@ -283,13 +283,14 @@
                 {{-- <button wire:click="addLossInfure" type="button" class="btn btn-success">
                     <i class="fa fa-plus"></i> Add Loss Infure
                 </button> --}}
-                <button data-bs-toggle="modal" data-bs-target="#modal-add" type="button" class="btn btn-success">
-                    <i class="ri-add-line"></i> Add Loss Infure
-                </button>
-
                 @if ($statusSeitai)
                     <h3 class="text-danger">Data sudah di Seitai!</h3>
+                @else
+                    <button data-bs-toggle="modal" data-bs-target="#modal-add" type="button" class="btn btn-success">
+                        <i class="ri-add-line"></i> Add Loss Infure
+                    </button>
                 @endif
+
             </div>
 
             <div class="col-lg-5">
