@@ -354,13 +354,13 @@
             <thead class="table-light">
                 <tr>
                     <th>Action</th>
-                    <th class="sort">Nama</th>
-                    <th class="sort">NIK</th>
-                    <th class="sort">Departemen</th>
-                    <th class="sort">Status</th>
-                    <th class="sort">Updated By</th>
-                    <th class="sort">Updated</th>
-                    {{-- <th class="sort">No.</th> --}}
+                    <th>Nama</th>
+                    <th>NIK</th>
+                    <th>Departemen</th>
+                    <th>Status</th>
+                    <th>Updated By</th>
+                    <th>Updated</th>
+                    {{-- <th>No.</th> --}}
                 </tr>
             </thead>
             <tbody class="list form-check-all">

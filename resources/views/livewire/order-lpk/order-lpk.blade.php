@@ -172,170 +172,176 @@
         </div>
     </div>
 
-    <div class="col text-end dropdown" x-data="{
-        po_no: true,
-        na_pr: true,
-        ko_pr: true,
-        bu: true,
-        qt: true,
-        tgo: true,
-        stf: false,
-        etd: true,
-        eta: false,
-        tgp: true,
-        num: true,
-        up_by: false,
-        up_dt: false
-    }">
-    {{-- show paginate --}}
-    <div class="d-flex justify-content-between mt-3">
-        <div class="d-flex align-items-center mb-4">
-            <span class="me-2">Show</span>
-            <select wire:model.live="paginate" class="form-select form-select-sm me-2" style="width: auto;">
-                <option value="10">10</option>
-                <option value="25">25</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-                <option value="all">All</option>
-            </select>
-            <span>Entries</span>
+    <div class="table-responsive table-card">
+        <div class="col text-end dropdown">
+            <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                class="btn btn-soft-primary btn-icon fs-14 mt-2">
+                <i class="ri-grid-fill"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                    <label style="cursor: pointer;">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="1"
+                            checked> PO Number
+                    </label>
+                </li>
+                <li>
+                    <label style="cursor: pointer;">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="2"
+                            checked> Nama Produk
+                    </label>
+                </li>
+                <li>
+                    <label style="cursor: pointer;">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="3"
+                            checked> Kode Produk
+                    </label>
+                </li>
+                <li>
+                    <label style="cursor: pointer;">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="4"
+                            checked> Buyer
+                    </label>
+                </li>
+                <li>
+                    <label style="cursor: pointer;">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="5"
+                            checked> Quantity
+                    </label>
+                </li>
+                <li>
+                    <label style="cursor: pointer;">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="6"
+                            checked> Tgl. Order
+                    </label>
+                </li>
+                <li>
+                    <label style="cursor: pointer;">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="7"
+                            checked> Stuffing
+                    </label>
+                </li>
+                <li>
+                    <label style="cursor: pointer;">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="8"
+                            checked> Etd
+                    </label>
+                </li>
+                <li>
+                    <label style="cursor: pointer;">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="9"
+                            checked> Eta
+                    </label>
+                </li>
+                <li>
+                    <label style="cursor: pointer;">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="10"
+                            checked> Tgl Proses
+                    </label>
+                </li>
+                <li>
+                    <label style="cursor: pointer;">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="11"
+                            checked> No.
+                    </label>
+                </li>
+                <li>
+                    <label style="cursor: pointer;">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="12"
+                            checked> Update By
+                    </label>
+                </li>
+                <li>
+                    <label style="cursor: pointer;">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="13"
+                            checked> Update On
+                    </label>
+                </li>
+            </ul>
         </div>
-        <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
-            class="btn btn-soft-primary btn-icon fs-14 mb-4">
-            <i class="ri-grid-fill"></i>
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end">
-            <li @click="po_no = !po_no; $refs.checkbox.checked = po_no" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="po_no = $refs.checkbox.checked" class="form-check-input fs-15 ms-2"
-                    type="checkbox" :checked="po_no">
-                PO Number
-            </li>
-            <li @click="na_pr = !na_pr; $refs.checkbox.checked = na_pr" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="na_pr = $refs.checkbox.checked" class="form-check-input fs-15 ms-2"
-                    type="checkbox" :checked="na_pr">
-                Nama Produk
-            </li>
-            <li @click="ko_pr = !ko_pr; $refs.checkbox.checked = ko_pr" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="ko_pr = $refs.checkbox.checked" class="form-check-input fs-15 ms-2"
-                    type="checkbox" :checked="ko_pr">
-                Kode Produk
-            </li>
-            <li @click="bu = !bu; $refs.checkbox.checked = bu" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="bu = $refs.checkbox.checked" class="form-check-input fs-15 ms-2"
-                    type="checkbox" :checked="bu">
-                Buyer
-            </li>
-            <li @click="qt = !qt; $refs.checkbox.checked = qt" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="qt = $refs.checkbox.checked" class="form-check-input fs-15 ms-2"
-                    type="checkbox" :checked="qt">
-                Quantity
-            </li>
-            <li @click="tgo = !tgo; $refs.checkbox.checked = tgo" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="tgo = $refs.checkbox.checked" class="form-check-input fs-15 ms-2"
-                    type="checkbox" :checked="tgo">
-                Tgl Order
-            </li>
-            <li @click="stf = !stf; $refs.checkbox.checked = stf" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="stf = $refs.checkbox.checked" class="form-check-input fs-15 ms-2"
-                    type="checkbox" :checked="stf">
-                Stuffing
-            </li>
-            <li @click="etd = !etd; $refs.checkbox.checked = etd" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="etd = $refs.checkbox.checked" class="form-check-input fs-15 ms-2"
-                    type="checkbox" :checked="etd">
-                Etd
-            </li>
-            <li @click="eta = !eta; $refs.checkbox.checked = eta" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="eta = $refs.checkbox.checked" class="form-check-input fs-15 ms-2"
-                    type="checkbox" :checked="eta">
-                Eta
-            </li>
-            <li @click="tgp = !tgp; $refs.checkbox.checked = tgp" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="tgp = $refs.checkbox.checked" class="form-check-input fs-15 ms-2"
-                    type="checkbox" :checked="tgp">
-                Tgl Proses
-            </li>
-            <li @click="num = !num; $refs.checkbox.checked = num" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="num = $refs.checkbox.checked" class="form-check-input fs-15 ms-2"
-                    type="checkbox" :checked="num">
-                No.
-            </li>
-            <li @click="up_by = !up_by; $refs.checkbox.checked = up_by" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="up_by = $refs.checkbox.checked" class="form-check-input fs-15 ms-2"
-                    type="checkbox" :checked="up_by">
-                Update By
-            </li>
-            <li @click="up_dt = !up_dt; $refs.checkbox.checked = up_dt" style="cursor: pointer;">
-                <input x-ref="checkbox" @change="up_dt = $refs.checkbox.checked" class="form-check-input fs-15 ms-2"
-                    type="checkbox" :checked="up_dt">
-                UpdateDt
-            </li>
-        </ul>
-    </div>
-
-        <div class="table-responsive table-card">
-            <table class="table table-bordered align-middle dt-responsive mdl-data-table" style="overflow-x: :scroll">
-                <thead class="table-light">
+        <table id="tableOrderLPK" class="table table-bordered align-middle"
+            style="overflow-x: :scroll">
+            <thead class="table-light">
+                <tr>
+                    <th></th>
+                    <th>PO Number</th>
+                    <th>Nama Produk</th>
+                    <th>Kode Produk</th>
+                    <th>Buyer</th>
+                    <th>Quantity</th>
+                    <th>Tgl. Order</th>
+                    <th>Stuffing</th>
+                    <th>Etd</th>
+                    <th>Eta</th>
+                    <th>Tgl Proses</th>
+                    <th>No.</th>
+                    <th>Update By</th>
+                    <th>Update On</th>
+                </tr>
+            </thead>
+            <tbody class="list form-check-all">
+                @php
+                    $no = 1;
+                @endphp
+                @forelse ($data as $item)
                     <tr>
-                        <th></th>
-                        <th x-show="po_no">PO Number</th>
-                        <th x-show="na_pr">Nama Produk</th>
-                        <th x-show="ko_pr">Kode Produk</th>
-                        <th x-show="bu">Buyer</th>
-                        <th x-show="qt">Quantity</th>
-                        <th x-show="tgo">Tgl. Order</th>
-                        <th x-show="stf">Stuffing</th>
-                        <th x-show="etd">Etd</th>
-                        <th x-show="eta">Eta</th>
-                        <th x-show="tgp">Tgl Proses</th>
-                        <th x-show="num">No.</th>
-                        <th x-show="up_by">Update By</th>
-                        <th x-show="up_dt">Update On</th>
+                        <td>
+                            <a href="/edit-order?orderId={{ $item->id }}"
+                                class="link-success fs-15 p-1 bg-primary rounded">
+                                <i class="ri-edit-box-line text-white"></i>
+                            </a>
+                        </td>
+                        <td>{{ $item->po_no }}</td>
+                        <td class="text-start">{{ $item->produk_name }}</td>
+                        <td>{{ $item->product_code }}</td>
+                        <td>{{ $item->buyer_name }}</td>
+                        <td>{{ number_format($item->order_qty) }}</td>
+                        <td>{{ $item->order_date }}</td>
+                        <td>{{ $item->stufingdate }}</td>
+                        <td>{{ $item->etddate }}</td>
+                        <td>{{ $item->etadate }}</td>
+                        <td>{{ $item->processdate }}</td>
+                        <td>{{ $no++ }}</td>
+                        <td>{{ $item->updated_by }}</td>
+                        <td>{{ $item->updated_on }}</td>
                     </tr>
-                </thead>
-                <tbody class="list form-check-all">
-                    @php
-                        $no = 1;
-                    @endphp
-                    @forelse ($data as $item)
-                        <tr>
-                            <td>
-                                <a href="/edit-order?orderId={{ $item->id }}"
-                                    class="link-success fs-15 p-1 bg-primary rounded">
-                                    <i class="ri-edit-box-line text-white"></i>
-                                </a>
-                            </td>
-                            <td x-show="po_no">{{ $item->po_no }}</td>
-                            <td x-show="na_pr" class="text-start">{{ $item->produk_name }}</td>
-                            <td x-show="ko_pr">{{ $item->product_code }}</td>
-                            <td x-show="bu">{{ $item->buyer_name }}</td>
-                            <td x-show="qt">{{ number_format($item->order_qty) }}</td>
-                            <td x-show="tgo">{{ $item->order_date }}</td>
-                            <td x-show="stf">{{ $item->stufingdate }}</td>
-                            <td x-show="etd">{{ $item->etddate }}</td>
-                            <td x-show="eta">{{ $item->etadate }}</td>
-                            <td x-show="tgp">{{ $item->processdate }}</td>
-                            <td x-show="num">{{ $no++ }}</td>
-                            <td x-show="up_by">{{ $item->updated_by }}</td>
-                            <td x-show="up_dt">{{ $item->updated_on }}</td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="10" class="text-center">
-                                <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
-                                    colors="primary:#121331,secondary:#08a88a"
-                                    style="width:40px;height:40px"></lord-icon>
-                                <h5 class="mt-2">Sorry! No Result Found</h5>
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-            {{ $data->links(data: ['scrollTo' => false]) }}
-        </div>
+                @empty
+                    <tr>
+                        <td colspan="10" class="text-center">
+                            <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                                colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
+                            <h5 class="mt-2">Sorry! No Result Found</h5>
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+        {{-- {{ $data->links(data: ['scrollTo' => false]) }} --}}
     </div>
     {{-- <livewire:tdorder/> --}}
 </div>
 
 @script
 @endscript
+
+@push('scripts')
+    <script>
+        // datatable
+        const table = $('#tableOrderLPK').DataTable({
+            "pageLength": 10,
+            "searching": true,
+            "responsive": true,
+            "order": [
+                [1, "asc"]
+            ]
+        });
+
+        // Tambahkan event listener ke setiap checkbox
+        document.querySelectorAll('.toggle-column').forEach(function(checkbox) {
+            checkbox.addEventListener('change', function() {
+                let column = table.column($(this).attr('data-column'));
+                column.visible(!column.visible());
+            });
+        });
+    </script>
+@endpush
