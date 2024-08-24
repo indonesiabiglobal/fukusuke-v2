@@ -12,8 +12,9 @@
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="modal-addLabel">Add Master Katagori Loss</h5> <button type="button"
-                                    class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <h5 class="modal-title" id="modal-addLabel">Add Master Katagori Loss</h5> <button
+                                    type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
                                 <form wire:submit.prevent="store">
@@ -159,7 +160,8 @@
                                 <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
                                     <button type="button" class="btn w-sm btn-light"
                                         data-bs-dismiss="modal">Close</button>
-                                    <button wire:click="destroy" id="btnCreate" type="button" class="btn w-sm btn-danger" id="remove-item">
+                                    <button wire:click="destroy" id="btnCreate" type="button"
+                                        class="btn w-sm btn-danger" id="remove-item">
                                         <span wire:loading.remove wire:target="destroy">
                                             <i class="ri-save-3-line"></i> Yes, Delete It!
                                         </span>
@@ -181,7 +183,9 @@
                 </div>
                 {{-- end modal delete buyer --}}
             </div>
-            <div class="col-12 col-lg-6">
+
+            {{-- filter search --}}
+            {{-- <div class="col-12 col-lg-6">
                 <div class="input-group">
                     <input wire:model.defer="searchTerm" class="form-control"style="padding:0.44rem" type="text"
                         placeholder="Pencarian" />
@@ -201,17 +205,61 @@
                         </div>
                     </button>
                 </div>
+            </div> --}}
+
+            {{-- toggle column table --}}
+            <div class="col-12 col-lg-6">
+                <div class="col text-end dropdown">
+                    <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                        class="btn btn-soft-primary btn-icon fs-14 mt-2">
+                        <i class="ri-grid-fill"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="1" checked> Nama Loss
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="2" checked> Kode Loss
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="3" checked> Status
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="4" checked> Updated By
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="5" checked> Updated
+                            </label>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
     <div class="table-responsive table-card mt-3 mb-1">
-        <table class="table align-middle table-nowrap" id="customerTable" style="width:100%">
+        <table class="table align-middle table-nowrap" id="lossCategoryTable" style="width:100%">
             <thead class="table-light">
                 <tr>
                     <th>Action</th>
-                    <th class="sort">Nama Loss</th>
-                    <th class="sort">Kode Loss</th>
-                    <th class="sort">Status</th>
+                    <th>Nama Loss</th>
+                    <th>Kode Loss</th>
+                    <th>Status</th>
+                    <th>Updated By</th>
+                    <th>Updated</th>
                 </tr>
             </thead>
             <tbody class="list form-check-all">
@@ -234,6 +282,8 @@
                                 ? '<span class="badge text-success bg-success-subtle">Active</span>'
                                 : '<span class="badge text-bg-danger">Non Active</span>' !!}
                         </td>
+                        <td>{{ $item->updated_by }}</td>
+                        <td>{{ $item->updated_on }}</td>
                     </tr>
                 @empty
                     <tr>
@@ -248,7 +298,7 @@
                 @endforelse
             </tbody>
         </table>
-        {{ $result->links() }}
+        {{-- {{ $result->links() }} --}}
     </div>
 </div>
 
@@ -276,5 +326,38 @@
         $wire.on('closeModalDelete', () => {
             $('#removeBuyerModal').modal('hide');
         });
+
+        // Inisialisasi saat Livewire di-initialized
+        document.addEventListener('livewire:initialized', function() {
+            initDataTable();
+        });
+
+        // Fungsi untuk menginisialisasi ulang DataTable
+        function initDataTable() {
+            // Hapus DataTable jika sudah ada
+            let table = $.fn.dataTable.isDataTable('#lossCategoryTable') ?
+                $('#lossCategoryTable').DataTable() :
+                null;
+
+            if (table) {
+                table.destroy();
+            }
+
+            // Inisialisasi ulang DataTable
+            table = $('#lossCategoryTable').DataTable({
+                "pageLength": 10,
+                "searching": true,
+                "responsive": true,
+                "order": [
+                    [1, "asc"]
+                ]
+            });
+
+            // Inisialisasi ulang event listener checkbox
+            $('.toggle-column').off('change').on('change', function() {
+                let column = table.column($(this).attr('data-column'));
+                column.visible(!column.visible());
+            });
+        }
     </script>
 @endscript
