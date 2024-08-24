@@ -141,7 +141,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-12 col-md-3 col-lg-5">Nomor Palet</label>
-                                <input type="text" placeholder="A0000-000000" class="form-control text-uppercase @error('nomor_palet') is-invalid @enderror" wire:model.live="nomor_palet" />
+                                <input type="text" placeholder="A0000-000000" class="form-control text-uppercase @error('nomor_palet') is-invalid @enderror" wire:model.live.debounce.300ms="nomor_palet" />
                                 @error('nomor_palet')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror

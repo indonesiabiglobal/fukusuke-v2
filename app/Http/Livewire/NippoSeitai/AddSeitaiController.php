@@ -523,7 +523,7 @@ class AddSeitaiController extends Component
     {
         // nomer palet
         if (isset($this->nomor_palet) && $this->nomor_palet != '') {
-            if (!str_contains($this->nomor_palet, '-') && strlen($this->nomor_palet) >= 5) {
+            if (!str_contains($this->nomor_palet, '-') && strlen($this->nomor_palet) >= 11) {
                 $this->nomor_palet = substr_replace($this->nomor_palet, '-', 5, 0);
             }
             $this->nomor_palet = strtoupper($this->nomor_palet);
