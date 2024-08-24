@@ -213,7 +213,8 @@ class KatanukiController extends Component
                         ->orWhere('name', 'ilike', "%" . $this->searchTerm . "%");
                 });
             })
-            ->paginate(10);
+            // ->paginate(10);
+            ->get();
 
         return view('livewire.master-tabel.katanuki', [
             'data' => $data

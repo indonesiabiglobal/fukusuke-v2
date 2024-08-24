@@ -99,9 +99,13 @@
                                                                 </div>
                                                                 <div class="flex-grow-1">
                                                                     <div class="pt-1">
-                                                                        <h5 class="fs-14 mb-1">{{ $photo->getClientOriginalName() }}</h5>
-                                                                        <p class="fs-13 text-muted mb-0">{{ number_format($photo->getSize() / 1024, 2) }} KB</p>
-                                                                        <strong class="error text-danger" data-dz-errormessage></strong>
+                                                                        <h5 class="fs-14 mb-1">
+                                                                            {{ $photo->getClientOriginalName() }}</h5>
+                                                                        <p class="fs-13 text-muted mb-0">
+                                                                            {{ number_format($photo->getSize() / 1024, 2) }}
+                                                                            KB</p>
+                                                                        <strong class="error text-danger"
+                                                                            data-dz-errormessage></strong>
                                                                     </div>
                                                                 </div>
                                                                 <div class="flex-shrink-0 ms-3">
@@ -192,7 +196,8 @@
 
                                                 <div class="card-body">
                                                     <input class="form-control" name="file" type="file"
-                                                        wire:model="photo" accept="image/png,image/jpeg" value="{{ asset('storage/' . $filename) }}">
+                                                        wire:model="photo" accept="image/png,image/jpeg"
+                                                        value="{{ asset('storage/' . $filename) }}">
                                                     @error('photo')
                                                         <span class="invalid-feedback">{{ $message }}</span>
                                                     @enderror
@@ -208,9 +213,13 @@
                                                                 </div>
                                                                 <div class="flex-grow-1">
                                                                     <div class="pt-1">
-                                                                        <h5 class="fs-14 mb-1">{{ $photo->getClientOriginalName() }}</h5>
-                                                                        <p class="fs-13 text-muted mb-0">{{ number_format($photo->getSize() / 1024, 2) }} KB</p>
-                                                                        <strong class="error text-danger" data-dz-errormessage></strong>
+                                                                        <h5 class="fs-14 mb-1">
+                                                                            {{ $photo->getClientOriginalName() }}</h5>
+                                                                        <p class="fs-13 text-muted mb-0">
+                                                                            {{ number_format($photo->getSize() / 1024, 2) }}
+                                                                            KB</p>
+                                                                        <strong class="error text-danger"
+                                                                            data-dz-errormessage></strong>
                                                                     </div>
                                                                 </div>
                                                                 <div class="flex-shrink-0 ms-3">
@@ -220,18 +229,24 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        @else
+                                                    @else
                                                         @if (isset($filename) && $filename)
                                                             <div class="border rounded">
                                                                 <div class="d-flex p-2">
                                                                     <div class="flex-shrink-0 me-3">
-                                                                        <img style="width: 100px;" class="img-fluid rounded d-block" src="{{ asset('storage/' . $filename) }}" alt="Dropzone-Image" />
+                                                                        <img style="width: 100px;"
+                                                                            class="img-fluid rounded d-block"
+                                                                            src="{{ asset('storage/' . $filename) }}"
+                                                                            alt="Dropzone-Image" />
                                                                     </div>
                                                                     <div class="flex-grow-1">
                                                                         <div class="pt-1">
-                                                                            <h5 class="fs-14 mb-1">{{ $filename }}</h5>
-                                                                            <p class="fs-13 text-muted mb-0">File sebelumnya</p>
-                                                                            <strong class="error text-danger" data-dz-errormessage></strong>
+                                                                            <h5 class="fs-14 mb-1">{{ $filename }}
+                                                                            </h5>
+                                                                            <p class="fs-13 text-muted mb-0">File
+                                                                                sebelumnya</p>
+                                                                            <strong class="error text-danger"
+                                                                                data-dz-errormessage></strong>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -320,7 +335,9 @@
                 </div>
                 {{-- end modal delete katanuki --}}
             </div>
-            <div class="col-12 col-lg-6">
+
+            {{-- filter search --}}
+            {{-- <div class="col-12 col-lg-6">
                 <form wire:submit.prevent="search">
                     <div class="input-group">
                         <input wire:model.defer="searchTerm" class="form-control"style="padding:0.44rem"
@@ -342,21 +359,68 @@
                         </button>
                     </div>
                 </form>
+            </div> --}}
+            <div class="col-12 col-lg-6">
+                <div class="col text-end dropdown">
+                    <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                        class="btn btn-soft-primary btn-icon fs-14 mt-2">
+                        <i class="ri-grid-fill"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="1" checked> Kode Nukigata
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="2" checked> Keterangan
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="3" checked> Gambar
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="4" checked> Status
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="5" checked> Updated By
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="6" checked> Updated
+                            </label>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
     <div class="table-responsive table-card mt-3 mb-1">
-        <table class="table align-middle table-nowrap" id="customerTable" style="width:100%">
+
+        <table class="table align-middle table-nowrap" id="katanukiTable" style="width:100%">
             <thead class="table-light">
                 <tr>
                     <th>Action</th>
-                    <th class="sort">Kode Nukigata</th>
-                    <th class="sort">Keterangan</th>
-                    <th class="sort">Gambar</th>
-                    <th class="sort">Status</th>
-                    <th class="sort">Updated By</th>
-                    <th class="sort">Updated</th>
-                    {{-- <th class="sort">No.</th> --}}
+                    <th>Kode Nukigata</th>
+                    <th>Keterangan</th>
+                    <th>Gambar</th>
+                    <th>Status</th>
+                    <th>Updated By</th>
+                    <th>Updated</th>
+                    {{-- <th>No.</th> --}}
                 </tr>
             </thead>
             <tbody class="list form-check-all">
@@ -400,7 +464,7 @@
                 @endforelse
             </tbody>
         </table>
-        {{ $data->links() }}
+        {{-- {{ $data->links() }} --}}
     </div>
     {{-- <livewire:tdorder/> --}}
 </div>
@@ -441,5 +505,38 @@
             //     @this.set('selected', data);
             // });
         });
+
+        // Inisialisasi saat Livewire di-initialized
+        document.addEventListener('livewire:initialized', function() {
+            initDataTable();
+        });
+
+        // Fungsi untuk menginisialisasi ulang DataTable
+        function initDataTable() {
+            // Hapus DataTable jika sudah ada
+            let table = $.fn.dataTable.isDataTable('#katanukiTable') ?
+                $('#katanukiTable').DataTable() :
+                null;
+
+            if (table) {
+                table.destroy();
+            }
+
+            // Inisialisasi ulang DataTable
+            table = $('#katanukiTable').DataTable({
+                "pageLength": 10,
+                "searching": true,
+                "responsive": true,
+                "order": [
+                    [1, "asc"]
+                ]
+            });
+
+            // Inisialisasi ulang event listener checkbox
+            $('.toggle-column').off('change').on('change', function() {
+                let column = table.column($(this).attr('data-column'));
+                column.visible(!column.visible());
+            });
+        }
     </script>
 @endscript
