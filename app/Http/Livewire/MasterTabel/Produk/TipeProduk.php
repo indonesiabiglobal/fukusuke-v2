@@ -232,7 +232,9 @@ class TipeProduk extends Component
                 'mspt.harga_sat_seitai',
                 'mspt.harga_sat_seitai_loss',
                 'mspt.berat_jenis',
-                'mspt.status'
+                'mspt.status',
+                'mspt.updated_by',
+                'mspt.updated_on'
             )
             ->Join('msproduct_group', 'msproduct_group.id', 'mspt.product_group_id')
             ->where(function ($query) {
@@ -241,12 +243,13 @@ class TipeProduk extends Component
                     ->orWhere('mspt.product_group_id', 'ilike', '%' . $this->searchTerm . '%');
             })
             ->where('mspt.status', 1)
-            ->when($this->paginate != 'all', function ($query) {
-                return $query->paginate($this->paginate);
-            }, function ($query) {
-                $count = $query->count();
-                return $query->paginate($count);
-            });
+            // ->when($this->paginate != 'all', function ($query) {
+            //     return $query->paginate($this->paginate);
+            // }, function ($query) {
+            //     $count = $query->count();
+            //     return $query->paginate($count);
+            // });
+            ->get();
 
         $productGroups = DB::select("SELECT id, name FROM msproduct_group");
 

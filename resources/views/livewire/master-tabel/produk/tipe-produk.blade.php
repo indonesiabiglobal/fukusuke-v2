@@ -350,7 +350,8 @@
                                                     <input type="text" step="0.001"
                                                         class="form-control @error('harga_sat_infure') is-invalid @enderror"
                                                         id="harga_sat_infure" wire:model.defer="harga_sat_infure"
-                                                        placeholder="Harga Satuan Infure" oninput="this.value = window.formatNumberDecimal(this.value)">
+                                                        placeholder="Harga Satuan Infure"
+                                                        oninput="this.value = window.formatNumberDecimal(this.value)">
                                                     @error('harga_sat_infure')
                                                         <span class="invalid-feedback">{{ $message }}</span>
                                                     @enderror
@@ -369,7 +370,8 @@
                                                         class="form-control @error('harga_sat_infure_loss') is-invalid @enderror"
                                                         id="harga_sat_infure_loss"
                                                         wire:model.defer="harga_sat_infure_loss"
-                                                        placeholder="Harga Satuan Loss Infure" oninput="this.value = window.formatNumberDecimal(this.value)">
+                                                        placeholder="Harga Satuan Loss Infure"
+                                                        oninput="this.value = window.formatNumberDecimal(this.value)">
                                                     @error('harga_sat_infure_loss')
                                                         <span class="invalid-feedback">{{ $message }}</span>
                                                     @enderror
@@ -387,7 +389,8 @@
                                                     <input type="text" step="0.001"
                                                         class="form-control @error('harga_sat_inline') is-invalid @enderror"
                                                         id="harga_sat_inline" wire:model.defer="harga_sat_inline"
-                                                        placeholder="Harga Satuan Inline" oninput="this.value = window.formatNumberDecimal(this.value)">
+                                                        placeholder="Harga Satuan Inline"
+                                                        oninput="this.value = window.formatNumberDecimal(this.value)">
                                                     @error('harga_sat_inline')
                                                         <span class="invalid-feedback">{{ $message }}</span>
                                                     @enderror
@@ -405,7 +408,8 @@
                                                     <input type="text" step="0.001"
                                                         class="form-control @error('harga_sat_cetak') is-invalid @enderror"
                                                         id="harga_sat_cetak" wire:model.defer="harga_sat_cetak"
-                                                        placeholder="Harga Satuan cetak" oninput="this.value = window.formatNumberDecimal(this.value)">
+                                                        placeholder="Harga Satuan cetak"
+                                                        oninput="this.value = window.formatNumberDecimal(this.value)">
                                                     @error('harga_sat_cetak')
                                                         <span class="invalid-feedback">{{ $message }}</span>
                                                     @enderror
@@ -423,7 +427,8 @@
                                                     <input type="text" step="0.001"
                                                         class="form-control @error('harga_sat_seitai') is-invalid @enderror"
                                                         id="harga_sat_seitai" wire:model.defer="harga_sat_seitai"
-                                                        placeholder="Harga Satuan seitai" oninput="this.value = window.formatNumberDecimal(this.value)">
+                                                        placeholder="Harga Satuan seitai"
+                                                        oninput="this.value = window.formatNumberDecimal(this.value)">
                                                     @error('harga_sat_seitai')
                                                         <span class="invalid-feedback">{{ $message }}</span>
                                                     @enderror
@@ -442,7 +447,8 @@
                                                         class="form-control @error('harga_sat_seitai_loss') is-invalid @enderror"
                                                         id="harga_sat_seitai_loss"
                                                         wire:model.defer="harga_sat_seitai_loss"
-                                                        placeholder="Harga Satuan seitai_loss" oninput="this.value = window.formatNumberDecimal(this.value)">
+                                                        placeholder="Harga Satuan seitai_loss"
+                                                        oninput="this.value = window.formatNumberDecimal(this.value)">
                                                     @error('harga_sat_seitai_loss')
                                                         <span class="invalid-feedback">{{ $message }}</span>
                                                     @enderror
@@ -459,7 +465,8 @@
                                                     <input type="text" step="0.001"
                                                         class="form-control @error('berat_jenis') is-invalid @enderror"
                                                         id="berat_jenis" wire:model.defer="berat_jenis"
-                                                        placeholder="Berat Jenis" oninput="this.value = window.formatNumberDecimal(this.value)">
+                                                        placeholder="Berat Jenis"
+                                                        oninput="this.value = window.formatNumberDecimal(this.value)">
                                                     @error('berat_jenis')
                                                         <span class="invalid-feedback">{{ $message }}</span>
                                                     @enderror
@@ -543,7 +550,8 @@
                 </div>
                 {{-- end modal delete buyer --}}
             </div>
-            <div class="col-12 col-lg-6">
+            {{-- filter search --}}
+            {{-- <div class="col-12 col-lg-6">
                 <div class="input-group">
                     <input wire:model.defer="searchTerm" class="form-control"style="padding:0.44rem" type="text"
                         placeholder="search tipe produk" />
@@ -563,11 +571,89 @@
                         </div>
                     </button>
                 </div>
+            </div> --}}
+
+            {{-- toggle column table --}}
+            <div class="col-12 col-lg-6">
+                <div class="col text-end dropdown">
+                    <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                        class="btn btn-soft-primary btn-icon fs-14 mt-2">
+                        <i class="ri-grid-fill"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="1" checked> Kode
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="2" checked> Nama Tipe Produk
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="3" checked> Jenis Produk
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="4" checked> Infure
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="5" checked> Loss Infure
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="6" checked> Inline
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="7" checked> Cetak
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="8" checked> Berat Jenis
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="9" checked> Status
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="10" checked> Updated By
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="11" checked> Updated
+                            </label>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
     {{-- paginate --}}
-    <div class="d-flex justify-content-between mt-3">
+    {{-- <div class="d-flex justify-content-between mt-3">
         <div class="d-flex align-items-center">
             <span class="me-2">Show</span>
             <select wire:model.live="paginate" class="form-select form-select-sm me-2" style="width: auto;">
@@ -579,21 +665,23 @@
             </select>
             <span>Entries</span>
         </div>
-    </div>
+    </div> --}}
     <div class="table-responsive table-card mt-3 mb-1">
-        <table class="table align-middle table-nowrap" id="customerTable" style="width:100%">
+        <table class="table align-middle table-nowrap" id="tipeProdukTable" style="width:100%">
             <thead class="table-light">
                 <tr>
                     <th>Action</th>
-                    <th class="sort">Kode</th>
-                    <th class="sort">Nama Tipe Produk</th>
-                    <th class="sort">Jenis Produk</th>
-                    <th class="sort">Infure</th>
-                    <th class="sort">Loss Infure</th>
-                    <th class="sort">Inline</th>
-                    <th class="sort">Cetak</th>
-                    <th class="sort">Berat Jenis</th>
-                    <th class="sort">Status</th>
+                    <th>Kode</th>
+                    <th>Nama Tipe Produk</th>
+                    <th>Jenis Produk</th>
+                    <th>Infure</th>
+                    <th>Loss Infure</th>
+                    <th>Inline</th>
+                    <th>Cetak</th>
+                    <th>Berat Jenis</th>
+                    <th>Status</th>
+                    <th>Updated By</th>
+                    <th>Updated</th>
                 </tr>
             </thead>
             <tbody class="list form-check-all">
@@ -625,6 +713,8 @@
                                 ? '<span class="badge text-success bg-success-subtle">Active</span>'
                                 : '<span class="badge text-bg-danger">Non Active</span>' !!}
                         </td>
+                        <td>{{ $item->updated_by }}</td>
+                        <td>{{ $item->updated_on }}</td>
                         {{-- <td>{{ $no++ }}</td> --}}
                     </tr>
                 @empty
@@ -640,7 +730,7 @@
                 @endforelse
             </tbody>
         </table>
-        {{ $data->links() }}
+        {{-- {{ $data->links() }} --}}
     </div>
     {{-- <livewire:tdorder/> --}}
 </div>
@@ -687,6 +777,39 @@
             input.value = value;
             // Update Livewire property
             @this.set('harga_sat_inline', value);
+        }
+
+        // Inisialisasi saat Livewire di-initialized
+        document.addEventListener('livewire:initialized', function() {
+            initDataTable();
+        });
+
+        // Fungsi untuk menginisialisasi ulang DataTable
+        function initDataTable() {
+            // Hapus DataTable jika sudah ada
+            let table = $.fn.dataTable.isDataTable('#tipeProdukTable') ?
+                $('#tipeProdukTable').DataTable() :
+                null;
+
+            if (table) {
+                table.destroy();
+            }
+
+            // Inisialisasi ulang DataTable
+            table = $('#tipeProdukTable').DataTable({
+                "pageLength": 10,
+                "searching": true,
+                "responsive": true,
+                "order": [
+                    [1, "asc"]
+                ]
+            });
+
+            // Inisialisasi ulang event listener checkbox
+            $('.toggle-column').off('change').on('change', function() {
+                let column = table.column($(this).attr('data-column'));
+                column.visible(!column.visible());
+            });
         }
     </script>
 @endscript
