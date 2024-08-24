@@ -158,7 +158,8 @@ class Department extends Component
                             ->orWhere('division_code', 'ilike', '%' . $this->searchTerm . '%');
                     });
             })
-            ->paginate(10);
+            // ->paginate(10);
+            ->get();
 
         return view('livewire.master-tabel.department', [
             'data' =>  $data

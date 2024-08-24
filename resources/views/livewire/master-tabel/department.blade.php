@@ -244,7 +244,9 @@
                 </div>
                 {{-- end modal delete departemen --}}
             </div>
-            <div class="col-12 col-lg-6">
+
+            {{-- filter search --}}
+            {{-- <div class="col-12 col-lg-6">
                 <form wire:submit.prevent="search">
                     <div class="input-group">
                         <input wire:model.defer="searchTerm" class="form-control"style="padding:0.44rem"
@@ -266,21 +268,65 @@
                         </button>
                     </div>
                 </form>
-            </div>
+            </div> --}}
         </div>
     </div>
     <div class="table-responsive table-card mt-3 mb-1">
-        <table class="table align-middle table-nowrap" id="customerTable" style="width:100%">
+        <div class="col text-end dropdown">
+            <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                class="btn btn-soft-primary btn-icon fs-14 mt-2">
+                <i class="ri-grid-fill"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                    <label style="cursor: pointer;">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="1"
+                            checked> Kode Departemen
+                    </label>
+                </li>
+                <li>
+                    <label style="cursor: pointer;">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="2"
+                            checked> Nama Departemen
+                    </label>
+                </li>
+                <li>
+                    <label style="cursor: pointer;">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="3"
+                            checked> Kode Divisi
+                    </label>
+                </li>
+                <li>
+                    <label style="cursor: pointer;">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="4"
+                            checked> Status
+                    </label>
+                </li>
+                <li>
+                    <label style="cursor: pointer;">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="5"
+                            checked> Updated By
+                    </label>
+                </li>
+                <li>
+                    <label style="cursor: pointer;">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="6"
+                            checked> Updated
+                    </label>
+                </li>
+            </ul>
+        </div>
+        <table class="table align-middle table-nowrap" id="departmentTable" style="width:100%">
             <thead class="table-light">
                 <tr>
                     <th>Action</th>
-                    <th class="sort">Kode Departemen</th>
-                    <th class="sort">Nama Departemen</th>
-                    <th class="sort">Kode Divisi</th>
-                    <th class="sort">Status</th>
-                    <th class="sort">Updated By</th>
-                    <th class="sort">Updated</th>
-                    {{-- <th class="sort">No.</th> --}}
+                    <th>Kode Departemen</th>
+                    <th>Nama Departemen</th>
+                    <th>Kode Divisi</th>
+                    <th>Status</th>
+                    <th>Updated By</th>
+                    <th>Updated</th>
+                    {{-- <th>No.</th> --}}
                 </tr>
             </thead>
             <tbody class="list form-check-all">
@@ -321,7 +367,7 @@
                 @endforelse
             </tbody>
         </table>
-        {{ $data->links() }}
+        {{-- {{ $data->links() }} --}}
     </div>
     {{-- <livewire:tdorder/> --}}
 </div>
@@ -350,5 +396,38 @@
         $wire.on('closeModalDelete', () => {
             $('#removeDepartemenModal').modal('hide');
         });
+
+        // Inisialisasi saat Livewire di-initialized
+        document.addEventListener('livewire:initialized', function() {
+            initDataTable();
+        });
+
+        // Fungsi untuk menginisialisasi ulang DataTable
+        function initDataTable() {
+            // Hapus DataTable jika sudah ada
+            let table = $.fn.dataTable.isDataTable('#departmentTable') ?
+                $('#departmentTable').DataTable() :
+                null;
+
+            if (table) {
+                table.destroy();
+            }
+
+            // Inisialisasi ulang DataTable
+            table = $('#departmentTable').DataTable({
+                "pageLength": 10,
+                "searching": true,
+                "responsive": true,
+                "order": [
+                    [1, "asc"]
+                ]
+            });
+
+            // Inisialisasi ulang event listener checkbox
+            $('.toggle-column').off('change').on('change', function() {
+                let column = table.column($(this).attr('data-column'));
+                column.visible(!column.visible());
+            });
+        }
     </script>
 @endscript
