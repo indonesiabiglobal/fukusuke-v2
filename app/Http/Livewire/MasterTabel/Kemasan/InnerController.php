@@ -168,7 +168,7 @@ class InnerController extends Component
             });
         }
 
-        $result = $result->paginate(8);
+        $result = $result->get();
 
         return view('livewire.master-tabel.kemasan.inner', [
             'result' => $result
