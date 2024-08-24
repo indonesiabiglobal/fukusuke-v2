@@ -167,7 +167,8 @@ class MenuLossInfureController extends Component
                     ->orWhere('mlc.name', 'ilike', '%' . $this->searchTerm . '%')
                     ->orWhere('mlcl.name', 'ilike', '%' . $this->searchTerm . '%');
             })
-            ->paginate(10);
+            // ->paginate(10);
+            ->get();
 
         return view('livewire.master-tabel.loss.menu-loss-infure', [
             'result' => $result
