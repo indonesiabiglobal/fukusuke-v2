@@ -42,7 +42,9 @@
                                         <div class="col-xxl-12">
                                             <div wire:ignore>
                                                 <label for="name" class="form-label">Klasifikasi</label>
-                                                <select class="form-control @error('box_class') is-invalid @enderror" wire:model.defer="box_class" data-choices data-choices-sorting-false data-choices-removeItem>
+                                                <select class="form-control @error('box_class') is-invalid @enderror"
+                                                    wire:model.defer="box_class" data-choices data-choices-sorting-false
+                                                    data-choices-removeItem>
                                                     <option value="">- All -</option>
                                                     <option value="1">Khusus</option>
                                                     <option value="2">Standar</option>
@@ -56,8 +58,10 @@
                                             <div class="form-group">
                                                 <label for="panjang" class="form-label">Panjang</label>
                                                 <div class="input-group">
-                                                    <input type="text" class="form-control @error('panjang') is-invalid @enderror"
-                                                        id="panjang" wire:model.defer="panjang" placeholder="Ukuran Panjang" >
+                                                    <input type="text"
+                                                        class="form-control @error('panjang') is-invalid @enderror"
+                                                        id="panjang" wire:model.defer="panjang"
+                                                        placeholder="Ukuran Panjang">
                                                     <span class="input-group-text py-0">
                                                         mm
                                                     </span>
@@ -71,8 +75,10 @@
                                             <div class="form-group">
                                                 <label for="lebar" class="form-label">Lebar</label>
                                                 <div class="input-group">
-                                                    <input type="text" class="form-control @error('lebar') is-invalid @enderror"
-                                                        id="lebar" wire:model.defer="lebar" placeholder="Ukuran lebar" >
+                                                    <input type="text"
+                                                        class="form-control @error('lebar') is-invalid @enderror"
+                                                        id="lebar" wire:model.defer="lebar"
+                                                        placeholder="Ukuran lebar">
                                                     <span class="input-group-text py-0">
                                                         mm
                                                     </span>
@@ -86,8 +92,10 @@
                                             <div class="form-group">
                                                 <label for="tinggi" class="form-label">Tinggi</label>
                                                 <div class="input-group">
-                                                    <input type="text" class="form-control @error('tinggi') is-invalid @enderror"
-                                                        id="tinggi" wire:model.defer="tinggi" placeholder="Ukuran tinggi" >
+                                                    <input type="text"
+                                                        class="form-control @error('tinggi') is-invalid @enderror"
+                                                        id="tinggi" wire:model.defer="tinggi"
+                                                        placeholder="Ukuran tinggi">
                                                     <span class="input-group-text py-0">
                                                         mm
                                                     </span>
@@ -166,7 +174,10 @@
                                         <div class="col-xxl-12">
                                             <div wire:ignore>
                                                 <label for="name" class="form-label">Klasifikasi</label>
-                                                <select class="form-control @error('loss_class_id') is-invalid @enderror" wire:model.defer="loss_class_id" data-choices data-choices-sorting-false data-choices-removeItem>
+                                                <select
+                                                    class="form-control @error('loss_class_id') is-invalid @enderror"
+                                                    wire:model.defer="loss_class_id" data-choices
+                                                    data-choices-sorting-false data-choices-removeItem>
                                                     <option value="">- All -</option>
                                                     <option value="1">Khusus</option>
                                                     <option value="2">Standar</option>
@@ -180,8 +191,10 @@
                                             <div class="form-group">
                                                 <label for="panjang" class="form-label">Panjang</label>
                                                 <div class="input-group">
-                                                    <input type="text" class="form-control @error('panjang') is-invalid @enderror"
-                                                        id="panjang" wire:model.defer="panjang" placeholder="Ukuran Panjang" >
+                                                    <input type="text"
+                                                        class="form-control @error('panjang') is-invalid @enderror"
+                                                        id="panjang" wire:model.defer="panjang"
+                                                        placeholder="Ukuran Panjang">
                                                     <span class="input-group-text py-0">
                                                         mm
                                                     </span>
@@ -195,8 +208,10 @@
                                             <div class="form-group">
                                                 <label for="lebar" class="form-label">Lebar</label>
                                                 <div class="input-group">
-                                                    <input type="text" class="form-control @error('lebar') is-invalid @enderror"
-                                                        id="lebar" wire:model.defer="lebar" placeholder="Ukuran lebar" >
+                                                    <input type="text"
+                                                        class="form-control @error('lebar') is-invalid @enderror"
+                                                        id="lebar" wire:model.defer="lebar"
+                                                        placeholder="Ukuran lebar">
                                                     <span class="input-group-text py-0">
                                                         mm
                                                     </span>
@@ -210,8 +225,10 @@
                                             <div class="form-group">
                                                 <label for="tinggi" class="form-label">Tinggi</label>
                                                 <div class="input-group">
-                                                    <input type="text" class="form-control @error('tinggi') is-invalid @enderror"
-                                                        id="tinggi" wire:model.defer="tinggi" placeholder="Ukuran tinggi" >
+                                                    <input type="text"
+                                                        class="form-control @error('tinggi') is-invalid @enderror"
+                                                        id="tinggi" wire:model.defer="tinggi"
+                                                        placeholder="Ukuran tinggi">
                                                     <span class="input-group-text py-0">
                                                         mm
                                                     </span>
@@ -271,7 +288,8 @@
                                 <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
                                     <button type="button" class="btn w-sm btn-light"
                                         data-bs-dismiss="modal">Close</button>
-                                    <button wire:click="destroy" id="btnCreate" type="button" class="btn w-sm btn-danger" id="remove-item">
+                                    <button wire:click="destroy" id="btnCreate" type="button"
+                                        class="btn w-sm btn-danger" id="remove-item">
                                         <span wire:loading.remove wire:target="destroy">
                                             <i class="ri-save-3-line"></i> Yes, Delete It!
                                         </span>
@@ -292,7 +310,9 @@
                     </div>
                 </div>
             </div>
-            <div class="col-12 col-lg-6">
+
+            {{-- filter search --}}
+            {{-- <div class="col-12 col-lg-6">
                 <div class="input-group">
                     <input wire:model.defer="searchTerm" class="form-control"style="padding:0.44rem" type="text"
                         placeholder="Pencairan" />
@@ -312,23 +332,89 @@
                         </div>
                     </button>
                 </div>
+            </div> --}}
+
+            {{-- toggle column table --}}
+            <div class="col-12 col-lg-6">
+                <div class="col text-end dropdown">
+                    <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                        class="btn btn-soft-primary btn-icon fs-14 mt-2">
+                        <i class="ri-grid-fill"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="1" checked> Klasifikasi
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="2" checked> Nama Box
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="3" checked> Code
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="4" checked> Panjang
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="5" checked> Lebar
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="6" checked> Tinggi
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="7" checked> Status
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="8" checked> Updated By
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="9" checked> Updated
+                            </label>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
     <div class="table-responsive table-card mt-3 mb-1">
-        <table class="table align-middle table-nowrap" id="customerTable" style="width:100%">
+        <table class="table align-middle table-nowrap" id="boxTable" style="width:100%">
             <thead class="table-light">
                 <tr>
                     <th>Action</th>
-                    <th class="sort">Klasifikasi</th>
-                    <th class="sort">Nama Box</th>
-                    <th class="sort">Code</th>
-                    <th class="sort">Panjang</th>
-                    <th class="sort">Lebar</th>
-                    <th class="sort">Tinggi</th>
-                    <th class="sort">Status</th>
-                    <th class="sort">Update_By</th>
-                    <th class="sort">Updated</th>
+                    <th>Klasifikasi</th>
+                    <th>Nama Box</th>
+                    <th>Code</th>
+                    <th>Panjang</th>
+                    <th>Lebar</th>
+                    <th>Tinggi</th>
+                    <th>Status</th>
+                    <th>Update_By</th>
+                    <th>Updated</th>
                 </tr>
             </thead>
             <tbody class="list form-check-all">
@@ -346,9 +432,9 @@
                         </td>
                         <td>{{ $item->box_class }}</td>
                         <td>{{ $item->name }}</td>
-                        <td>{{ $item->code }}</td>                        
+                        <td>{{ $item->code }}</td>
                         <td>{{ $item->panjang }}</td>
-                        <td>{{ $item->lebar }}</td>                        
+                        <td>{{ $item->lebar }}</td>
                         <td>{{ $item->tinggi }}</td>
                         <td>
                             {!! $item->status == 1
@@ -371,7 +457,7 @@
                 @endforelse
             </tbody>
         </table>
-        {{ $result->links() }}
+        {{-- {{ $result->links() }} --}}
     </div>
 </div>
 
@@ -399,5 +485,38 @@
         $wire.on('closeModalDelete', () => {
             $('#removeBuyerModal').modal('hide');
         });
+
+        // Inisialisasi saat Livewire di-initialized
+        document.addEventListener('livewire:initialized', function() {
+            initDataTable();
+        });
+
+        // Fungsi untuk menginisialisasi ulang DataTable
+        function initDataTable() {
+            // Hapus DataTable jika sudah ada
+            let table = $.fn.dataTable.isDataTable('#boxTable') ?
+                $('#boxTable').DataTable() :
+                null;
+
+            if (table) {
+                table.destroy();
+            }
+
+            // Inisialisasi ulang DataTable
+            table = $('#boxTable').DataTable({
+                "pageLength": 10,
+                "searching": true,
+                "responsive": true,
+                "order": [
+                    [1, "asc"]
+                ]
+            });
+
+            // Inisialisasi ulang event listener checkbox
+            $('.toggle-column').off('change').on('change', function() {
+                let column = table.column($(this).attr('data-column'));
+                column.visible(!column.visible());
+            });
+        }
     </script>
 @endscript
