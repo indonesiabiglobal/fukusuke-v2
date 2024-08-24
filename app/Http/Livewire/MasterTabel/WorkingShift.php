@@ -172,7 +172,8 @@ class WorkingShift extends Component
     public function render()
     {
         $workingShifts = MsWorkingShift::where('work_shift', 'like', '%' . $this->searchTerm . '%')
-            ->paginate(10);
+            // ->paginate(10);
+            ->get();
 
         return view('livewire.master-tabel.working-shift', [
             'data' => $workingShifts
