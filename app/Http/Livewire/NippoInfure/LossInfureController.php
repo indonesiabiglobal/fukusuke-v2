@@ -68,8 +68,47 @@ class LossInfureController extends Component
         $this->dispatch('redirectToPrint', "'$tglMasuk 00:00' and tdpa.created_on <= '$tglKeluar 23:59'");
     }
 
-    public function render()
+    // public function updatedLpkNo($lpk_no)
+    // {
+    //     dd($lpk_no);
+    //     // The rest of your code...
+    //     if (strlen($lpk_no) >= 9) {
+    //         if (!str_contains($lpk_no, '-')) {
+    //             $this->lpk_no = substr_replace($lpk_no, '-', 6, 0);
+    //         }
+    //         $tdorderlpk = DB::table('tdorderlpk')
+    //             ->select('id')
+    //             ->where('lpk_no', $this->lpk_no)
+    //             ->first();
+
+    //         if ($tdorderlpk == null) {
+    //             $this->dispatch('notification', [
+    //                 'type' => 'warning',
+    //                 'message' => 'Nomor LPK ' . $this->lpk_no . ' Tidak Terdaftar'
+    //             ]);
+    //         }
+    //     }
+    // }
+
+    public function render($isSearch = false)
     {
+        if (strlen($this->lpk_no) >= 9) {
+            if (!str_contains($this->lpk_no, '-')) {
+                $this->lpk_no = substr_replace($this->lpk_no, '-', 6, 0);
+            }
+            $tdorderlpk = DB::table('tdorderlpk')
+                ->select('id')
+                ->where('lpk_no', $this->lpk_no)
+                ->first();
+
+            if ($tdorderlpk == null) {
+                $this->dispatch('notification', [
+                    'type' => 'warning',
+                    'message' => 'Nomor LPK ' . $this->lpk_no . ' Tidak Terdaftar'
+                ]);
+            }
+        }
+
         $data = DB::table('tdproduct_assembly AS tdpa')
             ->select([
                 'tdpa.id AS id',
@@ -163,8 +202,8 @@ class LossInfureController extends Component
                     ->orWhere('tdpa.nomor_han', 'ilike', "%{$this->searchTerm}%");
             });
         }
-        // $data = $data->paginate(8);
-        $data = $data->get();
+        $data = $data->paginate(8);
+        // $data = $data->get();
 
         return view('livewire.nippo-infure.loss-infure', [
             'data' => $data
