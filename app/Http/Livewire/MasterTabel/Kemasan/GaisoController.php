@@ -166,7 +166,7 @@ class GaisoController extends Component
             });
         }
 
-        $result = $result->paginate(8);
+        $result = $result->get();
 
         return view('livewire.master-tabel.kemasan.gaiso', [
             'result' => $result
