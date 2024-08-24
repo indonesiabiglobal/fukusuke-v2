@@ -38,6 +38,7 @@ class AddKenpinInfureController extends Component
     public $code_loss;
     public $berat;
     public $frekuensi;
+    public $currentId = 1;
 
     public function mount()
     {
@@ -56,6 +57,12 @@ class AddKenpinInfureController extends Component
         ]);
 
         if ($validatedData) {
+            $this->gentan_no = '';
+            $this->machineno = '';
+            $this->namapetugas = '';
+            $this->berat_loss = '';
+            $this->berat = '';
+            $this->frekuensi = '';
             $this->dispatch('showModal');
         }
     }
@@ -67,26 +74,49 @@ class AddKenpinInfureController extends Component
             'berat_loss' => 'required',
         ]);
 
-        $tdpa = TdProductAssembly::where('lpk_id', $this->lpk_id)->first();
+        $data = [
+            'id' => $this->nextId(),
+            'gentan_no' => $this->gentan_no,
+            'machineno' => $this->machineno,
+            'namapetugas' => $this->namapetugas,
+            'berat_loss' => $this->berat_loss,
+            'berat' => $this->berat,
+            'frekuensi' => $this->frekuensi,
+        ];
 
-        $datas = new TdKenpinAssemblyDetail();
-        $datas->product_assembly_id = $tdpa->id;
-        $datas->berat_loss = $this->berat_loss;
-        $datas->berat = $this->berat;
-        $datas->frekuensi = $this->frekuensi;
-        $datas->trial468 = 'T';
-        $datas->lpk_id = $this->lpk_id;
+        $this->details[] = $data;
 
-        $datas->save();
+        // $tdpa = TdProductAssembly::where('lpk_id', $this->lpk_id)->first();
+
+        // $datas = new TdKenpinAssemblyDetail();
+        // $datas->product_assembly_id = $tdpa->id;
+        // $datas->berat_loss = $this->berat_loss;
+        // $datas->berat = $this->berat;
+        // $datas->frekuensi = $this->frekuensi;
+        // $datas->trial468 = 'T';
+        // $datas->lpk_id = $this->lpk_id;
+
+        // $datas->save();
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);
 
         $this->dispatch('closeModal');
     }
 
+    public function nextId()
+    {
+        return $this->currentId++;
+    }
+
     public function deleteInfure($orderId)
     {
-        $data = TdKenpinAssemblyDetail::findOrFail($orderId);
-        $data->delete();
+        // $data = TdKenpinAssemblyDetail::findOrFail($orderId);
+        // $data->delete();
+
+        $index = array_search($orderId, array_column($this->details, 'id'));
+
+        if ($index !== false) {
+            array_splice($this->details, $index, 1);
+        }
 
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Hapus']);
     }
@@ -113,9 +143,29 @@ class AddKenpinInfureController extends Component
             $product->status_kenpin = $this->status_kenpin;
             $product->save();
 
-            TdKenpinAssemblyDetail::where('product_assembly_id', $this->lpk_id)->update([
-                'kenpin_assembly_id' => $product->id,
-            ]);
+            $totalBerat = 0;
+            foreach ($this->details as $item) {
+                // $datas = new TdKenpinAssemblyDetail();
+                // $datas->product_assembly_id = $tdpa->id;
+                // $datas->berat_loss = $this->berat_loss;
+                // $datas->berat = $this->berat;
+                // $datas->frekuensi = $this->frekuensi;
+                // $datas->trial468 = 'T';
+                // $datas->lpk_id = $this->lpk_id;
+
+                $details = new TdKenpinAssemblyDetail();
+                $details->berat_loss = $item['berat_loss'];
+                $details->berat = $item['berat'];
+                $details->frekuensi = $item['frekuensi'];
+                $details->product_assembly_id = $product->id;
+
+                $totalBerat += $item['berat_loss'];
+                $details->save();
+            }
+
+            // TdKenpinAssemblyDetail::where('product_assembly_id', $this->lpk_id)->update([
+            //     'kenpin_assembly_id' => $product->id,
+            // ]);
 
             DB::commit();
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
@@ -167,35 +217,35 @@ class AddKenpinInfureController extends Component
                 $this->lpk_id = $tdorderlpk->id;
                 $this->lpk_no = $tdorderlpk->lpk_no;
 
-                $this->details = DB::table('tdproduct_assembly AS tdpa')
-                    ->select(
-                        'tad.id AS id',
-                        'tdpa.lpk_id',
-                        'tdol.lpk_no AS lpk_no',
-                        'tdol.lpk_date AS lpk_date',
-                        'tdol.panjang_lpk AS panjang_lpk',
-                        'tdpa.production_date AS tglproduksi',
-                        'tdpa.employee_id AS employee_id',
-                        'mse.empname AS namapetugas',
-                        'tdpa.work_shift AS work_shift',
-                        'tdpa.work_hour AS work_hour',
-                        'tdpa.machine_id AS machine_id',
-                        'msm.machineno AS nomesin',
-                        'msm.machinename AS namamesin',
-                        'tdpa.nomor_han AS nomor_han',
-                        'tdpa.gentan_no AS gentan_no',
-                        'tdpa.product_id',
-                        'msp.code AS code',
-                        'msp.name AS namaproduk',
-                        'tad.berat_loss'
-                    )
-                    ->join('tdorderlpk AS tdol', 'tdpa.lpk_id', '=', 'tdol.id')
-                    ->join('msemployee AS mse', 'mse.id', '=', 'tdpa.employee_id')
-                    ->join('msproduct AS msp', 'msp.id', '=', 'tdpa.product_id')
-                    ->join('msmachine AS msm', 'msm.id', '=', 'tdpa.machine_id')
-                    ->join('tdkenpin_assembly_detail AS tad', 'tad.lpk_id', '=', 'tdol.id')
-                    ->where('tdpa.lpk_id', $this->lpk_id)
-                    ->get();
+                // $this->details = DB::table('tdproduct_assembly AS tdpa')
+                //     ->select(
+                //         'tad.id AS id',
+                //         'tdpa.lpk_id',
+                //         'tdol.lpk_no AS lpk_no',
+                //         'tdol.lpk_date AS lpk_date',
+                //         'tdol.panjang_lpk AS panjang_lpk',
+                //         'tdpa.production_date AS tglproduksi',
+                //         'tdpa.employee_id AS employee_id',
+                //         'mse.empname AS namapetugas',
+                //         'tdpa.work_shift AS work_shift',
+                //         'tdpa.work_hour AS work_hour',
+                //         'tdpa.machine_id AS machine_id',
+                //         'msm.machineno AS nomesin',
+                //         'msm.machinename AS namamesin',
+                //         'tdpa.nomor_han AS nomor_han',
+                //         'tdpa.gentan_no AS gentan_no',
+                //         'tdpa.product_id',
+                //         'msp.code AS code',
+                //         'msp.name AS namaproduk',
+                //         'tad.berat_loss'
+                //     )
+                //     ->join('tdorderlpk AS tdol', 'tdpa.lpk_id', '=', 'tdol.id')
+                //     ->join('msemployee AS mse', 'mse.id', '=', 'tdpa.employee_id')
+                //     ->join('msproduct AS msp', 'msp.id', '=', 'tdpa.product_id')
+                //     ->join('msmachine AS msm', 'msm.id', '=', 'tdpa.machine_id')
+                //     ->join('tdkenpin_assembly_detail AS tad', 'tad.lpk_id', '=', 'tdol.id')
+                //     ->where('tdpa.lpk_id', $this->lpk_id)
+                //     ->get();
             }
         }
 

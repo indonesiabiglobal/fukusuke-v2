@@ -65,6 +65,8 @@ class AddSeitaiController extends Component
     public $jumlahBeratLoss;
     public $currentLossId = 1;
     public $currentGentanId = 1;
+    public $total_assembly_qty;
+    public $selisih;
 
     // data master produk
     public $masterKatanuki;
@@ -366,6 +368,23 @@ class AddSeitaiController extends Component
                 $datas->save();
             }
 
+            $totalGoods = DB::select("
+            SELECT
+                CASE WHEN x.A1 IS NULL THEN 0 ELSE x.A1 END AS C1
+            FROM
+                (
+                SELECT SUM(qty_produksi) AS A1
+                FROM
+                    tdproduct_goods AS ta
+                WHERE
+                    lpk_id = $lpkid->id
+            ) AS x
+            ");
+
+            TdOrderLpk::where('id', $lpkid->id)->update([
+                'total_assembly_qty' => $totalGoods[0]->c1,
+            ]);
+
             DB::commit();
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);
             return redirect()->route('nippo-seitai');
@@ -546,7 +565,8 @@ class AddSeitaiController extends Component
                         'mp.ketebalan',
                         'mp.diameterlipat',
                         'tolp.qty_gulung',
-                        'tolp.qty_gentan'
+                        'tolp.qty_gentan',
+                        'tolp.total_assembly_qty'
                     )
                     ->join('msproduct as mp', 'mp.id', '=', 'tolp.product_id')
                     ->where('tolp.lpk_no', $this->lpk_no)
@@ -563,7 +583,9 @@ class AddSeitaiController extends Component
                     $this->dimensiinfure = $tdorderlpk->ketebalan . 'x' . $tdorderlpk->diameterlipat;
                     $this->qty_gulung = $tdorderlpk->qty_gulung;
                     $this->qty_gentan = $tdorderlpk->qty_gentan;
+                    $this->total_assembly_qty = $tdorderlpk->total_assembly_qty;
                     $this->qty_lpk = number_format($tdorderlpk->qty_lpk);
+                    $this->selisih = $tdorderlpk->panjang_lpk - $tdorderlpk->total_assembly_qty;
                 }
             }
         }
@@ -585,12 +607,13 @@ class AddSeitaiController extends Component
             }
         }
 
-        if (isset($this->employeeno) && $this->employeeno != '' && strlen($this->employeeno) >= 7) {
-            $msemployee = MsEmployee::where('employeeno', $this->employeeno)->first();
+        if (isset($this->employeeno) && $this->employeeno != '' && strlen($this->employeeno) >= 3) {
+            $msemployee = MsEmployee::where('employeeno', 'ilike', '%' . $this->employeeno . '%')->first();
 
             if ($msemployee == null) {
-                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Karyawan ' . $this->employeeno . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
             } else {
+                $this->employeeno = $msemployee->employeeno;
                 $this->empname = $msemployee->empname;
             }
         }

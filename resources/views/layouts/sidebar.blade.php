@@ -119,7 +119,7 @@
                     <div class="collapse menu-dropdown" id="nipposeitai">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="nippo-seitai" class="nav-link" data-key="t-starter"> Nipo Seitai </a>
+                                <a href="nippo-seitai" class="nav-link" data-key="t-starter"> Nippo Seitai </a>
                             </li>
                             <li class="nav-item">
                                 <a href="loss-seitai" class="nav-link" data-key="t-starter"> Loss Seitai </a>
