@@ -58,7 +58,7 @@ class MenuLossKlasifikisasiController extends Component
                 'updated_on' => Carbon::now(),
             ]);
 
-            DB::commit();            
+            DB::commit();
             $this->dispatch('closeModalCreate');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Buyer saved successfully.']);
         } catch (\Exception $e) {
@@ -120,7 +120,7 @@ class MenuLossKlasifikisasiController extends Component
             $data->updated_by = Auth::user()->username;
             $data->updated_on = Carbon::now();
             $data->save();
-            
+
             DB::commit();
             $this->dispatch('closeModalDelete');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Loss Infure deleted successfully.']);
@@ -133,14 +133,14 @@ class MenuLossKlasifikisasiController extends Component
     }
 
     public function search()
-    {        
+    {
         $this->render();
     }
 
     public function render()
     {
         $result = MsLossClass::where('status', 1);
-        
+
         if (isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined") {
             $result = $result->where(function ($query) {
                 $query->where('code', 'ilike', "%{$this->searchTerm}%")
@@ -148,7 +148,7 @@ class MenuLossKlasifikisasiController extends Component
             });
         }
 
-        $result = $result->paginate(8);
+        $result = $result->get();
 
         return view('livewire.master-tabel.loss.menu-loss-klasifikisasi', [
             'result' => $result
