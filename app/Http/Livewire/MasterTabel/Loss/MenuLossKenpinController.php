@@ -32,7 +32,7 @@ class MenuLossKenpinController extends Component
     ];
 
     public function mount(){
-        $this->class = MsLossClass::get();    
+        $this->class = MsLossClass::get();
     }
 
     public function resetFields()
@@ -68,7 +68,7 @@ class MenuLossKenpinController extends Component
                 'updated_on' => Carbon::now(),
             ]);
 
-            DB::commit();            
+            DB::commit();
             $this->dispatch('closeModalCreate');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Loss Kenpin saved successfully.']);
             // return redirect()->route('buyer');
@@ -135,7 +135,7 @@ class MenuLossKenpinController extends Component
             $data->updated_by = Auth::user()->username;
             $data->updated_on = Carbon::now();
             $data->save();
-            
+
             DB::commit();
             $this->dispatch('closeModalDelete');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Loss Kenpin deleted successfully.']);
@@ -148,13 +148,13 @@ class MenuLossKenpinController extends Component
     }
 
     public function search()
-    {        
+    {
         $this->render();
     }
 
     public function render()
     {
-        $result = MsLossKenpin::where('status', 1)->paginate(10);
+        $result = MsLossKenpin::where('status', 1)->get();
 
         return view('livewire.master-tabel.loss.menu-loss-kenpin',[
             'result' => $result

@@ -279,7 +279,7 @@
                 {{-- end modal delete employee --}}
             </div>
 
-            {{-- filter --}}
+            {{-- filter search --}}
             {{-- <div class="col-12 col-lg-6">
                 <form wire:submit.prevent="search">
                     <div class="input-group">

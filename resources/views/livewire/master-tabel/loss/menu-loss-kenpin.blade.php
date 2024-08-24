@@ -11,8 +11,9 @@
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="modal-addLabel">Add Master Loss Infure</h5> <button type="button"
-                                    class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <h5 class="modal-title" id="modal-addLabel">Add Master Loss Infure</h5> <button
+                                    type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
                                 <form wire:submit.prevent="store">
@@ -43,8 +44,11 @@
                                         </div>
                                         <div class="col-xxl-12">
                                             <div wire:ignore>
-                                                <label for="validationDefault04" class="form-label">Klasifikasi Loss</label>
-                                                <select class="form-control" wire:model.defer="loss_class_id" id="validationDefault04" required data-choices data-choices-sorting-false data-choices-removeItem>
+                                                <label for="validationDefault04" class="form-label">Klasifikasi
+                                                    Loss</label>
+                                                <select class="form-control" wire:model.defer="loss_class_id"
+                                                    id="validationDefault04" required data-choices
+                                                    data-choices-sorting-false data-choices-removeItem>
                                                     <option value="">- All -</option>
                                                     @foreach ($class as $item)
                                                         <option value="{{ $item->id }}">{{ $item->name }}</option>
@@ -58,7 +62,10 @@
                                         <div class="col-xxl-12">
                                             <div wire:ignore>
                                                 <label for="name" class="form-label">Kategory Loss</label>
-                                                <select class="form-control @error('loss_category_code') is-invalid @enderror" wire:model.defer="loss_category_code" data-choices data-choices-sorting-false data-choices-removeItem>
+                                                <select
+                                                    class="form-control @error('loss_category_code') is-invalid @enderror"
+                                                    wire:model.defer="loss_category_code" data-choices
+                                                    data-choices-sorting-false data-choices-removeItem>
                                                     <option value="">- All -</option>
                                                     <option value="0">Loss Kebutuhan</option>
                                                     <option value="1">Loss Produksi</option>
@@ -68,7 +75,7 @@
                                                 @enderror
                                             </div>
                                         </div>
-                                        
+
                                         {{-- button --}}
                                         <div class="col-lg-12">
                                             <div class="hstack gap-2 justify-content-end">
@@ -139,12 +146,16 @@
                                         <div class="col-xxl-12">
                                             <div wire:ignore>
                                                 <label for="name" class="form-label">Klasifikasi Loss</label>
-                                                <select class="form-control @error('loss_class_id') is-invalid @enderror" wire:model.defer="loss_class_id" data-choices data-choices-sorting-false data-choices-removeItem>
+                                                <select
+                                                    class="form-control @error('loss_class_id') is-invalid @enderror"
+                                                    wire:model.defer="loss_class_id" data-choices
+                                                    data-choices-sorting-false data-choices-removeItem>
                                                     <option value="">- All -</option>
                                                     @foreach ($class as $item)
-                                                        <option value="{{ $item->id }}" {{ $item->id == $loss_class_id ? 'selected' : '' }}>
+                                                        <option value="{{ $item->id }}"
+                                                            {{ $item->id == $loss_class_id ? 'selected' : '' }}>
                                                             {{ $item->name }}
-                                                        </option>                      
+                                                        </option>
                                                     @endforeach
                                                 </select>
                                                 @error('loss_class_id')
@@ -155,7 +166,10 @@
                                         <div class="col-xxl-12">
                                             <div wire:ignore>
                                                 <label for="name" class="form-label">Kategory Loss</label>
-                                                <select class="form-control @error('loss_category_code') is-invalid @enderror" wire:model.defer="loss_category_code" data-choices data-choices-sorting-false data-choices-removeItem>
+                                                <select
+                                                    class="form-control @error('loss_category_code') is-invalid @enderror"
+                                                    wire:model.defer="loss_category_code" data-choices
+                                                    data-choices-sorting-false data-choices-removeItem>
                                                     <option value="">- All -</option>
                                                     <option value="0">Loss Kebutuhan</option>
                                                     <option value="1">Loss Produksi</option>
@@ -219,7 +233,8 @@
                                 <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
                                     <button type="button" class="btn w-sm btn-light"
                                         data-bs-dismiss="modal">Close</button>
-                                    <button wire:click="destroy" id="btnCreate" type="button" class="btn w-sm btn-danger" id="remove-item">
+                                    <button wire:click="destroy" id="btnCreate" type="button"
+                                        class="btn w-sm btn-danger" id="remove-item">
                                         <span wire:loading.remove wire:target="destroy">
                                             <i class="ri-save-3-line"></i> Yes, Delete It!
                                         </span>
@@ -241,7 +256,8 @@
                 </div>
                 {{-- end modal delete buyer --}}
             </div>
-            <div class="col-12 col-lg-6">
+            {{-- filter search --}}
+            {{-- <div class="col-12 col-lg-6">
                 <div class="input-group">
                     <input wire:model.defer="searchTerm" class="form-control"style="padding:0.44rem" type="text"
                         placeholder="pencarian" />
@@ -261,21 +277,75 @@
                         </div>
                     </button>
                 </div>
+            </div> --}}
+
+            {{-- toggle column table --}}
+            <div class="col-12 col-lg-6">
+                <div class="col text-end dropdown">
+                    <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                        class="btn btn-soft-primary btn-icon fs-14 mt-2">
+                        <i class="ri-grid-fill"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="1" checked> Nama Loss
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="2" checked> Kode Loss
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="3" checked> Klasifikasi Loss
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="4" checked> Katagori Loss
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="5" checked> Status
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="6" checked> Updated By
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="7" checked> Updated
+                            </label>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
     <div class="table-responsive table-card mt-3 mb-1">
-        <table class="table align-middle table-nowrap" id="customerTable" style="width:100%">
+        <table class="table align-middle table-nowrap" id="lossKenpinTable" style="width:100%">
             <thead class="table-light">
                 <tr>
                     <th>Action</th>
-                    <th class="sort">Nama Loss</th>
-                    <th class="sort">Kode Loss</th>
-                    <th class="sort">Klasifikasi Loss</th>
-                    <th class="sort">Katagori Loss</th>
-                    <th class="sort">Status</th>
-                    <th class="sort">Updated By</th>
-                    <th class="sort">Updated</th>
+                    <th>Nama Loss</th>
+                    <th>Kode Loss</th>
+                    <th>Klasifikasi Loss</th>
+                    <th>Katagori Loss</th>
+                    <th>Status</th>
+                    <th>Updated By</th>
+                    <th>Updated</th>
                 </tr>
             </thead>
             <tbody class="list form-check-all">
@@ -316,7 +386,7 @@
                 @endforelse
             </tbody>
         </table>
-        {{ $result->links() }}
+        {{-- {{ $result->links() }} --}}
     </div>
 </div>
 
@@ -344,5 +414,38 @@
         $wire.on('closeModalDelete', () => {
             $('#removeBuyerModal').modal('hide');
         });
+
+        // Inisialisasi saat Livewire di-initialized
+        document.addEventListener('livewire:initialized', function() {
+            initDataTable();
+        });
+
+        // Fungsi untuk menginisialisasi ulang DataTable
+        function initDataTable() {
+            // Hapus DataTable jika sudah ada
+            let table = $.fn.dataTable.isDataTable('#lossKenpinTable') ?
+                $('#lossKenpinTable').DataTable() :
+                null;
+
+            if (table) {
+                table.destroy();
+            }
+
+            // Inisialisasi ulang DataTable
+            table = $('#lossKenpinTable').DataTable({
+                "pageLength": 10,
+                "searching": true,
+                "responsive": true,
+                "order": [
+                    [1, "asc"]
+                ]
+            });
+
+            // Inisialisasi ulang event listener checkbox
+            $('.toggle-column').off('change').on('change', function() {
+                let column = table.column($(this).attr('data-column'));
+                column.visible(!column.visible());
+            });
+        }
     </script>
 @endscript
