@@ -171,7 +171,7 @@ class LayerController extends Component
             });
         }
 
-        $result = $result->paginate(8);
+        $result = $result->get();
 
         return view('livewire.master-tabel.kemasan.layer', [
             'result' => $result
