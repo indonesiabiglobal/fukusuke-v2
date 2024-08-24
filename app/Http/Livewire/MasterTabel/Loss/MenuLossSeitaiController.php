@@ -65,7 +65,7 @@ class MenuLossSeitaiController extends Component
                 'updated_on' => Carbon::now(),
             ]);
 
-            DB::commit();            
+            DB::commit();
             $this->dispatch('closeModalCreate');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Buyer saved successfully.']);
             // return redirect()->route('buyer');
@@ -132,7 +132,7 @@ class MenuLossSeitaiController extends Component
             $data->updated_by = Auth::user()->username;
             $data->updated_on = Carbon::now();
             $data->save();
-            
+
             DB::commit();
             $this->dispatch('closeModalDelete');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Loss Infure deleted successfully.']);
@@ -145,13 +145,13 @@ class MenuLossSeitaiController extends Component
     }
 
     public function search()
-    {        
+    {
         $this->render();
     }
-    
+
     public function render()
     {
-        $result = MsLossSeitai::where('status', 1)->paginate(10);
+        $result = MsLossSeitai::where('status', 1)->get();
 
         return view('livewire.master-tabel.loss.menu-loss-seitai',[
             'result' => $result
