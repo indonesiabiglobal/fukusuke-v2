@@ -360,6 +360,7 @@
                     </div>
                 </form>
             </div> --}}
+            {{-- toggle column table --}}
             <div class="col-12 col-lg-6">
                 <div class="col text-end dropdown">
                     <button type="button" data-bs-toggle="dropdown" aria-expanded="false"

@@ -303,54 +303,58 @@
                     </div>
                 </form>
             </div> --}}
+
+            {{-- toggle column table --}}
+            <div class="col-12 col-lg-6">
+                <div class="col text-end dropdown">
+                    <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                        class="btn btn-soft-primary btn-icon fs-14 mt-2">
+                        <i class="ri-grid-fill"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="1" checked> Nama
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="2" checked> NIK
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="3" checked> Departemen
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="4" checked> Status
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="5" checked> Updated By
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="6" checked> Updated
+                            </label>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
     {{-- Table employee --}}
     <div class="table-responsive table-card mt-3 mb-1">
-        <div class="col text-end dropdown">
-            <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
-                class="btn btn-soft-primary btn-icon fs-14 mt-2">
-                <i class="ri-grid-fill"></i>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end">
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="1"
-                            checked> Nama
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="2"
-                            checked> NIK
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="3"
-                            checked> Departemen
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="4"
-                            checked> Status
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="5"
-                            checked> Updated By
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="6"
-                            checked> Updated
-                    </label>
-                </li>
-            </ul>
-        </div>
 
         <table class="table align-middle table-nowrap" id="tableEmployee" style="width:100%">
             <thead class="table-light">
@@ -438,16 +442,16 @@
         });
 
         // Inisialisasi saat Livewire di-initialized
-        document.addEventListener('livewire:initialized', function () {
+        document.addEventListener('livewire:initialized', function() {
             initDataTable();
         });
 
         // Fungsi untuk menginisialisasi ulang DataTable
         function initDataTable() {
             // Hapus DataTable jika sudah ada
-            let table = $.fn.dataTable.isDataTable('#tableEmployee')
-                ? $('#tableEmployee').DataTable()
-                : null;
+            let table = $.fn.dataTable.isDataTable('#tableEmployee') ?
+                $('#tableEmployee').DataTable() :
+                null;
 
             if (table) {
                 table.destroy();

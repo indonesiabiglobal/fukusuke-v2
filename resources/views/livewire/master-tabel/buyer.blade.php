@@ -305,61 +305,63 @@
                     </button>
                 </div>
             </div> --}}
+            {{-- toggle column table --}}
+            <div class="col-12 col-lg-6">
+                <div class="col text-end dropdown">
+                    <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                        class="btn btn-soft-primary btn-icon fs-14 mt-2">
+                        <i class="ri-grid-fill"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="1" checked> Kode Buyer
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="2" checked> Nama Buyer
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="3" checked> Alamat
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="4" checked> Negara
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="5" checked> Status
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="6" checked> Updated By
+                            </label>
+                        </li>
+                        <li>
+                            <label style="cursor: pointer;">
+                                <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox"
+                                    data-column="7" checked> Updated
+                            </label>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 
     <div class="table-responsive table-card mt-3 mb-1">
-        <div class="col text-end dropdown">
-            <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
-                class="btn btn-soft-primary btn-icon fs-14 mt-2">
-                <i class="ri-grid-fill"></i>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end">
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="1"
-                            checked> Kode Buyer
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="2"
-                            checked> Nama Buyer
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="3"
-                            checked> Alamat
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="4"
-                            checked> Negara
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="5"
-                            checked> Status
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="6"
-                            checked> Updated By
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="7"
-                            checked> Updated
-                    </label>
-                </li>
-            </ul>
-        </div>
-
         <table class="table align-middle" id="customerTable" style="width:100%">
             <thead class="table-light">
                 <tr>
@@ -381,7 +383,8 @@
                                 data-bs-target="#modal-edit" wire:click="edit({{ $item->id }})">
                                 <i class="ri-edit-box-line text-white"></i>
                             </button>
-                            <button type="button" class="btn fs-15 p-1 bg-danger rounded" wire:click="delete({{ $item->id }})">
+                            <button type="button" class="btn fs-15 p-1 bg-danger rounded"
+                                wire:click="delete({{ $item->id }})">
                                 <i class="ri-delete-bin-line text-white"></i>
                             </button>
                         </td>
@@ -438,16 +441,16 @@
         });
 
         // Inisialisasi saat Livewire di-initialized
-        document.addEventListener('livewire:initialized', function () {
+        document.addEventListener('livewire:initialized', function() {
             initDataTable();
         });
 
         // Fungsi untuk menginisialisasi ulang DataTable
         function initDataTable() {
             // Hapus DataTable jika sudah ada
-            let table = $.fn.dataTable.isDataTable('#customerTable')
-                ? $('#customerTable').DataTable()
-                : null;
+            let table = $.fn.dataTable.isDataTable('#customerTable') ?
+                $('#customerTable').DataTable() :
+                null;
 
             if (table) {
                 table.destroy();
