@@ -437,10 +437,8 @@
             $('#modal-delete').modal('hide');
         });
 
-        // Inisialisasi saat Livewire di-update
+        // Inisialisasi saat Livewire di-initialized
         document.addEventListener('livewire:initialized', function () {
-            console.log('update');
-
             initDataTable();
         });
 

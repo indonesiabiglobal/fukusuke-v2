@@ -186,7 +186,8 @@ class BuyerController extends Component
             });
         }
 
-        $data = $data->paginate(8);
+        // $data = $data->paginate(8);
+        $data = $data->get();
 
         return view('livewire.master-tabel.buyer', [
             'data' => $data,
