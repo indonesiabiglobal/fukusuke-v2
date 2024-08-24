@@ -149,7 +149,8 @@ class JenisProduk extends Component
                 });
             })
             ->where('status', 1)
-            ->paginate(8);
+            // ->paginate(8);
+            ->get();
 
         return view('livewire.master-tabel.produk.jenis-produk', [
             'data' => $data
