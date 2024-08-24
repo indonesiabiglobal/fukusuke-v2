@@ -278,7 +278,9 @@
                 </div>
                 {{-- end modal delete employee --}}
             </div>
-            <div class="col-12 col-lg-6">
+
+            {{-- filter --}}
+            {{-- <div class="col-12 col-lg-6">
                 <form wire:submit.prevent="search">
                     <div class="input-group">
                         <input wire:model.defer="searchTerm" class="form-control"style="padding:0.44rem"
@@ -300,7 +302,7 @@
                         </button>
                     </div>
                 </form>
-            </div>
+            </div> --}}
         </div>
     </div>
     {{-- Table employee --}}
@@ -434,27 +436,62 @@
         $wire.on('closeModalDelete', () => {
             $('#modal-delete').modal('hide');
         });
+
+        // Inisialisasi saat Livewire di-update
+        document.addEventListener('livewire:initialized', function () {
+            console.log('update');
+
+            initDataTable();
+        });
+
+        // Fungsi untuk menginisialisasi ulang DataTable
+        function initDataTable() {
+            // Hapus DataTable jika sudah ada
+            let table = $.fn.dataTable.isDataTable('#tableEmployee')
+                ? $('#tableEmployee').DataTable()
+                : null;
+
+            if (table) {
+                table.destroy();
+            }
+
+            // Inisialisasi ulang DataTable
+            table = $('#tableEmployee').DataTable({
+                "pageLength": 10,
+                "searching": true,
+                "responsive": true,
+                "order": [
+                    [1, "asc"]
+                ]
+            });
+
+            // Inisialisasi ulang event listener checkbox
+            $('.toggle-column').off('change').on('change', function() {
+                let column = table.column($(this).attr('data-column'));
+                column.visible(!column.visible());
+            });
+        }
     </script>
 @endscript
 
 @push('scripts')
     <script>
         // datatable
-        const table = $('#tableEmployee').DataTable({
-            "pageLength": 10,
-            "searching": true,
-            "responsive": true,
-            "order": [
-                [1, "asc"]
-            ]
-        });
+        // const table = $('#tableEmployee').DataTable({
+        //     "pageLength": 10,
+        //     "searching": true,
+        //     "responsive": true,
+        //     "order": [
+        //         [1, "asc"]
+        //     ]
+        // });
 
-        // Tambahkan event listener ke setiap checkbox
-        document.querySelectorAll('.toggle-column').forEach(function(checkbox) {
-            checkbox.addEventListener('change', function() {
-                let column = table.column($(this).attr('data-column'));
-                column.visible(!column.visible());
-            });
-        });
+        // // Tambahkan event listener ke setiap checkbox
+        // document.querySelectorAll('.toggle-column').forEach(function(checkbox) {
+        //     checkbox.addEventListener('change', function() {
+        //         let column = table.column($(this).attr('data-column'));
+        //         column.visible(!column.visible());
+        //     });
+        // });
     </script>
 @endpush
