@@ -188,7 +188,8 @@ class Machine extends Component
                 ->orWhere('mpg.name','ilike', '%' . $this->searchTerm. '%');
             });
         })
-        ->paginate(10);
+        // ->paginate(10);
+        ->get();
 
         return view('livewire.master-tabel.machine', [
             'data' => $data
