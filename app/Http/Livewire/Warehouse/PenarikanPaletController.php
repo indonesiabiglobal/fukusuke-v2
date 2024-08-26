@@ -129,7 +129,6 @@ class PenarikanPaletController extends Component
                 $tglKeluar
                 $product_id
                 ) AS X
-                LIMIT 5
             ");
         // }
     }
@@ -137,5 +136,10 @@ class PenarikanPaletController extends Component
     public function render()
     {
         return view('livewire.warehouse.penarikan-palet')->extends('layouts.master');
+    }
+
+    public function rendered()
+    {
+        $this->dispatch('initDataTable');
     }
 }
