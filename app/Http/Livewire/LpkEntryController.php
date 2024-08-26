@@ -192,15 +192,22 @@ class LpkEntryController extends Component
             }
         }
 
-        $data = $data->when($this->paginate != 'all', function ($query) {
-            return $query->paginate($this->paginate);
-        }, function ($query) {
-            $count = $query->count();
-            return $query->paginate($count);
-        });
+        // $data = $data->when($this->paginate != 'all', function ($query) {
+        //     return $query->paginate($this->paginate);
+        // }, function ($query) {
+        //     $count = $query->count();
+        //     return $query->paginate($count);
+        // });
+
+        $data = $data->get();
 
         return view('livewire.order-lpk.lpk-entry', [
             'data' => $data,
         ])->extends('layouts.master');
+    }
+
+    public function rendered()
+    {
+        $this->dispatch('initDataTable');
     }
 }

@@ -221,7 +221,8 @@
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="12" checked>
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="12"
+                            checked>
                         Mesin
                     </label>
                 </li>
@@ -392,10 +393,16 @@
                         `
                     },
                     "columnDefs": [{
-                            "targets": [2, 3, 7, 8,9,10,18,19,20],
+                            "targets": [2, 3, 7, 8, 9, 10, 18, 19, 20],
                             "visible": false
                         } // Menyembunyikan kolom tertentu
                     ],
+                });
+
+                // default column visibility
+                $('.toggle-column').each(function() {
+                    let column = table.column($(this).attr('data-column'));
+                    column.visible($(this).is(':checked'));
                 });
 
                 // Inisialisasi ulang event listener checkbox
