@@ -61,8 +61,8 @@ class KenpinSeitaiController extends Component
         // }
         // $searchTerm = '';
         // if (isset($this->searchTerm) && $this->searchTerm != '') {
-        //     $searchTerm = "WHERE (tdpg.nomor_palet ilike '%" . $this->searchTerm . 
-        //     "%' OR tdpg.nomor_lot ilike '%" . $this->searchTerm . 
+        //     $searchTerm = "WHERE (tdpg.nomor_palet ilike '%" . $this->searchTerm .
+        //     "%' OR tdpg.nomor_lot ilike '%" . $this->searchTerm .
         //     "%')";
         // }
 
@@ -82,25 +82,25 @@ class KenpinSeitaiController extends Component
         //     tdkg.updated_on,
         //     msp.code,
         //     msp.NAME AS namaproduk,
-        //     mse.empname AS namapetugas 
+        //     mse.empname AS namapetugas
         // FROM
         //     tdkenpin_goods AS tdkg
         //     INNER JOIN (
         //     SELECT DISTINCT
-        //         tdkgd.kenpin_goods_id AS kenpin_goods_id 
+        //         tdkgd.kenpin_goods_id AS kenpin_goods_id
         //     FROM
         //         tdkenpin_goods_detail AS tdkgd
         //         INNER JOIN tdproduct_goods AS tdpg ON tdkgd.product_goods_id = tdpg.
-        //         ID INNER JOIN tdorderlpk AS tdol ON tdpg.lpk_id = tdol.ID 
+        //         ID INNER JOIN tdorderlpk AS tdol ON tdpg.lpk_id = tdol.ID
         //     $searchTerm
         //     ) AS distinct1 ON tdkg.ID = distinct1.kenpin_goods_id
         //     INNER JOIN msproduct AS msp ON tdkg.product_id = msp.
-        //     ID INNER JOIN msemployee AS mse ON mse.ID = tdkg.employee_id 
+        //     ID INNER JOIN msemployee AS mse ON mse.ID = tdkg.employee_id
         // WHERE
-        //     $tglMasuk 
-        //     AND $tglKeluar 
-        // -- 	AND tdkg.kenpin_no = '' 
-        // -- 	AND msp.ID = 
+        //     $tglMasuk
+        //     AND $tglKeluar
+        // -- 	AND tdkg.kenpin_no = ''
+        // -- 	AND msp.ID =
         //     $status
         // ");
     }
@@ -109,10 +109,10 @@ class KenpinSeitaiController extends Component
     {
         $data = DB::table('tdkenpin_goods AS tdkg')
             ->join(
-                DB::raw("(SELECT DISTINCT tdkgd.kenpin_goods_id AS kenpin_goods_id 
-                      FROM tdkenpin_goods_detail AS tdkgd 
-                      INNER JOIN tdproduct_goods AS tdpg ON tdkgd.product_goods_id = tdpg.id 
-                      INNER JOIN tdorderlpk AS tdol ON tdpg.lpk_id = tdol.id 
+                DB::raw("(SELECT DISTINCT tdkgd.kenpin_goods_id AS kenpin_goods_id
+                      FROM tdkenpin_goods_detail AS tdkgd
+                      INNER JOIN tdproduct_goods AS tdpg ON tdkgd.product_goods_id = tdpg.id
+                      INNER JOIN tdorderlpk AS tdol ON tdpg.lpk_id = tdol.id
                       ) AS distinct1"),
                 'tdkg.id',
                 '=',
@@ -155,10 +155,15 @@ class KenpinSeitaiController extends Component
         if (isset($this->status) && $this->status['value'] != "" && $this->status != "undefined") {
             $data = $data->where('tdkg.status_kenpin', $this->status['value']);
         }
-        $data = $data->paginate();
+        $data = $data->get();
 
         return view('livewire.kenpin.kenpin-seitai', [
             'data' => $data
         ])->extends('layouts.master');
+    }
+
+    public function rendered()
+    {
+        $this->dispatch('initDataTable');
     }
 }
