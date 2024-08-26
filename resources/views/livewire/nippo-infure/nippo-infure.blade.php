@@ -191,85 +191,85 @@
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="6"
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="7"
                             checked> Berat Standard
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="6"
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="8"
                             checked> Rasio %
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="6"
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="9"
                             checked> Selisih
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="6"
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="10"
                             checked> Nama Produk
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="6"
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="11"
                             checked> Nomor Order
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="6"
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="12"
                             checked> Mesin
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="6"
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="13"
                             checked> Tanggal Produksi
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="6"
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="14"
                             checked> Tanggal Proses
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="6"
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="15"
                             checked> Jam
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="6"
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="16"
                             checked> Shift
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="6"
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="17"
                             checked> Seq
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="6"
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="18"
                             checked> Loss
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="6"
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="19"
                             checked> Update By
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="6"
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="20"
                             checked> Updated
                     </label>
                 </li>
@@ -332,7 +332,7 @@
                         <td> {{ $item->updated_on }} </td>
                     </tr>
                 @empty
-                    <tr>
+                    {{-- <tr>
                         <td colspan="12" class="text-center">
                             <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
                                 colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
@@ -340,7 +340,7 @@
                             <p class="text-muted mb-0">We've searched more than 150+ Orders We did not find any orders
                                 for you search.</p>
                         </td>
-                    </tr>
+                    </tr> --}}
                 @endforelse
             </tbody>
         </table>
@@ -364,17 +364,15 @@
             "pageLength": 10,
             "searching": true,
             "responsive": true,
-            "order": [
-                [1, "asc"]
-            ]
+            "order": false,
         });
 
-        // Tambahkan event listener ke setiap checkbox
-        document.querySelectorAll('.toggle-column').forEach(function(checkbox) {
-            checkbox.addEventListener('change', function() {
-                let column = table.column($(this).attr('data-column'));
-                column.visible(!column.visible());
-            });
-        });
+        // // Tambahkan event listener ke setiap checkbox
+        // document.querySelectorAll('.toggle-column').forEach(function(checkbox) {
+        //     checkbox.addEventListener('change', function() {
+        //         let column = table.column($(this).attr('data-column'));
+        //         column.visible(!column.visible());
+        //     });
+        // });
     </script>
 @endpush
