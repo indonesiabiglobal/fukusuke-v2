@@ -53,7 +53,7 @@ class SeitaiJamKerjaController extends Component
         if (empty($this->tglKeluar)) {
             $this->tglKeluar = Carbon::now()->format('d-m-Y');
         }
-        $this->machine  = MsMachine::whereNotIn('department_id', [10, 12, 15, 2, 4, 10])->get();
+        $this->machine  = MsMachine::whereNotIn('department_id', [10, 12, 15, 2, 4, 10])->orderBy('machineno', 'ASC')->get();
         $this->working_date = Carbon::now()->format('d-m-Y');
         $this->workShift  = MsWorkingShift::where('status', 1)->get();
     }
@@ -136,6 +136,7 @@ class SeitaiJamKerjaController extends Component
                     'working_date' => $this->working_date,
                     'work_shift' => $this->work_shift,
                     'machine_id' => $machine->id,
+                    'department_id' => $machine->department_id,
                     'employee_id' => $msemployee->id,
                     'work_hour' => $this->work_hour,
                     'off_hour' => $this->off_hour,
@@ -155,6 +156,7 @@ class SeitaiJamKerjaController extends Component
                 $orderlpk->working_date = $this->working_date;
                 $orderlpk->work_shift = $this->work_shift;
                 $orderlpk->machine_id = $machine->id;
+                $orderlpk->department_id = $machine->department_id;
                 $orderlpk->employee_id = $msemployee->id;
                 $orderlpk->work_hour = $this->work_hour;
                 $orderlpk->off_hour =  $this->off_hour;
@@ -219,7 +221,9 @@ class SeitaiJamKerjaController extends Component
                 'mse.employeeno'
             )
             ->join('msmachine AS msm', 'msm.id', '=', 'tdjkm.machine_id')
-            ->join('msemployee AS mse', 'mse.id', '=', 'tdjkm.employee_id');
+            ->join('msemployee AS mse', 'mse.id', '=', 'tdjkm.employee_id')
+            ->join('msdepartment AS msd', 'msd.id', '=', 'tdjkm.department_id')
+            ->where('msd.division_code','20');
 
         if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
             $data = $data->where('tdjkm.working_date', '>=', $this->tglMasuk);
@@ -242,11 +246,16 @@ class SeitaiJamKerjaController extends Component
             });
         }
 
-        $data = $data->paginate(8);
+        $data = $data->get();
 
         return view(
             'livewire.jam-kerja.seitai',
             ['data' => $data]
         )->extends('layouts.master');
+    }
+
+    public function rendered()
+    {
+        $this->dispatch('initDataTable');
     }
 }

@@ -136,6 +136,7 @@ class InfureJamKerjaController extends Component
                     'working_date' => $this->working_date,
                     'work_shift' => $this->work_shift,
                     'machine_id' => $machine->id,
+                    'department_id' => $machine->department_id,
                     'employee_id' => $msemployee->id,
                     'work_hour' => $this->work_hour,
                     'off_hour' => $this->off_hour,
@@ -155,6 +156,7 @@ class InfureJamKerjaController extends Component
                 $orderlpk->working_date = $this->working_date;
                 $orderlpk->work_shift = $this->work_shift;
                 $orderlpk->machine_id = $machine->id;
+                $orderlpk->department_id = $machine->department_id;
                 $orderlpk->employee_id = $msemployee->id;
                 $orderlpk->work_hour = $this->work_hour;
                 $orderlpk->off_hour =  $this->off_hour;
@@ -220,7 +222,9 @@ class InfureJamKerjaController extends Component
                 'mse.employeeno'
             )
             ->join('msmachine AS msm', 'msm.id', '=', 'tdjkm.machine_id')
-            ->join('msemployee AS mse', 'mse.id', '=', 'tdjkm.employee_id');
+            ->join('msemployee AS mse', 'mse.id', '=', 'tdjkm.employee_id')
+            ->join('msdepartment AS msd', 'msd.id', '=', 'tdjkm.department_id')
+            ->where('msd.division_code','10');
 
         if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
             $data = $data->where('tdjkm.working_date', '>=', $this->tglMasuk);
@@ -243,7 +247,7 @@ class InfureJamKerjaController extends Component
             });
         }
 
-        $data = $data->paginate(8);
+        $data = $data->get();
         // dd($this->work_shift);
 
         return view('livewire.jam-kerja.infure', [
