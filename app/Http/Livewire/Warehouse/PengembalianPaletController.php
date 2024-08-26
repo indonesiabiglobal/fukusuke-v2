@@ -66,4 +66,9 @@ class PengembalianPaletController extends Component
     {
         return view('livewire.warehouse.pengembalian-palet')->extends('layouts.master');
     }
+
+    public function rendered()
+    {
+        $this->dispatch('initDataTable');
+    }
 }
