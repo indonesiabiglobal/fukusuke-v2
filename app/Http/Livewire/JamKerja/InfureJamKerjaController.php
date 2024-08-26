@@ -250,4 +250,9 @@ class InfureJamKerjaController extends Component
             'data' => $data
         ])->extends('layouts.master');
     }
+
+    public function rendered()
+    {
+        $this->dispatch('initDataTable');
+    }
 }
