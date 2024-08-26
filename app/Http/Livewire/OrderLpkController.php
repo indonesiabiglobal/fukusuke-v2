@@ -175,15 +175,21 @@ class OrderLpkController extends Component
             $data = $data->where('tod.status_order', $this->status['value']);
         }
         // paginate
-        $data = $data->when($this->paginate != 'all', function ($query) {
-            return $query->paginate($this->paginate);
-        }, function ($query) {
-            $count = $query->count();
-            return $query->paginate($count);
-        });
+        // $data = $data->when($this->paginate != 'all', function ($query) {
+        //     return $query->paginate($this->paginate);
+        // }, function ($query) {
+        //     $count = $query->count();
+        //     return $query->paginate($count);
+        // });
+        $data = $data->get();
 
         return view('livewire.order-lpk.order-lpk', [
             'data' => $data,
         ])->extends('layouts.master');
+    }
+
+    public function rendered()
+    {
+        $this->dispatch('initDataTable');
     }
 }

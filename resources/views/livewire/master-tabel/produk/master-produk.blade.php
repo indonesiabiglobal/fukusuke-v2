@@ -311,12 +311,19 @@
 
         // inisialisasi DataTable
         $wire.on('initDataTable', () => {
-            destroyDataTable();
             initDataTable();
         });
 
         // Fungsi untuk menginisialisasi ulang DataTable
         function initDataTable() {
+            // Hapus DataTable jika sudah ada
+            if ($.fn.dataTable.isDataTable('#productTable')) {
+                let table = $('#productTable').DataTable();
+                table.clear(); // Bersihkan data tabel
+                table.destroy(); // Hancurkan DataTable
+                // Hindari penggunaan $('#productTable').empty(); di sini
+            }
+
             setTimeout(() => {
                 // Inisialisasi ulang DataTable
                 let table = $('#productTable').DataTable({
@@ -334,16 +341,6 @@
                     column.visible(!column.visible());
                 });
             }, 500);
-        }
-
-        function destroyDataTable() {
-            // Hapus DataTable jika sudah ada
-            if ($.fn.dataTable.isDataTable('#productTable')) {
-                let table = $('#productTable').DataTable();
-                table.clear(); // Bersihkan data tabel
-                table.destroy(); // Hancurkan DataTable
-                // Hindari penggunaan $('#productTable').empty(); di sini
-            }
         }
     </script>
 @endscript

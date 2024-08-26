@@ -182,67 +182,67 @@
                 <li>
                     <label style="cursor: pointer;">
                         <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="1"
-                            checked> PO Number
+                            checked> No.
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
                         <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="2"
-                            checked> Nama Produk
+                            checked> PO Number
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
                         <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="3"
-                            checked> Kode Produk
+                            checked> Nama Produk
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
                         <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="4"
-                            checked> Buyer
+                            checked> Kode Produk
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
                         <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="5"
-                            checked> Quantity
+                            checked> Buyer
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
                         <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="6"
-                            checked> Tgl. Order
+                            checked> Quantity
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
                         <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="7"
-                            checked> Stuffing
+                            checked> Tgl. Order
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
                         <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="8"
-                            checked> Etd
+                            checked> Stuffing
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
                         <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="9"
-                            checked> Eta
+                            checked> Etd
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
                         <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="10"
-                            checked> Tgl Proses
+                            checked> Eta
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
                         <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="11"
-                            checked> No.
+                            checked> Tgl Proses
                     </label>
                 </li>
                 <li>
@@ -259,11 +259,11 @@
                 </li>
             </ul>
         </div>
-        <table id="tableOrderLPK" class="table table-responsive table-bordered align-middle"
-            style=" width:100%">
+        <table id="tableOrderLPK" class="table table-responsive table-bordered align-middle" style=" width:100%">
             <thead class="table-light">
                 <tr>
                     <th></th>
+                    <th>No.</th>
                     <th>PO Number</th>
                     <th>Nama Produk</th>
                     <th>Kode Produk</th>
@@ -274,7 +274,6 @@
                     <th>Etd</th>
                     <th>Eta</th>
                     <th>Tgl Proses</th>
-                    <th>No.</th>
                     <th>Update By</th>
                     <th>Update On</th>
                 </tr>
@@ -291,6 +290,7 @@
                                 <i class="ri-edit-box-line text-white"></i>
                             </a>
                         </td>
+                        <td>{{ $no++ }}</td>
                         <td>{{ $item->po_no }}</td>
                         <td class="text-start">{{ $item->produk_name }}</td>
                         <td>{{ $item->product_code }}</td>
@@ -301,18 +301,17 @@
                         <td>{{ $item->etddate }}</td>
                         <td>{{ $item->etadate }}</td>
                         <td>{{ $item->processdate }}</td>
-                        <td>{{ $no++ }}</td>
                         <td>{{ $item->updated_by }}</td>
                         <td>{{ $item->updated_on }}</td>
                     </tr>
                 @empty
-                    <tr>
+                    {{-- <tr>
                         <td colspan="10" class="text-center">
                             <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
                                 colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
                             <h5 class="mt-2">Sorry! No Result Found</h5>
                         </td>
-                    </tr>
+                    </tr> --}}
                 @endforelse
             </tbody>
         </table>
@@ -322,26 +321,49 @@
 </div>
 
 @script
-@endscript
-
-@push('scripts')
     <script>
         // datatable
-        // const table = $('#tableOrderLPK').DataTable({
-        //     "pageLength": 10,
-        //     "searching": true,
-        //     "responsive": true,
-        //     "order": [
-        //         [1, "asc"]
-        //     ],
-        // });
+        // inisialisasi DataTable
+        $wire.on('initDataTable', () => {
+            initDataTable();
+        });
 
-        // // Tambahkan event listener ke setiap checkbox
-        // document.querySelectorAll('.toggle-column').forEach(function(checkbox) {
-        //     checkbox.addEventListener('change', function() {
-        //         let column = table.column($(this).attr('data-column'));
-        //         column.visible(!column.visible());
-        //     });
-        // });
+        // Fungsi untuk menginisialisasi ulang DataTable
+        function initDataTable() {
+            // Hapus DataTable jika sudah ada
+            if ($.fn.dataTable.isDataTable('#tableOrderLPK')) {
+                let table = $('#tableOrderLPK').DataTable();
+                table.clear(); // Bersihkan data tabel
+                table.destroy(); // Hancurkan DataTable
+                // Hindari penggunaan $('#tableOrderLPK').empty(); di sini
+            }
+
+            setTimeout(() => {
+                // Inisialisasi ulang DataTable
+                let table = $('#tableOrderLPK').DataTable({
+                    "pageLength": 10,
+                    "searching": true,
+                    "responsive": true,
+                    "order": [
+                        [1, "asc"]
+                    ],
+                    "language": {
+                        "emptyTable": `
+                            <div class="text-center">
+                                <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                                    colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
+                                <h5 class="mt-2">Sorry! No Result Found</h5>
+                            </div>
+                        `
+                    }
+                });
+
+                // Inisialisasi ulang event listener checkbox
+                $('.toggle-column').off('change').on('change', function() {
+                    let column = table.column($(this).attr('data-column'));
+                    column.visible(!column.visible());
+                });
+            }, 500);
+        }
     </script>
-@endpush
+@endscript
