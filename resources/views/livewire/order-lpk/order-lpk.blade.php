@@ -119,7 +119,7 @@
                     <i class="ri-add-line"> </i> Add
                 </button>
             </div>
-            <div class="col-12 col-lg-6 d-none d-sm-block">
+            <div class="col-12 col-lg-6 d-none d-sm-block text-end">
                 <input type="file" id="fileInput" wire:model="file" style="display: none;">
                 <button class="btn btn-success w-lg p-1" type="button"
                     onclick="document.getElementById('fileInput').click()">
@@ -173,6 +173,7 @@
     </div>
 
     <div class="table-responsive table-card  mt-3 mb-1">
+        {{-- toggle column table --}}
         <div class="col text-end dropdown">
             <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
                 class="btn btn-soft-primary btn-icon fs-14 mt-2">
