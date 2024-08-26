@@ -113,10 +113,15 @@ class KenpinInfureController extends Component
             $data = $data->where('tdka.status_kenpin', $this->status['value']);
         }
 
-        $data = $data->paginate(8);
+        $data = $data->get();
 
         return view('livewire.kenpin.kenpin-infure', [
             'data' => $data
         ])->extends('layouts.master');
+    }
+
+    public function rendered()
+    {
+        $this->dispatch('initDataTable');
     }
 }
