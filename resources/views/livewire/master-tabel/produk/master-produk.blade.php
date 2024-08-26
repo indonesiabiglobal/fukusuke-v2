@@ -48,8 +48,11 @@
                 </div>
                 {{-- end modal delete product --}}
             </div>
-            <form wire:submit.prevent="search" class="row">
-                <div class="col-12 col-lg-7">
+            <div class="row justify-content-between">
+
+                {{-- <form wire:submit.prevent="search" class="row justify-content-between"> --}}
+                {{-- filter search --}}
+                {{-- <div class="col-12 col-lg-7">
                     <div class="row">
                         <div class="col-12 col-lg-3">
                             <label class="form-label text-muted fw-bold">Search</label>
@@ -61,8 +64,9 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-12 col-lg-5">
+                </div> --}}
+                {{-- filter tipe produk --}}
+                <div class="col-12 col-lg-6">
                     <div class="row">
                         <div class="col-12 col-lg-2">
                             <label for="productType" class="form-label text-muted fw-bold">Tipe Produk</label>
@@ -73,7 +77,9 @@
                                     name="productType" data-choices data-choices-sorting-false data-choices-removeItem>
                                     <option value="">- All -</option>
                                     @foreach (\App\Models\MsProductType::select('id', 'name', 'code')->get() as $item)
-                                        <option value="{{ $item->id }}" data-custom-properties='{"code": "{{ $item->code }}"}'>{{ $item->name }} , {{ $item->code }}
+                                        <option value="{{ $item->id }}"
+                                            data-custom-properties='{"code": "{{ $item->code }}"}'>{{ $item->name }}
+                                            , {{ $item->code }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -81,7 +87,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-12 col-lg-6">
+                <div class="col-12 col-lg-6 text-end">
                     <button wire:click="search" type="submit" class="btn btn-primary btn-load w-lg p-1">
                         <span wire:loading.remove wire:target="search">
                             <i class="ri-search-line"></i> Filter
@@ -104,7 +110,8 @@
                     </button>
 
                 </div>
-            </form>
+            </div>
+            {{-- </form> --}}
             {{-- <div class="col-12 col-lg-6 text-end">
                 <button class="btn btn-primary w-lg p-1" wire:click="download" type="button">
                     <span wire:loading.remove wire:target="download">
@@ -139,22 +146,91 @@
             </div> --}}
         </div>
     </div>
-    {{-- show paginate --}}
-    <div class="d-flex justify-content-between mt-3">
-        <div class="d-flex align-items-center">
-            <span class="me-2">Show</span>
-            <select wire:model.live="paginate" class="form-select form-select-sm me-2" style="width: auto;">
-                <option value="10">10</option>
-                <option value="25">25</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-                <option value="all">All</option>
-            </select>
-            <span>Entries</span>
-        </div>
-    </div>
     <div class="table-responsive table-card mt-3 mb-1">
-        <table class="table align-middle">
+        {{-- toggle column table --}}
+        <div class="col-12">
+            <div class="col text-end dropdown">
+                <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                    class="btn btn-soft-primary btn-icon fs-14 mt-2">
+                    <i class="ri-grid-fill"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                        <label style="cursor: pointer;">
+                            <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="1"
+                                checked> Nama Produk
+                        </label>
+                    </li>
+                    <li>
+                        <label style="cursor: pointer;">
+                            <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="2"
+                                checked> Nomor Order
+                        </label>
+                    </li>
+                    <li>
+                        <label style="cursor: pointer;">
+                            <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="3"
+                                checked> Kode Tipe
+                        </label>
+                    </li>
+                    <li>
+                        <label style="cursor: pointer;">
+                            <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="4"
+                                checked> Jenis Tipe
+                        </label>
+                    </li>
+                    <li>
+                        <label style="cursor: pointer;">
+                            <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="5"
+                                checked> Dimensi (T*L*P)
+                        </label>
+                    </li>
+                    <li>
+                        <label style="cursor: pointer;">
+                            <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="6"
+                                checked> Berat Satuan
+                        </label>
+                    </li>
+                    <li>
+                        <label style="cursor: pointer;">
+                            <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="7"
+                                checked> Katanuki
+                        </label>
+                    </li>
+                    <li>
+                        <label style="cursor: pointer;">
+                            <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="8"
+                                checked> Warna Font
+                        </label>
+                    </li>
+                    <li>
+                        <label style="cursor: pointer;">
+                            <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="9"
+                                checked> Warna Back
+                        </label>
+                    </li>
+                    <li>
+                        <label style="cursor: pointer;">
+                            <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="10"
+                                checked> Status
+                        </label>
+                    </li>
+                    <li>
+                        <label style="cursor: pointer;">
+                            <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="11"
+                                checked> Updated By
+                        </label>
+                    </li>
+                    <li>
+                        <label style="cursor: pointer;">
+                            <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="12"
+                                checked> Updated
+                        </label>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <table class="table align-middle" id="productTable">
             <thead class="table-light">
                 <tr>
                     <th style="width: 100px">Action</th>
@@ -217,7 +293,7 @@
                 @endforelse
             </tbody>
         </table>
-        {{ $data->links() }}
+        {{-- {{ $data->links() }} --}}
     </div>
     {{-- <livewire:tdorder/> --}}
 </div>
@@ -233,12 +309,41 @@
             $('#modal-delete').modal('hide');
         });
 
-        $(document).ready(function() {
-            $('#product_group_id').select2();
-            // $('#product_group_id').on('change', function(e) {
-            //     var data = $('#product_group_id').select2("val");
-            //     @this.set('selected', data);
-            // });
+        // inisialisasi DataTable
+        $wire.on('initDataTable', () => {
+            destroyDataTable();
+            initDataTable();
         });
+
+        // Fungsi untuk menginisialisasi ulang DataTable
+        function initDataTable() {
+            setTimeout(() => {
+                // Inisialisasi ulang DataTable
+                let table = $('#productTable').DataTable({
+                    "pageLength": 10,
+                    "searching": true,
+                    "responsive": true,
+                    "order": [
+                        [1, "asc"]
+                    ],
+                });
+
+                // Inisialisasi ulang event listener checkbox
+                $('.toggle-column').off('change').on('change', function() {
+                    let column = table.column($(this).attr('data-column'));
+                    column.visible(!column.visible());
+                });
+            }, 500);
+        }
+
+        function destroyDataTable() {
+            // Hapus DataTable jika sudah ada
+            if ($.fn.dataTable.isDataTable('#productTable')) {
+                let table = $('#productTable').DataTable();
+                table.clear(); // Bersihkan data tabel
+                table.destroy(); // Hancurkan DataTable
+                // Hindari penggunaan $('#productTable').empty(); di sini
+            }
+        }
     </script>
 @endscript

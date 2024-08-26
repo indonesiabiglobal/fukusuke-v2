@@ -25,7 +25,7 @@ class MasterProduk extends Component
     public function search()
     {
         $this->resetPage();
-        $this->render();
+        // $this->render();
     }
 
     public function delete($id)
@@ -75,27 +75,18 @@ class MasterProduk extends Component
                 'msp.updated_by',
                 'msp.updated_on'
             )
-            ->when(isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined", function ($query) {
-                $query->where(function ($query) {
-                    $query
-                        ->where('msp.name', 'ilike', "%" . $this->searchTerm . "%")
-                        ->orWhere('msp.product_type_code', 'ilike', "%" . $this->searchTerm . "%")
-                        ->orWhere('msp.code', 'ilike', "%" . $this->searchTerm . "%");
-                });
-            })
             ->when(isset($this->product_type_id) && $this->product_type_id != "" && $this->product_type_id != "undefined", function ($query) {
                 $query->where('msp.product_type_id', $this->product_type_id);
             })
-            // paginate
-            ->when($this->paginate != 'all', function ($query) {
-                return $query->paginate($this->paginate);
-            }, function ($query) {
-                $count = $query->count();
-                return $query->paginate($count);
-            });
+            ->get();
 
         return view('livewire.master-tabel.produk.master-produk', [
             'data' => $data
         ])->extends('layouts.master');
+    }
+
+    public function rendered()
+    {
+        $this->dispatch('initDataTable');
     }
 }
