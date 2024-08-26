@@ -38,16 +38,10 @@ class SecurityManagementController extends Component
                 'status as role',
                 DB::raw("'' AS job"),
                 DB::raw("CASE WHEN status = 0 THEN 'Inactive' ELSE 'Active' END AS status")
-            );
-            if (isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined") {
-                $data = $data->where(function($query) {
-                    $query->where('username', 'ilike', "%{$this->searchTerm}%");
-                        //   ->orWhere('mbu.name', 'ilike', "%{$this->searchTerm}%")
-                        //   ->orWhere('tod.po_no', 'ilike', "%{$this->searchTerm}%");
-                });
-            }
+            )
+            ->join('useraccess_role AS uar', 'users.id', '=', 'uar.userid');
             if (isset($this->idRole) && $this->idRole['value'] != "" && $this->idRole != "undefined") {
-                $data = $data->where('status', $this->idRole);
+                $data = $data->where('uar.roleid', $this->idRole);
             }
             // if (isset($this->status) && $this->status['value'] != "" && $this->status != "undefined") {
             //     if($this->status['value'] == 0){
@@ -56,10 +50,15 @@ class SecurityManagementController extends Component
             //         $data = $data->where('status', 1);
             //     }
             // }
-            $data = $data->paginate(8);
+            $data = $data->get();
 
         return view('livewire.administration.security-management', [
             'data' => $data
         ])->extends('layouts.master');
+    }
+
+    public function rendered()
+    {
+        $this->dispatch('initDataTable');
     }
 }

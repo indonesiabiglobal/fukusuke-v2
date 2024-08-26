@@ -1,6 +1,6 @@
 {{-- @include('layouts.customizer') --}}
 <div class="row">
-    <div class="col-12 col-lg-4">
+    {{-- <div class="col-12 col-lg-4">
         <div class="row">
             <div class="col-12 col-lg-3">
                 <label class="form-label text-muted fw-bold">Search</label>
@@ -11,7 +11,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
     <div class="col-12 col-lg-8">
         <div class="row">
             <div class="col-12 col-lg-1">
@@ -22,7 +22,7 @@
                     <select class="form-control" wire:model.defer="idRole" data-choices data-choices-sorting-false data-choices-removeItem>
                         <option value="">- All -</option>
                         @foreach ($userrole as $item)
-                            <option value="{{ $item->id }}">{{ $item->rolename }}</option>
+                            <option value="{{ $item->id }}">{{ $item->description }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -38,7 +38,7 @@
                         <option value="0">Inactive</option>
                     </select>
                 </div>
-            </div>            
+            </div>
         </div>
     </div>
     <div class="col-lg-12 mt-2">
@@ -59,27 +59,66 @@
                         </span>
                     </div>
                 </button>
-                
+
                 <button
-                    type="button" 
+                    type="button"
                     class="btn btn-success w-lg p-1"
                     onclick="window.location.href='/add-user'"
                     >
                     <i class="ri-add-line"> </i> Add
                 </button>
-            </div>            
+            </div>
         </div>
     </div>
-    <div class="table-responsive table-card mt-3 mb-1">
-        <table class="table align-middle table-nowrap" id="customerTable" style="width:100%">
+    <div class="table-responsive table-card mt-3 mb-2">
+        {{-- toggle column table --}}
+        <div class="col text-end dropdown">
+            <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                class="btn btn-soft-primary btn-icon fs-14 mt-2">
+                <i class="ri-grid-fill"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                    <label style="cursor: pointer;">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="1"
+                            checked> User Name
+                    </label>
+                </li>
+                <li>
+                    <label style="cursor: pointer;">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="2"
+                            checked> Email
+                    </label>
+                </li>
+                <li>
+                    <label style="cursor: pointer;">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="3"
+                            checked> Employee Name
+                    </label>
+                </li>
+                <li>
+                    <label style="cursor: pointer;">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="4"
+                            checked> Job Title
+                    </label>
+                </li>
+                <li>
+                    <label style="cursor: pointer;">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="5"
+                            checked> Status
+                    </label>
+                </li>
+            </ul>
+        </div>
+        <table class="table align-middle table-nowrap" id="securityTable" style="width:100%">
             <thead class="table-light">
                 <tr>
-                    <th class="sort">Action</th>
-                    <th class="sort">User Name</th>
-                    <th class="sort">Email</th>
-                    <th class="sort">Employee Name</th>
-                    <th class="sort">Job Title</th>
-                    <th class="sort">Status</th>
+                    <th>Action</th>
+                    <th>User Name</th>
+                    <th>Email</th>
+                    <th>Employee Name</th>
+                    <th>Job Title</th>
+                    <th>Status</th>
                 </tr>
             </thead>
             <tbody class="list form-check-all">
@@ -128,7 +167,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                         </td>
                         <td>{{ $item->username }}</td>
                         <td>{{ $item->email }}</td>
@@ -137,18 +176,73 @@
                         <td>{{ $item->status }}</td>
                     </tr>
                 @empty
-                    <tr>
+                    {{-- <tr>
                         <td colspan="10" class="text-center">
                             <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
                             <h5 class="mt-2">Sorry! No Result Found</h5>
                             <p class="text-muted mb-0">We've searched more than 150+ Orders We did not find any orders for you search.</p>
                         </td>
-                    </tr>
+                    </tr> --}}
                 @endforelse
             </tbody>
         </table>
-        {{ $data->links() }}
+        {{-- {{ $data->links() }} --}}
     </div>
-    
+
     {{-- <livewire:tdorder/> --}}
 </div>
+
+@script
+    <script>
+        // datatable
+        // inisialisasi DataTable
+        $wire.on('initDataTable', () => {
+            initDataTable();
+        });
+
+        // Fungsi untuk menginisialisasi ulang DataTable
+        function initDataTable() {
+            // Hapus DataTable jika sudah ada
+            if ($.fn.dataTable.isDataTable('#securityTable')) {
+                let table = $('#securityTable').DataTable();
+                table.clear(); // Bersihkan data tabel
+                table.destroy(); // Hancurkan DataTable
+                // Hindari penggunaan $('#securityTable').empty(); di sini
+            }
+
+            setTimeout(() => {
+                // Inisialisasi ulang DataTable
+                let table = $('#securityTable').DataTable({
+                    "pageLength": 10,
+                    "searching": true,
+                    "responsive": true,
+                    "order": [
+                        [1, "asc"]
+                    ],
+                    "scrollX": true,
+                    "language": {
+                        "emptyTable": `
+                            <div class="text-center">
+                                <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                                    colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
+                                <h5 class="mt-2">Sorry! No Result Found</h5>
+                            </div>
+                        `
+                    }
+                });
+
+                // default column visibility
+                $('.toggle-column').each(function() {
+                    let column = table.column($(this).attr('data-column'));
+                    column.visible($(this).is(':checked'));
+                });
+
+                // Inisialisasi ulang event listener checkbox
+                $('.toggle-column').off('change').on('change', function() {
+                    let column = table.column($(this).attr('data-column'));
+                    column.visible(!column.visible());
+                });
+            }, 500);
+        }
+    </script>
+@endscript
