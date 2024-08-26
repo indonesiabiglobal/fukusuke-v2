@@ -146,7 +146,7 @@
         </button>
     </div>
 
-    <div class="table-responsive table-card mt-3 mb-1">
+    <div class="table-responsive table-card  mt-2  mb-2">
         <div class="col text-end dropdown">
             <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
                 class="btn btn-soft-primary btn-icon fs-14 mt-2">

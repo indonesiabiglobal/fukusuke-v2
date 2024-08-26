@@ -172,7 +172,7 @@
         </div>
     </div>
 
-    <div class="table-responsive table-card  mt-3 mb-1">
+    <div class="table-responsive table-card  mt-2  mb-2">
         {{-- toggle column table --}}
         <div class="col text-end dropdown">
             <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
