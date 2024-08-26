@@ -198,10 +198,15 @@ class NippoInfureController extends Component
                     ->orWhere('tda.nomor_han', 'ilike', "%{$this->searchTerm}%");
             });
         }
-        $data = $data->paginate(8);
+        $data = $data->get();
 
         return view('livewire.nippo-infure.nippo-infure', [
             'data' => $data
         ])->extends('layouts.master');
+    }
+
+    public function rendered()
+    {
+        $this->dispatch('initDataTable');
     }
 }

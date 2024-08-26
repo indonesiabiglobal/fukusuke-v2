@@ -128,7 +128,7 @@
             </div>
         </div>
     </div>
-    <div class="col-lg-2 mt-2">
+    <div class="col-lg-2 mt-2 text-end">
         <button class="btn btn-info w-lg p-1" wire:click="print" type="button">
             <span wire:loading.remove wire:target="print">
                 <i class="ri-printer-line"> </i> Print
@@ -161,14 +161,14 @@
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="2"
-                            checked> Tanggal LPK
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="2">
+                        Tanggal LPK
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="3"
-                            checked> Panjang LPK
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="3">
+                        Panjang LPK
                     </label>
                 </li>
                 <li>
@@ -191,26 +191,26 @@
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="7"
-                            checked> Berat Standard
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="7">
+                        Berat Standard
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="8"
-                            checked> Rasio %
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="8">
+                        Rasio %
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="9"
-                            checked> Selisih
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="9">
+                        Selisih
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="10"
-                            checked> Nama Produk
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="10">
+                        Nama Produk
                     </label>
                 </li>
                 <li>
@@ -221,8 +221,8 @@
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="12"
-                            checked> Mesin
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="12" checked>
+                        Mesin
                     </label>
                 </li>
                 <li>
@@ -257,20 +257,20 @@
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="18"
-                            checked> Loss
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="18">
+                        Loss
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="19"
-                            checked> Update By
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="19">
+                        Update By
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="20"
-                            checked> Updated
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="20">
+                        Updated
                     </label>
                 </li>
             </ul>
@@ -354,25 +354,56 @@
             var printUrl = '{{ route('report-nippo-infure') }}?tanggal=' + datas;
             window.open(printUrl, '_blank');
         });
-    </script>
-@endscript
 
-@push('scripts')
-    <script>
         // datatable
-        const table = $('#tableInfure').DataTable({
-            "pageLength": 10,
-            "searching": true,
-            "responsive": true,
-            "order": false,
+        // inisialisasi DataTable
+        $wire.on('initDataTable', () => {
+            initDataTable();
         });
 
-        // // Tambahkan event listener ke setiap checkbox
-        // document.querySelectorAll('.toggle-column').forEach(function(checkbox) {
-        //     checkbox.addEventListener('change', function() {
-        //         let column = table.column($(this).attr('data-column'));
-        //         column.visible(!column.visible());
-        //     });
-        // });
+        // Fungsi untuk menginisialisasi ulang DataTable
+        function initDataTable() {
+            // Hapus DataTable jika sudah ada
+            if ($.fn.dataTable.isDataTable('#tableInfure')) {
+                let table = $('#tableInfure').DataTable();
+                table.clear(); // Bersihkan data tabel
+                table.destroy(); // Hancurkan DataTable
+                // Hindari penggunaan $('#tableInfure').empty(); di sini
+            }
+
+            setTimeout(() => {
+                console.log('initDataTable');
+
+                // Inisialisasi ulang DataTable
+                let table = $('#tableInfure').DataTable({
+                    "pageLength": 10,
+                    "searching": true,
+                    "responsive": true,
+                    "order": [
+                        [1, "asc"]
+                    ],
+                    "language": {
+                        "emptyTable": `
+                            <div class="text-center">
+                                <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                                    colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
+                                <h5 class="mt-2">Sorry! No Result Found</h5>
+                            </div>
+                        `
+                    },
+                    "columnDefs": [{
+                            "targets": [2, 3, 7, 8,9,10,18,19,20],
+                            "visible": false
+                        } // Menyembunyikan kolom tertentu
+                    ],
+                });
+
+                // Inisialisasi ulang event listener checkbox
+                $('.toggle-column').off('change').on('change', function() {
+                    let column = table.column($(this).attr('data-column'));
+                    column.visible(!column.visible());
+                });
+            }, 500);
+        }
     </script>
-@endpush
+@endscript
