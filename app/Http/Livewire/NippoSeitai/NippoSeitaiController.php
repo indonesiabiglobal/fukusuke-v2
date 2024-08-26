@@ -680,7 +680,7 @@ class NippoSeitaiController extends Component
                     $data->where('tdpg.status_warehouse', 1);
                 }
             }
-            $data = $data->paginate(8);
+            // $data = $data->paginate(8);
         } else {
             $data = DB::table('tdproduct_goods AS tdpg')
                 ->select([
@@ -764,10 +764,17 @@ class NippoSeitaiController extends Component
                 }
             }
 
-            $data = $data->paginate(8);
+            // $data = $data->paginate(8);
         }
+        $data = $data->get();
         return view('livewire.nippo-seitai.nippo-seitai', [
             'data' => $data,
         ])->extends('layouts.master');
+    }
+
+
+    public function rendered()
+    {
+        $this->dispatch('initDataTable');
     }
 }
