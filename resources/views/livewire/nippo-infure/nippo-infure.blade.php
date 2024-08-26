@@ -380,6 +380,7 @@
                     "pageLength": 10,
                     "searching": true,
                     "responsive": true,
+                    "scrollX": true,
                     "order": [
                         [1, "asc"]
                     ],
@@ -392,11 +393,6 @@
                             </div>
                         `
                     },
-                    "columnDefs": [{
-                            "targets": [2, 3, 7, 8, 9, 10, 18, 19, 20],
-                            "visible": false
-                        } // Menyembunyikan kolom tertentu
-                    ],
                 });
 
                 // default column visibility

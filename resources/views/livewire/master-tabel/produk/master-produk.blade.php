@@ -330,9 +330,16 @@
                     "pageLength": 10,
                     "searching": true,
                     "responsive": true,
+                    "scrollX": true,
                     "order": [
                         [1, "asc"]
                     ],
+                });
+
+                // default column visibility
+                $('.toggle-column').each(function() {
+                    let column = table.column($(this).attr('data-column'));
+                    column.visible($(this).is(':checked'));
                 });
 
                 // Inisialisasi ulang event listener checkbox

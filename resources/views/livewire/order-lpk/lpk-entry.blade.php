@@ -440,6 +440,7 @@
                     "pageLength": 10,
                     "searching": true,
                     "responsive": true,
+                    "scrollX": true,
                     "order": [
                         [2, "asc"]
                     ],

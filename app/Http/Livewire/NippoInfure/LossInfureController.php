@@ -202,11 +202,16 @@ class LossInfureController extends Component
                     ->orWhere('tdpa.nomor_han', 'ilike', "%{$this->searchTerm}%");
             });
         }
-        $data = $data->paginate(8);
-        // $data = $data->get();
+        // $data = $data->paginate(8);
+        $data = $data->get();
 
         return view('livewire.nippo-infure.loss-infure', [
             'data' => $data
         ])->extends('layouts.master');
+    }
+
+    public function rendered()
+    {
+        $this->dispatch('initDataTable');
     }
 }

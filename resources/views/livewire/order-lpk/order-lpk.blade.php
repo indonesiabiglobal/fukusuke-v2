@@ -348,6 +348,7 @@
                     "order": [
                         [1, "asc"]
                     ],
+                    "scrollX": true,
                     "language": {
                         "emptyTable": `
                             <div class="text-center">
