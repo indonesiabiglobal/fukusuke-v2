@@ -169,14 +169,13 @@
                                             </div>
                                         </div>
                                         <div class="col-xxl-12">
-                                            <div wire:ignore>
+                                            <div>
                                                 <label for="name" class="form-label">Klasifikasi</label>
                                                 <select class="form-control @error('box_class') is-invalid @enderror"
-                                                    wire:model.defer="box_class" data-choices
-                                                    data-choices-sorting-false data-choices-removeItem>
-                                                    <option value="">- All -</option>
-                                                    <option value="1">Khusus</option>
-                                                    <option value="2">Standar</option>
+                                                    wire:model.defer="box_class">
+                                                    {{-- <option value="">- All -</option> --}}
+                                                    <option value="1" {{ ($box_class ?? '') == 1 ? 'selected' : '' }}>Khusus</option>
+                                                    <option value="2" {{ ($box_class ?? '') == 2 ? 'selected' : '' }}>Standar</option>
                                                 </select>
                                                 @error('box_class')
                                                     <span class="invalid-feedback">{{ $message }}</span>
@@ -481,9 +480,9 @@
         });
 
         // Inisialisasi saat Livewire di-initialized
-        document.addEventListener('livewire:initialized', function() {
-            initDataTable();
-        });
+        // document.addEventListener('livewire:initialized', function() {
+        //     initDataTable();
+        // });
 
         // Fungsi untuk menginisialisasi ulang DataTable
         function initDataTable() {
