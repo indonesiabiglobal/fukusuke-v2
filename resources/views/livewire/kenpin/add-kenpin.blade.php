@@ -248,34 +248,34 @@
                             @forelse ($details as $item)
                                 <tr>
                                     <td>
-                                        <button type="button" class="btn btn-danger p-1" wire:click="deleteInfure({{$item->id}})">
+                                        <button type="button" class="btn btn-danger p-1" wire:click="deleteInfure({{$item['id']}})">
                                             <i class="ri-delete-bin-4-fill"></i>
                                         </button>
                                     </td>
                                     <td>                                
-                                        {{ $item->gentan_no }}
+                                        {{ $item['gentan_no'] }}
                                     </td>
                                     <td>
-                                        {{ $item->nomesin }}
+                                        {{ $item['machineno'] }}
                                     </td>
                                     <td>
-                                        {{ $item->work_shift }}
+                                        {{-- {{ $item['work_shift'] }} --}}
                                     </td>
 									<td>                                
-                                        {{ $item->namapetugas }}
+                                        {{ $item['namapetugas'] }}
                                     </td>
                                     <td>
-                                        {{ $item->nomor_han }}
+                                        {{-- {{ $item['nomor_han'] }} --}}
                                     </td>
                                     <td>
-                                        {{ $item->tglproduksi }}
+                                        {{-- {{ $item['tglproduksi'] }} --}}
                                     </td>
 									<td>
-										{{ $item->berat_loss }}
+										{{ $item['berat_loss'] }}
 									</td>
                                 </tr>
                                 @php
-                                    $total += $item->berat_loss;
+                                    $total += $item['berat_loss'];
                                 @endphp
                             @empty
                                 <tr>

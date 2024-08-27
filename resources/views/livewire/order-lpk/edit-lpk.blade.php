@@ -84,11 +84,8 @@
                 <div class="form-group mt-1">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-3 fw-bold text-muted">PO Number</label>
-                        <input type="text" class="form-control @error('po_no') is-invalid @enderror"
+                        <input type="text" class="form-control bg-light" readonly="readonly"
                             wire:model.live.debounce.300ms="po_no" placeholder="PO NUMBER" />
-                        @error('po_no')
-                            <span class="invalid-feedback">{{ $message }}</span>
-                        @enderror
                     </div>
                 </div>
                 <div class="form-group mt-1">
@@ -107,7 +104,7 @@
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-3 fw-bold text-muted">Nomor Mesin</label>
                         <input type="text" class="form-control @error('machineno') is-invalid @enderror"
-                            wire:model.live.debounce.300ms="machineno" />
+                            wire:model.change="machineno" />
                         @error('machineno')
                             <span class="invalid-feedback">{{ $message }}</span>
                         @enderror
