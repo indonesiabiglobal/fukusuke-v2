@@ -283,13 +283,13 @@ class AddLpkController extends Component
             $qty_gulung = floor((int)str_replace(',', '', $this->total_assembly_line) / (int)str_replace(',', '', $this->qty_gentan) / 10) * 10;
             $this->qty_gulung = $qty_gulung;
 
-            $this->panjang_lpk = (int)str_replace(',', '', $this->qty_gentan) * (int)str_replace(',', '', (int)$this->qty_gulung);
+            $this->panjang_lpk = (int)str_replace(',', '', $this->qty_gentan) * (int)str_replace(',', '', $this->qty_gulung);
 
             $this->selisihkurang = (int)str_replace(',', '', $this->total_assembly_line) - (int)str_replace(',', '', $this->panjang_lpk);
         } else if (isset($this->qty_gulung) && $this->qty_gulung != $this->qty_gulung_old) {
             $this->qty_gulung_old = $this->qty_gulung;
 
-            $this->panjang_lpk = (int)str_replace(',', '', $this->qty_gentan) * (int)str_replace(',', '', (int)$this->qty_gulung);
+            $this->panjang_lpk = (int)str_replace(',', '', $this->qty_gentan) * (int)str_replace(',', '', $this->qty_gulung);
             $this->selisihkurang = (int)str_replace(',', '', $this->total_assembly_line) - (int)str_replace(',', '', $this->panjang_lpk);
         } else if (isset($this->qty_lpk) && $this->qty_lpk != '') {
             $this->total_assembly_line = (int)str_replace(',', '', $this->qty_lpk) * ((int)str_replace(',', '', $this->productlength) / 1000);
@@ -307,7 +307,7 @@ class AddLpkController extends Component
             $this->qty_gulung = $qty_gulung;
             $this->qty_gulung_old = $this->qty_gulung;
 
-            $this->panjang_lpk = (int)str_replace(',', '', $this->qty_gentan) * (int)str_replace(',', '', (int)$this->qty_gulung);
+            $this->panjang_lpk = (int)str_replace(',', '', $this->qty_gentan) * (int)str_replace(',', '', $this->qty_gulung);
 
             $this->selisihkurang = (int)str_replace(',', '', $this->total_assembly_line) - (int)str_replace(',', '', $this->panjang_lpk);
         }
