@@ -106,7 +106,9 @@ crossorigin="anonymous">
 
     $data = collect(
         DB::select("
-                SELECT tdol.lpk_no,tdo.po_no,tdo.order_date, tdo.stufingdate,tdo.order_qty/mp.case_box_count as order_qty,tdol.qty_lpk,mwl.name as warnalpk,
+                SELECT tdol.lpk_no,tdo.po_no,tdo.order_date, tdo.stufingdate,tdo.order_qty/mp.case_box_count as order_qty,tdol.qty_lpk,
+                ((tdol.qty_lpk *mp.unit_weight)/mp.case_box_count)/1000 as order_berat,mwl.name as warnalpk,
+                (mp.ketebalan * mp.diameterlipat * tdol.qty_gulung * 2 * mpt.berat_jenis ) / 1000 AS berat_standard,
                 tdol.panjang_lpk,mm.machineno as nomesin,mp.codebarcode,tdol.qty_gentan as infure_qtygentan,tdol.qty_gulung as infure_pjgulunglpk,
                 mp.id, mp.name as product_name,mp.code_alias,mp.code,
                 mpt.code as tipe , mpt.name as tipename,mp.ketebalan as t, mp.diameterlipat as l, mp.productlength as p,
@@ -152,7 +154,7 @@ crossorigin="anonymous">
                 left join mspackaginginner as mpi on mp.pack_inner_id=mpi.id
                 left join mspackaginglayer as mpl on mp.pack_layer_id=mpl.id
                 left join msmachine as mm on mm.id=tdol.machine_id
-                left join mswarnalpk as mwl on mwl.id=tdol.warnalpkid
+                left join mswarnalpk as mwl on mwl.id=mp.warnalpkid
                 left join mslakbaninfure as mli on mli.id=mp.lakbaninfureid
                 left join mslakbanseitai as mls on mls.id=mp.lakbanseitaiid
                 where tdol.id='$lpk_id'
@@ -267,7 +269,7 @@ crossorigin="anonymous">
                                     <br>
                                     <span>
                                         <font style="font-size: 16px;font-weight: bold;">
-                                            {{ $data->qty_lpk / $data->order_qty }}</font> kg
+                                            {{ $data->order_berat }}</font> kg
                                     </span>
                                 </td>
                             </tr>
@@ -368,7 +370,7 @@ crossorigin="anonymous">
                                     <span style="font-size: 13.5px">Berat Standar</span>
                                     <br>
                                     <span>
-                                        <font style="font-size: 16px;font-weight: bold;">{{ $data->beratsatuan }}
+                                        <font style="font-size: 16px;font-weight: bold;">{{ $data->berat_standard }}
                                         </font> Kg
                                     </span>
                                 </td>
