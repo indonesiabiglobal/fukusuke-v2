@@ -69,6 +69,7 @@ class MenuLossKatagoriController extends Component
 
     public function edit($id)
     {
+        dd($id);
         $data = MsLossCategory::where('id', $id)->first();
         $this->idUpdate = $id;
         $this->code = $data->code;
@@ -138,19 +139,15 @@ class MenuLossKatagoriController extends Component
 
     public function render()
     {
-        $result = MsLossCategory::where('status', 1);
-
-        if (isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined") {
-            $result = $result->where(function ($query) {
-                $query->where('code', 'ilike', "%{$this->searchTerm}%")
-                    ->orWhere('name', 'ilike', "%{$this->searchTerm}%");
-            });
-        }
-
-        $result = $result->get();
+        $result = MsLossCategory::where('status', 1)->get();
 
         return view('livewire.master-tabel.loss.menu-loss-katagori', [
             'result' => $result
         ])->extends('layouts.master');
+    }
+
+    public function rendered()
+    {
+        $this->dispatch('initDataTable');
     }
 }
