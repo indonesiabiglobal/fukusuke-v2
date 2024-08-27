@@ -58,6 +58,9 @@ crossorigin="anonymous">
                 display: none;
             }
         }
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
         .image-container {
             position: relative;
             display: inline-block;
