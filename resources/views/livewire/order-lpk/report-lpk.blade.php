@@ -127,7 +127,7 @@ crossorigin="anonymous">
                 mp.gazette_dimension_a as infure_gz_dimensi_a,mp.gazette_dimension_b as infure_gz_dimensi_b,
                 mp.gazette_dimension_c as infure_gz_dimensi_c,mp.gazette_dimension_d as infure_gz_dimensi_d,
                 mk.code ||','||mk.name as hagata_kodenukigata,mp.extracted_dimension_a as hagata_a,
-                mk.filename,
+                mk.filename,mp.kodehagata,
                 mp.extracted_dimension_b as hagata_b,mp.extracted_dimension_c as hagata_c,
                 mp.number_of_color as printing_warnadepan,mp.color_spec_1 as printing_warnadepan1,mp.color_spec_2 as printing_warnadepan2,mp.color_spec_3 as printing_warnadepan3,
                 mp.color_spec_4 as printing_warnadepan4,mp.color_spec_5 as printing_warnadepan5,
@@ -141,7 +141,7 @@ crossorigin="anonymous">
                 mp.case_box_count as seitai_isibox,
                 mpg.code as seitai_kodegaiso ,mpg.name as seitai_namagaiso,mp.case_gaiso_count as seitai_isigaiso,
                 mpi.code as seitai_kodeinner, mpi.name as seitai_namainner,mp.case_inner_count as seitai_isiinner,
-                mpl.code as seitai_kodelayer,mpl.name as seitai_namalayer,mp.hagataseitaiid as namahagata,
+                mpl.code as seitai_kodelayer,mpl.name as seitai_namalayer,
                 mls.code as seitai_kodelakban,mls.name as seitai_namalakban,mp.stampelseitaiid as seitai_stample,'' as jenis,'' as kodeplate,
                 mp.manufacturing_summary as seitai_catatan, tdol.total_assembly_line
                 from tdorderlpk as tdol
@@ -576,8 +576,8 @@ crossorigin="anonymous">
                                 <td style="padding: 3px;border: 1px solid black;">
                                     <span style="font-size: 13.5px">
                                         Kode Hagata <br>
-                                        {{-- <font style="font-size: 14.5px;font-weight: bold;">{{ $data->kodehagata }}
-                                        </font> --}}
+                                        <font style="font-size: 14.5px;font-weight: bold;">{{ $data->kodehagata }}
+                                        </font>
                                     </span>
                                 </td>
                             </tr>
