@@ -10,37 +10,37 @@ crossorigin="anonymous">
     //         window.print();
     //     });
     // });
-    $(function() {
-        var hasPrinted = false;
+    // $(function() {
+    //     var hasPrinted = false;
 
-        window.onbeforeprint = function() {
-            hasPrinted = false;
-        };
+    //     window.onbeforeprint = function() {
+    //         hasPrinted = false;
+    //     };
 
-        window.onafterprint = function() {
-            hasPrinted = true;
-            tryToCloseWindow();
-        };
+    //     window.onafterprint = function() {
+    //         hasPrinted = true;
+    //         tryToCloseWindow();
+    //     };
 
-        function tryToCloseWindow() {
-            if (hasPrinted) {
-                setTimeout(function() {
-                    window.close();
-                    // Jika window.close() tidak berhasil, coba metode alternatif
-                    setTimeout(function() {
-                        if (!window.closed) {
-                            alert("Pencetakan selesai. Silakan tutup jendela ini secara manual.");
-                        }
-                    }, 1000);
-                }, 100);
-            }
-        }
+    //     function tryToCloseWindow() {
+    //         if (hasPrinted) {
+    //             setTimeout(function() {
+    //                 window.close();
+    //                 // Jika window.close() tidak berhasil, coba metode alternatif
+    //                 setTimeout(function() {
+    //                     if (!window.closed) {
+    //                         alert("Pencetakan selesai. Silakan tutup jendela ini secara manual.");
+    //                     }
+    //                 }, 1000);
+    //             }, 100);
+    //         }
+    //     }
 
-        // Memicu pencetakan
-        setTimeout(function() {
-            window.print();
-        }, 1000);
-    });
+    //     // Memicu pencetakan
+    //     setTimeout(function() {
+    //         window.print();
+    //     }, 1000);
+    // });
 </script>
 <head>
     <meta charset="UTF-8">
@@ -726,7 +726,8 @@ crossorigin="anonymous">
         <table width="100%" cellspacing="0" cellpadding="0">
             <tr>
                 <td style="padding: 3px;border: 1px solid black; font-size: 13.5px" width="70%">
-                    <font style="font-weight: bold;font-size: 14.5px;">{{ $data->seitai_catatan }}</font><br>
+                    {{-- <font style="font-weight: bold;font-size: 14.5px;">{{ $data->seitai_catatan }}</font><br> --}}
+                    <textarea name="" id="" cols="90" rows="12"  style="border: none;font-weight: bold;font-size: 14.5px;">{{ $data->seitai_catatan }}</textarea>
                 </td>
                 <td style="padding: 3px;border: 1px solid black;">
                     <span>
