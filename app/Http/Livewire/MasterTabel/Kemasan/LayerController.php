@@ -90,6 +90,7 @@ class LayerController extends Component
         $this->idUpdate = $id;
         $this->code = $data->code;
         $this->name = $data->name;
+        $this->box_class = $data->box_class;
         $this->panjang = $data->panjang;
         $this->lebar = $data->lebar;
         $this->tinggi = $data->tinggi;
@@ -107,7 +108,7 @@ class LayerController extends Component
             $data = MsPackagingLayer::where('id', $this->idUpdate)->first();
             $data->code = $this->code;
             $data->name = $this->name;
-            $data->box_class = $this->box_class['value'];
+            $data->box_class = $this->box_class;
             $data->panjang = $this->panjang;
             $data->lebar = $this->lebar;
             $data->tinggi = $this->tinggi;

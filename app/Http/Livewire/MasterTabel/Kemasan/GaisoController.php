@@ -85,6 +85,7 @@ class GaisoController extends Component
         $this->idUpdate = $id;
         $this->code = $data->code;
         $this->name = $data->name;
+        $this->box_class = $data->box_class;
         $this->panjang = $data->panjang;
         $this->lebar = $data->lebar;
         $this->tinggi = $data->tinggi;
@@ -102,7 +103,7 @@ class GaisoController extends Component
             $data = MsPackagingGaiso::where('id', $this->idUpdate)->first();
             $data->code = $this->code;
             $data->name = $this->name;
-            $data->box_class = $this->box_class['value'];
+            $data->box_class = $this->box_class;
             $data->panjang = $this->panjang;
             $data->lebar = $this->lebar;
             $data->tinggi = $this->tinggi ?? 0;
@@ -158,13 +159,6 @@ class GaisoController extends Component
     public function render()
     {
         $result = MsPackagingGaiso::where('status', 1);
-
-        if (isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined") {
-            $result = $result->where(function ($query) {
-                $query->where('code', 'ilike', "%{$this->searchTerm}%")
-                    ->orWhere('name', 'ilike', "%{$this->searchTerm}%");
-            });
-        }
 
         $result = $result->get();
 
