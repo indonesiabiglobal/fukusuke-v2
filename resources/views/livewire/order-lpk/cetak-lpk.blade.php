@@ -3,8 +3,8 @@
     <div class="col-lg-8">
         <div class="form-group">
             <div class="input-group">
-                <label class="control-label col-12 col-lg-2 fw-bold">Departemen</label>
-                <select class="form-control" placeholder="- all -">
+                <label class="control-label col-12 col-lg-2 fw-bold" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 12px;">Departemen</label>
+                <select class="form-control form-control-sm" placeholder="- all -">
                     <option value="all">- all -</option>
                     <option value="INFURE">INFURE</option>
                     <option value="SEITAI">SEITAI</option>
@@ -13,38 +13,38 @@
         </div>
         <div class="form-group mt-1">
             <div class="input-group">
-                <label class="control-label col-12 col-lg-2 fw-bold">Nomor LPK</label>
-                <input type="text" class="form-control" wire:model.live.debounce.300ms="lpk_no" />
+                <label class="control-label col-12 col-lg-2 fw-bold" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 12px;">Nomor LPK</label>
+                <input type="text" class="form-control form-control-sm" wire:model.change="lpk_no" />
             </div>
         </div>
         <div class="form-group mt-1">
             <div class="input-group">
-                <label class="control-label col-12 col-lg-2 fw-bold">Tanggal LPK</label>
-                <input type="text" wire:model="lpk_date" class="form-control readonly bg-light" readonly="readonly" />
+                <label class="control-label col-12 col-lg-2 fw-bold" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 12px;">Tanggal LPK</label>
+                <input type="text" wire:model="lpk_date" class="form-control form-control-sm readonly bg-light" readonly="readonly" />
             </div>
         </div>
         <div class="form-group mt-1">
             <div class="input-group">
-                <label class="control-label col-12 col-lg-2 fw-bold">Jumlah LPK</label>
-                <input type="text" wire:model="qty_lpk" class="form-control readonly bg-light" readonly="readonly" />
+                <label class="control-label col-12 col-lg-2 fw-bold" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 12px;">Jumlah LPK</label>
+                <input type="text" wire:model="qty_lpk" class="form-control form-control-sm readonly bg-light" readonly="readonly" />
             </div>
         </div>
         <div class="form-group mt-1">
             <div class="input-group">
-                <label class="control-label col-12 col-lg-2 fw-bold">Nomor Order</label>
-                <input type="text" wire:model="code" class="form-control readonly bg-light" readonly="readonly" />
+                <label class="control-label col-12 col-lg-2 fw-bold" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 12px;">Nomor Order</label>
+                <input type="text" wire:model="code" class="form-control form-control-sm readonly bg-light" readonly="readonly" />
             </div>
         </div>
         <div class="form-group mt-1">
             <div class="input-group">
-                <label class="control-label col-12 col-lg-2 fw-bold">Nama Produk</label>
-                <input type="text" wire:model="product_name" class="form-control readonly bg-light" readonly="readonly" />
+                <label class="control-label col-12 col-lg-2 fw-bold" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 12px;">Nama Produk</label>
+                <input type="text" wire:model="product_name" class="form-control form-control-sm readonly bg-light" readonly="readonly" />
             </div>
         </div>
         <div class="form-group mt-1">
             <div class="input-group">
-                <label class="control-label col-12 col-lg-2 fw-bold">Re-Print</label>
-                <input type="text" wire:model="reprint_no" class="form-control readonly bg-light" readonly="readonly" />
+                <label class="control-label col-12 col-lg-2 fw-bold" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 12px;">Re-Print</label>
+                <input type="text" wire:model="reprint_no" class="form-control form-control-sm readonly bg-light" readonly="readonly" />
             </div>
         </div>
         <hr />
