@@ -2,6 +2,8 @@
 
 namespace App\Http\Livewire;
 
+use App\Exports\LpkEntryExport;
+use App\Exports\LpkEntryImport;
 use Livewire\Component;
 use App\Models\TdOrderLpk;
 use App\Models\MsBuyer;
@@ -10,6 +12,8 @@ use App\Models\MsProduct;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Livewire\WithFileUploads;
+use Maatwebsite\Excel\Facades\Excel;
 
 class EditLpkController extends Component
 {
@@ -52,6 +56,9 @@ class EditLpkController extends Component
     public $product;
     public $photoKatanuki;
     public $katanuki_id;
+
+    use WithFileUploads;
+    public $file;
 
     protected $rules = [
         // 'lpk_date' => 'required',
@@ -141,6 +148,38 @@ class EditLpkController extends Component
         $this->remark = $order->remark;
         // $this->warnalpkid['value'] = $order->warnalpkid;
         $this->status_lpk = $order->status_lpk;
+    }
+
+    public function updatedFile()
+    {
+        $this->import();
+    }
+
+    public function import()
+    {
+        $this->validate([
+            'file' => 'required|mimes:xls,xlsx',
+        ]);
+
+        try {
+            Excel::import(new LpkEntryImport, $this->file->path());
+
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Excel imported successfully.']);
+        } catch (\Exception $e) {
+            $this->dispatch('notification', ['type' => 'error', 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function download()
+    {
+        return Excel::download(new LpkEntryExport, 'Template_LPK.xlsx');
+    }
+
+    public function printLPK()
+    {
+        // foreach ($this->checkListLPK as $lpk_id) {
+        $this->dispatch('redirectToPrint', $this->orderId);
+        // }
     }
 
     public function save()

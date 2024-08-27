@@ -1,4 +1,53 @@
 <div class="row">
+    <div class="col-6 offset-6 mb-2">
+        <input type="file" id="fileInput" wire:model="file" style="display: none;">
+        <button class="btn btn-success w-lg p-1" type="button"
+            onclick="document.getElementById('fileInput').click()">
+            <span wire:loading.remove wire:target="file">
+                <i class="ri-upload-2-fill"> </i> Upload Excel
+            </span>
+            <div wire:loading wire:target="file">
+                <span class="d-flex align-items-center">
+                    <span class="spinner-border flex-shrink-0" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </span>
+                    <span class="flex-grow-1 ms-1">
+                        Loading...
+                    </span>
+                </span>
+            </div>
+        </button>
+        <button class="btn btn-primary w-lg p-1" wire:click="download" type="button">
+            <span wire:loading.remove wire:target="download">
+                <i class="ri-download-cloud-2-line"> </i> Download Template
+            </span>
+            <div wire:loading wire:target="download">
+                <span class="d-flex align-items-center">
+                    <span class="spinner-border flex-shrink-0" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </span>
+                    <span class="flex-grow-1 ms-1">
+                        Loading...
+                    </span>
+                </span>
+            </div>
+        </button>
+        <button class="btn btn-info w-lg p-1" wire:click="printLPK" type="button" disabled="disabled">
+            <span wire:loading.remove wire:target="printLPK">
+                <i class="ri-printer-line"> </i> Cetak LPK
+            </span>
+            <div wire:loading wire:target="printLPK">
+                <span class="d-flex align-items-center">
+                    <span class="spinner-border flex-shrink-0" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </span>
+                    <span class="flex-grow-1 ms-1">
+                        Loading...
+                    </span>
+                </span>
+            </div>
+        </button>
+    </div>
     <form wire:submit.prevent="save">
         <div class="row">
             <div class="col-lg-6">
