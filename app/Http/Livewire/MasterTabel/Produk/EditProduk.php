@@ -274,7 +274,7 @@ class EditProduk extends Component
         $this->lakbanseitaiid['value'] = $this->product->lakbanseitaiid;
         $this->lakbaninfureid['value'] = $this->product->lakbaninfureid;
         $this->stampelseitaiid = $this->product->stampelseitaiid;
-        $this->hagataseitaiid = $this->product->hagataseitaiid;
+        $this->hagataseitaiid = $this->product->kodehagata;
         $this->jenissealseitaiid['value'] = $this->product->jenissealseitaiid;
         $this->warnalpkid['value'] = $this->product->warnalpkid;
     }
@@ -458,7 +458,7 @@ class EditProduk extends Component
 
             $product->lakbaninfureid = isset($this->lakbaninfureid) ? $this->lakbaninfureid['value'] : null;;
             $product->stampelseitaiid = isset($this->stampelseitaiid) ? $this->stampelseitaiid : null;;
-            $product->hagataseitaiid = isset($this->hagataseitaiid) ? $this->hagataseitaiid : null;;
+            $product->kodehagata = isset($this->hagataseitaiid) ? $this->hagataseitaiid : null;;
             // warna LPK
             if (isset($this->warnalpkid) && $this->warnalpkid['value'] != null) {
                 if ($this->warnalpkid['value'] == 'lainnya') {
