@@ -270,13 +270,13 @@
                                 data-bs-target="#modal-edit" wire:click="edit({{ $item->id }})">
                                 <i class="ri-edit-box-line text-white"></i>
                             </button>
-                            <button type="button" class="btn fs-15 p-1 bg-danger rounded removeBuyerModal"
+                            <button type="button" class="btn fs-15 p-1 bg-danger rounded"
                                 wire:click="delete({{ $item->id }})">
                                 <i class="ri-delete-bin-line  text-white"></i>
                             </button>
                         </td>
-                        <td>{{ $item->code }}</td>
                         <td>{{ $item->name }}</td>
+                        <td>{{ $item->code }}</td>
                         <td>
                             {!! $item->status == 1
                                 ? '<span class="badge text-success bg-success-subtle">Active</span>'
@@ -319,45 +319,54 @@
 
         // show modal delete buyer
         $wire.on('showModalDelete', () => {
+            console.log('show modal delete');
+
             $('#removeBuyerModal').modal('show');
         });
 
         // close modal delete buyer
         $wire.on('closeModalDelete', () => {
+            console.log('close modal delete');
+
             $('#removeBuyerModal').modal('hide');
         });
 
         // Inisialisasi saat Livewire di-initialized
-        document.addEventListener('livewire:initialized', function() {
+        // document.addEventListener('livewire:initialized', function() {
+        //     initDataTable();
+        // });
+
+        // inisialisasi DataTable
+        $wire.on('initDataTable', () => {
             initDataTable();
         });
 
         // Fungsi untuk menginisialisasi ulang DataTable
         function initDataTable() {
             // Hapus DataTable jika sudah ada
-            let table = $.fn.dataTable.isDataTable('#lossCategoryTable') ?
-                $('#lossCategoryTable').DataTable() :
-                null;
-
-            if (table) {
-                table.destroy();
+            if ($.fn.dataTable.isDataTable('#lossCategoryTable')) {
+                let table = $('#lossCategoryTable').DataTable();
+                table.clear(); // Bersihkan data tabel
+                table.destroy(); // Hancurkan DataTable
             }
 
             // Inisialisasi ulang DataTable
-            table = $('#lossCategoryTable').DataTable({
-                "pageLength": 10,
-                "searching": true,
-                "responsive": true,
-                "order": [
-                    [1, "asc"]
-                ]
-            });
+            setTimeout(() => {
+                table = $('#lossCategoryTable').DataTable({
+                    "pageLength": 10,
+                    "searching": true,
+                    "responsive": true,
+                    "order": [
+                        [1, "asc"]
+                    ]
+                });
 
-            // Inisialisasi ulang event listener checkbox
-            $('.toggle-column').off('change').on('change', function() {
-                let column = table.column($(this).attr('data-column'));
-                column.visible(!column.visible());
-            });
+                // Inisialisasi ulang event listener checkbox
+                $('.toggle-column').off('change').on('change', function() {
+                    let column = table.column($(this).attr('data-column'));
+                    column.visible(!column.visible());
+                });
+            }, 500);
         }
     </script>
 @endscript
