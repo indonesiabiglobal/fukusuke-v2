@@ -49,6 +49,15 @@ crossorigin="anonymous">
     <title>Document</title>
 
     <style>
+        @media print {
+            /* Menyembunyikan header, footer, dan URL */
+            @page {
+                margin: 0;
+            }
+            header, footer, .page-header, .page-footer {
+                display: none;
+            }
+        }
         .image-container {
             position: relative;
             display: inline-block;
@@ -157,7 +166,6 @@ crossorigin="anonymous">
                     <td>
                         <table width="100%" cellspacing="0" border="0" cellpadding="3">
                             <tr>
-                                <button type="button" name="button" id="button">Print</button>
                                 <td width="60%">
                                     <h1 style="font-size: 27px">LPK {{ $data->lpk_no }}</h1>
                                 </td>
