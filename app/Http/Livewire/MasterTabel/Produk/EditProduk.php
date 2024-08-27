@@ -5,6 +5,7 @@ namespace App\Http\Livewire\MasterTabel\Produk;
 use App\Models\MsKlasifikasiSeal;
 use App\Models\MsLakbanSeitai;
 use App\Models\MsProduct;
+use App\Models\MsWarnaLPK;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Livewire\Component;
@@ -113,35 +114,36 @@ class EditProduk extends Component
     public $hagataseitaiid;
     public $jenissealseitaiid;
     public $warnalpkid;
+    public $custom_warna_lpk;
 
     protected $rules = [
         'code' => 'required',
         'name' => 'required',
         'product_unit' => 'required',
         'product_type_id' => 'required',
-        'ketebalan' => 'required',
-        'diameterlipat' => 'required',
-        'productlength' => 'required',
-        'unit_weight' => 'required',
-        'one_winding_m_number' => 'required',
-        'inflation_thickness' => 'required',
-        'inflation_fold_diameter' => 'required',
-        'gazette_dimension_a' => 'required',
-        'gazette_dimension_b' => 'required',
-        'gazette_dimension_c' => 'required',
-        'gazette_dimension_d' => 'required',
-        'number_of_color' => 'required',
-        'back_color_number' => 'required',
-        'from_seal_design' => 'required',
-        'lower_sealing_length' => 'required',
-        'extracted_dimension_a' => 'required',
-        'extracted_dimension_b' => 'required',
-        'extracted_dimension_c' => 'required',
-        'case_box_count' => 'required',
-        'case_gaiso_count' => 'required',
-        'case_inner_count' => 'required',
-        'palet_jumlah_baris' => 'required',
-        'palet_isi_baris' => 'required',
+        // 'ketebalan' => 'required',
+        // 'diameterlipat' => 'required',
+        // 'productlength' => 'required',
+        // 'unit_weight' => 'required',
+        // 'one_winding_m_number' => 'required',
+        // 'inflation_thickness' => 'required',
+        // 'inflation_fold_diameter' => 'required',
+        // 'gazette_dimension_a' => 'required',
+        // 'gazette_dimension_b' => 'required',
+        // 'gazette_dimension_c' => 'required',
+        // 'gazette_dimension_d' => 'required',
+        // 'number_of_color' => 'required',
+        // 'back_color_number' => 'required',
+        // 'from_seal_design' => 'required',
+        // 'lower_sealing_length' => 'required',
+        // 'extracted_dimension_a' => 'required',
+        // 'extracted_dimension_b' => 'required',
+        // 'extracted_dimension_c' => 'required',
+        // 'case_box_count' => 'required',
+        // 'case_gaiso_count' => 'required',
+        // 'case_inner_count' => 'required',
+        // 'palet_jumlah_baris' => 'required',
+        // 'palet_isi_baris' => 'required',
     ];
 
     protected $messages = [
@@ -149,29 +151,29 @@ class EditProduk extends Component
         'name.required' => 'Nama Produk tidak boleh kosong.',
         'product_unit.required' => 'Satuan Produk tidak boleh kosong.',
         'product_type_id.required' => 'Tipe Produk tidak boleh kosong.',
-        'ketebalan.required' => 'Ketebalan tidak boleh kosong.',
-        'diameterlipat.required' => 'Diameter Lipat tidak boleh kosong.',
-        'productlength.required' => 'Panjang Produk tidak boleh kosong.',
-        'unit_weight.required' => 'Berat Satuan tidak boleh kosong.',
-        'inflation_thickness.required' => 'Ketebalan Inflasi tidak boleh kosong.',
-        'inflation_fold_diameter.required' => 'Diameter Lipat Inflasi tidak boleh kosong.',
-        'gazette_dimension_a.required' => 'Dimensi A tidak boleh kosong.',
-        'gazette_dimension_b.required' => 'Dimensi B tidak boleh kosong.',
-        'gazette_dimension_c.required' => 'Dimensi C tidak boleh kosong.',
-        'gazette_dimension_d.required' => 'Dimensi D tidak boleh kosong.',
-        'number_of_color.required' => 'Warna Depan tidak boleh kosong.',
-        'back_color_number.required' => 'Warna Belakang tidak boleh kosong.',
-        'from_seal_design.required' => 'Jarak Seal dari Pola tidak boleh kosong.',
-        'lower_sealing_length.required' => 'Jarak Seal Bawah tidak boleh kosong.',
-        'extracted_dimension_a.required' => 'Dimensi A Ekstraksi tidak boleh kosong.',
-        'extracted_dimension_b.required' => 'Dimensi B Ekstraksi tidak boleh kosong.',
-        'extracted_dimension_c.required' => 'Dimensi C Ekstraksi tidak boleh kosong.',
-        'case_box_count.required' => 'Jumlah Box tidak boleh kosong.',
-        'case_gaiso_count.required' => 'Jumlah Gaiso tidak boleh kosong.',
-        'case_inner_count.required' => 'Jumlah Inner tidak boleh kosong.',
-        'one_winding_m_number.required' => 'Panjang Gulung tidak boleh kosong.',
-        'palet_jumlah_baris.required' => 'Jumlah Baris Palet tidak boleh kosong.',
-        'palet_isi_baris.required' => 'Isi Baris Palet tidak boleh kosong.',
+        // 'ketebalan.required' => 'Ketebalan tidak boleh kosong.',
+        // 'diameterlipat.required' => 'Diameter Lipat tidak boleh kosong.',
+        // 'productlength.required' => 'Panjang Produk tidak boleh kosong.',
+        // 'unit_weight.required' => 'Berat Satuan tidak boleh kosong.',
+        // 'inflation_thickness.required' => 'Ketebalan Inflasi tidak boleh kosong.',
+        // 'inflation_fold_diameter.required' => 'Diameter Lipat Inflasi tidak boleh kosong.',
+        // 'gazette_dimension_a.required' => 'Dimensi A tidak boleh kosong.',
+        // 'gazette_dimension_b.required' => 'Dimensi B tidak boleh kosong.',
+        // 'gazette_dimension_c.required' => 'Dimensi C tidak boleh kosong.',
+        // 'gazette_dimension_d.required' => 'Dimensi D tidak boleh kosong.',
+        // 'number_of_color.required' => 'Warna Depan tidak boleh kosong.',
+        // 'back_color_number.required' => 'Warna Belakang tidak boleh kosong.',
+        // 'from_seal_design.required' => 'Jarak Seal dari Pola tidak boleh kosong.',
+        // 'lower_sealing_length.required' => 'Jarak Seal Bawah tidak boleh kosong.',
+        // 'extracted_dimension_a.required' => 'Dimensi A Ekstraksi tidak boleh kosong.',
+        // 'extracted_dimension_b.required' => 'Dimensi B Ekstraksi tidak boleh kosong.',
+        // 'extracted_dimension_c.required' => 'Dimensi C Ekstraksi tidak boleh kosong.',
+        // 'case_box_count.required' => 'Jumlah Box tidak boleh kosong.',
+        // 'case_gaiso_count.required' => 'Jumlah Gaiso tidak boleh kosong.',
+        // 'case_inner_count.required' => 'Jumlah Inner tidak boleh kosong.',
+        // 'one_winding_m_number.required' => 'Panjang Gulung tidak boleh kosong.',
+        // 'palet_jumlah_baris.required' => 'Jumlah Baris Palet tidak boleh kosong.',
+        // 'palet_isi_baris.required' => 'Isi Baris Palet tidak boleh kosong.',
     ];
 
     public function mount(Request $request)
@@ -280,7 +282,6 @@ class EditProduk extends Component
     public function update()
     {
         try {
-
             $validatedData = $this->validate();
         } catch (\Illuminate\Validation\ValidationException $e) {
             $this->dispatch('notification', ['type' => 'error', 'message' => $e->validator->errors()->first()]);
@@ -458,7 +459,25 @@ class EditProduk extends Component
             $product->lakbaninfureid = isset($this->lakbaninfureid) ? $this->lakbaninfureid['value'] : null;;
             $product->stampelseitaiid = isset($this->stampelseitaiid) ? $this->stampelseitaiid : null;;
             $product->hagataseitaiid = isset($this->hagataseitaiid) ? $this->hagataseitaiid : null;;
-            $product->warnalpkid = isset($this->warnalpkid) ? $this->warnalpkid['value'] : null;;
+            // warna LPK
+            if (isset($this->warnalpkid) && $this->warnalpkid['value'] != null) {
+                if ($this->warnalpkid['value'] == 'lainnya') {
+                    // insert new seal classification
+                    $maxCode = MsWarnaLPK::max('code');
+                    $warnaLPK = MsWarnaLPK::insertGetId([
+                        'code' => str_pad($maxCode + 1, 2, '0', STR_PAD_LEFT),
+                        'name' => $this->custom_warna_lpk,
+                        'status' => 1,
+                        'created_by' => auth()->user()->username,
+                        'created_on' => Carbon::now(),
+                        'updated_by' => auth()->user()->username,
+                        'updated_on' => Carbon::now(),
+                    ]);
+                    $product->warnalpkid = $warnaLPK;
+                } else {
+                    $product->warnalpkid = $this->warnalpkid['value'];
+                }
+            }
             // $product->jenissealseitaiid = isset($this->jenissealseitaiid) ? $this->jenissealseitaiid : null;
             $product->status = 1;
             $product->updated_by = auth()->user()->username;

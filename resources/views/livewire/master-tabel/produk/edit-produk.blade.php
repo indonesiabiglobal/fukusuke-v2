@@ -800,9 +800,9 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-6">Warna LPK</label>
                             <div class="col-12 col-lg-6" wire:ignore>
-                                <select required data-choices data-choices-sorting="true"
+                                <select required data-choices data-choices-sorting-false
                                     class="form-select @error('warnalpkid') is-invalid @enderror"
-                                    wire:model="warnalpkid">
+                                    wire:model.live="warnalpkid">
                                     <option value="" selected>
                                         Silahkan Pilih
                                     </option>
@@ -811,11 +811,22 @@
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
+                                    <option value="lainnya">
+                                        Lainnya
+                                    </option>
                                 </select>
-                                @error('warnalpkid')
-                                    <span class="invalid-feedback">{{ $message }}</span>
-                                @enderror
                             </div>
+                            @if (($warnalpkid['value'] ?? '') == 'lainnya')
+                                <input required type="text" class="form-control mt-2"
+                                    wire:model="custom_warna_lpk"
+                                    placeholder="Masukkan warna LPK" />
+                            @endif
+                            @error('warnalpkid')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
+                            @error('custom_warna_lpk')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
                         </div>
                     </div>
                     {{-- <div class="form-group mt-1">

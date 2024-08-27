@@ -5,6 +5,7 @@ namespace App\Http\Livewire\MasterTabel\Produk;
 use App\Models\MsBuyer;
 use App\Models\MsLakbanSeitai;
 use App\Models\MsProduct;
+use App\Models\MsWarnaLPK;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -112,6 +113,7 @@ class AddMasterProduk extends Component
     public $hagataseitaiid;
     public $jenissealseitaiid;
     public $warnalpkid;
+    public $custom_warna_lpk;
 
     protected $rules = [
         'code' => 'required',
@@ -380,7 +382,27 @@ class AddMasterProduk extends Component
             $product->lakbaninfureid = isset($this->lakbaninfureid) ? $this->lakbaninfureid['value'] : null;;
             $product->stampelseitaiid = isset($this->stampelseitaiid) ? $this->stampelseitaiid : null;;
             $product->hagataseitaiid = isset($this->hagataseitaiid) ? $this->hagataseitaiid : null;;
-            $product->warnalpkid = isset($this->warnalpkid) ? $this->warnalpkid['value'] : null;;
+            $product->warnalpkid = isset($this->warnalpkid) ? $this->warnalpkid['value'] : null;
+
+            // warna LPK
+            if (isset($this->warnalpkid) && $this->warnalpkid['value'] != null) {
+                if ($this->warnalpkid['value'] == 'lainnya') {
+                    // insert new seal classification
+                    $maxCode = MsWarnaLPK::max('code');
+                    $warnaLPK = MsWarnaLPK::insertGetId([
+                        'code' => str_pad($maxCode + 1, 2, '0', STR_PAD_LEFT),
+                        'name' => $this->custom_warna_lpk,
+                        'status' => 1,
+                        'created_by' => auth()->user()->username,
+                        'created_on' => Carbon::now(),
+                        'updated_by' => auth()->user()->username,
+                        'updated_on' => Carbon::now(),
+                    ]);
+                    $product->warnalpkid = $warnaLPK;
+                } else {
+                    $product->warnalpkid = $this->warnalpkid['value'];
+                }
+            }
             // $product->jenissealseitaiid = isset($this->jenissealseitaiid) ? $this->jenissealseitaiid['value'] : null;;
             $product->status = 1;
             $product->created_by = auth()->user()->username;
