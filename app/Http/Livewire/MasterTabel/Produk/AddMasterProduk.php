@@ -381,7 +381,7 @@ class AddMasterProduk extends Component
             }
             $product->lakbaninfureid = isset($this->lakbaninfureid) ? $this->lakbaninfureid['value'] : null;;
             $product->stampelseitaiid = isset($this->stampelseitaiid) ? $this->stampelseitaiid : null;;
-            $product->hagataseitaiid = isset($this->hagataseitaiid) ? $this->hagataseitaiid : null;;
+            $product->kodehagata = isset($this->hagataseitaiid) ? $this->hagataseitaiid : null;;
             $product->warnalpkid = isset($this->warnalpkid) ? $this->warnalpkid['value'] : null;
 
             // warna LPK
