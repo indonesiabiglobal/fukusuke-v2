@@ -18,13 +18,13 @@
                             <div class="form-group">
                                 <div class="input-group">
                                     <input wire:model.defer="tglMasuk" type="text" class="form-control"
-                                        style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
+                                        style="padding:0.44rem" data-provider="flatpickr" data-date-format="d M Y">
                                     <span class="input-group-text py-0">
                                         <i class="ri-calendar-event-fill fs-4"></i>
                                     </span>
 
                                     <input wire:model.defer="tglKeluar" type="text" class="form-control"
-                                        style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
+                                        style="padding:0.44rem" data-provider="flatpickr" data-date-format="d M Y">
                                     <span class="input-group-text py-0">
                                         <i class="ri-calendar-event-fill fs-4"></i>
                                     </span>
@@ -225,7 +225,7 @@
                 <li>
                     <label style="cursor: pointer;">
                         <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="8"
-                            checked> Stuffing
+                        unchecked> Stuffing
                     </label>
                 </li>
                 <li>
@@ -237,7 +237,7 @@
                 <li>
                     <label style="cursor: pointer;">
                         <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="10"
-                            checked> Eta
+                        unchecked> Eta
                     </label>
                 </li>
                 <li>
@@ -249,13 +249,13 @@
                 <li>
                     <label style="cursor: pointer;">
                         <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="12"
-                            checked> Update By
+                        unchecked> Update By
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
                         <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="13"
-                            checked> Update On
+                            unchecked> Update On
                     </label>
                 </li>
             </ul>
@@ -297,20 +297,20 @@
                         <td>{{ $item->product_code }}</td>
                         <td>{{ $item->buyer_name }}</td>
                         <td>{{ number_format($item->order_qty) }}</td>
-                        <td>{{ $item->order_date }}</td>
-                        <td>{{ $item->stufingdate }}</td>
-                        <td>{{ $item->etddate }}</td>
-                        <td>{{ $item->etadate }}</td>
-                        <td>{{ $item->processdate }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->order_date)->format('d M Y') }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->stufingdate)->format('d M Y') }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->etddate)->format('d M Y') }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->etadate)->format('d M Y') }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->processdate)->format('d M Y') }}</td>
                         <td>{{ $item->updated_by }}</td>
-                        <td>{{ $item->updated_on }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y')  }}</td>
                     </tr>
                 @empty
                     {{-- <tr>
                         <td colspan="10" class="text-center">
                             <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
                                 colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
-                            <h5 class="mt-2">Sorry! No Result Found</h5>
+                            <h5 class="mt-2">Record not found..!</h5>
                         </td>
                     </tr> --}}
                 @endforelse
@@ -354,7 +354,7 @@
                             <div class="text-center">
                                 <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
                                     colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
-                                <h5 class="mt-2">Sorry! No Result Found</h5>
+                                <h5 class="mt-2">Record not found..!</h5>
                             </div>
                         `
                     }
