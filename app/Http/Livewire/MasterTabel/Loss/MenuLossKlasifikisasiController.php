@@ -15,6 +15,7 @@ class MenuLossKlasifikisasiController extends Component
 {
     use WithPagination, WithoutUrlPagination;
     protected $paginationTheme = 'bootstrap';
+    protected $listeners = ['delete','edit'];
     public $searchTerm;
     public $code;
     public $name;
@@ -39,6 +40,8 @@ class MenuLossKlasifikisasiController extends Component
     {
         $this->resetFields();
         $this->dispatch('showModalCreate');
+        // Mencegah render ulang
+        $this->skipRender();
     }
 
     public function store()
@@ -75,7 +78,7 @@ class MenuLossKlasifikisasiController extends Component
         $this->code = $data->code;
         $this->name = $data->name;
 
-        // $this->dispatch('showModalUpdate', $buyer);
+        $this->dispatch('showModalUpdate');
     }
 
     public function update()
@@ -96,7 +99,6 @@ class MenuLossKlasifikisasiController extends Component
             DB::commit();
             $this->dispatch('closeModalUpdate');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Loss Infure updated successfully.']);
-            $this->search();
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to update master Loss Infure: ' . $e->getMessage());
@@ -108,6 +110,8 @@ class MenuLossKlasifikisasiController extends Component
     {
         $this->idDelete = $id;
         $this->dispatch('showModalDelete');
+        // Mencegah render ulang
+        $this->skipRender();
     }
 
     public function destroy()
@@ -124,7 +128,6 @@ class MenuLossKlasifikisasiController extends Component
             DB::commit();
             $this->dispatch('closeModalDelete');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Loss Infure deleted successfully.']);
-            $this->search();
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to delete master Loss Infure: ' . $e->getMessage());
@@ -132,26 +135,17 @@ class MenuLossKlasifikisasiController extends Component
         }
     }
 
-    public function search()
-    {
-        $this->render();
-    }
-
     public function render()
     {
-        $result = MsLossClass::where('status', 1);
-
-        if (isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined") {
-            $result = $result->where(function ($query) {
-                $query->where('code', 'ilike', "%{$this->searchTerm}%")
-                    ->orWhere('name', 'ilike', "%{$this->searchTerm}%");
-            });
-        }
-
-        $result = $result->get();
+        $result = MsLossClass::get();
 
         return view('livewire.master-tabel.loss.menu-loss-klasifikisasi', [
             'result' => $result
         ])->extends('layouts.master');
+    }
+
+    public function rendered()
+    {
+        $this->dispatch('initDataTable');
     }
 }
