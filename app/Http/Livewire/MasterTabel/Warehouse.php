@@ -12,6 +12,7 @@ class Warehouse extends Component
 {
     use WithPagination, WithoutUrlPagination;
     protected $paginationTheme = 'bootstrap';
+    protected $listeners = ['delete','edit'];
     public $warehouses;
     public $searchTerm;
     public $name;
@@ -22,12 +23,6 @@ class Warehouse extends Component
     public $address;
     public $idUpdate;
     public $idDelete;
-
-    public function mount()
-    {
-        $this->warehouses = DB::table('mswarehouse')
-            ->get(['id', 'name', 'city', 'country', 'description', 'province', 'address', 'status', 'updated_by', 'updated_on']);
-    }
 
     public function resetFields()
     {
@@ -43,6 +38,8 @@ class Warehouse extends Component
     {
         $this->resetFields();
         $this->dispatch('showModalCreate');
+        // Mencegah render ulang
+        $this->skipRender();
     }
 
     public function store()
@@ -74,7 +71,6 @@ class Warehouse extends Component
             ]);
             DB::commit();
             $this->resetFields();
-            $this->render();
             $this->dispatch('closeModalCreate');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Warehouse created successfully.']);
         } catch (\Exception $e) {
@@ -117,12 +113,12 @@ class Warehouse extends Component
                 'description' => $this->description,
                 'province' => $this->province,
                 'address' => $this->address,
+                'status' => 1,
                 'updated_by' => auth()->user()->username,
                 'updated_on' => now(),
             ]);
             DB::commit();
             $this->resetFields();
-            $this->render();
             $this->dispatch('closeModalUpdate');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Warehouse updated successfully.']);
         } catch (\Exception $e) {
@@ -136,6 +132,8 @@ class Warehouse extends Component
     {
         $this->idDelete = $id;
         $this->dispatch('showModalDelete');
+        // Mencegah render ulang
+        $this->skipRender();
     }
 
     public function destroy()
@@ -149,7 +147,6 @@ class Warehouse extends Component
                 'updated_on' => now(),
             ]);
             DB::commit();
-            $this->render();
             $this->dispatch('closeModalDelete');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Warehouse deleted successfully.']);
         } catch (\Exception $e) {
@@ -159,31 +156,19 @@ class Warehouse extends Component
         }
     }
 
-    public function search()
-    {
-        $this->resetPage();
-        $this->render();
-    }
-
     public function render()
     {
         $this->warehouses = DB::table('mswarehouse')
             ->select('id', 'name', 'city', 'address', 'status', 'updated_by', 'updated_on')
-            ->when(isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined", function ($query) {
-                $query->where(function ($query) {
-                    $query->where('name', 'ilike', '%' . $this->searchTerm . '%')
-                        ->orWhere('city', 'ilike', '%' . $this->searchTerm . '%')
-                        ->orWhere('country', 'ilike', '%' . $this->searchTerm . '%')
-                        ->orWhere('description', 'ilike', '%' . $this->searchTerm . '%')
-                        ->orWhere('province', 'ilike', '%' . $this->searchTerm . '%')
-                        ->orWhere('address', 'ilike', '%' . $this->searchTerm . '%');
-                });
-            })
-            // ->paginate(2);
         ->get();
 
         return view('livewire.master-tabel.warehouse', [
             'data' => $this->warehouses,
         ])->extends('layouts.master');
+    }
+
+    public function rendered()
+    {
+        $this->dispatch('initDataTable');
     }
 }

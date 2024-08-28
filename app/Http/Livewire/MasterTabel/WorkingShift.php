@@ -14,6 +14,7 @@ class WorkingShift extends Component
 {
     use WithPagination, WithoutUrlPagination;
     protected $paginationTheme = 'bootstrap';
+    protected $listeners = ['delete','edit'];
     public $workingShifts;
     public $searchTerm;
     public $work_shift;
@@ -22,10 +23,10 @@ class WorkingShift extends Component
     public $idUpdate;
     public $idDelete;
 
-    public function mount()
-    {
-        $this->workingShifts = MsWorkingShift::get(['id', 'work_shift', 'work_hour_from', 'work_hour_till', 'status', 'updated_by', 'updated_on']);
-    }
+    // public function mount()
+    // {
+    //     $this->workingShifts = MsWorkingShift::get(['id', 'work_shift', 'work_hour_from', 'work_hour_till', 'status', 'updated_by', 'updated_on']);
+    // }
 
     public function resetFields()
     {
@@ -38,6 +39,8 @@ class WorkingShift extends Component
     {
         $this->resetFields();
         $this->dispatch('showModalCreate');
+        // Mencegah render ulang
+        $this->skipRender();
     }
 
     public function store()
@@ -50,12 +53,6 @@ class WorkingShift extends Component
 
         DB::beginTransaction();
         try {
-            // check jika work_hour_from lebih besar dari work_hour_till
-            if ($this->work_hour_from > $this->work_hour_till) {
-                $this->dispatch('notification', ['type' => 'error', 'message' => 'Work Hour From cannot be greater than Work Hour Till.']);
-                return;
-            }
-
             // check jika work_hour_from sama dengan work_hour_till
             if ($this->work_hour_from == $this->work_hour_till) {
                 $this->dispatch('notification', ['type' => 'error', 'message' => 'Work Hour From cannot be equal to Work Hour Till.']);
@@ -76,7 +73,6 @@ class WorkingShift extends Component
             ]);
             DB::commit();
             $this->resetFields();
-            $this->search();
             $this->dispatch('closeModalCreate');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Working Shift saved successfully.']);
         } catch (\Exception $e) {
@@ -128,7 +124,6 @@ class WorkingShift extends Component
             ]);
             DB::commit();
             $this->resetFields();
-            $this->search();
             $this->dispatch('closeModalUpdate');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Working Shift updated successfully.']);
         } catch (\Exception $e) {
@@ -142,6 +137,8 @@ class WorkingShift extends Component
     {
         $this->idDelete = $id;
         $this->dispatch('showModalDelete');
+        // Mencegah render ulang
+        $this->skipRender();
     }
 
     public function destroy()
@@ -155,7 +152,6 @@ class WorkingShift extends Component
                 'updated_on' => Carbon::now(),
             ]);
             DB::commit();
-            $this->search();
             $this->dispatch('closeModalDelete');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Working Shift deleted successfully.']);
         } catch (\Exception $e) {
@@ -165,18 +161,18 @@ class WorkingShift extends Component
         }
     }
 
-    public function search()
-    {
-        $this->render();
-    }
     public function render()
     {
         $workingShifts = MsWorkingShift::where('work_shift', 'like', '%' . $this->searchTerm . '%')
-            // ->paginate(10);
             ->get();
 
         return view('livewire.master-tabel.working-shift', [
             'data' => $workingShifts
         ])->extends('layouts.master');
+    }
+
+    public function rendered()
+    {
+        $this->dispatch('initDataTable');
     }
 }

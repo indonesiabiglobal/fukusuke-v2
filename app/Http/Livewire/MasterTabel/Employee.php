@@ -12,7 +12,8 @@ class Employee extends Component
 {
     use WithPagination, WithoutUrlPagination;
     protected $paginationTheme = 'bootstrap';
-    public $employees;
+    protected $listeners = ['delete', 'edit'];
+    public $data;
     public $searchTerm;
     public $employeeno;
     public $empname;
@@ -24,8 +25,19 @@ class Employee extends Component
 
     public function mount()
     {
-        $this->employees = DB::table('msemployee')
-            ->get(['id', 'employeeno', 'empname', 'department_id', 'status', 'updated_by', 'updated_on']);
+        $this->data =  DB::table('msemployee as mse')
+            ->select(
+                'mse.id',
+                'mse.employeeno',
+                'mse.empname',
+                'mse.department_id',
+                'mse.status',
+                'mse.updated_by',
+                'mse.updated_on',
+                'msd.name as department_name'
+            )
+            ->leftJoin('msdepartment as msd', 'mse.department_id', '=', 'msd.id')
+            ->get();
     }
 
     public function resetFields()
@@ -39,6 +51,8 @@ class Employee extends Component
     {
         $this->resetFields();
         $this->dispatch('showModalCreate');
+        // Mencegah render ulang
+        $this->skipRender();
     }
 
     public function store()
@@ -101,8 +115,8 @@ class Employee extends Component
                 ->update([
                     'employeeno' => $this->employeeno,
                     'empname' => $this->empname,
-                    'department_id' => $this->department_id,
-                    'status' => $this->status,
+                    'department_id' => $this->department_id['value'],
+                    'status' => $this->status['value'],
                     'updated_by' => auth()->user()->username,
                     'updated_on' => now(),
                 ]);
@@ -121,6 +135,9 @@ class Employee extends Component
     {
         $this->idDelete = $id;
         $this->dispatch('showModalDelete');
+
+        // Mencegah render ulang
+        $this->skipRender();
     }
 
     public function destroy()
@@ -143,37 +160,13 @@ class Employee extends Component
         }
     }
 
-    public function search()
-    {
-        $this->resetPage();
-        $this->render();
-    }
     public function render()
     {
-        $data = DB::table('msemployee as mse')
-            ->select(
-                'mse.id',
-                'mse.employeeno',
-                'mse.empname',
-                'mse.department_id',
-                'mse.status',
-                'mse.updated_by',
-                'mse.updated_on',
-                'msd.name as department_name'
-            )
-            ->leftJoin('msdepartment as msd', 'mse.department_id', '=', 'msd.id')
-            ->when(isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined", function ($query) {
-                $query->where(function ($query) {
-                    $query
-                        ->where('mse.employeeno', 'ilike', "%" . $this->searchTerm . "%")
-                        ->orWhere('mse.empname', 'ilike', "%" . $this->searchTerm . "%")
-                        ->orWhere('msd.name', 'ilike', "%" . $this->searchTerm . "%");
-                });
-            })
-            ->get();
+        return view('livewire.master-tabel.employee')->extends('layouts.master');
+    }
 
-        return view('livewire.master-tabel.employee', [
-            'data' => $data,
-        ])->extends('layouts.master');
+    public function rendered()
+    {
+        $this->dispatch('initDataTable');
     }
 }

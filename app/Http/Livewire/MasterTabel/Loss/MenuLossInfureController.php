@@ -16,6 +16,7 @@ class MenuLossInfureController extends Component
 {
     use WithPagination, WithoutUrlPagination;
     protected $paginationTheme = 'bootstrap';
+    protected $listeners = ['delete','edit'];
     // public $result;
     public $searchTerm;
     public $code;
@@ -48,6 +49,8 @@ class MenuLossInfureController extends Component
     {
         $this->resetFields();
         $this->dispatch('showModalCreate');
+        // Mencegah render ulang
+        $this->skipRender();
     }
 
     public function store()
@@ -104,8 +107,8 @@ class MenuLossInfureController extends Component
             $data = MsLossInfure::where('id', $this->idUpdate)->first();
             $data->code = $this->code;
             $data->name = $this->name;
-            $data->loss_class_id = $this->loss_class_id['value'];
-            $data->loss_category_code = $this->loss_category_code['value'];
+            $data->loss_class_id = $this->loss_class_id;
+            $data->loss_category_code = $this->loss_category_code;
             $data->status = $statusActive;
             $data->updated_by = Auth::user()->username;
             $data->updated_on = Carbon::now();
@@ -114,7 +117,6 @@ class MenuLossInfureController extends Component
             DB::commit();
             $this->dispatch('closeModalUpdate');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Loss Infure updated successfully.']);
-            $this->search();
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to update master Loss Infure: ' . $e->getMessage());
@@ -126,6 +128,8 @@ class MenuLossInfureController extends Component
     {
         $this->idDelete = $id;
         $this->dispatch('showModalDelete');
+        // Mencegah render ulang
+        $this->skipRender();
     }
 
     public function destroy()
@@ -142,7 +146,6 @@ class MenuLossInfureController extends Component
             DB::commit();
             $this->dispatch('closeModalDelete');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Loss Infure deleted successfully.']);
-            $this->search();
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to delete master Loss Infure: ' . $e->getMessage());
@@ -150,28 +153,20 @@ class MenuLossInfureController extends Component
         }
     }
 
-    public function search()
-    {
-        $this->render();
-    }
-
     public function render()
     {
         $result = MsLossInfure::join('mslosscategory as mlc', 'mslossinfure.loss_category_code', '=', 'mlc.code')
             ->join('mslossclass as mlcl', 'mslossinfure.loss_class_id', '=', 'mlcl.id')
             ->select('mslossinfure.*', 'mlc.name as category_name', 'mlcl.name as class_name')
-            ->where('mslossinfure.status', 1)
-            ->when(isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined", function ($query) {
-                $query->where('mslossinfure.code', 'ilike', '%' . $this->searchTerm . '%')
-                    ->orWhere('mslossinfure.name', 'ilike', '%' . $this->searchTerm . '%')
-                    ->orWhere('mlc.name', 'ilike', '%' . $this->searchTerm . '%')
-                    ->orWhere('mlcl.name', 'ilike', '%' . $this->searchTerm . '%');
-            })
-            // ->paginate(10);
             ->get();
 
         return view('livewire.master-tabel.loss.menu-loss-infure', [
             'result' => $result
         ])->extends('layouts.master');
+    }
+
+    public function rendered()
+    {
+        $this->dispatch('initDataTable');
     }
 }

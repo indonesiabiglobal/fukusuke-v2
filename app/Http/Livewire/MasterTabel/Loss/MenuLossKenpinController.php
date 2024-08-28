@@ -16,6 +16,7 @@ class MenuLossKenpinController extends Component
 {
     use WithPagination, WithoutUrlPagination;
     protected $paginationTheme = 'bootstrap';
+    protected $listeners = ['delete','edit'];
     // public $result;
     public $searchTerm;
     public $code;
@@ -47,6 +48,8 @@ class MenuLossKenpinController extends Component
     {
         $this->resetFields();
         $this->dispatch('showModalCreate');
+        // Mencegah render ulang
+        $this->skipRender();
     }
 
     public function store()
@@ -101,8 +104,8 @@ class MenuLossKenpinController extends Component
             $data = MsLossKenpin::where('id', $this->idUpdate)->first();
             $data->code = $this->code;
             $data->name = $this->name;
-            $data->loss_class_id = $this->loss_class_id['value'];
-            $data->loss_category_code = $this->loss_category_code['value'];
+            $data->loss_class_id = $this->loss_class_id;
+            $data->loss_category_code = $this->loss_category_code;
             $data->status = $statusActive;
             $data->updated_by = Auth::user()->username;
             $data->updated_on = Carbon::now();
@@ -111,7 +114,6 @@ class MenuLossKenpinController extends Component
             DB::commit();
             $this->dispatch('closeModalUpdate');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Loss Kenpin updated successfully.']);
-            $this->search();
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to update master Loss Kenpin: ' . $e->getMessage());
@@ -123,6 +125,8 @@ class MenuLossKenpinController extends Component
     {
         $this->idDelete = $id;
         $this->dispatch('showModalDelete');
+        // Mencegah render ulang
+        $this->skipRender();
     }
 
     public function destroy()
@@ -139,7 +143,6 @@ class MenuLossKenpinController extends Component
             DB::commit();
             $this->dispatch('closeModalDelete');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Loss Kenpin deleted successfully.']);
-            $this->search();
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to delete master Loss Kenpin: ' . $e->getMessage());
@@ -147,17 +150,20 @@ class MenuLossKenpinController extends Component
         }
     }
 
-    public function search()
-    {
-        $this->render();
-    }
-
     public function render()
     {
-        $result = MsLossKenpin::where('status', 1)->get();
+        $result = MsLossKenpin::join('mslosscategory as mlc', 'mslosskenpin.loss_category_code', '=', 'mlc.code')
+        ->join('mslossclass as mlcl', 'mslosskenpin.loss_class_id', '=', 'mlcl.id')
+        ->select('mslosskenpin.*', 'mlc.name as category_name', 'mlcl.name as class_name')
+        ->get();;
 
         return view('livewire.master-tabel.loss.menu-loss-kenpin',[
             'result' => $result
         ])->extends('layouts.master');
+    }
+
+    public function rendered()
+    {
+        $this->dispatch('initDataTable');
     }
 }

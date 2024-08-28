@@ -47,7 +47,7 @@ class NippoSeitaiController extends Component
     {
         $this->products = MsProduct::get();
         $this->buyer = MsBuyer::get();
-        $this->machine = MsMachine::where('machineno',  'LIKE', '00S%')->get();
+        $this->machine = MsMachine::where('machineno',  'LIKE', '00S%')->orderBy('machineno')->get();
         if (empty($this->tglMasuk)) {
             $this->tglMasuk = Carbon::now()->format('d-m-Y');
         }

@@ -12,6 +12,7 @@ class Department extends Component
 {
     use WithPagination, WithoutUrlPagination;
     protected $paginationTheme = 'bootstrap';
+    protected $listeners = ['delete','edit'];
     public $departments;
     public $searchTerm;
     public $code;
@@ -37,6 +38,8 @@ class Department extends Component
     {
         $this->resetFields();
         $this->dispatch('showModalCreate');
+        // Mencegah render ulang
+        $this->skipRender();
     }
 
     public function store()
@@ -115,6 +118,9 @@ class Department extends Component
     {
         $this->idDelete = $id;
         $this->dispatch('showModalDelete');
+
+        // Mencegah render ulang
+        $this->skipRender();
     }
 
     public function destroy()
@@ -164,5 +170,10 @@ class Department extends Component
         return view('livewire.master-tabel.department', [
             'data' =>  $data
         ])->extends('layouts.master');
+    }
+
+    public function rendered()
+    {
+        $this->dispatch('initDataTable');
     }
 }

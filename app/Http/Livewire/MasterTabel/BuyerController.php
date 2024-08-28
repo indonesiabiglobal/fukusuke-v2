@@ -15,6 +15,7 @@ class BuyerController extends Component
 {
     use WithPagination, WithoutUrlPagination;
     protected $paginationTheme = 'bootstrap';
+    protected $listeners = ['delete','edit'];
     public $buyers;
     public $searchTerm;
     public $code;
@@ -53,6 +54,8 @@ class BuyerController extends Component
     {
         $this->resetFields();
         $this->dispatch('showModalCreate');
+        // Mencegah render ulang
+        $this->skipRender();
     }
 
     public function store()
@@ -96,7 +99,7 @@ class BuyerController extends Component
         $this->city = $buyer->city;
         $this->country = $buyer->country;
 
-        // $this->dispatch('showModalUpdate', $buyer);
+        $this->dispatch('showModalUpdate');
     }
 
     public function update()
@@ -131,6 +134,7 @@ class BuyerController extends Component
     {
         $this->idDelete = $id;
         $this->dispatch('showModalDelete');
+        $this->skipRender();
     }
 
     public function destroy()
@@ -183,8 +187,8 @@ class BuyerController extends Component
         ])->extends('layouts.master');
     }
 
-    // public function rendered()
-    // {
-    //     $this->dispatch('initDataTable');
-    // }
+    public function rendered()
+    {
+        $this->dispatch('initDataTable');
+    }
 }

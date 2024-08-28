@@ -16,6 +16,7 @@ class MenuLossSeitaiController extends Component
 {
     use WithPagination, WithoutUrlPagination;
     protected $paginationTheme = 'bootstrap';
+    protected $listeners = ['delete','edit'];
     public $searchTerm;
     public $code;
     public $name;
@@ -44,6 +45,8 @@ class MenuLossSeitaiController extends Component
     {
         $this->resetFields();
         $this->dispatch('showModalCreate');
+        // Mencegah render ulang
+        $this->skipRender();
     }
 
     public function store()
@@ -98,8 +101,8 @@ class MenuLossSeitaiController extends Component
             $data = MsLossSeitai::where('id', $this->idUpdate)->first();
             $data->code = $this->code;
             $data->name = $this->name;
-            $data->loss_class_id = $this->loss_class_id['value'];
-            $data->loss_category_code = $this->loss_category_code['value'];
+            $data->loss_class_id = $this->loss_class_id;
+            $data->loss_category_code = $this->loss_category_code;
             $data->status = $statusActive;
             $data->updated_by = Auth::user()->username;
             $data->updated_on = Carbon::now();
@@ -108,7 +111,6 @@ class MenuLossSeitaiController extends Component
             DB::commit();
             $this->dispatch('closeModalUpdate');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Loss Infure updated successfully.']);
-            $this->search();
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to update master Loss Infure: ' . $e->getMessage());
@@ -120,6 +122,8 @@ class MenuLossSeitaiController extends Component
     {
         $this->idDelete = $id;
         $this->dispatch('showModalDelete');
+        // Mencegah render ulang
+        $this->skipRender();
     }
 
     public function destroy()
@@ -136,7 +140,6 @@ class MenuLossSeitaiController extends Component
             DB::commit();
             $this->dispatch('closeModalDelete');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Loss Infure deleted successfully.']);
-            $this->search();
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to delete master Loss Infure: ' . $e->getMessage());
@@ -144,17 +147,20 @@ class MenuLossSeitaiController extends Component
         }
     }
 
-    public function search()
-    {
-        $this->render();
-    }
-
     public function render()
     {
-        $result = MsLossSeitai::where('status', 1)->get();
+        $result = MsLossSeitai::join('mslosscategory as mlc', 'mslossseitai.loss_category_code', '=', 'mlc.code')
+        ->join('mslossclass as mlcl', 'mslossseitai.loss_class_id', '=', 'mlcl.id')
+        ->select('mslossseitai.*', 'mlc.name as category_name', 'mlcl.name as class_name')
+        ->get();
 
         return view('livewire.master-tabel.loss.menu-loss-seitai',[
             'result' => $result
         ])->extends('layouts.master');
+    }
+
+    public function rendered()
+    {
+        $this->dispatch('initDataTable');
     }
 }
