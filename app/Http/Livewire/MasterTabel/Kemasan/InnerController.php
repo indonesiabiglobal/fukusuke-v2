@@ -15,6 +15,7 @@ class InnerController extends Component
 {
     use WithPagination, WithoutUrlPagination;
     protected $paginationTheme = 'bootstrap';
+    protected $listeners = ['delete','edit'];
     public $searchTerm;
     public $code;
     public $name;
@@ -48,6 +49,8 @@ class InnerController extends Component
     {
         $this->resetFields();
         $this->dispatch('showModalCreate');
+        // Mencegah render ulang
+        $this->skipRender();
     }
 
     public function store()
@@ -87,11 +90,12 @@ class InnerController extends Component
         $this->idUpdate = $id;
         $this->code = $data->code;
         $this->name = $data->name;
+        $this->box_class = $data->box_class;
         $this->panjang = $data->panjang;
         $this->lebar = $data->lebar;
         $this->tinggi = $data->tinggi;
 
-        // $this->dispatch('showModalUpdate', $buyer);
+        $this->dispatch('showModalUpdate');
     }
 
     public function update()
@@ -104,7 +108,7 @@ class InnerController extends Component
             $data = MsPackagingInner::where('id', $this->idUpdate)->first();
             $data->code = $this->code;
             $data->name = $this->name;
-            $data->box_class = $this->box_class['value'];
+            $data->box_class = $this->box_class;
             $data->panjang = $this->panjang;
             $data->lebar = $this->lebar;
             $data->tinggi = $this->tinggi;
@@ -116,7 +120,6 @@ class InnerController extends Component
             DB::commit();
             $this->dispatch('closeModalUpdate');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Inner updated successfully.']);
-            $this->search();
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to update master Inner: ' . $e->getMessage());
@@ -128,6 +131,8 @@ class InnerController extends Component
     {
         $this->idDelete = $id;
         $this->dispatch('showModalDelete');
+        // Mencegah render ulang
+        $this->skipRender();
     }
 
     public function destroy()
@@ -144,7 +149,6 @@ class InnerController extends Component
             DB::commit();
             $this->dispatch('closeModalDelete');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Inner deleted successfully.']);
-            $this->search();
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to delete master Inner: ' . $e->getMessage());
@@ -152,26 +156,17 @@ class InnerController extends Component
         }
     }
 
-    public function search()
-    {
-        $this->render();
-    }
-
     public function render()
     {
-        $result = MsPackagingInner::where('status', 1);
-
-        if (isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined") {
-            $result = $result->where(function ($query) {
-                $query->where('code', 'ilike', "%{$this->searchTerm}%")
-                    ->orWhere('name', 'ilike', "%{$this->searchTerm}%");
-            });
-        }
-
-        $result = $result->get();
+        $result = MsPackagingInner::get();
 
         return view('livewire.master-tabel.kemasan.inner', [
             'result' => $result
         ])->extends('layouts.master');
+    }
+
+    public function rendered()
+    {
+        $this->dispatch('initDataTable');
     }
 }

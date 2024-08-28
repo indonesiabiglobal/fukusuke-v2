@@ -421,8 +421,7 @@
                     <tr>
                         <td>
                             <button type="button" class="btn fs-15 p-1 bg-primary rounded btn-edit"
-                                data-edit-id="{{ $item->id }}" data-bs-toggle="modal"
-                                data-bs-target="#modal-edit" wire:click="edit({{ $item->id }})">
+                                data-edit-id="{{ $item->id }}" wire:click="edit({{ $item->id }})">
                                 <i class="ri-edit-box-line text-white"></i>
                             </button>
                             <button {{ $item->status == 0 ? 'hidden' : '' }} type="button"
