@@ -17,13 +17,13 @@
                             <div class="form-group">
                                 <div class="input-group">
                                     <input wire:model.defer="tglMasuk" type="text" class="form-control"
-                                        style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
+                                        style="padding:0.44rem" data-provider="flatpickr" data-date-format="d M Y">
                                     <span class="input-group-text py-0">
                                         <i class="ri-calendar-event-fill fs-4"></i>
                                     </span>
 
                                     <input wire:model.defer="tglKeluar" type="text" class="form-control"
-                                        style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
+                                        style="padding:0.44rem" data-provider="flatpickr" data-date-format="d M Y">
                                     <span class="input-group-text py-0">
                                         <i class="ri-calendar-event-fill fs-4"></i>
                                     </span>
@@ -38,8 +38,26 @@
             </div>
             <div class="col-12 col-lg-9 mb-1">
                 <div class="input-group">
-                    <input wire:model.defer.live="lpk_no" class="form-control"style="padding:0.44rem" type="text"
-                        placeholder="000000-000" />
+                    <input wire:model="lpk_no" class="form-control" style="padding:0.44rem" type="text"
+                        placeholder="000000-000"
+                        x-data="{ lpk_no: '', status: true }"
+                        x-init="$watch('lpk_no', value => {
+                            if (value.length === 6 && !value.includes('-') && status) {
+                                lpk_no = value + '-';
+                            }
+                            if (value.length < 6) {
+                                status = true;
+                            }
+                            if (value.length === 7) {
+                                status = false;
+                            }
+                            if (value.length > 10) {
+                                lpk_no = value.substring(0, 11);
+                            }
+                        })"
+                        x-model="lpk_no"
+                        maxlength="10"
+                    />
                 </div>
             </div>
             <div class="col-12 col-lg-3">
@@ -66,7 +84,7 @@
                         <option value="">- All -</option>
                         @foreach ($products as $item)
                             <option data-custom-properties='{"code": "{{ $item->code }}"}' value="{{ $item->id }}"
-                                @if ($item->id == ($idProduct['value'] ?? null)) selected @endif>{{ $item->name }}</option>
+                                @if ($item->id == ($idProduct['value'] ?? null)) selected @endif>{{ $item->name }}, {{ $item->code }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -122,7 +140,7 @@
                     </div>
                 </button>
 
-                <button type="button" class="btn btn-success w-lg p-1" onclick="window.location.href='/add-nippo'">
+                <button type="button" class="btn btn-success w-lg p-1" onclick="window.location.href='/add-nippo?lpk_no={{ $lpk_no }}'">
                     <i class="ri-add-line"> </i> Add
                 </button>
             </div>
@@ -312,25 +330,25 @@
                             </a>
                         </td>
                         <td> {{ $item->lpk_no }} </td>
-                        <td> {{ $item->lpk_date }} </td>
-                        <td> {{ $item->panjang_lpk }}</td>
-                        <td> {{ $item->panjang_produksi }} </td>
-                        <td> {{ $item->berat_produksi }} </td>
-                        <td> {{ $item->gentan_no }} </td>
-                        <td> {{ $item->berat_standard }}</td>
+                        <td> {{ \Carbon\Carbon::parse($item->lpk_date)->format('d M Y') }} </td>            
+                        <td> {{ number_format($item->panjang_lpk, 0, ',', '.') }} </td>
+                        <td> {{ number_format($item->panjang_produksi, 0, ',', '.') }} </td>
+                        <td> {{ number_format($item->berat_produksi, 0, ',', '.') }} </td>
+                        <td> {{ $item->gentan_no }} </td>                        
+                        <td> {{ number_format($item->berat_standard, 0, ',', '.') }} </td>
                         <td> - </td>
                         <td> - </td>
                         <td> {{ $item->product_name }} </td>
                         <td> {{ $item->product_code }} </td>
                         <td> {{ $item->machineno }} </td>
-                        <td> {{ $item->production_date }} </td>
-                        <td> {{ $item->created_on }} </td>
+                        <td> {{ \Carbon\Carbon::parse($item->production_date)->format('d M Y') }} </td>                        
+                        <td> {{ \Carbon\Carbon::parse($item->created_on)->format('d M Y') }} </td>
                         <td> {{ $item->work_hour }} </td>
                         <td> {{ $item->work_shift }} </td>
                         <td> {{ $item->seq_no }} </td>
                         <td> {{ $item->infure_berat_loss }} </td>
-                        <td> {{ $item->updated_by }} </td>
-                        <td> {{ $item->updated_on }} </td>
+                        <td> {{ $item->updated_by }} </td>                        
+                        <td> {{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y H:i') }} </td> 
                     </tr>
                 @empty
                     {{-- <tr>
@@ -389,7 +407,7 @@
                             <div class="text-center">
                                 <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
                                     colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
-                                <h5 class="mt-2">Sorry! No Result Found</h5>
+                                <h5 class="mt-2">Record not Found..!</h5>
                             </div>
                         `
                     },

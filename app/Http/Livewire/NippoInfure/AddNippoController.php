@@ -62,10 +62,13 @@ class AddNippoController extends Component
     // data LPK
     public $orderLPK;
 
-    public function mount()
+    public function mount(Request $request)
     {
-        $this->production_date = Carbon::now()->format('Y-m-d');
-        $this->created_on = Carbon::now()->format('Y-m-d H:i:s');
+        if (!empty($request->query('lpk_no'))) {
+            $this->lpk_no = $request->query('lpk_no');
+        }
+        $this->production_date = Carbon::now()->format('d/m/Y');
+        $this->created_on = Carbon::now()->format('d/m/Y');
         $this->work_hour = Carbon::now()->format('H:i');
 
         $workingShift = DB::select("
@@ -431,6 +434,22 @@ class AddNippoController extends Component
         return redirect()->route('nippo-infure');
     }
 
+    public function resetLpkNo()
+    {
+        $this->lpk_date = Carbon::now()->format('d/m/Y');
+        $this->panjang_lpk = '';
+        $this->created_on = Carbon::now()->format('d/m/Y');
+        $this->code = '';
+        $this->name = '';
+        $this->dimensiinfure = '';
+        $this->qty_gulung = '';
+        $this->lpk_no = '';
+        $this->qty_gentan = '';
+        $this->berat_standard = '';
+        $this->total_assembly_line = '';
+        $this->selisih = '';
+    }
+
     public function render()
     {
         if (strlen($this->lpk_no) === 6 && strpos($this->lpk_no, '-') === false) {
@@ -468,10 +487,11 @@ class AddNippoController extends Component
 
             if ($tdorderlpk == null) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor LPK ' . $this->lpk_no . ' Tidak Terdaftar']);
+                $this->resetLpkNo();
             } else {
-                $this->lpk_date = Carbon::parse($tdorderlpk->lpk_date)->format('Y-m-d');
-                $this->panjang_lpk = $tdorderlpk->panjang_lpk;
-                $this->created_on = Carbon::parse($tdorderlpk->created_on)->format('d/m/Y H:i:s');
+                $this->lpk_date = Carbon::parse($tdorderlpk->lpk_date)->format('d/m/Y');
+                $this->panjang_lpk = number_format($tdorderlpk->panjang_lpk, 0, ',', ',');;
+                $this->created_on = Carbon::parse($tdorderlpk->created_on)->format('d/m/Y');
                 $this->code = $tdorderlpk->code;
                 $this->name = $tdorderlpk->name;
                 $this->dimensiinfure = $tdorderlpk->ketebalan . 'x' . $tdorderlpk->diameterlipat;
@@ -503,6 +523,8 @@ class AddNippoController extends Component
 
             if ($machine == null) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Machine ' . $this->machineno . ' Tidak Terdaftar']);
+                $this->machineno = '';
+                $this->machinename = '';
             } else {
                 $this->machineno = $machine->machineno;
                 $this->machinename = $machine->machinename;

@@ -31,7 +31,7 @@ class NippoInfureController extends Component
     public $machineId;
     #[Session]
     public $status;
-    #[Session]
+    // #[Session]
     public $lpk_no;
     #[Session]
     public $searchTerm;
@@ -50,10 +50,10 @@ class NippoInfureController extends Component
         $this->buyer = MsBuyer::get();
         $this->machine = MsMachine::whereIn('department_id', [10, 12, 15, 2, 4, 10])->get();
         if (empty($this->tglMasuk)) {
-            $this->tglMasuk = Carbon::now()->format('d-m-Y');
+            $this->tglMasuk = Carbon::now()->format('d M Y');
         }
         if (empty($this->tglKeluar)) {
-            $this->tglKeluar = Carbon::now()->format('d-m-Y');
+            $this->tglKeluar = Carbon::now()->format('d M Y');
         }
     }
 
