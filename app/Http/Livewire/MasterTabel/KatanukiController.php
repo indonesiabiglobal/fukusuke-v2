@@ -16,6 +16,7 @@ class KatanukiController extends Component
     use WithFileUploads;
     use WithPagination, WithoutUrlPagination;
     protected $paginationTheme = 'bootstrap';
+    protected $listeners = ['delete', 'edit'];
     public $katanukis;
     public $searchTerm;
     public $code;
@@ -28,11 +29,11 @@ class KatanukiController extends Component
     #[Validate('image|max:10240')] // 10MB Max
 
 
-    public function mount()
-    {
-        $this->katanukis = DB::table('mskatanuki')
-            ->get(['id', 'code', 'name', 'filename', 'status', 'updated_by', 'updated_on']);
-    }
+    // public function mount()
+    // {
+    //     $this->katanukis = DB::table('mskatanuki')
+    //         ->get(['id', 'code', 'name', 'filename', 'status', 'updated_by', 'updated_on']);
+    // }
 
     public function resetFields()
     {
@@ -45,6 +46,8 @@ class KatanukiController extends Component
     {
         $this->resetFields();
         $this->dispatch('showModalCreate');
+        // Mencegah render ulang
+        $this->skipRender();
     }
 
     public function removePhoto()
@@ -55,7 +58,7 @@ class KatanukiController extends Component
     public function store()
     {
         $this->validate([
-            'code' => 'required|unique:mskatanuki,code',
+            'code' => 'required|max:10|unique:mskatanuki,code',
             'name' => 'required',
             // 'photo' => 'required|image|max:10240',
         ]);
@@ -111,9 +114,9 @@ class KatanukiController extends Component
     public function update()
     {
         $this->validate([
-            'code' => 'required|unique:mskatanuki,code,' . $this->idUpdate,
+            'code' => 'required|max:10|unique:mskatanuki,code,' . $this->idUpdate,
             'name' => 'required',
-            'photo' => 'image|max:10240',
+            'photo' => 'max:10240',
         ]);
 
         DB::beginTransaction();
@@ -135,10 +138,8 @@ class KatanukiController extends Component
             $statusActive = 1;
             if ($this->photo) {
                 // menyimpan file image ke storage
-                $filename = $this->photo->getClientOriginalName();
+                $filename = Str::random(20) . '.' . $this->photo->getClientOriginalExtension();
                 $this->filename = $this->photo->storeAs('katanuki', $filename, 'public');
-            } else {
-                $this->filename = $this->filename;
             }
 
             // menyimpan data ke database
@@ -153,6 +154,7 @@ class KatanukiController extends Component
                     'updated_on' => now(),
                 ]);
             DB::commit();
+
             $this->resetFields();
             $this->dispatch('closeModalUpdate');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Katanuki updated successfully.']);
@@ -167,6 +169,8 @@ class KatanukiController extends Component
     {
         $this->idDelete = $id;
         $this->dispatch('showModalDelete');
+        // Mencegah render ulang
+        $this->skipRender();
     }
 
     public function destroy()
@@ -174,7 +178,7 @@ class KatanukiController extends Component
         DB::beginTransaction();
         try {
             $statusInactive = 0;
-            // $katanuki = DB::table('mskatanuki')->where('id', $this->idDelete)->first();
+            $katanuki = DB::table('mskatanuki')->where('id', $this->idDelete)->first();
             // $pathFile = $katanuki->filename;
             // if ($pathFile) {
             //     $pathFile = 'public/' . $pathFile;
@@ -197,27 +201,18 @@ class KatanukiController extends Component
         }
     }
 
-    public function search()
-    {
-        $this->resetPage();
-        $this->render();
-    }
-
     public function render()
     {
         $data = DB::table('mskatanuki')
-            ->when(isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined", function ($query) {
-                $query->where(function ($query) {
-                    $query
-                        ->where('code', 'ilike', "%" . $this->searchTerm . "%")
-                        ->orWhere('name', 'ilike', "%" . $this->searchTerm . "%");
-                });
-            })
-            // ->paginate(10);
             ->get();
 
         return view('livewire.master-tabel.katanuki', [
             'data' => $data
         ])->extends('layouts.master');
+    }
+
+    public function rendered()
+    {
+        $this->dispatch('initDataTable');
     }
 }

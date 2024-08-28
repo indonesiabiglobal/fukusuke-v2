@@ -341,7 +341,7 @@
                                 data-edit-id="{{ $item->id }}" wire:click="edit({{ $item->id }})">
                                 <i class="ri-edit-box-line text-white"></i>
                             </button>
-                            <button type="button"
+                            <button type="button" {{ $item->status == 0 ? 'hidden' : '' }}
                                 class="btn fs-15 p-1 bg-danger rounded removeDepartemenModal btn-delete"
                                 data-delete-id="{{ $item->id }}" wire:click="delete({{ $item->id }})">
                                 <i class="ri-delete-bin-line  text-white"></i>
