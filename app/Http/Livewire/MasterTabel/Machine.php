@@ -12,6 +12,7 @@ class Machine extends Component
 {
     use WithPagination, WithoutUrlPagination;
     protected $paginationTheme = 'bootstrap';
+    protected $listeners = ['delete','edit'];
     public $machines;
     public $searchTerm;
     public $machineno;
@@ -24,11 +25,11 @@ class Machine extends Component
     public $idUpdate;
     public $idDelete;
 
-    public function mount()
-    {
-        $this->machines = DB::table('msmachine')
-            ->get(['id', 'machinename', 'machineno', 'department_id', 'product_group_id', 'capacity_kg', 'capacity_lembar', 'status', 'updated_by', 'updated_on']);
-    }
+    // public function mount()
+    // {
+    //     $this->machines = DB::table('msmachine')
+    //         ->get(['id', 'machinename', 'machineno', 'department_id', 'product_group_id', 'capacity_kg', 'capacity_lembar', 'status', 'updated_by', 'updated_on']);
+    // }
 
     public function resetFields()
     {
@@ -45,6 +46,8 @@ class Machine extends Component
     {
         $this->resetFields();
         $this->dispatch('showModalCreate');
+        // Mencegah render ulang
+        $this->skipRender();
     }
 
     public function store()
@@ -61,8 +64,8 @@ class Machine extends Component
             DB::table('msmachine')->insert([
                 'machineno' => $this->machineno,
                 'machinename' => $this->machinename,
-                'department_id' => $this->department_id,
-                'product_group_id' => $this->product_group_id,
+                'department_id' => $this->department_id['value'],
+                'product_group_id' => $this->product_group_id['value'],
                 'capacity_kg' => $this->capacity_kg,
                 'capacity_lembar' => $this->capacity_lembar,
                 'capacity_size' => $this->capacity_size,
@@ -74,7 +77,6 @@ class Machine extends Component
             ]);
             DB::commit();
             $this->resetFields();
-            $this->search();
             $this->dispatch('closeModalCreate');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Machine created successfully.']);
         } catch (\Exception $e) {
@@ -121,7 +123,6 @@ class Machine extends Component
             ]);
             DB::commit();
             $this->resetFields();
-            $this->search();
             $this->dispatch('closeModalUpdate');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Machine updated successfully.']);
         } catch (\Exception $e) {
@@ -135,6 +136,8 @@ class Machine extends Component
     {
         $this->idDelete = $id;
         $this->dispatch('showModalDelete');
+        // Mencegah render ulang
+        $this->skipRender();
     }
 
     public function destroy()
@@ -148,7 +151,6 @@ class Machine extends Component
                 'updated_on' => now(),
             ]);
             DB::commit();
-            $this->search();
             $this->dispatch('closeModalDelete');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Machine deleted successfully.']);
         } catch (\Exception $e) {
@@ -158,11 +160,6 @@ class Machine extends Component
         }
     }
 
-    public function search()
-    {
-        $this->resetPage();
-        $this->render();
-    }
     public function render()
     {
         $data = DB::table('msmachine as msm')
@@ -180,19 +177,15 @@ class Machine extends Component
         )
         ->leftJoin('msdepartment as msd', 'msd.id', '=', 'msm.department_id')
         ->leftJoin('msproduct_group as mpg', 'mpg.id', '=', 'msm.product_group_id')
-        ->when(isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined", function ($query) {
-            $query->where(function ($query) {
-                $query->where('msm.machinename', 'ilike', '%' . $this->searchTerm. '%')
-                ->orWhere('msm.machineno', 'ilike', '%' . $this->searchTerm. '%')
-                ->orWhere('msd.name','ilike', '%' . $this->searchTerm. '%')
-                ->orWhere('mpg.name','ilike', '%' . $this->searchTerm. '%');
-            });
-        })
-        // ->paginate(10);
         ->get();
 
         return view('livewire.master-tabel.machine', [
             'data' => $data
         ])->extends('layouts.master');
+    }
+
+    public function rendered()
+    {
+        $this->dispatch('initDataTable');
     }
 }

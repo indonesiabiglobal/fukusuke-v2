@@ -57,7 +57,7 @@
                                                 <input type="text"
                                                     class="form-control @error('machineno') is-invalid @enderror"
                                                     id="machineno" wire:model.defer="machineno"
-                                                    placeholder="Kode/Nomor">
+                                                    placeholder="Kode/Nomor" oninput="this.value = this.value.toUpperCase()">
                                                 @error('machineno')
                                                     <span class="invalid-feedback">{{ $message }}</span>
                                                 @enderror
@@ -234,9 +234,6 @@
                                                 <select data-choices data-choices-sorting="true"
                                                     class="form-select @error('department_id') is-invalid @enderror"
                                                     wire:model="department_id" placeholder="">
-                                                    <option value="" selected>
-                                                        Silahkan Pilih
-                                                    </option>
                                                     @foreach (\App\Models\MsDepartment::whereIn('id', [10, 11, 12, 13, 15, 16])->select('id', 'name')->get() as $department)
                                                         <option value="{{ $department->id }}"
                                                             {{ $department_id == $department->id ? 'selected' : '' }}>
@@ -256,9 +253,6 @@
                                                 <select data-choices data-choices-sorting="true" id="product_group_id"
                                                     class="form-control @error('product_group_id') is-invalid @enderror"
                                                     wire:model="product_group_id" placeholder="">
-                                                    <option value="" selected>
-                                                        Silahkan Pilih
-                                                    </option>
                                                     @foreach (\App\Models\MsProductGroup::select('id', 'name')->get() as $productGroup)
                                                         <option value="{{ $productGroup->id }}">
                                                             {{ $productGroup->name }}
@@ -499,12 +493,13 @@
                 @forelse ($data as $item)
                     <tr>
                         <td>
-                            <button type="button" class="btn fs-15 p-1 bg-primary rounded"
-                                wire:click="edit({{ $item->id }})">
+                            <button type="button" class="btn fs-15 p-1 bg-primary rounded btn-edit"
+                                data-edit-id="{{ $item->id }}" wire:click="edit({{ $item->id }})">
                                 <i class="ri-edit-box-line text-white"></i>
                             </button>
-                            <button type="button" class="btn fs-15 p-1 bg-danger rounded modal-delete"
-                                wire:click="delete({{ $item->id }})">
+                            <button {{ $item->status == 0 ? 'hidden' : '' }} type="button"
+                                class="btn fs-15 p-1 bg-danger rounded modal-delete btn-delete"
+                                data-delete-id="{{ $item->id }}" wire:click="delete({{ $item->id }})">
                                 <i class="ri-delete-bin-line  text-white"></i>
                             </button>
                         </td>
@@ -512,15 +507,15 @@
                         <td>{{ $item->machineno }}</td>
                         <td>{{ $item->departmentname }}</td>
                         <td>{{ $item->productgroupname }}</td>
-                        <td>{{ $item->capacity_kg }}</td>
-                        <td>{{ $item->capacity_lembar }}</td>
+                        <td>{{ number_format($item->capacity_kg, 2) }}</td>
+                        <td>{{ number_format($item->capacity_lembar, 2) }}</td>
                         <td>
                             {!! $item->status == 1
                                 ? '<span class="badge text-success bg-success-subtle">Active</span>'
                                 : '<span class="badge text-bg-danger">Non Active</span>' !!}
                         </td>
                         <td>{{ $item->updated_by }}</td>
-                        <td>{{ $item->updated_on }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->updated_on)->format('d-M-Y H:i:s')  }}</td>
                         {{-- <td>{{ $no++ }}</td> --}}
                     </tr>
                 @empty
@@ -570,45 +565,70 @@
             $('#modal-delete').modal('hide');
         });
 
-        $(document).ready(function() {
-            $('#product_group_id').select2();
-            // $('#product_group_id').on('change', function(e) {
-            //     var data = $('#product_group_id').select2("val");
-            //     @this.set('selected', data);
-            // });
-        });
-
-        // Inisialisasi saat Livewire di-initialized
-        document.addEventListener('livewire:initialized', function() {
-            initDataTable();
+        // datatable
+        $wire.on('initDataTable', () => {
+            initDataTable('machineTable');
         });
 
         // Fungsi untuk menginisialisasi ulang DataTable
-        function initDataTable() {
+        function initDataTable(id) {
             // Hapus DataTable jika sudah ada
-            let table = $.fn.dataTable.isDataTable('#machineTable') ?
-                $('#machineTable').DataTable() :
-                null;
-
-            if (table) {
-                table.destroy();
+            if ($.fn.dataTable.isDataTable('#' + id)) {
+                let table = $('#' + id).DataTable();
+                table.clear(); // Bersihkan data tabel
+                table.destroy(); // Hancurkan DataTable
+                // Hindari penggunaan $('#' + id).empty(); di sini
             }
 
-            // Inisialisasi ulang DataTable
-            table = $('#machineTable').DataTable({
-                "pageLength": 10,
-                "searching": true,
-                "responsive": true,
-                "order": [
-                    [1, "asc"]
-                ]
-            });
+            setTimeout(() => {
+                // Inisialisasi ulang DataTable
+                let table = $('#' + id).DataTable({
+                    "pageLength": 10,
+                    "searching": true,
+                    "responsive": true,
+                    "scrollX": true,
+                    "order": [
+                        [2, "asc"]
+                    ],
+                    "language": {
+                        "emptyTable": `
+                            <div class="text-center">
+                                <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                                    colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
+                                <h5 class="mt-2">Sorry! No Result Found</h5>
+                            </div>
+                        `
+                    },
+                });
+                // tombol delete
+                $('.btn-delete').on('click', function() {
+                    let id = $(this).attr('data-delete-id');
 
-            // Inisialisasi ulang event listener checkbox
-            $('.toggle-column').off('change').on('change', function() {
-                let column = table.column($(this).attr('data-column'));
-                column.visible(!column.visible());
-            });
+                    // livewire click
+                    $wire.dispatch('delete', {
+                        id
+                    });
+                });
+                // tombol edit
+                $('.btn-edit').on('click', function() {
+                    let id = $(this).attr('data-edit-id');
+
+                    // livewire click
+                    $wire.dispatch('edit', {id});
+                });
+
+                // default column visibility
+                $('.toggle-column').each(function() {
+                    let column = table.column($(this).attr('data-column'));
+                    column.visible($(this).is(':checked'));
+                });
+
+                // Inisialisasi ulang event listener checkbox
+                $('.toggle-column').off('change').on('change', function() {
+                    let column = table.column($(this).attr('data-column'));
+                    column.visible(!column.visible());
+                });
+            }, 500);
         }
     </script>
 @endscript
