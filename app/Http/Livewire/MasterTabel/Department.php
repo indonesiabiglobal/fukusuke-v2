@@ -12,6 +12,7 @@ class Department extends Component
 {
     use WithPagination, WithoutUrlPagination;
     protected $paginationTheme = 'bootstrap';
+    protected $listeners = ['delete'];
     public $departments;
     public $searchTerm;
     public $code;

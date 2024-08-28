@@ -80,75 +80,60 @@
         // inisialisasi DataTable
 
         // Fungsi untuk menginisialisasi ulang DataTable
-        function initDataTable(id) {
-            // Hapus DataTable jika sudah ada
-            if ($.fn.dataTable.isDataTable('#' + id)) {
-                let table = $('#' + id).DataTable();
-                table.clear(); // Bersihkan data tabel
-                table.destroy(); // Hancurkan DataTable
-                // Hindari penggunaan $('#' + id).empty(); di sini
-            }
+        document.addEventListener('livewire:init', () => {
+            function initDataTable(id) {
+                // Hapus DataTable jika sudah ada
+                if ($.fn.dataTable.isDataTable('#' + id)) {
+                    let table = $('#' + id).DataTable();
+                    table.clear(); // Bersihkan data tabel
+                    table.destroy(); // Hancurkan DataTable
+                    // Hindari penggunaan $('#' + id).empty(); di sini
+                }
 
-            setTimeout(() => {
-                // Inisialisasi ulang DataTable
-                let table = $('#' + id).DataTable({
-                    "pageLength": 10,
-                    "searching": true,
-                    "responsive": true,
-                    "scrollX": true,
-                    "order": [
-                        [2, "asc"]
-                    ],
-                    "language": {
-                        "emptyTable": `
+                setTimeout(() => {
+                    // Inisialisasi ulang DataTable
+                    let table = $('#' + id).DataTable({
+                        "pageLength": 10,
+                        "searching": true,
+                        "responsive": true,
+                        "scrollX": true,
+                        "order": [
+                            [2, "asc"]
+                        ],
+                        "language": {
+                            "emptyTable": `
                             <div class="text-center">
                                 <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
                                     colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
                                 <h5 class="mt-2">Sorry! No Result Found</h5>
                             </div>
                         `
-                    },
-                    "drawCallback": function(settings) {
-                        // Tambahkan event listener JS secara manual
-                        document.querySelectorAll('.btn.bg-primary').forEach(button => {
-                            button.addEventListener('click', function() {
-                                let id = this.getAttribute('data-id');
-                                // Lakukan sesuatu saat tombol edit diklik
-                                console.log('Edit button clicked for ID:', id);
-                            });
+                        }
+                    });
+                    // tombol delete
+                    $('.btn-delete').on('click', function() {
+                        let id = $(this).attr('data-id');
+
+                        // livewire click
+                        $wire.dispatch('delete', {
+                            id
                         });
+                    });
 
-                        // document.querySelectorAll('.btn-delete').forEach(button => {
-                        //     button.addEventListener('click', function() {
-                        //         console.log('Delete button clicked');
+                    // default column visibility
+                    $('.toggle-column').each(function() {
+                        let column = table.column($(this).attr('data-column'));
+                        column.visible($(this).is(':checked'));
+                    });
 
-                        //         let id = this.getAttribute('data-id');
-                        //         // Lakukan sesuatu saat tombol delete diklik
-                        //         console.log('Delete button clicked for ID:', id);
-                        //     });
-                        // });
-                    }
-                });
-                // tombol delete
-                $('.btn-delete').on('click', function() {
-                    console.log('Delete button clicked');
-                    let id = $(this).data('id');
-                    console.log("id: "+ id);
-                });
-
-                // default column visibility
-                $('.toggle-column').each(function() {
-                    let column = table.column($(this).attr('data-column'));
-                    column.visible($(this).is(':checked'));
-                });
-
-                // Inisialisasi ulang event listener checkbox
-                $('.toggle-column').off('change').on('change', function() {
-                    let column = table.column($(this).attr('data-column'));
-                    column.visible(!column.visible());
-                });
-            }, 500);
-        }
+                    // Inisialisasi ulang event listener checkbox
+                    $('.toggle-column').off('change').on('change', function() {
+                        let column = table.column($(this).attr('data-column'));
+                        column.visible(!column.visible());
+                    });
+                }, 500);
+            }
+        })
     </script>
     <script src="{{ asset('/sw.js') }}"></script>
     <script>

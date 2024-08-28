@@ -361,7 +361,7 @@
         </div>
     </div>
 
-    {{-- <div class="table-responsive table-card mt-3 mb-1" wire:ignore>
+    <div class="table-responsive table-card mt-3 mb-1">
         <table class="table align-middle" id="customerTable" style="width:100%">
             <thead class="table-light">
                 <tr>
@@ -379,13 +379,13 @@
                 @forelse ($data as $item)
                     <tr>
                         <td class="text-nowrap">
-                            <button type="button" class="btn fs-15 p-1 bg-primary rounded"
-                                wire:click.lazy="edit({{ $item->id }})">
+                            <button type="button" class="btn fs-15 p-1 bg-primary rounded btn-edit"
+                                data-edit-id="{{ $item->id }}" wire:click="edit({{ $item->id }})">
                                 <i class="ri-edit-box-line text-white"></i>
                             </button>
                             <button {{ $item->status == 0 ? 'hidden' : '' }} type="button"
-                                class="btn fs-15 p-1 bg-danger rounded btn-delete" data-id="{{ $item->id }}"
-                                wire:click.lazy="delete({{ $item->id }})">
+                                class="btn fs-15 p-1 bg-danger rounded btn-delete" data-delete-id="{{ $item->id }}"
+                                wire:click="delete({{ $item->id }})">
                                 <i class="ri-delete-bin-line text-white"></i>
                             </button>
                         </td>
@@ -412,10 +412,10 @@
                 @endforelse
             </tbody>
         </table>
-        {{ $data->links() }}
-    </div> --}}
+        {{-- {{ $data->links() }} --}}
+    </div>
 
-    <table id="example" class="table table-striped" style="width:100%">
+    {{-- <table id="example" class="table table-striped" style="width:100%">
         <thead>
             <tr>
                 <th>Name</th>
@@ -894,7 +894,7 @@
                 <th>Salary</th>
             </tr>
         </tfoot>
-    </table>
+    </table> --}}
 </div>
 
 @script
@@ -907,6 +907,11 @@
         // Close modal create buyer
         $wire.on('closeModalCreate', () => {
             $('#modal-add').modal('hide');
+        });
+
+        // Show modal update buyer
+        $wire.on('showModalUpdate', () => {
+            $('#modal-edit').modal('show');
         });
 
         // Close modal update buyer
@@ -924,14 +929,10 @@
             $('#removeBuyerModal').modal('hide');
         });
 
-        // Inisialisasi saat Livewire di-initialized
-        document.addEventListener('livewire:initialized', () => {
+        // datatable
+        $wire.on('initDataTable', () => {
             initDataTable('customerTable');
         });
-
-
-        // datatable
-        // inisialisasi DataTable
 
         // Fungsi untuk menginisialisasi ulang DataTable
         function initDataTable(id) {
@@ -962,6 +963,22 @@
                             </div>
                         `
                     },
+                });
+                // tombol delete
+                $('.btn-delete').on('click', function() {
+                    let id = $(this).attr('data-delete-id');
+
+                    // livewire click
+                    $wire.dispatch('delete', {
+                        id
+                    });
+                });
+                // tombol edit
+                $('.btn-edit').on('click', function() {
+                    let id = $(this).attr('data-edit-id');
+
+                    // livewire click
+                    $wire.dispatch('edit', {id});
                 });
 
                 // default column visibility
