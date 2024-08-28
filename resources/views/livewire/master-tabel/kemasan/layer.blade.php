@@ -480,9 +480,9 @@
         });
 
         // Inisialisasi saat Livewire di-initialized
-        // document.addEventListener('livewire:initialized', function() {
-        //     initDataTable();
-        // });
+        document.addEventListener('livewire:initialized', function() {
+            initDataTable();
+        });
 
         // Fungsi untuk menginisialisasi ulang DataTable
         function initDataTable() {

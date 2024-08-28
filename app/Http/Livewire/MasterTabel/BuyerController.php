@@ -176,24 +176,15 @@ class BuyerController extends Component
     {
         $data = DB::table('msbuyer AS mb')
             ->select('mb.id', 'mb.code', 'mb.name', 'mb.address', 'mb.country', 'mb.status', 'mb.updated_by', 'mb.updated_on');
-
-        if (isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined") {
-            $data = $data->where(function ($query) {
-                $query->where('mb.code', 'ilike', "%{$this->searchTerm}%")
-                    ->orWhere('mb.name', 'ilike', "%{$this->searchTerm}%")
-                    ->orWhere('mb.address', 'ilike', "%{$this->searchTerm}%")
-                    ->orWhere('mb.country', 'ilike', "%{$this->searchTerm}%");
-            });
-        }
-
-        // $data = $data->paginate(8);
         $data = $data->get();
 
         return view('livewire.master-tabel.buyer', [
             'data' => $data,
         ])->extends('layouts.master');
-
-
-        // return view('livewire.master-tabel.buyer')->extends('layouts.master');
     }
+
+    // public function rendered()
+    // {
+    //     $this->dispatch('initDataTable');
+    // }
 }
