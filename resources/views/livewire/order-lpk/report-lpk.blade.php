@@ -134,15 +134,22 @@ crossorigin="anonymous">
                 mp.back_color_number as printing_warnabelakang,mp.back_color_1 as printing_warnabelakang1,
                 mp.back_color_2 as printing_warnabelakang2,mp.back_color_3 as printing_warnabelakang3,
                 mp.back_color_4 as printing_warnabelakang4,mp.back_color_5 as printing_warnabelakang5,
-                mp.print_type as printing_jeniscetak,mp.ink_characteristic as printing_sifattinta,mp.endless_printing as printing_endless,mp.winding_direction_of_the_web as printing_araggulungan,
-                mp.seal_classification as seitai_klasifikasiseal,mp.from_seal_design as seitai_jaraksealdaripola,
+                mp.print_type,mjc.name as printing_jeniscetak,
+                mp.ink_characteristic,msi.name as printing_sifattinta,
+                mp.endless_printing,mse.name as printing_endless,mp.winding_direction_of_the_web as printing_araggulungan,
+                mp.seal_classification, mks.name as seitai_klasifikasiseal,
+                mp.from_seal_design as seitai_jaraksealdaripola,
                 mp.lower_sealing_length as seitai_jaraksealbawah,mp.palet_jumlah_baris as seitai_jmlhbarispalet,
                 mp.palet_isi_baris as seitai_isibarispalet,	mpb.code as seitai_kodebox , mpb.name as seitai_namabox,
                 mp.case_box_count as seitai_isibox,
                 mpg.code as seitai_kodegaiso ,mpg.name as seitai_namagaiso,mp.case_gaiso_count as seitai_isigaiso,
                 mpi.code as seitai_kodeinner, mpi.name as seitai_namainner,mp.case_inner_count as seitai_isiinner,
                 mpl.code as seitai_kodelayer,mpl.name as seitai_namalayer,
-                mls.code as seitai_kodelakban,mls.name as seitai_namalakban,mp.stampelseitaiid as seitai_stample,'' as jenis,'' as kodeplate,
+                mls.code as seitai_kodelakban,mls.name as seitai_namalakban,mp.stampelseitaiid as seitai_stample,
+                case when mpb.box_class='1' then 'Khusus' when  mpb.box_class='2' then 'Standar' else '' end as jns_box,
+				case when mpg.box_class='1' then 'Khusus' when  mpg.box_class='2' then 'Standar' else '' end as jns_gaiso,
+				case when mpi.box_class='1' then 'Khusus' when  mpi.box_class='2' then 'Standar' else '' end as jns_inner,
+				case when mpl.box_class='1' then 'Khusus' when  mpl.box_class='2' then 'Standar' else '' end as jns_layer,'' as kodeplate,
                 mp.manufacturing_summary as seitai_catatan, tdol.total_assembly_line
                 from tdorderlpk as tdol
                 left join tdorder as tdo on tdo.id=tdol.order_id
@@ -157,6 +164,10 @@ crossorigin="anonymous">
                 left join mswarnalpk as mwl on mwl.id=mp.warnalpkid
                 left join mslakbaninfure as mli on mli.id=mp.lakbaninfureid
                 left join mslakbanseitai as mls on mls.id=mp.lakbanseitaiid
+                left join msklasifikasiseal as mks on mks.code=mp.seal_classification
+                left join msendless as mse on mse.code=mp.endless_printing
+                left join mssifattinta as msi  on msi.code=mp.ink_characteristic
+				left join msjeniscetak as mjc  on mjc.code=mp.print_type
                 where tdol.id='$lpk_id'
         "),
     )->first();
@@ -517,6 +528,13 @@ crossorigin="anonymous">
                                             </td>
                                         </tr>
                                         <tr>
+                                            <td style="border-bottom: 1px solid black;">
+                                                <span style="font-size: 13.5px">Cetak Endless</span><br>
+                                                <span
+                                                    style="font-size: 14.5px; font-weight: bold;">{{ $data->printing_endless }}</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
                                             <td>
                                                 <span style="font-size: 13.5px">Kode Plate</span><br>
                                                 <span
@@ -649,7 +667,11 @@ crossorigin="anonymous">
                         <table>
                             <tr>
                                 <td>
-                                    <font style="font-weight: bold; font-size: 14.5px">{{ $data->jenis }}</font><br>
+                                    <font style="font-weight: bold;" style="font-size: 14.5px">{{ $data->jns_gaiso }}</font><br>
+                                    <font style="font-weight: bold;" style="font-size: 14.5px">{{ $data->jns_box }}</font><br>
+                                    <font style="font-weight: bold;" style="font-size: 14.5px">{{ $data->jns_inner }}</font><br>
+                                    <font style="font-weight: bold;" style="font-size: 14.5px">{{ $data->jns_layer }}</font><br>
+                                    {{-- <font style="font-weight: bold;" style="font-size: 14.5px">{{ $data->seitai_namalakban }}</font><br> --}}
                                 </td>
                             </tr>
                         </table>

@@ -56,13 +56,15 @@
             tdol.lpk_no,
             msp.name,
             msp.code,
+            msp.code_alias,
             msp.product_type_code,
-            to_char(tdpa.production_date, 'YYYY-MM-DD') AS production_date,
+            to_char(tdpa.production_date, 'DD-MM-YYYY') AS production_date,
             tdpa.work_hour,
             tdpa.work_shift,
             msm.machineno,
             tdpa.berat_produksi,
             tdpa.panjang_produksi,
+            tdol.total_assembly_line-tdol.panjang_lpk as selisih,
             tdpa.nomor_han,
             mse.employeeno as nik,
             mse.empname,
@@ -159,7 +161,7 @@
                                 <td width="60%">
                                     <span>
                                         <font style="font-size: 22px;">
-                                            : {{ $data->product_type_code }}
+                                            : {{ $data->code_alias }}
                                         </font>
                                     </span>
                                 </td>
@@ -226,7 +228,7 @@
                                 <td width="60%">
                                     <span>
                                         <font style="font-size: 22px;">
-                                            : {{ $data->code }}
+                                            : {{ $data->machineno }}
                                         </font>
                                     </span>
                                 </td>
@@ -279,7 +281,7 @@
                                 <td width="60%">
                                     <span>
                                         <font style="font-size: 22px;">
-                                            : -
+                                            : {{ $data->selisih }}
                                         </font>
                                     </span>
                                 </td>
