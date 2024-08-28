@@ -12,7 +12,7 @@ class Department extends Component
 {
     use WithPagination, WithoutUrlPagination;
     protected $paginationTheme = 'bootstrap';
-    protected $listeners = ['delete'];
+    protected $listeners = ['delete','edit'];
     public $departments;
     public $searchTerm;
     public $code;
@@ -165,5 +165,10 @@ class Department extends Component
         return view('livewire.master-tabel.department', [
             'data' =>  $data
         ])->extends('layouts.master');
+    }
+
+    public function rendered()
+    {
+        $this->dispatch('initDataTable');
     }
 }
