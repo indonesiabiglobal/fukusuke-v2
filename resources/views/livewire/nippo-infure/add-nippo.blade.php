@@ -22,8 +22,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Tanggal Proses</label>
-                                <input class="form-control datepicker-input"  style="padding:0.44rem" type="datetime-local" wire:model.defer="production_date" />
-                                {{-- <input class="form-control" type="text" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y" wire:model.defer="created_on" placeholder="yyyy/mm/dd"/> --}}
+                                <input class="form-control" type="text" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y" wire:model.defer="created_on" placeholder="yyyy/mm/dd"/>
                                 <span class="input-group-text py-0">
                                     <i class="ri-calendar-event-fill fs-4"></i>
                                 </span>
@@ -42,7 +41,56 @@
                                         Nomor LPK
                                     </a>
                                 </label>
-                                <input type="text" class="form-control @error('lpk_no') is-invalid @enderror" wire:model.live.debounce.300ms="lpk_no" />
+                                {{-- <input type="text" class="form-control @error('lpk_no') is-invalid @enderror" wire:model.live.debounce.300ms="lpk_no" /> --}}
+                                {{-- <div x-data="{ lpk_no: @entangle('lpk_no').change, status: true }">
+                                    <input 
+                                        wire:model.change="lpk_no" 
+                                        class="form-control" 
+                                        style="padding:0.44rem" 
+                                        type="text"
+                                        placeholder="000000-000"
+                                        x-on:keydown.tab="$event.preventDefault(); $refs.machineInput.focus();" 
+                                        x-init="$watch('lpk_no', value => {
+                                            if (value.length === 6 && !value.includes('-') && status) {
+                                                lpk_no = value + '-';
+                                            }
+                                            if (value.length < 6) {
+                                                status = true;
+                                            }
+                                            if (value.length === 7) {
+                                                status = false;
+                                            }
+                                            if (value.length > 10) {
+                                                lpk_no = value.substring(0, 11);
+                                            }
+                                        })"
+                                        maxlength="10"
+                                    />
+                                </div> --}}
+                                <div x-data="{ lpk_no: @entangle('lpk_no').live, status: true }" x-init="$watch('lpk_no', value => {
+                                        if (value.length === 6 && !value.includes('-') && status) {
+                                            lpk_no = value + '-';
+                                        }
+                                        if (value.length < 6) {
+                                            status = true;
+                                        }
+                                        if (value.length === 7) {
+                                            status = false;
+                                        }
+                                        if (value.length > 10) {
+                                            lpk_no = value.substring(0, 10);
+                                        }
+                                    })">
+                                    <input 
+                                        class="form-control" 
+                                        style="padding:0.44rem" 
+                                        type="text"
+                                        placeholder="000000-000"
+                                        x-model="lpk_no" 
+                                        maxlength="10"
+                                        x-on:keydown.tab="$event.preventDefault(); $refs.machineInput.focus();" 
+                                    />
+                                </div>
                                 @error('lpk_no')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -53,10 +101,14 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label pe-2">Tanggal LPK</label>
-                                <input class="form-control readonly datepicker-input bg-light" readonly="readonly" type="date" wire:model.defer="lpk_date" placeholder="yyyy/mm/dd"/>
+                                {{-- <input class="form-control readonly datepicker-input bg-light" readonly="readonly" type="date" wire:model.defer="lpk_date" placeholder="yyyy/mm/dd"/> 
                                 <span class="input-group-text py-0">
                                     <i class="ri-calendar-event-fill fs-4"></i>
-                                </span>
+                                </span> --}}
+                                <input class="form-control readonly datepicker-input bg-light" readonly="readonly" type="text" style="padding:0.44rem" wire:model.defer="lpk_date" placeholder="yyyy/mm/dd"/>
+                                <span class="input-group-text py-0">
+                                    <i class="ri-calendar-event-fill fs-4"></i>
+                                </span>                                
                                 @error('lpk_date')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -107,7 +159,10 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Nomor Mesin</label>
-                                <input type="text" placeholder=" ... " class="form-control @error('machineno') is-invalid @enderror" wire:model.live.debounce.500ms="machineno" />
+                                <input type="text" placeholder=" ... " class="form-control @error('machineno') is-invalid @enderror" wire:model.change="machineno"
+                                x-on:keydown.tab="$event.preventDefault(); $refs.employeeno.focus();"
+                                x-ref="machineInput" 
+                                />
                                 @error('machineno')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -129,7 +184,9 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Petugas</label>
-                                <input type="text" placeholder=" ... " class="form-control @error('employeeno') is-invalid @enderror" wire:model.live="employeeno" />
+                                <input type="text" placeholder=" ... " class="form-control @error('employeeno') is-invalid @enderror" wire:model.change="employeeno"
+                                x-on:keydown.tab="$event.preventDefault(); $refs.panjang_produksi.focus();"
+                                x-ref="employeeno" />
                                 @error('employeeno')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -188,8 +245,9 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5">Panjang Produksi</label>
-                                <input type="text" placeholder="-" class="form-control @error('panjang_produksi') is-invalid @enderror" wire:model="panjang_produksi"
-                                    oninput="this.value = window.formatNumber(this.value)"/>
+                                <input type="text" placeholder="-" class="form-control @error('panjang_produksi') is-invalid @enderror" wire:model="panjang_produksi" oninput="this.value = window.formatNumber(this.value)"
+                                x-on:keydown.tab="$event.preventDefault(); $refs.berat_produksi.focus();"
+                                x-ref="panjang_produksi"/>
                                 <span class="input-group-text">
                                     m
                                 </span>
@@ -231,7 +289,9 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5">Berat Gentan</label>
-                                <input type="number" class="form-control @error('berat_produksi') is-invalid @enderror" wire:model.live.debounce.500ms="berat_produksi" />
+                                <input type="number" class="form-control @error('berat_produksi') is-invalid @enderror" wire:model.change="berat_produksi"
+                                x-on:keydown.tab="$event.preventDefault(); $refs.work_hour.focus();"
+                                x-ref="berat_produksi" />
                                 <span class="input-group-text">
                                     kg
                                 </span>
@@ -273,7 +333,9 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Jam Produksi</label>
-                                <input class="form-control" wire:model="work_hour" type="time" placeholder="hh:mm">
+                                <input class="form-control" wire:model="work_hour" type="time" placeholder="hh:mm"
+                                x-on:keydown.tab="$event.preventDefault(); $refs.nomor_han.focus();"
+                                x-ref="work_hour">
                                 {{-- <input class="form-control" type="time" placeholder="hh:mm" wire:model="work_hour"> --}}
                                 @error('work_hour')
                                     <span class="invalid-feedback">{{ $message }}</span>
@@ -296,7 +358,9 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-4">Nomor Han</label>
-                                <input type="text" class="form-control" placeholder="00-00-00-00A" wire:model="nomor_han" />
+                                <input type="text" class="form-control" placeholder="00-00-00-00A" wire:model="nomor_han"
+                                x-on:keydown.tab="$event.preventDefault(); $refs.nomor_barcode.focus();"
+                                x-ref="nomor_han" />
                                 @error('nomor_han')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -307,7 +371,9 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Nomor Barcode</label>
-                                <input type="text" class="form-control" wire:model.debounce.300ms="nomor_barcode" />
+                                <input type="text" class="form-control" wire:model.live.debounce.300ms="nomor_barcode"
+                                x-on:keydown.tab="$event.preventDefault(); $refs.gentan_no.focus();"
+                                x-ref="nomor_barcode" />
                                 @error('nomor_barcode')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -318,7 +384,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Nomor Gentan</label>
-                                <input type="text" class="form-control"  wire:model="gentan_no" />
+                                <input type="text" class="form-control"  wire:model="gentan_no" x-ref="gentan_no"/>
                                 @error('gentan_no')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -387,7 +453,7 @@
                                     <div class="form-group">
                                         <div class="input-group">
                                             <label class="col-12 col-lg-2 fw-bold text-muted">Kode Loss </label>
-                                            <input class="form-control" type="text" wire:model.live.debounce.300ms="loss_infure_id" placeholder="..." />
+                                            <input class="form-control" type="text" wire:model.change="loss_infure_id" placeholder="..." />
                                             @error('loss_infure_id')
                                                 <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror
