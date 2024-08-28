@@ -54,6 +54,8 @@ class BuyerController extends Component
     {
         $this->resetFields();
         $this->dispatch('showModalCreate');
+        // Mencegah render ulang
+        $this->skipRender();
     }
 
     public function store()
@@ -132,6 +134,7 @@ class BuyerController extends Component
     {
         $this->idDelete = $id;
         $this->dispatch('showModalDelete');
+        $this->skipRender();
     }
 
     public function destroy()
