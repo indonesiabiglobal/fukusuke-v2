@@ -10,37 +10,37 @@ crossorigin="anonymous">
     //         window.print();
     //     });
     // });
-    $(function() {
-        var hasPrinted = false;
+    // $(function() {
+    //     var hasPrinted = false;
 
-        window.onbeforeprint = function() {
-            hasPrinted = false;
-        };
+    //     window.onbeforeprint = function() {
+    //         hasPrinted = false;
+    //     };
 
-        window.onafterprint = function() {
-            hasPrinted = true;
-            tryToCloseWindow();
-        };
+    //     window.onafterprint = function() {
+    //         hasPrinted = true;
+    //         tryToCloseWindow();
+    //     };
 
-        function tryToCloseWindow() {
-            if (hasPrinted) {
-                setTimeout(function() {
-                    window.close();
-                    // Jika window.close() tidak berhasil, coba metode alternatif
-                    setTimeout(function() {
-                        if (!window.closed) {
-                            alert("Pencetakan selesai. Silakan tutup jendela ini secara manual.");
-                        }
-                    }, 1000);
-                }, 100);
-            }
-        }
+    //     function tryToCloseWindow() {
+    //         if (hasPrinted) {
+    //             setTimeout(function() {
+    //                 window.close();
+    //                 // Jika window.close() tidak berhasil, coba metode alternatif
+    //                 setTimeout(function() {
+    //                     if (!window.closed) {
+    //                         alert("Pencetakan selesai. Silakan tutup jendela ini secara manual.");
+    //                     }
+    //                 }, 1000);
+    //             }, 100);
+    //         }
+    //     }
 
-        // Memicu pencetakan
-        setTimeout(function() {
-            window.print();
-        }, 1000);
-    });
+    //     // Memicu pencetakan
+    //     setTimeout(function() {
+    //         window.print();
+    //     }, 1000);
+    // });
 </script>
 <head>
     <meta charset="UTF-8">
@@ -106,7 +106,9 @@ crossorigin="anonymous">
 
     $data = collect(
         DB::select("
-                SELECT tdol.lpk_no,tdo.po_no,tdo.order_date, tdo.stufingdate,tdo.order_qty/mp.case_box_count as order_qty,tdol.qty_lpk,mwl.name as warnalpk,
+                SELECT tdol.lpk_no,tdo.po_no,tdo.order_date, tdo.stufingdate,tdo.order_qty/mp.case_box_count as order_qty,tdol.qty_lpk,
+                ((tdol.qty_lpk *mp.unit_weight)/mp.case_box_count)/1000 as order_berat,mwl.name as warnalpk,
+                (mp.ketebalan * mp.diameterlipat * tdol.qty_gulung * 2 * mpt.berat_jenis ) / 1000 AS berat_standard,
                 tdol.panjang_lpk,mm.machineno as nomesin,mp.codebarcode,tdol.qty_gentan as infure_qtygentan,tdol.qty_gulung as infure_pjgulunglpk,
                 mp.id, mp.name as product_name,mp.code_alias,mp.code,
                 mpt.code as tipe , mpt.name as tipename,mp.ketebalan as t, mp.diameterlipat as l, mp.productlength as p,
@@ -125,7 +127,7 @@ crossorigin="anonymous">
                 mp.gazette_dimension_a as infure_gz_dimensi_a,mp.gazette_dimension_b as infure_gz_dimensi_b,
                 mp.gazette_dimension_c as infure_gz_dimensi_c,mp.gazette_dimension_d as infure_gz_dimensi_d,
                 mk.code ||','||mk.name as hagata_kodenukigata,mp.extracted_dimension_a as hagata_a,
-                mk.filename,
+                mk.filename,mp.kodehagata,
                 mp.extracted_dimension_b as hagata_b,mp.extracted_dimension_c as hagata_c,
                 mp.number_of_color as printing_warnadepan,mp.color_spec_1 as printing_warnadepan1,mp.color_spec_2 as printing_warnadepan2,mp.color_spec_3 as printing_warnadepan3,
                 mp.color_spec_4 as printing_warnadepan4,mp.color_spec_5 as printing_warnadepan5,
@@ -139,7 +141,7 @@ crossorigin="anonymous">
                 mp.case_box_count as seitai_isibox,
                 mpg.code as seitai_kodegaiso ,mpg.name as seitai_namagaiso,mp.case_gaiso_count as seitai_isigaiso,
                 mpi.code as seitai_kodeinner, mpi.name as seitai_namainner,mp.case_inner_count as seitai_isiinner,
-                mpl.code as seitai_kodelayer,mpl.name as seitai_namalayer,mp.hagataseitaiid as namahagata,
+                mpl.code as seitai_kodelayer,mpl.name as seitai_namalayer,
                 mls.code as seitai_kodelakban,mls.name as seitai_namalakban,mp.stampelseitaiid as seitai_stample,'' as jenis,'' as kodeplate,
                 mp.manufacturing_summary as seitai_catatan, tdol.total_assembly_line
                 from tdorderlpk as tdol
@@ -152,7 +154,7 @@ crossorigin="anonymous">
                 left join mspackaginginner as mpi on mp.pack_inner_id=mpi.id
                 left join mspackaginglayer as mpl on mp.pack_layer_id=mpl.id
                 left join msmachine as mm on mm.id=tdol.machine_id
-                left join mswarnalpk as mwl on mwl.id=tdol.warnalpkid
+                left join mswarnalpk as mwl on mwl.id=mp.warnalpkid
                 left join mslakbaninfure as mli on mli.id=mp.lakbaninfureid
                 left join mslakbanseitai as mls on mls.id=mp.lakbanseitaiid
                 where tdol.id='$lpk_id'
@@ -267,7 +269,7 @@ crossorigin="anonymous">
                                     <br>
                                     <span>
                                         <font style="font-size: 16px;font-weight: bold;">
-                                            {{ $data->qty_lpk / $data->order_qty }}</font> kg
+                                            {{ $data->order_berat }}</font> kg
                                     </span>
                                 </td>
                             </tr>
@@ -368,7 +370,7 @@ crossorigin="anonymous">
                                     <span style="font-size: 13.5px">Berat Standar</span>
                                     <br>
                                     <span>
-                                        <font style="font-size: 16px;font-weight: bold;">{{ $data->beratsatuan }}
+                                        <font style="font-size: 16px;font-weight: bold;">{{ $data->berat_standard }}
                                         </font> Kg
                                     </span>
                                 </td>
@@ -574,8 +576,8 @@ crossorigin="anonymous">
                                 <td style="padding: 3px;border: 1px solid black;">
                                     <span style="font-size: 13.5px">
                                         Kode Hagata <br>
-                                        {{-- <font style="font-size: 14.5px;font-weight: bold;">{{ $data->kodehagata }}
-                                        </font> --}}
+                                        <font style="font-size: 14.5px;font-weight: bold;">{{ $data->kodehagata }}
+                                        </font>
                                     </span>
                                 </td>
                             </tr>
@@ -724,7 +726,8 @@ crossorigin="anonymous">
         <table width="100%" cellspacing="0" cellpadding="0">
             <tr>
                 <td style="padding: 3px;border: 1px solid black; font-size: 13.5px" width="70%">
-                    <font style="font-weight: bold;font-size: 14.5px;">{{ $data->seitai_catatan }}</font><br>
+                    {{-- <font style="font-weight: bold;font-size: 14.5px;">{{ $data->seitai_catatan }}</font><br> --}}
+                    <textarea name="" id="" cols="90" rows="12"  style="border: none;font-weight: bold;font-size: 14.5px;">{{ $data->seitai_catatan }}</textarea>
                 </td>
                 <td style="padding: 3px;border: 1px solid black;">
                     <span>

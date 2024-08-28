@@ -85,7 +85,7 @@
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-3 fw-bold text-muted">PO Number</label>
                         <input type="text" class="form-control bg-light" readonly="readonly"
-                            wire:model.live.debounce.300ms="po_no" placeholder="PO NUMBER" />
+                            wire:model.change="po_no" placeholder="PO NUMBER" />
                     </div>
                 </div>
                 <div class="form-group mt-1">
@@ -114,7 +114,7 @@
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-3 fw-bold text-muted">Jumlah LPK</label>
                         <input type="text" class="form-control @error('qty_lpk') is-invalid @enderror"
-                            wire:model.live="qty_lpk" oninput="this.value = window.formatNumber(this.value)" />
+                            wire:model.change="qty_lpk" oninput="this.value = window.formatNumber(this.value)" />
                         <span class="input-group-text">
                             Lembar
                         </span>
@@ -127,7 +127,7 @@
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-3 fw-bold text-muted">Jumlah Gentan</label>
                         <input type="text" class="form-control @error('qty_gentan') is-invalid @enderror"
-                            wire:model.live="qty_gentan" oninput="this.value = window.formatNumber(this.value)" />
+                            wire:model.change="qty_gentan" oninput="this.value = window.formatNumber(this.value)" />
                         <span class="input-group-text">
                             roll
                         </span>
@@ -140,7 +140,7 @@
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-3 fw-bold text-muted">Meter Gulung</label>
                         <input type="text" class="form-control @error('qty_gulung') is-invalid @enderror"
-                            wire:model.live="qty_gulung" oninput="this.value = window.formatNumber(this.value)" />
+                            wire:model.change="qty_gulung" oninput="this.value = window.formatNumber(this.value)" />
                         <span class="input-group-text">
                             meter
                         </span>
