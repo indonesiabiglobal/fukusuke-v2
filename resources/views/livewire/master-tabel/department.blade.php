@@ -356,7 +356,7 @@
                                 : '<span class="badge text-bg-danger">Non Active</span>' !!}
                         </td>
                         <td>{{ $item->updated_by }}</td>
-                        <td>{{ $item->updated_on }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->updated_on)->format('d-M-Y H:i:s')  }}</td>
                         {{-- <td>{{ $no++ }}</td> --}}
                     </tr>
                 @empty
