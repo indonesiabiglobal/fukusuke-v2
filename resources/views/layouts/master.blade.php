@@ -1,10 +1,11 @@
 <!doctype html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"  data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg" data-sidebar-image="none" data-preloader="enable">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-layout="vertical" data-topbar="light" data-sidebar="dark"
+    data-sidebar-size="lg" data-sidebar-image="none" data-preloader="enable">
 
 <head>
     <meta charset="utf-8" />
     <!-- PWA  -->
-    <meta name="theme-color" content="#6777ef"/>
+    <meta name="theme-color" content="#6777ef" />
     <link rel="apple-touch-icon" href="{{ asset('logo.png') }}">
     <link rel="manifest" href="{{ asset('/manifest.json') }}">
     <title> Fukusuke Kogyo Indonesia </title>
@@ -14,9 +15,9 @@
     <!-- App favicon -->
     <link rel="shortcut icon" href="{{ URL::asset('build/images/fukusuke.ico') }}">
     {{-- @section('css') --}}
-    <link href="{{ URL::asset('build/libs/jsvectormap/css/jsvectormap.min.css')}}" rel="stylesheet" type="text/css" />
-    <link href="{{ URL::asset('build/libs/swiper/swiper-bundle.min.css')}}" rel="stylesheet" type="text/css" />
-{{-- @endsection --}}
+    <link href="{{ URL::asset('build/libs/jsvectormap/css/jsvectormap.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ URL::asset('build/libs/swiper/swiper-bundle.min.css') }}" rel="stylesheet" type="text/css" />
+    {{-- @endsection --}}
     @include('layouts.head-css')
     @livewireStyles
 
@@ -29,6 +30,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
     {{-- @powerGridStyles --}}
 </head>
+
 <body>
     <!-- Begin page -->
     <div id="layout-wrapper">
@@ -57,7 +59,7 @@
     @include('layouts.vendor-scripts')
     @stack('scripts')
     {{-- toastr --}}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
     @livewireScripts
     {{-- @powerGridScripts --}}
@@ -67,28 +69,103 @@
         });
 
         // Cek apakah ada session flash notification
-        @if(session()->has('notification'))
+        @if (session()->has('notification'))
             var type = "{{ session('notification')['type'] }}";
             var message = "{{ session('notification')['message'] }}";
             toastr[type](message);
         @endif
+
+
+        // datatable
+        // inisialisasi DataTable
+
+        // Fungsi untuk menginisialisasi ulang DataTable
+        function initDataTable(id) {
+            // Hapus DataTable jika sudah ada
+            if ($.fn.dataTable.isDataTable('#' + id)) {
+                let table = $('#' + id).DataTable();
+                table.clear(); // Bersihkan data tabel
+                table.destroy(); // Hancurkan DataTable
+                // Hindari penggunaan $('#' + id).empty(); di sini
+            }
+
+            setTimeout(() => {
+                // Inisialisasi ulang DataTable
+                let table = $('#' + id).DataTable({
+                    "pageLength": 10,
+                    "searching": true,
+                    "responsive": true,
+                    "scrollX": true,
+                    "order": [
+                        [2, "asc"]
+                    ],
+                    "language": {
+                        "emptyTable": `
+                            <div class="text-center">
+                                <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                                    colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
+                                <h5 class="mt-2">Sorry! No Result Found</h5>
+                            </div>
+                        `
+                    },
+                    "drawCallback": function(settings) {
+                        // Tambahkan event listener JS secara manual
+                        document.querySelectorAll('.btn.bg-primary').forEach(button => {
+                            button.addEventListener('click', function() {
+                                let id = this.getAttribute('data-id');
+                                // Lakukan sesuatu saat tombol edit diklik
+                                console.log('Edit button clicked for ID:', id);
+                            });
+                        });
+
+                        // document.querySelectorAll('.btn-delete').forEach(button => {
+                        //     button.addEventListener('click', function() {
+                        //         console.log('Delete button clicked');
+
+                        //         let id = this.getAttribute('data-id');
+                        //         // Lakukan sesuatu saat tombol delete diklik
+                        //         console.log('Delete button clicked for ID:', id);
+                        //     });
+                        // });
+                    }
+                });
+                // tombol delete
+                $('.btn-delete').on('click', function() {
+                    console.log('Delete button clicked');
+                    let id = $(this).data('id');
+                    console.log("id: "+ id);
+                });
+
+                // default column visibility
+                $('.toggle-column').each(function() {
+                    let column = table.column($(this).attr('data-column'));
+                    column.visible($(this).is(':checked'));
+                });
+
+                // Inisialisasi ulang event listener checkbox
+                $('.toggle-column').off('change').on('change', function() {
+                    let column = table.column($(this).attr('data-column'));
+                    column.visible(!column.visible());
+                });
+            }, 500);
+        }
     </script>
     <script src="{{ asset('/sw.js') }}"></script>
     <script>
-       if ("serviceWorker" in navigator) {
-          // Register a service worker hosted at the root of the
-          // site using the default scope.
-          navigator.serviceWorker.register("/sw.js").then(
-          (registration) => {
-             console.log("Service worker registration succeeded:", registration);
-          },
-          (error) => {
-             console.error(`Service worker registration failed: ${error}`);
-          },
-        );
-      } else {
-         console.error("Service workers are not supported.");
-      }
+        if ("serviceWorker" in navigator) {
+            // Register a service worker hosted at the root of the
+            // site using the default scope.
+            navigator.serviceWorker.register("/sw.js").then(
+                (registration) => {
+                    console.log("Service worker registration succeeded:", registration);
+                },
+                (error) => {
+                    console.error(`Service worker registration failed: ${error}`);
+                },
+            );
+        } else {
+            console.error("Service workers are not supported.");
+        }
     </script>
 
     <script>
@@ -141,7 +218,6 @@
             // Kembalikan value tanpa modifikasi jika tidak valid
             return value;
         };
-
     </script>
 
     {{-- <script>

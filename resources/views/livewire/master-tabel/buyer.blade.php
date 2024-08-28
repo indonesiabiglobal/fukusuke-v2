@@ -379,12 +379,13 @@
                 @forelse ($data as $item)
                     <tr>
                         <td class="text-nowrap">
-                            <button type="button" class="btn fs-15 p-1 bg-primary rounded" data-bs-toggle="modal"
-                                data-bs-target="#modal-edit" wire:click="edit({{ $item->id }})">
+                            <button type="button" class="btn fs-15 p-1 bg-primary rounded"
+                                wire:click.lazy="edit({{ $item->id }})">
                                 <i class="ri-edit-box-line text-white"></i>
                             </button>
-                            <button type="button" class="btn fs-15 p-1 bg-danger rounded"
-                                wire:click="delete({{ $item->id }})">
+                            <button {{ $item->status == 0 ? 'hidden' : '' }} type="button"
+                                class="btn fs-15 p-1 bg-danger rounded btn-delete" data-id="{{ $item->id }}"
+                                wire:click.lazy="delete({{ $item->id }})">
                                 <i class="ri-delete-bin-line text-white"></i>
                             </button>
                         </td>
@@ -417,60 +418,83 @@
 
 @script
     <script>
+        // Show modal create buyer
         $wire.on('showModalCreate', () => {
             $('#modal-add').modal('show');
         });
-        // close modal create buyer
+
+        // Close modal create buyer
         $wire.on('closeModalCreate', () => {
             $('#modal-add').modal('hide');
         });
 
-        // close modal update buyer
+        // Close modal update buyer
         $wire.on('closeModalUpdate', () => {
             $('#modal-edit').modal('hide');
         });
 
-        // show modal delete buyer
+        // Show modal delete buyer
         $wire.on('showModalDelete', () => {
             $('#removeBuyerModal').modal('show');
         });
 
-        // close modal delete buyer
+        // Close modal delete buyer
         $wire.on('closeModalDelete', () => {
             $('#removeBuyerModal').modal('hide');
         });
 
         // Inisialisasi saat Livewire di-initialized
-        document.addEventListener('livewire:initialized', function() {
-            initDataTable();
+        document.addEventListener('livewire:initialized', () => {
+            initDataTable('customerTable');
         });
 
-        // Fungsi untuk menginisialisasi ulang DataTable
-        function initDataTable() {
-            // Hapus DataTable jika sudah ada
-            let table = $.fn.dataTable.isDataTable('#customerTable') ?
-                $('#customerTable').DataTable() :
-                null;
 
-            if (table) {
-                table.destroy();
+        // datatable
+        // inisialisasi DataTable
+
+        // Fungsi untuk menginisialisasi ulang DataTable
+        function initDataTable(id) {
+            // Hapus DataTable jika sudah ada
+            if ($.fn.dataTable.isDataTable('#' + id)) {
+                let table = $('#' + id).DataTable();
+                table.clear(); // Bersihkan data tabel
+                table.destroy(); // Hancurkan DataTable
+                // Hindari penggunaan $('#' + id).empty(); di sini
             }
 
-            // Inisialisasi ulang DataTable
-            table = $('#customerTable').DataTable({
-                "pageLength": 10,
-                "searching": true,
-                "responsive": true,
-                "order": [
-                    [1, "asc"]
-                ]
-            });
+            setTimeout(() => {
+                // Inisialisasi ulang DataTable
+                let table = $('#' + id).DataTable({
+                    "pageLength": 10,
+                    "searching": true,
+                    "responsive": true,
+                    "scrollX": true,
+                    "order": [
+                        [2, "asc"]
+                    ],
+                    "language": {
+                        "emptyTable": `
+                            <div class="text-center">
+                                <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                                    colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
+                                <h5 class="mt-2">Sorry! No Result Found</h5>
+                            </div>
+                        `
+                    },
+                });
 
-            // Inisialisasi ulang event listener checkbox
-            $('.toggle-column').off('change').on('change', function() {
-                let column = table.column($(this).attr('data-column'));
-                column.visible(!column.visible());
-            });
+                // default column visibility
+                $('.toggle-column').each(function() {
+                    let column = table.column($(this).attr('data-column'));
+                    column.visible($(this).is(':checked'));
+                });
+
+                // Inisialisasi ulang event listener checkbox
+                $('.toggle-column').off('change').on('change', function() {
+                    let column = table.column($(this).attr('data-column'));
+                    column.visible(!column.visible());
+                });
+            }, 500);
         }
     </script>
 @endscript
