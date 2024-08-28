@@ -17,13 +17,13 @@
                             <div class="form-group">
                                 <div class="input-group">
                                     <input wire:model.defer="tglMasuk" type="text" class="form-control"
-                                        style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
+                                        style="padding:0.44rem" data-provider="flatpickr" data-date-format="d M Y">
                                     <span class="input-group-text py-0">
                                         <i class="ri-calendar-event-fill fs-4"></i>
                                     </span>
 
                                     <input wire:model.defer="tglKeluar" type="text" class="form-control"
-                                        style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
+                                        style="padding:0.44rem" data-provider="flatpickr" data-date-format="d M Y">
                                     <span class="input-group-text py-0">
                                         <i class="ri-calendar-event-fill fs-4"></i>
                                     </span>
@@ -38,9 +38,31 @@
             </div>
             <div class="col-12 col-lg-9 mb-1">
                 <div class="input-group">
+                    <input wire:model="lpk_no" class="form-control" style="padding:0.44rem" type="text"
+                        placeholder="000000-000"
+                        x-data="{ lpk_no: '', status: true }"
+                        x-init="$watch('lpk_no', value => {
+                            if (value.length === 6 && !value.includes('-') && status) {
+                                lpk_no = value + '-';
+                            }
+                            if (value.length < 6) {
+                                status = true;
+                            }
+                            if (value.length === 7) {
+                                status = false;
+                            }
+                            if (value.length > 10) {
+                                lpk_no = value.substring(0, 11);
+                            }
+                        })"
+                        x-model="lpk_no"
+                        maxlength="10"
+                    />
+                </div>
+                {{-- <div class="input-group">
                     <input wire:model.defer="lpk_no" class="form-control" style="padding:0.44rem" type="text"
                         placeholder="000000-000" />
-                </div>
+                </div> --}}
             </div>
             <div class="col-12 col-lg-3">
                 <label class="form-label text-muted fw-bold">Search</label>
@@ -358,24 +380,24 @@
                             </a>
                         </td>
                         <td>{{ $item->lpk_no }}</td>
-                        <td>{{ $item->lpk_date }}</td>
-                        <td>{{ $item->panjang_lpk }}</td>
-                        <td>{{ $item->qty_lpk }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->lpk_date)->format('d M Y') }}</td>
+                        <td>{{ number_format($item->panjang_lpk) }}</td>
+                        <td>{{ number_format($item->qty_lpk) }}</td>
                         <td>{{ $item->qty_gentan }}</td>
-                        <td>{{ $item->qty_gulung }}</td>
+                        <td>{{ number_format($item->qty_gulung) }}</td>
                         <td>-</td>
-                        <td>{{ $item->infure }}</td>
-                        <td>{{ $item->total_assembly_qty }}</td>
+                        <td>{{ number_format($item->infure) }}</td>
+                        <td>{{ number_format($item->total_assembly_qty) }}</td>
                         <td>{{ $item->po_no }}</td>
                         <td>{{ $item->product_name }}</td>
                         <td>{{ $item->product_code }}</td>
                         <td>{{ $item->machine_no }}</td>
                         <td>{{ $item->buyer_name }}</td>
                         {{-- <td>{{ $item->warnalpk }}</td> --}}
-                        <td>{{ $item->tglproses }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->tglproses)->format('d M Y') }}</td>
                         <td>{{ $item->seq_no }}</td>
                         <td>{{ $item->updated_by }}</td>
-                        <td>{{ $item->updatedt }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->updatedt)->format('d M Y') }}</td>
                     </tr>
                 @empty
                     {{-- <tr>
