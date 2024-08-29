@@ -13,6 +13,7 @@ class JenisProduk extends Component
 {
     use WithPagination, WithoutUrlPagination;
     protected $paginationTheme = 'bootstrap';
+    protected $listeners = ['delete','edit'];
     public $groupProducts;
     public $searchTerm;
     public $code;
@@ -20,12 +21,12 @@ class JenisProduk extends Component
     public $idUpdate;
     public $idDelete;
 
-    public function mount()
-    {
-        $this->groupProducts = DB::table('msproduct_group')
-            ->where('status', 1)
-            ->get(['id', 'code', 'name', 'status', 'updated_by', 'updated_on']);
-    }
+    // public function mount()
+    // {
+    //     $this->groupProducts = DB::table('msproduct_group')
+    //         ->where('status', 1)
+    //         ->get(['id', 'code', 'name', 'status', 'updated_by', 'updated_on']);
+    // }
 
     public function resetFields()
     {
@@ -37,6 +38,8 @@ class JenisProduk extends Component
     {
         $this->resetFields();
         $this->dispatch('showModalCreate');
+        // Mencegah render ulang
+        $this->skipRender();
     }
 
     public function store()
@@ -60,7 +63,6 @@ class JenisProduk extends Component
             ]);
             DB::commit();
             $this->resetFields();
-            $this->search();
             $this->dispatch('closeModalCreate');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Group Product saved successfully.']);
         } catch (\Exception $e) {
@@ -96,7 +98,6 @@ class JenisProduk extends Component
             ]);
             DB::commit();
             $this->resetFields();
-            $this->search();
             $this->dispatch('closeModalUpdate');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Group Product updated successfully.']);
         } catch (\Exception $e) {
@@ -110,6 +111,8 @@ class JenisProduk extends Component
     {
         $this->idDelete = $id;
         $this->dispatch('showModalDelete');
+        // Mencegah render ulang
+        $this->skipRender();
     }
 
     public function destroy()
@@ -124,7 +127,6 @@ class JenisProduk extends Component
                 'updated_on' => Carbon::now(),
             ]);
             DB::commit();
-            $this->search();
             $this->dispatch('closeModalDelete');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Group Product deleted successfully.']);
         } catch (\Exception $e) {
@@ -134,26 +136,18 @@ class JenisProduk extends Component
         }
     }
 
-    public function search()
-    {
-        $this->render();
-    }
-
     public function render()
     {
         $data = DB::table('msproduct_group')
-            ->when(isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined", function ($query) {
-                $query->where(function ($queryWhere) {
-                    $queryWhere->where('code', 'ilike', "%" . $this->searchTerm . "%")
-                        ->orWhere('name', 'ilike', "%" . $this->searchTerm . "%");
-                });
-            })
-            ->where('status', 1)
-            // ->paginate(8);
             ->get();
 
         return view('livewire.master-tabel.produk.jenis-produk', [
             'data' => $data
         ])->extends('layouts.master');
+    }
+
+    public function rendered()
+    {
+        $this->dispatch('initDataTable');
     }
 }

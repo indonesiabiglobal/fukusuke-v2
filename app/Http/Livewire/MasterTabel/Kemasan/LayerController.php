@@ -14,6 +14,7 @@ class LayerController extends Component
 {
     use WithPagination, WithoutUrlPagination;
     protected $paginationTheme = 'bootstrap';
+    protected $listeners = ['delete','edit'];
     public $searchTerm;
     public $code;
     public $name;
@@ -46,6 +47,8 @@ class LayerController extends Component
     {
         $this->resetFields();
         $this->dispatch('showModalCreate');
+        // Mencegah render ulang
+        $this->skipRender();
     }
 
     public function store()
@@ -95,7 +98,7 @@ class LayerController extends Component
         $this->lebar = $data->lebar;
         $this->tinggi = $data->tinggi;
 
-        // $this->dispatch('showModalUpdate', $buyer);
+        $this->dispatch('showModalUpdate');
     }
 
     public function update()
@@ -120,7 +123,6 @@ class LayerController extends Component
             DB::commit();
             $this->dispatch('closeModalUpdate');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Layer updated successfully.']);
-            $this->search();
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to update master Layer: ' . $e->getMessage());
@@ -132,6 +134,8 @@ class LayerController extends Component
     {
         $this->idDelete = $id;
         $this->dispatch('showModalDelete');
+        // Mencegah render ulang
+        $this->skipRender();
     }
 
     public function destroy()
@@ -148,7 +152,6 @@ class LayerController extends Component
             DB::commit();
             $this->dispatch('closeModalDelete');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Layer deleted successfully.']);
-            $this->search();
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to delete master Layer: ' . $e->getMessage());
@@ -156,26 +159,17 @@ class LayerController extends Component
         }
     }
 
-    public function search()
-    {
-        $this->render();
-    }
-
     public function render()
     {
-        $result = MsPackagingLayer::where('status', 1);
-
-        if (isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined") {
-            $result = $result->where(function ($query) {
-                $query->where('code', 'ilike', "%{$this->searchTerm}%")
-                    ->orWhere('name', 'ilike', "%{$this->searchTerm}%");
-            });
-        }
-
-        $result = $result->get();
+        $result = MsPackagingLayer::get();
 
         return view('livewire.master-tabel.kemasan.layer', [
             'result' => $result
         ])->extends('layouts.master');
+    }
+
+    public function rendered()
+    {
+        $this->dispatch('initDataTable');
     }
 }

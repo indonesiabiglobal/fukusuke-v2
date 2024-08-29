@@ -16,6 +16,7 @@ class MenuLossKatagoriController extends Component
 {
     use WithPagination, WithoutUrlPagination;
     protected $paginationTheme = 'bootstrap';
+    protected $listeners = ['delete','edit'];
     public $searchTerm;
     public $code;
     public $name;
@@ -38,6 +39,8 @@ class MenuLossKatagoriController extends Component
     {
         $this->resetFields();
         $this->dispatch('showModalCreate');
+        // Mencegah render ulang
+        $this->skipRender();
     }
 
     public function store()
@@ -69,13 +72,12 @@ class MenuLossKatagoriController extends Component
 
     public function edit($id)
     {
-        dd($id);
         $data = MsLossCategory::where('id', $id)->first();
         $this->idUpdate = $id;
         $this->code = $data->code;
         $this->name = $data->name;
 
-        // $this->dispatch('showModalUpdate', $buyer);
+        $this->dispatch('showModalUpdate');
     }
 
     public function update()
@@ -96,7 +98,6 @@ class MenuLossKatagoriController extends Component
             DB::commit();
             $this->dispatch('closeModalUpdate');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Loss Infure updated successfully.']);
-            $this->search();
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to update master Loss Infure: ' . $e->getMessage());
@@ -108,6 +109,8 @@ class MenuLossKatagoriController extends Component
     {
         $this->idDelete = $id;
         $this->dispatch('showModalDelete');
+        // Mencegah render ulang
+        $this->skipRender();
     }
 
     public function destroy()
@@ -124,7 +127,6 @@ class MenuLossKatagoriController extends Component
             DB::commit();
             $this->dispatch('closeModalDelete');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Loss Infure deleted successfully.']);
-            $this->search();
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to delete master Loss Infure: ' . $e->getMessage());
@@ -132,14 +134,9 @@ class MenuLossKatagoriController extends Component
         }
     }
 
-    public function search()
-    {
-        $this->render();
-    }
-
     public function render()
     {
-        $result = MsLossCategory::where('status', 1)->get();
+        $result = MsLossCategory::get();
 
         return view('livewire.master-tabel.loss.menu-loss-katagori', [
             'result' => $result

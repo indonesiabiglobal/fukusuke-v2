@@ -19,6 +19,8 @@
                 <div class="input-group">
                     <label class="control-label col-12 col-lg-3 fw-bold text-muted">PO Number</label>
                     <input type="text" class="form-control @error('po_no') is-invalid @enderror" wire:model="po_no"
+                    {{-- x-on:keydown.tab="$event.preventDefault(); $refs.product_id.focus();" --}}
+                    x-ref="po_no"
                         required />
                     @error('po_no')
                         <div class="invalid-feedback">
@@ -49,7 +51,9 @@
                         </a>
                     </label>
                     <input type="text" class="form-control text-uppercase @error('product_id') is-invalid @enderror"
-                        wire:model.live.debounce.300ms="product_id" oninput="this.value = this.value.toUpperCase()" />
+                        wire:model.live.debounce.300ms="product_id" oninput="this.value = this.value.toUpperCase()"
+                        x-on:keydown.tab="$event.preventDefault(); $refs.order_qty.focus();"
+                        x-ref="product_id"/>
                     @error('product_id')
                         <span class="invalid-feedback">{{ $message }}</span>
                     @enderror
@@ -73,7 +77,8 @@
                 <div class="input-group">
                     <label class="control-label col-12 col-lg-3 fw-bold text-muted">Jumlah Order</label>
                     <input type="text" id="order_qty" class="form-control @error('order_qty') is-invalid @enderror"
-                        wire:model="order_qty" oninput="this.value = window.formatNumber(this.value)" />
+                        wire:model="order_qty" oninput="this.value = window.formatNumber(this.value)"
+                        x-ref="order_qty" />
                     @error('order_qty')
                         <span class="invalid-feedback">{{ $message }}</span>
                     @enderror

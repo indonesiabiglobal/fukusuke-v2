@@ -257,8 +257,8 @@
                                     <i class="ri-edit-box-line text-white"></i>
                                 </button>
                             </a>
-                            <button type="button" class="btn fs-15 p-1 bg-danger rounded modal-delete"
-                                wire:click="delete({{ $item->id }})">
+                            <button type="button" class="btn fs-15 p-1 bg-danger rounded modal-delete  btn-delete"
+                                data-delete-id="{{ $item->id }}" wire:click="delete({{ $item->id }})">
                                 <i class="ri-delete-bin-line  text-white"></i>
                             </button>
                         </td>
@@ -277,7 +277,7 @@
                                 : '<span class="badge text-bg-danger">Non Active</span>' !!}
                         </td>
                         <td>{{ $item->updated_by }}</td>
-                        <td>{{ $item->updated_on }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->updated_on)->format('d-M-Y H:i:s') }}</td>
                         {{-- <td>{{ $no++ }}</td> --}}
                     </tr>
                 @empty
@@ -309,31 +309,59 @@
             $('#modal-delete').modal('hide');
         });
 
-        // inisialisasi DataTable
+
+        // datatable
         $wire.on('initDataTable', () => {
-            initDataTable();
+            initDataTable('productTable');
         });
 
         // Fungsi untuk menginisialisasi ulang DataTable
-        function initDataTable() {
+        function initDataTable(id) {
             // Hapus DataTable jika sudah ada
-            if ($.fn.dataTable.isDataTable('#productTable')) {
-                let table = $('#productTable').DataTable();
+            if ($.fn.dataTable.isDataTable('#' + id)) {
+                let table = $('#' + id).DataTable();
                 table.clear(); // Bersihkan data tabel
                 table.destroy(); // Hancurkan DataTable
-                // Hindari penggunaan $('#productTable').empty(); di sini
+                // Hindari penggunaan $('#' + id).empty(); di sini
             }
 
             setTimeout(() => {
                 // Inisialisasi ulang DataTable
-                let table = $('#productTable').DataTable({
+                let table = $('#' + id).DataTable({
                     "pageLength": 10,
                     "searching": true,
                     "responsive": true,
                     "scrollX": true,
                     "order": [
-                        [1, "asc"]
+                        [2, "asc"]
                     ],
+                    "language": {
+                        "emptyTable": `
+                    <div class="text-center">
+                        <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                            colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
+                        <h5 class="mt-2">Sorry! No Result Found</h5>
+                    </div>
+                `
+                    },
+                });
+                // tombol delete
+                $('.btn-delete').on('click', function() {
+                    let id = $(this).attr('data-delete-id');
+
+                    // livewire click
+                    $wire.dispatch('delete', {
+                        id
+                    });
+                });
+                // tombol edit
+                $('.btn-edit').on('click', function() {
+                    let id = $(this).attr('data-edit-id');
+
+                    // livewire click
+                    $wire.dispatch('edit', {
+                        id
+                    });
                 });
 
                 // default column visibility

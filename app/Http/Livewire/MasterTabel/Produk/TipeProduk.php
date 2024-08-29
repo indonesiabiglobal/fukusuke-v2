@@ -14,6 +14,7 @@ class TipeProduk extends Component
 {
     use WithPagination, WithoutUrlPagination;
     protected $paginationTheme = 'bootstrap';
+    protected $listeners = ['delete','edit'];
     public $types = [];
     public $searchTerm = '';
 
@@ -45,35 +46,6 @@ class TipeProduk extends Component
         'berat_jenis' => 'required',
     ];
 
-    public function mount()
-    {
-        $this->search();
-    }
-
-    public function search()
-    {
-        // $searchTerm = '';
-        // if (isset($this->searchTerm) && $this->searchTerm != '') {
-        //     $searchTerm = "where (pt.code ilike '%" . $this->searchTerm .
-        //         "%' OR pt.name ilike '%" . $this->searchTerm .
-        //         "%' OR  pg.name ilike '%" . $this->searchTerm .
-        //         "%'
-        //     )";
-        // }
-
-        // $this->types = DB::select("
-        //     SELECT pt.id,pt.code,pt.name,pt.product_group_id,pg.name as jenisproduk, pt.harga_sat_infure,
-        //     pt.harga_sat_infure_loss,pt.harga_sat_inline,
-        //     pt.harga_sat_cetak,pt.berat_jenis,pt.status
-        //     from msproduct_type as pt
-        //     inner join msproduct_group as pg on pt.product_group_id=pg.id
-        //     $searchTerm
-        // ");
-
-        $this->render();
-    }
-
-
     public function resetFields()
     {
         $this->code = '';
@@ -84,6 +56,7 @@ class TipeProduk extends Component
         $this->harga_sat_inline = '';
         $this->harga_sat_cetak = '';
         $this->harga_sat_seitai = '';
+        $this->harga_sat_seitai_loss = '';
         $this->berat_jenis = '';
     }
 
@@ -91,6 +64,8 @@ class TipeProduk extends Component
     {
         $this->resetFields();
         $this->dispatch('showModalCreate');
+        // Mencegah render ulang
+        $this->skipRender();
     }
 
     public function store()
@@ -121,7 +96,6 @@ class TipeProduk extends Component
             ]);
 
             DB::commit();
-            $this->search();
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Tipe Produk saved successfully.']);
             $this->dispatch('closeModalCreate');
         } catch (\Exception $e) {
@@ -138,13 +112,15 @@ class TipeProduk extends Component
         $this->code = $typeProduct->code;
         $this->name = $typeProduct->name;
         $this->product_group_id = $typeProduct->product_group_id;
-        $this->harga_sat_infure = $typeProduct->harga_sat_infure;
-        $this->harga_sat_infure_loss = $typeProduct->harga_sat_infure_loss;
-        $this->harga_sat_inline = $typeProduct->harga_sat_inline;
-        $this->harga_sat_cetak = $typeProduct->harga_sat_cetak;
-        $this->harga_sat_seitai = $typeProduct->harga_sat_seitai;
-        $this->harga_sat_seitai_loss = $typeProduct->harga_sat_seitai_loss;
-        $this->berat_jenis = $typeProduct->berat_jenis;
+        $this->harga_sat_infure = number_format($typeProduct->harga_sat_infure, 2);
+        $this->harga_sat_infure_loss = number_format($typeProduct->harga_sat_infure_loss, 2);
+        $this->harga_sat_inline = number_format($typeProduct->harga_sat_inline, 2);
+        $this->harga_sat_cetak = number_format($typeProduct->harga_sat_cetak, 2);
+        $this->harga_sat_seitai = number_format($typeProduct->harga_sat_seitai, 2);
+        $this->harga_sat_seitai_loss = number_format($typeProduct->harga_sat_seitai_loss, 2);
+        $this->berat_jenis = number_format($typeProduct->berat_jenis, 2);
+
+        $this->dispatch('showModalUpdate');
     }
 
     public function update()
@@ -184,7 +160,6 @@ class TipeProduk extends Component
             ]);
 
             DB::commit();
-            $this->search();
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Tipe Produk updated successfully.']);
             $this->dispatch('closeModalUpdate');
         } catch (\Exception $e) {
@@ -198,15 +173,21 @@ class TipeProduk extends Component
     {
         $this->idDelete = $id;
         $this->dispatch('showModalDelete');
+        // Mencegah render ulang
+        $this->skipRender();
     }
 
     public function destroy()
     {
         try {
             DB::beginTransaction();
-            MsProductType::where('id', $this->idDelete)->delete();
+            $statusInactive = 0;
+            MsProductType::where('id', $this->idDelete)->update([
+                'status' => $statusInactive,
+                'updated_by' => auth()->user()->username,
+                'updated_on' => Carbon::now(),
+            ]);
             DB::commit();
-            $this->search();
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Tipe Produk deleted successfully.']);
             $this->dispatch('closeModalDelete');
         } catch (\Exception $e) {
@@ -237,18 +218,6 @@ class TipeProduk extends Component
                 'mspt.updated_on'
             )
             ->Join('msproduct_group', 'msproduct_group.id', 'mspt.product_group_id')
-            ->where(function ($query) {
-                $query->where('mspt.code', 'ilike', '%' . $this->searchTerm . '%')
-                    ->orWhere('mspt.name', 'ilike', '%' . $this->searchTerm . '%')
-                    ->orWhere('mspt.product_group_id', 'ilike', '%' . $this->searchTerm . '%');
-            })
-            ->where('mspt.status', 1)
-            // ->when($this->paginate != 'all', function ($query) {
-            //     return $query->paginate($this->paginate);
-            // }, function ($query) {
-            //     $count = $query->count();
-            //     return $query->paginate($count);
-            // });
             ->get();
 
         $productGroups = DB::select("SELECT id, name FROM msproduct_group");
@@ -257,5 +226,10 @@ class TipeProduk extends Component
             'data' => $data,
             'productGroups' => $productGroups
         ])->extends('layouts.master');
+    }
+
+    public function rendered()
+    {
+        $this->dispatch('initDataTable');
     }
 }

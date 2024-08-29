@@ -15,6 +15,7 @@ class MasterProduk extends Component
 {
     use WithPagination, WithoutUrlPagination;
     protected $paginationTheme = 'bootstrap';
+    protected $listeners = ['delete','edit'];
     public $products;
     public $searchTerm;
     public $product_type_id;
@@ -32,6 +33,8 @@ class MasterProduk extends Component
     {
         $this->idDelete = $id;
         $this->dispatch('showModalDelete');
+        // Mencegah render ulang
+        $this->skipRender();
     }
 
     public function destroy()
@@ -75,7 +78,7 @@ class MasterProduk extends Component
                 'msp.updated_by',
                 'msp.updated_on'
             )
-            ->when(isset($this->product_type_id) && $this->product_type_id != "" && $this->product_type_id != "undefined", function ($query) {
+            ->when(isset($this->product_type_id) && $this->product_type_id != "" && $this->product_type_id != "undefined" && $this->product_type_id['value'] != "", function ($query) {
                 $query->where('msp.product_type_id', $this->product_type_id);
             })
             ->get();

@@ -15,6 +15,7 @@ class BoxController extends Component
 {
     use WithPagination, WithoutUrlPagination;
     protected $paginationTheme = 'bootstrap';
+    protected $listeners = ['delete','edit'];
     public $searchTerm;
     public $code;
     public $name;
@@ -48,6 +49,8 @@ class BoxController extends Component
     {
         $this->resetFields();
         $this->dispatch('showModalCreate');
+        // Mencegah render ulang
+        $this->skipRender();
     }
 
     public function store()
@@ -87,8 +90,12 @@ class BoxController extends Component
         $this->idUpdate = $id;
         $this->code = $data->code;
         $this->name = $data->name;
+        $this->box_class = $data->box_class;
+        $this->panjang = $data->panjang;
+        $this->lebar = $data->lebar;
+        $this->tinggi = $data->tinggi;
 
-        // $this->dispatch('showModalUpdate', $buyer);
+        $this->dispatch('showModalUpdate');
     }
 
     public function update()
@@ -101,7 +108,7 @@ class BoxController extends Component
             $data = MsPackagingBox::where('id', $this->idUpdate)->first();
             $data->code = $this->code;
             $data->name = $this->name;
-            $data->box_class = $this->box_class['value'];
+            $data->box_class = $this->box_class;
             $data->panjang = $this->panjang;
             $data->lebar = $this->lebar;
             $data->tinggi = $this->tinggi;
@@ -113,7 +120,6 @@ class BoxController extends Component
             DB::commit();
             $this->dispatch('closeModalUpdate');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Box updated successfully.']);
-            $this->search();
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to update master Box: ' . $e->getMessage());
@@ -125,6 +131,8 @@ class BoxController extends Component
     {
         $this->idDelete = $id;
         $this->dispatch('showModalDelete');
+        // Mencegah render ulang
+        $this->skipRender();
     }
 
     public function destroy()
@@ -141,7 +149,6 @@ class BoxController extends Component
             DB::commit();
             $this->dispatch('closeModalDelete');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Box deleted successfully.']);
-            $this->search();
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to delete master Box: ' . $e->getMessage());
@@ -149,26 +156,17 @@ class BoxController extends Component
         }
     }
 
-    public function search()
-    {
-        $this->render();
-    }
-
     public function render()
     {
-        $result = MsPackagingBox::where('status', 1);
-
-        if (isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined") {
-            $result = $result->where(function ($query) {
-                $query->where('code', 'ilike', "%{$this->searchTerm}%")
-                    ->orWhere('name', 'ilike', "%{$this->searchTerm}%");
-            });
-        }
-
-        $result = $result->get();
+        $result = MsPackagingBox::get();
 
         return view('livewire.master-tabel.kemasan.box', [
             'result' => $result
         ])->extends('layouts.master');
+    }
+
+    public function rendered()
+    {
+        $this->dispatch('initDataTable');
     }
 }

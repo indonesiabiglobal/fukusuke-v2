@@ -159,6 +159,7 @@ class OrderLpkController extends Component
             $data = $data->where(function ($query) {
                 $query->where('mp.name', 'ilike', "%{$this->searchTerm}%")
                     ->orWhere('mbu.name', 'ilike', "%{$this->searchTerm}%")
+                    ->orWhere('tod.product_code', 'ilike', "%{$this->searchTerm}%")
                     ->orWhere('tod.po_no', 'ilike', "%{$this->searchTerm}%");
             });
         }
