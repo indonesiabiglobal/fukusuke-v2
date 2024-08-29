@@ -471,8 +471,6 @@
         // datatable
         // inisialisasi DataTable
         $wire.on('initDataTable', () => {
-            console.log('initDataTable');
-
             initDataTable();
         });
 

@@ -92,7 +92,7 @@
                 </div>
             </button>
 
-            <button type="button" class="btn btn-success w-lg p-1" data-bs-toggle="modal" data-bs-target="#modal-add">
+            <button type="button" class="btn btn-success w-lg p-1" wire:click="showModalCreate">
                 <i class="ri-add-line"> </i> Add
             </button>
             <div wire:ignore.self class="modal fade" id="modal-add" tabindex="-1" role="dialog"
@@ -134,7 +134,7 @@
                                     <div class="form-group">
                                         <label>Nomor Mesin </label>
                                         <div class="input-group">
-                                            <input class="form-control" type="text" wire:model.live="machineno"
+                                            <input class="form-control" type="text" wire:model.live.debounce.400ms="machineno" max="6"
                                                 placeholder="..." />
                                             <input class="form-control readonly" readonly="readonly" type="text"
                                                 wire:model="machinename" placeholder="..." />
@@ -148,7 +148,7 @@
                                     <div class="form-group">
                                         <label>Petugas </label>
                                         <div class="input-group col-md-9 col-xs-8">
-                                            <input class="form-control" wire:model.live="employeeno" type="text"
+                                            <input class="form-control" wire:model.live.debounce.400ms="employeeno" type="text" max="8"
                                                 placeholder="..." />
                                             <input class="form-control readonly" readonly="readonly" type="text"
                                                 wire:model="empname" placeholder="..." />
@@ -250,7 +250,7 @@
                                     <div class="form-group">
                                         <label>Nomor Mesin </label>
                                         <div class="input-group">
-                                            <input class="form-control" type="text" wire:model="machineno"
+                                            <input class="form-control" max="6" type="text" wire:model.live.debounce.400ms="machineno"
                                                 placeholder="..." />
                                             <input class="form-control readonly" readonly="readonly" type="text"
                                                 wire:model="machinename" placeholder="..." />
@@ -264,7 +264,7 @@
                                     <div class="form-group">
                                         <label>Petugas </label>
                                         <div class="input-group col-md-9 col-xs-8">
-                                            <input class="form-control" wire:model="employeeno" type="text"
+                                            <input class="form-control" max="8" wire:model.live.debounce.400ms="employeeno" type="text"
                                                 placeholder="..." />
                                             <input class="form-control readonly" readonly="readonly" type="text"
                                                 wire:model="empname" placeholder="..." />
@@ -415,9 +415,8 @@
                 @forelse ($data as $item)
                     <tr>
                         <td>
-                            <button type="button" class="link-success fs-15 p-1 bg-primary rounded"
-                                data-bs-toggle="modal" data-bs-target="#modal-edit"
-                                wire:click="edit({{ $item->orderid }})">
+                            <button type="button" class="btn fs-15 p-1 bg-primary rounded btn-edit"
+                                data-edit-id="{{ $item->orderid }}" wire:click="edit({{ $item->orderid }})">
                                 <i class="ri-edit-box-line text-white"></i>
                             </button>
                         </td>
@@ -449,6 +448,24 @@
 
 @script
     <script>
+        // Show modal create buyer
+        $wire.on('showModalCreate', () => {
+            $('#modal-add').modal('show');
+        });
+
+        // Close modal create buyer
+        $wire.on('closeModalCreate', () => {
+            $('#modal-add').modal('hide');
+        });
+        // Show modal update buyer
+        $wire.on('showModalUpdate', () => {
+            $('#modal-edit').modal('show');
+        });
+
+        // Close modal update buyer
+        $wire.on('closeModalUpdate', () => {
+            $('#modal-edit').modal('hide');
+        });
         // datatable
         // inisialisasi DataTable
         $wire.on('initDataTable', () => {
@@ -484,6 +501,13 @@
                             </div>
                         `
                     }
+                });
+                // tombol edit
+                $('.btn-edit').on('click', function() {
+                    let id = $(this).attr('data-edit-id');
+
+                    // livewire click
+                    $wire.dispatch('edit', {id});
                 });
 
                 // default column visibility
