@@ -38,7 +38,7 @@
             </div>
             <div class="col-12 col-lg-9 mb-1">
                 <div class="input-group">
-                    <input wire:model="lpk_no" class="form-control" style="padding:0.44rem" type="text"
+                    <input wire:model.live="lpk_no" class="form-control" style="padding:0.44rem" type="text"
                         placeholder="000000-000"
                         x-data="{ lpk_no: '', status: true }"
                         x-init="$watch('lpk_no', value => {
@@ -331,11 +331,11 @@
                         </td>
                         <td> {{ $item->lpk_no }} </td>
                         <td> {{ \Carbon\Carbon::parse($item->lpk_date)->format('d M Y') }} </td>            
-                        <td> {{ number_format($item->panjang_lpk, 0, ',', '.') }} </td>
-                        <td> {{ number_format($item->panjang_produksi, 0, ',', '.') }} </td>
-                        <td> {{ number_format($item->berat_produksi, 0, ',', '.') }} </td>
+                        <td> {{ number_format($item->panjang_lpk, 0, ',', ',') }} </td>
+                        <td> {{ number_format($item->panjang_produksi, 0, ',', ',') }} </td>
+                        <td> {{ number_format($item->berat_produksi, 0, ',', ',') }} </td>
                         <td> {{ $item->gentan_no }} </td>                        
-                        <td> {{ number_format($item->berat_standard, 0, ',', '.') }} </td>
+                        <td> {{ number_format($item->berat_standard, 0, ',', ',') }} </td>
                         <td> - </td>
                         <td> - </td>
                         <td> {{ $item->product_name }} </td>
