@@ -54,6 +54,7 @@ class EditNippoController extends Component
     public $rasio;
     public $selisih;
     public $berat_produksi;
+    public $seq_no;
 
     // data master produk
     public $masterKatanuki;
@@ -122,6 +123,8 @@ class EditNippoController extends Component
                 'mse.empname',
                 'msp.code',
                 'msp.name',
+                'msp.ketebalan',
+                'msp.diameterlipat',
                 // DB::raw("CASE WHEN tdpg.id IS NOT NULL THEN 1 ELSE 0 END as tdpg")
             )
             ->where('tda.id', $request->query('orderId'))
@@ -138,11 +141,11 @@ class EditNippoController extends Component
         $this->statusSeitai = $data->status_production;
         $this->orderId = $request->query('orderId');
         $this->production_no = $data->production_no;
-        $this->production_date = Carbon::parse($data->production_date)->format('Y-m-d');
-        $this->created_on = Carbon::parse($data->created_on)->format('Y-m-d H:i:s');
+        $this->production_date = Carbon::parse($data->production_date)->format('d M Y');
+        $this->created_on = Carbon::parse($data->created_on)->format('d/m/Y') . ' - Nomor: ' . $data->seq_no;
         $this->lpk_no = $data->lpk_no;
-        $this->lpk_date = Carbon::parse($data->lpk_date)->format('Y-m-d');
-        $this->panjang_lpk = $data->panjang_lpk;
+        $this->lpk_date = Carbon::parse($data->lpk_date)->format('d/M/Y');
+        $this->panjang_lpk = number_format($data->panjang_lpk, 0, ',', ',');
         $this->machineno = $data->machineno;
         $this->machinename = $data->machinename;
         $this->code = $data->code;
@@ -153,7 +156,15 @@ class EditNippoController extends Component
         $this->work_shift = $data->work_shift;
         $this->gentan_no = $data->gentan_no;
         $this->nomor_han = $data->nomor_han;
+        $this->seq_no = $data->seq_no;
         $this->panjang_produksi = $data->panjang_produksi;
+        $this->dimensiinfure = $data->ketebalan . 'x' . $data->diameterlipat;
+        $this->qty_gulung = number_format($data->qty_gulung, 0, ',', ',');
+        $this->berat_standard = round($data->berat_standard, 2);
+        $this->total_assembly_line = number_format($data->total_assembly_line, 0, ',', ',');
+        $selisih = $data->total_assembly_line - $data->panjang_lpk;
+        $this->selisih = number_format(round($selisih, 2), 0, ',', ',');
+        $this->berat_produksi = $data->berat_produksi;
 
         $this->details = DB::table('tdproduct_assembly_loss as tal')
             ->select(
@@ -338,7 +349,7 @@ class EditNippoController extends Component
 
             $product = TdProductAssembly::findOrFail($this->orderId);
             $product->production_date = Carbon::parse($this->production_date . ' ' . $this->work_hour)->format('Y-m-d H:i:s');
-            $product->created_on = $this->created_on;
+            // $product->created_on = $this->created_on;
             $product->machine_id = $machine->id;
             $product->employee_id = $employe->id;
             $product->work_shift = $this->work_shift;
@@ -465,74 +476,74 @@ class EditNippoController extends Component
 
     public function render()
     {
-        if (isset($this->lpk_no) && $this->lpk_no != '') {
-            $prefix = substr($this->lpk_no, 0, 6);
-            $suffix = substr($this->lpk_no, -3);
+        // if (isset($this->lpk_no) && $this->lpk_no != '') {
+        //     $prefix = substr($this->lpk_no, 0, 6);
+        //     $suffix = substr($this->lpk_no, -3);
 
-            $tdorderlpk = DB::table('tdorderlpk as tolp')
-                ->select(
-                    'tolp.lpk_no',
-                    'tolp.id',
-                    'tolp.lpk_date',
-                    'tolp.panjang_lpk',
-                    'tolp.created_on',
-                    'mp.code',
-                    'mp.name',
-                    'mp.ketebalan',
-                    'mp.diameterlipat',
-                    'tolp.qty_gulung',
-                    'tolp.qty_gentan',
-                    'tda.gentan_no',
-                    'tolp.total_assembly_line',
-                    'tda.berat_produksi',
-                    DB::raw("( mp.ketebalan * mp.diameterlipat * tolp.qty_gulung * 2 * mt.berat_jenis ) / 1000 AS berat_standard "),
-                )
-                ->join('msproduct as mp', 'mp.id', '=', 'tolp.product_id')
-                ->join('tdproduct_assembly as tda', 'tda.lpk_id', '=', 'tolp.id')
-                ->leftJoin('msproduct_type as mt', 'mt.id', '=', 'mp.product_type_id')
-                // ->where('tolp.lpk_no', $this->lpk_no)
-                ->whereRaw("LEFT(lpk_no, 6) ILIKE ?", ["{$prefix}"])
-                ->whereRaw("RIGHT(lpk_no, 3) ILIKE ?", ["{$suffix}"])
-                ->first();
+        //     $tdorderlpk = DB::table('tdorderlpk as tolp')
+        //         ->select(
+        //             'tolp.lpk_no',
+        //             'tolp.id',
+        //             'tolp.lpk_date',
+        //             'tolp.panjang_lpk',
+        //             'tolp.created_on',
+        //             'mp.code',
+        //             'mp.name',
+        //             'mp.ketebalan',
+        //             'mp.diameterlipat',
+        //             'tolp.qty_gulung',
+        //             'tolp.qty_gentan',
+        //             'tda.gentan_no',
+        //             'tolp.total_assembly_line',
+        //             'tda.berat_produksi',
+        //             DB::raw("( mp.ketebalan * mp.diameterlipat * tolp.qty_gulung * 2 * mt.berat_jenis ) / 1000 AS berat_standard "),
+        //         )
+        //         ->join('msproduct as mp', 'mp.id', '=', 'tolp.product_id')
+        //         ->join('tdproduct_assembly as tda', 'tda.lpk_id', '=', 'tolp.id')
+        //         ->leftJoin('msproduct_type as mt', 'mt.id', '=', 'mp.product_type_id')
+        //         // ->where('tolp.lpk_no', $this->lpk_no)
+        //         ->whereRaw("LEFT(lpk_no, 6) ILIKE ?", ["{$prefix}"])
+        //         ->whereRaw("RIGHT(lpk_no, 3) ILIKE ?", ["{$suffix}"])
+        //         ->first();
 
-            if ($tdorderlpk == null) {
-                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor LPK ' . $this->lpk_no . ' Tidak Terdaftar']);
-            } else {
-                $this->lpk_date = Carbon::parse($tdorderlpk->lpk_date)->format('Y-m-d');
-                $this->panjang_lpk = $tdorderlpk->panjang_lpk;
-                $this->created_on = Carbon::parse($tdorderlpk->created_on)->format('Y-m-d H:i:s');
-                $this->code = $tdorderlpk->code;
-                $this->name = $tdorderlpk->name;
-                $this->dimensiinfure = $tdorderlpk->ketebalan . 'x' . $tdorderlpk->diameterlipat;
-                $this->qty_gulung = $tdorderlpk->qty_gulung;
-                $this->lpk_no = $tdorderlpk->lpk_no;
-                $this->qty_gentan = $tdorderlpk->qty_gentan;
-                $this->berat_standard = round($tdorderlpk->berat_standard, 2);
-                $this->total_assembly_line = $tdorderlpk->total_assembly_line;
-                $selisih = $tdorderlpk->total_assembly_line - $tdorderlpk->panjang_lpk;
-                $this->selisih = round($selisih, 2);
-                $this->berat_produksi = $tdorderlpk->berat_produksi;
+        //     if ($tdorderlpk == null) {
+        //         $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor LPK ' . $this->lpk_no . ' Tidak Terdaftar']);
+        //     } else {
+        //         $this->lpk_date = Carbon::parse($tdorderlpk->lpk_date)->format('d/M/Y');
+        //         $this->panjang_lpk = number_format($tdorderlpk->panjang_lpk, 0, ',', ',');
+        //         $this->created_on = Carbon::parse($tdorderlpk->created_on)->format('d/m/Y') . ' - Nomor: ' . $this->seq_no;
+        //         $this->code = $tdorderlpk->code;
+        //         $this->name = $tdorderlpk->name;
+        //         $this->dimensiinfure = $tdorderlpk->ketebalan . 'x' . $tdorderlpk->diameterlipat;
+        //         $this->qty_gulung = number_format($tdorderlpk->qty_gulung, 0, ',', ',');
+        //         $this->lpk_no = $tdorderlpk->lpk_no;
+        //         $this->qty_gentan = number_format($tdorderlpk->qty_gentan, 0, ',', ',');
+        //         $this->berat_standard = round($tdorderlpk->berat_standard, 2);
+        //         $this->total_assembly_line = number_format($tdorderlpk->total_assembly_line, 0, ',', ',');
+        //         $selisih = $tdorderlpk->total_assembly_line - $tdorderlpk->panjang_lpk;
+        //         $this->selisih = number_format(round($selisih, 2), 0, ',', ',');
+        //         $this->berat_produksi = $tdorderlpk->berat_produksi;
 
-                $this->details = DB::table('tdproduct_assembly_loss as tal')
-                    ->select(
-                        'tal.loss_infure_id',
-                        'tal.berat_loss',
-                        'tal.id',
-                        'tal.berat',
-                        'tal.frekuensi',
-                        'msi.name as name_infure'
-                    )
-                    ->join('mslossinfure as msi', 'msi.id', '=', 'tal.loss_infure_id')
-                    ->where('tal.product_assembly_id', $this->orderId)
-                    ->get();
-            }
-        }
+        $this->details = DB::table('tdproduct_assembly_loss as tal')
+            ->select(
+                'tal.loss_infure_id',
+                'tal.berat_loss',
+                'tal.id',
+                'tal.berat',
+                'tal.frekuensi',
+                'msi.name as name_infure'
+            )
+            ->join('mslossinfure as msi', 'msi.id', '=', 'tal.loss_infure_id')
+            ->where('tal.product_assembly_id', $this->orderId)
+            ->get();
+        //     }
+        // }
 
         if (isset($this->loss_infure_id) && $this->loss_infure_id != '') {
-            $lossinfure = MsLossInfure::where('id', $this->loss_infure_id)->first();
+            $lossinfure = MsLossInfure::where('code', $this->loss_infure_id)->first();
 
             if ($lossinfure == null) {
-                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->loss_infure_id . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Loss Infure ' . $this->loss_infure_id . ' Tidak Terdaftar']);
             } else {
                 $this->name_infure = $lossinfure->name;
             }
@@ -543,18 +554,23 @@ class EditNippoController extends Component
 
             if ($machine == null) {
                 $this->dispatch('notification', ['type' => 'error', 'message' => 'Machine ' . $this->machineno . ' Tidak Terdaftar']);
+                $this->machineno = '';
+                $this->machinename = '';
             } else {
                 $this->machineno = $machine->machineno;
                 $this->machinename = $machine->machinename;
             }
         }
 
-        if (isset($this->employeeno) && $this->employeeno != '') {
-            $msemployee = MsEmployee::where('employeeno', $this->employeeno)->first();
+        if (isset($this->employeeno) && $this->employeeno != '' && strlen($this->employeeno) >= 3) {
+            $msemployee = MsEmployee::where('employeeno', 'ilike', '%' . $this->employeeno . '%')->first();
 
             if ($msemployee == null) {
-                $this->dispatch('notification', ['type' => 'error', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
+                $this->employeeno = '';
+                $this->empname = '';
             } else {
+                $this->employeeno = $msemployee->employeeno;
                 $this->empname = $msemployee->empname;
             }
         }

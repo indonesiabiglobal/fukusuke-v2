@@ -43,10 +43,10 @@ class LossInfureController extends Component
         $this->machine = MsMachine::get();
 
         if (empty($this->tglMasuk)) {
-            $this->tglMasuk = Carbon::now()->format('d-m-Y');
+            $this->tglMasuk = Carbon::now()->format('d M Y');
         }
         if (empty($this->tglKeluar)) {
-            $this->tglKeluar = Carbon::now()->format('d-m-Y');
+            $this->tglKeluar = Carbon::now()->format('d M Y');
         }
     }
 
@@ -90,25 +90,8 @@ class LossInfureController extends Component
     //     }
     // }
 
-    public function render($isSearch = false)
+    public function render()
     {
-        if (strlen($this->lpk_no) >= 9) {
-            if (!str_contains($this->lpk_no, '-')) {
-                $this->lpk_no = substr_replace($this->lpk_no, '-', 6, 0);
-            }
-            $tdorderlpk = DB::table('tdorderlpk')
-                ->select('id')
-                ->where('lpk_no', $this->lpk_no)
-                ->first();
-
-            if ($tdorderlpk == null) {
-                $this->dispatch('notification', [
-                    'type' => 'warning',
-                    'message' => 'Nomor LPK ' . $this->lpk_no . ' Tidak Terdaftar'
-                ]);
-            }
-        }
-
         $data = DB::table('tdproduct_assembly AS tdpa')
             ->select([
                 'tdpa.id AS id',
@@ -117,7 +100,7 @@ class LossInfureController extends Component
                 'tdpa.employee_id AS employee_id',
                 'tdpa.work_shift AS work_shift',
                 'tdpa.work_hour AS work_hour',
-                'tdpa.machine_id AS machine_id',
+                'msm.machineno',
                 'tdpa.lpk_id AS lpk_id',
                 'tdpa.product_id AS product_id',
                 'tdpa.panjang_produksi AS panjang_produksi',
@@ -148,7 +131,8 @@ class LossInfureController extends Component
                 'tdol.qty_lpk AS qty_lpk',
                 'tdol.total_assembly_line AS total_assembly_line',
                 'tdol.total_assembly_qty AS total_assembly_qty',
-                'mp.name AS product_name'
+                'mp.name AS product_name',
+                'mp.code AS code'
             ])
             ->join('tdorderlpk AS tdol', 'tdpa.lpk_id', '=', 'tdol.id')
             ->leftJoin('msproduct AS mp', 'mp.id', '=', 'tdol.product_id')

@@ -27,39 +27,56 @@ class LabelGentanController extends Component
         $this->dispatch('redirectToPrint', $this->produk_asemblyid);
     }
 
+    public function resetLpkNo()
+    {
+        $this->lpk_no = '';
+        $this->code = '';
+        $this->product_name = '';
+        $this->product_panjanggulung = '';
+        $this->qty_lpk = '';
+        $this->lpk_date = '';
+    }
+
+    public function resetGentanNo()
+    {
+        $this->produk_asemblyid = '';
+        $this->product_panjang = '';
+        $this->berat_produksi = '';
+        $this->berat_standard = '';
+        $this->gentan_no = '';
+    }
+
     public function render()
     {
-        if (isset($this->lpk_no) && $this->lpk_no != '') {
-            if (!str_contains($this->lpk_no, '-') && strlen($this->lpk_no) >= 6) {
-                $this->lpk_no = substr_replace($this->lpk_no, '-', 6, 0);
-            } else if (strlen($this->lpk_no) >= 9) {
-                $data = DB::table('tdorderlpk as tod')
-                    ->join('msproduct as mp', 'mp.id', '=', 'tod.product_id')
-                    ->select(
-                        'tod.lpk_no',
-                        'mp.code',
-                        'mp.name as product_name',
-                        'tod.product_panjang',
-                        'tod.qty_gentan',
-                        'tod.product_panjanggulung',
-                        'tod.qty_lpk',
-                        'tod.lpk_date',
-                        'tod.reprint_no as reprint_no'
-                    )
-                    ->where('lpk_no', $this->lpk_no)
-                    ->first();
-                if ($data == null) {
-                    $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor LPK ' . $this->lpk_no . ' Tidak Terdaftar']);
-                } else {
-                    $this->lpk_no = $data->lpk_no;
-                    $this->code = $data->code;
-                    $this->product_name = $data->product_name;
-                    // $this->product_panjang = $data->product_panjang;
-                    // $this->qty_gentan = $data->qty_gentan;
-                    $this->product_panjanggulung = $data->product_panjanggulung;
-                    $this->qty_lpk = $data->qty_lpk;
-                    $this->lpk_date = Carbon::parse($data->lpk_date)->format('Y-m-d');
-                }
+        if (isset($this->lpk_no) && $this->lpk_no != '' && strlen($this->lpk_no) >= 9) {
+            $data = DB::table('tdorderlpk as tod')
+                ->join('msproduct as mp', 'mp.id', '=', 'tod.product_id')
+                ->select(
+                    'tod.lpk_no',
+                    'mp.code',
+                    'mp.name as product_name',
+                    'tod.product_panjang',
+                    'tod.qty_gentan',
+                    'tod.product_panjanggulung',
+                    'tod.qty_lpk',
+                    'tod.lpk_date',
+                    'tod.reprint_no as reprint_no'
+                )
+                ->where('lpk_no', $this->lpk_no)
+                ->first();
+            if ($data == null) {
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor LPK ' . $this->lpk_no . ' Tidak Terdaftar']);
+                $this->resetLpkNo();
+                $this->resetGentanNo();
+            } else {
+                $this->lpk_no = $data->lpk_no;
+                $this->code = $data->code;
+                $this->product_name = $data->product_name;
+                // $this->product_panjang = $data->product_panjang;
+                // $this->qty_gentan = $data->qty_gentan;
+                $this->product_panjanggulung = $data->product_panjanggulung;
+                $this->qty_lpk = $data->qty_lpk;
+                $this->lpk_date = Carbon::parse($data->lpk_date)->format('d/M/Y');
             }
         }
 
@@ -90,6 +107,7 @@ class LabelGentanController extends Component
 
             if ($data2->isEmpty()) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Gentan ' . $this->gentan_no . ' Tidak Terdaftar']);
+                $this->resetGentanNo();
             } else {
                 $firstItem = $data2->first();
                 $this->produk_asemblyid = $firstItem->produk_asembly_id;
