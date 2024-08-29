@@ -20,6 +20,7 @@ class Department extends Component
     public $divisionCode;
     public $idUpdate;
     public $idDelete;
+    public $status;
 
     public function mount()
     {
@@ -82,6 +83,7 @@ class Department extends Component
         $this->code = $department->code;
         $this->name = $department->name;
         $this->divisionCode = $department->division_code;
+        $this->status = $department->status;
         $this->dispatch('showModalUpdate');
     }
 
@@ -99,6 +101,7 @@ class Department extends Component
                 'code' => $this->code,
                 'name' => $this->name,
                 'division_code' => $this->divisionCode,
+                'status' => $this->status,
                 'updated_by' => auth()->user()->username,
                 'updated_on' => now(),
             ]);

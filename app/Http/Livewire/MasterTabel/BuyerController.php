@@ -25,6 +25,7 @@ class BuyerController extends Component
     public $country;
     public $idUpdate;
     public $idDelete;
+    public $status;
 
     public $perPage = 10;
 
@@ -98,6 +99,7 @@ class BuyerController extends Component
         $this->address = $buyer->address;
         $this->city = $buyer->city;
         $this->country = $buyer->country;
+        $this->status = $buyer->status;
 
         $this->dispatch('showModalUpdate');
     }
@@ -108,14 +110,15 @@ class BuyerController extends Component
 
         DB::beginTransaction();
         try {
-            $statusActive = 1;
+            // $statusActive = 1;
             $msbuyer = MsBuyer::where('id', $this->idUpdate)->first();
             $msbuyer->code = $this->code;
             $msbuyer->name = $this->name;
             $msbuyer->city = $this->city;
             $msbuyer->address = $this->address;
             $msbuyer->country = $this->country;
-            $msbuyer->status = $statusActive;
+            // $msbuyer->status = $statusActive;
+            $msbuyer->status = $this->status;
             $msbuyer->updated_by = Auth::user()->username;
             $msbuyer->updated_on = Carbon::now();
             $msbuyer->save();

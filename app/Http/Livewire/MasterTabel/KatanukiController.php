@@ -25,6 +25,7 @@ class KatanukiController extends Component
     public $photo;
     public $idUpdate;
     public $idDelete;
+    public $status;
 
     #[Validate('image|max:10240')] // 10MB Max
 
@@ -103,11 +104,12 @@ class KatanukiController extends Component
     {
         $katanuki = DB::table('mskatanuki')
             ->where('id', $id)
-            ->first(['code', 'name', 'filename']);
+            ->first(['code', 'name', 'filename','status']);
         $this->code = $katanuki->code;
         $this->name = $katanuki->name;
         $this->filename = $katanuki->filename;
         $this->idUpdate = $id;
+        $this->status = $katanuki->status;
         $this->dispatch('showModalUpdate');
     }
 
@@ -149,7 +151,7 @@ class KatanukiController extends Component
                     'code' => $this->code,
                     'name' => strtoupper($this->name),
                     'filename' => $this->filename,
-                    'status' => $statusActive,
+                    'status' => $this->status,
                     'updated_by' => auth()->user()->username,
                     'updated_on' => now(),
                 ]);
