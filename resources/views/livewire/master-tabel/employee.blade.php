@@ -54,10 +54,12 @@
                                         <div class="col-xxl-12">
                                             <div>
                                                 <label for="employeeno" class="form-label">NIK</label>
-                                                <input type="number"
+                                                <input type="text"
                                                     class="form-control @error('employeeno') is-invalid @enderror"
                                                     id="employeeno" wire:model.defer="employeeno"
-                                                    placeholder="Nomor Induk Karyawan">
+                                                    placeholder="Nomor Induk Karyawan" maxlength="8"
+                                                    style="text-transform: uppercase;"
+                                                    oninput="this.value = this.value.toUpperCase();" >
                                                 @error('employeeno')
                                                     <span class="invalid-feedback">{{ $message }}</span>
                                                 @enderror
@@ -144,11 +146,13 @@
                                         {{-- employeeno --}}
                                         <div class="col-xxl-12">
                                             <div>
-                                                <label for="employeeno" class="form-label">employeeno</label>
-                                                <input type="number"
+                                                <label for="employeeno" class="form-label">NIK</label>
+                                                <input type="text"
                                                     class="form-control @error('employeeno') is-invalid @enderror"
                                                     id="employeeno" wire:model.defer="employeeno"
-                                                    placeholder="Kode/Nomor">
+                                                    placeholder="Nomor Induk Karyawan" maxlength="8"
+                                                    style="text-transform: uppercase;"
+                                                    oninput="this.value = this.value.toUpperCase();">
                                                 @error('employeeno')
                                                     <span class="invalid-feedback">{{ $message }}</span>
                                                 @enderror
@@ -166,19 +170,6 @@
                                                 @enderror
                                             </div>
                                         </div>
-                                        @if ($status == '0')
-                                            <div class="col-xxl-12">
-                                                <div wire:ignore>
-                                                    <label for="empname" class="form-label">Status</label>
-                                                    <select class="form-select" wire:model="status">
-                                                        <option value="0" {{ $status == '0' ? 'selected' : '' }}>
-                                                            Inactive</option>
-                                                        <option value="1" {{ $status == '1' ? 'selected' : '' }}>
-                                                            Active</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        @endif
                                         {{-- Departemen Karyawan --}}
                                         <div class="col-xxl-12">
                                             <div class="row">
@@ -202,6 +193,20 @@
                                                 @enderror
                                             </div>
                                         </div>
+                                        @if ($status == '0')
+                                            <div class="col-xxl-12">
+                                                <div wire:ignore>
+                                                    <label for="empname" class="form-label">Status</label>
+                                                    <select class="form-select" wire:model="status">
+                                                        <option value="0" {{ $status == '0' ? 'selected' : '' }}>
+                                                            Inactive</option>
+                                                        <option value="1" {{ $status == '1' ? 'selected' : '' }}>
+                                                            Active</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        @endif
+                                        
                                         {{-- button --}}
                                         <div class="col-lg-12">
                                             <div class="hstack gap-2 justify-content-end">
@@ -391,7 +396,7 @@
                         <td>
                             {!! $item->status == 1
                                 ? '<span class="badge text-success bg-success-subtle">Active</span>'
-                                : '<span class="badge text-bg-danger">Non Active</span>' !!}
+                                : '<span class="badge text-bg-danger">Inactive</span>' !!}
                         </td>
                         <td>{{ $item->updated_by }}</td>
                         <td>{{ \Carbon\Carbon::parse($item->updated_on)->format('d-M-Y H:i:s') }}</td>

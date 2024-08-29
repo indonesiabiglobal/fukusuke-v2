@@ -55,7 +55,8 @@
                                                 <label for="code" class="form-label">Kode Buyer</label>
                                                 <input type="number"
                                                     class="form-control @error('code') is-invalid @enderror"
-                                                    id="code" wire:model.defer="code" placeholder="Kode">
+                                                    id="code" wire:model.defer="code" placeholder="Kode" maxlength="10"
+                                                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);">
                                                 @error('code')
                                                     <span class="invalid-feedback">{{ $message }}</span>
                                                 @enderror
@@ -155,7 +156,8 @@
                                                 <label for="code" class="form-label">Kode Buyer</label>
                                                 <input type="number"
                                                     class="form-control @error('code') is-invalid @enderror"
-                                                    id="code" wire:model.defer="code" placeholder="Kode">
+                                                    id="code" wire:model.defer="code" placeholder="Kode" maxlength="10"
+                                                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);">
                                                 @error('code')
                                                     <span class="invalid-feedback">{{ $message }}</span>
                                                 @enderror
@@ -205,6 +207,19 @@
                                                 @enderror
                                             </div>
                                         </div>
+                                        @if ($status == '0')
+                                            <div class="col-xxl-12">
+                                                <div wire:ignore>
+                                                    <label for="empname" class="form-label">Status</label>
+                                                    <select class="form-select" wire:model="status">
+                                                        <option value="0" {{ $status == '0' ? 'selected' : '' }}>
+                                                            Inactive</option>
+                                                        <option value="1" {{ $status == '1' ? 'selected' : '' }}>
+                                                            Active</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        @endif
                                         {{-- button --}}
                                         <div class="col-lg-12">
                                             <div class="hstack gap-2 justify-content-end">
@@ -395,9 +410,9 @@
                         <td>{{ $item->country }}</td>
                         <td>{!! $item->status == 1
                             ? '<span class="badge text-success bg-success-subtle">Active</span>'
-                            : '<span class="badge text-bg-danger">Non Active</span>' !!}</td>
+                            : '<span class="badge text-bg-danger">Inactive</span>' !!}</td>
                         <td>{{ $item->updated_by }}</td>
-                        <td>{{ \Carbon\Carbon::parse($item->updated_on)->format('d-M-Y H:i:s')  }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y H:i')  }}</td>
                     </tr>
                 @empty
                     <tr>
