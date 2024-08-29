@@ -77,11 +77,7 @@ class NippoInfureController extends Component
 
     public function render()
     {
-        if (strlen($this->lpk_no) === 6 && strpos($this->lpk_no, '-') === false) {
-            $this->lpk_no = $this->lpk_no . '-';
-        }
-
-        if (strlen($this->lpk_no) >= 9) {
+        if (strlen($this->lpk_no) == 10) {
             $prefix = substr($this->lpk_no, 0, 6);
             $suffix = substr($this->lpk_no, -3);
 
@@ -171,7 +167,7 @@ class NippoInfureController extends Component
             $data = $data->where('msm.id', $this->machineId['value']);
         }
 
-        if (isset($this->lpk_no) && $this->lpk_no != "" && $this->lpk_no != "undefined") {
+        if (isset($this->lpk_no) && $this->lpk_no != "" && $this->lpk_no != "undefined" && strlen($this->lpk_no) == 10) {
             $data = $data->where('tdol.lpk_no', 'ilike', "%{$this->lpk_no}%");
         }
 

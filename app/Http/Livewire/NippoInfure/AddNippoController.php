@@ -51,6 +51,9 @@ class AddNippoController extends Component
     public $total_assembly_line;
     public $selisih;
     public $rasio;
+    public $ketebalan;
+    public $diameterlipat;
+    public $berat_jenis;
 
     // data master produk
     public $masterKatanuki;
@@ -475,7 +478,8 @@ class AddNippoController extends Component
                     'tolp.qty_gentan',
                     'tda.gentan_no',
                     'tolp.total_assembly_line',
-                    DB::raw("( mp.ketebalan * mp.diameterlipat * tolp.qty_gulung * 2 * mt.berat_jenis ) / 1000 AS berat_standard "),
+                    'mt.berat_jenis',
+                    // DB::raw("( mp.ketebalan * mp.diameterlipat * tolp.qty_gulung * 2 * mt.berat_jenis ) / 1000 AS berat_standard "),
                 )
                 ->join('msproduct as mp', 'mp.id', '=', 'tolp.product_id')
                 ->leftJoin('tdproduct_assembly as tda', 'tda.lpk_id', '=', 'tolp.id')
@@ -494,13 +498,16 @@ class AddNippoController extends Component
                 $this->created_on = Carbon::parse($tdorderlpk->created_on)->format('d/m/Y');
                 $this->code = $tdorderlpk->code;
                 $this->name = $tdorderlpk->name;
+                $this->ketebalan = $tdorderlpk->ketebalan;
+                $this->diameterlipat = $tdorderlpk->diameterlipat;
+                $this->berat_jenis = $tdorderlpk->berat_jenis;
                 $this->dimensiinfure = $tdorderlpk->ketebalan . 'x' . $tdorderlpk->diameterlipat;
                 $this->qty_gulung = $tdorderlpk->qty_gulung;
                 $this->lpk_no = $tdorderlpk->lpk_no;
                 $this->qty_gentan = $tdorderlpk->qty_gentan;
-                $this->berat_standard = round($tdorderlpk->berat_standard, 2);
+                // $this->berat_standard = round($tdorderlpk->berat_standard, 2);
                 $this->total_assembly_line = $tdorderlpk->total_assembly_line;
-                $selisih = $tdorderlpk->total_assembly_line - $tdorderlpk->panjang_lpk;
+                $selisih = $tdorderlpk->panjang_lpk - $tdorderlpk->total_assembly_line;
                 $this->selisih = round($selisih, 2);
 
                 // $this->details = DB::table('tdproduct_assembly_loss as tal')
@@ -516,6 +523,10 @@ class AddNippoController extends Component
                 //     ->where('tal.lpk_id', $tdorderlpk->id)
                 //     ->get();
             }
+        }
+
+        if (isset($this->panjang_produksi) && $this->panjang_produksi != '') {
+            $this->berat_standard = ($this->ketebalan * $this->diameterlipat * (int)str_replace(',', '', $this->panjang_produksi) * 2 * $this->berat_jenis) / 1000;
         }
 
         if (isset($this->machineno) && $this->machineno != '') {
@@ -536,6 +547,8 @@ class AddNippoController extends Component
 
             if ($msemployee == null) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
+                $this->employeeno = '';
+                $this->empname = '';
             } else {
                 $this->employeeno = $msemployee->employeeno;
                 $this->empname = $msemployee->empname;
@@ -559,7 +572,7 @@ class AddNippoController extends Component
         }
 
         if (isset($this->berat_produksi) && $this->berat_produksi != '') {
-            $this->rasio = round(($this->berat_produksi / $this->berat_standard) * 100, 2);
+            $this->rasio = round(((int)str_replace(',', '', $this->berat_produksi) / $this->berat_standard) * 100, 2);
         }
 
         // dd($this->details);

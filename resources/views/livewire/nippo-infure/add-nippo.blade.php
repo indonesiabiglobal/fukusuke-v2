@@ -245,7 +245,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5">Panjang Produksi</label>
-                                <input type="text" placeholder="-" class="form-control @error('panjang_produksi') is-invalid @enderror" wire:model="panjang_produksi" oninput="this.value = window.formatNumber(this.value)"
+                                <input type="text" placeholder="-" class="form-control @error('panjang_produksi') is-invalid @enderror" wire:model.change="panjang_produksi" oninput="this.value = window.formatNumber(this.value)"
                                 x-on:keydown.tab="$event.preventDefault(); $refs.berat_produksi.focus();"
                                 x-ref="panjang_produksi"/>
                                 <span class="input-group-text">
