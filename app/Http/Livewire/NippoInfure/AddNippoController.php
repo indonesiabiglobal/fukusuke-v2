@@ -556,7 +556,7 @@ class AddNippoController extends Component
         }
 
         if (isset($this->loss_infure_id) && $this->loss_infure_id != '') {
-            $lossinfure = MsLossInfure::where('id', $this->loss_infure_id)->first();
+            $lossinfure = MsLossInfure::where('code', $this->loss_infure_id)->first();
 
             if ($lossinfure == null) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->loss_infure_id . ' Tidak Terdaftar']);

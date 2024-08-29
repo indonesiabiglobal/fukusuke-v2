@@ -4,31 +4,54 @@
 		<div class="form-group">
 			<div class="input-group">
 				<label class="control-label col-12 col-lg-3 text-muted fw-bold">Nomor LPK</label>
-				<input type="text" wire:model.live.debounce.300ms="lpk_no" class="form-control" placeholder="000000-000"/>
+				{{-- <input type="text" wire:model.change="lpk_no" class="form-control" placeholder="000000-000"/> --}}
+				<div class="col-12 col-lg-9 mb-1" x-data="{ lpk_no: @entangle('lpk_no').live, status: true }" x-init="$watch('lpk_no', value => {
+                    if (value.length === 6 && !value.includes('-') && status) {
+                        lpk_no = value + '-';
+                    }
+                    if (value.length < 6) {
+                        status = true;
+                    }
+                    if (value.length === 7) {
+                        status = false;
+                    }
+                    if (value.length > 10) {
+                        lpk_no = value.substring(0, 10);
+                    }
+                })">
+                <input 
+                    class="form-control" 
+                    style="padding:0.44rem" 
+                    type="text"
+                    placeholder="000000-000"
+                    x-model="lpk_no" 
+                    maxlength="10"
+                />
+				</div>
 			</div>
 		</div>
 		<div class="form-group mt-1">
 			<div class="input-group">
 				<label class="control-label col-12 col-lg-3 text-muted fw-bold">Nomor Gentan</label>
-				<input type="text"  wire:model.live="gentan_no" class="form-control" placeholder="..." />
+				<input type="text"  wire:model.change="gentan_no" class="form-control" placeholder="..." />
 			</div>
 		</div>
 		<div class="form-group mt-1">
 			<div class="input-group">
 				<label class="control-label col-12 col-lg-3 text-muted fw-bold">Nomor Order</label>
-				<input type="text" wire:model="code" class="form-control readonly" readonly="readonly" />
+				<input type="text" wire:model="code" class="form-control readonly bg-light" readonly="readonly" />
 			</div>
 		</div>
 		<div class="form-group mt-1">
 			<div class="input-group">
 				<label class="control-label col-12 col-lg-3 text-muted fw-bold">Nama Produk</label>
-				<input type="text" wire:model="product_name" class="form-control readonly" readonly="readonly" />
+				<input type="text" wire:model="product_name" class="form-control readonly bg-light" readonly="readonly" />
 			</div>
 		</div>
 		<div class="form-group mt-1">
 			<div class="input-group">
 				<label class="control-label col-12 col-lg-3 text-muted fw-bold">Panjang Produksi</label>
-				<input type="text" wire:model="product_panjang" class="form-control readonly currency" readonly="readonly" />
+				<input type="text" wire:model="product_panjang" class="form-control readonly currency bg-light" readonly="readonly" />
 				<span class="input-group-text">
 					meter
 				</span>
@@ -37,7 +60,7 @@
 		<div class="form-group mt-1">
 			<div class="input-group">
 				<label class="control-label col-12 col-lg-3 text-muted fw-bold">Berat Gentan</label>
-				<input type="text" wire:model="berat_produksi" class="form-control readonly currency" readonly="readonly" />
+				<input type="text" wire:model="berat_produksi" class="form-control readonly currency bg-light" readonly="readonly" />
 				<span class="input-group-text">
 					kg
 				</span>
@@ -46,7 +69,7 @@
 		<div class="form-group mt-1">
 			<div class="input-group">
 				<label class="control-label col-12 col-lg-3 text-muted fw-bold">Berat Standard</label>
-				<input type="text" wire:model="berat_standard" class="form-control readonly currency" readonly="readonly" />
+				<input type="text" wire:model="berat_standard" class="form-control readonly currency bg-light" readonly="readonly" />
 				<span class="input-group-text">
 					kg
 				</span>
@@ -55,13 +78,14 @@
 		<div class="form-group mt-1">
 			<div class="input-group">
 				<label class="control-label col-12 col-lg-3 text-muted fw-bold">Tanggal LPK</label>
-				<input class="form-control readonly datepicker-input" readonly="readonly" type="date" wire:model="lpk_date" />
+				{{-- <input class="form-control readonly datepicker-input bg-light" readonly="readonly" type="date" wire:model="lpk_date" /> --}}
+				<input class="form-control readonly datepicker-input bg-light" readonly="readonly" type="text" style="padding:0.44rem" wire:model.defer="lpk_date" placeholder="yyyy/mm/dd"/>
 			</div>
 		</div>
 		<div class="form-group mt-1">
 			<div class="input-group">
 				<label class="control-label col-12 col-lg-3 text-muted fw-bold">Jumlah LPK</label>
-				<input type="text" name="qty_lpk" class="form-control readonly integer" readonly="readonly" wire:model="qty_lpk" />
+				<input type="text" name="qty_lpk" class="form-control readonly integer bg-light" readonly="readonly" wire:model="qty_lpk" />
 			</div>
 		</div>
 		<hr />

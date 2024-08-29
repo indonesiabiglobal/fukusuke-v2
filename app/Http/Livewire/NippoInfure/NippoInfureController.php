@@ -31,7 +31,7 @@ class NippoInfureController extends Component
     public $machineId;
     #[Session]
     public $status;
-    // #[Session]
+    #[Session]
     public $lpk_no;
     #[Session]
     public $searchTerm;
@@ -77,26 +77,6 @@ class NippoInfureController extends Component
 
     public function render()
     {
-        if (strlen($this->lpk_no) == 10) {
-            $prefix = substr($this->lpk_no, 0, 6);
-            $suffix = substr($this->lpk_no, -3);
-
-            $tdorderlpk = DB::table('tdorderlpk as tolp')
-                ->select(
-                    'tolp.lpk_no'
-                )
-                // ->where('tolp.lpk_no', $this->lpk_no)
-                ->whereRaw("LEFT(lpk_no, 6) ILIKE ?", ["{$prefix}"])
-                ->whereRaw("RIGHT(lpk_no, 3) ILIKE ?", ["{$suffix}"])
-                ->first();
-
-            if ($tdorderlpk == null) {
-                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor LPK ' . $this->lpk_no . ' Tidak Terdaftar']);
-            } else {
-                $this->lpk_no = $tdorderlpk->lpk_no;
-            }
-        }
-
         $data = DB::table('tdproduct_assembly AS tda')
             ->select([
                 'tda.id AS id',
