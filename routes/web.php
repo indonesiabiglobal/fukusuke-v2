@@ -65,6 +65,7 @@ use App\Http\Livewire\Kenpin\PrintLabelGudangKenpinController;
 use App\Http\Livewire\MasterTabel\Loss\MenuLossInfureController;
 use App\Http\Livewire\MasterTabel\Loss\MenuLossSeitaiController;
 use App\Http\Livewire\Administration\SecurityManagementController;
+use App\Http\Livewire\Kenpin\EditKenpinSeitaiController;
 use App\Http\Livewire\MasterTabel\Loss\MenuLossKatagoriController;
 use App\Http\Livewire\MasterTabel\Loss\MenuLossKenpinController;
 use App\Http\Livewire\MasterTabel\Loss\MenuLossKlasifikisasiController;
@@ -138,6 +139,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/kenpin-seitai', KenpinSeitaiController::class)->name('kenpin-seitai-kenpin');
     Route::get('/add-kenpin-seitai', AddKenpinSeitaiController::class)->name('add-kenpin-seitai');
+    Route::get('/edit-kenpin-seitai', EditKenpinSeitaiController::class)->name('edit-kenpin-seitai');
 
     Route::get('/mutasi-isi-palet-kenpin', MutasiIsiPaletKenpinController::class)->name('mutasi-isi-palet-kenpin');
     Route::get('/print-label-gudang-kenpin', PrintLabelGudangKenpinController::class)->name('print-label-gudang-kenpin');

@@ -24,7 +24,7 @@
 				<div class="form-group">
 					<div class="input-group">
 						<label class="control-label col-12 col-lg-6">Nomor Order</label>
-						<input type="text" placeholder="-" class="form-control col-4" wire:model.live.debounce.300ms="code" x-on:keydown.tab="$event.preventDefault(); $refs.employeenoInput.focus();" />
+						<input type="text" placeholder="-" class="form-control col-4" wire:model.live.debounce.300ms="code" />
 					</div>
 				</div>
 			</div>
@@ -40,7 +40,7 @@
 				<div class="form-group">
 					<div class="input-group">
 						<label class="control-label col-12 col-lg-6">Petugas</label>
-						<input type="text" placeholder="-" class="form-control" wire:model.live="employeeno" x-ref="employeenoInput" max="8"  x-on:keydown.tab="$event.preventDefault(); $refs.remarkInput.focus();" />
+						<input type="text" placeholder="-" class="form-control" wire:model.live="employeeno" maxlength="8" />
 						@error('employeeno')
 							<span class="invalid-feedback">{{ $message }}</span>
 						@enderror
@@ -59,7 +59,7 @@
 				<div class="form-group">
 					<div class="input-group">
 						<label class="control-label col-12 col-lg-2">NG</label>
-						<input type="text" class="form-control" wire:model="remark"  x-ref="remarkInput" />
+						<input type="text" class="form-control" wire:model="remark" />
 					</div>
 				</div>
 			</div>
@@ -212,7 +212,7 @@
                         <div class="modal-footer">
                             {{-- <button type="button" class="btn btn-secondary">Accept</button> --}}
                             <button type="button" class="btn btn-link text-gray-600 ms-auto" data-bs-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-success" wire:click="saveSeitai">
+                            <button type="button" class="btn btn-success" wire:click="saveSeitai()">
                                 <span wire:loading.remove wire:target="saveSeitai">
                                     <i class="ri-save-3-line"></i> Save
                                 </span>
@@ -284,7 +284,7 @@
 							@endforelse
                             <tr>
                                 <td colspan="6" class="text-end">Berat Loss Total (kg):</td>
-                                <td colspan="1" class="text-center">0</td>
+                                <td colspan="1" class="text-center">{{ $beratLossTotal }}</td>
                             </tr>
                         </tbody>
                     </table>

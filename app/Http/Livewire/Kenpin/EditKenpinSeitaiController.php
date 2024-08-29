@@ -14,11 +14,12 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
-class AddKenpinSeitaiController extends Component
+class EditKenpinSeitaiController extends Component
 {
+    public $idKenpinGoods;
     public $kenpin_no;
     public $kenpin_date;
-    public $name;
+    // public $name;
     public $code;
     public $empname;
     public $employeeno;
@@ -33,13 +34,51 @@ class AddKenpinSeitaiController extends Component
     public $remark;
     public $status;
     public $idKenpinGoodDetailUpdate;
-    public $beratLossTotal;
+    public $beratLossTotal = 0;
 
-    public function mount()
+    public function mount(Request $request)
     {
-        $this->kenpin_date = Carbon::now()->format('Y-m-d');
-        $today = Carbon::now();
-        $this->kenpin_no = $today->format('ym').'-001';
+        $this->idKenpinGoods = $request->orderId;
+        $data = TdKenpinGoods::where('id', $request->orderId)->first();
+        $employee = MsEmployee::where('id', $data->employee_id)->first();
+        $product = MsProduct::where('id', $data->product_id)->first();
+
+        $this->kenpin_no = $data->kenpin_no;
+        $this->kenpin_date = $data->kenpin_date;
+        $this->code = $product->code;
+        $this->empname = $employee->empname;
+        $this->employeeno = $employee->employeeno;
+        $this->qty_loss = $data->qty_loss;
+        $this->remark = $data->remark;
+        $this->status = $data->status_kenpin;
+
+
+        $this->details = DB::table('tdproduct_goods AS tdpg')
+            ->select(
+                'tdpg.id AS id',
+                'tdpg.production_no AS production_no',
+                'tdpg.production_date AS production_date',
+                'tdpg.lpk_id AS lpk_id',
+                'tdpg.product_id AS product_id',
+                'msp.code AS code',
+                'msp.name AS namaproduk',
+                'tdpg.qty_produksi AS qty_produksi',
+                'tdpg.nomor_palet AS nomor_palet',
+                'tdpg.nomor_lot AS nomor_lot',
+                'tdol.order_id AS order_id',
+                'tdol.lpk_no AS lpk_no',
+                'tdol.lpk_date AS lpk_date',
+                'tgd.qty_loss'
+            )
+            ->join('tdorderlpk AS tdol', 'tdpg.lpk_id', '=', 'tdol.id')
+            ->join('msproduct AS msp', 'tdpg.product_id', '=', 'msp.id')
+            ->leftJoin('tdkenpin_goods_detail AS tgd', 'tgd.product_goods_id', '=', 'tdpg.id')
+            ->where('tgd.kenpin_goods_id', $this->idKenpinGoods)
+            ->get();
+
+        $this->beratLossTotal = array_sum(array_map(function ($detail) {
+            return $detail->qty_loss;
+        }, $this->details->toArray()));
     }
 
     public function edit($idKenpinGoodDetailUpdate)
@@ -47,7 +86,6 @@ class AddKenpinSeitaiController extends Component
         $this->idKenpinGoodDetailUpdate = $idKenpinGoodDetailUpdate;
         array_map(function ($detail) use ($idKenpinGoodDetailUpdate) {
             if ($detail->id == $idKenpinGoodDetailUpdate) {
-                $this->orderid = $detail->id;
                 $this->no_palet = $detail->nomor_palet;
                 $this->no_lot = $detail->nomor_lot;
                 $this->no_lpk = $detail->lpk_no;
@@ -57,9 +95,9 @@ class AddKenpinSeitaiController extends Component
         }, $this->details->toArray());
     }
 
-    public function deleteSeitai($orderId)
+    public function deleteSeitai($id)
     {
-        $data = TdKenpinGoodsDetail::where('product_goods_id', $orderId)->first();
+        $data = TdKenpinGoodsDetail::where('product_goods_id', $id)->first();
         if ($data) {
             $data->delete();
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Data berhasil dihapus.']);
@@ -86,7 +124,8 @@ class AddKenpinSeitaiController extends Component
         // menghitung total berat loss
         $this->beratLossTotal = array_sum(array_map(function ($detail) {
             return $detail->qty_loss;
-        }, $this->details));
+        }, $this->details->toArray()));
+
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);
 
         $this->dispatch('closeModal');
@@ -102,15 +141,19 @@ class AddKenpinSeitaiController extends Component
 
         DB::beginTransaction();
         try {
-            $mspetugas=MsEmployee::where('employeeno', $this->employeeno)->first();
-            $product=MsProduct::where('code', $this->code)->first();
-            $productGoods = TdProductGoods::where('id', $this->orderid)->get();
+            $mspetugas = MsEmployee::where('employeeno', $this->employeeno)->first();
+            $product = MsProduct::where('code', $this->code)->first();
+            $productGoods = TdProductGoods::where('id', $this->orderid)->first();
 
-            $data = new TdKenpinGoods();
+            $data = TdKenpinGoods::where('id', $this->idKenpinGoods)->first();
             $data->kenpin_no = $this->kenpin_no;
             $data->kenpin_date = $this->kenpin_date;
             $data->employee_id = $mspetugas->id;
             $data->product_id = $product->id;
+            $data->remark = $this->remark;
+            $data->status_kenpin = $this->status;
+
+            // menghitung total qty loss
             if (is_array($this->details)) {
                 $qtyLoss = array_sum(array_column($this->details, 'qty_loss'));
             } else {
@@ -118,17 +161,18 @@ class AddKenpinSeitaiController extends Component
                 $qtyLoss = $this->details->sum('qty_loss');
             }
             $data->qty_loss = $qtyLoss;
-            $data->remark = $this->remark;
-            $data->status_kenpin = $this->status;
 
             $data->save();
+
+            // hapus data pada kenpin goods detail
+            TdKenpinGoodsDetail::where('kenpin_goods_id', $this->idKenpinGoods)->delete();
 
             // update pada kenpin goods detail
             foreach ($this->details as $detail) {
                 $kenpinGoodsDetail = new TdKenpinGoodsDetail();
                 $kenpinGoodsDetail->product_goods_id = $detail->id;
                 $kenpinGoodsDetail->kenpin_goods_id = $data->id;
-                $kenpinGoodsDetail->qty_loss = $data->qty_loss ?? 0;
+                $kenpinGoodsDetail->qty_loss = $detail->qty_loss ?? 0;
                 $kenpinGoodsDetail->trial468 = 'T';
                 $kenpinGoodsDetail->save();
             }
@@ -154,10 +198,10 @@ class AddKenpinSeitaiController extends Component
 
     public function render()
     {
-        if(isset($this->code) && $this->code != ''){
-            $product=MsProduct::where('code', $this->code)->first();
+        if (isset($this->code) && $this->code != '') {
+            $product = MsProduct::where('code', $this->code)->first();
 
-            if($product == null){
+            if ($product == null) {
                 // session()->flash('error', 'Nomor PO ' . $this->po_no . ' Tidak Terdaftar');
                 $this->dispatch('notification', ['type' => 'error', 'message' => 'Code ' . $this->code . ' Tidak Terdaftar']);
             } else {
@@ -165,51 +209,49 @@ class AddKenpinSeitaiController extends Component
             }
         }
 
-        if(isset($this->employeeno) && $this->employeeno != '' && strlen($this->employeeno) >= 3){
-            $msemployee=MsEmployee::where('employeeno', 'ilike', '%'. $this->employeeno)->active()->first();
+        if (isset($this->employeeno) && $this->employeeno != '') {
+            $msemployee = MsEmployee::where('employeeno', $this->employeeno)->first();
 
-            if($msemployee == null){
+            if ($msemployee == null) {
                 // session()->flash('error', 'Nomor PO ' . $this->po_no . ' Tidak Terdaftar');
                 $this->dispatch('notification', ['type' => 'error', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
             } else {
                 $this->empname = $msemployee->empname;
-                $this->employeeno = $msemployee->employeeno;
             }
         }
 
-        if(isset($this->nomor_palet) && $this->nomor_palet != ''){
-            $product=MsProduct::where('code', $this->code)->first();
+        if (isset($this->nomor_palet) && $this->nomor_palet != '') {
+            $product = MsProduct::where('code', $this->code)->first();
             $this->details = DB::table('tdproduct_goods AS tdpg')
-            ->select(
-                'tdpg.id AS id',
-                'tdpg.production_no AS production_no',
-                'tdpg.production_date AS production_date',
-                'tdpg.lpk_id AS lpk_id',
-                'tdpg.product_id AS product_id',
-                'msp.code AS code',
-                'msp.name AS namaproduk',
-                'tdpg.qty_produksi AS qty_produksi',
-                'tdpg.nomor_palet AS nomor_palet',
-                'tdpg.nomor_lot AS nomor_lot',
-                'tdol.order_id AS order_id',
-                'tdol.lpk_no AS lpk_no',
-                'tdol.lpk_date AS lpk_date',
-                'tgd.qty_loss'
-            )
-            ->join('tdorderlpk AS tdol', 'tdpg.lpk_id', '=', 'tdol.id')
-            ->join('msproduct AS msp', 'tdpg.product_id', '=', 'msp.id')
-            ->leftJoin('tdkenpin_goods_detail AS tgd', 'tgd.product_goods_id', '=', 'tdpg.id')
-            ->where('tdpg.product_id', $product->id)
-            ->where('tdpg.nomor_palet', $this->nomor_palet)
-            ->get();
+                ->select(
+                    'tdpg.id AS id',
+                    'tdpg.production_no AS production_no',
+                    'tdpg.production_date AS production_date',
+                    'tdpg.lpk_id AS lpk_id',
+                    'tdpg.product_id AS product_id',
+                    'msp.code AS code',
+                    'msp.name AS namaproduk',
+                    'tdpg.qty_produksi AS qty_produksi',
+                    'tdpg.nomor_palet AS nomor_palet',
+                    'tdpg.nomor_lot AS nomor_lot',
+                    'tdol.order_id AS order_id',
+                    'tdol.lpk_no AS lpk_no',
+                    'tdol.lpk_date AS lpk_date',
+                    'tgd.qty_loss'
+                )
+                ->join('tdorderlpk AS tdol', 'tdpg.lpk_id', '=', 'tdol.id')
+                ->join('msproduct AS msp', 'tdpg.product_id', '=', 'msp.id')
+                ->leftJoin('tdkenpin_goods_detail AS tgd', 'tgd.product_goods_id', '=', 'tdpg.id')
+                ->where('tdpg.product_id', $product->id)
+                ->where('tdpg.nomor_palet', $this->nomor_palet)
+                ->get();
 
-            if($this->details == null){
+            if ($this->details == null) {
                 // session()->flash('error', 'Nomor PO ' . $this->po_no . ' Tidak Terdaftar');
                 $this->dispatch('notification', ['type' => 'error', 'message' => 'Employee ' . $this->details . ' Tidak Terdaftar']);
             }
         }
 
-        return view('livewire.kenpin.add-kenpin-seitai')->extends('layouts.master');
+        return view('livewire.kenpin.edit-kenpin-seitai')->extends('layouts.master');
     }
 }
-

@@ -202,7 +202,7 @@
                 @forelse ($data as $item)
                     <tr>
                         <td>
-                            <a href="/edit-kenpin-infure?orderId={{ $item->id }}"
+                            <a href="/edit-kenpin-seitai?orderId={{ $item->id }}"
                                 class="link-success fs-15 p-1 bg-primary rounded">
                                 <i class="ri-edit-box-line text-white"></i>
                             </a>
