@@ -92,8 +92,7 @@
                     </div>
                 </button>
 
-                <button type="button" class="btn btn-success w-lg p-1" data-bs-toggle="modal"
-                    data-bs-target="#modal-add">
+                <button type="button" class="btn btn-success w-lg p-1" wire:click="showModalCreate">
                     <i class="ri-add-line"> </i> Add
                 </button>
                 <div class="modal fade" id="modal-add" tabindex="-1" role="dialog" aria-labelledby="modal-add"
@@ -139,7 +138,7 @@
                                         <div class="form-group">
                                             <label>Nomor Mesin </label>
                                             <div class="input-group">
-                                                <input class="form-control" type="text"
+                                                <input class="form-control" type="text" max="6"
                                                     wire:model.live="machineno" placeholder="..." />
                                                 <input class="form-control readonly" readonly="readonly"
                                                     type="text" wire:model="machinename" placeholder="..." />
@@ -153,7 +152,7 @@
                                         <div class="form-group">
                                             <label>Petugas </label>
                                             <div class="input-group col-md-9 col-xs-8">
-                                                <input class="form-control" wire:model.live="employeeno"
+                                                <input class="form-control" wire:model.live="employeeno" max="8"
                                                     type="text" placeholder="..." />
                                                 <input class="form-control readonly" readonly="readonly"
                                                     type="text" wire:model="empname" placeholder="..." />
@@ -250,8 +249,8 @@
                                         <div class="form-group">
                                             <label>Nomor Mesin </label>
                                             <div class="input-group">
-                                                <input class="form-control" type="text"
-                                                    wire:model.live="machineno" placeholder="..." />
+                                                <input class="form-control" type="text" max="5"
+                                                    wire:model.live.debounce.400ms="machineno" placeholder="..." />
                                                 <input class="form-control readonly" readonly="readonly"
                                                     type="text" wire:model="machinename" placeholder="..." />
                                                 @error('machineno')
@@ -264,7 +263,7 @@
                                         <div class="form-group">
                                             <label>Petugas </label>
                                             <div class="input-group col-md-9 col-xs-8">
-                                                <input class="form-control" wire:model.live="employeeno"
+                                                <input class="form-control" wire:model.live.debounce.400ms="employeeno" max="8"
                                                     type="text" placeholder="..." />
                                                 <input class="form-control readonly" readonly="readonly"
                                                     type="text" wire:model="empname" placeholder="..." />
@@ -416,9 +415,8 @@
                 @forelse ($data as $item)
                     <tr>
                         <td>
-                            <button type="button" class="link-success fs-15 p-1 bg-primary rounded"
-                                data-bs-toggle="modal" data-bs-target="#modal-edit"
-                                wire:click="edit({{ $item->id }})">
+                            <button type="button" class="btn fs-15 p-1 bg-primary rounded btn-edit"
+                                data-edit-id="{{ $item->id }}" wire:click="edit({{ $item->id }})">
                                 <i class="ri-edit-box-line text-white"></i>
                             </button>
                         </td>
@@ -431,7 +429,7 @@
                         <td>{{ $item->off_hour }}</td>
                         <td>{{ $item->on_hour }}</td>
                         <td>{{ $item->updated_by }}</td>
-                        <td>{{ $item->updated_on }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->updated_on)->format('d-M-Y H:i:s')  }}</td>
                     </tr>
                 @empty
                     {{-- <tr>
@@ -452,9 +450,29 @@
 
 @script
     <script>
+        // Show modal create buyer
+        $wire.on('showModalCreate', () => {
+            $('#modal-add').modal('show');
+        });
+
+        // Close modal create buyer
+        $wire.on('closeModalCreate', () => {
+            $('#modal-add').modal('hide');
+        });
+        // Show modal update buyer
+        $wire.on('showModalUpdate', () => {
+            $('#modal-edit').modal('show');
+        });
+
+        // Close modal update buyer
+        $wire.on('closeModalUpdate', () => {
+            $('#modal-edit').modal('hide');
+        });
         // datatable
         // inisialisasi DataTable
         $wire.on('initDataTable', () => {
+            console.log('initDataTable');
+
             initDataTable();
         });
 
@@ -487,6 +505,13 @@
                             </div>
                         `
                     }
+                });
+                // tombol edit
+                $('.btn-edit').on('click', function() {
+                    let id = $(this).attr('data-edit-id');
+
+                    // livewire click
+                    $wire.dispatch('edit', {id});
                 });
 
                 // default column visibility

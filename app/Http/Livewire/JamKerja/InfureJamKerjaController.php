@@ -16,6 +16,7 @@ use Livewire\Attributes\Session;
 class InfureJamKerjaController extends Component
 {
     protected $paginationTheme = 'bootstrap';
+    protected $listeners = ['edit'];
     #[Session]
     public $tglMasuk;
     #[Session]
@@ -63,9 +64,17 @@ class InfureJamKerjaController extends Component
         $this->render();
     }
 
-    public function edit($orderid)
+    public function showModalCreate()
     {
-        $item = TdJamKerjaMesin::find($orderid);
+        $this->resetInput();
+        $this->dispatch('showModalCreate');
+        // Mencegah render ulang
+        $this->skipRender();
+    }
+
+    public function edit($id)
+    {
+        $item = TdJamKerjaMesin::find($id);
         if ($item) {
             $machine = MsMachine::where('id', $item->machine_id)->first();
             $msemployee = MsEmployee::where('id', $item->employee_id)->first();
@@ -79,6 +88,8 @@ class InfureJamKerjaController extends Component
             $this->empname = $msemployee->empname;
             $this->work_hour = Carbon::parse($item->work_hour)->format('H:i');
             $this->off_hour = Carbon::parse($item->off_hour)->format('H:i');
+
+            $this->dispatch('showModalUpdate');
         } else {
             return redirect()->to('jam-kerja/infure');
         }
@@ -94,7 +105,9 @@ class InfureJamKerjaController extends Component
         $this->working_date = '';
         $this->work_shift = '';
         $this->machineno = '';
+        $this->machinename = '';
         $this->employeeno = '';
+        $this->empname = '';
         $this->work_hour = '';
         $this->off_hour = '';
     }
@@ -171,7 +184,8 @@ class InfureJamKerjaController extends Component
 
             $this->reset(['employeeno', 'empname', 'machineno', 'machinename', 'working_date', 'work_shift']);
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
-            return redirect()->route('infure-jam-kerja');
+            $this->dispatch('closeModalUpdate');
+            // return redirect()->route('infure-jam-kerja');
         } catch (\Exception $e) {
             $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
         }
@@ -180,9 +194,9 @@ class InfureJamKerjaController extends Component
     public function render()
     {
         if (isset($this->machineno) && $this->machineno != '') {
-            $machine = MsMachine::where('machineno', 'ilike', '%' . $this->machineno . '%')->whereIn('department_id', [10, 12, 15, 2, 4, 10])->first();
-
+            $machine = MsMachine::where('machineno', 'ilike', '%' . $this->machineno)->whereIn('department_id', [10, 12, 15, 2, 4])->first();
             if ($machine == null) {
+                $this->machinename = '';
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Machine ' . $this->machineno . ' Tidak Terdaftar']);
             } else {
                 $this->machineno = $machine->machineno;
@@ -191,9 +205,10 @@ class InfureJamKerjaController extends Component
         }
 
         if (isset($this->employeeno) && $this->employeeno != '' && strlen($this->employeeno) >= 3) {
-            $msemployee = MsEmployee::where('employeeno', 'ilike', '%' . $this->employeeno . '%')->first();
+            $msemployee = MsEmployee::where('employeeno', 'ilike', '%' . $this->employeeno)->active()->first();
 
             if ($msemployee == null) {
+                $this->empname = '';
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
             } else {
                 $this->employeeno = $msemployee->employeeno;
@@ -248,7 +263,6 @@ class InfureJamKerjaController extends Component
         }
 
         $data = $data->get();
-        // dd($this->work_shift);
 
         return view('livewire.jam-kerja.infure', [
             'data' => $data

@@ -15,4 +15,9 @@ class MsEmployee extends Model
     //     'title',
     //     'content',
     // ];
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', 1);
+    }
 }
