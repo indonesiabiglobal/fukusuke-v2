@@ -166,31 +166,33 @@
                                                 @enderror
                                             </div>
                                         </div>
-                                        <div class="col-xxl-12">
-                                            <div wire:ignore>
-                                                <label for="empname" class="form-label">Status</label>
-                                                <select data-choices data-choices-sorting="true" class="form-select"
-                                                    wire:model="status">
-                                                    <option value="0" {{ $status == '0' ? 'selected' : '' }}>
-                                                        Inactive</option>
-                                                    <option value="1" {{ $status == '1' ? 'selected' : '' }}>
-                                                        Active</option>
-                                                </select>
+                                        @if ($status == '0')
+                                            <div class="col-xxl-12">
+                                                <div wire:ignore>
+                                                    <label for="empname" class="form-label">Status</label>
+                                                    <select class="form-select" wire:model="status">
+                                                        <option value="0" {{ $status == '0' ? 'selected' : '' }}>
+                                                            Inactive</option>
+                                                        <option value="1" {{ $status == '1' ? 'selected' : '' }}>
+                                                            Active</option>
+                                                    </select>
+                                                </div>
                                             </div>
-                                        </div>
+                                        @endif
                                         {{-- Departemen Karyawan --}}
                                         <div class="col-xxl-12">
                                             <div class="row">
                                                 <label for="Departemen Karyawan" class="form-label">Departemen
                                                     Karyawan</label>
-                                                <select data-choices data-choices-sorting="true"
-                                                    class="form-select @error('department_id') is-invalid @enderror"
-                                                    wire:model="department_id" placeholder="">
+                                                <select
+                                                    class="form-select select2 @error('department_id') is-invalid @enderror"
+                                                    wire:model="department_id" placeholder="" id="department_id">
                                                     <option value="" selected>
                                                         Silahkan Pilih
                                                     </option>
                                                     @foreach (\App\Models\MsDepartment::select('id', 'name')->get() as $department)
-                                                        <option value="{{ $department->id }}" {{ $department->id == $department_id ? 'selected' : '' }}>
+                                                        <option value="{{ $department->id }}"
+                                                            {{ $department->id == $department_id ? 'selected' : '' }}>
                                                             {{ $department->name }}
                                                         </option>
                                                     @endforeach
@@ -377,7 +379,8 @@
                                 data-edit-id="{{ $item->id }}" wire:click="edit({{ $item->id }})">
                                 <i class="ri-edit-box-line text-white"></i>
                             </button>
-                            <button {{ $item->status == 0 ? 'hidden' : '' }} type="button" class="btn fs-15 p-1 bg-danger rounded modal-delete btn-delete"
+                            <button {{ $item->status == 0 ? 'hidden' : '' }} type="button"
+                                class="btn fs-15 p-1 bg-danger rounded modal-delete btn-delete"
                                 data-delete-id="{{ $item->id }}" wire:click="delete({{ $item->id }})">
                                 <i class="ri-delete-bin-line  text-white"></i>
                             </button>
@@ -391,7 +394,7 @@
                                 : '<span class="badge text-bg-danger">Non Active</span>' !!}
                         </td>
                         <td>{{ $item->updated_by }}</td>
-                        <td>{{ \Carbon\Carbon::parse($item->updated_on)->format('d-M-Y H:i:s')  }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->updated_on)->format('d-M-Y H:i:s') }}</td>
                         {{-- <td>{{ $no++ }}</td> --}}
                     </tr>
                 @empty
@@ -414,6 +417,7 @@
 
 @script
     <script>
+
         $wire.on('showModalCreate', () => {
             $('#modal-add').modal('show');
         });

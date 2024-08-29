@@ -18,6 +18,7 @@ class Employee extends Component
     public $employeeno;
     public $empname;
     public $department_id;
+    public $department_name;
     public $idUpdate;
     public $idDelete;
     public $status;
@@ -89,12 +90,14 @@ class Employee extends Component
 
     public function edit($id)
     {
-        $employee = DB::table('msemployee')
-            ->where('id', $id)
-            ->first(['employeeno', 'empname', 'department_id', 'status']);
+        $employee = DB::table('msemployee as mse')
+            ->join('msdepartment as msd', 'mse.department_id', '=', 'msd.id')
+            ->where('mse.id', $id)
+            ->first(['mse.employeeno', 'mse.empname', 'mse.department_id', 'mse.status', 'msd.name as department_name']);
         $this->employeeno = $employee->employeeno;
         $this->empname = $employee->empname;
         $this->department_id = $employee->department_id;
+        $this->department_name = $employee->department_name;
         $this->status = $employee->status;
         $this->idUpdate = $id;
         $this->dispatch('showModalUpdate');
@@ -115,8 +118,8 @@ class Employee extends Component
                 ->update([
                     'employeeno' => $this->employeeno,
                     'empname' => $this->empname,
-                    'department_id' => $this->department_id['value'],
-                    'status' => $this->status['value'],
+                    'department_id' => $this->department_id,
+                    'status' => $this->status,
                     'updated_by' => auth()->user()->username,
                     'updated_on' => now(),
                 ]);
@@ -162,6 +165,20 @@ class Employee extends Component
 
     public function render()
     {
+        $this->data =  DB::table('msemployee as mse')
+            ->select(
+                'mse.id',
+                'mse.employeeno',
+                'mse.empname',
+                'mse.department_id',
+                'mse.status',
+                'mse.updated_by',
+                'mse.updated_on',
+                'msd.name as department_name'
+            )
+            ->leftJoin('msdepartment as msd', 'mse.department_id', '=', 'msd.id')
+            ->get();
+
         return view('livewire.master-tabel.employee')->extends('layouts.master');
     }
 
