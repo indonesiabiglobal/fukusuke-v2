@@ -42,7 +42,7 @@ class AddKenpinInfureController extends Component
 
     public function mount()
     {
-        $this->kenpin_date = Carbon::now()->format('Y-m-d');
+        $this->kenpin_date = Carbon::now()->format('d-m-Y');
         $today = Carbon::now();
         $this->kenpin_no = $today->format('ym') . '-001';
         $this->msLossKenpin = MsLossKenpin::get();
