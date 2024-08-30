@@ -32,14 +32,14 @@
                 </div>
             </div>
 
-            <div class="col-12 col-lg-3">
+            {{-- <div class="col-12 col-lg-3">
                 <label class="form-label text-muted fw-bold">Search</label>
             </div>
             <div class="col-12 col-lg-9">
                 <div class="input-group">
                     <input wire:model.defer="searchTerm" class="form-control"style="padding:0.44rem" type="text" placeholder="search nomor PO, nama produk" />
                 </div>
-            </div>
+            </div> --}}
         </div>
     </div>
     <div class="col-12 col-lg-5">
