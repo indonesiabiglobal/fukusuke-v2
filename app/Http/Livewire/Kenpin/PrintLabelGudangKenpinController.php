@@ -35,13 +35,13 @@ class PrintLabelGudangKenpinController extends Component
         FROM
             tdorder AS tod
             INNER JOIN msproduct AS mp ON mp.ID = tod.product_id
-            INNER JOIN msbuyer AS mbu ON mbu.ID = tod.buyer_id 
+            INNER JOIN msbuyer AS mbu ON mbu.ID = tod.buyer_id
         WHERE
             tod.id = '12766'
         "))->first();
-        
-        $this->emit('redirectToPrint', $data);
-            
+
+        $this->dispatch('redirectToPrint', $data);
+
     }
 
     public function render()
@@ -62,7 +62,7 @@ class PrintLabelGudangKenpinController extends Component
                 INNER JOIN msproduct AS msp ON msp.id = tdpg.product_id
             WHERE
                 tdpg.nomor_palet='$this->nomor_palet'");
-                                    
+
             if($this->data == null){
                 $this->dispatchBrowserEvent('notification', ['type' => 'error', 'message' => 'Palet ' . $this->nomor_palet . ' Tidak Terdaftar']);
             } else {
@@ -70,7 +70,7 @@ class PrintLabelGudangKenpinController extends Component
                 $this->name = $this->data[0]->name;
             }
         }
-        
+
         return view('livewire.kenpin.print-label-gudang')->extends('layouts.master');
     }
 }

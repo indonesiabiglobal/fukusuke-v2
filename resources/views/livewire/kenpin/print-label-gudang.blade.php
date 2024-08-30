@@ -1,15 +1,27 @@
 <form>
 	<div class="row mt-3">
 		<div class="col-12 col-lg-6">
-			<div class="form-group">				
+			<div class="form-group">
 				<div class="input-group">
 					<span class="input-group-text readonly">
 						Nomor Palet Sumber
 					</span>
 					<input wire:model.defer="nomor_palet" class="form-control" type="text" placeholder="A0000-000000" />
-					<button wire:click="search" type="button" class="btn btn-info">
-						<i class="fa fa-search"></i>
-					</button>
+                    <button wire:click="search" type="button" class="btn btn-info">
+                        <span wire:loading.remove wire:target="search">
+                            <i class="ri-search-line"></i>
+                        </span>
+                        <div wire:loading wire:target="search">
+                            <span class="d-flex align-items-center">
+                                <span class="spinner-border flex-shrink-0" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </span>
+                                <span class="flex-grow-1 ms-1">
+                                    Loading...
+                                </span>
+                            </span>
+                        </div>
+                    </button>
 				</div>
 			</div>
 
@@ -68,9 +80,21 @@
 			<div class="form-group">
 				<label class="control-label col-md-4 col-xs-12"></label>
 				<div class="input-group">
-					<button type="button" class="btn btn-success btn-print" wire:click="print" style="width:99%">
-						<i class="fa fa-print"></i> Print
-					</button>
+                    <button wire:click="print" type="button" class="btn btn-success btn-print" style="width:99%">
+                        <span wire:loading.remove wire:target="print">
+                            <i class="bx bx-printer"></i> Print
+                        </span>
+                        <div wire:loading wire:target="print">
+                            <span class="d-flex align-items-center">
+                                <span class="spinner-border flex-shrink-0" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </span>
+                                <span class="flex-grow-1 ms-1">
+                                    Loading...
+                                </span>
+                            </span>
+                        </div>
+                    </button>
 				</div>
 			</div>
 		</div>
