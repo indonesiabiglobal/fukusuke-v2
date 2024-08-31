@@ -24,6 +24,7 @@ class Machine extends Component
     public $capacity_size;
     public $idUpdate;
     public $idDelete;
+    public $status;
 
     // public function mount()
     // {
@@ -97,6 +98,7 @@ class Machine extends Component
         $this->capacity_kg = $machine->capacity_kg;
         $this->capacity_lembar = $machine->capacity_lembar;
         $this->capacity_size = $machine->capacity_size;
+        $this->status = $machine->status;
         $this->dispatch('showModalUpdate');
     }
 
@@ -118,6 +120,7 @@ class Machine extends Component
                 'capacity_kg' => $this->capacity_kg,
                 'capacity_lembar' => $this->capacity_lembar,
                 'capacity_size' => $this->capacity_size,
+                'status' => $this->status,
                 'updated_by' => auth()->user()->username,
                 'updated_on' => now(),
             ]);

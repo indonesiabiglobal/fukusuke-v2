@@ -196,7 +196,7 @@
                                         @if ($status == '0')
                                             <div class="col-xxl-12">
                                                 <div wire:ignore>
-                                                    <label for="empname" class="form-label">Status</label>
+                                                    <label for="status" class="form-label">Status</label>
                                                     <select class="form-select" wire:model="status">
                                                         <option value="0" {{ $status == '0' ? 'selected' : '' }}>
                                                             Inactive</option>
@@ -206,7 +206,7 @@
                                                 </div>
                                             </div>
                                         @endif
-                                        
+
                                         {{-- button --}}
                                         <div class="col-lg-12">
                                             <div class="hstack gap-2 justify-content-end">

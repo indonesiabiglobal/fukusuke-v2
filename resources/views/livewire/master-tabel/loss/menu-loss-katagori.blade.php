@@ -24,6 +24,7 @@
                                                 <label for="code" class="form-label">Kode Katagori Loss</label>
                                                 <input type="number"
                                                     class="form-control @error('code') is-invalid @enderror"
+                                                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);"
                                                     id="code" wire:model.defer="code" placeholder="Kode">
                                                 @error('code')
                                                     <span class="invalid-feedback">{{ $message }}</span>
@@ -90,6 +91,7 @@
                                                 <label for="code" class="form-label">Kode Katagori Loss</label>
                                                 <input type="number"
                                                     class="form-control @error('code') is-invalid @enderror"
+                                                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);"
                                                     id="code" wire:model.defer="code" placeholder="Kode">
                                                 @error('code')
                                                     <span class="invalid-feedback">{{ $message }}</span>
@@ -105,6 +107,20 @@
                                                 @error('name')
                                                     <span class="invalid-feedback">{{ $message }}</span>
                                                 @enderror
+                                            </div>
+                                        </div>
+                                        {{-- status --}}
+                                        <div x-data="{ isVisible: $wire.entangle('statusIsVisible') }">
+                                            <div class="col-xxl-12" x-show="isVisible">
+                                                <div>
+                                                    <label for="status" class="form-label">Status</label>
+                                                    <select class="form-select" wire:model="status">
+                                                        <option value="0" {{ $status == '0' ? 'selected' : '' }}>
+                                                            Inactive</option>
+                                                        <option value="1" {{ $status == '1' ? 'selected' : '' }}>
+                                                            Active</option>
+                                                    </select>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="col-lg-12">

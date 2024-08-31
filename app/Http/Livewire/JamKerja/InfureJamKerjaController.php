@@ -12,11 +12,12 @@ use Illuminate\Support\Facades\DB;
 use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
 use Livewire\Attributes\Session;
+use PhpParser\Node\Expr\FuncCall;
 
 class InfureJamKerjaController extends Component
 {
     protected $paginationTheme = 'bootstrap';
-    protected $listeners = ['edit'];
+    protected $listeners = ['edit','delete'];
     #[Session]
     public $tglMasuk;
     #[Session]
@@ -43,6 +44,7 @@ class InfureJamKerjaController extends Component
     public $workShift;
     #[Session]
     public $searchTerm;
+    public $idDelete;
 
     use WithPagination, WithoutUrlPagination;
 
@@ -66,7 +68,8 @@ class InfureJamKerjaController extends Component
 
     public function showModalCreate()
     {
-        $this->resetInput();
+        // $this->resetInput();
+        $this->working_date = Carbon::now()->format('d-m-Y');
         $this->dispatch('showModalCreate');
         // Mencegah render ulang
         $this->skipRender();
@@ -114,12 +117,34 @@ class InfureJamKerjaController extends Component
 
     public function validateWorkHour()
     {
-        if ($this->work_hour > '08:00') {
+        if (isset($this->work_hour) && $this->work_hour > '08:00') {
             $this->work_hour = '08:00';
             $this->dispatch('notification', ['type' => 'warning', 'message' => 'Jam Kerja Tidak Boleh Lebih Dari 8 Jam']);
         }
+
+        if (isset($this->off_hour) && $this->off_hour > '08:00') {
+            $this->off_hour = '08:00';
+            $this->dispatch('notification', ['type' => 'warning', 'message' => 'Jam Off Kerja Tidak Boleh Lebih Dari 8 jam']);
+        }
     }
 
+    public function delete($id)
+    {
+        $this->idDelete = $id;
+        $this->dispatch('showModalDelete');
+        $this->skipRender();
+    }
+
+    public function destroy ()
+    {
+        try {
+            TdJamKerjaMesin::where('id', $this->idDelete)->delete();
+            $this->dispatch('closeModalDelete');
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Order deleted successfully.']);
+        } catch (\Exception $e) {
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to delete the order: ' . $e->getMessage()]);
+        }
+    }
 
     public function save()
     {
@@ -160,7 +185,8 @@ class InfureJamKerjaController extends Component
                     'updated_by' => auth()->user()->username,
                 ]);
                 $this->reset(['employeeno', 'empname', 'machineno', 'machinename', 'working_date', 'work_shift']);
-                $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
+                $this->resetInput();
+                $this->dispatch('closeModalUpdate');
             } else {
                 $machine = MsMachine::where('machineno', $this->machineno)->first();
                 $msemployee = MsEmployee::where('employeeno', $this->employeeno)->first();
@@ -180,11 +206,12 @@ class InfureJamKerjaController extends Component
                 $orderlpk->updated_by = auth()->user()->username;
 
                 $orderlpk->save();
+                $this->reset(['employeeno', 'empname', 'machineno', 'machinename', 'working_date', 'work_shift']);
+                $this->resetInput();
+                $this->dispatch('closeModalCreate');
             }
 
-            $this->reset(['employeeno', 'empname', 'machineno', 'machinename', 'working_date', 'work_shift']);
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
-            $this->dispatch('closeModalUpdate');
             // return redirect()->route('infure-jam-kerja');
         } catch (\Exception $e) {
             $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);

@@ -24,7 +24,8 @@
                                                 <label for="code" class="form-label">Kode Loss</label>
                                                 <input type="number"
                                                     class="form-control @error('code') is-invalid @enderror"
-                                                    id="code" wire:model.defer="code" placeholder="Kode">
+                                                    id="code" wire:model.defer="code" placeholder="Kode"
+                                                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 9);">
                                                 @error('code')
                                                     <span class="invalid-feedback">{{ $message }}</span>
                                                 @enderror
@@ -120,13 +121,14 @@
                             <div class="modal-body">
                                 <form wire:submit.prevent="update">
                                     <div class="row g-3">
-                                        {{-- kode buyer --}}
+                                        {{-- kode loss --}}
                                         <div class="col-xxl-12">
                                             <div>
                                                 <label for="code" class="form-label">Kode Loss</label>
-                                                <input type="number"
+                                                <input type="text" maxlength="9"
                                                     class="form-control @error('code') is-invalid @enderror"
-                                                    id="code" wire:model.defer="code" placeholder="Kode">
+                                                    id="code" wire:model.defer="code" placeholder="Kode"
+                                                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 9);">
                                                 @error('code')
                                                     <span class="invalid-feedback">{{ $message }}</span>
                                                 @enderror
@@ -181,8 +183,22 @@
                                                 @enderror
                                             </div>
                                         </div>
+                                        {{-- status --}}
+                                        <div x-data="{ isVisible: $wire.entangle('statusIsVisible') }">
+                                            <div class="col-xxl-12" x-show="isVisible">
+                                                <div>
+                                                    <label for="status" class="form-label">Status</label>
+                                                    <select class="form-select" wire:model="status">
+                                                        <option value="0" {{ $status == '0' ? 'selected' : '' }}>
+                                                            Inactive</option>
+                                                        <option value="1" {{ $status == '1' ? 'selected' : '' }}>
+                                                            Active</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
                                         {{-- button --}}
-                                        <div class="col-lg-12">
+                                        <div class="col-lg-12 mt-1">
                                             <div class="hstack gap-2 justify-content-end">
                                                 <button type="button" class="btn btn-light"
                                                     data-bs-dismiss="modal">Close</button>

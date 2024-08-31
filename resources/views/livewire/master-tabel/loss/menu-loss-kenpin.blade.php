@@ -11,7 +11,7 @@
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="modal-addLabel">Add Master Loss Infure</h5> <button
+                                <h5 class="modal-title" id="modal-addLabel">Add Master Loss Kenpin</h5> <button
                                     type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
@@ -24,7 +24,8 @@
                                                 <label for="code" class="form-label">Kode Loss</label>
                                                 <input type="number"
                                                     class="form-control @error('code') is-invalid @enderror"
-                                                    id="code" wire:model.defer="code" placeholder="Kode">
+                                                    id="code" wire:model.defer="code" placeholder="Kode"
+                                                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 9);">
                                                 @error('code')
                                                     <span class="invalid-feedback">{{ $message }}</span>
                                                 @enderror
@@ -113,7 +114,7 @@
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="modal-editLabel">Edit Master Loss Infure</h5> <button
+                                <h5 class="modal-title" id="modal-editLabel">Edit Master Loss Kenpin</h5> <button
                                     type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
@@ -126,7 +127,8 @@
                                                 <label for="code" class="form-label">Kode Loss</label>
                                                 <input type="number"
                                                     class="form-control @error('code') is-invalid @enderror"
-                                                    id="code" wire:model.defer="code" placeholder="Kode">
+                                                    id="code" wire:model.defer="code" placeholder="Kode"
+                                                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 9);">
                                                 @error('code')
                                                     <span class="invalid-feedback">{{ $message }}</span>
                                                 @enderror
@@ -179,6 +181,20 @@
                                                 @error('loss_category_code')
                                                     <span class="invalid-feedback">{{ $message }}</span>
                                                 @enderror
+                                            </div>
+                                        </div>
+                                        {{-- status --}}
+                                        <div x-data="{ isVisible: $wire.entangle('statusIsVisible') }">
+                                            <div class="col-xxl-12" x-show="isVisible">
+                                                <div>
+                                                    <label for="status" class="form-label">Status</label>
+                                                    <select class="form-select" wire:model="status">
+                                                        <option value="0" {{ $status == '0' ? 'selected' : '' }}>
+                                                            Inactive</option>
+                                                        <option value="1" {{ $status == '1' ? 'selected' : '' }}>
+                                                            Active</option>
+                                                    </select>
+                                                </div>
                                             </div>
                                         </div>
                                         {{-- button --}}
