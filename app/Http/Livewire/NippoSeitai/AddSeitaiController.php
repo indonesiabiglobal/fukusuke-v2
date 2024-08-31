@@ -682,6 +682,30 @@ class AddSeitaiController extends Component
             }
         }
 
+        if (isset($this->work_hour) && $this->work_hour != '') {
+            $workingShift = DB::select("
+            SELECT *
+                FROM msworkingshift
+                WHERE (
+                    -- Shift does not cross midnight
+                    work_hour_from <= work_hour_till
+                    AND '$this->work_hour' BETWEEN work_hour_from AND work_hour_till
+                ) OR (
+                    -- Shift crosses midnight
+                    work_hour_from > work_hour_till
+                    AND (
+                        '$this->work_hour' BETWEEN work_hour_from AND '23:59:59'
+                        OR
+                        '$this->work_hour' BETWEEN '00:00:00' AND work_hour_till
+                    )
+                )
+                ORDER BY work_hour_till ASC
+                LIMIT 1;
+            ")[0];
+            $this->work_shift = $workingShift->id;
+        }
+
+
         // $this->gentan_no = 1;
         // if (!empty($lpkid)) {
         //     $lastGentan = TdProductAssembly::where('lpk_id', $lpkid->lpk_id)

@@ -30,7 +30,7 @@ class LossSeitaiController extends Component
     public $machineid;
     #[Session]
     public $searchTerm;
-    #[Session]
+    // #[Session]
     public $lpk_no;
     #[Session]
     public $idProduct;
