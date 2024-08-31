@@ -17,13 +17,13 @@
                             <div class="form-group">
                                 <div class="input-group">
                                     <input wire:model.defer="tglMasuk" type="text" class="form-control"
-                                        style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
+                                        style="padding:0.44rem" data-provider="flatpickr" data-date-format="d M Y">
                                     <span class="input-group-text py-0">
                                         <i class="ri-calendar-event-fill fs-4"></i>
                                     </span>
 
                                     <input wire:model.defer="tglKeluar" type="text" class="form-control"
-                                        style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
+                                        style="padding:0.44rem" data-provider="flatpickr" data-date-format="d M Y">
                                     <span class="input-group-text py-0">
                                         <i class="ri-calendar-event-fill fs-4"></i>
                                     </span>
@@ -36,11 +36,28 @@
             <div class="col-12 col-lg-3">
                 <label class="form-label text-muted fw-bold">Nomor LPK</label>
             </div>
-            <div class="col-12 col-lg-9 mb-1">
-                <div class="input-group">
-                    <input wire:model.live.debounce.300ms="lpk_no" class="form-control"style="padding:0.44rem"
-                        type="text" placeholder="000000-000" />
-                </div>
+            <div class="col-12 col-lg-9 mb-1" x-data="{ lpk_no: @entangle('lpk_no').live, status: true }" x-init="$watch('lpk_no', value => {
+                    if (value.length === 6 && !value.includes('-') && status) {
+                        lpk_no = value + '-';
+                    }
+                    if (value.length < 6) {
+                        status = true;
+                    }
+                    if (value.length === 7) {
+                        status = false;
+                    }
+                    if (value.length > 10) {
+                        lpk_no = value.substring(0, 10);
+                    }
+                })">
+                <input 
+                    class="form-control" 
+                    style="padding:0.44rem" 
+                    type="text"
+                    placeholder="000000-000"
+                    x-model="lpk_no" 
+                    maxlength="10"
+                />
             </div>
             <div class="col-12 col-lg-3">
                 <label class="form-label text-muted fw-bold">Search</label>
@@ -93,7 +110,7 @@
                     <select class="form-control" wire:model.defer="status" data-choices data-choices-sorting-false
                         data-choices-removeItem>
                         <option value="">- All -</option>
-                        <option value="0" @if (($status['value'] ?? null) == 0) selected @endif>Open</option>
+                        <option value="0">Open</option>
                         <option value="1" @if (($status['value'] ?? null) == 1) selected @endif>Seitai</option>
                         <option value="2" @if (($status['value'] ?? null) == 2) selected @endif>Kenpin</option>
                     </select>
@@ -129,7 +146,7 @@
                     </div>
                 </button>
 
-                <button type="button" class="btn btn-success w-lg p-1" onclick="window.location.href='/add-seitai'">
+                <button type="button" class="btn btn-success w-lg p-1" onclick="window.location.href='/add-seitai?lpk_no={{ $lpk_no }}'">
                     <i class="ri-add-line"> </i> Add
                 </button>
             </div>
@@ -312,14 +329,14 @@
                             </a>
                         </td>
                         <td>{{ $item->lpk_no }}</td>
-                        <td>{{ $item->lpk_date }}</td>
-                        <td>{{ $item->qty_lpk }}</td>
-                        <td>{{ $item->qty_produksi }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->lpk_date)->format('d M Y') }}</td>
+                        <td>{{ number_format($item->qty_lpk, 0, ',', ',') }}</td>
+                        <td>{{ number_format($item->qty_produksi, 0, ',', ',') }}</td>
                         <td>-</td>
                         <td>{{ $item->seitai_berat_loss }}</td>
                         <td>-</td>
                         <td>{{ $item->product_name }}</td>
-                        <td>{{ $item->order_id }}</td>
+                        <td>{{ $item->code }}</td>
                         <td>{{ $item->machineno }}</td>
                         <td>{{ $item->production_date }}</td>
                         <td>{{ $item->created_on }}</td>

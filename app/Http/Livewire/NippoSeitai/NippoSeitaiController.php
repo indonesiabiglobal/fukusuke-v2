@@ -38,7 +38,7 @@ class NippoSeitaiController extends Component
     public $lpk_no;
     #[Session]
     public $idProduct;
-    #[Session]
+    // #[Session]
     public $status;
 
     use WithPagination, WithoutUrlPagination;
@@ -49,10 +49,10 @@ class NippoSeitaiController extends Component
         $this->buyer = MsBuyer::get();
         $this->machine = MsMachine::where('machineno',  'LIKE', '00S%')->orderBy('machineno')->get();
         if (empty($this->tglMasuk)) {
-            $this->tglMasuk = Carbon::now()->format('d-m-Y');
+            $this->tglMasuk = Carbon::now()->format('d M Y');
         }
         if (empty($this->tglKeluar)) {
-            $this->tglKeluar = Carbon::now()->format('d-m-Y');
+            $this->tglKeluar = Carbon::now()->format('d M Y');
         }
     }
 
@@ -81,7 +81,6 @@ class NippoSeitaiController extends Component
 
     public function export()
     {
-        ini_set('max_execution_time', 360);
         // pengecekan inputan jam awal dan jam akhir
         // if (is_array($this->jamMasuk)) {
         //     $this->jamMasuk = $this->jamMasuk['value'];
@@ -584,20 +583,6 @@ class NippoSeitaiController extends Component
         $tglAwal = Carbon::parse($this->tglMasuk)->format('d-m-Y 00:00:00');
         $tglAkhir = Carbon::parse($this->tglKeluar)->format('d-m-Y 23:59:59');
 
-        // filter lpk no
-        if (strlen($this->lpk_no) >= 9) {
-            if (!str_contains($this->lpk_no, '-')) {
-                $this->lpk_no = substr_replace($this->lpk_no, '-', 6, 0);
-            }
-            $tdorderlpk = DB::table('tdorderlpk')
-                ->select('id')
-                ->where('lpk_no', $this->lpk_no)
-                ->first();
-
-            if ($tdorderlpk == null) {
-                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor LPK ' . $this->lpk_no . ' Tidak Terdaftar']);
-            }
-        }
         if ($this->transaksi == 2) {
             $data = DB::table('tdproduct_goods AS tdpg')
                 ->select(
@@ -634,6 +619,7 @@ class NippoSeitaiController extends Component
                     'tdol.qty_lpk AS qty_lpk',
                     'tdol.total_assembly_qty AS total_assembly_qty',
                     'mp.name AS product_name',
+                    'mp.code',
                     'mc.machineno',
                 )
                 ->distinct()
@@ -717,6 +703,7 @@ class NippoSeitaiController extends Component
                     'tdol.qty_lpk AS qty_lpk',
                     'tdol.total_assembly_qty AS total_assembly_qty',
                     'mp.name AS product_name',
+                    'mp.code',
                     'mc.machineno',
                 ])
                 ->distinct()
