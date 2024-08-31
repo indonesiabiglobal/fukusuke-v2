@@ -229,6 +229,22 @@
                                                 @enderror
                                             </div>
                                         </div>
+                                        {{-- status --}}
+                                        {{-- @if ($status == '0') --}}
+                                        <div x-data="{ status: $wire.entangle('status') }">
+                                            <div class="col-xxl-12" x-show="status == '0'">
+                                                <div>
+                                                    <label for="status" class="form-label">Status</label>
+                                                    <select class="form-select" wire:model="status">
+                                                        <option value="0" {{ $status == '0' ? 'selected' : '' }}>
+                                                            Inactive</option>
+                                                        <option value="1" {{ $status == '1' ? 'selected' : '' }}>
+                                                            Active</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {{-- @endif --}}
                                         {{-- button --}}
                                         <div class="col-lg-12">
                                             <div class="hstack gap-2 justify-content-end">
@@ -419,7 +435,7 @@
                                 : '<span class="badge text-bg-danger">Non Active</span>' !!}
                         </td>
                         <td>{{ $item->updated_by }}</td>
-                        <td>{{ \Carbon\Carbon::parse($item->updated_on)->format('d-M-Y H:i:s')  }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->updated_on)->format('d-M-Y H:i:s') }}</td>
                         {{-- <td>{{ $no++ }}</td> --}}
                     </tr>
                 @empty

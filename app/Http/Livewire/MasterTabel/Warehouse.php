@@ -12,7 +12,7 @@ class Warehouse extends Component
 {
     use WithPagination, WithoutUrlPagination;
     protected $paginationTheme = 'bootstrap';
-    protected $listeners = ['delete','edit'];
+    protected $listeners = ['delete', 'edit'];
     public $warehouses;
     public $searchTerm;
     public $name;
@@ -23,6 +23,7 @@ class Warehouse extends Component
     public $address;
     public $idUpdate;
     public $idDelete;
+    public $status;
 
     public function resetFields()
     {
@@ -90,7 +91,11 @@ class Warehouse extends Component
         $this->description = $warehouse->description;
         $this->province = $warehouse->province;
         $this->address = $warehouse->address;
+        $this->status = $warehouse->status;
+
+        $this->dispatch('status-updated', ['status' => $this->status]);
         $this->dispatch('showModalUpdate');
+        $this->skipRender();
     }
 
     public function update()
@@ -113,7 +118,7 @@ class Warehouse extends Component
                 'description' => $this->description,
                 'province' => $this->province,
                 'address' => $this->address,
-                'status' => 1,
+                'status' => $this->status,
                 'updated_by' => auth()->user()->username,
                 'updated_on' => now(),
             ]);
@@ -160,7 +165,7 @@ class Warehouse extends Component
     {
         $this->warehouses = DB::table('mswarehouse')
             ->select('id', 'name', 'city', 'address', 'status', 'updated_by', 'updated_on')
-        ->get();
+            ->get();
 
         return view('livewire.master-tabel.warehouse', [
             'data' => $this->warehouses,
