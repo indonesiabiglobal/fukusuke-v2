@@ -24,7 +24,8 @@
                                                 <label for="code" class="form-label">Kode Loss</label>
                                                 <input type="number"
                                                     class="form-control @error('code') is-invalid @enderror"
-                                                    id="code" wire:model.defer="code" placeholder="Kode">
+                                                    id="code" wire:model.defer="code" placeholder="Kode"
+                                                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 9);">
                                                 @error('code')
                                                     <span class="invalid-feedback">{{ $message }}</span>
                                                 @enderror
@@ -120,13 +121,14 @@
                             <div class="modal-body">
                                 <form wire:submit.prevent="update">
                                     <div class="row g-3">
-                                        {{-- kode buyer --}}
+                                        {{-- kode loss --}}
                                         <div class="col-xxl-12">
                                             <div>
                                                 <label for="code" class="form-label">Kode Loss</label>
-                                                <input type="number"
+                                                <input type="text" maxlength="9"
                                                     class="form-control @error('code') is-invalid @enderror"
-                                                    id="code" wire:model.defer="code" placeholder="Kode">
+                                                    id="code" wire:model.defer="code" placeholder="Kode"
+                                                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 9);">
                                                 @error('code')
                                                     <span class="invalid-feedback">{{ $message }}</span>
                                                 @enderror
