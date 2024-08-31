@@ -77,12 +77,12 @@
             </div>
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
-                    <select class="form-control" wire:model.defer="idProduct" id="product" name="product" data-choices
-                        data-choices-sorting-false data-choices-removeItem>
+                    <select class="form-control" wire:model.defer="idProduct" data-choices data-choices-sorting-false
+                        data-choices-removeItem>
                         <option value="">- All -</option>
                         @foreach ($products as $item)
                             <option data-custom-properties='{"code": "{{ $item->code }}"}' value="{{ $item->id }}"
-                                @if ($item->id == ($idProduct['value'] ?? null)) selected @endif>{{ $item->name }}</option>
+                                @if ($item->id == ($idProduct['value'] ?? null)) selected @endif>{{ $item->name }}, {{ $item->code }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -339,14 +339,15 @@
                         <td>{{ $item->code }}</td>
                         <td>{{ $item->machineno }}</td>
                         <td>{{ $item->production_date }}</td>
-                        <td>{{ $item->created_on }}</td>
+                        <td>{{ $item->created_on }}</td>                        
+                        <td>{{ \Carbon\Carbon::parse($item->created_on)->format('d M Y') }}</td>
                         <td>{{ $item->work_hour }}</td>
                         <td>{{ $item->work_shift }}</td>
                         <td>{{ $item->nomor_palet }}</td>
                         <td>{{ $item->nomor_lot }}</td>
                         <td>{{ $item->seq_no }}</td>
                         <td>{{ $item->updated_by }}</td>
-                        <td>{{ $item->updated_on }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y H:i') }}</td>
                     </tr>
                 @empty
                     {{-- <tr>
