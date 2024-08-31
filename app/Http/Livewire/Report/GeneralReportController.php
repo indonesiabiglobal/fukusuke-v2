@@ -8953,6 +8953,7 @@ class GeneralReportController extends Component
                 ( dep.NAME ) AS department_name,
                 MAX ( dep.id ) AS department_id,
                 MAX ( prd.NAME ) AS product_name,
+                MAX ( prd.code ) AS noorder,
                 MAX ( prd.id ) AS product_id,
                 MAX ( mac.machineNo ) AS machine_no,
                 MAX ( mac.machineName ) AS machine_name,
@@ -9001,7 +9002,11 @@ class GeneralReportController extends Component
         }, []);
 
         $listProduct = array_reduce($data, function ($carry, $item) {
-            $carry[$item->department_id][$item->machine_no][$item->product_id] = $item->product_name;
+            $carry[$item->department_id][$item->machine_no][$item->product_id] = [
+                'productName' => $item->product_name,
+                'productId' => $item->product_id,
+                'noorder' => $item->noorder
+            ];
             return $carry;
         }, []);
 
@@ -9033,12 +9038,12 @@ class GeneralReportController extends Component
                 phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $rowItem, true, 8, 'Calibri');
                 $rowItem++;
                 // daftar mesin
-                foreach ($listProduct[$department['department_id']][$machineNo] as $productId => $productName) {
+                foreach ($listProduct[$department['department_id']][$machineNo] as $productId => $product) {
                     $columnItem = $startColumnItemData;
 
                     // Menulis data mesin
-                    $spreadsheet->getActiveSheet()->setCellValue($columnMachineNo . $rowItem, $productId);
-                    $spreadsheet->getActiveSheet()->setCellValue($columnMachineName . $rowItem, $productName);
+                    $spreadsheet->getActiveSheet()->setCellValue($columnMachineNo . $rowItem, $product['noorder']);
+                    $spreadsheet->getActiveSheet()->setCellValue($columnMachineName . $rowItem, $product['productName']);
                     // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
 
                     // memasukkan data
@@ -9072,7 +9077,7 @@ class GeneralReportController extends Component
                     phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                     $columnItem++;
                     // loss %
-                    $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->berat_produksi > 0 ? $dataItem->infure_berat_loss / $dataItem->berat_produksi : 0);
+                    $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->berat_produksi > 0 ? $dataItem->infure_berat_loss / ($dataItem->berat_produksi + $dataItem->infure_berat_loss) : 0);
                     phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowItem);
                     $columnItem++;
                     // panjang infure
@@ -9101,22 +9106,28 @@ class GeneralReportController extends Component
                 $activeWorksheet->setCellValue($startColumnItem . $rowItem, 'Total');
                 $columnItem = $startColumnItemData;
                 $columnItemEnd = chr(ord($columnItem) + count($header) - 1);
+                // berat standar
                 $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listProduct[$department['department_id']][$machineNo])) . ':' . $columnItem . ($rowItem - 1) . ')');
                 phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
+                // berat produksi
                 $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listProduct[$department['department_id']][$machineNo])) . ':' . $columnItem . ($rowItem - 1) . ')');
                 phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
+                // weight rate
                 $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listProduct[$department['department_id']][$machineNo])) . ':' . $columnItem . ($rowItem - 1) . ')/COUNTIF(' . $columnItem . ($rowItem - count($listProduct[$department['department_id']][$machineNo])) . ':' . $columnItem . ($rowItem - 1) . ', "<>0")');
                 phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
+                // infure cost
                 $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listProduct[$department['department_id']][$machineNo])) . ':' . $columnItem . ($rowItem - 1) . ')');
                 phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
+                // loss
                 $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listProduct[$department['department_id']][$machineNo])) . ':' . $columnItem . ($rowItem - 1) . ')');
                 phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
-                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listProduct[$department['department_id']])) . ':' . $columnItem . ($rowItem - 1) . ')/COUNTIF(' . $columnItem . ($rowItem - count($listProduct[$department['department_id']])) . ':' . $columnItem . ($rowItem - 1) . ', "<>0")');
+                // loss %
+                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listProduct[$department['department_id']][$machineNo])) . ':' . $columnItem . ($rowItem - 1) . ')/COUNTIF(' . $columnItem . ($rowItem - count($listProduct[$department['department_id']][$machineNo])) . ':' . $columnItem . ($rowItem - 1) . ', "<>0")');
                 phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
                 $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listProduct[$department['department_id']][$machineNo])) . ':' . $columnItem . ($rowItem - 1) . ')');
@@ -9196,7 +9207,7 @@ class GeneralReportController extends Component
         phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
         $columnItem++;
         // loss %
-        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_produksi'] > 0 ? $grandTotal['infure_berat_loss'] / $grandTotal['berat_produksi'] : 0);
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_produksi'] > 0 ? $grandTotal['infure_berat_loss'] / ($grandTotal['berat_produksi'] + $grandTotal['infure_berat_loss']) : 0);
         phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowGrandTotal);
         $columnItem++;
         // panjang infure
@@ -9294,6 +9305,7 @@ class GeneralReportController extends Component
                 MAX(dep.name) AS department_name,
                 MAX(dep.id) AS department_id,
                 MAX(prd.id) AS product_id,
+                MAX(prd.code) AS noorder,
                 MAX(prd.name) AS product_name,
                 MAX(mac.machineNo) AS machine_no,
                 MAX(mac.machineName) AS machine_name,
@@ -9345,7 +9357,11 @@ class GeneralReportController extends Component
         }, []);
 
         $listProduct = array_reduce($data, function ($carry, $item) {
-            $carry[$item->department_id][$item->machine_no][$item->product_id] = $item->product_name;
+            $carry[$item->department_id][$item->machine_no][$item->product_id] = [
+                'productName' => $item->product_name,
+                'productId' => $item->product_id,
+                'noorder' => $item->noorder
+            ];
             return $carry;
         }, []);
 
@@ -9377,12 +9393,12 @@ class GeneralReportController extends Component
                 phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $rowItem, true, 8, 'Calibri');
                 $rowItem++;
                 // daftar mesin
-                foreach ($listProduct[$department['department_id']][$machineNo] as $productId => $productName) {
+                foreach ($listProduct[$department['department_id']][$machineNo] as $productId => $product) {
                     $columnItem = $startColumnItemData;
 
                     // Menulis data mesin
-                    $spreadsheet->getActiveSheet()->setCellValue($columnMachineNo . $rowItem, $productId);
-                    $spreadsheet->getActiveSheet()->setCellValue($columnMachineName . $rowItem, $productName);
+                    $spreadsheet->getActiveSheet()->setCellValue($columnMachineNo . $rowItem, $product['noorder']);
+                    $spreadsheet->getActiveSheet()->setCellValue($columnMachineName . $rowItem, $product['productName']);
                     // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
 
                     // memasukkan data
@@ -9407,7 +9423,7 @@ class GeneralReportController extends Component
                     phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                     $columnItem++;
                     // loss %
-                    $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->berat_produksi > 0 ? $dataItem->seitai_berat_loss / $dataItem->berat_produksi : 0);
+                    $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->berat_produksi > 0 ? $dataItem->seitai_berat_loss / ($dataItem->berat_produksi + $dataItem->seitai_berat_loss) : 0);
                     phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowItem);
                     $columnItem++;
                     // Seitai cost
@@ -9514,7 +9530,7 @@ class GeneralReportController extends Component
         phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
         $columnItem++;
         // loss %
-        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_produksi'] > 0 ? $grandTotal['seitai_berat_loss'] / $grandTotal['berat_produksi'] : 0);
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_produksi'] > 0 ? $grandTotal['seitai_berat_loss'] / ($grandTotal['berat_produksi'] + $grandTotal['seitai_berat_loss']) : 0);
         phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowGrandTotal);
         $columnItem++;
         // Seitai cost
