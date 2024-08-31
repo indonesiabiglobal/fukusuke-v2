@@ -6,7 +6,30 @@
 					<span class="input-group-text readonly">
 						Nomor Palet Sumber
 					</span>
-					<input wire:model.defer="searchOld" class="form-control" type="text" placeholder="A0000-000000" />
+					{{-- <input wire:model.defer="searchOld" class="form-control" type="text" placeholder="A0000-000000" /> --}}
+					<div class="form-control" x-data="{ searchOld: @entangle('searchOld'), status: true }" x-init="$watch('searchOld', value => {
+							searchOld = value.replace(/\s/g, '');
+							if (value.length === 5 && !value.includes('-') && status) {
+								searchOld = value + '-';
+							}
+							if (value.length < 5) {
+								status = true;
+							}
+							if (value.length === 7) {
+								status = false;
+							}
+							if (value.length > 12) {
+								searchOld = value.substring(0, 12);
+							}
+						})">
+						<input 
+							type="text"
+							placeholder="000000-000"
+							x-model="searchOld" 
+							maxlength="12"
+							class="form-control"
+						/>
+					</div>
 
 					<button wire:click="search" type="button" class="btn btn-light">
 						<span wire:loading.remove wire:target="search">
@@ -83,21 +106,21 @@
 									<div class="form-group">
 										<label>Nomor Lot </label>
 										<div class="input-group col-md-9 col-xs-8">
-											<input class="form-control" type="text" wire:model="nomor_lot" placeholder="..." />
+											<input class="form-control readonly bg-light" readonly="readonly" type="text" wire:model="nomor_lot" placeholder="..." />
 										</div>
 									</div>
 								</div>
 								<div class="col-lg-12 mb-1">
 									<div class="form-group">
-										<label>Kode Loss </label>
+										<label>Box Seitai </label>
 										<div class="input-group col-md-9 col-xs-8">
-											<input class="form-control readonly" readonly="readonly" type="text" wire:model.defer="qty_seitai" placeholder="..." />
+											<input class="form-control readonly bg-light" readonly="readonly" type="text" wire:model.defer="qty_seitai" placeholder="..." />
 										</div>
 									</div>
 								</div>
 								<div class="col-lg-12 mb-1">
 									<div class="form-group">
-										<label>Berat Loss </label>
+										<label>Box Mutasi </label>
 										<div class="input-group col-md-9 col-xs-8">
 											<input class="form-control" type="text" wire:model.defer="qty_mutasi" placeholder="0" />
 											@error('qty_mutasi')
@@ -138,7 +161,30 @@
 					<span class="input-group-text readonly">
 						Nomor Palet Tujuan
 					</span>
-					<input wire:model.defer="searchNew" class="form-control" type="text" placeholder="A0000-000000" />
+					{{-- <input wire:model.defer="searchNew" class="form-control" type="text" placeholder="A0000-000000" /> --}}
+						<div class="form-control" x-data="{ searchNew: @entangle('searchNew'), status: true }" x-init="$watch('searchNew', value => {
+							searchNew = value.replace(/\s/g, '');
+							if (value.length === 5 && !value.includes('-') && status) {
+								searchNew = value + '-';
+							}
+							if (value.length < 5) {
+								status = true;
+							}
+							if (value.length === 7) {
+								status = false;
+							}
+							if (value.length > 12) {
+								searchNew = value.substring(0, 12);
+							}
+						})">
+						<input 
+							type="text"
+							placeholder="000000-000"
+							x-model="searchNew" 
+							maxlength="12"
+							class="form-control"
+						/>
+					</div>
 					<button wire:click="searchTujuan" type="button" class="btn btn-light">
 						<span wire:loading.remove wire:target="searchTujuan">
 							<i class="ri-search-line"></i>
