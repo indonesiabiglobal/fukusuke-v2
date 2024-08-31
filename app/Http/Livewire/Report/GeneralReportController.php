@@ -1148,15 +1148,9 @@ class GeneralReportController extends Component
             $spreadsheet->getActiveSheet()->mergeCells($startColumnItem . $rowItem . ':' . $endColumnItem . $rowItem);
             phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $rowItem, true, 9, 'Calibri');
             $rowItem++;
+            $countMachine = 0;
             // daftar mesin
             foreach ($listMachine[$department['department_id']] as $machineNo => $machineName) {
-                $columnItem = $startColumnItemData;
-
-                // Menulis data mesin
-                $spreadsheet->getActiveSheet()->setCellValue($columnMachineNo . $rowItem, $machineNo);
-                $spreadsheet->getActiveSheet()->setCellValue($columnMachineName . $rowItem, $machineName);
-                // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
-
                 // memasukkan data
                 $dataItem = $dataFilter[$department['department_id']][$machineNo] ?? (object)[
                     'qty_produksi' => 0,
@@ -1169,6 +1163,17 @@ class GeneralReportController extends Component
                     'work_hour_off_mm' => 0,
                     'work_hour_on_mm' => 0,
                 ];
+                if ($dataItem->qty_produksi == 0 && $dataItem->berat_produksi == 0) {
+                    continue;
+                }
+                $countMachine++;
+                $columnItem = $startColumnItemData;
+
+                // Menulis data mesin
+                $spreadsheet->getActiveSheet()->setCellValue($columnMachineNo . $rowItem, $machineNo);
+                $spreadsheet->getActiveSheet()->setCellValue($columnMachineName . $rowItem, $machineName);
+                // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
+
                 // jumlah produksi
                 $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->qty_produksi);
                 phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnItem . $rowItem);
@@ -1182,7 +1187,7 @@ class GeneralReportController extends Component
                 phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
                 // seitai loss %
-                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->berat_produksi > 0 ? $dataItem->seitai_berat_loss / $dataItem->berat_produksi : 0);
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->berat_produksi > 0 ? $dataItem->seitai_berat_loss / ($dataItem->berat_produksi + $dataItem->seitai_berat_loss) : 0);
                 phpspreadsheet::numberPercentageOrZero($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
                 // seitai_cost
@@ -1243,35 +1248,35 @@ class GeneralReportController extends Component
             $columnItem = $startColumnItemData;
             $columnItemEnd = chr(ord($columnItem) + count($header) - 1);
             // jumlah produksi
-            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$department['department_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - $countMachine) . ':' . $columnItem . ($rowItem - 1) . ')');
             phpspreadsheet::numberFormatThousands($spreadsheet, $columnItem . $rowItem);
             $columnItem++;
             // berat_produksi
-            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$department['department_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - $countMachine) . ':' . $columnItem . ($rowItem - 1) . ')');
             phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnItem . $rowItem);
             $columnItem++;
             // seitai_berat_loss
-            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$department['department_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - $countMachine) . ':' . $columnItem . ($rowItem - 1) . ')');
             phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnItem . $rowItem);
             $columnItem++;
             // seitai loss %
-            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$department['department_id']])) . ':' . $columnItem . ($rowItem - 1) . ')/COUNTIF(' . $columnItem . ($rowItem - count($listMachine[$department['department_id']])) . ':' . $columnItem . ($rowItem - 1) . ', "<>0")');
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - $countMachine) . ':' . $columnItem . ($rowItem - 1) . ')/COUNTIF(' . $columnItem . ($rowItem - $countMachine) . ':' . $columnItem . ($rowItem - 1) . ', "<>0")');
             phpspreadsheet::numberPercentageOrZero($spreadsheet, $columnItem . $rowItem);
             $columnItem++;
             // seitai_cost
-            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$department['department_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - $countMachine) . ':' . $columnItem . ($rowItem - 1) . ')');
             phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnItem . $rowItem);
             $columnItem++;
             // seitai_berat_loss_ponsu
-            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$department['department_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - $countMachine) . ':' . $columnItem . ($rowItem - 1) . ')');
             phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnItem . $rowItem);
             $columnItem++;
             // infure_berat_loss
-            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$department['department_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - $countMachine) . ':' . $columnItem . ($rowItem - 1) . ')');
             phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnItem . $rowItem);
             $columnItem++;
             // produksi per jam
-            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$department['department_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - $countMachine) . ':' . $columnItem . ($rowItem - 1) . ')');
             phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnItem . $rowItem);
             $columnItem++;
 
@@ -1365,19 +1370,24 @@ class GeneralReportController extends Component
         phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnItem . $rowGrandTotal);
         $columnItem++;
         // seitai loss %
-        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_produksi'] > 0 ? $grandTotal['seitai_berat_loss'] / $grandTotal['berat_produksi'] : 0);
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_produksi'] > 0 ? $grandTotal['seitai_berat_loss'] / ($grandTotal['berat_produksi'] + $grandTotal['seitai_berat_loss']) : 0);
         phpspreadsheet::numberPercentageOrZero($spreadsheet, $columnItem . $rowGrandTotal);
         $columnItem++;
+        // seitai_cost
         $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['seitai_cost']);
         phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnItem . $rowGrandTotal);
         $columnItem++;
+        // seitai_berat_loss_ponsu
         $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['seitai_berat_loss_ponsu']);
         phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnItem . $rowGrandTotal);
         $columnItem++;
+        // infure_berat_loss
         $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['infure_berat_loss']);
         phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnItem . $rowGrandTotal);
         $columnItem++;
-        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['qty_produksi'] > 0 ? $grandTotal['infure_berat_loss'] / $grandTotal['qty_produksi'] : 0);
+        // produksi per jam
+        $hours = floor($grandTotal['work_hour_mm'] / 60); // Hitung jumlah jam
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $hours > 0 ? $grandTotal['qty_produksi'] / $hours : 0);
         phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnItem . $rowGrandTotal);
         $columnItem++;
 
@@ -1387,7 +1397,6 @@ class GeneralReportController extends Component
         $columnItem++;
 
         // jam kerja
-        $hours = floor($grandTotal['work_hour_mm'] / 60); // Hitung jumlah jam
         $minutes = $grandTotal['work_hour_mm'] % 60; // Hitung sisa menit
         $formatedWorkHours = sprintf('%d:%02d', $hours, $minutes);
         $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $formatedWorkHours);
