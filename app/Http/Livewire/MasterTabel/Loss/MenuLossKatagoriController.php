@@ -23,6 +23,8 @@ class MenuLossKatagoriController extends Component
     public $idUpdate;
     public $idDelete;
     public $class;
+    public $status;
+    public $statusIsVisible = false;
 
     protected $rules = [
         'code' => 'required',
@@ -62,11 +64,11 @@ class MenuLossKatagoriController extends Component
 
             DB::commit();
             $this->dispatch('closeModalCreate');
-            $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Buyer saved successfully.']);
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Loss Kategori berhasil disimpan.']);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Failed to save master buyer: ' . $e->getMessage());
-            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the buyer: ' . $e->getMessage()]);
+            Log::error('Failed to save master loss category: ' . $e->getMessage());
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the loss category: ' . $e->getMessage()]);
         }
     }
 
@@ -76,6 +78,9 @@ class MenuLossKatagoriController extends Component
         $this->idUpdate = $id;
         $this->code = $data->code;
         $this->name = $data->name;
+        $this->status = $data->status;
+        $this->statusIsVisible = $data->status == 0 ? true : false;
+        $this->skipRender();
 
         $this->dispatch('showModalUpdate');
     }
@@ -86,22 +91,21 @@ class MenuLossKatagoriController extends Component
 
         DB::beginTransaction();
         try {
-            $statusActive = 1;
             $data = MsLossCategory::where('id', $this->idUpdate)->first();
             $data->code = $this->code;
             $data->name = $this->name;
-            $data->status = $statusActive;
+            $data->status = $this->status;
             $data->updated_by = Auth::user()->username;
             $data->updated_on = Carbon::now();
             $data->save();
 
             DB::commit();
             $this->dispatch('closeModalUpdate');
-            $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Loss Infure updated successfully.']);
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Loss Kategori berhasil ditambahkan.']);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Failed to update master Loss Infure: ' . $e->getMessage());
-            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to update the Loss Infure: ' . $e->getMessage()]);
+            Log::error('Failed to update master Loss category: ' . $e->getMessage());
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to update the Loss category: ' . $e->getMessage()]);
         }
     }
 

@@ -25,7 +25,8 @@
                                                 <label for="code" class="form-label">Kode Loss</label>
                                                 <input type="number"
                                                     class="form-control @error('code') is-invalid @enderror"
-                                                    id="code" wire:model.defer="code" placeholder="Kode">
+                                                    id="code" wire:model.defer="code" placeholder="Kode"
+                                                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 9);">
                                                 @error('code')
                                                     <span class="invalid-feedback">{{ $message }}</span>
                                                 @enderror
@@ -121,25 +122,14 @@
                             <div class="modal-body">
                                 <form wire:submit.prevent="update">
                                     <div class="row g-3">
-                                        {{-- kode buyer --}}
+                                        {{-- kode Loss --}}
                                         <div class="col-xxl-12">
-                                            <div>
-                                                <label for="code" class="form-label">Kode Buyer</label>
-                                                <input type="number"
-                                                    class="form-control @error('code') is-invalid @enderror"
-                                                    id="code" wire:model.defer="code" placeholder="Kode">
-                                                @error('code')
-                                                    <span class="invalid-feedback">{{ $message }}</span>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                        {{-- kode buyer --}}
-                                        <div class="col-xxl-12">
-                                            <div>
+                                            <div  wire:ignore>
                                                 <label for="code" class="form-label">Kode Loss</label>
                                                 <input type="number"
                                                     class="form-control @error('code') is-invalid @enderror"
-                                                    id="code" wire:model.defer="code" placeholder="Kode">
+                                                    id="code" wire:model.defer="code" placeholder="Kode"
+                                                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 9);">
                                                 @error('code')
                                                     <span class="invalid-feedback">{{ $message }}</span>
                                                 @enderror
@@ -158,7 +148,7 @@
                                             </div>
                                         </div>
                                         <div class="col-xxl-12">
-                                            <div>
+                                            <div  wire:ignore>
                                                 <label for="name" class="form-label">Klasifikasi Loss</label>
                                                 <select
                                                     class="form-control @error('loss_class_id') is-invalid @enderror"
@@ -175,7 +165,7 @@
                                             </div>
                                         </div>
                                         <div class="col-xxl-12">
-                                            <div>
+                                            <div  wire:ignore>
                                                 <label for="name" class="form-label">Kategory Loss</label>
                                                 <select
                                                     class="form-control @error('loss_category_code') is-invalid @enderror"
@@ -187,6 +177,20 @@
                                                 @error('loss_category_code')
                                                     <span class="invalid-feedback">{{ $message }}</span>
                                                 @enderror
+                                            </div>
+                                        </div>
+                                        {{-- status --}}
+                                        <div x-data="{ isVisible: $wire.entangle('statusIsVisible') }">
+                                            <div class="col-xxl-12" x-show="isVisible">
+                                                <div>
+                                                    <label for="status" class="form-label">Status</label>
+                                                    <select class="form-select" wire:model="status">
+                                                        <option value="0" {{ $status == '0' ? 'selected' : '' }}>
+                                                            Inactive</option>
+                                                        <option value="1" {{ $status == '1' ? 'selected' : '' }}>
+                                                            Active</option>
+                                                    </select>
+                                                </div>
                                             </div>
                                         </div>
                                         {{-- button --}}

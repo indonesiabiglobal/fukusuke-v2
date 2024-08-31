@@ -94,7 +94,7 @@ class Warehouse extends Component
         $this->address = $warehouse->address;
         $this->status = $warehouse->status;
 
-        $this->statusIsVisible = $data->status == 0 ? true : false;
+        $this->statusIsVisible = $warehouse->status == 0 ? true : false;
         $this->dispatch('showModalUpdate');
         $this->skipRender();
     }

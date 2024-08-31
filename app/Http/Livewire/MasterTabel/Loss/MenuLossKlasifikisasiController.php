@@ -24,6 +24,8 @@ class MenuLossKlasifikisasiController extends Component
     public $idUpdate;
     public $idDelete;
     public $class;
+    public $status;
+    public $statusIsVisible = false;
 
     protected $rules = [
         'code' => 'required',
@@ -77,6 +79,9 @@ class MenuLossKlasifikisasiController extends Component
         $this->idUpdate = $id;
         $this->code = $data->code;
         $this->name = $data->name;
+        $this->status = $data->status;
+        $this->statusIsVisible = $data->status == 0 ? true : false;
+        $this->skipRender();
 
         $this->dispatch('showModalUpdate');
     }
@@ -87,11 +92,10 @@ class MenuLossKlasifikisasiController extends Component
 
         DB::beginTransaction();
         try {
-            $statusActive = 1;
             $data = MsLossClass::where('id', $this->idUpdate)->first();
             $data->code = $this->code;
             $data->name = $this->name;
-            $data->status = $statusActive;
+            $data->status = $this->status;
             $data->updated_by = Auth::user()->username;
             $data->updated_on = Carbon::now();
             $data->save();

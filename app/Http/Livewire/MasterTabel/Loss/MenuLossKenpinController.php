@@ -26,6 +26,8 @@ class MenuLossKenpinController extends Component
     public $idUpdate;
     public $idDelete;
     public $class;
+    public $status;
+    public $statusIsVisible = false;
 
     protected $rules = [
         'code' => 'required',
@@ -90,6 +92,9 @@ class MenuLossKenpinController extends Component
         $this->name = $data->name;
         $this->loss_class_id = $data->loss_class_id;
         $this->loss_category_code = $data->loss_category_code;
+        $this->status = $data->status;
+        $this->statusIsVisible = $data->status == 0 ? true : false;
+        $this->skipRender();
 
         // $this->dispatch('showModalUpdate', $buyer);
     }
@@ -100,13 +105,12 @@ class MenuLossKenpinController extends Component
 
         DB::beginTransaction();
         try {
-            $statusActive = 1;
             $data = MsLossKenpin::where('id', $this->idUpdate)->first();
             $data->code = $this->code;
             $data->name = $this->name;
-            $data->loss_class_id = $this->loss_class_id;
-            $data->loss_category_code = $this->loss_category_code;
-            $data->status = $statusActive;
+            $data->loss_class_id = is_array($this->loss_class_id ) ? $this->loss_class_id['value'] : $this->loss_class_id;
+            $data->loss_category_code = is_array($this->loss_category_code) ? $this->loss_category_code['value'] : $this->loss_category_code;
+            $data->status = $this->status;
             $data->updated_by = Auth::user()->username;
             $data->updated_on = Carbon::now();
             $data->save();
