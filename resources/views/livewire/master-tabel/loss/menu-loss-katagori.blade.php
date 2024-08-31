@@ -271,8 +271,8 @@
             <thead class="table-light">
                 <tr>
                     <th>Action</th>
-                    <th>Nama Loss</th>
-                    <th>Kode Loss</th>
+                    <th>Kode Katagori Loss</th>
+                    <th>Katagori Loss</th>
                     <th>Status</th>
                     <th>Updated By</th>
                     <th>Updated</th>

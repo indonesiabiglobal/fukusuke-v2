@@ -22,6 +22,7 @@
                                                 <label for="code" class="form-label">Kode Box</label>
                                                 <input type="number"
                                                     class="form-control @error('code') is-invalid @enderror"
+                                                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);"
                                                     id="code" wire:model.defer="code" placeholder="Kode">
                                                 @error('code')
                                                     <span class="invalid-feedback">{{ $message }}</span>
@@ -61,7 +62,8 @@
                                                     <input type="text"
                                                         class="form-control @error('panjang') is-invalid @enderror"
                                                         id="panjang" wire:model.defer="panjang"
-                                                        placeholder="Ukuran Panjang">
+                                                        placeholder="Ukuran Panjang"
+                                                        oninput="this.value = window.formatNumberDecimal(this.value)">
                                                     <span class="input-group-text py-0">
                                                         mm
                                                     </span>
@@ -78,7 +80,8 @@
                                                     <input type="text"
                                                         class="form-control @error('lebar') is-invalid @enderror"
                                                         id="lebar" wire:model.defer="lebar"
-                                                        placeholder="Ukuran lebar">
+                                                        placeholder="Ukuran lebar"
+                                                        oninput="this.value = window.formatNumberDecimal(this.value)">
                                                     <span class="input-group-text py-0">
                                                         mm
                                                     </span>
@@ -95,7 +98,8 @@
                                                     <input type="text"
                                                         class="form-control @error('tinggi') is-invalid @enderror"
                                                         id="tinggi" wire:model.defer="tinggi"
-                                                        placeholder="Ukuran tinggi">
+                                                        placeholder="Ukuran tinggi"
+                                                        oninput="this.value = window.formatNumberDecimal(this.value)">
                                                     <span class="input-group-text py-0">
                                                         mm
                                                     </span>
@@ -154,6 +158,7 @@
                                                 <label for="code" class="form-label">Kode Box</label>
                                                 <input type="number"
                                                     class="form-control @error('code') is-invalid @enderror"
+                                                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);"
                                                     id="code" wire:model.defer="code" placeholder="Kode">
                                                 @error('code')
                                                     <span class="invalid-feedback">{{ $message }}</span>
@@ -193,7 +198,8 @@
                                                     <input type="text"
                                                         class="form-control @error('panjang') is-invalid @enderror"
                                                         id="panjang" wire:model.defer="panjang"
-                                                        placeholder="Ukuran Panjang">
+                                                        placeholder="Ukuran Panjang"
+                                                        oninput="this.value = window.formatNumberDecimal(this.value)">
                                                     <span class="input-group-text py-0">
                                                         mm
                                                     </span>
@@ -210,7 +216,8 @@
                                                     <input type="text"
                                                         class="form-control @error('lebar') is-invalid @enderror"
                                                         id="lebar" wire:model.defer="lebar"
-                                                        placeholder="Ukuran lebar">
+                                                        placeholder="Ukuran lebar"
+                                                        oninput="this.value = window.formatNumberDecimal(this.value)">
                                                     <span class="input-group-text py-0">
                                                         mm
                                                     </span>
@@ -227,13 +234,28 @@
                                                     <input type="text"
                                                         class="form-control @error('tinggi') is-invalid @enderror"
                                                         id="tinggi" wire:model.defer="tinggi"
-                                                        placeholder="Ukuran tinggi">
+                                                        placeholder="Ukuran tinggi"
+                                                        oninput="this.value = window.formatNumberDecimal(this.value)">
                                                     <span class="input-group-text py-0">
                                                         mm
                                                     </span>
                                                     @error('tinggi')
                                                         <span class="invalid-feedback">{{ $message }}</span>
                                                     @enderror
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {{-- status --}}
+                                        <div x-data="{ isVisible: $wire.entangle('statusIsVisible') }">
+                                            <div class="col-xxl-12" x-show="isVisible">
+                                                <div>
+                                                    <label for="status" class="form-label">Status</label>
+                                                    <select class="form-select" wire:model="status">
+                                                        <option value="0" {{ $status == '0' ? 'selected' : '' }}>
+                                                            Inactive</option>
+                                                        <option value="1" {{ $status == '1' ? 'selected' : '' }}>
+                                                            Active</option>
+                                                    </select>
                                                 </div>
                                             </div>
                                         </div>
