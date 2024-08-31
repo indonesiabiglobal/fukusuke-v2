@@ -230,8 +230,8 @@
                                             </div>
                                         </div>
                                         {{-- status --}}
-                                        <div x-data="{ status: $wire.entangle('status') }">
-                                            <div class="col-xxl-12" x-show="status == '0'">
+                                        <div x-data="{ isVisible: $wire.entangle('statusIsVisible') }">
+                                            <div class="col-xxl-12" x-show="isVisible">
                                                 <div>
                                                     <label for="status" class="form-label">Status</label>
                                                     <select class="form-select" wire:model="status">

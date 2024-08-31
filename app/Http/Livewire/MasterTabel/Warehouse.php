@@ -24,6 +24,7 @@ class Warehouse extends Component
     public $idUpdate;
     public $idDelete;
     public $status;
+    public $statusIsVisible;
 
     public function resetFields()
     {
@@ -93,7 +94,7 @@ class Warehouse extends Component
         $this->address = $warehouse->address;
         $this->status = $warehouse->status;
 
-        $this->dispatch('status-updated', ['status' => $this->status]);
+        $this->statusIsVisible = $data->status == 0 ? true : false;
         $this->dispatch('showModalUpdate');
         $this->skipRender();
     }
