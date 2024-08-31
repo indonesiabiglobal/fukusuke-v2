@@ -230,7 +230,6 @@
                                             </div>
                                         </div>
                                         {{-- status --}}
-                                        {{-- @if ($status == '0') --}}
                                         <div x-data="{ status: $wire.entangle('status') }">
                                             <div class="col-xxl-12" x-show="status == '0'">
                                                 <div>
@@ -244,7 +243,6 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        {{-- @endif --}}
                                         {{-- button --}}
                                         <div class="col-lg-12">
                                             <div class="hstack gap-2 justify-content-end">
