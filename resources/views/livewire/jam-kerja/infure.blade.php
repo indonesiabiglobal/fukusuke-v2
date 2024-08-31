@@ -329,6 +329,52 @@
                         </div>
                     </div>
                 </div>
+
+                {{-- delete --}}
+                <div id="removeBuyerModal" class="modal fade zoomIn" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                                    id="close-removeBuyerModal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mt-2 text-center">
+                                    <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop"
+                                        colors="primary:#f7b84b,secondary:#f06548"
+                                        style="width:100px;height:100px"></lord-icon>
+                                    <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
+                                        <h4>Apakah Anda yakin ingin menghapus data ini?</h4>
+                                        <p class="text-muted mx-4 mb-0">Data
+                                            yang dihapus tidak dapat dikembalikan.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
+                                    <button type="button" class="btn w-sm btn-light"
+                                        data-bs-dismiss="modal">Tutup</button>
+                                    <button wire:click="destroy" id="btnCreate" type="button"
+                                        class="btn w-sm btn-danger" id="remove-item">
+                                        <span wire:loading.remove wire:target="destroy">
+                                            <i class="ri-save-3-line"></i> Ya, Hapus!
+                                        </span>
+                                        <div wire:loading wire:target="destroy">
+                                            <span class="d-flex align-items-center">
+                                                <span class="spinner-border flex-shrink-0" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </span>
+                                                <span class="flex-grow-1 ms-1">
+                                                    Loading...
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{-- end modal delete buyer --}}
             </div>
         </div>
     </div>
@@ -427,8 +473,13 @@
                                 data-edit-id="{{ $item->id }}" wire:click="edit({{ $item->id }})">
                                 <i class="ri-edit-box-line text-white"></i>
                             </button>
+                            <button type="button"
+                                class="btn fs-15 p-1 bg-danger rounded btn-delete" data-delete-id="{{ $item->id }}"
+                                wire:click="delete({{ $item->id }})">
+                                <i class="ri-delete-bin-line text-white"></i>
+                            </button>
                         </td>
-                        <td>{{ \Carbon\Carbon::parse($item->working_date)->format('d-M-Y') }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->working_date)->format('d M Y') }}</td>
                         <td>{{ $item->work_shift }}</td>
                         <td>{{ $item->machine_id }}</td>
                         <td> {{ $item->employeeno }}</td>
@@ -437,7 +488,7 @@
                         <td>{{ $item->off_hour }}</td>
                         <td>{{ $item->on_hour }}</td>
                         <td>{{ $item->updated_by }}</td>
-                        <td>{{ \Carbon\Carbon::parse($item->updated_on)->format('d-M-Y H:i:s') }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y H:i:s') }}</td>
                     </tr>
                 @empty
                     {{-- <tr>
@@ -476,6 +527,17 @@
         $wire.on('closeModalUpdate', () => {
             $('#modal-edit').modal('hide');
         });
+
+        // Show modal delete buyer
+        $wire.on('showModalDelete', () => {
+            $('#removeBuyerModal').modal('show');
+        });
+
+        // Close modal delete buyer
+        $wire.on('closeModalDelete', () => {
+            $('#removeBuyerModal').modal('hide');
+        });
+
         // datatable
         // inisialisasi DataTable
         $wire.on('initDataTable', () => {
@@ -518,6 +580,15 @@
 
                     // livewire click
                     $wire.dispatch('edit', {
+                        id
+                    });
+                });
+                // tombol delete
+                $('.btn-delete').on('click', function() {
+                    let id = $(this).attr('data-delete-id');
+
+                    // livewire click
+                    $wire.dispatch('delete', {
                         id
                     });
                 });
