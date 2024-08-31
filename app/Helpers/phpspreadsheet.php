@@ -93,16 +93,16 @@ class phpspreadsheet
         ]);
     }
 
-    public static function numberFormatCommaSeparated($spreadsheet, $range)
+    public static function numberFormatCommaSeparated($spreadsheet, $range, $decimal = 2)
     {
         $spreadsheet->getActiveSheet()->getStyle($range)
             ->getNumberFormat()
-            ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+            ->setFormatCode('#,##0.' . str_repeat('0', $decimal));
     }
 
-    public static function numberFormatCommaThousandsOrZero($spreadsheet, $range)
+    public static function numberFormatCommaThousandsOrZero($spreadsheet, $range, $decimal = 2)
     {
-        $spreadsheet->getActiveSheet()->getStyle($range)->getNumberFormat()->setFormatCode('#,##0.00;-#,##0.00;"-"');
+        $spreadsheet->getActiveSheet()->getStyle($range)->getNumberFormat()->setFormatCode('#,##0.' . str_repeat('0', $decimal) . ';-#,##0.' . str_repeat('0', $decimal) . ';"-"');
     }
 
     public static function numberFormatThousands($spreadsheet, $range)
@@ -117,6 +117,11 @@ class phpspreadsheet
         $spreadsheet->getActiveSheet()->getStyle($range)
             ->getNumberFormat()
             ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_PERCENTAGE_00);
+    }
+
+    public static function numberPercentageOrZero($spreadsheet, $range)
+    {
+        $spreadsheet->getActiveSheet()->getStyle($range)->getNumberFormat()->setFormatCode('0.00%;-0.00%;"-"');
     }
 
     public static function numberFormatThousandsOrZero($spreadsheet, $range)
