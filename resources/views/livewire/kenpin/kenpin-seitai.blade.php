@@ -213,7 +213,7 @@
                         <td>{{ $item->code }}</td>
                         <td>{{ $item->namapetugas }}</td>
                         <td>{{ $item->qty_loss }}</td>
-                        <td>{{ $item->status_kenpin }}</td>
+                        <td>{{ $item->status_kenpin == 1 ? 'Proses' : 'Finish' }}</td>
                         <td>{{ $item->updated_by }}</td>
                         <td>{{ $item->updated_on }}</td>
                     </tr>

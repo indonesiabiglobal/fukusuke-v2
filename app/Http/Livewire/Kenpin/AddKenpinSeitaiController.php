@@ -13,6 +13,9 @@ use App\Models\TdProductGoods;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
+use Livewire\Attributes\Validate;
 
 class AddKenpinSeitaiController extends Component
 {
@@ -22,7 +25,7 @@ class AddKenpinSeitaiController extends Component
     public $code;
     public $empname;
     public $employeeno;
-    public $details = [];
+    public $details;
     public $nomor_palet;
     public $orderid;
     public $no_palet;
@@ -31,7 +34,7 @@ class AddKenpinSeitaiController extends Component
     public $quantity;
     public $qty_loss;
     public $remark;
-    public $status;
+    public $status = 1;
     public $idKenpinGoodDetailUpdate;
     public $beratLossTotal;
 
@@ -43,10 +46,11 @@ class AddKenpinSeitaiController extends Component
 
     public function mount()
     {
+        $this->details = collect([]);
         $this->kenpin_date = Carbon::now()->format('d-m-Y');
         $today = Carbon::now();
-        $lastKenpinGoods = TdKenpinGoods::where('kenpin_no', 'like', $today->format('ym').'%')->orderBy('kenpin_no', 'desc')->first();
-        $this->kenpin_no = $today->format('ym'). str_pad((int)substr($lastKenpinGoods->kenpin_no, 5, 3) + 1, 3, '0', STR_PAD_LEFT);
+        $lastKenpinGoods = TdKenpinGoods::where('kenpin_no', 'like', $today->format('ym') . '%')->orderBy('kenpin_no', 'desc')->first();
+        $this->kenpin_no = $today->format('ym') .'-'. str_pad((int)substr($lastKenpinGoods->kenpin_no, 5, 3) + 1, 3, '0', STR_PAD_LEFT);
     }
 
     public function edit($idKenpinGoodDetailUpdate)
@@ -58,8 +62,8 @@ class AddKenpinSeitaiController extends Component
                 $this->no_palet = $detail->nomor_palet;
                 $this->no_lot = $detail->nomor_lot;
                 $this->no_lpk = $detail->lpk_no;
-                $this->quantity = $detail->qty_produksi;
-                $this->qty_loss = $detail->qty_loss;
+                $this->quantity = number_format($detail->qty_produksi);
+                $this->qty_loss = number_format($detail->qty_loss);
             }
         }, $this->details->toArray());
     }
@@ -135,15 +139,13 @@ class AddKenpinSeitaiController extends Component
         foreach ($this->details as &$detail) {
             if ($detail->id == $this->idKenpinGoodDetailUpdate) {
                 // Perform the update you need here
-                $detail->qty_loss = $validatedData['qty_loss'];
+                $detail->qty_loss = (int)str_replace(',', '', $validatedData['qty_loss']);
                 break;
             }
         }
 
         // menghitung total berat loss
-        $this->beratLossTotal = array_sum(array_map(function ($detail) {
-            return $detail->qty_loss;
-        }, $this->details));
+        $this->beratLossTotal = $this->details->sum('qty_loss');
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);
 
         $this->dispatch('closeModal');
@@ -151,16 +153,23 @@ class AddKenpinSeitaiController extends Component
 
     public function save()
     {
-        $validatedData = $this->validate([
-            'code' => 'required',
-            'employeeno' => 'required',
-            'status' => 'required'
-        ]);
+        try {
+            $this->validate();
+            // Kode Anda jika validasi berhasil
+        } catch (ValidationException $e) {
+            // Tangani validasi yang gagal
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Data belum lengkap']);
+
+            // Mengirimkan pesan error ke view Livewire secara manual jika diperlukan
+            $this->setErrorBag($e->validator->errors());
+
+            return;
+        }
 
         DB::beginTransaction();
         try {
-            $mspetugas=MsEmployee::where('employeeno', $this->employeeno)->first();
-            $product=MsProduct::where('code', $this->code)->first();
+            $mspetugas = MsEmployee::where('employeeno', $this->employeeno)->first();
+            $product = MsProduct::where('code', $this->code)->first();
             $productGoods = TdProductGoods::where('id', $this->orderid)->get();
 
             $data = new TdKenpinGoods();
@@ -168,12 +177,7 @@ class AddKenpinSeitaiController extends Component
             $data->kenpin_date = $this->kenpin_date;
             $data->employee_id = $mspetugas->id;
             $data->product_id = $product->id;
-            if (is_array($this->details)) {
-                $qtyLoss = array_sum(array_column($this->details, 'qty_loss'));
-            } else {
-                // jika berupa collection
-                $qtyLoss = $this->details->sum('qty_loss');
-            }
+            $qtyLoss = $this->details->sum('qty_loss');
             $data->qty_loss = $qtyLoss;
             $data->remark = $this->remark;
             $data->status_kenpin = $this->status;
@@ -204,6 +208,73 @@ class AddKenpinSeitaiController extends Component
         return redirect()->route('kenpin-seitai-kenpin');
     }
 
+    public function rules()
+    {
+        return [
+            'code' => 'required',
+            'employeeno' => 'required',
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'code.required' => 'Nomor Order tidak boleh kosong',
+            'employeeno.required' => 'Petugas tidak boleh kosong',
+        ];
+    }
+
+
+    public function addPalet()
+    {
+        try {
+            $this->validate();
+            // Kode Anda jika validasi berhasil
+        } catch (ValidationException $e) {
+            // Tangani validasi yang gagal
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Data belum lengkap']);
+
+            // Mengirimkan pesan error ke view Livewire secara manual jika diperlukan
+            $this->setErrorBag($e->validator->errors());
+
+            return;
+        }
+
+        if (isset($this->nomor_palet) && $this->nomor_palet != '') {
+            $product = MsProduct::where('code', $this->code)->first();
+            $this->details = DB::table('tdproduct_goods AS tdpg')
+                ->select(
+                    'tdpg.id AS id',
+                    'tdpg.production_no AS production_no',
+                    'tdpg.production_date AS production_date',
+                    'tdpg.lpk_id AS lpk_id',
+                    'tdpg.product_id AS product_id',
+                    'msp.code AS code',
+                    'msp.name AS namaproduk',
+                    'tdpg.qty_produksi AS qty_produksi',
+                    'tdpg.nomor_palet AS nomor_palet',
+                    'tdpg.nomor_lot AS nomor_lot',
+                    'tdol.order_id AS order_id',
+                    'tdol.lpk_no AS lpk_no',
+                    'tdol.lpk_date AS lpk_date',
+                    'tgd.qty_loss'
+                )
+                ->join('tdorderlpk AS tdol', 'tdpg.lpk_id', '=', 'tdol.id')
+                ->join('msproduct AS msp', 'tdpg.product_id', '=', 'msp.id')
+                ->leftJoin('tdkenpin_goods_detail AS tgd', 'tgd.product_goods_id', '=', 'tdpg.id')
+                ->where('tdpg.product_id', $product->id)
+                ->where('tdpg.nomor_palet', $this->nomor_palet)
+                ->get();
+
+            if ($this->details == null) {
+                // session()->flash('error', 'Nomor PO ' . $this->po_no . ' Tidak Terdaftar');
+                $this->dispatch('notification', ['type' => 'error', 'message' => 'Employee ' . $this->details . ' Tidak Terdaftar']);
+            }
+        } else {
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Nomor Palet yang dicari tidak boleh kosong']);
+        }
+    }
+
     public function search()
     {
         $this->render();
@@ -211,66 +282,35 @@ class AddKenpinSeitaiController extends Component
 
     public function render()
     {
-        if(isset($this->code) && $this->code != ''){
-            $product=MsProduct::where('code', 'ilike', $this->code . '%')->first();
+        if (isset($this->code) && $this->code != '') {
+            $product = MsProduct::where('code', 'ilike', $this->code . '%')->first();
 
-            if($product == null){
+            if ($product == null) {
                 // session()->flash('error', 'Nomor PO ' . $this->po_no . ' Tidak Terdaftar');
-                $this->dispatch('notification', ['type' => 'error', 'message' => 'Code ' . $this->code . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'error', 'message' => 'Nomor Order ' . $this->code . ' Tidak Terdaftar']);
                 $this->code = '';
                 $this->name = '';
             } else {
+                $this->resetValidation('code');
                 $this->code = $product->code;
                 $this->name = $product->name;
             }
         }
 
-        if(isset($this->employeeno) && $this->employeeno != '' && strlen($this->employeeno) >= 2){
-            $msemployee=MsEmployee::where('employeeno', 'ilike', '%'. $this->employeeno . '%')->active()->first();
+        if (isset($this->employeeno) && $this->employeeno != '' && strlen($this->employeeno) >= 2) {
+            $msemployee = MsEmployee::where('employeeno', 'ilike', '%' . $this->employeeno . '%')->active()->first();
 
-            if($msemployee == null){
+            if ($msemployee == null) {
                 // session()->flash('error', 'Nomor PO ' . $this->po_no . ' Tidak Terdaftar');
-                $this->dispatch('notification', ['type' => 'error', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'error', 'message' => 'Petugas ' . $this->employeeno . ' Tidak Terdaftar']);
                 $this->empname = '';
             } else {
+                $this->resetValidation('employeeno');
                 $this->empname = $msemployee->empname;
                 $this->employeeno = $msemployee->employeeno;
-            }
-        }
-
-        if(isset($this->nomor_palet) && $this->nomor_palet != ''){
-            $product=MsProduct::where('code', $this->code)->first();
-            $this->details = DB::table('tdproduct_goods AS tdpg')
-            ->select(
-                'tdpg.id AS id',
-                'tdpg.production_no AS production_no',
-                'tdpg.production_date AS production_date',
-                'tdpg.lpk_id AS lpk_id',
-                'tdpg.product_id AS product_id',
-                'msp.code AS code',
-                'msp.name AS namaproduk',
-                'tdpg.qty_produksi AS qty_produksi',
-                'tdpg.nomor_palet AS nomor_palet',
-                'tdpg.nomor_lot AS nomor_lot',
-                'tdol.order_id AS order_id',
-                'tdol.lpk_no AS lpk_no',
-                'tdol.lpk_date AS lpk_date',
-                'tgd.qty_loss'
-            )
-            ->join('tdorderlpk AS tdol', 'tdpg.lpk_id', '=', 'tdol.id')
-            ->join('msproduct AS msp', 'tdpg.product_id', '=', 'msp.id')
-            ->leftJoin('tdkenpin_goods_detail AS tgd', 'tgd.product_goods_id', '=', 'tdpg.id')
-            ->where('tdpg.product_id', $product->id)
-            ->where('tdpg.nomor_palet', $this->nomor_palet)
-            ->get();
-
-            if($this->details == null){
-                // session()->flash('error', 'Nomor PO ' . $this->po_no . ' Tidak Terdaftar');
-                $this->dispatch('notification', ['type' => 'error', 'message' => 'Employee ' . $this->details . ' Tidak Terdaftar']);
             }
         }
 
         return view('livewire.kenpin.add-kenpin-seitai')->extends('layouts.master');
     }
 }
-
