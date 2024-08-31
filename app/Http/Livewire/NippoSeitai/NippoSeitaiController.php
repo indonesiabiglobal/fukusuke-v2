@@ -644,7 +644,8 @@ class NippoSeitaiController extends Component
                         ->orWhere('tdpg.production_no', 'ilike', '%' . $this->searchTerm . '%')
                         ->orWhere('tdpg.product_id', 'ilike', '%' . $this->searchTerm . '%')
                         ->orWhere('tdpg.nomor_palet', 'ilike', '%' . $this->searchTerm . '%')
-                        ->orWhere('tdpg.machine_id', 'ilike', '%' . $this->searchTerm . '%');
+                        ->orWhere('tdpg.machine_id', 'ilike', '%' . $this->searchTerm . '%')
+                        ->orWhere('tdpg.nomor_lot', 'ilike', '%' . $this->searchTerm . '%');
                 });
             }
             if (isset($this->idProduct) && $this->idProduct['value'] != "" && $this->idProduct != "undefined") {
@@ -728,7 +729,8 @@ class NippoSeitaiController extends Component
                         ->orWhere('tdpg.production_no', 'ilike', '%' . $this->searchTerm . '%')
                         ->orWhere('tdpg.product_id', 'ilike', '%' . $this->searchTerm . '%')
                         ->orWhere('tdpg.nomor_palet', 'ilike', '%' . $this->searchTerm . '%')
-                        ->orWhere('tdpg.machine_id', 'ilike', '%' . $this->searchTerm . '%');
+                        ->orWhere('tdpg.machine_id', 'ilike', '%' . $this->searchTerm . '%')
+                        ->orWhere('tdpg.nomor_lot', 'ilike', '%' . $this->searchTerm . '%');
                 });
             }
             if (isset($this->idProduct) && $this->idProduct['value'] != "" && $this->idProduct != "undefined") {

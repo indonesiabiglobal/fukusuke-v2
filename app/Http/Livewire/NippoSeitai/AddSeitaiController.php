@@ -309,7 +309,7 @@ class AddSeitaiController extends Component
 
             $data = new TdProductGoods();
             $data->production_no = $today->format('dmy') . '-' . $seqno;
-            $data->production_date = Carbon::parse($this->production_date)->format('Y-m-d');
+            $data->production_date = $this->production_date . ' ' . now()->format('H:i:s');
             $data->employee_id = $employe->id;
             if (isset($this->employeenoinfure)) {
                 $data->employee_id_infure = $employeinfure->id;
@@ -324,9 +324,9 @@ class AddSeitaiController extends Component
             $data->seq_no = $seqno;
             $data->nomor_palet = $this->nomor_palet;
             $data->nomor_lot = $this->nomor_lot;
-            $data->created_on = $this->created_on;
+            $data->created_on = $this->created_on  . ' ' . now()->format('H:i:s');
             $data->created_by = auth()->user()->username;
-            $data->updated_on = $this->created_on;
+            $data->updated_on = $this->created_on  . ' ' . now()->format('H:i:s');
             $data->updated_by = auth()->user()->username;
 
             // jumlah berat loss
