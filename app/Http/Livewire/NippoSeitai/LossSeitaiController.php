@@ -43,7 +43,7 @@ class LossSeitaiController extends Component
     {
         $this->products = MsProduct::get();
         // $this->buyer = MsBuyer::get();
-        $this->machine = MsMachine::get();
+        $this->machine = MsMachine::where('machineno',  'LIKE', '00S%')->orderBy('machineno')->get();
         if (empty($this->tglMasuk)) {
             $this->tglMasuk = Carbon::now()->format('d-m-Y');
         }
@@ -606,11 +606,14 @@ class LossSeitaiController extends Component
                     'tdol.qty_gulung AS qty_gulung',
                     'tdol.qty_lpk AS qty_lpk',
                     'tdol.total_assembly_qty AS total_assembly_qty',
-                    'mp.name AS product_name'
+                    'mp.name AS product_name',
+                    'mp.code',
+                    'msm.machineno'
                 ])
                 ->join('tdorderlpk AS tdol', 'tdpg.lpk_id', '=', 'tdol.id')
                 ->leftJoin('msproduct AS mp', 'mp.id', '=', 'tdol.product_id')
                 ->leftJoin('tdproduct_goods_assembly AS tga', 'tga.product_goods_id', '=', 'tdpg.id')
+                ->leftJoin('msmachine AS msm', 'msm.id', '=', 'tdpg.machine_id')
                 ->leftJoin('tdproduct_assembly AS ta', 'ta.id', '=', 'tga.product_assembly_id');
 
             if (isset($this->tglMasuk) && $this->tglMasuk != '') {
@@ -627,7 +630,9 @@ class LossSeitaiController extends Component
                     $query->where('tdol.lpk_no', 'ilike', '%' . $this->searchTerm . '%')
                         ->orWhere('tdpg.production_no', 'ilike', '%' . $this->searchTerm . '%')
                         ->orWhere('tdpg.product_id', 'ilike', '%' . $this->searchTerm . '%')
-                        ->orWhere('tdpg.machine_id', 'ilike', '%' . $this->searchTerm . '%');
+                        ->orWhere('tdpg.machine_id', 'ilike', '%' . $this->searchTerm . '%')
+                        ->orWhere('tdpg.nomor_palet', 'ilike', '%' . $this->searchTerm . '%')
+                        ->orWhere('tdpg.nomor_lot', 'ilike', '%' . $this->searchTerm . '%');
                 });
             }
             if (isset($this->idProduct) && $this->idProduct['value'] != "" && $this->idProduct != "undefined") {
@@ -685,10 +690,13 @@ class LossSeitaiController extends Component
                     'tdol.qty_gulung AS qty_gulung',
                     'tdol.qty_lpk AS qty_lpk',
                     'tdol.total_assembly_qty AS total_assembly_qty',
-                    'mp.name AS product_name'
+                    'mp.name AS product_name',
+                    'mp.code',
+                    'msm.machineno'
                 )
                 ->join('tdorderlpk AS tdol', 'tdpg.lpk_id', '=', 'tdol.id')
-                ->leftJoin('msproduct AS mp', 'mp.id', '=', 'tdol.product_id');
+                ->leftJoin('msproduct AS mp', 'mp.id', '=', 'tdol.product_id')
+                ->leftJoin('msmachine AS msm', 'msm.id', '=', 'tdpg.machine_id');
 
             if (isset($this->tglMasuk) && $this->tglMasuk != '') {
                 $data = $data->where('tdpg.production_date', '>=', $this->tglMasuk);
@@ -704,7 +712,9 @@ class LossSeitaiController extends Component
                     $query->where('tdol.lpk_no', 'ilike', '%' . $this->searchTerm . '%')
                         ->orWhere('tdpg.production_no', 'ilike', '%' . $this->searchTerm . '%')
                         ->orWhere('tdpg.product_id', 'ilike', '%' . $this->searchTerm . '%')
-                        ->orWhere('tdpg.machine_id', 'ilike', '%' . $this->searchTerm . '%');
+                        ->orWhere('tdpg.machine_id', 'ilike', '%' . $this->searchTerm . '%')
+                        ->orWhere('tdpg.nomor_palet', 'ilike', '%' . $this->searchTerm . '%')
+                        ->orWhere('tdpg.nomor_lot', 'ilike', '%' . $this->searchTerm . '%');
                 });
             }
             if (isset($this->idProduct) && $this->idProduct['value'] != "" && $this->idProduct != "undefined") {

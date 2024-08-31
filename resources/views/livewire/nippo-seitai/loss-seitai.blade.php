@@ -36,7 +36,7 @@
             <div class="col-12 col-lg-3">
                 <label class="form-label text-muted fw-bold">Nomor LPK</label>
             </div>
-            <div class="col-12 col-lg-9 mb-1" x-data="{ lpk_no: @entangle('lpk_no').change, status: true }" x-init="$watch('lpk_no', value => {
+            <div class="col-12 col-lg-9 mb-1" x-data="{ lpk_no: @entangle('lpk_no').live, status: true }" x-init="$watch('lpk_no', value => {
                     if (value.length === 6 && !value.includes('-') && status) {
                         lpk_no = value + '-';
                     }
@@ -83,7 +83,7 @@
                         <option value="">- All -</option>
                         @foreach ($products as $item)
                             <option data-custom-properties='{"code": "{{ $item->code }}"}' value="{{ $item->id }}"
-                                @if ($item->id == ($idProduct['value'] ?? null)) selected @endif>{{ $item->name }}</option>
+                                @if ($item->id == ($idProduct['value'] ?? null)) selected @endif>{{ $item->name }}, {{ $item->code }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -311,23 +311,23 @@
                             </a>
                         </td>
                         <td>{{ $item->lpk_no }}</td>
-                        <td>{{ $item->lpk_date }}</td>
-                        <td>{{ $item->qty_lpk }}</td>
-                        <td>{{ $item->qty_produksi }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->lpk_date)->format('d M Y') }}</td>
+                        <td>{{ number_format($item->qty_lpk, 0, ',', ',') }}</td>
+                        <td>{{ number_format($item->qty_produksi, 0, ',', ',') }}</td>
                         <td> </td>
-                        <td>{{ $item->seitai_berat_loss }}</td>
-                        <td>{{ $item->infure_berat_loss }}</td>
+                        <td>{{ number_format($item->seitai_berat_loss, 0, ',', ',') }}</td>
+                        <td>{{ number_format($item->infure_berat_loss, 0, ',', ',') }}</td>
                         <td>{{ $item->product_name }}</td>
-                        <td>{{ $item->order_id }}</td>
-                        <td>{{ $item->machine_id }}</td>
-                        <td>{{ $item->production_date }}</td>
-                        <td>{{ $item->production_date }}</td>
+                        <td>{{ $item->code }}</td>
+                        <td>{{ $item->machineno }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->production_date)->format('d M Y') }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->created_on)->format('d M Y') }}</td>
                         <td>{{ $item->work_shift }}</td>
                         <td>{{ $item->nomor_palet }}</td>
                         <td>{{ $item->nomor_lot }}</td>
                         <td>{{ $item->seq_no }}</td>
                         <td>{{ $item->updated_by }}</td>
-                        <td>{{ $item->updated_on }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y H:i') }}</td>
                     </tr>
                 @empty
                     {{-- <tr>
