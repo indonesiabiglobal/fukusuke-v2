@@ -55,7 +55,6 @@ class SeitaiJamKerjaController extends Component
             $this->tglKeluar = Carbon::now()->format('d-m-Y');
         }
         $this->machine  = MsMachine::whereNotIn('department_id', [10, 12, 15, 2, 4, 10])->orderBy('machineno', 'ASC')->get();
-        $this->working_date = Carbon::now()->format('d-m-Y');
         $this->workShift  = MsWorkingShift::where('status', 1)->get();
     }
 
@@ -67,7 +66,8 @@ class SeitaiJamKerjaController extends Component
 
     public function showModalCreate()
     {
-        $this->resetInput();
+        // $this->resetInput();
+        $this->working_date = Carbon::now()->format('d-m-Y');
         $this->dispatch('showModalCreate');
         // Mencegah render ulang
         $this->skipRender();
@@ -119,6 +119,11 @@ class SeitaiJamKerjaController extends Component
             $this->work_hour = '08:00';
             $this->dispatch('notification', ['type' => 'warning', 'message' => 'Jam Kerja Tidak Boleh Lebih Dari 8 Jam']);
         }
+
+        if (isset($this->off_hour) && $this->off_hour > '08:00') {
+            $this->off_hour = '08:00';
+            $this->dispatch('notification', ['type' => 'warning', 'message' => 'Jam Off Kerja Tidak Boleh Lebih Dari 8 jam']);
+        }
     }
 
     public function save()
@@ -160,6 +165,8 @@ class SeitaiJamKerjaController extends Component
                     'updated_by' => auth()->user()->username,
                 ]);
                 $this->reset(['employeeno', 'empname', 'machineno', 'machinename', 'working_date', 'work_shift']);
+                $this->resetInput();
+                $this->dispatch('closeModalUpdate');
             } else {
                 $machine = MsMachine::where('machineno', $this->machineno)->first();
                 $msemployee = MsEmployee::where('employeeno', $this->employeeno)->first();
@@ -179,11 +186,12 @@ class SeitaiJamKerjaController extends Component
                 $orderlpk->updated_by = auth()->user()->username;
 
                 $orderlpk->save();
+                $this->resetInput();
+                $this->reset(['employeeno', 'empname', 'machineno', 'machinename', 'working_date', 'work_shift']);
+                $this->dispatch('closeModalCreate');
             }
-
-            $this->reset(['employeeno', 'empname', 'machineno', 'machinename', 'working_date', 'work_shift']);
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
-            $this->dispatch('closeModalUpdate');
+
         } catch (\Exception $e) {
             $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
         }

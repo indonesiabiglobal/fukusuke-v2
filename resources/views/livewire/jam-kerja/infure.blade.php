@@ -139,8 +139,9 @@
                                             <label>Nomor Mesin </label>
                                             <div class="input-group">
                                                 <input class="form-control" type="text" max="6"
-                                                    wire:model.live="machineno" placeholder="..." />
-                                                <input class="form-control readonly" readonly="readonly"
+                                                    x-on:keydown.tab="$event.preventDefault(); $refs.employeenoInput.focus();"
+                                                    wire:model.change="machineno" placeholder="..." />
+                                                <input class="form-control readonly bg-light" readonly="readonly"
                                                     type="text" wire:model="machinename" placeholder="..." />
                                                 @error('machineno')
                                                     <span class="invalid-feedback">{{ $message }}</span>
@@ -152,9 +153,11 @@
                                         <div class="form-group">
                                             <label>Petugas </label>
                                             <div class="input-group col-md-9 col-xs-8">
-                                                <input class="form-control" wire:model.live="employeeno" max="8"
-                                                    type="text" placeholder="..." />
-                                                <input class="form-control readonly" readonly="readonly"
+                                                <input class="form-control" wire:model.change="employeeno"
+                                                    max="8"
+                                                    x-on:keydown.tab="$event.preventDefault(); $refs.workHourInput.focus();" x-ref="employeenoInput" type="text"
+                                                    placeholder="..." />
+                                                <input class="form-control readonly bg-light" readonly="readonly"
                                                     type="text" wire:model="empname" placeholder="..." />
                                                 @error('employeeno')
                                                     <span class="invalid-feedback">{{ $message }}</span>
@@ -166,6 +169,7 @@
                                         <label for="">Jam Kerja</label>
                                         <div class="form-group" style="margin-left:1px; white-space:nowrap">
                                             <input class="form-control" wire:model="work_hour" type="time"
+                                                x-on:keydown.tab="$event.preventDefault(); $refs.offHourInput.focus();" x-ref="workHourInput"
                                                 placeholder="hh:mm" wire:change="validateWorkHour" max="08:00">
                                             @error('work_hour')
                                                 <span class="invalid-feedback">{{ $message }}</span>
@@ -175,7 +179,7 @@
                                     <div class="col-lg-12 mb-1">
                                         <label for="">Lama Mesin Mati</label>
                                         <div class="form-group" style="margin-left:1px; white-space:nowrap">
-                                            <input class="form-control" wire:model="off_hour" type="time"
+                                            <input class="form-control" wire:model="off_hour" wire:change="validateWorkHour" type="time"  x-ref="offHourInput"
                                                 placeholder="hh:mm">
                                             @error('off_hour')
                                                 <span class="invalid-feedback">{{ $message }}</span>
@@ -249,8 +253,9 @@
                                         <div class="form-group">
                                             <label>Nomor Mesin </label>
                                             <div class="input-group">
-                                                <input class="form-control" type="text" max="5"
-                                                    wire:model.live.debounce.400ms="machineno" placeholder="..." />
+                                                <input class="form-control" type="text" max="6"
+                                                    x-on:keydown.tab="$event.preventDefault(); $refs.employeenoEditInput.focus();"
+                                                    wire:model.change="machineno" placeholder="..." />
                                                 <input class="form-control readonly" readonly="readonly"
                                                     type="text" wire:model="machinename" placeholder="..." />
                                                 @error('machineno')
@@ -263,8 +268,10 @@
                                         <div class="form-group">
                                             <label>Petugas </label>
                                             <div class="input-group col-md-9 col-xs-8">
-                                                <input class="form-control" wire:model.live.debounce.400ms="employeeno" max="8"
-                                                    type="text" placeholder="..." />
+                                                <input class="form-control" wire:model.change="employeeno"
+                                                    max="8"
+                                                    x-on:keydown.tab="$event.preventDefault(); $refs.workHourEditInput.focus();" x-ref="employeenoEditInput" type="text"
+                                                    placeholder="..." />
                                                 <input class="form-control readonly" readonly="readonly"
                                                     type="text" wire:model="empname" placeholder="..." />
                                                 @error('employeeno')
@@ -277,6 +284,7 @@
                                         <label for="">Jam Kerja</label>
                                         <div class="form-group" style="margin-left:1px; white-space:nowrap">
                                             <input class="form-control" wire:model="work_hour" type="time"
+                                            x-on:keydown.tab="$event.preventDefault(); $refs.offHourEditInput.focus();" x-ref="workHourEditInput"
                                                 placeholder="hh:mm" wire:change="validateWorkHour" max="08:00">
                                             @error('work_hour')
                                                 <span class="invalid-feedback">{{ $message }}</span>
@@ -286,7 +294,7 @@
                                     <div class="col-lg-12 mb-1">
                                         <label for="">Lama Mesin Mati</label>
                                         <div class="form-group" style="margin-left:1px; white-space:nowrap">
-                                            <input class="form-control" wire:model="off_hour" type="time"
+                                            <input class="form-control" wire:model="off_hour" wire:change="validateWorkHour" type="time"  x-ref="offHourEditInput"
                                                 placeholder="hh:mm">
                                             @error('off_hour')
                                                 <span class="invalid-feedback">{{ $message }}</span>
@@ -420,7 +428,7 @@
                                 <i class="ri-edit-box-line text-white"></i>
                             </button>
                         </td>
-                        <td>{{ $item->working_date }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->working_date)->format('d-M-Y') }}</td>
                         <td>{{ $item->work_shift }}</td>
                         <td>{{ $item->machine_id }}</td>
                         <td> {{ $item->employeeno }}</td>
@@ -429,7 +437,7 @@
                         <td>{{ $item->off_hour }}</td>
                         <td>{{ $item->on_hour }}</td>
                         <td>{{ $item->updated_by }}</td>
-                        <td>{{ \Carbon\Carbon::parse($item->updated_on)->format('d-M-Y H:i:s')  }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->updated_on)->format('d-M-Y H:i:s') }}</td>
                     </tr>
                 @empty
                     {{-- <tr>
@@ -509,7 +517,9 @@
                     let id = $(this).attr('data-edit-id');
 
                     // livewire click
-                    $wire.dispatch('edit', {id});
+                    $wire.dispatch('edit', {
+                        id
+                    });
                 });
 
                 // default column visibility
