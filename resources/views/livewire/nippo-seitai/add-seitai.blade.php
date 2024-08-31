@@ -8,7 +8,7 @@
                             <div class="input-group">
                                 <label class="control-label col-12 col-md-3 col-lg-3 pe-2">Tanggal Produksi</label>
                                 {{-- <input class="form-control datepicker-input" type="datetime-local" wire:model.defer="production_date" /> --}}
-                                <input class="form-control" type="text" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y" wire:model.defer="production_date" placeholder="yyyy/mm/dd"/>
+                                <input class="form-control" type="text" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d/m/y" wire:model.defer="production_date" placeholder="yyyy/mm/dd"/>
                             </div>
                         </div>
                     </div>
@@ -16,7 +16,8 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-12 col-md-3 col-lg-3 pe-2">Tanggal Proses</label>
-                                <input class="form-control datepicker-input" type="datetime-local" wire:model.defer="created_on" placeholder="yyyy/mm/dd"/>
+                                {{-- <input class="form-control datepicker-input" type="datetime-local" wire:model.defer="created_on" placeholder="yyyy/mm/dd"/> --}}
+                                <input class="form-control" type="text" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d/m/y" wire:model.defer="created_on" placeholder="yyyy/mm/dd"/>
                             </div>
                         </div>
                     </div>
@@ -29,7 +30,31 @@
                                         Nomor LPK
                                     </a>
                                 </label>
-                                <input type="text" class="form-control @error('lpk_no') is-invalid @enderror col-12 col-md-9 col-lg-7"  wire:model.live="lpk_no" />
+                                {{-- <input type="text" class="form-control @error('lpk_no') is-invalid @enderror col-12 col-md-9 col-lg-7"  wire:model.live="lpk_no" /> --}}
+                                <div x-data="{ lpk_no: @entangle('lpk_no').live, status: true }" x-init="$watch('lpk_no', value => {
+                                        if (value.length === 6 && !value.includes('-') && status) {
+                                            lpk_no = value + '-';
+                                        }
+                                        if (value.length < 6) {
+                                            status = true;
+                                        }
+                                        if (value.length === 7) {
+                                            status = false;
+                                        }
+                                        if (value.length > 10) {
+                                            lpk_no = value.substring(0, 10);
+                                        }
+                                    })">
+                                    <input 
+                                        class="form-control" 
+                                        style="padding:0.44rem" 
+                                        type="text"
+                                        placeholder="000000-000"
+                                        x-model="lpk_no" 
+                                        maxlength="10"
+                                        x-on:keydown.tab="$event.preventDefault(); $refs.machineInput.focus();" 
+                                    />
+                                </div>
                                 @error('lpk_no')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -40,7 +65,8 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-12 col-md-3 col-lg-4 pe-2">Tanggal LPK</label>
-                                <input class="form-control readonly datepicker-input col-12 col-md-9 col-lg-8 bg-light" readonly="readonly" type="date" wire:model.defer="lpk_date" placeholder="yyyy/mm/dd"/>
+                                {{-- <input class="form-control readonly datepicker-input col-12 col-md-9 col-lg-8 bg-light" readonly="readonly" type="date" wire:model.defer="lpk_date" placeholder="yyyy/mm/dd"/> --}}
+                                <input class="form-control readonly datepicker-input bg-light" readonly="readonly" type="text" style="padding:0.44rem" wire:model.defer="lpk_date" placeholder="yyyy/mm/dd"/>
                             </div>
                         </div>
                     </div>
@@ -76,7 +102,8 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-12 col-md-4 col-lg-5 pe-2">Nomor Mesin</label>
-                                <input type="text" placeholder=" ... " class="form-control col-12 col-md-8 col-lg-7" wire:model.live.debounce.300ms="machineno" />
+                                <input type="text" placeholder=" ... " class="form-control col-12 col-md-8 col-lg-7" wire:model.change="machineno" x-on:keydown.tab="$event.preventDefault(); $refs.employeeno.focus();"
+                                x-ref="machineInput" />
                             </div>
                         </div>
                     </div>
@@ -92,7 +119,9 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-12 col-md-4 col-lg-5 pe-2">Petugas</label>
-                                <input type="text" placeholder=" ... " class="form-control col-12 col-md-8 col-lg-7" wire:model.live="employeeno" />
+                                <input type="text" placeholder=" ... " class="form-control col-12 col-md-8 col-lg-7" wire:model.change="employeeno"
+                                x-on:keydown.tab="$event.preventDefault(); $refs.qty_produksi.focus();"
+                                x-ref="employeeno" />
                             </div>
                         </div>
                     </div>
@@ -108,7 +137,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-12 col-md-3 col-lg-5">Jumlah Produksi</label>
-                                <input type="text" placeholder="-" class="form-control" wire:model="qty_produksi" oninput="this.value = window.formatNumber(this.value)"/>
+                                <input type="text" placeholder="-" class="form-control" wire:model.change="qty_produksi" oninput="this.value = window.formatNumber(this.value)" x-ref="qty_produksi"/>
                                 <span class="input-group-text">
                                     lbr
                                 </span>
@@ -119,7 +148,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-12 col-md-3 col-lg-5">Total Produksi</label>
-                                <input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="total_assembly_qty" oninput="this.value = window.formatNumber(this.value)"/>
+                                <input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="total_assembly_qty"/>
                                 <span class="input-group-text">
                                     lbr
                                 </span>
@@ -141,7 +170,31 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-12 col-md-3 col-lg-5">Nomor Palet</label>
-                                <input type="text" placeholder="A0000-000000" class="form-control text-uppercase @error('nomor_palet') is-invalid @enderror" wire:model.live.debounce.300ms="nomor_palet" />
+                                <div x-data="{ nomor_palet: @entangle('nomor_palet'), status: true }" x-init="$watch('nomor_palet', value => {
+                                        if (value.length === 5 && !value.includes('-') && status) {
+                                            nomor_palet = value + '-';
+                                        }
+                                        if (value.length < 6) {
+                                            status = true;
+                                        }
+                                        if (value.length === 7) {
+                                            status = false;
+                                        }
+                                        if (value.length > 12) {
+                                            nomor_palet = value.substring(0, 12);
+                                        }
+                                    })">
+                                    <input 
+                                        class="form-control" 
+                                        style="padding:0.44rem" 
+                                        type="text"
+                                        placeholder="A0000-000000"
+                                        x-model="nomor_palet" 
+                                        maxlength="12"
+                                        x-on:keydown.tab="$event.preventDefault(); $refs.nomor_lot.focus();"
+                                    />
+                                </div>
+                                {{-- <input type="text" placeholder="A0000-000000" class="form-control text-uppercase @error('nomor_palet') is-invalid @enderror" wire:model.change="nomor_palet" x-on:keydown.tab="$event.preventDefault(); $refs.nomor_lot.focus();" x-ref="nomor_palet" /> --}}
                                 @error('nomor_palet')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -152,8 +205,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-12 col-md-3 col-lg-5">Nomor LOT</label>
-                                <input type="text" placeholder="----------" class="form-control @error('nomor_lot') is-invalid @enderror" wire:model="nomor_lot" />
-
+                                <input type="text" placeholder="----------" class="form-control @error('nomor_lot') is-invalid @enderror" wire:model="nomor_lot" x-on:keydown.tab="$event.preventDefault(); $refs.infure_berat_loss.focus();" x-ref="nomor_lot" />
                                 <input type="text" class="form-control readonly bg-light" readonly="readonly" />
                                 @error('nomor_lot')
                                     <span class="invalid-feedback">{{ $message }}</span>
@@ -165,7 +217,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-12 col-md-3 col-lg-5">Loss Infure</label>
-                                <input type="text" class="form-control @error('infure_berat_loss') is-invalid @enderror" wire:model="infure_berat_loss" oninput="this.value = window.formatNumber(this.value)"/>
+                                <input type="text" class="form-control @error('infure_berat_loss') is-invalid @enderror" wire:model="infure_berat_loss" x-on:keydown.tab="$event.preventDefault(); $refs.employeenoinfure.focus();" x-ref="infure_berat_loss"/>
                                 <span class="input-group-text">
                                     kg
                                 </span>
@@ -179,8 +231,9 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-3 col-lg-2">Petugas Infure</label>
-                                <input type="text" placeholder="..." class="form-control" wire:model.live="employeenoinfure" />
-
+                                <input type="text" placeholder="..." class="form-control" wire:model.change="employeenoinfure" 
+                                x-on:keydown.tab="$event.preventDefault(); $refs.work_hour.focus();"
+                                x-ref="employeenoinfure" />
                                 <input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="empnameinfure" />
                             </div>
                         </div>
@@ -189,7 +242,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-12 col-md-3 col-lg-7 pe-2">Jam Produksi</label>
-                                <input class="form-control col-12 col-md-9 col-lg-5" wire:model="work_hour" type="time" placeholder="hh:mm">
+                                <input class="form-control col-12 col-md-9 col-lg-5" wire:model.change="work_hour" type="time" placeholder="hh:mm" x-ref="work_hour">
                             </div>
                         </div>
                     </div>
@@ -420,7 +473,7 @@
                                     <div class="form-group">
                                         <label>Nomor Gentan </label>
                                         <div class="input-group col-md-9 col-xs-8">
-                                            <input class="form-control" type="text" wire:model.live="gentan_no" placeholder="..." />
+                                            <input class="form-control" type="number" wire:model.change="gentan_no" placeholder="..." />
                                             @error('gentan_no')
                                                 <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror
@@ -514,7 +567,7 @@
                                     <div class="form-group">
                                         <label>Kode Loss </label>
                                         <div class="input-group col-md-9 col-xs-8">
-                                            <input class="form-control" type="text" wire:model.live="loss_seitai_id" placeholder="..." />
+                                            <input class="form-control" type="text" wire:model.change="loss_seitai_id" placeholder="..." />
                                             @error('loss_seitai_id')
                                                 <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror

@@ -455,10 +455,6 @@ class AddNippoController extends Component
 
     public function render()
     {
-        if (strlen($this->lpk_no) === 6 && strpos($this->lpk_no, '-') === false) {
-            $this->lpk_no = $this->lpk_no . '-';
-        }
-
         if (strlen($this->lpk_no) >= 9) {
             $prefix = substr($this->lpk_no, 0, 6);
             $suffix = substr($this->lpk_no, -3);
