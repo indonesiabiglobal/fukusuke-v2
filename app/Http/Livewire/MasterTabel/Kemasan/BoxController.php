@@ -66,9 +66,9 @@ class BoxController extends Component
                 'code' => $this->code,
                 'name' => $this->name,
                 'box_class' => $this->box_class['value'],
-                'panjang' => (float)str_replace(',', '', $this->panjang),
-                'lebar' => (float)str_replace(',', '', $this->lebar),
-                'tinggi' => (float)str_replace(',', '', $this->tinggi),
+                'panjang' => (int)str_replace(',', '', $this->panjang),
+                'lebar' => (int)str_replace(',', '', $this->lebar),
+                'tinggi' => (int)str_replace(',', '', $this->tinggi),
                 'status' => $statusActive,
                 'created_by' => Auth::user()->username,
                 'created_on' => Carbon::now(),
@@ -93,9 +93,9 @@ class BoxController extends Component
         $this->code = $data->code;
         $this->name = $data->name;
         $this->box_class = $data->box_class;
-        $this->panjang = number_format($data->panjang, 2);
-        $this->lebar = number_format($data->lebar, 2);
-        $this->tinggi = number_format($data->tinggi, 2);
+        $this->panjang = number_format($data->panjang);
+        $this->lebar = number_format($data->lebar);
+        $this->tinggi = number_format($data->tinggi);
         $this->status = $data->status;
         $this->statusIsVisible = $data->status == 0 ? true : false;
         $this->skipRender();
@@ -113,9 +113,9 @@ class BoxController extends Component
             $data->code = $this->code;
             $data->name = $this->name;
             $data->box_class = is_array($this->box_class) ? $this->box_class['value'] : $this->box_class;
-            $data->panjang = (float)str_replace(',', '', $this->panjang);
-            $data->lebar = (float)str_replace(',', '', $this->lebar);
-            $data->tinggi = (float)str_replace(',', '', $this->tinggi);
+            $data->panjang = (int)str_replace(',', '', $this->panjang);
+            $data->lebar = (int)str_replace(',', '', $this->lebar);
+            $data->tinggi = (int)str_replace(',', '', $this->tinggi);
             $data->status = $this->status;
             $data->updated_by = Auth::user()->username;
             $data->updated_on = Carbon::now();

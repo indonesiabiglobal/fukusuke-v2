@@ -46,7 +46,6 @@
                                                 <select class="form-control @error('box_class') is-invalid @enderror"
                                                     wire:model.defer="box_class" data-choices data-choices-sorting-false
                                                     data-choices-removeItem>
-                                                    <option value="">- All -</option>
                                                     <option value="1">Khusus</option>
                                                     <option value="2">Standar</option>
                                                 </select>
@@ -63,7 +62,7 @@
                                                         class="form-control @error('panjang') is-invalid @enderror"
                                                         id="panjang" wire:model.defer="panjang"
                                                         placeholder="Ukuran Panjang"
-                                                        oninput="this.value = window.formatNumberDecimal(this.value)">
+                                                        oninput="this.value = window.formatNumber(this.value)">
                                                     <span class="input-group-text py-0">
                                                         mm
                                                     </span>
@@ -81,7 +80,7 @@
                                                         class="form-control @error('lebar') is-invalid @enderror"
                                                         id="lebar" wire:model.defer="lebar"
                                                         placeholder="Ukuran lebar"
-                                                        oninput="this.value = window.formatNumberDecimal(this.value)">
+                                                        oninput="this.value = window.formatNumber(this.value)">
                                                     <span class="input-group-text py-0">
                                                         mm
                                                     </span>
@@ -99,7 +98,7 @@
                                                         class="form-control @error('tinggi') is-invalid @enderror"
                                                         id="tinggi" wire:model.defer="tinggi"
                                                         placeholder="Ukuran tinggi"
-                                                        oninput="this.value = window.formatNumberDecimal(this.value)">
+                                                        oninput="this.value = window.formatNumber(this.value)">
                                                     <span class="input-group-text py-0">
                                                         mm
                                                     </span>
@@ -199,7 +198,7 @@
                                                         class="form-control @error('panjang') is-invalid @enderror"
                                                         id="panjang" wire:model.defer="panjang"
                                                         placeholder="Ukuran Panjang"
-                                                        oninput="this.value = window.formatNumberDecimal(this.value)">
+                                                        oninput="this.value = window.formatNumber(this.value)">
                                                     <span class="input-group-text py-0">
                                                         mm
                                                     </span>
@@ -217,7 +216,7 @@
                                                         class="form-control @error('lebar') is-invalid @enderror"
                                                         id="lebar" wire:model.defer="lebar"
                                                         placeholder="Ukuran lebar"
-                                                        oninput="this.value = window.formatNumberDecimal(this.value)">
+                                                        oninput="this.value = window.formatNumber(this.value)">
                                                     <span class="input-group-text py-0">
                                                         mm
                                                     </span>
@@ -235,7 +234,7 @@
                                                         class="form-control @error('tinggi') is-invalid @enderror"
                                                         id="tinggi" wire:model.defer="tinggi"
                                                         placeholder="Ukuran tinggi"
-                                                        oninput="this.value = window.formatNumberDecimal(this.value)">
+                                                        oninput="this.value = window.formatNumber(this.value)">
                                                     <span class="input-group-text py-0">
                                                         mm
                                                     </span>
@@ -455,9 +454,9 @@
                         <td>{{ $item->box_class == 1 ? 'Khusus' : 'Standar' }}</td>
                         <td>{{ $item->name }}</td>
                         <td>{{ $item->code }}</td>
-                        <td>{{ number_format($item->panjang, 2) }}</td>
-                        <td>{{ number_format($item->lebar, 2) }}</td>
-                        <td>{{ number_format($item->tinggi, 2) }}</td>
+                        <td>{{ number_format($item->panjang) }}</td>
+                        <td>{{ number_format($item->lebar) }}</td>
+                        <td>{{ number_format($item->tinggi) }}</td>
                         <td>
                             {!! $item->status == 1
                                 ? '<span class="badge text-success bg-success-subtle">Active</span>'
