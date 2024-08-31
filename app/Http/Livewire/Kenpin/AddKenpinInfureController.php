@@ -22,6 +22,7 @@ class AddKenpinInfureController extends Component
     public $lpk_no;
     public $lpk_date;
     public $panjang_lpk;
+    public $productId;
     public $code;
     public $name;
     public $employeeno;
@@ -328,7 +329,7 @@ class AddKenpinInfureController extends Component
             foreach ($this->details as $item) {
                 $details = new TdKenpinAssemblyDetail();
                 $details->kenpin_assembly_id = $product->id;
-                $details->product_assembly_id = $product->id;
+                $details->product_assembly_id = $this->productId;
                 $details->berat_loss = $item['berat_loss'];
                 // $details->berat = $item['berat'];
                 $details->frekuensi = $item['frekuensi'];
@@ -360,6 +361,7 @@ class AddKenpinInfureController extends Component
                     'tolp.lpk_date',
                     'tolp.panjang_lpk',
                     'tolp.created_on',
+                    'mp.id as productId',
                     'mp.code',
                     'mp.name',
                     'mp.ketebalan',
@@ -387,6 +389,7 @@ class AddKenpinInfureController extends Component
 
                 $this->lpk_date = Carbon::parse($tdorderlpk->lpk_date)->format('d M Y');
                 $this->panjang_lpk = number_format($tdorderlpk->panjang_lpk);
+                $this->productId = $tdorderlpk->productId;
                 $this->code = $tdorderlpk->code;
                 $this->name = $tdorderlpk->name;
                 $this->lpk_id = $tdorderlpk->id;

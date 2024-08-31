@@ -24,7 +24,8 @@ class EditKenpinController extends Component
     public $empname;
     public $remark;
     public $status_kenpin;
-    public $details = [];
+    public $details;
+    public $beratLossTotal = 0;
     public $lpk_id;
     public $gentan_no;
     public $machineno;
@@ -69,6 +70,26 @@ class EditKenpinController extends Component
         $this->empname = $data->empname;
         $this->remark = $data->remark;
         $this->status_kenpin = $data->status_kenpin;
+
+        $this->details = DB::table('tdkenpin_assembly_detail AS tkad')
+            ->join('tdproduct_assembly AS tpa', 'tpa.id', '=', 'tkad.product_assembly_id')
+            ->join('tdorderlpk AS tol', 'tol.id', '=', 'tpa.lpk_id')
+            ->join('msproduct AS msp', 'msp.id', '=', 'tpa.product_id')
+            ->join('msemployee AS mse', 'mse.id', '=', 'tpa.employee_id')
+            ->join('msmachine AS msm', 'msm.id', '=', 'tpa.machine_id')
+            ->where('tkad.kenpin_assembly_id', $this->orderid)
+            ->select(
+                'tkad.id',
+                'tkad.berat_loss',
+                'tpa.production_date AS tglproduksi',
+                'tpa.work_shift',
+                'msm.machineno AS nomesin',
+                'mse.empname AS namapetugas',
+                'tpa.nomor_han',
+                'tpa.gentan_no',
+            )
+            ->get();
+        $this->beratLossTotal = $this->details->sum('berat_loss');
     }
 
     public function addGentan()
@@ -190,35 +211,35 @@ class EditKenpinController extends Component
                 $this->name = $tdorderlpk->name;
                 $this->lpk_id = $tdorderlpk->id;
 
-                $this->details = DB::table('tdproduct_assembly AS tdpa')
-                    ->select(
-                        'tad.id AS id',
-                        'tdpa.lpk_id',
-                        'tdol.lpk_no AS lpk_no',
-                        'tdol.lpk_date AS lpk_date',
-                        'tdol.panjang_lpk AS panjang_lpk',
-                        'tdpa.production_date AS tglproduksi',
-                        'tdpa.employee_id AS employee_id',
-                        'mse.empname AS namapetugas',
-                        'tdpa.work_shift AS work_shift',
-                        'tdpa.work_hour AS work_hour',
-                        'tdpa.machine_id AS machine_id',
-                        'msm.machineno AS nomesin',
-                        'msm.machinename AS namamesin',
-                        'tdpa.nomor_han AS nomor_han',
-                        'tdpa.gentan_no AS gentan_no',
-                        'tdpa.product_id',
-                        'msp.code AS code',
-                        'msp.name AS namaproduk',
-                        'tad.berat_loss'
-                    )
-                    ->join('tdorderlpk AS tdol', 'tdpa.lpk_id', '=', 'tdol.id')
-                    ->join('msemployee AS mse', 'mse.id', '=', 'tdpa.employee_id')
-                    ->join('msproduct AS msp', 'msp.id', '=', 'tdpa.product_id')
-                    ->join('msmachine AS msm', 'msm.id', '=', 'tdpa.machine_id')
-                    ->join('tdkenpin_assembly_detail AS tad', 'tad.lpk_id', '=', 'tdol.id')
-                    ->where('tad.kenpin_assembly_id', $this->orderid)
-                    ->get();
+                // $this->details = DB::table('tdproduct_assembly AS tdpa')
+                //     ->select(
+                //         'tad.id AS id',
+                //         'tdpa.lpk_id',
+                //         'tdol.lpk_no AS lpk_no',
+                //         'tdol.lpk_date AS lpk_date',
+                //         'tdol.panjang_lpk AS panjang_lpk',
+                //         'tdpa.production_date AS tglproduksi',
+                //         'tdpa.employee_id AS employee_id',
+                //         'mse.empname AS namapetugas',
+                //         'tdpa.work_shift AS work_shift',
+                //         'tdpa.work_hour AS work_hour',
+                //         'tdpa.machine_id AS machine_id',
+                //         'msm.machineno AS nomesin',
+                //         'msm.machinename AS namamesin',
+                //         'tdpa.nomor_han AS nomor_han',
+                //         'tdpa.gentan_no AS gentan_no',
+                //         'tdpa.product_id',
+                //         'msp.code AS code',
+                //         'msp.name AS namaproduk',
+                //         'tad.berat_loss'
+                //     )
+                //     ->join('tdorderlpk AS tdol', 'tdpa.lpk_id', '=', 'tdol.id')
+                //     ->join('msemployee AS mse', 'mse.id', '=', 'tdpa.employee_id')
+                //     ->join('msproduct AS msp', 'msp.id', '=', 'tdpa.product_id')
+                //     ->join('msmachine AS msm', 'msm.id', '=', 'tdpa.machine_id')
+                //     ->join('tdkenpin_assembly_detail AS tad', 'tad.lpk_id', '=', 'tdol.id')
+                //     ->where('tad.kenpin_assembly_id', $this->orderid)
+                //     ->get();
             }
         }
 
@@ -232,26 +253,26 @@ class EditKenpinController extends Component
             }
         }
 
-        if (isset($this->gentan_no) && $this->gentan_no != '') {
-            $gentan = DB::table('tdproduct_assembly AS tdpa')
-                ->select(
-                    'tdpa.id AS id',
-                    'mse.empname AS namapetugas',
-                    'msm.machineno AS nomesin',
-                )
-                ->join('msemployee AS mse', 'mse.id', '=', 'tdpa.employee_id')
-                ->join('msmachine AS msm', 'msm.id', '=', 'tdpa.machine_id')
-                ->where('tdpa.lpk_id', $this->lpk_id)
-                ->where('tdpa.gentan_no', $this->gentan_no)
-                ->first();
+        // if (isset($this->gentan_no) && $this->gentan_no != '') {
+        //     $gentan = DB::table('tdproduct_assembly AS tdpa')
+        //         ->select(
+        //             'tdpa.id AS id',
+        //             'mse.empname AS namapetugas',
+        //             'msm.machineno AS nomesin',
+        //         )
+        //         ->join('msemployee AS mse', 'mse.id', '=', 'tdpa.employee_id')
+        //         ->join('msmachine AS msm', 'msm.id', '=', 'tdpa.machine_id')
+        //         ->where('tdpa.lpk_id', $this->lpk_id)
+        //         ->where('tdpa.gentan_no', $this->gentan_no)
+        //         ->first();
 
-            if ($gentan == null) {
-                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Gentan ' . $this->gentan_no . ' Tidak Terdaftar']);
-            } else {
-                $this->machineno = $gentan->nomesin;
-                $this->namapetugas = $gentan->namapetugas;
-            }
-        }
+        //     if ($gentan == null) {
+        //         $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Gentan ' . $this->gentan_no . ' Tidak Terdaftar']);
+        //     } else {
+        //         $this->machineno = $gentan->nomesin;
+        //         $this->namapetugas = $gentan->namapetugas;
+        //     }
+        // }
 
         return view('livewire.kenpin.edit-kenpin')->extends('layouts.master');
     }
