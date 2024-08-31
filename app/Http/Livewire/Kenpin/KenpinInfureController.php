@@ -79,6 +79,7 @@ class KenpinInfureController extends Component
                 'tdol.product_id',
                 'tdol.lpk_no',
                 'tdol.lpk_date',
+                'tdol.qty_lpk',
                 'tdol.panjang_lpk',
                 'tdol.qty_gentan',
                 'tdol.qty_gulung',
@@ -89,7 +90,8 @@ class KenpinInfureController extends Component
                 'msp.code',
                 'msp.name AS namaproduk',
                 'tdpa.nomor_han'
-            );
+            )
+            ->distinct();
 
         if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
             $data = $data->where('tdka.kenpin_date', '>=', $this->tglMasuk);

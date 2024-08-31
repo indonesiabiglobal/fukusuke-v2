@@ -207,7 +207,7 @@
                                 <i class="ri-edit-box-line text-white"></i>
                             </a>
                         </td>
-                        <td>{{ \Carbon\Carbon::parse($item->kenpin_date)->format('d-M-Y') }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->kenpin_date)->format('d M Y') }}</td>
                         <td>{{ $item->kenpin_no }}</td>
                         <td>{{ $item->namaproduk }}</td>
                         <td>{{ $item->code }}</td>
@@ -215,7 +215,7 @@
                         <td>{{ number_format($item->qty_loss) }}</td>
                         <td>{{ $item->status_kenpin == 1 ? 'Proses' : 'Finish' }}</td>
                         <td>{{ $item->updated_by }}</td>
-                        <td>{{ \Carbon\Carbon::parse($item->updated_on)->format('d-M-Y') }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y') }}</td>
 
                     </tr>
                 @empty

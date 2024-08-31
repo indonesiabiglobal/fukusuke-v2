@@ -17,7 +17,27 @@
                 <div class="form-group">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-2">Nomor Kenpin</label>
-                        <input type="text" class="form-control" wire:model="kenpin_no" />
+                        <div class="col-12 col-lg-10" x-data="{ kenpin_no: @entangle('kenpin_no').live, status: true }" x-init="$watch('kenpin_no', value => {
+                            // Membuat karakter pertama kapital
+                            if (value.length === 4 && !value.includes('-') && status) {
+                                kenpin_no = value + '-';
+                            }
+                            if (value.length < 4) {
+                                status = true;
+                            }
+                            if (value.length === 5) {
+                                status = false;
+                            }
+                            {{-- membatasi 12 karakter --}}
+                            if (value.length == 11 && !value.includes('-') && status) {
+                                kenpin_no = value.substring(0, 5) + '-' + value.substring(5, 11);
+                            } else if (value.length > 12) {
+                                kenpin_no = value.substring(0, 12);
+                            }
+                        })">
+                            <input type="text" class="form-control" wire:model="kenpin_no" maxlength="8"
+                                x-model="kenpin_no" wire:model="kenpin_no" maxlength="8" />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -41,8 +61,13 @@
                     <div class="input-group">
                         <label class="control-label"></label>
                         <input type="text" class="form-control col-8 readonly bg-light"
-                            @error('code') placeholder="{{ $message }}" @else placeholder="-" @enderror
+                            @error('code') placeholder="{{ $message }}" id="nameId" @else placeholder="-" @enderror
                             readonly="readonly" wire:model="name" />
+                        <style>
+                            #nameId::placeholder {
+                                color: red;
+                            }
+                        </style>
                     </div>
                 </div>
             </div>
@@ -51,8 +76,8 @@
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-6">Petugas</label>
                         <input type="text" placeholder="-"
-                            class="form-control @error('employeeno') is-invalid @enderror" wire:model.live="employeeno"
-                            x-ref="employeenoInput" max="8"
+                            class="form-control @error('employeeno') is-invalid @enderror" wire:model.change="employeeno"
+                            x-ref="employeenoInput" maxlength="8"
                             x-on:keydown.tab="$event.preventDefault(); $refs.remarkInput.focus();" />
                     </div>
                 </div>
@@ -62,8 +87,13 @@
                     <div class="input-group">
                         <label class="control-label"></label>
                         <input type="text"
-                            @error('employeeno') placeholder="{{ $message }}" @else placeholder="-" @enderror
+                            @error('employeeno') placeholder="{{ $message }}" id="empnameId" @else placeholder="-" @enderror
                             class="form-control readonly bg-light" readonly="readonly" wire:model="empname" />
+                        <style>
+                            #empnameId::placeholder {
+                                color: red;
+                            }
+                        </style>
                     </div>
                 </div>
             </div>
@@ -95,7 +125,7 @@
                         <span class="input-group-text readonly">
                             Nomor Palet
                         </span>
-                        <div x-data="{ nomor_palet: @entangle('nomor_palet').live, status: true }" x-init="$watch('nomor_palet', value => {
+                        <div x-data="{ nomor_palet: @entangle('nomor_palet').change, status: true }" x-init="$watch('nomor_palet', value => {
                             // Membuat karakter pertama kapital
                             nomor_palet = value.charAt(0).toUpperCase() + value.slice(1).replace(/[^0-9-]/g, '');
                             if (value.length === 5 && !value.includes('-') && status) {

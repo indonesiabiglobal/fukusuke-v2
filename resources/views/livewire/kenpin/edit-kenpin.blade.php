@@ -2,7 +2,7 @@
     <form wire:submit.prevent="save">
         <div class="row mt-2">
 			<div class="col-12 col-lg-12">
-				<div class="form-group">                            
+				<div class="form-group">
 					<div class="input-group">
 						<label class="control-label col-12 col-lg-2">Tanggal Kenpin</label>
                         <input class="form-control" type="text" data-provider="flatpickr" data-date-format="d-m-Y" wire:model.defer="kenpin_date" placeholder="yyyy/mm/dd"/>
@@ -40,7 +40,7 @@
 				</div>
 			</div>
 			<div class="col-12 col-lg-4 mt-1">
-				<div class="form-group">                            
+				<div class="form-group">
 					<div class="input-group">
 						<label class="control-label col-12 col-lg-5">Panjang LPK</label>
 						<input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="panjang_lpk" />
@@ -56,13 +56,13 @@
 				</div>
 			</div>
 			<div class="col-12 col-lg-8 mt-1">
-				<div class="form-group">                            
+				<div class="form-group">
 					<div class="input-group">
 						<label class="control-label"></label>
 						<input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="name" />
 					</div>
 				</div>
-			</div>                    
+			</div>
 			<div class="col-12 col-lg-4 mt-1">
 				<div class="form-group">
 					<div class="input-group">
@@ -95,7 +95,6 @@
 					<div class="input-group">
 						<label class="control-label col-12 col-lg-2">Status</label>
 						<select wire:model="status_kenpin" class="form-control" placeholder="- all -">
-							<option value="">- all -</option>
 							<option value="1">Proses</option>
 							<option value="2">Finish</option>
 						</select>
@@ -186,7 +185,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-12 mb-1">
+                            {{-- <div class="col-lg-12 mb-1">
                                 <div class="form-group">
                                     <label>Berat </label>
                                     <div class="input-group col-md-9 col-xs-8">
@@ -196,7 +195,7 @@
                                         @enderror
                                     </div>
                                 </div>
-                            </div>
+                            </div> --}}
                             <div class="col-lg-12 mb-1">
                                 <div class="form-group">
                                     <label>Frekuensi </label>
@@ -249,9 +248,6 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @php
-                                $total=0
-                            @endphp
                             @forelse ($details as $item)
                                 <tr>
                                     <td>
@@ -259,7 +255,7 @@
                                             <i class="ri-delete-bin-4-fill"></i>
                                         </button>
                                     </td>
-                                    <td>                                
+                                    <td>
                                         {{ $item->gentan_no }}
                                     </td>
                                     <td>
@@ -268,7 +264,7 @@
                                     <td>
                                         {{ $item->work_shift }}
                                     </td>
-									<td>                                
+									<td>
                                         {{ $item->namapetugas }}
                                     </td>
                                     <td>
@@ -281,9 +277,6 @@
 										{{ $item->berat_loss }}
 									</td>
                                 </tr>
-                                @php
-                                    $total += $item->berat_loss;
-                                @endphp
                             @empty
                                 <tr>
                                     <td colspan="8" class="text-center">No results found</td>
@@ -291,28 +284,28 @@
                             @endforelse
                             <tr>
                                 <td colspan="7" class="text-end">Berat Loss Total (kg):</td>
-                                <td colspan="1" class="text-center">{{ $total }}</td>
+                                <td colspan="1" class="text-center">{{ number_format($beratLossTotal) }}</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
-    </form>        
+    </form>
 
 </div>
 @script
 <script>
     $wire.on('showModal', () => {
-      
+
       $('#modal-add').modal('show');
-       
+
     });
 
     $wire.on('closeModal', () => {
-      
+
       $('#modal-add').modal('hide');
-       
+
     });
  </script>
  @endscript
