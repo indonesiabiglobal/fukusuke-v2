@@ -94,9 +94,9 @@ class MenuLossKenpinController extends Component
         $this->loss_category_code = $data->loss_category_code;
         $this->status = $data->status;
         $this->statusIsVisible = $data->status == 0 ? true : false;
-        $this->skipRender();
+        // $this->skipRender();
 
-        // $this->dispatch('showModalUpdate', $buyer);
+        $this->dispatch('showModalUpdate');
     }
 
     public function update()

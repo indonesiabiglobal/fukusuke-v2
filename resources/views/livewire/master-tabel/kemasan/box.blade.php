@@ -180,8 +180,7 @@
                                                 <label for="name" class="form-label">Klasifikasi</label>
                                                 <select
                                                     class="form-control @error('box_class') is-invalid @enderror"
-                                                    wire:model.defer="box_class" data-choices
-                                                    data-choices-sorting-false data-choices-removeItem>
+                                                    wire:model.defer="box_class">
                                                     <option value="1" {{ $box_class == 1 ? 'selected' : '' }}>Khusus</option>
                                                     <option value="2" {{ $box_class == 2 ? 'selected' : '' }}>Standar</option>
                                                 </select>
@@ -577,6 +576,22 @@
                     let column = table.column($(this).attr('data-column'));
                     column.visible(!column.visible());
                 });
+
+                setTimeout(() => {
+                    table.on('search.dt', function() {
+                        var value = $('.dt-search input').val();
+                        // debounce
+                        debounce(function() {
+                            // url search
+                            window.history.pushState(null, null, `?search=${value}`);
+                        }, 300)();
+                    });
+
+                    let querySearch = new URLSearchParams(window.location.search).get('search') || '';
+
+                    // set search term
+                    table.search(querySearch).draw();
+                }, 10);
             }, 500);
         }
     </script>

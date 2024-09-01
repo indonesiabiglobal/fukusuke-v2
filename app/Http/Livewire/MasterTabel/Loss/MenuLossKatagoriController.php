@@ -101,7 +101,7 @@ class MenuLossKatagoriController extends Component
 
             DB::commit();
             $this->dispatch('closeModalUpdate');
-            $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Loss Kategori berhasil ditambahkan.']);
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Loss Kategori berhasil diubah.']);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to update master Loss category: ' . $e->getMessage());

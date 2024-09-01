@@ -628,7 +628,9 @@
                     let id = $(this).attr('data-edit-id');
 
                     // livewire click
-                    $wire.dispatch('edit', {id});
+                    $wire.dispatch('edit', {
+                        id
+                    });
                 });
 
                 // default column visibility
@@ -643,19 +645,21 @@
                     column.visible(!column.visible());
                 });
 
-                table.on('search.dt', function() {
-                    var value = $('.dt-search input').val();
-                    // debounce
-                    debounce(function() {
-                        // url search
-                        window.history.pushState(null, null, `?search=${value}`);
-                    }, 300)();
-                });
+                setTimeout(() => {
+                    table.on('search.dt', function() {
+                        var value = $('.dt-search input').val();
+                        // debounce
+                        debounce(function() {
+                            // url search
+                            window.history.pushState(null, null, `?search=${value}`);
+                        }, 300)();
+                    });
 
-                let querySearch = new URLSearchParams(window.location.search).get('search') || '';
+                    let querySearch = new URLSearchParams(window.location.search).get('search') || '';
 
-                // set search term
-                table.search(querySearch).draw();
+                    // set search term
+                    table.search(querySearch).draw();
+                }, 10);
             }, 500);
         }
     </script>

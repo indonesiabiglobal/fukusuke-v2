@@ -575,6 +575,22 @@
                     let column = table.column($(this).attr('data-column'));
                     column.visible(!column.visible());
                 });
+
+                setTimeout(() => {
+                    table.on('search.dt', function() {
+                        var value = $('.dt-search input').val();
+                        // debounce
+                        debounce(function() {
+                            // url search
+                            window.history.pushState(null, null, `?search=${value}`);
+                        }, 300)();
+                    });
+
+                    let querySearch = new URLSearchParams(window.location.search).get('search') || '';
+
+                    // set search term
+                    table.search(querySearch).draw();
+                }, 10);
             }, 500);
         }
     </script>

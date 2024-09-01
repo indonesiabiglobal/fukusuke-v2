@@ -178,9 +178,6 @@
                                                 <select
                                                     class="form-select select2 @error('department_id') is-invalid @enderror"
                                                     wire:model="department_id" placeholder="" id="department_id">
-                                                    <option value="" selected>
-                                                        Silahkan Pilih
-                                                    </option>
                                                     @foreach (\App\Models\MsDepartment::select('id', 'name')->get() as $department)
                                                         <option value="{{ $department->id }}"
                                                             {{ $department->id == $department_id ? 'selected' : '' }}>
