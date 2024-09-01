@@ -26,6 +26,7 @@ class KatanukiController extends Component
     public $idUpdate;
     public $idDelete;
     public $status;
+    public $statusIsVisible = false;
 
     #[Validate('image|max:10240')] // 10MB Max
 
@@ -110,6 +111,8 @@ class KatanukiController extends Component
         $this->filename = $katanuki->filename;
         $this->idUpdate = $id;
         $this->status = $katanuki->status;
+        $this->statusIsVisible = $katanuki->status == 0 ? true : false;
+        $this->skipRender();
         $this->dispatch('showModalUpdate');
     }
 

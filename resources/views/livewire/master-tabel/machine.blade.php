@@ -303,10 +303,10 @@
                                             </div>
                                         </div>
                                         {{-- status --}}
-                                        @if ($status == '0')
-                                            <div class="col-xxl-12">
+                                        <div x-data="{ isVisible: $wire.entangle('statusIsVisible') }">
+                                            <div class="col-xxl-12" x-show="isVisible">
                                                 <div wire:ignore>
-                                                    <label for="status" class="form-label">Status</label>
+                                                    <label for="empname" class="form-label">Status</label>
                                                     <select class="form-select" wire:model="status">
                                                         <option value="0" {{ $status == '0' ? 'selected' : '' }}>
                                                             Inactive</option>
@@ -315,7 +315,7 @@
                                                     </select>
                                                 </div>
                                             </div>
-                                        @endif
+                                        </div>
                                         {{-- button --}}
                                         <div class="col-lg-12">
                                             <div class="hstack gap-2 justify-content-end">
@@ -642,6 +642,20 @@
                     let column = table.column($(this).attr('data-column'));
                     column.visible(!column.visible());
                 });
+
+                table.on('search.dt', function() {
+                    var value = $('.dt-search input').val();
+                    // debounce
+                    debounce(function() {
+                        // url search
+                        window.history.pushState(null, null, `?search=${value}`);
+                    }, 300)();
+                });
+
+                let querySearch = new URLSearchParams(window.location.search).get('search') || '';
+
+                // set search term
+                table.search(querySearch).draw();
             }, 500);
         }
     </script>
