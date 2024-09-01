@@ -32,8 +32,31 @@
             </div>
             <div class="col-12 col-lg-9 mb-1">
                 <div class="input-group">
-                    <input wire:model.defer="lpk_no" class="form-control" style="padding:0.44rem" type="text"
-                        placeholder="000000-000" />
+                    {{-- <input wire:model.defer="lpk_no" class="form-control" style="padding:0.44rem" type="text"
+                        placeholder="000000-000" /> --}}
+                        <div class="col-12 col-lg-12 mb-1" x-data="{ lpk_no: @entangle('lpk_no'), status: true }" x-init="$watch('lpk_no', value => {
+                            if (value.length === 6 && !value.includes('-') && status) {
+                                lpk_no = value + '-';
+                            }
+                            if (value.length < 6) {
+                                status = true;
+                            }
+                            if (value.length === 7) {
+                                status = false;
+                            }
+                            if (value.length > 10) {
+                                lpk_no = value.substring(0, 10);
+                            }
+                        })">
+                        <input 
+                            class="form-control" 
+                            style="padding:0.44rem" 
+                            type="text"
+                            placeholder="000000-000"
+                            x-model="lpk_no" 
+                            maxlength="10"
+                        />
+                    </div>
                 </div>
             </div>
             <div class="col-12 col-lg-3">
@@ -41,8 +64,31 @@
             </div>
             <div class="col-12 col-lg-9">
                 <div class="input-group">
-                    <input wire:model.defer="searchTerm" class="form-control" style="padding:0.44rem" type="text"
-                        placeholder="_____-_____" />
+                    {{-- <input wire:model.defer="searchTerm" class="form-control" style="padding:0.44rem" type="text"
+                        placeholder="_____-_____" /> --}}
+                        <div class="col-12 col-lg-12 mb-1" x-data="{ searchTerm: @entangle('searchTerm'), status: true }" x-init="$watch('searchTerm', value => {
+                            if (value.length === 5 && !value.includes('-') && status) {
+                                searchTerm = value + '-';
+                            }
+                            if (value.length < 5) {
+                                status = true;
+                            }
+                            if (value.length === 6) {
+                                status = false;
+                            }
+                            if (value.length > 8) {
+                                searchTerm = value.substring(0, 8);
+                            }
+                        })">
+                        <input 
+                            class="form-control" 
+                            style="padding:0.44rem" 
+                            type="text"
+                            placeholder="_____-_____"
+                            x-model="searchTerm" 
+                            maxlength="8"
+                        />
+                    </div>
                 </div>
             </div>
         </div>
@@ -67,11 +113,41 @@
             <div class="col-12 col-lg-2">
                 <label class="form-label text-muted fw-bold">No Han</label>
             </div>
-            <div class="col-12 col-lg-10 mb-1">
+            {{-- <div class="col-12 col-lg-10 mb-1">
                 <div wire:ignore>
                     <input wire:model.defer="no_han" class="form-control" style="padding:0.44rem" type="text"
                         placeholder="00-00-00-00A" />
                 </div>
+            </div> --}}
+            <div class="col-12 col-lg-10 mb-1" x-data="{ no_han: @entangle('no_han'), status: true }" x-init="$watch('no_han', value => {
+                    if (value.length === 2 && status) {
+                        no_han = value + '-';
+                    }
+                    if (value.length === 5 && status) {
+                        no_han = value + '-';
+                    }
+                    if (value.length === 8 && status) {
+                        no_han = value + '-';
+                    }
+                    if (value.length < 10) {
+                        status = true;
+                    }
+                    if (value.length === 3 || value.length === 6 || value.length === 9) {
+                        status = false;
+                    }
+                    if (value.length > 12) {
+                        no_han = value.substring(0, 12);
+                    }
+                })">
+                <input 
+                    class="form-control" 
+                    style="padding:0.44rem" 
+                    type="text"
+                    placeholder="00-00-00-00A"
+                    x-model="no_han" 
+                    maxlength="12"
+                    x-on:keydown.tab="$event.preventDefault(); $refs.nomor_barcode.focus();"
+                />
             </div>
             <div class="col-12 col-lg-2">
                 <label for="status" class="form-label text-muted fw-bold">Status</label>

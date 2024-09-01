@@ -432,6 +432,11 @@ class EditSeitaiController extends Component
             $order = TdProductGoods::where('id', $this->orderId)->first();
             $order->delete();
 
+            TdProductAssembly::where('lpk_id', $order['lpk_id'])->orderBy('seq_no', 'ASC')
+                ->update([
+                    'status_production' => 0,
+                ]);
+
             DB::commit();
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Order Deleted successfully.']);
             return redirect()->route('nippo-seitai');
