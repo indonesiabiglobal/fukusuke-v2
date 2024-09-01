@@ -50,7 +50,7 @@ class AddKenpinSeitaiController extends Component
         $this->kenpin_date = Carbon::now()->format('d-m-Y');
         $today = Carbon::now();
         $lastKenpinGoods = TdKenpinGoods::where('kenpin_no', 'like', $today->format('ym') . '%')->orderBy('kenpin_no', 'desc')->first();
-        $this->kenpin_no = $today->format('ym') .'-'. str_pad((int)substr($lastKenpinGoods->kenpin_no, 5, 3) + 1, 3, '0', STR_PAD_LEFT);
+        $this->kenpin_no = $today->format('ym') .'-'. str_pad((int)substr($lastKenpinGoods->kenpin_no ?? 0, 5, 3) + 1, 3, '0', STR_PAD_LEFT);
     }
 
     public function edit($idKenpinGoodDetailUpdate)

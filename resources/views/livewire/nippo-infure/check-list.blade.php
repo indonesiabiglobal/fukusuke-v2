@@ -84,7 +84,31 @@
 		<div class="form-group mt-1">
 			<div class="input-group">
 				<span class="input-group-addon col-12 col-lg-3 text-muted fw-bold">Nomor LPK </span>
-				<input type="text" class="form-control" placeholder="000000-000" wire:model.live.debounce.300ms="lpk_no">
+                <div class="col-12 col-lg-9" x-data="{ lpk_no: @entangle('lpk_no').live, status: true }" x-init="$watch('lpk_no', value => {
+                        if (value.length === 6 && !value.includes('-') && status) {
+                            lpk_no = value + '-';
+                        }
+                        if (value.length < 6) {
+                            status = true;
+                        }
+                        if (value.length === 7) {
+                            status = false;
+                        }
+                        if (value.length > 10) {
+                            lpk_no = value.substring(0, 10);
+                        }
+                    })">
+                    <input
+                        class="form-control"
+                        style="padding:0.44rem"
+                        type="text"
+                        placeholder="000000-000"
+                        x-model="lpk_no"
+                        maxlength="10"
+                        x-on:keydown.tab="$event.preventDefault(); $refs.machineInput.focus();"
+                    />
+                </div>
+				{{-- <input type="text" class="form-control" placeholder="000000-000" wire:model.live.debounce.300ms="lpk_no"> --}}
 			</div>
 		</div>
 		<div class="form-group mt-1">
@@ -146,7 +170,37 @@
 		<div class="form-group mt-1">
 			<div class="input-group">
 				<span class="input-group-addon col-12 col-lg-3 text-muted fw-bold">Nomor Han</span>
-				<input type="text" class="form-control" placeholder="00-00-00A" wire:model.defer="nomorHan" />
+                <div class="col-12 col-lg-9" x-data="{ nomorHan: @entangle('nomorHan'), status: true }" x-init="$watch('nomorHan', value => {
+                        if (value.length === 2 && status) {
+                            nomorHan = value + '-';
+                        }
+                        if (value.length === 5 && status) {
+                            nomorHan = value + '-';
+                        }
+                        if (value.length === 8 && status) {
+                            nomorHan = value + '-';
+                        }
+                        if (value.length < 10) {
+                            status = true;
+                        }
+                        if (value.length === 3 || value.length === 6 || value.length === 9) {
+                            status = false;
+                        }
+                        if (value.length > 12) {
+                            nomorHan = value.substring(0, 12);
+                        }
+                    })">
+                    <input
+                        class="form-control"
+                        style="padding:0.44rem"
+                        type="text"
+                        placeholder="00-00-00-00A"
+                        x-model="nomorHan"
+                        maxlength="12"
+                        x-on:keydown.tab="$event.preventDefault(); $refs.nomor_barcode.focus();"
+                    />
+                </div>
+				{{-- <input type="text" class="form-control" placeholder="00-00-00A" wire:model.defer="nomorHan" /> --}}
 			</div>
 		</div>
 		<hr />

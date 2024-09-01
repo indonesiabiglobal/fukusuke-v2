@@ -45,7 +45,7 @@ class CheckListInfureController extends Component
         $this->workingShiftHour = MsWorkingShift::select('id', 'work_hour_from', 'work_hour_till')->where('status', 1)->orderBy('work_hour_from', 'ASC')->get();
         $this->jamAwal = $this->workingShiftHour[0]->work_hour_from;
         $this->jamAkhir = $this->workingShiftHour[count($this->workingShiftHour) - 1]->work_hour_till;
-        $this->machine = MsMachine::where('machineno',  'LIKE', '00I%')->get();
+        $this->machine = MsMachine::where('machineno',  'LIKE', '00I%')->orderBy('machineno')->get();
         $this->department = MsDepartment::where('division_code', 10)->get();
         $this->products = MsProduct::get();
     }

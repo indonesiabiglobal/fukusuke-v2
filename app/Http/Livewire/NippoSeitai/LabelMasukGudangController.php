@@ -357,12 +357,13 @@ class LabelMasukGudangController extends Component
         phpspreadsheet::textAlignCenter($spreadsheet, $columnJumlahKotakStart . $rowJumlahKotakStart);
 
         // value jumlah kotak (box)
+        $jumlahBox = $data->sum('qty_produksi');
         $columnJumlahKotakValueStart = 'V';
         $columnJumlahKotakValueEnd = 'AK';
         $rowJumlahKotakValueStart = 15;
         $rowJumlahKotakValueEnd = 16;
         $spreadsheet->getActiveSheet()->mergeCells($columnJumlahKotakValueStart . $rowJumlahKotakValueStart . ':' . $columnJumlahKotakValueEnd . $rowJumlahKotakValueEnd);
-        $spreadsheet->getActiveSheet()->setCellValue($columnJumlahKotakValueStart . $rowJumlahKotakValueStart, $data[0]->qty_produksi);
+        $spreadsheet->getActiveSheet()->setCellValue($columnJumlahKotakValueStart . $rowJumlahKotakValueStart, $jumlahBox);
         phpspreadsheet::styleFont($spreadsheet, $columnJumlahKotakValueStart . $rowJumlahKotakValueStart, true, 36, 'Times New Roman');
         phpspreadsheet::textAlignCenter($spreadsheet, $columnJumlahKotakValueStart . $rowJumlahKotakValueStart);
         phpspreadsheet::addOutlineBorder($spreadsheet, $columnJumlahKotakStart . $rowJumlahKotakStart . ':' . $columnJumlahKotakEnd . $rowJumlahKotakValueEnd);
@@ -377,12 +378,13 @@ class LabelMasukGudangController extends Component
         phpspreadsheet::textAlignCenter($spreadsheet, $columnTinggiStart . $rowTinggiStart);
 
         // value tinggi
+        $tinggi = $jumlahBox / $data[0]->jmlbaris;
         $columnTinggiValueStart = 'W';
         $columnTinggiValueEnd = 'Y';
         $rowTinggiValueStart = 18;
         $rowTinggiValueEnd = 19;
         $spreadsheet->getActiveSheet()->mergeCells($columnTinggiValueStart . $rowTinggiValueStart . ':' . $columnTinggiValueEnd . $rowTinggiValueEnd);
-        $spreadsheet->getActiveSheet()->setCellValue($columnTinggiValueStart . $rowTinggiValueStart, $data[0]->tinggi);
+        $spreadsheet->getActiveSheet()->setCellValue($columnTinggiValueStart . $rowTinggiValueStart, round($tinggi));
         phpspreadsheet::styleFont($spreadsheet, $columnTinggiValueStart . $rowTinggiValueStart, false, 24, 'Times New Roman');
         phpspreadsheet::textAlignCenter($spreadsheet, $columnTinggiValueStart . $rowTinggiValueStart);
         phpspreadsheet::addOutlineBorder($spreadsheet, $columnTinggiValueStart . $rowTinggiValueStart . ':' . $columnTinggiValueEnd . $rowTinggiValueEnd);
@@ -417,6 +419,7 @@ class LabelMasukGudangController extends Component
         phpspreadsheet::textAlignCenter($spreadsheet, $columnJumlahBarisValueStart . $rowJumlahBarisValueStart);
         phpspreadsheet::addOutlineBorder($spreadsheet, $columnJumlahBarisStart . $rowJumlahBarisValueStart . ':' . $columnJumlahBarisValueEnd . $rowJumlahBarisValueEnd);
 
+
         // tanda +
         $columnTandaPlusStart = 'AE';
         $columnTandaPlusEnd = 'AF';
@@ -442,7 +445,7 @@ class LabelMasukGudangController extends Component
         $rowSatuanValueStart = 18;
         $rowSatuanValueEnd = 19;
         $spreadsheet->getActiveSheet()->mergeCells($columnSatuanValueStart . $rowSatuanValueStart . ':' . $columnSatuanValueEnd . $rowSatuanValueEnd);
-        $spreadsheet->getActiveSheet()->setCellValue($columnSatuanValueStart . $rowSatuanValueStart, $data[0]->jmlbaris);
+        $spreadsheet->getActiveSheet()->setCellValue($columnSatuanValueStart . $rowSatuanValueStart, $jumlahBox % $data[0]->jmlbaris);
         phpspreadsheet::styleFont($spreadsheet, $columnSatuanValueStart . $rowSatuanValueStart, false, 24, 'Times New Roman');
         phpspreadsheet::textAlignCenter($spreadsheet, $columnSatuanValueStart . $rowSatuanValueStart);
         phpspreadsheet::addOutlineBorder($spreadsheet, $columnSatuanStart . $rowSatuanValueStart . ':' . $columnSatuanValueEnd . $rowSatuanValueEnd);
