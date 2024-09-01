@@ -74,12 +74,12 @@
                         lpk_no = value.substring(0, 10);
                     }
                 })">
-                <input 
-                    class="form-control" 
-                    style="padding:0.44rem" 
+                <input
+                    class="form-control"
+                    style="padding:0.44rem"
                     type="text"
                     placeholder="000000-000"
-                    x-model="lpk_no" 
+                    x-model="lpk_no"
                     maxlength="10"
                 />
             </div>
@@ -170,11 +170,11 @@
         </div>
     </div>
     <div class="col-lg-2 mt-2 text-end">
-        <button class="btn btn-info w-lg p-1" wire:click="print" type="button">
-            <span wire:loading.remove wire:target="print">
+        <button class="btn btn-info w-lg p-1" wire:click="export" type="button">
+            <span wire:loading.remove wire:target="export">
                 <i class="ri-printer-line"> </i> Print
             </span>
-            <div wire:loading wire:target="print">
+            <div wire:loading wire:target="export">
                 <span class="d-flex align-items-center">
                     <span class="spinner-border flex-shrink-0" role="status">
                         <span class="visually-hidden">Loading...</span>
@@ -353,25 +353,25 @@
                             </a>
                         </td>
                         <td> {{ $item->lpk_no }} </td>
-                        <td> {{ \Carbon\Carbon::parse($item->lpk_date)->format('d M Y') }} </td>            
+                        <td> {{ \Carbon\Carbon::parse($item->lpk_date)->format('d M Y') }} </td>
                         <td> {{ number_format($item->panjang_lpk, 0, ',', ',') }} </td>
                         <td> {{ number_format($item->panjang_produksi, 0, ',', ',') }} </td>
                         <td> {{ number_format($item->berat_produksi, 0, ',', ',') }} </td>
-                        <td> {{ $item->gentan_no }} </td>                        
+                        <td> {{ $item->gentan_no }} </td>
                         <td> {{ number_format($item->berat_standard, 0, ',', ',') }} </td>
                         <td> - </td>
                         <td> - </td>
                         <td> {{ $item->product_name }} </td>
                         <td> {{ $item->product_code }} </td>
                         <td> {{ $item->machineno }} </td>
-                        <td> {{ \Carbon\Carbon::parse($item->production_date)->format('d M Y') }} </td>                        
+                        <td> {{ \Carbon\Carbon::parse($item->production_date)->format('d M Y') }} </td>
                         <td> {{ \Carbon\Carbon::parse($item->created_on)->format('d M Y') }} </td>
                         <td> {{ $item->work_hour }} </td>
                         <td> {{ $item->work_shift }} </td>
                         <td> {{ $item->seq_no }} </td>
                         <td> {{ $item->infure_berat_loss }} </td>
-                        <td> {{ $item->updated_by }} </td>                        
-                        <td> {{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y H:i') }} </td> 
+                        <td> {{ $item->updated_by }} </td>
+                        <td> {{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y H:i') }} </td>
                     </tr>
                 @empty
                     {{-- <tr>

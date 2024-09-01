@@ -100,7 +100,7 @@ class CheckListInfureController extends Component
         $tglAwal = Carbon::parse($this->tglAwal . ' ' . $this->jamAwal);
         $tglAkhir = Carbon::parse($this->tglAkhir . ' ' . $this->jamAkhir);
 
-        $response = $this->checklistInfure($tglAwal, $tglAkhir);
+        $response = $this->checklistInfure($tglAwal, $tglAkhir, $this->jenisReport);
         if ($response['status'] == 'success') {
             return response()->download($response['filename']);
         } else if ($response['status'] == 'error') {
@@ -109,7 +109,7 @@ class CheckListInfureController extends Component
         }
     }
 
-    public function checklistInfure($tglAwal, $tglAkhir)
+    public function checklistInfure($tglAwal, $tglAkhir, $jenisReport = 'Checklist')
     {
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
@@ -119,7 +119,7 @@ class CheckListInfureController extends Component
         Carbon::setLocale('id');
 
         // Judul
-        $activeWorksheet->setCellValue('A1', ($this->jenisReport == 'Checklist' ? 'CHECKLIST ' : 'LOSS ') . 'NIPPO INFURE');
+        $activeWorksheet->setCellValue('A1', ($jenisReport == 'Checklist' ? 'CHECKLIST ' : 'LOSS ') . 'NIPPO INFURE');
         $activeWorksheet->setCellValue('A2', 'Periode: ' . $tglAwal->translatedFormat('d-M-Y H:i') . ' s/d ' . $tglAkhir->translatedFormat('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'A1:A2', true, 11, 'Calibri');
@@ -204,7 +204,7 @@ class CheckListInfureController extends Component
         $this->productId = $this->productId ? (is_array($this->productId) ? $this->productId['value'] : $this->productId) : '';
         $filterProduct = $this->productId ? " AND (tdpa.product_id = '$this->productId')" : '';
 
-        if ($this->jenisReport == 'Checklist') {
+        if ($jenisReport == 'Checklist') {
             $data = DB::select(
                 "
                     SELECT
@@ -253,7 +253,7 @@ class CheckListInfureController extends Component
                     ORDER BY nomesin ASC, tglproduksi ASC, jam ASC
                     ",
             );
-        } else if ($this->jenisReport == 'Loss') {
+        } else if ($jenisReport == 'Loss') {
             $data = DB::select(
                 "
                     SELECT
@@ -545,7 +545,7 @@ class CheckListInfureController extends Component
         // }
 
         $writer = new Xlsx($spreadsheet);
-        $filename = 'NippoInfure-' . $this->jenisReport . '.xlsx';
+        $filename = 'NippoInfure-' . $jenisReport . '.xlsx';
         $writer->save($filename);
         $response = [
             'status' => 'success',

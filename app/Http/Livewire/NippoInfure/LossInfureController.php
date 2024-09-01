@@ -68,6 +68,21 @@ class LossInfureController extends Component
         $this->dispatch('redirectToPrint', "'$tglMasuk 00:00' and tdpa.created_on <= '$tglKeluar 23:59'");
     }
 
+    public function export()
+    {
+        $tglMasuk = Carbon::parse($this->tglMasuk);
+        $tglKeluar = Carbon::parse($this->tglKeluar);
+
+        $checklistInfure = new CheckListInfureController();
+        $response = $checklistInfure->checklistInfure($tglMasuk, $tglKeluar, 'Loss');
+        if ($response['status'] == 'success') {
+            return response()->download($response['filename']);
+        } else if ($response['status'] == 'error') {
+            $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+            return;
+        }
+    }
+
     // public function updatedLpkNo($lpk_no)
     // {
     //     dd($lpk_no);

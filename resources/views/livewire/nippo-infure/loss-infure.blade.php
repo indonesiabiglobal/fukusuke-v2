@@ -56,12 +56,12 @@
                         lpk_no = value.substring(0, 10);
                     }
                 })">
-                <input 
-                    class="form-control" 
-                    style="padding:0.44rem" 
+                <input
+                    class="form-control"
+                    style="padding:0.44rem"
                     type="text"
                     placeholder="000000-000"
-                    x-model="lpk_no" 
+                    x-model="lpk_no"
                     maxlength="10"
                 />
             </div>
@@ -147,11 +147,11 @@
                 </button>
             </div>
             <div class="col-lg-2 text-end">
-                <button class="btn btn-info w-lg p-1" wire:click="print" type="button">
-                    <span wire:loading.remove wire:target="print">
+                <button class="btn btn-info w-lg p-1" wire:click="export" type="button">
+                    <span wire:loading.remove wire:target="export">
                         <i class="ri-printer-line"> </i> Print
                     </span>
-                    <div wire:loading wire:target="print">
+                    <div wire:loading wire:target="export">
                         <span class="d-flex align-items-center">
                             <span class="spinner-border flex-shrink-0" role="status">
                                 <span class="visually-hidden">Loading...</span>

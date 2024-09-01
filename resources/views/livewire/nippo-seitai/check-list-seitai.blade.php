@@ -7,7 +7,7 @@
                 <div class="col-12 col-lg-9">
                     <select class="form-select mb-0" wire:model.defer="transaksi">
                         <option value="produksi">Produksi</option>
-                        {{-- <option value="order">Order</option> --}}
+                        <option value="proses">Proses</option>
                     </select>
                 </div>
             </div>

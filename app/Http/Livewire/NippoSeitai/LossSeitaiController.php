@@ -209,45 +209,6 @@ class LossSeitaiController extends Component
             return $response;
         }
 
-        // $listProductionDate = array_reduce($data, function ($carry, $item) {
-        //     $carry[$item->tglproduksi] = $item->tglproduksi;
-        //     return $carry;
-        // }, []);
-
-        // $dataFilter = array_reduce($data, function ($carry, $item) {
-        //     $carry[$item->tglproduksi][$item->noproses] = [
-        //         'tglproses' => $item->tglproses,
-        //         'noproses' => $item->noproses,
-        //         'tglproduksi' => $item->tglproduksi,
-        //         'shift' => $item->work_shift,
-        //         'nikpetugas' => $item->nikpetugas,
-        //         'namapetugas' => $item->namapetugas,
-        //         'mesinno' => $item->mesinno,
-        //         'mesinnama' => $item->mesinnama,
-        //         'nolpk' => $item->nolpk,
-        //         'namaproduk' => $item->namaproduk,
-        //         'noorder' => $item->noorder,
-        //         'qty_produksi' => $item->qty_produksi,
-        //         'infure_berat_loss' => $item->infure_berat_loss,
-        //         'nikpetugasinfure' => $item->nikpetugasinfure,
-        //         'nomor_palet' => $item->nomor_palet,
-        //         'nomor_lot' => $item->nomor_lot,
-        //         'gentan' => [],
-        //         'loss' => []
-        //     ];
-
-        //     $carry[$item->tglproduksi][$item->noproses]['gentan'][$item->gentannomor] = [
-        //         'gentannomorline' => $item->gentannomorline
-        //     ];
-
-        //     $carry[$item->tglproduksi][$item->noproses]['loss'][$item->losscode] = [
-        //         'losscode' => $item->losscode,
-        //         'lossname' => $item->lossname,
-        //         'berat_loss' => $item->berat_loss
-        //     ];
-        //     return $carry;
-        // }, []);
-
         $dataFiltered = [];
         $dataLoss = [];
         $dataGentan = [];
@@ -278,13 +239,6 @@ class LossSeitaiController extends Component
                 ];
             }
 
-            // Gentan No
-            if (!isset($dataGentan[$item->tglproduksiasy][$item->id_tdpg][$item->gentannomorline])) {
-                $dataGentan[$item->tglproduksiasy][$item->id_tdpg][$item->gentannomor] = (object)[
-                    'gentannomorline' => $item->gentannomorline,
-                ];
-            }
-
             // Data Loss
             if (!isset($dataLoss[$item->tglproduksiasy][$item->id_tdpg][$item->losscode])) {
                 $dataLoss[$item->tglproduksiasy][$item->id_tdpg][$item->losscode] = (object)[
@@ -307,7 +261,7 @@ class LossSeitaiController extends Component
         $rowTitleCardStart = 1;
         $rowTitleCardEnd = 2;
         $spreadsheet->getActiveSheet()->mergeCells($startColumn . $rowTitleCardStart . ':' . $endColumn . $rowTitleCardStart);
-        $activeWorksheet->setCellValue($startColumn . $rowTitleCardStart, 'CHECK LIST NIPPO SEITAI');
+        $activeWorksheet->setCellValue($startColumn . $rowTitleCardStart, 'CHECKLIST LOSS SEITAI');
         $spreadsheet->getActiveSheet()->mergeCells($startColumn . $rowTitleCardEnd . ':' . $endColumn . $rowTitleCardEnd);
         $activeWorksheet->setCellValue($startColumn . $rowTitleCardEnd, 'Tanggal ' . ucwords($this->transaksi) . ' : ' . $tglAwal . ' s/d ' . $tglAkhir);
         phpspreadsheet::styleFont($spreadsheet, $startColumn . $rowTitleCardStart . ':' . $startColumn . $rowTitleCardEnd, true, 11, 'Calibri');
@@ -328,75 +282,75 @@ class LossSeitaiController extends Component
         phpspreadsheet::styleFont($spreadsheet, $columnProduksi . $rowHeaderStart . ':' . $columnProduksi . $rowHeaderEnd, true, 9, 'Calibri');
         phpspreadsheet::textAlignCenter($spreadsheet, $columnProduksi . $rowHeaderStart . ':' . $columnProduksi . $rowHeaderEnd);
 
-        // petugas
-        $columnPetugas = 'C';
-        $activeWorksheet->setCellValue($columnPetugas . $rowHeaderStart, 'NIK');
-        $activeWorksheet->setCellValue($columnPetugas . $rowHeaderEnd, 'Petugas');
-        phpspreadsheet::styleFont($spreadsheet, $columnPetugas . $rowHeaderStart . ':' . $columnPetugas . $rowHeaderEnd, true, 9, 'Calibri');
-        phpspreadsheet::textAlignCenter($spreadsheet, $columnPetugas . $rowHeaderStart . ':' . $columnPetugas . $rowHeaderEnd);
-
-        // Nomor mesin
-        $columnMesin = 'D';
-        $spreadsheet->getActiveSheet()->mergeCells($columnMesin . $rowHeaderStart . ':' . $columnMesin . $rowHeaderEnd);
-        $activeWorksheet->setCellValue($columnMesin . $rowHeaderStart, 'Nomor Mesin');
-        phpspreadsheet::styleFont($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnMesin . $rowHeaderEnd, true, 9, 'Calibri');
-        phpspreadsheet::textAlignCenter($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnMesin . $rowHeaderEnd);
-        $activeWorksheet->getStyle($columnMesin . $rowHeaderStart)->getAlignment()->setWrapText(true);
-
         // Nomor LPK
-        $columnLpk = 'E';
+        $columnLpk = 'C';
         $spreadsheet->getActiveSheet()->mergeCells($columnLpk . $rowHeaderStart . ':' . $columnLpk . $rowHeaderEnd);
         $activeWorksheet->setCellValue($columnLpk . $rowHeaderStart, 'Nomor LPK');
         phpspreadsheet::styleFont($spreadsheet, $columnLpk . $rowHeaderStart . ':' . $columnLpk . $rowHeaderEnd, true, 9, 'Calibri');
         phpspreadsheet::textAlignCenter($spreadsheet, $columnLpk . $rowHeaderStart . ':' . $columnLpk . $rowHeaderEnd);
 
         // Nama Produk
-        $columnProduk = 'F';
+        $columnProduk = 'D';
         $activeWorksheet->setCellValue($columnProduk . $rowHeaderStart, 'Nama Produk');
         $activeWorksheet->setCellValue($columnProduk . $rowHeaderEnd, 'Nomor Order');
         phpspreadsheet::styleFont($spreadsheet, $columnProduk . $rowHeaderStart . ':' . $columnProduk . $rowHeaderEnd, true, 9, 'Calibri');
         phpspreadsheet::textAlignCenter($spreadsheet, $columnProduk . $rowHeaderStart . ':' . $columnProduk . $rowHeaderEnd);
 
+        // Nomor mesin
+        $columnMesin = 'E';
+        $spreadsheet->getActiveSheet()->mergeCells($columnMesin . $rowHeaderStart . ':' . $columnMesin . $rowHeaderEnd);
+        $activeWorksheet->setCellValue($columnMesin . $rowHeaderStart, 'Nomor Mesin');
+        phpspreadsheet::styleFont($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnMesin . $rowHeaderEnd, true, 9, 'Calibri');
+        phpspreadsheet::textAlignCenter($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnMesin . $rowHeaderEnd);
+        $activeWorksheet->getStyle($columnMesin . $rowHeaderStart)->getAlignment()->setWrapText(true);
+
+        // petugas
+        $columnPetugas = 'F';
+        $activeWorksheet->setCellValue($columnPetugas . $rowHeaderStart, 'NIK');
+        $activeWorksheet->setCellValue($columnPetugas . $rowHeaderEnd, 'Petugas');
+        phpspreadsheet::styleFont($spreadsheet, $columnPetugas . $rowHeaderStart . ':' . $columnPetugas . $rowHeaderEnd, true, 9, 'Calibri');
+        phpspreadsheet::textAlignCenter($spreadsheet, $columnPetugas . $rowHeaderStart . ':' . $columnPetugas . $rowHeaderEnd);
+
         // Quantity
-        $columnQty = 'G';
-        $spreadsheet->getActiveSheet()->mergeCells($columnQty . $rowHeaderStart . ':' . $columnQty . $rowHeaderEnd);
-        $activeWorksheet->setCellValue($columnQty . $rowHeaderStart, 'Quantity (Lembar)');
-        phpspreadsheet::styleFont($spreadsheet, $columnQty . $rowHeaderStart . ':' . $columnQty . $rowHeaderEnd, true, 9, 'Calibri');
-        phpspreadsheet::textAlignCenter($spreadsheet, $columnQty . $rowHeaderStart . ':' . $columnQty . $rowHeaderEnd);
-        $activeWorksheet->getStyle($columnQty . $rowHeaderStart)->getAlignment()->setWrapText(true);
+        // $columnQty = 'G';
+        // $spreadsheet->getActiveSheet()->mergeCells($columnQty . $rowHeaderStart . ':' . $columnQty . $rowHeaderEnd);
+        // $activeWorksheet->setCellValue($columnQty . $rowHeaderStart, 'Quantity (Lembar)');
+        // phpspreadsheet::styleFont($spreadsheet, $columnQty . $rowHeaderStart . ':' . $columnQty . $rowHeaderEnd, true, 9, 'Calibri');
+        // phpspreadsheet::textAlignCenter($spreadsheet, $columnQty . $rowHeaderStart . ':' . $columnQty . $rowHeaderEnd);
+        // $activeWorksheet->getStyle($columnQty . $rowHeaderStart)->getAlignment()->setWrapText(true);
 
         // Loss Infure
-        $columnLoss = 'H';
-        $activeWorksheet->setCellValue($columnLoss . $rowHeaderStart, 'Loss Infure');
-        $activeWorksheet->setCellValue($columnLoss . $rowHeaderEnd, 'NIK');
-        phpspreadsheet::styleFont($spreadsheet, $columnLoss . $rowHeaderStart . ':' . $columnLoss . $rowHeaderEnd, true, 9, 'Calibri');
-        phpspreadsheet::textAlignCenter($spreadsheet, $columnLoss . $rowHeaderStart . ':' . $columnLoss . $rowHeaderEnd);
-        $activeWorksheet->getStyle($columnLoss . $rowHeaderStart)->getAlignment()->setWrapText(true);
+        // $columnLoss = 'H';
+        // $activeWorksheet->setCellValue($columnLoss . $rowHeaderStart, 'Loss Infure');
+        // $activeWorksheet->setCellValue($columnLoss . $rowHeaderEnd, 'NIK');
+        // phpspreadsheet::styleFont($spreadsheet, $columnLoss . $rowHeaderStart . ':' . $columnLoss . $rowHeaderEnd, true, 9, 'Calibri');
+        // phpspreadsheet::textAlignCenter($spreadsheet, $columnLoss . $rowHeaderStart . ':' . $columnLoss . $rowHeaderEnd);
+        // $activeWorksheet->getStyle($columnLoss . $rowHeaderStart)->getAlignment()->setWrapText(true);
 
-        // Nomor palet
-        $columnPalet = 'I';
-        $activeWorksheet->setCellValue($columnPalet . $rowHeaderStart, 'Nomor Palet');
-        $activeWorksheet->setCellValue($columnPalet . $rowHeaderEnd, 'Nomor LOT');
-        phpspreadsheet::styleFont($spreadsheet, $columnPalet . $rowHeaderStart . ':' . $columnPalet . $rowHeaderEnd, true, 9, 'Calibri');
-        phpspreadsheet::textAlignCenter($spreadsheet, $columnPalet . $rowHeaderStart . ':' . $columnPalet . $rowHeaderEnd);
-
-        // nomor gentan
-        $columnGentan = 'J';
-        $spreadsheet->getActiveSheet()->mergeCells($columnGentan . $rowHeaderStart . ':' . $columnGentan . $rowHeaderEnd);
-        $activeWorksheet->setCellValue($columnGentan . $rowHeaderStart, 'Nomor Gentan');
-        phpspreadsheet::styleFont($spreadsheet, $columnGentan . $rowHeaderStart . ':' . $columnGentan . $rowHeaderEnd, true, 9, 'Calibri');
-        phpspreadsheet::textAlignCenter($spreadsheet, $columnGentan . $rowHeaderStart . ':' . $columnGentan . $rowHeaderEnd);
-        $activeWorksheet->getStyle($columnGentan . $rowHeaderStart)->getAlignment()->setWrapText(true);
+        // // Nomor palet
+        // $columnPalet = 'I';
+        // $activeWorksheet->setCellValue($columnPalet . $rowHeaderStart, 'Nomor Palet');
+        // $activeWorksheet->setCellValue($columnPalet . $rowHeaderEnd, 'Nomor LOT');
+        // phpspreadsheet::styleFont($spreadsheet, $columnPalet . $rowHeaderStart . ':' . $columnPalet . $rowHeaderEnd, true, 9, 'Calibri');
+        // phpspreadsheet::textAlignCenter($spreadsheet, $columnPalet . $rowHeaderStart . ':' . $columnPalet . $rowHeaderEnd);
 
         // Nama Loss
-        $columnNamaLoss = 'K';
+        $columnNamaLoss = 'G';
         $spreadsheet->getActiveSheet()->mergeCells($columnNamaLoss . $rowHeaderStart . ':' . $columnNamaLoss . $rowHeaderEnd);
         $activeWorksheet->setCellValue($columnNamaLoss . $rowHeaderStart, 'Nama Loss');
         phpspreadsheet::styleFont($spreadsheet, $columnNamaLoss . $rowHeaderStart . ':' . $columnNamaLoss . $rowHeaderEnd, true, 9, 'Calibri');
         phpspreadsheet::textAlignCenter($spreadsheet, $columnNamaLoss . $rowHeaderStart . ':' . $columnNamaLoss . $rowHeaderEnd);
 
+        // kode loss
+        $columnKodeLoss = 'H';
+        $spreadsheet->getActiveSheet()->mergeCells($columnKodeLoss . $rowHeaderStart . ':' . $columnKodeLoss . $rowHeaderEnd);
+        $activeWorksheet->setCellValue($columnKodeLoss . $rowHeaderStart, 'Kode Loss');
+        phpspreadsheet::styleFont($spreadsheet, $columnKodeLoss . $rowHeaderStart . ':' . $columnKodeLoss . $rowHeaderEnd, true, 9, 'Calibri');
+        phpspreadsheet::textAlignCenter($spreadsheet, $columnKodeLoss . $rowHeaderStart . ':' . $columnKodeLoss . $rowHeaderEnd);
+        $activeWorksheet->getStyle($columnKodeLoss . $rowHeaderStart)->getAlignment()->setWrapText(true);
+
         // Berat
-        $columnBerat = 'L';
+        $columnBerat = 'I';
         $spreadsheet->getActiveSheet()->mergeCells($columnBerat . $rowHeaderStart . ':' . $columnBerat . $rowHeaderEnd);
         $activeWorksheet->setCellValue($columnBerat . $rowHeaderStart, 'Berat (Kg)');
         phpspreadsheet::styleFont($spreadsheet, $columnBerat . $rowHeaderStart . ':' . $columnBerat . $rowHeaderEnd, true, 9, 'Calibri');
@@ -429,19 +383,6 @@ class LossSeitaiController extends Component
                 $activeWorksheet->setCellValue($columnProduksi . $rowItemEnd, $item['shift']);
                 phpspreadsheet::styleFont($spreadsheet, $columnProduksi . $rowItemEnd, false, 8, 'Calibri');
                 phpspreadsheet::textAlignCenter($spreadsheet, $columnProduksi . $rowItemEnd);
-                // NIK
-                $activeWorksheet->setCellValue($columnPetugas . $rowItemStart, $item['nikpetugas']);
-                phpspreadsheet::styleFont($spreadsheet, $columnPetugas . $rowItemStart, false, 8, 'Calibri');
-                phpspreadsheet::textAlignCenter($spreadsheet, $columnPetugas . $rowItemStart);
-                // Petugas
-                $activeWorksheet->setCellValue($columnPetugas . $rowItemEnd, $item['namapetugas']);
-                $spreadsheet->getActiveSheet()->mergeCells($columnPetugas . $rowItemEnd . ':' . $columnLpk . $rowItemEnd);
-                phpspreadsheet::styleFont($spreadsheet, $columnPetugas . $rowItemEnd, false, 8, 'Calibri');
-                phpspreadsheet::textAlignCenter($spreadsheet, $columnPetugas . $rowItemEnd . ':' . $columnLpk . $rowItemEnd);
-                // Nomor Mesin
-                $activeWorksheet->setCellValue($columnMesin . $rowItemStart, $item['mesinno'] . ' - ' . $item['mesinnama']);
-                phpspreadsheet::styleFont($spreadsheet, $columnMesin . $rowItemStart, false, 8, 'Calibri');
-                phpspreadsheet::textAlignCenter($spreadsheet, $columnMesin . $rowItemStart);
                 // Nomor LPK
                 $activeWorksheet->setCellValue($columnLpk . $rowItemStart, $item['nolpk']);
                 phpspreadsheet::styleFont($spreadsheet, $columnLpk . $rowItemStart, false, 8, 'Calibri');
@@ -449,47 +390,64 @@ class LossSeitaiController extends Component
                 // Nama Produk
                 $activeWorksheet->setCellValue($columnProduk . $rowItemStart, $item['namaproduk']);
                 phpspreadsheet::styleFont($spreadsheet, $columnProduk . $rowItemStart, false, 8, 'Calibri');
-                phpspreadsheet::textAlignCenter($spreadsheet, $columnProduk . $rowItemStart);
+                // phpspreadsheet::textAlignCenter($spreadsheet, $columnProduk . $rowItemStart);
                 // Nomor Order
                 $activeWorksheet->setCellValue($columnProduk . $rowItemEnd, $item['noorder']);
                 phpspreadsheet::styleFont($spreadsheet, $columnProduk . $rowItemEnd, false, 8, 'Calibri');
                 phpspreadsheet::textAlignCenter($spreadsheet, $columnProduk . $rowItemEnd);
-                // Quantity
-                $activeWorksheet->setCellValue($columnQty . $rowItemStart, $item['qty_produksi']);
-                phpspreadsheet::styleFont($spreadsheet, $columnQty . $rowItemStart, false, 8, 'Calibri');
-                phpSpreadsheet::numberFormatThousands($spreadsheet, $columnQty . $rowItemStart);
-                // Loss Infure
-                $activeWorksheet->setCellValue($columnLoss . $rowItemStart, $item['infure_berat_loss']);
-                phpspreadsheet::styleFont($spreadsheet, $columnLoss . $rowItemStart, false, 8, 'Calibri');
+                // Nomor Mesin
+                $activeWorksheet->setCellValue($columnMesin . $rowItemStart, $item['mesinno']);
+                phpspreadsheet::styleFont($spreadsheet, $columnMesin . $rowItemStart, false, 8, 'Calibri');
+                phpspreadsheet::textAlignCenter($spreadsheet, $columnMesin . $rowItemStart);
                 // NIK
-                $activeWorksheet->setCellValue($columnLoss . $rowItemEnd, $item['nikpetugasinfure']);
-                phpspreadsheet::styleFont($spreadsheet, $columnLoss . $rowItemEnd, false, 8, 'Calibri');
-                // Nomor Palet
-                $activeWorksheet->setCellValue($columnPalet . $rowItemStart, $item['nomor_palet']);
-                phpspreadsheet::styleFont($spreadsheet, $columnPalet . $rowItemStart, false, 8, 'Calibri');
-                phpspreadsheet::textAlignCenter($spreadsheet, $columnPalet . $rowItemStart);
-                // Nomor LOT
-                $activeWorksheet->setCellValue($columnPalet . $rowItemEnd, $item['nomor_lot']);
-                phpspreadsheet::styleFont($spreadsheet, $columnPalet . $rowItemEnd, false, 8, 'Calibri');
-                phpspreadsheet::textAlignCenter($spreadsheet, $columnPalet . $rowItemEnd);
+                $activeWorksheet->setCellValue($columnPetugas . $rowItemStart, $item['nikpetugas']);
+                phpspreadsheet::styleFont($spreadsheet, $columnPetugas . $rowItemStart, false, 8, 'Calibri');
+                phpspreadsheet::textAlignCenter($spreadsheet, $columnPetugas . $rowItemStart);
+                // Petugas
+                $activeWorksheet->setCellValue($columnPetugas . $rowItemEnd, $item['namapetugas']);
+                // $spreadsheet->getActiveSheet()->mergeCells($columnPetugas . $rowItemEnd . ':' . $columnLpk . $rowItemEnd);
+                phpspreadsheet::styleFont($spreadsheet, $columnPetugas . $rowItemEnd, false, 8, 'Calibri');
+                // phpspreadsheet::textAlignCenter($spreadsheet, $columnPetugas . $rowItemEnd);
+                // Quantity
+                // $activeWorksheet->setCellValue($columnQty . $rowItemStart, $item['qty_produksi']);
+                // phpspreadsheet::styleFont($spreadsheet, $columnQty . $rowItemStart, false, 8, 'Calibri');
+                // phpSpreadsheet::numberFormatThousands($spreadsheet, $columnQty . $rowItemStart);
+                // Loss Infure
+                // $activeWorksheet->setCellValue($columnLoss . $rowItemStart, $item['infure_berat_loss']);
+                // phpspreadsheet::styleFont($spreadsheet, $columnLoss . $rowItemStart, false, 8, 'Calibri');
+                // // NIK
+                // $activeWorksheet->setCellValue($columnLoss . $rowItemEnd, $item['nikpetugasinfure']);
+                // phpspreadsheet::styleFont($spreadsheet, $columnLoss . $rowItemEnd, false, 8, 'Calibri');
+                // // Nomor Palet
+                // $activeWorksheet->setCellValue($columnPalet . $rowItemStart, $item['nomor_palet']);
+                // phpspreadsheet::styleFont($spreadsheet, $columnPalet . $rowItemStart, false, 8, 'Calibri');
+                // phpspreadsheet::textAlignCenter($spreadsheet, $columnPalet . $rowItemStart);
+                // // Nomor LOT
+                // $activeWorksheet->setCellValue($columnPalet . $rowItemEnd, $item['nomor_lot']);
+                // phpspreadsheet::styleFont($spreadsheet, $columnPalet . $rowItemEnd, false, 8, 'Calibri');
+                // phpspreadsheet::textAlignCenter($spreadsheet, $columnPalet . $rowItemEnd);
 
                 // border
-                phpspreadsheet::addFullBorder($spreadsheet, $startColumn . $rowItemStart . ':' . $columnPalet . $rowItemEnd);
+                phpspreadsheet::addFullBorder($spreadsheet, $startColumn . $rowItemStart . ':' . $columnPetugas . $rowItemEnd);
 
                 // Nomor Gentan
-                $rowGentan = $rowItemStart;
-                foreach ($dataGentan[$productionDate][$id_tdpg] as $gentan) {
-                    $activeWorksheet->setCellValue($columnGentan . $rowGentan, $gentan->gentannomorline);
-                    phpspreadsheet::styleFont($spreadsheet, $columnGentan . $rowGentan, false, 8, 'Calibri');
-                    phpspreadsheet::textAlignCenter($spreadsheet, $columnGentan . $rowGentan);
-                    $rowGentan++;
-                }
+                // $rowGentan = $rowItemStart;
+                // foreach ($dataGentan[$productionDate][$id_tdpg] as $gentan) {
+                //     $activeWorksheet->setCellValue($columnNamaLoss . $rowGentan, $gentan->gentannomorline);
+                //     phpspreadsheet::styleFont($spreadsheet, $columnNamaLoss . $rowGentan, false, 8, 'Calibri');
+                //     phpspreadsheet::textAlignCenter($spreadsheet, $columnNamaLoss . $rowGentan);
+                //     $rowGentan++;
+                // }
 
                 // Nama Loss
                 $rowLoss = $rowItemStart;
                 foreach ($dataLoss[$productionDate][$id_tdpg] as $itemLoss) {
-                    $activeWorksheet->setCellValue($columnNamaLoss . $rowLoss, $itemLoss->losscode . '. ' . $itemLoss->lossname);
+                    // Nama Loss
+                    $activeWorksheet->setCellValue($columnNamaLoss . $rowLoss, $itemLoss->lossname);
                     phpspreadsheet::styleFont($spreadsheet, $columnNamaLoss . $rowLoss, false, 8, 'Calibri');
+                    // kode loss
+                    $activeWorksheet->setCellValue($columnKodeLoss . $rowLoss, $itemLoss->losscode);
+                    phpspreadsheet::styleFont($spreadsheet, $columnKodeLoss . $rowLoss, false, 8, 'Calibri');
                     // Berat
                     $activeWorksheet->setCellValue($columnBerat . $rowLoss, $itemLoss->berat_loss);
                     phpspreadsheet::styleFont($spreadsheet, $columnBerat . $rowLoss, false, 8, 'Calibri');
@@ -497,9 +455,9 @@ class LossSeitaiController extends Component
                 }
 
                 // border
-                phpspreadsheet::addFullBorder($spreadsheet, $columnGentan . $rowItemStart . ':' . $columnBerat . ($rowLoss > $rowGentan ? $rowLoss : $rowGentan));
+                phpspreadsheet::addFullBorder($spreadsheet, $columnNamaLoss . $rowItemStart . ':' . $columnBerat . $rowLoss);
 
-                $rowItemStart = ($rowLoss < $rowGentan) ? $rowGentan + 2 : $rowLoss + 2;
+                $rowItemStart = $rowLoss + 2;
                 $rowItemEnd = $rowItemStart + 1;
             }
         }
@@ -512,33 +470,33 @@ class LossSeitaiController extends Component
         $activeWorksheet->setCellValue($startColumn . $rowGrandTotal, 'Grand Total');
         $columnGrandTotalEnd++;
 
-        // total quantity
-        $totalQty = array_reduce($dataFiltered, function ($carry, $item) {
-            $carry += array_sum(array_column($item, 'qty_produksi'));
-            return $carry;
-        }, 0);
-        $activeWorksheet->setCellValue($columnQty . $rowGrandTotal, $totalQty);
-        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnQty . $rowGrandTotal);
-        $columnGrandTotalEnd++;
+        // // total quantity
+        // $totalQty = array_reduce($dataFiltered, function ($carry, $item) {
+        //     $carry += array_sum(array_column($item, 'qty_produksi'));
+        //     return $carry;
+        // }, 0);
+        // $activeWorksheet->setCellValue($columnQty . $rowGrandTotal, $totalQty);
+        // phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnQty . $rowGrandTotal);
+        // $columnGrandTotalEnd++;
 
         // total loss
-        $totalLoss = array_reduce($dataFiltered, function ($carry, $item) {
-            $carry += array_sum(array_column($item, 'infure_berat_loss'));
-            return $carry;
-        }, 0);
-        $activeWorksheet->setCellValue($columnLoss . $rowGrandTotal, $totalLoss);
-        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnQty . $rowGrandTotal);
-        $columnGrandTotalEnd++;
+        // $totalLoss = array_reduce($dataFiltered, function ($carry, $item) {
+        //     $carry += array_sum(array_column($item, 'infure_berat_loss'));
+        //     return $carry;
+        // }, 0);
+        // $activeWorksheet->setCellValue($columnLoss . $rowGrandTotal, $totalLoss);
+        // phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnQty . $rowGrandTotal);
+        // $columnGrandTotalEnd++;
 
         // berat loss
-        $columnBerat = 'K';
+        $columnBerat = 'I';
         $spreadsheet->getActiveSheet()->mergeCells($columnGrandTotalEnd . $rowGrandTotal . ':' . $columnBerat . $rowGrandTotal);
         $columnBerat++;
         $totalBeratLoss = array_sum(array_column($data, 'berat_loss'));
         // dd($totalLoss);
         $activeWorksheet->setCellValue($columnBerat . $rowGrandTotal, $totalBeratLoss);
         phpspreadsheet::addFullBorder($spreadsheet, 'A' . $rowGrandTotal . ':' . $columnBerat . $rowGrandTotal);
-        phpSpreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnQty . $rowGrandTotal);
+        // phpSpreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnQty . $rowGrandTotal);
 
         phpspreadsheet::styleFont($spreadsheet, 'A' . $rowGrandTotal . ':' . $columnBerat . $rowGrandTotal, true, 9, 'Calibri');
 
@@ -546,11 +504,10 @@ class LossSeitaiController extends Component
         while ($startColumn !== $columnBerat) {
 
             switch ($startColumn) {
-                case $columnQty:
-                    $spreadsheet->getActiveSheet()->getColumnDimension($columnQty)->setWidth(90, 'px');
-                    break;
-                case $columnGentan:
-                    $spreadsheet->getActiveSheet()->getColumnDimension($columnGentan)->setWidth(54, 'px');
+                case $columnNamaLoss:
+                    $spreadsheet->getActiveSheet()->getColumnDimension($columnNamaLoss)->setWidth(180, 'px');
+                    // wrap text
+                    $activeWorksheet->getStyle($columnNamaLoss . $rowHeaderStart)->getAlignment()->setWrapText(true);
                     break;
                 case $columnBerat:
                     $spreadsheet->getActiveSheet()->getColumnDimension($columnBerat)->setWidth(80, 'px');
