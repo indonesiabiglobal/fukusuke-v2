@@ -93,7 +93,31 @@
         <div class="form-group mt-1">
             <div class="input-group">
                 <span class="input-group-addon col-12 col-lg-3 text-muted fw-bold">Nomor LPK </span>
-                <input type="text" class="form-control" placeholder="000000-000" wire:model.defer="lpk_no">
+                <div class="col-12 col-lg-9" x-data="{ lpk_no: @entangle('lpk_no').live, status: true }" x-init="$watch('lpk_no', value => {
+                        if (value.length === 6 && !value.includes('-') && status) {
+                            lpk_no = value + '-';
+                        }
+                        if (value.length < 6) {
+                            status = true;
+                        }
+                        if (value.length === 7) {
+                            status = false;
+                        }
+                        if (value.length > 10) {
+                            lpk_no = value.substring(0, 10);
+                        }
+                    })">
+                    <input
+                        class="form-control"
+                        style="padding:0.44rem"
+                        type="text"
+                        placeholder="000000-000"
+                        x-model="lpk_no"
+                        maxlength="10"
+                        x-on:keydown.tab="$event.preventDefault(); $refs.machineInput.focus();"
+                    />
+                </div>
+                {{-- <input type="text" class="form-control" placeholder="000000-000" wire:model.defer="lpk_no"> --}}
             </div>
         </div>
         <div class="form-group mt-1">
@@ -151,8 +175,30 @@
         <div class="form-group mt-1">
             <div class="input-group">
                 <span class="input-group-addon col-12 col-lg-3 text-muted fw-bold">Nomor Palet</span>
-                <input type="text" class="form-control" placeholder="A0000-000000"
-                    wire:model.defer="nomorPalet" />
+                <div x-data="{ nomorPalet: @entangle('nomorPalet').change, status: true }" x-init="$watch('nomorPalet', value => {
+                    // Membuat karakter pertama kapital
+                    nomorPalet = value.charAt(0).toUpperCase() + value.slice(1).replace(/[^0-9-]/g, '');
+                    if (value.length === 5 && !value.includes('-') && status) {
+                        nomorPalet = value + '-';
+                    }
+                    if (value.length < 5) {
+                        status = true;
+                    }
+                    if (value.length === 6) {
+                        status = false;
+                    }
+                    {{-- membatasi 12 karakter --}}
+                    if (value.length == 11 && !value.includes('-') && status) {
+                        nomorPalet = value.substring(0, 5) + '-' + value.substring(5, 11);
+                    } else if (value.length > 12) {
+                        nomorPalet = value.substring(0, 12);
+                    }
+                })">
+                    <input type="text" class="form-control" x-model="nomorPalet" wire:model="nomorPalet"
+                        maxlength="12" x-on:keydown.tab="$event.preventDefault(); $refs.lotnoInput.focus();"
+                        placeholder="A0000-000000" />
+                </div>
+                {{-- <input type="text" class="form-control" placeholder="A0000-000000" wire:model.defer="nomorPalet" /> --}}
             </div>
         </div>
         <div class="form-group mt-1">

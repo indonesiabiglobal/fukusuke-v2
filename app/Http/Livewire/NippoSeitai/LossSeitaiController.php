@@ -108,6 +108,7 @@ class LossSeitaiController extends Component
             $filterNomorPalet .= " AND (tdpg.nomor_palet ILIKE '%$this->searchTerm%')";
             $filterMachine .= " AND (tdpg.machine_id ILIKE '%$this->searchTerm%')";
         }
+        dd($filterNoLPK);
 
         $data = DB::select("
             WITH goodasy AS (
@@ -206,7 +207,8 @@ class LossSeitaiController extends Component
                 'message' => "Data pada periode tanggal tersebut tidak ditemukan"
             ];
 
-            return $response;
+            $this->dispatch('notification', ['type' => 'warning', 'message' => 'Data pada periode tanggal tersebut tidak ditemukan']);
+            return;
         }
 
         $dataFiltered = [];

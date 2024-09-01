@@ -699,27 +699,7 @@ class CheckListSeitaiController extends Component
         $filterProduct = $this->productId ? " AND (tdpg.product_id = '$this->productId')" : '';
 
         $data = DB::select("
-                WITH goodasy AS (
-                    SELECT
-                        tpga.product_goods_id,
-                        tdpa.gentan_no AS gentannomor,
-                        tdpa.gentan_no || '-' || tpga.gentan_line AS gentannomorline,
-                        tdpa.panjang_produksi,
-                        tdpa.production_date AS tglproduksi,
-                        tdpa.work_shift,
-                        tdpa.work_hour,
-                        msm.machineno AS nomesin,
-                        tdpa.nomor_han,
-                        mse.employeeno AS nik,
-                        mse.empname AS namapetugas,
-                        msd.NAME AS deptpetugas
-                    FROM
-                        tdproduct_goods_assembly AS tpga
-                        INNER JOIN tdproduct_assembly AS tdpa ON tdpa.ID = tpga.product_assembly_id
-                        INNER JOIN msmachine AS msm ON msm.ID = tdpa.machine_id
-                        INNER JOIN msemployee AS mse ON mse.ID = tdpa.employee_id
-                        INNER JOIN msDepartment AS msd ON msd.ID = mse.department_id
-                    ),
+                WITH
                     lossgoods AS (
                     SELECT
                         tpgl.product_goods_id,
@@ -757,28 +737,27 @@ class CheckListSeitaiController extends Component
                     tdpg.seq_no AS noproses,
                     lossgoods.code as losscode,
                     lossgoods.namaloss as lossname,
-                    lossgoods.berat_loss,
-                    goodasy.gentannomor,
-                    goodasy.gentannomorline,
-                    goodasy.panjang_produksi,
-                    goodasy.tglproduksi AS tglproduksiasy,
-                    goodasy.work_shift AS work_shiftasy,
-                    goodasy.work_hour AS work_hourasy,
-                    goodasy.nomesin AS nomesinasy,
-                    goodasy.nomor_han,
-                    goodasy.nik AS nikasy,
-                    goodasy.namapetugas AS namapetugasasy,
-                    goodasy.deptpetugas AS deptpetugasasy
+                    lossgoods.berat_loss
+                    -- goodasy.gentannomor,
+                    -- goodasy.gentannomorline,
+                    -- goodasy.panjang_produksi,
+                    -- goodasy.tglproduksi AS tglproduksiasy,
+                    -- goodasy.work_shift AS work_shiftasy,
+                    -- goodasy.work_hour AS work_hourasy,
+                    -- goodasy.nomesin AS nomesinasy,
+                    -- goodasy.nomor_han,
+                    -- goodasy.nik AS nikasy,
+                    -- goodasy.namapetugas AS namapetugasasy,
+                    -- goodasy.deptpetugas AS deptpetugasasy
                 FROM
                     tdProduct_Goods AS tdpg
-                    LEFT JOIN goodasy ON tdpg.ID = goodasy.product_goods_id
                     INNER JOIN lossgoods ON tdpg.ID = lossgoods.product_goods_id
-                    INNER JOIN tdOrderLpk AS tdol ON tdpg.lpk_id = tdol.
-                    ID INNER JOIN msmachine AS mm ON mm.ID = tdpg.machine_id
-                    INNER JOIN msemployee AS maPetugas ON maPetugas.ID = tdpg.employee_id
+                    LEFT JOIN tdOrderLpk AS tdol ON tdpg.lpk_id = tdol.
+                    ID LEFT JOIN msmachine AS mm ON mm.ID = tdpg.machine_id
+                    LEFT JOIN msemployee AS maPetugas ON maPetugas.ID = tdpg.employee_id
                     LEFT JOIN msemployee AS maInfure ON tdpg.employee_id_infure = maInfure.
-                    ID INNER JOIN msDepartment AS msd ON msd.ID = maPetugas.department_id
-                    INNER JOIN msProduct AS mp ON mp.ID = tdpg.product_id
+                    ID LEFT JOIN msDepartment AS msd ON msd.ID = maPetugas.department_id
+                    LEFT JOIN msProduct AS mp ON mp.ID = tdpg.product_id
                 WHERE
                     $filterDate
                     $filterNoproses
@@ -805,8 +784,8 @@ class CheckListSeitaiController extends Component
             $tglProduksi = $item->tglproduksi;
 
             // Data Utama
-            if (!isset($dataFiltered[$item->tglproduksiasy][$item->id_tdpg])) {
-                $dataFiltered[$item->tglproduksiasy][$item->id_tdpg] = [
+            if (!isset($dataFiltered[$item->tglproduksi][$item->id_tdpg])) {
+                $dataFiltered[$item->tglproduksi][$item->id_tdpg] = [
                     'tglproses' => $item->tglproses,
                     'tglproduksi' => $item->tglproduksi,
                     'shift' => $item->work_shift,
@@ -823,13 +802,13 @@ class CheckListSeitaiController extends Component
                     'nomor_palet' => $item->nomor_palet,
                     'nomor_lot' => $item->nomor_lot,
                     'noproses' => $item->noproses,
-                    'tglproduksiasy' => $item->tglproduksiasy,
+                    // 'tglproduksiasy' => $item->tglproduksiasy,
                 ];
             }
 
             // Data Loss
-            if (!isset($dataLoss[$item->tglproduksiasy][$item->id_tdpg][$item->losscode])) {
-                $dataLoss[$item->tglproduksiasy][$item->id_tdpg][$item->losscode] = (object)[
+            if (!isset($dataLoss[$item->tglproduksi][$item->id_tdpg][$item->losscode])) {
+                $dataLoss[$item->tglproduksi][$item->id_tdpg][$item->losscode] = (object)[
                     'losscode' => $item->losscode,
                     'lossname' => $item->lossname,
                     'berat_loss' => $item->berat_loss,
@@ -1077,7 +1056,7 @@ class CheckListSeitaiController extends Component
         // $columnGrandTotalEnd++;
 
         // berat loss
-        $columnBerat = 'I';
+        $columnBerat = 'H';
         $spreadsheet->getActiveSheet()->mergeCells($columnGrandTotalEnd . $rowGrandTotal . ':' . $columnBerat . $rowGrandTotal);
         $columnBerat++;
         $totalBeratLoss = array_sum(array_column($data, 'berat_loss'));
