@@ -45,10 +45,10 @@ class LossSeitaiController extends Component
         // $this->buyer = MsBuyer::get();
         $this->machine = MsMachine::where('machineno',  'LIKE', '00S%')->orderBy('machineno')->get();
         if (empty($this->tglMasuk)) {
-            $this->tglMasuk = Carbon::now()->format('d-m-Y');
+            $this->tglMasuk = Carbon::now()->format('d M Y');
         }
         if (empty($this->tglKeluar)) {
-            $this->tglKeluar = Carbon::now()->format('d-m-Y');
+            $this->tglKeluar = Carbon::now()->format('d M Y');
         }
     }
 
