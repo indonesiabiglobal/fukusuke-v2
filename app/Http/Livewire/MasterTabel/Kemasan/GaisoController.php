@@ -25,6 +25,8 @@ class GaisoController extends Component
     public $idUpdate;
     public $idDelete;
     public $class;
+    public $status;
+    public $statusIsVisible = false;
 
     protected $rules = [
         'code' => 'required',
@@ -62,9 +64,9 @@ class GaisoController extends Component
                 'code' => $this->code,
                 'name' => $this->name,
                 'box_class' => $this->box_class['value'],
-                'panjang' => $this->panjang,
-                'lebar' => $this->lebar,
-                'tinggi' => $this->tinggi == '' ? 0 : ($this->tinggi ?? 0),
+                'panjang' => (int)str_replace(',', '', $this->panjang),
+                'lebar' => (int)str_replace(',', '', $this->lebar),
+                'tinggi' => (int)str_replace(',', '', $this->tinggi),
                 'status' => $statusActive,
                 'created_by' => Auth::user()->username,
                 'created_on' => Carbon::now(),
@@ -89,9 +91,12 @@ class GaisoController extends Component
         $this->code = $data->code;
         $this->name = $data->name;
         $this->box_class = $data->box_class;
-        $this->panjang = $data->panjang;
-        $this->lebar = $data->lebar;
-        $this->tinggi = $data->tinggi;
+        $this->panjang = number_format($data->panjang);
+        $this->lebar = number_format($data->lebar);
+        $this->tinggi = number_format($data->tinggi);
+        $this->status = $data->status;
+        $this->statusIsVisible = $data->status == 0 ? true : false;
+        $this->skipRender();
 
         $this->dispatch('showModalUpdate');
     }
@@ -106,11 +111,11 @@ class GaisoController extends Component
             $data = MsPackagingGaiso::where('id', $this->idUpdate)->first();
             $data->code = $this->code;
             $data->name = $this->name;
-            $data->box_class = $this->box_class;
-            $data->panjang = $this->panjang;
-            $data->lebar = $this->lebar;
-            $data->tinggi = $this->tinggi ?? 0;
-            $data->status = $statusActive;
+            $data->box_class = is_array($this->box_class) ? $this->box_class['value'] : $this->box_class;
+            $data->panjang = (int)str_replace(',', '', $this->panjang);
+            $data->lebar = (int)str_replace(',', '', $this->lebar);
+            $data->tinggi = (int)str_replace(',', '', $this->tinggi);
+            $data->status = $this->status;
             $data->updated_by = Auth::user()->username;
             $data->updated_on = Carbon::now();
             $data->save();
@@ -120,6 +125,7 @@ class GaisoController extends Component
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Gaiso updated successfully.']);
         } catch (\Exception $e) {
             DB::rollBack();
+            $this->skipRender();
             Log::error('Failed to update master Gaiso: ' . $e->getMessage());
             $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to update the Gaiso: ' . $e->getMessage()]);
         }
