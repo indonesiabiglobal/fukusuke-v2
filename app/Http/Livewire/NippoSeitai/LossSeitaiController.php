@@ -169,18 +169,18 @@ class LossSeitaiController extends Component
                 tdpg.seq_no AS noproses,
                 lossgoods.code as losscode,
                 lossgoods.namaloss as lossname,
-                lossgoods.berat_loss,
-                goodasy.gentannomor,
-                goodasy.gentannomorline,
-                goodasy.panjang_produksi,
-                goodasy.tglproduksi AS tglproduksiasy,
-                goodasy.work_shift AS work_shiftasy,
-                goodasy.work_hour AS work_hourasy,
-                goodasy.nomesin AS nomesinasy,
-                goodasy.nomor_han,
-                goodasy.nik AS nikasy,
-                goodasy.namapetugas AS namapetugasasy,
-                goodasy.deptpetugas AS deptpetugasasy
+                lossgoods.berat_loss
+                -- goodasy.gentannomor,
+                -- goodasy.gentannomorline,
+                -- goodasy.panjang_produksi,
+                -- goodasy.tglproduksi AS tglproduksiasy,
+                -- goodasy.work_shift AS work_shiftasy,
+                -- goodasy.work_hour AS work_hourasy,
+                -- goodasy.nomesin AS nomesinasy,
+                -- goodasy.nomor_han,
+                -- goodasy.nik AS nikasy,
+                -- goodasy.namapetugas AS namapetugasasy,
+                -- goodasy.deptpetugas AS deptpetugasasy
             FROM
                 tdProduct_Goods AS tdpg
                 LEFT JOIN goodasy ON tdpg.ID = goodasy.product_goods_id
@@ -219,8 +219,8 @@ class LossSeitaiController extends Component
             $tglProduksi = $item->tglproduksi;
 
             // Data Utama
-            if (!isset($dataFiltered[$item->tglproduksiasy][$item->id_tdpg])) {
-                $dataFiltered[$item->tglproduksiasy][$item->id_tdpg] = [
+            if (!isset($dataFiltered[$item->tglproduksi][$item->id_tdpg])) {
+                $dataFiltered[$item->tglproduksi][$item->id_tdpg] = [
                     'tglproses' => $item->tglproses,
                     'tglproduksi' => $item->tglproduksi,
                     'shift' => $item->work_shift,
@@ -237,13 +237,13 @@ class LossSeitaiController extends Component
                     'nomor_palet' => $item->nomor_palet,
                     'nomor_lot' => $item->nomor_lot,
                     'noproses' => $item->noproses,
-                    'tglproduksiasy' => $item->tglproduksiasy,
+                    // 'tglproduksiasy' => $item->tglproduksiasy,
                 ];
             }
 
             // Data Loss
-            if (!isset($dataLoss[$item->tglproduksiasy][$item->id_tdpg][$item->losscode])) {
-                $dataLoss[$item->tglproduksiasy][$item->id_tdpg][$item->losscode] = (object)[
+            if (!isset($dataLoss[$item->tglproduksi][$item->id_tdpg][$item->losscode])) {
+                $dataLoss[$item->tglproduksi][$item->id_tdpg][$item->losscode] = (object)[
                     'losscode' => $item->losscode,
                     'lossname' => $item->lossname,
                     'berat_loss' => $item->berat_loss,
