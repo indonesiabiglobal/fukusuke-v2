@@ -339,7 +339,6 @@
                         <td>{{ $item->code }}</td>
                         <td>{{ $item->machineno }}</td>
                         <td>{{ $item->production_date }}</td>
-                        <td>{{ $item->created_on }}</td>                        
                         <td>{{ \Carbon\Carbon::parse($item->created_on)->format('d M Y') }}</td>
                         <td>{{ $item->work_hour }}</td>
                         <td>{{ $item->work_shift }}</td>

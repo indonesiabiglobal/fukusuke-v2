@@ -48,7 +48,7 @@ class LabelGentanController extends Component
 
     public function render()
     {
-        if (isset($this->lpk_no) && $this->lpk_no != '' && strlen($this->lpk_no) >= 9) {
+        if (isset($this->lpk_no) && $this->lpk_no != '' && strlen($this->lpk_no) == 10) {
             $data = DB::table('tdorderlpk as tod')
                 ->join('msproduct as mp', 'mp.id', '=', 'tod.product_id')
                 ->select(

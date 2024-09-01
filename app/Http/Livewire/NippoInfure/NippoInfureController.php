@@ -48,7 +48,7 @@ class NippoInfureController extends Component
         $this->products = MsProduct::get();
         $this->tdOrderLpk = TdOrderLpk::get();
         $this->buyer = MsBuyer::get();
-        $this->machine = MsMachine::whereIn('department_id', [10, 12, 15, 2, 4, 10])->get();
+        $this->machine = MsMachine::whereIn('department_id', [10, 12, 15, 2, 4, 10])->orderBy('machineno')->get();
         if (empty($this->tglMasuk)) {
             $this->tglMasuk = Carbon::now()->format('d M Y');
         }
@@ -170,6 +170,7 @@ class NippoInfureController extends Component
             $data = $data->where(function ($query) {
                 $query->where('tda.production_no', 'ilike', "%{$this->searchTerm}%")
                     ->orWhere('mp.name', 'ilike', "%{$this->searchTerm}%")
+                    ->orWhere('mp.code', 'ilike', "%{$this->searchTerm}%")
                     ->orWhere('tda.machine_id', 'ilike', "%{$this->searchTerm}%")
                     ->orWhere('tda.nomor_han', 'ilike', "%{$this->searchTerm}%");
             });
