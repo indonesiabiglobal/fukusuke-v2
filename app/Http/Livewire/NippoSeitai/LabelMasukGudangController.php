@@ -79,6 +79,20 @@ class LabelMasukGudangController extends Component
 
         // Menghilangkan gridline
         $activeWorksheet->setShowGridlines(false);
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+
+        $activeWorksheet->getPageSetup()->setFitToWidth(1);
+        $activeWorksheet->getPageSetup()->setFitToHeight(0); // Biarkan tinggi menyesuaikan otomatis
+
+        // Jika ingin memastikan rasio tetap terjaga
+        $activeWorksheet->getPageSetup()->setFitToPage(true);
+        // Mengatur margin halaman menjadi 0.75 cm di semua sisi
+        $activeWorksheet->getPageMargins()->setTop(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setBottom(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setLeft(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setRight(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setHeader(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setFooter(0.75 / 2.54);
 
         $startColumn = 'B';
         // Set Title Kartu masuk gudang
@@ -500,7 +514,7 @@ class LabelMasukGudangController extends Component
 
         // membuat border untuk seluruh cell
         phpspreadsheet::addOutlineBorder($spreadsheet, $startColumn . '2:' . $endColumn . '24');
-
+        $startColumn = 'A';
         while ($startColumn !== $endColumn) {
             $spreadsheet->getActiveSheet()->getColumnDimension($startColumn)->setWidth(25, 'px');
 
