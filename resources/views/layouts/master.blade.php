@@ -199,6 +199,14 @@
             // Kembalikan value tanpa modifikasi jika tidak valid
             return value;
         };
+
+        function debounce(func, wait) {
+            let timeout;
+            return function() {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, arguments), wait);
+            };
+        }
     </script>
 
     {{-- <script>

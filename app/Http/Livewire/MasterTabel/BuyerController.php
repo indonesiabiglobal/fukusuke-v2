@@ -26,6 +26,7 @@ class BuyerController extends Component
     public $idUpdate;
     public $idDelete;
     public $status;
+    public $statusIsVisible = false;
 
     public $perPage = 10;
 
@@ -100,6 +101,8 @@ class BuyerController extends Component
         $this->city = $buyer->city;
         $this->country = $buyer->country;
         $this->status = $buyer->status;
+        $this->statusIsVisible = $buyer->status == 0 ? true : false;
+        $this->skipRender();
 
         $this->dispatch('showModalUpdate');
     }
@@ -165,18 +168,6 @@ class BuyerController extends Component
     {
         $this->resetPage();
         $this->render();
-
-        // $this->buyers = MsBuyer::select('id', 'code', 'name', 'address', 'country', 'status', 'updated_by', 'updated_on')
-        //     ->when(isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined", function ($query) {
-        //         $query->where(function ($queryWhere) {
-        //             $queryWhere->where('code', 'ilike', "%" . $this->searchTerm . "%")
-        //                 ->orWhere('name', 'ilike', "%" . $this->searchTerm . "%")
-        //                 ->orWhere('address', 'ilike', "%" . $this->searchTerm . "%")
-        //                 ->orWhere('country', 'ilike', "%" . $this->searchTerm . "%");
-        //         });
-        //     })
-        //     ->get();
-        // $this->render();
     }
 
     public function render()

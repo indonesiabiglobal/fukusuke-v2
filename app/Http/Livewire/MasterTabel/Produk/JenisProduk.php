@@ -20,6 +20,8 @@ class JenisProduk extends Component
     public $name;
     public $idUpdate;
     public $idDelete;
+    public $status;
+    public $statusIsVisible = false;
 
     // public function mount()
     // {
@@ -78,6 +80,9 @@ class JenisProduk extends Component
         $this->idUpdate = $id;
         $this->code = $groupProduct->code;
         $this->name = $groupProduct->name;
+        $this->status = $groupProduct->status;
+        $this->statusIsVisible = $groupProduct->status == 0 ? true : false;
+        $this->skipRender();
         $this->dispatch('showModalUpdate');
     }
 
@@ -93,6 +98,7 @@ class JenisProduk extends Component
             DB::table('msproduct_group')->where('id', $this->idUpdate)->update([
                 'code' => $this->code,
                 'name' => $this->name,
+                'status' => $this->status,
                 'updated_by' => auth()->user()->username,
                 'updated_on' => Carbon::now(),
             ]);

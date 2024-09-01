@@ -55,7 +55,8 @@
                                                 <label for="code" class="form-label">Kode Buyer</label>
                                                 <input type="number"
                                                     class="form-control @error('code') is-invalid @enderror"
-                                                    id="code" wire:model.defer="code" placeholder="Kode" maxlength="10"
+                                                    id="code" wire:model.defer="code" placeholder="Kode"
+                                                    maxlength="10"
                                                     oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);">
                                                 @error('code')
                                                     <span class="invalid-feedback">{{ $message }}</span>
@@ -156,7 +157,8 @@
                                                 <label for="code" class="form-label">Kode Buyer</label>
                                                 <input type="number"
                                                     class="form-control @error('code') is-invalid @enderror"
-                                                    id="code" wire:model.defer="code" placeholder="Kode" maxlength="10"
+                                                    id="code" wire:model.defer="code" placeholder="Kode"
+                                                    maxlength="10"
                                                     oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);">
                                                 @error('code')
                                                     <span class="invalid-feedback">{{ $message }}</span>
@@ -207,8 +209,9 @@
                                                 @enderror
                                             </div>
                                         </div>
-                                        @if ($status == '0')
-                                            <div class="col-xxl-12">
+                                        {{-- status --}}
+                                        <div x-data="{ isVisible: $wire.entangle('statusIsVisible') }">
+                                            <div class="col-xxl-12" x-show="isVisible">
                                                 <div wire:ignore>
                                                     <label for="empname" class="form-label">Status</label>
                                                     <select class="form-select" wire:model="status">
@@ -219,7 +222,7 @@
                                                     </select>
                                                 </div>
                                             </div>
-                                        @endif
+                                        </div>
                                         {{-- button --}}
                                         <div class="col-lg-12">
                                             <div class="hstack gap-2 justify-content-end">
@@ -399,8 +402,8 @@
                                 <i class="ri-edit-box-line text-white"></i>
                             </button>
                             <button {{ $item->status == 0 ? 'hidden' : '' }} type="button"
-                                class="btn fs-15 p-1 bg-danger rounded btn-delete" data-delete-id="{{ $item->id }}"
-                                wire:click="delete({{ $item->id }})">
+                                class="btn fs-15 p-1 bg-danger rounded btn-delete"
+                                data-delete-id="{{ $item->id }}" wire:click="delete({{ $item->id }})">
                                 <i class="ri-delete-bin-line text-white"></i>
                             </button>
                         </td>
@@ -412,7 +415,7 @@
                             ? '<span class="badge text-success bg-success-subtle">Active</span>'
                             : '<span class="badge text-bg-danger">Inactive</span>' !!}</td>
                         <td>{{ $item->updated_by }}</td>
-                        <td>{{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y H:i')  }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y H:i') }}</td>
                     </tr>
                 @empty
                     <tr>
@@ -512,7 +515,9 @@
                     let id = $(this).attr('data-edit-id');
 
                     // livewire click
-                    $wire.dispatch('edit', {id});
+                    $wire.dispatch('edit', {
+                        id
+                    });
                 });
 
                 // default column visibility
@@ -526,6 +531,20 @@
                     let column = table.column($(this).attr('data-column'));
                     column.visible(!column.visible());
                 });
+
+                table.on('search.dt', function() {
+                    var value = $('.dt-search input').val();
+                    // debounce
+                    debounce(function() {
+                        // url search
+                        window.history.pushState(null, null, `?search=${value}`);
+                    }, 300)();
+                });
+
+                let querySearch = new URLSearchParams(window.location.search).get('search') || '';
+
+                // set search term
+                table.search(querySearch).draw();
             }, 500);
         }
     </script>

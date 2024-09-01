@@ -29,6 +29,7 @@ class TipeProduk extends Component
     public $harga_sat_seitai_loss;
     public $berat_jenis;
     public $status;
+    public $statusIsVisible = false;
     public $idUpdate;
     public $idDelete;
     public $paginate = 10;
@@ -119,6 +120,9 @@ class TipeProduk extends Component
         $this->harga_sat_seitai = number_format($typeProduct->harga_sat_seitai, 2);
         $this->harga_sat_seitai_loss = number_format($typeProduct->harga_sat_seitai_loss, 2);
         $this->berat_jenis = number_format($typeProduct->berat_jenis, 2);
+        $this->status = $typeProduct->status;
+        $this->statusIsVisible = $typeProduct->status == 0 ? true : false;
+        $this->skipRender();
 
         $this->dispatch('showModalUpdate');
     }
@@ -140,7 +144,6 @@ class TipeProduk extends Component
 
         try {
             DB::beginTransaction();
-            $statusActive = 1;
 
             MsProductType::where('id', $this->idUpdate)->update([
                 'code' => $this->code,
@@ -153,7 +156,7 @@ class TipeProduk extends Component
                 'harga_sat_seitai' => (float)str_replace(',', '', $this->harga_sat_seitai),
                 'harga_sat_seitai_loss' => (float)str_replace(',', '', $this->harga_sat_seitai_loss),
                 'berat_jenis' => (float)str_replace(',', '', $this->berat_jenis),
-                'status' => $statusActive,
+                'status' => $this->status,
                 'updated_by' => auth()->user()->username,
                 'updated_on' => Carbon::now(),
                 'trial464' => 'T',
@@ -164,6 +167,7 @@ class TipeProduk extends Component
             $this->dispatch('closeModalUpdate');
         } catch (\Exception $e) {
             DB::rollBack();
+            $this->skipRender();
             Log::error('Failed to update master tipe produk: ' . $e->getMessage());
             $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to update the Tipe Produk: ' . $e->getMessage()]);
         }

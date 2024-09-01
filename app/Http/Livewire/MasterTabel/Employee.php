@@ -22,6 +22,7 @@ class Employee extends Component
     public $idUpdate;
     public $idDelete;
     public $status;
+    public $statusIsVisible = false;
     public $paginate = 10;
 
     public function mount()
@@ -98,8 +99,10 @@ class Employee extends Component
         $this->empname = $employee->empname;
         $this->department_id = $employee->department_id;
         $this->department_name = $employee->department_name;
-        $this->status = $employee->status;
         $this->idUpdate = $id;
+        $this->status = $employee->status;
+        $this->statusIsVisible = $employee->status == 0 ? true : false;
+        $this->skipRender();
         $this->dispatch('showModalUpdate');
     }
 
@@ -129,6 +132,7 @@ class Employee extends Component
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Employee updated successfully.']);
         } catch (\Exception $e) {
             DB::rollBack();
+            $this->skipRender();
             Log::error('Failed to update master Employee: ' . $e->getMessage());
             $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to update the Employee: ' . $e->getMessage()]);
         }

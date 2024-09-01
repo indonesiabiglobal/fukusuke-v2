@@ -21,6 +21,7 @@ class Department extends Component
     public $idUpdate;
     public $idDelete;
     public $status;
+    public $statusIsVisible = false;
 
     public function mount()
     {
@@ -84,6 +85,9 @@ class Department extends Component
         $this->name = $department->name;
         $this->divisionCode = $department->division_code;
         $this->status = $department->status;
+        $this->status = $department->status;
+        $this->statusIsVisible = $department->status == 0 ? true : false;
+        $this->skipRender();
         $this->dispatch('showModalUpdate');
     }
 

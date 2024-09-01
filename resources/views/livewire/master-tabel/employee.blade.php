@@ -59,7 +59,7 @@
                                                     id="employeeno" wire:model.defer="employeeno"
                                                     placeholder="Nomor Induk Karyawan" maxlength="8"
                                                     style="text-transform: uppercase;"
-                                                    oninput="this.value = this.value.toUpperCase();" >
+                                                    oninput="this.value = this.value.toUpperCase();">
                                                 @error('employeeno')
                                                     <span class="invalid-feedback">{{ $message }}</span>
                                                 @enderror
@@ -193,10 +193,11 @@
                                                 @enderror
                                             </div>
                                         </div>
-                                        @if ($status == '0')
-                                            <div class="col-xxl-12">
+                                        {{-- status --}}
+                                        <div x-data="{ isVisible: $wire.entangle('statusIsVisible') }">
+                                            <div class="col-xxl-12" x-show="isVisible">
                                                 <div wire:ignore>
-                                                    <label for="status" class="form-label">Status</label>
+                                                    <label for="empname" class="form-label">Status</label>
                                                     <select class="form-select" wire:model="status">
                                                         <option value="0" {{ $status == '0' ? 'selected' : '' }}>
                                                             Inactive</option>
@@ -205,7 +206,7 @@
                                                     </select>
                                                 </div>
                                             </div>
-                                        @endif
+                                        </div>
 
                                         {{-- button --}}
                                         <div class="col-lg-12">
@@ -422,7 +423,6 @@
 
 @script
     <script>
-
         $wire.on('showModalCreate', () => {
             $('#modal-add').modal('show');
         });
@@ -477,12 +477,12 @@
                     ],
                     "language": {
                         "emptyTable": `
-                            <div class="text-center">
-                                <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
-                                    colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
-                                <h5 class="mt-2">Sorry! No Result Found</h5>
-                            </div>
-                        `
+                    <div class="text-center">
+                        <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                            colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
+                        <h5 class="mt-2">Sorry! No Result Found</h5>
+                    </div>
+                `
                     },
                 });
                 // tombol delete
@@ -515,6 +515,20 @@
                     let column = table.column($(this).attr('data-column'));
                     column.visible(!column.visible());
                 });
+
+                table.on('search.dt', function() {
+                    var value = $('.dt-search input').val();
+                    // debounce
+                    debounce(function() {
+                        // url search
+                        window.history.pushState(null, null, `?search=${value}`);
+                    }, 300)();
+                });
+
+                let querySearch = new URLSearchParams(window.location.search).get('search') || '';
+
+                // set search term
+                table.search(querySearch).draw();
             }, 500);
         }
     </script>

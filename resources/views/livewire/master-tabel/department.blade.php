@@ -56,9 +56,9 @@
                                                 <label for="code" class="form-label">Kode Departemen</label>
                                                 <input type="text"
                                                     class="form-control @error('code') is-invalid @enderror"
-                                                    id="code" wire:model.defer="code" placeholder="Kode" maxlength="10"
-                                                    style="text-transform: uppercase;"
-                                                    oninput="this.value = this.value.toUpperCase();" >
+                                                    id="code" wire:model.defer="code" placeholder="Kode"
+                                                    maxlength="10" style="text-transform: uppercase;"
+                                                    oninput="this.value = this.value.toUpperCase();">
                                                 @error('code')
                                                     <span class="invalid-feedback">{{ $message }}</span>
                                                 @enderror
@@ -138,8 +138,8 @@
                                                 <label for="code" class="form-label">Kode Departemen</label>
                                                 <input type="number"
                                                     class="form-control @error('code') is-invalid @enderror"
-                                                    id="code" wire:model.defer="code" placeholder="Kode" maxlength="10"
-                                                    style="text-transform: uppercase;"
+                                                    id="code" wire:model.defer="code" placeholder="Kode"
+                                                    maxlength="10" style="text-transform: uppercase;"
                                                     oninput="this.value = this.value.toUpperCase();">
                                                 @error('code')
                                                     <span class="invalid-feedback">{{ $message }}</span>
@@ -170,8 +170,9 @@
                                                 @enderror
                                             </div>
                                         </div>
-                                        @if ($status == '0')
-                                            <div class="col-xxl-12">
+                                        {{-- status --}}
+                                        <div x-data="{ isVisible: $wire.entangle('statusIsVisible') }">
+                                            <div class="col-xxl-12" x-show="isVisible">
                                                 <div wire:ignore>
                                                     <label for="empname" class="form-label">Status</label>
                                                     <select class="form-select" wire:model="status">
@@ -182,7 +183,7 @@
                                                     </select>
                                                 </div>
                                             </div>
-                                        @endif
+                                        </div>
                                         {{-- button --}}
                                         <div class="col-lg-12">
                                             <div class="hstack gap-2 justify-content-end">
@@ -373,7 +374,7 @@
                                 : '<span class="badge text-bg-danger">Inactive</span>' !!}
                         </td>
                         <td>{{ $item->updated_by }}</td>
-                        <td>{{ \Carbon\Carbon::parse($item->updated_on)->format('d-M-Y H:i:s')  }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->updated_on)->format('d-M-Y H:i:s') }}</td>
                         {{-- <td>{{ $no++ }}</td> --}}
                     </tr>
                 @empty
@@ -489,6 +490,20 @@
                     let column = table.column($(this).attr('data-column'));
                     column.visible(!column.visible());
                 });
+
+                table.on('search.dt', function() {
+                    var value = $('.dt-search input').val();
+                    // debounce
+                    debounce(function() {
+                        // url search
+                        window.history.pushState(null, null, `?search=${value}`);
+                    }, 300)();
+                });
+
+                let querySearch = new URLSearchParams(window.location.search).get('search') || '';
+
+                // set search term
+                table.search(querySearch).draw();
             }, 500);
         }
     </script>
