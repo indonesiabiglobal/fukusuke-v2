@@ -169,13 +169,12 @@
                                                 <label for="name" class="form-label">Kategory Loss</label>
                                                 <select
                                                     class="form-control @error('loss_category_code') is-invalid @enderror"
-                                                    wire:model.defer="loss_category_code" data-choices
-                                                    data-choices-sorting-false data-choices-removeItem>
+                                                    wire:model.defer="loss_category_code">
                                                     <option value="0"
-                                                        {{ $loss_category_code == 0 ? 'selected' : '' }}>
+                                                        {{ $loss_category_code == '0' ? 'selected' : '' }}>
                                                         Loss Produksi</option>
                                                     <option value="1"
-                                                        {{ $loss_category_code == 1 ? 'selected' : '' }}>
+                                                        {{ $loss_category_code == '1' ? 'selected' : '' }}>
                                                         Loss Kebutuhan</option>
                                                 </select>
                                                 @error('loss_category_code')
@@ -372,8 +371,7 @@
                     <tr>
                         <td>
                             <button type="button" class="btn fs-15 p-1 bg-primary rounded btn-edit"
-                                data-edit-id="{{ $item->id }}" data-bs-toggle="modal"
-                                data-bs-target="#modal-edit" wire:click="edit({{ $item->id }})">
+                                data-edit-id="{{ $item->id }}" wire:click="edit({{ $item->id }})">
                                 <i class="ri-edit-box-line text-white"></i>
                             </button>
                             <button {{ $item->status == 0 ? 'hidden' : '' }} type="button"
@@ -506,6 +504,22 @@
                     let column = table.column($(this).attr('data-column'));
                     column.visible(!column.visible());
                 });
+
+                setTimeout(() => {
+                    table.on('search.dt', function() {
+                        var value = $('.dt-search input').val();
+                        // debounce
+                        debounce(function() {
+                            // url search
+                            window.history.pushState(null, null, `?search=${value}`);
+                        }, 300)();
+                    });
+
+                    let querySearch = new URLSearchParams(window.location.search).get('search') || '';
+
+                    // set search term
+                    table.search(querySearch).draw();
+                }, 10);
             }, 500);
         }
     </script>

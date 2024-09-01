@@ -95,8 +95,8 @@ class Warehouse extends Component
         $this->status = $warehouse->status;
 
         $this->statusIsVisible = $warehouse->status == 0 ? true : false;
-        $this->dispatch('showModalUpdate');
         $this->skipRender();
+        $this->dispatch('showModalUpdate');
     }
 
     public function update()

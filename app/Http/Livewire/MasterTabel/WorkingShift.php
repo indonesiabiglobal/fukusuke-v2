@@ -14,7 +14,7 @@ class WorkingShift extends Component
 {
     use WithPagination, WithoutUrlPagination;
     protected $paginationTheme = 'bootstrap';
-    protected $listeners = ['delete','edit'];
+    protected $listeners = ['delete', 'edit'];
     public $workingShifts;
     public $searchTerm;
     public $work_shift;
@@ -22,6 +22,8 @@ class WorkingShift extends Component
     public $work_hour_till;
     public $idUpdate;
     public $idDelete;
+    public $status;
+    public $statusIsVisible;
 
     // public function mount()
     // {
@@ -89,6 +91,10 @@ class WorkingShift extends Component
         $this->work_shift = $workingShift->work_shift;
         $this->work_hour_from = $workingShift->work_hour_from;
         $this->work_hour_till = $workingShift->work_hour_till;
+        $this->status = $workingShift->status;
+
+        $this->statusIsVisible = $workingShift->status == 0 ? true : false;
+        $this->skipRender();
         $this->dispatch('showModalUpdate');
     }
 
@@ -113,12 +119,11 @@ class WorkingShift extends Component
                 $this->dispatch('notification', ['type' => 'error', 'message' => 'Work Hour From cannot be equal to Work Hour Till.']);
                 return;
             }
-            $statusActive = 1;
             MsWorkingShift::where('id', $this->idUpdate)->update([
                 'work_shift' => $this->work_shift,
                 'work_hour_from' => $this->work_hour_from,
                 'work_hour_till' => $this->work_hour_till,
-                'status' => $statusActive,
+                'status' => $this->status,
                 'updated_by' => auth()->user()->username,
                 'updated_on' => Carbon::now(),
             ]);
@@ -128,6 +133,7 @@ class WorkingShift extends Component
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Working Shift updated successfully.']);
         } catch (\Exception $e) {
             DB::rollBack();
+            $this->skipRender();
             Log::error('Failed to update master Working Shift: ' . $e->getMessage());
             $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to update the Working Shift: ' . $e->getMessage()]);
         }

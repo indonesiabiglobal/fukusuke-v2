@@ -101,6 +101,7 @@ class LayerController extends Component
         $this->tinggi = number_format($data->tinggi);
         $this->status = $data->status;
         $this->statusIsVisible = $data->status == 0 ? true : false;
+        $this->skipRender();
 
         $this->dispatch('showModalUpdate');
     }

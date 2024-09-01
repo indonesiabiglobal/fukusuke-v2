@@ -98,7 +98,7 @@ class InnerController extends Component
         $this->status = $data->status;
         $this->statusIsVisible = $data->status == 0 ? true : false;
         $this->box_class = $data->box_class;
-        // $this->skipRender();
+        $this->skipRender();
 
         $this->dispatch('showModalUpdate');
     }
