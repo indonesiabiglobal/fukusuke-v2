@@ -25,6 +25,8 @@ class Machine extends Component
     public $idUpdate;
     public $idDelete;
     public $status;
+    public $statusIsVisible = false;
+
 
     // public function mount()
     // {
@@ -99,6 +101,8 @@ class Machine extends Component
         $this->capacity_lembar = $machine->capacity_lembar;
         $this->capacity_size = $machine->capacity_size;
         $this->status = $machine->status;
+        $this->statusIsVisible = $machine->status == 0 ? true : false;
+        $this->skipRender();
         $this->dispatch('showModalUpdate');
     }
 
