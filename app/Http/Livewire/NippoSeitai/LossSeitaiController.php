@@ -108,7 +108,7 @@ class LossSeitaiController extends Component
             $filterNomorPalet .= " AND (tdpg.nomor_palet ILIKE '%$this->searchTerm%')";
             $filterMachine .= " AND (tdpg.machine_id ILIKE '%$this->searchTerm%')";
         }
-        dd($filterNoLPK);
+        // dd($filterNoLPK);
 
         $data = DB::select("
             WITH goodasy AS (
