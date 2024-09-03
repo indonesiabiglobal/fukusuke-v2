@@ -491,7 +491,7 @@ class LossSeitaiController extends Component
         // $columnGrandTotalEnd++;
 
         // berat loss
-        $columnBerat = 'I';
+        $columnBerat = 'H';
         $spreadsheet->getActiveSheet()->mergeCells($columnGrandTotalEnd . $rowGrandTotal . ':' . $columnBerat . $rowGrandTotal);
         $columnBerat++;
         $totalBeratLoss = array_sum(array_column($data, 'berat_loss'));
