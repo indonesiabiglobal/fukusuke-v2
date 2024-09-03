@@ -91,7 +91,7 @@
 		<hr />
 		<div class="form-group">
 			<div class="input-group">
-				<button type="button" class="btn btn-success btn-print" wire:click="print">
+				<button type="button" class="btn btn-success btn-print" wire:click="print"  {{ !$statusPrint ? 'disabled' : '' }}>
 					<i class="ri-printer-line"></i> Print
 				</button>
 				<div style="float:right" class="text-danger">Paper: A4-Portrait or Thermal </div>
