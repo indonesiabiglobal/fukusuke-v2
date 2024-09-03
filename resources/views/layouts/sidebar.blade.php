@@ -222,68 +222,91 @@
                 </li>
                 @endif
 
+                {{-- <li class="nav-item">
+                    <a class="nav-link menu-link" href="#orderlpk" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="orderlpk">
+                        <i class="ri-shopping-cart-2-line"></i> <span data-key="t-orderlpk">Order & LPK</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="orderlpk">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a href="order-lpk" class="nav-link" data-key="t-order-lpk"
+                                > Order Entry </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="lpk-entry" class="nav-link" data-key="t-lpk-entry"> LPK Entry </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="cetak-lpk" class="nav-link" data-key="t-lpk"> Cetak LPK </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="order-report" class="nav-link" data-key="t-order-report"> Order Report </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li> --}}
+
                 @if (in_array("Master", $userRoles) || in_array("Admin", $userRoles))
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#mastertabel" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="mastertabel">
-                        <i class="bx bx-table"></i> <span data-key="t-pages">Master Tabel</span>
+                        <i class="bx bx-table"></i> <span data-key="t-mastertabel">Master Tabel</span>
                     </a>
                     <div class="collapse menu-dropdown" id="mastertabel">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="buyer" class="nav-link" data-key="t-starter"> Buyer </a>
+                                <a href="buyer" class="nav-link" data-key="t-buyer"> Buyer </a>
                             </li>
                             <li class="nav-item">
                                 <a href="#produk" class="nav-link" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="produk" data-key="t-profile"><i class="bx bx-money"></i> Produk </a>
                                 <div class="collapse menu-dropdown" id="produk">
                                     <ul class="nav nav-sm flex-column">
                                         <li class="nav-item">
-                                            <a href="/master-produk" class="nav-link" data-key="t-simple-page"> Master Produk </a>
+                                            <a href="master-produk" class="nav-link" data-key="t-simple-page"> Master Produk </a>
                                         </li>
                                         <li class="nav-item">
-                                            <a href="/tipe-produk" class="nav-link" data-key="t-settings"> Tipe Produk </a>
+                                            <a href="tipe-produk" class="nav-link" data-key="t-settings"> Tipe Produk </a>
                                         </li>
                                         <li class="nav-item">
-                                            <a href="/jenis-produk" class="nav-link" data-key="t-settings"> Jenis Produk </a>
+                                            <a href="jenis-produk" class="nav-link" data-key="t-settings"> Jenis Produk </a>
                                         </li>
                                     </ul>
                                 </div>
                             </li>
                             <li class="nav-item">
-                                <a href="/departemen" class="nav-link" data-key="t-starter"> Departemen </a>
+                                <a href="departemen" class="nav-link" data-key="t-departemen"> Departemen </a>
                             </li>
                             <li class="nav-item">
-                                <a href="/karyawan" class="nav-link" data-key="t-starter"> Karyawan </a>
+                                <a href="karyawan" class="nav-link" data-key="t-starter"> Karyawan </a>
                             </li>
                             <li class="nav-item">
-                                <a href="/menu-katanuki" class="nav-link" data-key="t-starter"> Katanuki </a>
+                                <a href="menu-katanuki" class="nav-link" data-key="t-starter"> Katanuki </a>
                             </li>
                             <li class="nav-item">
-                                <a href="/mesin" class="nav-link" data-key="t-starter"> Mesin </a>
+                                <a href="mesin" class="nav-link" data-key="t-starter"> Mesin </a>
                             </li>
                             <li class="nav-item">
-                                <a href="/warehouse" class="nav-link" data-key="t-starter"> Warehouse </a>
+                                <a href="warehouse" class="nav-link" data-key="t-starter"> Warehouse </a>
                             </li>
                             <li class="nav-item">
-                                <a href="/working-shift" class="nav-link" data-key="t-starter"> Working Shift </a>
+                                <a href="working-shift" class="nav-link" data-key="t-starter"> Working Shift </a>
                             </li>
                             <li class="nav-item">
                                 <a href="#loss" class="nav-link" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="loss" data-key="t-profile"><i class="bx bx-money"></i> Loss </a>
                                 <div class="collapse menu-dropdown" id="loss">
                                     <ul class="nav nav-sm flex-column">
                                         <li class="nav-item">
-                                            <a href="/menu-loss-infure" class="nav-link" data-key="t-simple-page"> Loss Infure </a>
+                                            <a href="menu-loss-infure" class="nav-link" data-key="t-simple-page"> Loss Infure </a>
                                         </li>
                                         <li class="nav-item">
-                                            <a href="/menu-loss-seitai" class="nav-link" data-key="t-simple-page"> Loss Seitai </a>
+                                            <a href="menu-loss-seitai" class="nav-link" data-key="t-simple-page"> Loss Seitai </a>
                                         </li>
                                         <li class="nav-item">
-                                            <a href="/menu-loss-kenpin" class="nav-link" data-key="t-simple-page"> Loss Kenpin </a>
+                                            <a href="menu-loss-kenpin" class="nav-link" data-key="t-simple-page"> Loss Kenpin </a>
                                         </li>
                                         <li class="nav-item">
-                                            <a href="/menu-loss-klasifikasi" class="nav-link" data-key="t-settings"> Loss Klasifikasi </a>
+                                            <a href="menu-loss-klasifikasi" class="nav-link" data-key="t-settings"> Loss Klasifikasi </a>
                                         </li>
                                         <li class="nav-item">
-                                            <a href="/menu-loss-kategori" class="nav-link" data-key="t-settings"> Loss Kategori </a>
+                                            <a href="menu-loss-kategori" class="nav-link" data-key="t-settings"> Loss Kategori </a>
                                         </li>
                                     </ul>
                                 </div>
@@ -293,16 +316,16 @@
                                 <div class="collapse menu-dropdown" id="kemasan">
                                     <ul class="nav nav-sm flex-column">
                                         <li class="nav-item">
-                                            <a href="/kemasan-box" class="nav-link" data-key="t-simple-page"> Kemasan Box </a>
+                                            <a href="kemasan-box" class="nav-link" data-key="t-simple-page"> Kemasan Box </a>
                                         </li>
                                         <li class="nav-item">
-                                            <a href="/kemasan-inner" class="nav-link" data-key="t-simple-page"> Kemasan Inner </a>
+                                            <a href="kemasan-inner" class="nav-link" data-key="t-simple-page"> Kemasan Inner </a>
                                         </li>
                                         <li class="nav-item">
-                                            <a href="/kemasan-layer" class="nav-link" data-key="t-settings"> Kemasan Layer </a>
+                                            <a href="kemasan-layer" class="nav-link" data-key="t-settings"> Kemasan Layer </a>
                                         </li>
                                         <li class="nav-item">
-                                            <a href="/kemasan-gasio" class="nav-link" data-key="t-settings"> Kemasan Gaiso </a>
+                                            <a href="kemasan-gasio" class="nav-link" data-key="t-settings"> Kemasan Gaiso </a>
                                         </li>
                                     </ul>
                                 </div>
@@ -320,7 +343,7 @@
                     <div class="collapse menu-dropdown" id="administration">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="/security-management" class="nav-link" data-key="t-starter"> Security Management </a>
+                                <a href="security-management" class="nav-link" data-key="t-security"> Security Management </a>
                             </li>
                         </ul>
                     </div>
