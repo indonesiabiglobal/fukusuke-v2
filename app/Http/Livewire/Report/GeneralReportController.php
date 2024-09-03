@@ -644,35 +644,44 @@ class GeneralReportController extends Component
         phpspreadsheet::textAlignCenter($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
 
         $data = DB::select("
-            SELECT max(mac.machineNo) AS machine_no,
-            max(mac.machineName) AS machine_name,
-            max(dep.id) AS department_id,
-            max(dep.name) AS department_name,
-            SUM(asy.berat_standard) AS berat_standard,
-            SUM(asy.berat_produksi) AS berat_produksi,
-            SUM(asy.infure_cost) AS infure_cost,
-            SUM(asy.infure_berat_loss) AS infure_berat_loss,
-            SUM(asy.panjang_produksi) AS panjang_produksi,
-            SUM(asy.panjang_printing_inline) AS panjang_printing_inline,
-            SUM(asy.infure_cost_printing) AS infure_cost_printing,
-            COALESCE(MAX(jam.work_hour), 0) AS work_hour_mm,
-            COALESCE(MAX(jam.off_hour), 0) AS work_hour_off_mm,
-            COALESCE(MAX(jam.on_hour), 0) AS work_hour_on_mm
-            FROM tdProduct_Assembly AS asy
-            LEFT JOIN LATERAL (
-                SELECT
-                    SUM(EXTRACT(EPOCH FROM work_hour) / 60) AS work_hour,
-                    SUM(EXTRACT(EPOCH FROM off_hour) / 60) AS off_hour,
-                    SUM(EXTRACT(EPOCH FROM on_hour) / 60) AS on_hour
-                FROM tdJamKerjaMesin AS jam_
-                WHERE asy.machine_id = jam_.machine_id
-                AND jam_.working_date BETWEEN '$tglMasuk' AND '$tglKeluar'
-                GROUP BY jam_.machine_id
-            ) AS jam ON true
-            left JOIN msMachine AS mac ON asy.machine_id = mac.id
-            left JOIN msDepartment AS dep ON mac.department_id = dep.id
-            WHERE asy.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
-            GROUP BY asy.machine_id
+            SELECT MAX
+                ( mac.machineNo ) AS machine_no,
+                MAX ( mac.machineName ) AS machine_name,
+                MAX ( dep.ID ) AS department_id,
+                MAX ( dep.NAME ) AS department_name,
+                SUM ( asy.berat_standard ) AS berat_standard,
+                SUM ( asy.berat_produksi ) AS berat_produksi,
+                SUM ( asy.infure_cost ) AS infure_cost,
+                SUM ( asy.infure_berat_loss ) AS infure_berat_loss,
+                SUM ( asy.panjang_produksi ) AS panjang_produksi,
+                SUM ( asy.panjang_printing_inline ) AS panjang_printing_inline,
+                SUM ( asy.infure_cost_printing ) AS infure_cost_printing,
+                COALESCE ( MAX ( jam.work_hour ), 0 ) AS work_hour_mm,
+                COALESCE ( MAX ( jam.off_hour ), 0 ) AS work_hour_off_mm,
+                COALESCE ( MAX ( jam.on_hour ), 0 ) AS work_hour_on_mm
+            FROM
+                tdProduct_Assembly AS asy
+                LEFT JOIN LATERAL (
+                SELECT SUM
+                    ( EXTRACT ( EPOCH FROM work_hour ) / 60 ) AS work_hour,
+                    SUM ( EXTRACT ( EPOCH FROM off_hour ) / 60 ) AS off_hour,
+                    SUM ( EXTRACT ( EPOCH FROM on_hour ) / 60 ) AS on_hour
+                FROM
+                    tdJamKerjaMesin AS jam_
+                    INNER JOIN msworkingshift AS ws ON jam_.work_shift = ws.work_shift
+                WHERE
+                    asy.machine_id = jam_.machine_id
+                    AND ( working_date :: TEXT || ' ' || work_hour_from :: TEXT ) :: TIMESTAMP BETWEEN '$tglMasuk' AND '$tglKeluar'
+
+                GROUP BY
+                    jam_.machine_id
+                ) AS jam
+                ON TRUE LEFT JOIN msMachine AS mac ON asy.machine_id = mac.
+                ID LEFT JOIN msDepartment AS dep ON mac.department_id = dep.ID
+            WHERE
+                asy.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
+            GROUP BY
+                asy.machine_id
         ");
 
         if (count($data) == 0) {
@@ -791,7 +800,7 @@ class GeneralReportController extends Component
                 $columnItem++;
 
                 // jam kerja
-                $workHours = $dataItem->work_hour_mm; // Ambil nilai menit dari data
+                $workHours = $dataItem->work_hour_on_mm; // Ambil nilai menit dari data
                 $hours = floor($workHours / 60); // Hitung jumlah jam
                 $minutes = $workHours % 60; // Hitung sisa menit
                 if ($hours == 0 && $minutes == 0) {
@@ -811,7 +820,7 @@ class GeneralReportController extends Component
                 $columnItem++;
 
                 // jalan mesin
-                $activeWorksheet->setCellValue($columnItem . $rowItem, $workHours > 0 ? 100 - ($offHours / $workHours) : 0);
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $workHours > 0 ? $workHours / ($offHours + $workHours) : 0);
                 phpspreadsheet::numberPercentageOrZero($spreadsheet, $columnItem . $rowItem);
                 phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
                 $columnItem++;
@@ -878,7 +887,7 @@ class GeneralReportController extends Component
                     'work_hour_off_mm' => 0,
                     'work_hour_on_mm' => 0,
                 ];
-                $carry['workHours'] += $dataItem->work_hour_mm;
+                $carry['workHours'] += $dataItem->work_hour_on_mm;
                 $carry['offHours'] += $dataItem->work_hour_off_mm;
                 return $carry;
             }, ['workHours' => 0, 'offHours' => 0]);
@@ -922,6 +931,7 @@ class GeneralReportController extends Component
             'panjang_printing_inline' => 0,
             'infure_cost_printing' => 0,
             'work_hour_mm' => 0,
+            'work_hour_on_mm' => 0,
             'work_hour_off_mm' => 0,
         ];
 
@@ -935,6 +945,7 @@ class GeneralReportController extends Component
                 $grandTotal['panjang_printing_inline'] += $machine->panjang_printing_inline;
                 $grandTotal['infure_cost_printing'] += $machine->infure_cost_printing;
                 $grandTotal['work_hour_mm'] += $machine->work_hour_mm;
+                $grandTotal['work_hour_on_mm'] += $machine->work_hour_on_mm;
                 $grandTotal['work_hour_off_mm'] += $machine->work_hour_off_mm;
             }
         }
@@ -983,8 +994,8 @@ class GeneralReportController extends Component
         $columnItem++;
 
         // jam kerja
-        $hours = floor($grandTotal['work_hour_mm'] / 60); // Hitung jumlah jam
-        $minutes = $grandTotal['work_hour_mm'] % 60; // Hitung sisa menit
+        $hours = floor($grandTotal['work_hour_on_mm'] / 60); // Hitung jumlah jam
+        $minutes = $grandTotal['work_hour_on_mm'] % 60; // Hitung sisa menit
         $formatedWorkHours = sprintf('%d:%02d', $hours, $minutes);
         $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $formatedWorkHours);
         $columnItem++;
@@ -996,7 +1007,7 @@ class GeneralReportController extends Component
         $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $formatedOffHours);
         $columnItem++;
 
-        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['work_hour_mm'] > 0 ? 100 - ($grandTotal['work_hour_off_mm'] / $grandTotal['work_hour_mm']) : 0);
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['work_hour_on_mm'] > 0 ? $grandTotal['work_hour_on_mm'] / ($grandTotal['work_hour_off_mm'] + $grandTotal['work_hour_on_mm']) : 0);
         phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowGrandTotal);
         phpspreadsheet::addFullBorder($spreadsheet, $columnMachineNo . $rowGrandTotal . ':' . $columnItem . $rowGrandTotal);
 
@@ -1090,7 +1101,10 @@ class GeneralReportController extends Component
                     SUM(EXTRACT(EPOCH FROM off_hour) / 60) AS off_hour,
                     SUM(EXTRACT(EPOCH FROM on_hour) / 60) AS on_hour
                 FROM tdJamKerjaMesin AS jam_
-                WHERE jam_.working_date BETWEEN  '$tglMasuk' AND '$tglKeluar'
+                INNER JOIN msworkingshift AS ws ON jam_.work_shift = ws.work_shift
+                WHERE
+                    asy.machine_id = jam_.machine_id
+                    AND ( working_date :: TEXT || ' ' || work_hour_from :: TEXT ) :: TIMESTAMP BETWEEN '$tglMasuk' AND '$tglKeluar'
                 GROUP BY jam_.machine_id
             ) jam ON good.machine_id = jam.machine_id
             INNER JOIN msMachine AS mac ON good.machine_id = mac.id
@@ -1203,8 +1217,8 @@ class GeneralReportController extends Component
                 phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
                 // produksi per jam
-                $workHours = $dataItem->work_hour_mm; // Ambil nilai menit dari data
-                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->work_hour_mm > 0 ? $dataItem->qty_produksi / ($workHours / 60) : 0);
+                $workHours = $dataItem->work_hour_on_mm; // Ambil nilai menit dari data
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->work_hour_on_mm > 0 ? $dataItem->qty_produksi / ($workHours / 60) : 0);
                 phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
                 // $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->berat_standard > 0 ? $dataItem->berat_produksi / $dataItem->berat_standard : 0);
@@ -1216,7 +1230,7 @@ class GeneralReportController extends Component
                 // $columnItem++;
 
                 // jam kerja
-                $workHours = $dataItem->work_hour_mm; // Ambil nilai menit dari data
+                $workHours = $dataItem->work_hour_on_mm; // Ambil nilai menit dari data
                 $hours = floor($workHours / 60); // Hitung jumlah jam
                 $minutes = $workHours % 60; // Hitung sisa menit
                 $formatedWorkHours = sprintf('%d:%02d', $hours, $minutes);
@@ -1228,7 +1242,7 @@ class GeneralReportController extends Component
                 $formatedOffHours = sprintf('%d:%02d', $hours, $minutes);
 
                 // jalan mesin %
-                $activeWorksheet->setCellValue($columnItem . $rowItem, $workHours > 0 ? 100 - ($offHours / $workHours) : 0);
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $workHours > 0 ? $workHours / ($offHours + $workHours) : 0);
                 phpspreadsheet::numberPercentageOrZero($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
                 // jam kerja
@@ -1301,7 +1315,7 @@ class GeneralReportController extends Component
             $totalJalanMesin = $jamKerjaMesin['workHours'] + $jamKerjaMesin['offHours'];
             $hours = floor($totalJalanMesin / 60); // Hitung jumlah jam
             $minutes = $totalJalanMesin % 60; // Hitung sisa menit
-            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, $jamKerjaMesin['workHours'] > 0 ? 100 - ($jamKerjaMesin['offHours'] / $jamKerjaMesin['workHours']) : 0);
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, $jamKerjaMesin['workHours'] > 0 ? $jamKerjaMesin['workHours'] / ($jamKerjaMesin['offHours'] + $jamKerjaMesin['workHours']) : 0);
             phpspreadsheet::numberPercentageOrZero($spreadsheet, $columnItem . $rowItem);
             $columnItem++;
 
@@ -1386,18 +1400,18 @@ class GeneralReportController extends Component
         phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnItem . $rowGrandTotal);
         $columnItem++;
         // produksi per jam
-        $hours = floor($grandTotal['work_hour_mm'] / 60); // Hitung jumlah jam
+        $hours = floor($grandTotal['work_hour_on_mm'] / 60); // Hitung jumlah jam
         $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $hours > 0 ? $grandTotal['qty_produksi'] / $hours : 0);
         phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnItem . $rowGrandTotal);
         $columnItem++;
 
         // jalan mesin %
-        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['work_hour_mm'] > 0 ? 100 - ($grandTotal['work_hour_off_mm'] / $grandTotal['work_hour_mm']) : 0);
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['work_hour_on_mm'] > 0 ? $grandTotal['work_hour_on_mm'] / ($grandTotal['work_hour_off_mm'] + $grandTotal['work_hour_on_mm']) : 0);
         phpspreadsheet::numberPercentageOrZero($spreadsheet, $columnItem . $rowGrandTotal);
         $columnItem++;
 
         // jam kerja
-        $minutes = $grandTotal['work_hour_mm'] % 60; // Hitung sisa menit
+        $minutes = $grandTotal['work_hour_on_mm'] % 60; // Hitung sisa menit
         $formatedWorkHours = sprintf('%d:%02d', $hours, $minutes);
         $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $formatedWorkHours);
         $columnItem++;
