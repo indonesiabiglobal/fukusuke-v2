@@ -874,8 +874,8 @@ class GeneralReportController extends Component
             phpSpreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
             $columnItem++;
             // jam kerja
-            $jamKerjaMesin = array_reduce(array_keys($listMachine[$department['department_id']]->toArray()), function ($carry, $item) use ($dataFilter) {
-                $dataItem = $dataFilter[$item] ?? (object)[
+            $jamKerjaMesin = array_reduce(array_keys($listMachine[$department['department_id']]->toArray()), function ($carry, $item) use ($dataFilter, $department) {
+                $dataItem = $dataFilter[$department['department_id']][$item] ?? (object)[
                     'berat_standard' => 0,
                     'berat_produksi' => 0,
                     'infure_cost' => 0,
@@ -904,7 +904,7 @@ class GeneralReportController extends Component
             $activeWorksheet->setCellValue($columnItem . $rowItem, $formatedOffHours);
             $columnItem++;
 
-            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=IF(' . $columnItem . ($rowItem - 1) . '=0, 0, 100 - (' . $columnItem . ($rowItem - 2) . '/' . $columnItem . ($rowItem - 1) . '))');
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, $jamKerjaMesin['workHours'] > 0 ? $jamKerjaMesin['workHours'] / ($jamKerjaMesin['offHours'] + $jamKerjaMesin['workHours']) : 0);
             phpspreadsheet::addFullBorder($spreadsheet, $columnMachineNo . $rowItem . ':' . $columnItem . $rowItem);
             phpspreadsheet::styleFont($spreadsheet, $columnMachineNo . $rowItem . ':' . $columnItem . $rowItem, true, 8, 'Calibri');
             $columnItem++;
@@ -1086,31 +1086,30 @@ class GeneralReportController extends Component
                 COALESCE(MAX(jam.off_hour), 0) AS work_hour_off_mm,
                 COALESCE(MAX(jam.on_hour), 0) AS work_hour_on_mm
             FROM tdProduct_Goods AS good
-            LEFT JOIN (
-                SELECT
-                    los_.product_goods_id,
-                    SUM(los_.berat_loss) AS berat_loss
-                FROM tdProduct_Goods_Loss AS los_
-                WHERE los_.loss_seitai_id = 1
-                GROUP BY los_.product_goods_id
-            ) ponsu ON good.id = ponsu.product_goods_id
-            LEFT JOIN (
-                SELECT
-                    jam_.machine_id,
-                    SUM(EXTRACT(EPOCH FROM work_hour) / 60) AS work_hour,
-                    SUM(EXTRACT(EPOCH FROM off_hour) / 60) AS off_hour,
-                    SUM(EXTRACT(EPOCH FROM on_hour) / 60) AS on_hour
-                FROM tdJamKerjaMesin AS jam_
-                INNER JOIN msworkingshift AS ws ON jam_.work_shift = ws.work_shift
-                WHERE
-                    asy.machine_id = jam_.machine_id
-                    AND ( working_date :: TEXT || ' ' || work_hour_from :: TEXT ) :: TIMESTAMP BETWEEN '$tglMasuk' AND '$tglKeluar'
-                GROUP BY jam_.machine_id
-            ) jam ON good.machine_id = jam.machine_id
-            INNER JOIN msMachine AS mac ON good.machine_id = mac.id
-            INNER JOIN msDepartment AS dep ON mac.department_id = dep.id
-            INNER JOIN msProduct AS prd ON good.product_id = prd.id
-            INNER JOIN msProduct_type AS prT ON prd.product_type_id = prT.id
+                LEFT JOIN (
+                    SELECT
+                        los_.product_goods_id,
+                        SUM(los_.berat_loss) AS berat_loss
+                    FROM tdProduct_Goods_Loss AS los_
+                    WHERE los_.loss_seitai_id = 1
+                    GROUP BY los_.product_goods_id
+                ) ponsu ON good.id = ponsu.product_goods_id
+                LEFT JOIN (
+                    SELECT
+                        jam_.machine_id,
+                        SUM(EXTRACT(EPOCH FROM work_hour) / 60) AS work_hour,
+                        SUM(EXTRACT(EPOCH FROM off_hour) / 60) AS off_hour,
+                        SUM(EXTRACT(EPOCH FROM on_hour) / 60) AS on_hour
+                    FROM tdJamKerjaMesin AS jam_
+                    INNER JOIN msworkingshift AS ws ON jam_.work_shift = ws.work_shift
+                    WHERE
+                        ( working_date :: TEXT || ' ' || work_hour_from :: TEXT ) :: TIMESTAMP BETWEEN '$tglMasuk' AND '$tglKeluar'
+                    GROUP BY jam_.machine_id
+                ) jam ON good.machine_id = jam.machine_id
+                INNER JOIN msMachine AS mac ON good.machine_id = mac.id
+                INNER JOIN msDepartment AS dep ON mac.department_id = dep.id
+                INNER JOIN msProduct AS prd ON good.product_id = prd.id
+                INNER JOIN msProduct_type AS prT ON prd.product_type_id = prT.id
             WHERE good.production_date BETWEEN  '$tglMasuk' AND '$tglKeluar'
             GROUP BY good.machine_id
         ");
@@ -1294,8 +1293,8 @@ class GeneralReportController extends Component
             phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnItem . $rowItem);
             $columnItem++;
 
-            $jamKerjaMesin = array_reduce(array_keys($listMachine[$department['department_id']]->toArray()), function ($carry, $item) use ($dataFilter) {
-                $dataItem = $dataFilter[$item] ?? (object)[
+            $jamKerjaMesin = array_reduce(array_keys($listMachine[$department['department_id']]->toArray()), function ($carry, $item) use ($dataFilter, $department) {
+                $dataItem = $dataFilter[$department['department_id']][$item] ?? (object)[
                     'qty_produksi' => 0,
                     'berat_produksi' => 0,
                     'seitai_berat_loss' => 0,
@@ -1356,6 +1355,7 @@ class GeneralReportController extends Component
             'seitai_berat_loss_ponsu' => 0,
             'infure_berat_loss' => 0,
             'work_hour_mm' => 0,
+            'work_hour_on_mm' => 0,
             'work_hour_off_mm' => 0,
         ];
 
@@ -1368,6 +1368,7 @@ class GeneralReportController extends Component
                 $grandTotal['seitai_berat_loss_ponsu'] += $machine->seitai_berat_loss_ponsu;
                 $grandTotal['infure_berat_loss'] += $machine->infure_berat_loss;
                 $grandTotal['work_hour_mm'] += $machine->work_hour_mm;
+                $grandTotal['work_hour_on_mm'] += $machine->work_hour_on_mm;
                 $grandTotal['work_hour_off_mm'] += $machine->work_hour_off_mm;
             }
         }
