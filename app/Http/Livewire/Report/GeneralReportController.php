@@ -5458,24 +5458,28 @@ class GeneralReportController extends Component
             $startRowItemSum = $rowItem;
             // daftar mesin
             foreach ($listLossClass[$department['department_id']] as $lossClass) {
+                if ($dataFilter[$department['department_id']][$lossClass] == null) {
+                    continue;
+                }
                 // Menulis data mesin
                 $spreadsheet->getActiveSheet()->mergeCells($columnLossClass . $rowItem . ':' . $columnLossClassName . $rowItem);
                 $spreadsheet->getActiveSheet()->setCellValue($columnLossClass . $rowItem, $lossClass);
                 // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
 
                 // memasukkan data
-                $dataItem = $dataFilter[$department['department_id']][$lossClass] ?? [
-                    'loss_class_name' => $lossClass,
-                    'losses' => [
-                        [
-                            'loss_code' => '',
-                            'loss_name' => '',
-                            'berat_loss_produksi' => 0,
-                            'berat_loss_kebutuhan' => 0,
-                            'frekuensi' => 0
-                        ]
-                    ]
-                ];
+                $dataItem = $dataFilter[$department['department_id']][$lossClass];
+                // $dataItem = $dataFilter[$department['department_id']][$lossClass] ?? [
+                //     'loss_class_name' => $lossClass,
+                //     'losses' => [
+                //         [
+                //             'loss_code' => '',
+                //             'loss_name' => '',
+                //             'berat_loss_produksi' => 0,
+                //             'berat_loss_kebutuhan' => 0,
+                //             'frekuensi' => 0
+                //         ]
+                //     ]
+                // ];
 
                 foreach ($dataItem['losses'] as $item) {
                     $spreadsheet->getActiveSheet()->mergeCells($columnLossClass . $rowItem . ':' . $columnLossClassName . $rowItem);
@@ -5737,24 +5741,28 @@ class GeneralReportController extends Component
             $startRowItemSum = $rowItem;
             // daftar mesin
             foreach ($listLossClass[$department['department_id']] as $lossClass) {
+                if ($dataFilter[$department['department_id']][$lossClass] == null) {
+                    continue;
+                }
                 // Menulis data mesin
                 $spreadsheet->getActiveSheet()->mergeCells($columnLossClass . $rowItem . ':' . $columnLossClassName . $rowItem);
                 $spreadsheet->getActiveSheet()->setCellValue($columnLossClass . $rowItem, $lossClass);
                 // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
 
                 // memasukkan data
-                $dataItem = $dataFilter[$department['department_id']][$lossClass] ?? [
-                    'loss_class_name' => $lossClass,
-                    'losses' => [
-                        [
-                            'loss_code' => '',
-                            'loss_name' => '',
-                            'berat_loss_produksi' => 0,
-                            'berat_loss_kebutuhan' => 0,
-                            'frekuensi' => 0
-                        ]
-                    ]
-                ];
+                $dataItem = $dataFilter[$department['department_id']][$lossClass];
+                // $dataItem = $dataFilter[$department['department_id']][$lossClass] ?? [
+                //     'loss_class_name' => $lossClass,
+                //     'losses' => [
+                //         [
+                //             'loss_code' => '',
+                //             'loss_name' => '',
+                //             'berat_loss_produksi' => 0,
+                //             'berat_loss_kebutuhan' => 0,
+                //             'frekuensi' => 0
+                //         ]
+                //     ]
+                // ];
 
                 foreach ($dataItem['losses'] as $item) {
                     $spreadsheet->getActiveSheet()->mergeCells($columnLossClass . $rowItem . ':' . $columnLossClassName . $rowItem);
@@ -6035,23 +6043,15 @@ class GeneralReportController extends Component
                 // $rowItem++;
                 // daftar loss class
                 foreach ($listLossClass[$department['department_id']][$productGroup] as $lossClass) {
+                    if ($dataFilter[$department['department_id']][$productGroup][$lossClass] == null) {
+                        continue;
+                    }
                     // Menulis data loss class
                     $spreadsheet->getActiveSheet()->setCellValue($columnLossClass . $rowItem, $lossClass);
                     // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
 
                     // memasukkan data
-                    $dataItem = $dataFilter[$department['department_id']][$productGroup][$lossClass] ?? [
-                        'loss_class_name' => $lossClass,
-                        'losses' => [
-                            [
-                                'loss_code' => '',
-                                'loss_name' => '',
-                                'berat_loss_produksi' => 0,
-                                'berat_loss_kebutuhan' => 0,
-                                'frekuensi' => 0
-                            ]
-                        ]
-                    ];
+                    $dataItem = $dataFilter[$department['department_id']][$productGroup][$lossClass];
 
                     foreach ($dataItem['losses'] as $item) {
                         $spreadsheet->getActiveSheet()->mergeCells($columnProductGroup . $rowItem . ':' . $columnProductGroupEnd . $rowItem);
@@ -6335,23 +6335,15 @@ class GeneralReportController extends Component
                 // $rowItem++;
                 // daftar loss class
                 foreach ($listLossClass[$department['department_id']][$productGroup] as $lossClass) {
+                    if ($dataFilter[$department['department_id']][$productGroup][$lossClass] == null) {
+                        continue;
+                    }
                     // Menulis data loss class
                     $spreadsheet->getActiveSheet()->setCellValue($columnLossClass . $rowItem, $lossClass);
                     // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
 
                     // memasukkan data
-                    $dataItem = $dataFilter[$department['department_id']][$productGroup][$lossClass] ?? [
-                        'loss_class_name' => $lossClass,
-                        'losses' => [
-                            [
-                                'loss_code' => '',
-                                'loss_name' => '',
-                                'berat_loss_produksi' => 0,
-                                'berat_loss_kebutuhan' => 0,
-                                'frekuensi' => 0
-                            ]
-                        ]
-                    ];
+                    $dataItem = $dataFilter[$department['department_id']][$productGroup][$lossClass];
 
                     foreach ($dataItem['losses'] as $item) {
                         $spreadsheet->getActiveSheet()->mergeCells($columnProductGroup . $rowItem . ':' . $columnProductGroupEnd . $rowItem);
@@ -6666,6 +6658,9 @@ class GeneralReportController extends Component
             $startRowItemSum = $rowItem;
             // daftar petugas
             foreach ($listEmployee[$department['department_id']] as $employeeNo => $employeeName) {
+                if ($dataFilter[$department['department_id']][$employeeNo] == null) {
+                    continue;
+                }
                 // Menulis data petugas
                 // $spreadsheet->getActiveSheet()->mergeCells($columnEmployee . $rowItem . ':' . $columnEmployeeName . $rowItem);
                 $spreadsheet->getActiveSheet()->setCellValue($columnEmployee . $rowItem, $employeeNo);
@@ -6674,21 +6669,7 @@ class GeneralReportController extends Component
                 // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
 
                 // memasukkan data
-                $dataItem = $dataFilter[$department['department_id']][$employeeNo] ?? [
-                    'employeeno' => $employeeNo,
-                    'empname' => '',
-                    'berat_produksi' => 0,
-                    'infure_berat_loss' => 0,
-                    'berat_loss_katagae' => 0,
-                    'berat_loss_tachiage' => 0,
-                    'berat_loss_kualitas' => 0,
-                    'berat_loss_printing' => 0,
-                    'berat_loss_mesin' => 0,
-                    'berat_loss_orang' => 0,
-                    'berat_loss_lainlain' => 0,
-                    'seitai_infure_berat_loss' => 0,
-                    'frekuensi' => 0
-                ];
+                $dataItem = $dataFilter[$department['department_id']][$employeeNo];
 
                 // $spreadsheet->getActiveSheet()->mergeCells($columnEmployee . $rowItem . ':' . $columnEmployeeName . $rowItem);
                 $columnItem = $startColumnItemData;
@@ -7112,6 +7093,9 @@ class GeneralReportController extends Component
             $startRowItemSum = $rowItem;
             // daftar petugas
             foreach ($listEmployee[$department['department_id']] as $employeeNo => $employeeName) {
+                if ($dataFilter[$department['department_id']][$employeeNo] == null) {
+                    continue;
+                }
                 // Menulis data petugas
                 // $spreadsheet->getActiveSheet()->mergeCells($columnEmployee . $rowItem . ':' . $columnEmployeeName . $rowItem);
                 $spreadsheet->getActiveSheet()->setCellValue($columnEmployee . $rowItem, $employeeNo);
@@ -7120,17 +7104,7 @@ class GeneralReportController extends Component
                 // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
 
                 // memasukkan data
-                $dataItem = $dataFilter[$department['department_id']][$employeeNo] ?? [
-                    'employeeno' => $employeeNo,
-                    'empname' => '',
-                    'berat_produksi' => 0,
-                    'seitai_berat_loss' => 0,
-                    'berat_loss_katanuki' => 0,
-                    'berat_loss_kualitas' => 0,
-                    'berat_loss_mesin' => 0,
-                    'berat_loss_lainlain' => 0,
-                    'frekuensi' => 0
-                ];
+                $dataItem = $dataFilter[$department['department_id']][$employeeNo];
 
                 // $spreadsheet->getActiveSheet()->mergeCells($columnEmployee . $rowItem . ':' . $columnEmployeeName . $rowItem);
                 $columnItem = $startColumnItemData;
@@ -7462,24 +7436,16 @@ class GeneralReportController extends Component
             $startRowItemSum = $rowItem;
             // daftar mesin
             foreach ($listLossClass[$machine['machine_no']] as $lossClass) {
+                if ($dataFilter[$machine['machine_no']][$lossClass] == null) {
+                    continue;
+                }
                 // Menulis data mesin
                 $spreadsheet->getActiveSheet()->mergeCells($columnLossClass . $rowItem . ':' . $columnLossClassName . $rowItem);
                 $spreadsheet->getActiveSheet()->setCellValue($columnLossClass . $rowItem, $lossClass);
                 // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
 
                 // memasukkan data
-                $dataItem = $dataFilter[$machine['machine_no']][$lossClass] ?? [
-                    'loss_class_name' => $lossClass,
-                    'losses' => [
-                        [
-                            'loss_code' => '',
-                            'loss_name' => '',
-                            'berat_loss_produksi' => 0,
-                            'berat_loss_kebutuhan' => 0,
-                            'frekuensi' => 0
-                        ]
-                    ]
-                ];
+                $dataItem = $dataFilter[$machine['machine_no']][$lossClass];
 
                 foreach ($dataItem['losses'] as $item) {
                     $spreadsheet->getActiveSheet()->mergeCells($columnLossClass . $rowItem . ':' . $columnLossClassName . $rowItem);
@@ -7738,24 +7704,16 @@ class GeneralReportController extends Component
             $startRowItemSum = $rowItem;
             // daftar mesin
             foreach ($listLossClass[$machine['machine_no']] as $lossClass) {
+                if ($dataFilter[$machine['machine_no']][$lossClass] == null) {
+                    continue;
+                }
                 // Menulis data mesin
                 $spreadsheet->getActiveSheet()->mergeCells($columnLossClass . $rowItem . ':' . $columnLossClassName . $rowItem);
                 $spreadsheet->getActiveSheet()->setCellValue($columnLossClass . $rowItem, $lossClass);
                 // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
 
                 // memasukkan data
-                $dataItem = $dataFilter[$machine['machine_no']][$lossClass] ?? [
-                    'loss_class_name' => $lossClass,
-                    'losses' => [
-                        [
-                            'loss_code' => '',
-                            'loss_name' => '',
-                            'berat_loss_produksi' => 0,
-                            'berat_loss_kebutuhan' => 0,
-                            'frekuensi' => 0
-                        ]
-                    ]
-                ];
+                $dataItem = $dataFilter[$machine['machine_no']][$lossClass];
 
                 foreach ($dataItem['losses'] as $item) {
                     $spreadsheet->getActiveSheet()->mergeCells($columnLossClass . $rowItem . ':' . $columnLossClassName . $rowItem);
@@ -7997,6 +7955,9 @@ class GeneralReportController extends Component
             $rowItem++;
             // daftar mesin
             foreach ($listMachine[$productGroup['product_group_code']] as $machineNo => $machineName) {
+                if ($dataFilter[$productGroup['product_group_code']][$machineNo] == null) {
+                    continue;
+                }
                 $columnItem = $startColumnItemData;
 
                 // Menulis data mesin
@@ -8005,14 +7966,8 @@ class GeneralReportController extends Component
                 // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
 
                 // memasukkan data
-                $dataItem = $dataFilter[$productGroup['product_group_code']][$machineNo] ?? (object)[
-                    'machine_no' => $machineNo,
-                    'machine_name' => $machineName,
-                    'panjang_produksi' => 0,
-                    'berat_produksi' => 0,
-                    'capacity_kg' => 0,
-                    'capacity_lembar' => 0
-                ];
+                $dataItem = $dataFilter[$productGroup['product_group_code']][$machineNo];
+
                 // hari kerja
                 $hariKerja = $tglMasuk->diffInDays($tglKeluar) + 1;
                 $activeWorksheet->setCellValue($columnItem . $rowItem, $hariKerja);
@@ -8284,6 +8239,9 @@ class GeneralReportController extends Component
             $rowItem++;
             // daftar mesin
             foreach ($listMachine[$productGroup['product_group_code']] as $machineNo => $machineName) {
+                if ($dataFilter[$productGroup['product_group_code']][$machineNo] == null) {
+                    continue;
+                }
                 $columnItem = $startColumnItemData;
 
                 // Menulis data mesin
@@ -8292,14 +8250,8 @@ class GeneralReportController extends Component
                 // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
 
                 // memasukkan data
-                $dataItem = $dataFilter[$productGroup['product_group_code']][$machineNo] ?? (object)[
-                    'machine_no' => $machineNo,
-                    'machine_name' => $machineName,
-                    'qty_produksi' => 0,
-                    'berat_produksi' => 0,
-                    'capacity_kg' => 0,
-                    'capacity_lembar' => 0
-                ];
+                $dataItem = $dataFilter[$productGroup['product_group_code']][$machineNo];
+
                 // hari kerja
                 $hariKerja = $tglMasuk->diffInDays($tglKeluar) + 1;
                 $activeWorksheet->setCellValue($columnItem . $rowItem, $hariKerja);
