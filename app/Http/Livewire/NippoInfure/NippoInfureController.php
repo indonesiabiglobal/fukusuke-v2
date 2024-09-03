@@ -72,8 +72,8 @@ class NippoInfureController extends Component
 
     public function export()
     {
-        $tglMasuk = Carbon::parse($this->tglMasuk);
-        $tglKeluar = Carbon::parse($this->tglKeluar);
+        $tglMasuk = Carbon::parse($this->tglMasuk . " 00:00:00");
+        $tglKeluar = Carbon::parse($this->tglKeluar . " 23:59:59");
 
         $checklistInfure = new CheckListInfureController();
         $response = $checklistInfure->checklistInfure($tglMasuk, $tglKeluar, 'Checklist');

@@ -962,7 +962,7 @@ class GeneralReportController extends Component
         phpSpreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnItem . $rowGrandTotal);
         $columnItem++;
         // loss %
-        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_produksi'] > 0 ? $grandTotal['infure_berat_loss'] / ($grandTotal['berat_produksi']/$grandTotal['infure_berat_loss']) : 0);
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_produksi'] > 0 ? $grandTotal['infure_berat_loss'] / ($grandTotal['berat_produksi'] / $grandTotal['infure_berat_loss']) : 0);
         phpspreadsheet::numberPercentageOrZero($spreadsheet, $columnItem . $rowGrandTotal);
         $columnItem++;
         // panjang produksi
@@ -1526,7 +1526,7 @@ class GeneralReportController extends Component
 
         // list mesin berdasarkan tanggal pertama dan departemen
         $listMachine = array_reduce($data, function ($carry, $item) {
-            $carry[$item->product_type_id][$item->machine_no] = $item->machine_name;
+            $carry[$item->department_id][$item->product_type_id][$item->machine_no] = $item->machine_name;
             return $carry;
         }, []);
 
@@ -1558,7 +1558,12 @@ class GeneralReportController extends Component
                 phpspreadsheet::styleFont($spreadsheet, $columnMachineNo . $rowItem, false, 8, 'Calibri');
                 $rowItem++;
                 // daftar mesin
-                foreach ($listMachine[$productType['product_type_id']] as $machineNo => $machineName) {
+                foreach ($listMachine[$department['department_id']][$productType['product_type_id']] as $machineNo => $machineName) {
+                    if ($dataFilter[$department['department_id']][$productType['product_type_id']][$machineNo] == null) {
+                        continue;
+                    }
+                    // memasukkan data
+                    $dataItem = $dataFilter[$department['department_id']][$productType['product_type_id']][$machineNo];
                     $columnItem = $startColumnItemData;
 
                     // Menulis data mesin
@@ -1566,16 +1571,6 @@ class GeneralReportController extends Component
                     $spreadsheet->getActiveSheet()->setCellValue($columnMachineName . $rowItem, $machineName);
                     // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
 
-                    // memasukkan data
-                    $dataItem = $dataFilter[$department['department_id']][$productType['product_type_id']][$machineNo] ?? (object)[
-                        'berat_standard' => 0,
-                        'berat_produksi' => 0,
-                        'infure_cost' => 0,
-                        'infure_berat_loss' => 0,
-                        'panjang_produksi' => 0,
-                        'panjang_printing_inline' => 0,
-                        'infure_cost_printing' => 0
-                    ];
                     // berat standar
                     $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->berat_standard);
                     phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
@@ -1626,39 +1621,40 @@ class GeneralReportController extends Component
                 // $activeWorksheet->setCellValue($columnMachineNo . $rowItem, 'Total ' . $department['department_name']);
                 $columnItem = $startColumnItemData;
                 $columnItemEnd = chr(ord($columnItem) + count($header) - 1);
-                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
+                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$department['department_id']][$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
                 phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
-                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
+                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$department['department_id']][$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
                 phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
-                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ')/COUNTIF(' . $columnItem . ($rowItem - count($listMachine[$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ', "<>0")');
+                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$department['department_id']][$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ')/COUNTIF(' . $columnItem . ($rowItem - count($listMachine[$department['department_id']][$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ', "<>0")');
                 phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
-                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
+                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$department['department_id']][$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
                 phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
-                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
+                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$department['department_id']][$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
                 phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
-                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ')/COUNTIF(' . $columnItem . ($rowItem - count($listMachine[$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ', "<>0")');
+                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$department['department_id']][$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ')/COUNTIF(' . $columnItem . ($rowItem - count($listMachine[$department['department_id']][$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ', "<>0")');
                 phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
-                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
+                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$department['department_id']][$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
                 phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
-                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
+                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$department['department_id']][$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
                 phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
-                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
+                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$department['department_id']][$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
                 phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
-                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
+                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$department['department_id']][$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
                 phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                 phpspreadsheet::addFullBorder($spreadsheet, $columnMachineNo . $rowItem . ':' . $columnItem . $rowItem);
                 $columnItem++;
                 phpspreadsheet::styleFont($spreadsheet, $columnMachineNo . $rowItem . ':' . $columnHeaderEnd . $rowItem, true, 8, 'Calibri');
 
+                $rowItem++;
                 $rowItem++;
             }
             // total berdasarkan departemen
@@ -1937,7 +1933,7 @@ class GeneralReportController extends Component
 
         // list mesin berdasarkan tanggal pertama dan departemen
         $listMachine = array_reduce($data, function ($carry, $item) {
-            $carry[$item->product_type_id][$item->machine_no] = $item->machine_name;
+            $carry[$item->department_id][$item->product_type_id][$item->machine_no] = $item->machine_name;
             return $carry;
         }, []);
 
@@ -1969,7 +1965,10 @@ class GeneralReportController extends Component
                 phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $rowItem, false, 8, 'Calibri');
                 $rowItem++;
                 // daftar mesin
-                foreach ($listMachine[$productType['product_type_id']] as $machineNo => $machineName) {
+                foreach ($listMachine[$department['department_id']][$productType['product_type_id']] as $machineNo => $machineName) {
+                    if ($dataFilter[$department['department_id']][$productType['product_type_id']][$machineNo] == null) {
+                        continue;
+                    }
                     $columnItem = $startColumnItemData;
 
                     // Menulis data mesin
@@ -1978,14 +1977,15 @@ class GeneralReportController extends Component
                     // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
 
                     // memasukkan data
-                    $dataItem = $dataFilter[$department['department_id']][$productType['product_type_id']][$machineNo] ?? (object)[
-                        'qty_produksi' => 0,
-                        'berat_produksi' => 0,
-                        'seitai_cost' => 0,
-                        'seitai_berat_loss' => 0,
-                        'seitai_berat_loss_ponsu' => 0,
-                        'infure_berat_loss' => 0
-                    ];
+                    $dataItem = $dataFilter[$department['department_id']][$productType['product_type_id']][$machineNo];
+                    // $dataItem = $dataFilter[$department['department_id']][$productType['product_type_id']][$machineNo] ?? (object)[
+                    //     'qty_produksi' => 0,
+                    //     'berat_produksi' => 0,
+                    //     'seitai_cost' => 0,
+                    //     'seitai_berat_loss' => 0,
+                    //     'seitai_berat_loss_ponsu' => 0,
+                    //     'infure_berat_loss' => 0
+                    // ];
                     // jumlah produksi
                     $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->qty_produksi);
                     phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
@@ -2025,31 +2025,31 @@ class GeneralReportController extends Component
                 $columnItem = $startColumnItemData;
                 $columnItemEnd = chr(ord($columnItem) + count($header) - 1);
                 // jumlah produksi
-                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
+                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$department['department_id']][$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
                 phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
                 // berat produksi
-                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
+                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$department['department_id']][$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
                 phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
                 // Loss
-                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
+                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$department['department_id']][$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
                 phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
                 // loss %
-                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ')/COUNTIF(' . $columnItem . ($rowItem - count($listMachine[$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ', "<>0")');
+                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$department['department_id']][$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ')/COUNTIF(' . $columnItem . ($rowItem - count($listMachine[$department['department_id']][$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ', "<>0")');
                 phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
                 // Seitai cost
-                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
+                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$department['department_id']][$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
                 phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
                 // Ponsu Loss
-                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
+                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$department['department_id']][$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
                 phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
                 // Infure Loss
-                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
+                $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listMachine[$department['department_id']][$productType['product_type_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
                 phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                 phpspreadsheet::addFullBorder($spreadsheet, $columnMachineNo . $rowItem . ':' . $columnItem . $rowItem);
                 $columnItem++;
@@ -2298,6 +2298,9 @@ class GeneralReportController extends Component
         $rowItem = $startRowItem;
         // daftar departemen
         foreach ($listProductType as $productGroupCode => $productGroup) {
+            if ($dataFilter[$productGroupCode] == null) {
+                continue;
+            }
             // daftar mesin
             $columnItem = $startColumnItemData;
 
@@ -2307,15 +2310,16 @@ class GeneralReportController extends Component
             // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
 
             // memasukkan data
-            $dataItem = $dataFilter[$productGroupCode] ?? (object)[
-                'berat_standard' => 0,
-                'berat_produksi' => 0,
-                'infure_cost' => 0,
-                'infure_berat_loss' => 0,
-                'panjang_produksi' => 0,
-                'panjang_printing_inline' => 0,
-                'infure_cost_printing' => 0
-            ];
+            $dataItem = $dataFilter[$productGroupCode];
+            // $dataItem = $dataFilter[$productGroupCode] ?? (object)[
+            //     'berat_standard' => 0,
+            //     'berat_produksi' => 0,
+            //     'infure_cost' => 0,
+            //     'infure_berat_loss' => 0,
+            //     'panjang_produksi' => 0,
+            //     'panjang_printing_inline' => 0,
+            //     'infure_cost_printing' => 0
+            // ];
             $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->berat_standard);
             phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
             $columnItem++;
@@ -2542,6 +2546,9 @@ class GeneralReportController extends Component
         $rowItem = $startRowItem;
         // daftar departemen
         foreach ($listProductGroup as $productGroupCode => $productGroup) {
+            if ($dataFilter[$productGroupCode] == null) {
+                continue;
+            }
             // daftar mesin
             $columnItem = $startColumnItemData;
 
@@ -2551,14 +2558,15 @@ class GeneralReportController extends Component
             // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
 
             // memasukkan data
-            $dataItem = $dataFilter[$productGroupCode] ?? (object)[
-                'qty_produksi' => 0,
-                'berat_produksi' => 0,
-                'seitai_cost' => 0,
-                'seitai_berat_loss' => 0,
-                'seitai_berat_loss_ponsu' => 0,
-                'infure_berat_loss' => 0
-            ];
+            $dataItem = $dataFilter[$productGroupCode];
+            // $dataItem = $dataFilter[$productGroupCode] ?? (object)[
+            //     'qty_produksi' => 0,
+            //     'berat_produksi' => 0,
+            //     'seitai_cost' => 0,
+            //     'seitai_berat_loss' => 0,
+            //     'seitai_berat_loss_ponsu' => 0,
+            //     'infure_berat_loss' => 0
+            // ];
             // jumlah produksi
             $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->qty_produksi);
             phpspreadsheet::numberFormatThousands($spreadsheet, $columnItem . $rowItem);
@@ -2767,6 +2775,9 @@ class GeneralReportController extends Component
         $rowItem = $startRowItem;
         // daftar departemen
         foreach ($listProductGroup as $productGroupCode => $productGroup) {
+            if ($dataFilter[$productGroupCode] == null) {
+                continue;
+            }
             // daftar mesin
             $columnItem = $startColumnItemData;
 
@@ -2776,15 +2787,16 @@ class GeneralReportController extends Component
             // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
 
             // memasukkan data
-            $dataItem = $dataFilter[$productGroupCode] ?? (object)[
-                'berat_standard' => 0,
-                'berat_produksi' => 0,
-                'infure_cost' => 0,
-                'infure_berat_loss' => 0,
-                'panjang_produksi' => 0,
-                'panjang_printing_inline' => 0,
-                'infure_cost_printing' => 0
-            ];
+            $dataItem = $dataFilter[$productGroupCode];
+            // $dataItem = $dataFilter[$productGroupCode] ?? (object)[
+            //     'berat_standard' => 0,
+            //     'berat_produksi' => 0,
+            //     'infure_cost' => 0,
+            //     'infure_berat_loss' => 0,
+            //     'panjang_produksi' => 0,
+            //     'panjang_printing_inline' => 0,
+            //     'infure_cost_printing' => 0
+            // ];
             $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->berat_standard);
             phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
             $columnItem++;
@@ -3012,6 +3024,9 @@ class GeneralReportController extends Component
         $rowItem = $startRowItem;
         // daftar departemen
         foreach ($listProductGroup as $productGroupCode => $productGroup) {
+            if ($dataFilter[$productGroupCode] == null) {
+                continue;
+            }
             // daftar mesin
             $columnItem = $startColumnItemData;
 
@@ -3021,14 +3036,15 @@ class GeneralReportController extends Component
             // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
 
             // memasukkan data
-            $dataItem = $dataFilter[$productGroupCode] ?? (object)[
-                'qty_produksi' => 0,
-                'berat_produksi' => 0,
-                'seitai_cost' => 0,
-                'seitai_berat_loss' => 0,
-                'seitai_berat_loss_ponsu' => 0,
-                'infure_berat_loss' => 0
-            ];
+            $dataItem = $dataFilter[$productGroupCode];
+            // $dataItem = $dataFilter[$productGroupCode] ?? (object)[
+            //     'qty_produksi' => 0,
+            //     'berat_produksi' => 0,
+            //     'seitai_cost' => 0,
+            //     'seitai_berat_loss' => 0,
+            //     'seitai_berat_loss_ponsu' => 0,
+            //     'infure_berat_loss' => 0
+            // ];
             // jumlah produksi
             $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->qty_produksi);
             phpspreadsheet::numberFormatThousands($spreadsheet, $columnItem . $rowItem);
@@ -3147,6 +3163,7 @@ class GeneralReportController extends Component
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
+        $spreadsheet->getActiveSheet()->freezePane('A4');
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER PRODUK INFURE');
@@ -3239,6 +3256,9 @@ class GeneralReportController extends Component
         $rowItem = $startRowItem;
         // daftar departemen
         foreach ($listProduct as $productCode => $product) {
+            if ($dataFilter[$productCode] == null) {
+                continue;
+            }
             // daftar mesin
             $columnItem = $startColumnItemData;
 
@@ -3248,15 +3268,16 @@ class GeneralReportController extends Component
             // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
 
             // memasukkan data
-            $dataItem = $dataFilter[$productCode] ?? (object)[
-                'berat_standard' => 0,
-                'berat_produksi' => 0,
-                'infure_cost' => 0,
-                'infure_berat_loss' => 0,
-                'panjang_produksi' => 0,
-                'panjang_printing_inline' => 0,
-                'infure_cost_printing' => 0
-            ];
+            $dataItem = $dataFilter[$productCode];
+            // $dataItem = $dataFilter[$productCode] ?? (object)[
+            //     'berat_standard' => 0,
+            //     'berat_produksi' => 0,
+            //     'infure_cost' => 0,
+            //     'infure_berat_loss' => 0,
+            //     'panjang_produksi' => 0,
+            //     'panjang_printing_inline' => 0,
+            //     'infure_cost_printing' => 0
+            // ];
             $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->berat_standard);
             phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
             $columnItem++;
@@ -3388,6 +3409,7 @@ class GeneralReportController extends Component
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
+        $spreadsheet->getActiveSheet()->freezePane('A4');
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER PRODUK SEITAI');
@@ -3485,6 +3507,9 @@ class GeneralReportController extends Component
         $rowItem = $startRowItem;
         // daftar departemen
         foreach ($listProduct as $productCode => $product) {
+            if ($dataFilter[$productCode] == null) {
+                continue;
+            }
             // daftar mesin
             $columnItem = $startColumnItemData;
 
@@ -3494,14 +3519,7 @@ class GeneralReportController extends Component
             // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
 
             // memasukkan data
-            $dataItem = $dataFilter[$productCode] ?? (object)[
-                'qty_produksi' => 0,
-                'berat_produksi' => 0,
-                'seitai_cost' => 0,
-                'seitai_berat_loss' => 0,
-                'seitai_berat_loss_ponsu' => 0,
-                'infure_berat_loss' => 0
-            ];
+            $dataItem = $dataFilter[$productCode];
             // jumlah produksi
             $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->qty_produksi);
             phpspreadsheet::numberFormatThousands($spreadsheet, $columnItem . $rowItem);
@@ -3620,6 +3638,7 @@ class GeneralReportController extends Component
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
+        $spreadsheet->getActiveSheet()->freezePane('A4');
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER DEPARTEMEN PER JENIS INFURE');
@@ -3728,6 +3747,9 @@ class GeneralReportController extends Component
             $rowItem++;
             // daftar mesin
             foreach ($listProductGroup[$department['department_id']] as $typeCode => $typeName) {
+                if ($dataFilter[$department['department_id']][$typeCode] == null) {
+                    continue;
+                }
                 $columnItem = $startColumnItemData;
 
                 // Menulis data mesin
@@ -3736,15 +3758,8 @@ class GeneralReportController extends Component
                 // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
 
                 // memasukkan data
-                $dataItem = $dataFilter[$department['department_id']][$typeCode] ?? (object)[
-                    'berat_standard' => 0,
-                    'berat_produksi' => 0,
-                    'infure_cost' => 0,
-                    'infure_berat_loss' => 0,
-                    'panjang_produksi' => 0,
-                    'panjang_printing_inline' => 0,
-                    'infure_cost_printing' => 0,
-                ];
+                $dataItem = $dataFilter[$department['department_id']][$typeCode];
+
                 $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->berat_standard);
                 phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
@@ -4023,6 +4038,9 @@ class GeneralReportController extends Component
             $rowItem++;
             // daftar mesin
             foreach ($listProductGroup[$department['department_id']] as $TypeCode => $TypeName) {
+                if ($dataFilter[$department['department_id']][$TypeCode] == null) {
+                    continue;
+                }
                 $columnItem = $startColumnItemData;
 
                 // Menulis data mesin
@@ -4031,14 +4049,7 @@ class GeneralReportController extends Component
                 // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
 
                 // memasukkan data
-                $dataItem = $dataFilter[$department['department_id']][$TypeCode] ?? (object)[
-                    'qty_produksi' => 0,
-                    'berat_produksi' => 0,
-                    'seitai_berat_loss' => 0,
-                    'seitai_cost' => 0,
-                    'seitai_berat_loss_ponsu' => 0,
-                    'infure_berat_loss' => 0,
-                ];
+                $dataItem = $dataFilter[$department['department_id']][$TypeCode];
                 // jumlah produksi
                 $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->qty_produksi);
                 phpspreadsheet::numberFormatThousands($spreadsheet, $columnItem . $rowItem);
@@ -4191,6 +4202,7 @@ class GeneralReportController extends Component
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
+        $spreadsheet->getActiveSheet()->freezePane('A4');
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER DEPARTEMEN PER TIPE INFURE');
@@ -4299,6 +4311,9 @@ class GeneralReportController extends Component
             $rowItem++;
             // daftar mesin
             foreach ($listProductType[$department['department_id']] as $typeCode => $typeName) {
+                if ($dataFilter[$department['department_id']][$typeCode] == null) {
+                    continue;
+                }
                 $columnItem = $startColumnItemData;
 
                 // Menulis data mesin
@@ -4307,15 +4322,8 @@ class GeneralReportController extends Component
                 // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
 
                 // memasukkan data
-                $dataItem = $dataFilter[$department['department_id']][$typeCode] ?? (object)[
-                    'berat_standard' => 0,
-                    'berat_produksi' => 0,
-                    'infure_cost' => 0,
-                    'infure_berat_loss' => 0,
-                    'panjang_produksi' => 0,
-                    'panjang_printing_inline' => 0,
-                    'infure_cost_printing' => 0,
-                ];
+                $dataItem = $dataFilter[$department['department_id']][$typeCode];
+
                 $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->berat_standard);
                 phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
@@ -4481,6 +4489,7 @@ class GeneralReportController extends Component
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
+        $spreadsheet->getActiveSheet()->freezePane('A4');
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER DEPARTEMEN PER TIPE SEITAI');
@@ -4593,6 +4602,9 @@ class GeneralReportController extends Component
             $rowItem++;
             // daftar mesin
             foreach ($listProductType[$department['department_id']] as $TypeCode => $TypeName) {
+                if ($dataFilter[$department['department_id']][$TypeCode] == null) {
+                    continue;
+                }
                 $columnItem = $startColumnItemData;
 
                 // Menulis data mesin
@@ -4601,14 +4613,8 @@ class GeneralReportController extends Component
                 // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
 
                 // memasukkan data
-                $dataItem = $dataFilter[$TypeCode] ?? (object)[
-                    'qty_produksi' => 0,
-                    'berat_produksi' => 0,
-                    'seitai_berat_loss' => 0,
-                    'seitai_cost' => 0,
-                    'seitai_berat_loss_ponsu' => 0,
-                    'infure_berat_loss' => 0,
-                ];
+                $dataItem = $dataFilter[$department['department_id']][$TypeCode];
+
                 // jumlah produksi
                 $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->qty_produksi);
                 phpspreadsheet::numberFormatThousands($spreadsheet, $columnItem . $rowItem);
@@ -4762,6 +4768,7 @@ class GeneralReportController extends Component
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
+        $spreadsheet->getActiveSheet()->freezePane('A4');
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER DEPARTEMEN PER PETUGAS INFURE');
@@ -4868,6 +4875,9 @@ class GeneralReportController extends Component
             $rowItem++;
             // daftar mesin
             foreach ($listEmployee[$department['department_id']] as $employeeno => $EmployeeName) {
+                if ($dataFilter[$department['department_id']][$employeeno] == null) {
+                    continue;
+                }
                 $columnItem = $startColumnItemData;
 
                 // Menulis data mesin
@@ -4876,15 +4886,8 @@ class GeneralReportController extends Component
                 // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
 
                 // memasukkan data
-                $dataItem = $dataFilter[$department['department_id']][$employeeno] ?? (object)[
-                    'berat_standard' => 0,
-                    'berat_produksi' => 0,
-                    'infure_cost' => 0,
-                    'infure_berat_loss' => 0,
-                    'panjang_produksi' => 0,
-                    'panjang_printing_inline' => 0,
-                    'infure_cost_printing' => 0,
-                ];
+                $dataItem = $dataFilter[$department['department_id']][$employeeno];
+
                 $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->berat_standard);
                 phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
@@ -4900,7 +4903,8 @@ class GeneralReportController extends Component
                 $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->infure_berat_loss);
                 phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
-                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->berat_produksi > 0 ? $dataItem->infure_berat_loss / $dataItem->berat_produksi : 0);
+                // loss %
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->berat_produksi > 0 ? $dataItem->infure_berat_loss / ($dataItem->infure_berat_loss + $dataItem->berat_produksi) : 0);
                 phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
                 $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->panjang_produksi);
@@ -5051,6 +5055,7 @@ class GeneralReportController extends Component
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
+        $spreadsheet->getActiveSheet()->freezePane('A4');
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER DEPARTEMEN PER PETUGAS SEITAI');
@@ -5163,6 +5168,9 @@ class GeneralReportController extends Component
             $rowItem++;
             // daftar mesin
             foreach ($listEmployee[$department['department_id']] as $employeeNo => $employeeName) {
+                if ($dataFilter[$department['department_id']][$employeeNo] == null) {
+                    continue;
+                }
                 $columnItem = $startColumnItemData;
 
                 // Menulis data mesin
@@ -5171,14 +5179,8 @@ class GeneralReportController extends Component
                 // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
 
                 // memasukkan data
-                $dataItem = $dataFilter[$department['department_id']][$employeeNo] ?? (object)[
-                    'qty_produksi' => 0,
-                    'berat_produksi' => 0,
-                    'seitai_berat_loss' => 0,
-                    'seitai_cost' => 0,
-                    'seitai_berat_loss_ponsu' => 0,
-                    'infure_berat_loss' => 0,
-                ];
+                $dataItem = $dataFilter[$department['department_id']][$employeeNo];
+
                 // jumlah produksi
                 $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->qty_produksi);
                 phpspreadsheet::numberFormatThousands($spreadsheet, $columnItem . $rowItem);
@@ -5192,7 +5194,7 @@ class GeneralReportController extends Component
                 phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
                 // seitai loss %
-                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->berat_produksi > 0 ? $dataItem->seitai_berat_loss / $dataItem->berat_produksi : 0);
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->berat_produksi > 0 ? $dataItem->seitai_berat_loss / ($dataItem->seitai_berat_loss + $dataItem->berat_produksi) : 0);
                 phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
                 // seitai_cost
@@ -8478,6 +8480,7 @@ class GeneralReportController extends Component
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
+        $spreadsheet->getActiveSheet()->freezePane('A5');
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER PALET SEITAI');
@@ -8666,22 +8669,15 @@ class GeneralReportController extends Component
                 // $rowItem++;
                 // daftar palet
                 foreach ($listPalet[$productCode][$noLPK] as $palet) {
+                    if ($dataFilter[$productCode][$noLPK][$palet] == null) {
+                        continue;
+                    }
                     // Menulis data palet
                     $spreadsheet->getActiveSheet()->setCellValue($columnNoPalet . $rowItem, $palet);
                     // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
 
                     // memasukkan data
-                    $dataItem = $dataFilter[$productCode][$noLPK][$palet] ?? (object)[
-                        'product_code' => $productCode,
-                        'work_shift' => '',
-                        'nomor_lot' => '',
-                        'qty_produksi' => 0,
-                        'qty_produksi_box' => 0,
-                        'kenpin_qty_loss_proses' => 0,
-                        'kenpin_qty_box_proses' => 0,
-                        'kenpin_qty_loss' => 0,
-                        'kenpin_qty_box' => 0,
-                    ];
+                    $dataItem = $dataFilter[$productCode][$noLPK][$palet];
                     foreach ($dataItem as $item) {
                         // $spreadsheet->getActiveSheet()->mergeCells($columnProductGroup . $rowItem . ':' . $columnProductGroupEnd . $rowItem);
                         $columnItem = $startColumnItemData;
