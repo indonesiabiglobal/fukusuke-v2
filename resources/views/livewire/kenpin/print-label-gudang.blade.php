@@ -80,11 +80,11 @@
 			<div class="form-group">
 				<label class="control-label col-md-4 col-xs-12"></label>
 				<div class="input-group">
-                    <button wire:click="print" type="button" class="btn btn-success btn-print" style="width:99%">
-                        <span wire:loading.remove wire:target="print">
+                    <button wire:click="export" wire:loading.attr="disabled" type="button" class="btn btn-success btn-print" style="width:99%">
+                        <span wire:loading.remove wire:target="export">
                             <i class="bx bx-printer"></i> Print
                         </span>
-                        <div wire:loading wire:target="print">
+                        <div wire:loading wire:target="export">
                             <span class="d-flex align-items-center">
                                 <span class="spinner-border flex-shrink-0" role="status">
                                     <span class="visually-hidden">Loading...</span>
