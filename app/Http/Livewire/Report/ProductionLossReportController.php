@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Report;
 
 use App\Exports\GeneralReportExport;
+use App\Helpers\phpspreadsheet;
 use App\Models\MsDepartment;
 use App\Models\MsMachine;
 use App\Models\MsWorkingShift;
@@ -182,7 +183,7 @@ class ProductionLossReportController extends Component
                         tpa.machine_id,
                         to_char( tpa.production_date, 'MM yyyy' )
                     ) AS loss ON x.ID = loss.machine_id
-                    AND x.bulan = loss.bulan ORDER BY x.bulan,  x.machine_name",
+                    AND x.bulan = loss.bulan ORDER BY x.bulan, x.department_id, x.machine_name",
                 [
                     'filterDateStart' => $filterDateStart,
                     'filterDateEnd' => $filterDateEnd,
@@ -226,7 +227,7 @@ class ProductionLossReportController extends Component
         $activeWorksheet->setShowGridlines(false);
 
         // Judul
-        $activeWorksheet->setCellValue('B1', 'REPORT PRODUKSI DAN LOSS MESIN' . ($this->nipon == 'infure' ? ' INFURE' : 'SEITAI'));
+        $activeWorksheet->setCellValue('B1', 'REPORT PRODUKSI DAN LOSS MESIN ' . ($this->nipon == 'infure' ? ' INFURE' : 'SEITAI'));
         $activeWorksheet->setCellValue('B2', 'Periode : ' . $filterDateStart . ' s/d ' . $filterDateEnd);
         // Style Judul
         $this->styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
@@ -245,6 +246,8 @@ class ProductionLossReportController extends Component
         $diffMonth = Carbon::parse($this->tglAkhir)->diffInMonths(Carbon::parse($this->tglAwal)) + 1;
         $tglAwalHeader = Carbon::parse($this->tglAwal);
         $columnHeaderStartDate = 'D';
+        $listMachineExist = [];
+
         for ($month = 0; $month < $diffMonth; $month++) {
             // Menghitung cell akhir dengan menambah jumlah yang diinginkan
             $columnHeaderEndDate = $columnHeaderStartDate;
@@ -280,15 +283,25 @@ class ProductionLossReportController extends Component
             $columnMachineName = 'C';
             $startRowItem = 5;
             $rowItem = $startRowItem;
+            // dd($dataFilter[$tglAwalHeader->format('m Y')]['00S92']);
+
             // daftar departemen
             foreach ($listDepartment as $department) {
                 $spreadsheet->getActiveSheet()->setCellValue($columnMachineNo . $rowItem, $department['department_name']);
                 $this->styleFont($spreadsheet, $columnMachineNo . $rowItem, true, 9, 'Calibri');
+                if (!array_key_exists($department['department_id'], $listMachineExist)) {
+                    $listMachineExist[$department['department_id']] = [];
+                }
 
                 $rowItem++;
+                $maxRowDepartment = $rowItem;
                 // daftar mesin
                 foreach ($listMachine[$department['department_id']] as $machineno => $machinename) {
-                    if ($month == 0) {
+                    // if (!array_key_exists($machineno, $dataFilter[$tglAwalHeader->format('m Y')])) {
+                    //     continue;
+                    // }
+                    if (!array_key_exists($machineno, $listMachineExist[$department['department_id']])) {
+                        $listMachineExist[$department['department_id']][$machineno] = $machinename;
                         // Menulis data mesin
                         $spreadsheet->getActiveSheet()->setCellValue($columnMachineNo . $rowItem, $machineno);
                         $spreadsheet->getActiveSheet()->setCellValue($columnMachineName . $rowItem, $machinename);
@@ -300,14 +313,12 @@ class ProductionLossReportController extends Component
                     // Menulis data produksi dan loss
                     $item = $dataFilter[$tglAwalHeader->format('m Y')][$machineno] ?? ['tot_produksi' => 0, 'berat_loss' => 0, 'persenloss' => 0];
                     $spreadsheet->getActiveSheet()->setCellValue($columnProduksi . $rowItem, $item['tot_produksi']);
-                    $this->numberFormatCommaSeparated($spreadsheet, $columnProduksi . $rowItem);
+                    phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnProduksi . $rowItem);
                     $spreadsheet->getActiveSheet()->setCellValue($columnLoss . $rowItem, $item['berat_loss']);
-                    $this->numberFormatCommaSeparated($spreadsheet, $columnLoss . $rowItem);
+                    phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnLoss . $rowItem);
                     $spreadsheet->getActiveSheet()->setCellValue($columnPersenLoss . $rowItem, $item['persenloss']);
                     // Mengatur format sel menjadi persentase
-                    $spreadsheet->getActiveSheet()->getStyle($columnPersenLoss . $rowItem)
-                        ->getNumberFormat()
-                        ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_PERCENTAGE_00);
+                    phpspreadsheet::numberPercentageOrZero($spreadsheet, $columnPersenLoss . $rowItem);
 
                     // border
                     $this->addFullBorder($spreadsheet, "{$columnProduksi}{$rowItem}:{$columnPersenLoss}{$rowItem}");
@@ -327,14 +338,14 @@ class ProductionLossReportController extends Component
                     $avgLossDepartment = array_sum(array_column($itemCountDepartment, 'persenloss')) / count($itemCountDepartment);
                 }
                 $spreadsheet->getActiveSheet()->setCellValue($columnProduksi . $rowItem, $sumProduksiDepartment);
+                phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnProduksi . $rowItem);
                 $spreadsheet->getActiveSheet()->setCellValue($columnLoss . $rowItem, $sumLossDepartment);
+                phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnLoss . $rowItem);
                 $spreadsheet->getActiveSheet()->setCellValue($columnPersenLoss . $rowItem, $avgLossDepartment);
                 $this->addFullBorder($spreadsheet, "{$columnMachineNo}{$rowItem}:{$columnPersenLoss}{$rowItem}");
                 $this->styleFont($spreadsheet, "{$columnMachineNo}{$rowItem}:{$columnPersenLoss}{$rowItem}", false, 8, 'Calibri');
                 // Mengatur format sel menjadi persentase
-                $spreadsheet->getActiveSheet()->getStyle($columnPersenLoss . $rowItem)
-                    ->getNumberFormat()
-                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_PERCENTAGE_00);
+                phpspreadsheet::numberPercentageOrZero($spreadsheet, $columnPersenLoss . $rowItem);
 
                 $spreadsheet->getActiveSheet()->mergeCells($columnMachineNo . $rowItem . ':' . $columnMachineName . $rowItem);
                 $rowItem++;
@@ -342,7 +353,9 @@ class ProductionLossReportController extends Component
                 // border
                 // $this->addFullBorder($spreadsheet, "{$columnMachineNo}5:{$columnMachineName}" . ($rowItem - 1));
                 $rowItem++;
+                $maxRowDepartment = $maxRowDepartment > $rowItem ? $maxRowDepartment : $rowItem;
             }
+            $rowItem = $maxRowDepartment;
             // perhitungan jumlah berdasarkan bulan
             $itemCountMonth = $dataFilter[$tglAwalHeader->format('m Y')] ?? [];
             $sumProduksiMonth = array_sum(array_column($itemCountMonth, 'tot_produksi'));
@@ -353,13 +366,11 @@ class ProductionLossReportController extends Component
                 $avgLossMonth = array_sum(array_column($itemCountMonth, 'persenloss')) / count($itemCountMonth);
             }
             $spreadsheet->getActiveSheet()->setCellValue($columnProduksi . $rowItem, $sumProduksiMonth);
-            $this->numberFormatCommaSeparated($spreadsheet, $columnProduksi . $rowItem);
+            phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnProduksi . $rowItem);
             $spreadsheet->getActiveSheet()->setCellValue($columnLoss . $rowItem, $sumLossMonth);
-            $this->numberFormatCommaSeparated($spreadsheet, $columnLoss . $rowItem);
+            phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnLoss . $rowItem);
             $spreadsheet->getActiveSheet()->setCellValue($columnPersenLoss . $rowItem, $avgLossMonth);
-            $spreadsheet->getActiveSheet()->getStyle($columnPersenLoss . $rowItem)
-                ->getNumberFormat()
-                ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_PERCENTAGE_00);
+            phpspreadsheet::numberPercentageOrZero($spreadsheet, $columnPersenLoss . $rowItem);
 
             // Menambahkan 1 bulan
             $tglAwalHeader->addMonth();
@@ -386,16 +397,17 @@ class ProductionLossReportController extends Component
         $rowItemSum = $startRowItem;
         foreach ($listDepartment as $department) {
             $rowItemSum++;
-            foreach ($listMachine[$department['department_id']] as $machineno => $machinename) {
+            foreach ($listMachineExist[$department['department_id']] as $machineno => $machinename) {
                 $itemCountMachine = array_filter($data, function ($item) use ($machineno) {
                     return $item->machine_no == $machineno;
                 });
                 $sumProduksiMachine = array_sum(array_column($itemCountMachine, 'tot_produksi'));
-                $avgProduksiMachine = $sumProduksiMachine / count($itemCountMachine);
+                $avgProduksiMachine = count($itemCountMachine) > 0 ?$sumProduksiMachine / count($itemCountMachine) : 0;
 
                 $spreadsheet->getActiveSheet()->setCellValue($columnValueTotal . $rowItemSum, $sumProduksiMachine);
+                phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnValueTotal . $rowItemSum);
                 $spreadsheet->getActiveSheet()->setCellValue($columnValueAvg . $rowItemSum, $avgProduksiMachine);
-                $this->numberFormatCommaSeparated($spreadsheet, $columnValueTotal . $rowItemSum . ':' . $columnValueAvg . $rowItemSum);
+                phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnValueAvg . $rowItemSum);
                 $this->addFullBorder($spreadsheet, $columnValueTotal . $rowItemSum . ':' . $columnValueAvg . $rowItemSum);
                 $this->styleFont($spreadsheet, $columnValueTotal . $rowItemSum . ':' . $columnValueAvg . $rowItemSum, false, 8, 'Calibri');
                 $rowItemSum++;
