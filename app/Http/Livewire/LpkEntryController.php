@@ -149,13 +149,13 @@ class LpkEntryController extends Component
             }
         } else {
             if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
-                $tglMasuk = Carbon::createFromFormat('d-m-Y', $this->tglMasuk)->startOfDay();
-                $data = $data->where('tolp.created_on', '>=', $tglMasuk);
+                // $tglMasuk = Carbon::createFromFormat('d M Y', $this->tglMasuk)->startOfDay();
+                $data = $data->where('tolp.created_on', '>=', $this->tglMasuk);
             }
 
             if (isset($this->tglKeluar) && $this->tglKeluar != "" && $this->tglKeluar != "undefined") {
-                $tglKeluar = Carbon::createFromFormat('d-m-Y', $this->tglKeluar)->endOfDay();
-                $data = $data->where('tolp.created_on', '<=', $tglKeluar);
+                // $tglKeluar = Carbon::createFromFormat('d M Y', $this->tglKeluar)->endOfDay();
+                $data = $data->where('tolp.created_on', '<=', $this->tglKeluar);
             }
         }
 

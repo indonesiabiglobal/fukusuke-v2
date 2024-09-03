@@ -278,11 +278,11 @@
 
     <script>
         $(document).ready(function() {
-            $('#filterDate').flatpickr({
-                mode: "range",
-                dateFormat: "d-m-Y",
-                defaultDate: ['today to today'],
-            });
+            // $('#filterDate').flatpickr({
+            //     mode: "range",
+            //     dateFormat: "d-m-Y",
+            //     defaultDate: ['today to today'],
+            // });
 
             // $('#data-table-basic').DataTable();
 

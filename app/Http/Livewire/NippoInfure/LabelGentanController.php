@@ -20,11 +20,13 @@ class LabelGentanController extends Component
     public $qty_lpk;
     public $gentan_no;
     public $produk_asemblyid;
+    public $statusPrint = false;
 
     public function print()
     {
-
+        // $statusPrint = $this->statusPrint;
         $this->dispatch('redirectToPrint', $this->produk_asemblyid);
+        $this->statusPrint = false;
     }
 
     public function resetLpkNo()
@@ -68,6 +70,7 @@ class LabelGentanController extends Component
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor LPK ' . $this->lpk_no . ' Tidak Terdaftar']);
                 $this->resetLpkNo();
                 $this->resetGentanNo();
+                $this->statusPrint = false;
             } else {
                 $this->lpk_no = $data->lpk_no;
                 $this->code = $data->code;
@@ -108,12 +111,14 @@ class LabelGentanController extends Component
             if ($data2->isEmpty()) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Gentan ' . $this->gentan_no . ' Tidak Terdaftar']);
                 $this->resetGentanNo();
+                $this->statusPrint = false;
             } else {
                 $firstItem = $data2->first();
                 $this->produk_asemblyid = $firstItem->produk_asembly_id;
                 $this->product_panjang = $firstItem->panjang_produksi;
                 $this->berat_produksi = $firstItem->berat_produksi;
                 $this->berat_standard = $firstItem->berat_standard;
+                $this->statusPrint = true;
 
                 // $this->lpk_date = Carbon::parse($data->lpk_date)->format('Y-m-d');
             }
