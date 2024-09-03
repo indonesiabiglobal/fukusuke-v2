@@ -208,7 +208,7 @@
             </div>
         </div>
         <hr />
-        <button type="button" class="btn btn-success btn-print" wire:click="export" style="width:99%">
+        <button type="button" class="btn btn-success btn-print" wire:click="export" wire:loading.attr="disabled" style="width:99%">
             <span wire:loading.remove wire:target="export">
                 <i class="ri-printer-line"></i> Generate Report
             </span>
