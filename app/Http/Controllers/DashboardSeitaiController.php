@@ -44,12 +44,37 @@ class DashboardSeitaiController extends Controller
             $higherLossPercentage = 0;
         }
 
+        $listMachineSeitai = $this->getListMachineSeitai($startDate, $endDate, $divisionCodeSeitai);
+        $kadouJikan = $this->getkadouJikanSeitai($startDate, $endDate, $divisionCodeSeitai);
+        $kadouJikanDepartment = array_reduce($listMachineSeitai['listDepartment'], function ($carry, $item) use ($kadouJikan) {
+            $totalPersenMesin = array_reduce($kadouJikan, function ($carry, $itemKadou) use ($item) {
+                if ($itemKadou->department_id == $item['department_id']) {
+                    $carry += $itemKadou->persenmesinkerja;
+                }
+                return $carry;
+            }, 0);
+
+            $countMesin = array_reduce($kadouJikan, function ($carry, $itemKadou) use ($item) {
+                if ($itemKadou->department_id == $item['department_id']) {
+                    $carry += 1;
+                }
+                return $carry;
+            }, 0);
+            $carry[$item['department_id']] = [
+                'departmentId' => $item['department_id'],
+                'departmentName' => $item['department_name'],
+                'persenMesinDepartment' => $totalPersenMesin / $countMesin
+            ];
+            return $carry;
+        }, []);
+
         $data = [
             'filterDate' => $requestFilterDate,
 
             // Seitai
-            'listMachineSeitai' => $this->getListMachineSeitai($startDate, $endDate, $divisionCodeSeitai),
-            'kadouJikanSeitaiMesin' => $this->getkadouJikanSeitai($startDate, $endDate, $divisionCodeSeitai),
+            'listMachineSeitai' => $listMachineSeitai,
+            'kadouJikanSeitaiMesin' => $kadouJikan,
+            'kadouJikanDepartment' => $kadouJikanDepartment,
             'hasilProduksiSeitai' => $this->getHasilProduksiSeitai($startDate, $endDate),
             'counterTroubleSeitai' => $this->getCounterTroubleSeitai($startDate, $endDate),
             'lossSeitai' => $lossSeitai,

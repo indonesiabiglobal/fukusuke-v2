@@ -369,7 +369,8 @@
             /*
             Seitai
             */
-            let kadouJikanSeitaiMesin = @json($kadouJikanSeitaiMesin);
+            let kadouJikanDepartment = @json($kadouJikanDepartment);
+            kadouJikanDepartment = Object.values(kadouJikanDepartment);
 
 
             // Kadou Jikan Seitai
@@ -396,7 +397,7 @@
                 xAxis: {
                     type: 'category',
                     title: {
-                        text: 'Machine No'
+                        text: 'Department'
                     }
                 },
                 yAxis: {
@@ -427,10 +428,10 @@
                 series: [{
                     name: 'Division Seitai',
                     colorByPoint: false,
-                    data: kadouJikanSeitaiMesin.map(item => {
+                    data: kadouJikanDepartment.map(item => {
                         return {
-                            name: item.machine_no,
-                            y: parseFloat(item.persenmesinkerja),
+                            name: item.departmentName,
+                            y: parseFloat(item.persenMesinDepartment),
                         };
                     })
                 }]
