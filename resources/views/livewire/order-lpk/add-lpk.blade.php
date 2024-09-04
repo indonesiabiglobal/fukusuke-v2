@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-6 offset-6 mb-2">
+    <div class="col-6 offset-6 mb-2 text-end">
         <input type="file" id="fileInput" wire:model="file" style="display: none;">
         <button class="btn btn-success w-lg p-1" type="button"
             onclick="document.getElementById('fileInput').click()">
@@ -75,7 +75,8 @@
                 <div class="form-group mt-1">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-3 fw-bold text-muted">PO Number</label>
-                        <input type="text" class="form-control @error('po_no') is-invalid @enderror" wire:model.live.debounce.300ms="po_no"  placeholder="PO NUMBER" />
+                        <input type="text" class="form-control @error('po_no') is-invalid @enderror" wire:model.change="po_no"  placeholder="PO NUMBER"
+                        x-on:keydown.tab="$event.preventDefault(); $refs.machineno.focus();" />
                         @error('po_no')
                             <span class="invalid-feedback">{{ $message }}</span>
                         @enderror
@@ -83,9 +84,15 @@
                 </div>
                 <div class="form-group mt-1">
                     <div class="input-group">
-                        <label class="control-label col-12 col-lg-3 fw-bold text-muted" style="text-decoration: underline;">
+                        {{-- <label class="control-label col-12 col-lg-3 fw-bold text-muted" style="text-decoration: underline;">
                             <a href="#" data-bs-toggle="modal" wire:click="showModalNoOrder" class="text-muted">
                                 Nomor Order
+                            </a>
+                        </label> --}}
+                        <label class="control-label col-12 col-lg-3 fw-bold">
+                            <a href="#" data-bs-toggle="modal" wire:click="showModalNoOrder"
+                                class="text-underscore">
+                                Nomor Order <i class="ri-information-fill"></i>
                             </a>
                         </label>
                         <input type="text" class="form-control readonly bg-light" readonly="readonly" wire:model="no_order" />
@@ -94,7 +101,7 @@
                 <div class="form-group mt-1">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-3 fw-bold text-muted">Nomor Mesin</label>
-                        <input type="text" class="form-control @error('machineno') is-invalid @enderror" wire:model.live.debounce.300ms="machineno" />
+                        <input type="text" class="form-control @error('machineno') is-invalid @enderror" wire:model.change="machineno" x-ref="machineno"/>
                         @error('machineno')
                             <span class="invalid-feedback">{{ $message }}</span>
                         @enderror

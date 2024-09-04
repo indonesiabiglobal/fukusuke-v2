@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-6 offset-6 mb-2">
+    <div class="col-6 offset-6 mb-2 text-end">
         <input type="file" id="fileInput" wire:model="file" style="display: none;">
         <button class="btn btn-success w-lg p-1" type="button"
             onclick="document.getElementById('fileInput').click()">
