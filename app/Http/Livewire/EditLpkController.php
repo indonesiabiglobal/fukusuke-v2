@@ -48,6 +48,7 @@ class EditLpkController extends Component
     public $case_box_count;
     public $status_lpk;
     public $seq_no;
+    public $reprint_no;
 
     public $masterWarnaLPK;
 
@@ -117,6 +118,7 @@ class EditLpkController extends Component
                 'tolp.seq_no',
                 'tolp.updated_by',
                 'tolp.updated_on as updatedt',
+                'tolp.reprint_no',
                 'tolp.status_lpk'
             )
             ->join('tdorder as tod', 'tod.id', '=', 'tolp.order_id')
@@ -146,6 +148,7 @@ class EditLpkController extends Component
         $this->total_assembly_line = $order->total_assembly_line;
         $this->productlength = $order->productlength;
         $this->remark = $order->remark;
+        $this->reprint_no = $order->reprint_no;
         // $this->warnalpkid['value'] = $order->warnalpkid;
         $this->status_lpk = $order->status_lpk;
     }

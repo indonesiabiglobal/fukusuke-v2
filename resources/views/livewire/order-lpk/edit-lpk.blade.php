@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-6 offset-6 mb-2">
+    <div class="col-6 offset-6 mb-2 text-end">
         <input type="file" id="fileInput" wire:model="file" style="display: none;">
         <button class="btn btn-success w-lg p-1" type="button"
             onclick="document.getElementById('fileInput').click()">
@@ -284,7 +284,7 @@
             </div>
         </div>
         <hr />
-        <div class="col-lg-12" style="border-top:1px solid #efefef">
+        <div class="col-lg-12">
             <div class="toolbar">
                 <button type="button" class="btn btn-warning" wire:click="cancel">
                     <span wire:loading.remove wire:target="cancel">
@@ -307,7 +307,7 @@
                         <i class="ri-delete-bin-line"></i> Delete
                     </button>
 
-                    <button type="button" wire:click="save" class="btn btn-success w-lg">
+                    <button type="button" wire:click="save" class="btn btn-success">
                         <span wire:loading.remove wire:target="save">
                             <i class="ri-save-3-line"></i> Update
                         </span>
@@ -328,6 +328,9 @@
                         <i class="bx bx-printer"></i> Print
                     </button>
                     <p class="text-secondary mb-0">Data LPK Sudah Di Produksi ! ..</p>
+                @endif
+                @if ($reprint_no > 0)
+                    <p class="text-danger text-end">Re-Print #{{ $reprint_no }}</p>
                 @endif
             </div>
         </div>

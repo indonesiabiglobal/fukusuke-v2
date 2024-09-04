@@ -71,8 +71,8 @@ class AddLpkController extends Component
 
     public function mount()
     {
-        $this->lpk_date = Carbon::now()->format('Y-m-d');
-        $this->processdate = Carbon::now()->format('Y-m-d');
+        $this->lpk_date = Carbon::now()->format('d-m-Y');
+        $this->processdate = Carbon::now()->format('d-m-Y');
         $today = Carbon::now();
         $lastLPK = TdOrderLpk::whereDate('lpk_date', Carbon::today())
             ->orderBy('lpk_no', 'desc')
@@ -207,7 +207,7 @@ class AddLpkController extends Component
             $orderlpk->product_panjang = $this->productlength;
             $orderlpk->product_panjanggulung = $this->defaultgulung;
             // $orderlpk->warnalpkid = $this->warnalpkid['value'];
-            $orderlpk->created_on = Carbon::now()->format('Y-m-d H:i:s');
+            $orderlpk->created_on = Carbon::now()->format('d-m-Y H:i:s');
 
             $orderlpk->save();
 
@@ -228,6 +228,20 @@ class AddLpkController extends Component
     public function cancel()
     {
         return redirect()->route('lpk-entry');
+    }
+
+    public function resetPoNo()
+    {
+        $this->po_no = '';
+        $this->no_order = '';
+        $this->processdate = '';
+        $this->order_date = '';
+        $this->buyer_name = '';
+        $this->product_name = '';
+        $this->productlength = '';
+        $this->case_box_count = '';
+        $this->defaultgulung = '';
+        $this->dimensi = '';
     }
 
     public function render()
@@ -255,6 +269,7 @@ class AddLpkController extends Component
 
             if ($tdorder == null) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor PO ' . $this->po_no . ' Tidak Terdaftar']);
+                $this->resetPoNo();
             } else {
                 $this->no_order = $tdorder->product_code;
                 $this->processdate = $tdorder->processdate;
@@ -269,9 +284,11 @@ class AddLpkController extends Component
         }
 
         if (isset($this->machineno) && $this->machineno != '') {
-            $machine = MsMachine::where('machineno', 'ilike', '%' . $this->machineno . '%')->first();
+            $machine = MsMachine::where('machineno', 'ilike', '%' . $this->machineno . '%')->whereIn('department_id', [10, 12, 15, 2, 4, 10])->first();
             if ($machine == null) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Mesin ' . $this->machineno . ' Tidak Terdaftar']);
+                $this->machineno = '';
+                $this->machinename = '';
             } else {
                 $this->machineno = $machine->machineno;
                 $this->machinename = $machine->machinename;
