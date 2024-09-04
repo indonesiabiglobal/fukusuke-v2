@@ -290,18 +290,27 @@
                             <h4 class="card-title mb-0 flex-grow-1">SEITAI Machine Running Rate (Kadou Jikan)</h4>
                         </div>
                         <div class="card-body">
-                            <table class="table">
-                                @foreach ($listMachineSeitai['listDepartment'] as $department)
-                                    <tr>
-                                        <td>{{ $department['department_name'] }}</td>
-                                        @foreach ($listMachineSeitai['listMachineSeitai'] as $machine)
-                                            @if ($machine->department_id == $department['department_id'])
-                                                <td class="bg-danger">{{ $machine->machineno }}</td>
-                                            @endif
-                                        @endforeach
-                                    </tr>
-                                @endforeach
-                            </table>
+                            <div style="max-height: 400px; overflow-y: auto; max-width: 100%; overflow-x: auto;">
+                                <table class="table">
+                                    @foreach ($listMachineSeitai['listDepartment'] as $department)
+                                        <tr>
+                                            <td>{{ $department['department_name'] }}</td>
+                                            @foreach ($kadouJikanSeitaiMesin as $machine)
+                                                @if ($machine->department_id == $department['department_id'])
+                                                <td style="padding: 1px;">
+                                                    <div class="{{ $machine->persenmesinkerja > 50 ? 'bg-success' : ($machine->persenmesinkerja > 0 ? 'bg-warning' : 'bg-danger') }}"
+                                                        style="padding: 10px; width: 100%; height: 100%;"
+                                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                                        data-bs-title="{{ $machine->machineno . ': ' . $machine->persenmesinkerja }}%">
+                                                        {{ $machine->machine_no }}
+                                                    </div>
+                                                </td>
+                                                @endif
+                                            @endforeach
+                                        </tr>
+                                    @endforeach
+                                </table>
+                            </div>
                         </div><!-- end card body -->
                     </div>
                     <div class="mt-4">

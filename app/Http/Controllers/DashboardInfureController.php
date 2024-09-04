@@ -103,8 +103,10 @@ class DashboardInfureController extends Controller
         SELECT y.* FROM (
             SELECT x.*,round(x.work_hour_on_mm/?*100,2) as persenmesinkerja from (
                 SELECT RIGHT(mac.machineno, 2) AS machine_no,
-                    mac.machineno AS machine_name,
+                    mac.machineno AS machineno,
+                    mac.machinename AS machine_name,
                     dep.name AS department_name,
+                    dep.id AS department_id,
                     dep.division_code,
                     COALESCE(jam.work_hour_mm, 0) AS work_hour_mm,
                     COALESCE(jam.work_hour_off_mm, 0) AS work_hour_off_mm,

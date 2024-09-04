@@ -45,10 +45,10 @@
                     <div class="collapse menu-dropdown" id="dashboard">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="dashboard-seitai" class="nav-link" data-key="d-seitai"> SEITAI </a>
+                                <a href="dashboard-infure" class="nav-link" data-key="d-infure"> INFURE </a>
                             </li>
                             <li class="nav-item">
-                                <a href="dashboard-infure" class="nav-link" data-key="d-infure"> INFURE </a>
+                                <a href="dashboard-seitai" class="nav-link" data-key="d-seitai"> SEITAI </a>
                             </li>
                             <li class="nav-item">
                                 <a href="/dashboard-ppic" class="nav-link" data-key="dashboard-ppic"> PPIC </a>
@@ -69,7 +69,7 @@
                     <div class="collapse menu-dropdown" id="orderlpk">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="order-lpk" class="nav-link" data-key="t-order-lpk" 
+                                <a href="order-lpk" class="nav-link" data-key="t-order-lpk"
                                 {{-- onclick="return confirm('Are you sure you want to proceed to Order Entry?');" --}}
                                 > Order Entry </a>
                             </li>
