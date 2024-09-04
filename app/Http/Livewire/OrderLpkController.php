@@ -61,8 +61,8 @@ class OrderLpkController extends Component
         $this->buyer = MsBuyer::get();
 
         // mengambil data dari session terlebih dahulu jika ada
-        $this->tglMasuk = session('tglMasuk', Carbon::now()->format('d-m-Y'));
-        $this->tglKeluar = session('tglKeluar', Carbon::now()->format('d-m-Y'));
+        $this->tglMasuk = session('tglMasuk', Carbon::now()->format('d M Y'));
+        $this->tglKeluar = session('tglKeluar', Carbon::now()->format('d M Y'));
     }
 
     public function search()

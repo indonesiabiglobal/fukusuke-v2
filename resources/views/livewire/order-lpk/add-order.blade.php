@@ -45,13 +45,19 @@
             </div>
             <div class="form-group mt-1">
                 <div class="input-group">
-                    <label class="control-label col-12 col-lg-3 fw-bold text-muted" style="text-decoration: underline;">
+                    {{-- <label class="control-label col-12 col-lg-3 fw-bold text-muted" style="text-decoration: underline;">
                         <a href="#" data-bs-toggle="modal" wire:click="showModalNoOrder" class="text-muted">
                             Nomor Order
                         </a>
+                    </label> --}}
+                    <label class="control-label col-12 col-lg-3 fw-bold">
+                        <a href="#" data-bs-toggle="modal" wire:click="showModalNoOrder"
+                            class="text-underscore">
+                            Nomor Order <i class="ri-information-fill"></i>
+                        </a>
                     </label>
                     <input type="text" class="form-control text-uppercase @error('product_id') is-invalid @enderror"
-                        wire:model.live.debounce.300ms="product_id" oninput="this.value = this.value.toUpperCase()"
+                        wire:model.change="product_id" oninput="this.value = this.value.toUpperCase()"
                         x-on:keydown.tab="$event.preventDefault(); $refs.order_qty.focus();"
                         x-ref="product_id"/>
                     @error('product_id')

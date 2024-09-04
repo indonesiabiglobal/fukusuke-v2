@@ -122,7 +122,7 @@ class EditOrderController extends Component
 
     public function mount(Request $request)
     {
-        $this->tglMasuk = Carbon::now()->format('Y-m-d');
+        $this->tglMasuk = Carbon::now()->format('d-m-Y');
         $this->buyer = MsBuyer::get();
 
         $order = TdOrders::where('id', $request->query('orderId'))->first();
@@ -130,15 +130,15 @@ class EditOrderController extends Component
         $this->po_no = $order->po_no;
         $this->product_code = $order->product_code;
         $this->order_qty = number_format($order->order_qty);
-        $this->process_date = Carbon::parse($order->processdate)->format('Y-m-d');
-        $this->order_date = Carbon::parse($order->order_date)->format('Y-m-d');
-        $this->stufingdate = Carbon::parse($order->stufingdate)->format('Y-m-d');
-        $this->etddate = Carbon::parse($order->etddate)->format('Y-m-d');
-        $this->etadate = Carbon::parse($order->etadate)->format('Y-m-d');
+        $this->process_date = Carbon::parse($order->processdate)->format('d-m-Y') . ' - Nomor: ' . $order->processseq;
+        $this->order_date = Carbon::parse($order->order_date)->format('d-m-Y');
+        $this->stufingdate = Carbon::parse($order->stufingdate)->format('d-m-Y');
+        $this->etddate = Carbon::parse($order->etddate)->format('d-m-Y');
+        $this->etadate = Carbon::parse($order->etadate)->format('d-m-Y');
         $product = MsProduct::where('id', $order->product_id)->first();
         $this->product_id = $product->code;
         $this->product_name = $product->name;
-        $this->dimensi = $product->ketebalan.'x'.$product->diameterlipat.'x'.$product->productlength;
+        $this->dimensi = $product->ketebalan . 'x' . $product->diameterlipat . 'x' . $product->productlength;
         $this->buyer_id['value'] = $order->buyer_id;
         $this->unit_id = $order->order_unit;
         $this->status_order = $order->status_order;
@@ -314,13 +314,13 @@ class EditOrderController extends Component
 
     public function render()
     {
-        if(isset($this->product_id) && $this->product_id != ''){
-            $product=MsProduct::where('code', $this->product_id)->first();
-            if($product == null){
+        if (isset($this->product_id) && $this->product_id != '') {
+            $product = MsProduct::where('code', $this->product_id)->first();
+            if ($product == null) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Order ' . $this->product_id . ' Tidak Terdaftar']);
             } else {
                 $this->product_name = $product->name;
-                $this->dimensi = $product->ketebalan.'x'.$product->diameterlipat.'x'.$product->productlength;
+                $this->dimensi = $product->ketebalan . 'x' . $product->diameterlipat . 'x' . $product->productlength;
             }
         }
         return view('livewire.order-lpk.edit-order')->extends('layouts.master');
