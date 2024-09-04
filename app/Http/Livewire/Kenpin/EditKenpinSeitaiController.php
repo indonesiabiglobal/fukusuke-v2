@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Kenpin;
 
+use App\Helpers\phpspreadsheet;
 use Livewire\Component;
 use App\Models\TdOrder;
 use App\Models\MsBuyer;
@@ -14,6 +15,8 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class EditKenpinSeitaiController extends Component
 {
@@ -315,6 +318,89 @@ class EditKenpinSeitaiController extends Component
         } else {
             $this->dispatch('notification', ['type' => 'error', 'message' => 'Nomor Palet yang dicari tidak boleh kosong']);
         }
+    }
+
+    public function export()
+    {
+        $spreadsheet = new Spreadsheet();
+        $activeWorksheet = $spreadsheet->getActiveSheet();
+
+        // Menghilangkan gridline
+        $activeWorksheet->setShowGridlines(false);
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+
+        $activeWorksheet->getPageSetup()->setFitToWidth(1);
+        $activeWorksheet->getPageSetup()->setFitToHeight(0);
+        // Jika ingin memastikan rasio tetap terjaga
+        $activeWorksheet->getPageSetup()->setFitToPage(true);
+        // Mengatur margin halaman menjadi 0.75 cm di semua sisi
+        $activeWorksheet->getPageMargins()->setTop(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setBottom(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setLeft(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setRight(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setHeader(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setFooter(0.75 / 2.54);
+
+        $startColumn = 'B';
+        // Set Title Kenpin
+        $rowTitleCard = 2;
+        $spreadsheet->getActiveSheet()->setCellValue($startColumn . $rowTitleCard, 'KARTU KENPIN SEITAI');
+        phpspreadsheet::styleFont($spreadsheet, $startColumn . $rowTitleCard, false, 20, 'Tahoma');
+
+        /**
+         * Header Kenpin
+         */
+        // header nomor kenpin
+        $columnHeaderNoKenpinStart = 'B';
+        $columnHeaderNoKenpinEnd = 'E';
+        $rowItem = 3;
+        $spreadsheet->getActiveSheet()->mergeCells($columnHeaderNoKenpinStart . $rowItem . ':' . $columnHeaderNoKenpinEnd . $rowItem);
+        $spreadsheet->getActiveSheet()->setCellValue($columnHeaderNoKenpinStart . $rowItem, 'Nomor Kenpin');
+
+        // header tanggal kenpin
+        $columnHeaderTanggalKenpinStart = 'F';
+        $columnHeaderTanggalKenpinEnd = 'I';
+        $spreadsheet->getActiveSheet()->mergeCells($columnHeaderTanggalKenpinStart . $rowItem . ':' . $columnHeaderTanggalKenpinEnd . $rowItem);
+        $spreadsheet->getActiveSheet()->setCellValue($columnHeaderTanggalKenpinStart . $rowItem , 'Tanggal Kenpin');
+
+        // header pic
+        $columnHeaderPicStart = 'J';
+        $columnHeaderPicEnd = 'P';
+        $spreadsheet->getActiveSheet()->mergeCells($columnHeaderPicStart . $rowItem . ':' . $columnHeaderPicEnd . $rowItem);
+        $spreadsheet->getActiveSheet()->setCellValue($columnHeaderPicStart . $rowItem , 'PIC');
+
+        // header kenpin kosong
+        $columnHeaderKosongStart = 'Q';
+        $columnHeaderKosongEnd = 'U';
+        $spreadsheet->getActiveSheet()->mergeCells($columnHeaderKosongStart . $rowItem . ':' . $columnHeaderKosongEnd . $rowItem);
+
+        phpSpreadsheet::styleFont($spreadsheet, $columnHeaderNoKenpinStart . $rowItem .':'. $columnHeaderPicEnd . $rowItem, true, 12, 'Tahoma');
+        phpSpreadsheet::textAlignCenter($spreadsheet, $columnHeaderNoKenpinStart . $rowItem . ':' . $columnHeaderPicEnd . $rowItem);
+        $rowItem++;
+
+        /**
+         * Value kenpin
+         */
+        // value nomor kenpin
+        $spreadsheet->getActiveSheet()->mergeCells($columnHeaderNoKenpinStart . $rowItem . ':' . $columnHeaderNoKenpinEnd . $rowItem);
+        $spreadsheet->getActiveSheet()->setCellValue($columnHeaderNoKenpinStart . $rowItem, $this->kenpin_no);
+        phpspreadsheet::styleFont($spreadsheet, $columnHeaderNoKenpinStart . $rowItem, true, 14, 'Tahoma', 'FFFFFFFF');
+        phpspreadsheet::styleCell($spreadsheet, $columnHeaderNoKenpinStart . $rowItem, 'FF000000');
+        phpspreadsheet::textAlignCenter($spreadsheet, $columnHeaderNoKenpinStart . $rowItem);
+
+        // value tanggal kenpin
+        $spreadsheet->getActiveSheet()->mergeCells($columnHeaderTanggalKenpinStart . $rowItem . ':' . $columnHeaderTanggalKenpinEnd . $rowItem);
+        $spreadsheet->getActiveSheet()->setCellValue($columnHeaderTanggalKenpinStart . $rowItem, $this->kenpin_date);
+        phpspreadsheet::styleFont($spreadsheet, $columnHeaderTanggalKenpinStart . $rowItem, false, 14, 'Tahoma');
+
+        // value pic
+        $spreadsheet->getActiveSheet()->mergeCells($columnHeaderPicStart . $rowItem . ':' . $columnHeaderPicEnd . $rowItem);
+        $spreadsheet->getActiveSheet()->setCellValue($columnHeaderPicStart . $rowItem, $this->empname);
+        phpspreadsheet::styleFont($spreadsheet, $columnHeaderPicStart . $rowItem, false, 14, 'Tahoma');
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('asset/report/KKSeitai-' . $this->kenpin_no . '.xlsx');
+        return response()->download('asset/report/KKSeitai-' . $this->kenpin_no . '.xlsx');
     }
 
     public function render()
