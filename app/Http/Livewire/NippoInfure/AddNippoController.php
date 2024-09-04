@@ -275,7 +275,7 @@ class AddNippoController extends Component
 
             $product = new TdProductAssembly();
             $product->production_no = $today->format('dmy') . '-' . $seqno;
-            $product->production_date = Carbon::parse($this->production_date . ' ' . $this->work_hour)->format('Y-m-d H:i:s');
+            $product->production_date = Carbon::parse($this->production_date . ' ' . $this->work_hour)->format('d/m/y H:i:s');
             $product->created_on = $this->created_on;
             $product->machine_id = $machine->id;
             $product->employee_id = $employe->id;
