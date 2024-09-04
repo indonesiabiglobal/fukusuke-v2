@@ -17,4 +17,9 @@ class MsProduct extends Model
     //     'title',
     //     'content',
     // ];
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', 1);
+    }
 }

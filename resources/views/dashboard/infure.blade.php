@@ -367,8 +367,8 @@
             /*
             Infure
             */
-            let kadouJikanInfureMesin = @json($kadouJikanInfureMesin);
-
+            let kadouJikanDepartment = @json($kadouJikanDepartment);
+            kadouJikanDepartment = Object.values(kadouJikanDepartment);
 
             // Kadou Jikan Infure
             Highcharts.chart('kadouJikanInfure', {
@@ -394,7 +394,7 @@
                 xAxis: {
                     type: 'category',
                     title: {
-                        text: 'Machine No'
+                        text: 'Department'
                     }
                 },
                 yAxis: {
@@ -421,15 +421,15 @@
                     pointFormat: '<span style="color:{point.color};">{point.name}</span>: ' +
                         '<b>{point.y:.2f}%</b> of total<br/>'
                 },
-
                 series: [{
                     name: 'Division Infure',
                     colorByPoint: false,
-                    data: kadouJikanInfureMesin.map(item => {
+                    data: kadouJikanDepartment.map(item => {
                         return {
-                            name: item.machine_no,
-                            y: parseFloat(item.persenmesinkerja),
-                        };
+                            name: item.departmentName,
+                            y: parseFloat(item.persenMesinDepartment),
+                            // drilldown: item.departmentName
+                        }
                     })
                 }]
             });

@@ -43,12 +43,37 @@ class DashboardInfureController extends Controller
         } else {
             $higherLossPercentage = 0;
         }
+        $listMachineInfure = $this->getListMachineInfure($startDate, $endDate, $divisionCodeInfure);
+        $kadouJikan = $this->getKadouJikanInfure($startDate, $endDate, $divisionCodeInfure);
+        $kadouJikanDepartment = array_reduce($listMachineInfure['listDepartment'], function ($carry, $item) use ($kadouJikan) {
+            $totalPersenMesin = array_reduce($kadouJikan, function ($carry, $itemKadou) use ($item) {
+                if ($itemKadou->department_id == $item['department_id']) {
+                    $carry += $itemKadou->persenmesinkerja;
+                }
+                return $carry;
+            }, 0);
+
+            $countMesin = array_reduce($kadouJikan, function ($carry, $itemKadou) use ($item) {
+                if ($itemKadou->department_id == $item['department_id']) {
+                    $carry += 1;
+                }
+                return $carry;
+            }, 0);
+            $carry[$item['department_id']] = [
+                'departmentId' => $item['department_id'],
+                'departmentName' => $item['department_name'],
+                'persenMesinDepartment' => $totalPersenMesin / $countMesin
+            ];
+            return $carry;
+        }, []);
+
         $data = [
             'filterDate' => $requestFilterDate,
 
             // Infure
-            'listMachineInfure' => $this->getListMachineInfure($startDate, $endDate, $divisionCodeInfure),
-            'kadouJikanInfureMesin' => $this->getKadouJikanInfure($startDate, $endDate, $divisionCodeInfure),
+            'listMachineInfure' => $listMachineInfure,
+            'kadouJikanInfureMesin' => $kadouJikan,
+            'kadouJikanDepartment' => $kadouJikanDepartment,
             'hasilProduksiInfure' => $this->getHasilProduksiInfure($startDate, $endDate),
             'counterTroubleInfure' => $this->getCounterTroubleInfure($startDate, $endDate),
             'lossInfure' => $lossInfure,
@@ -56,7 +81,6 @@ class DashboardInfureController extends Controller
             'higherLoss' => round($higherLoss, 2),
             'higherLossPercentage' => $higherLossPercentage,
         ];
-        // dd($data);
         return view('dashboard.infure', $data);
     }
 
