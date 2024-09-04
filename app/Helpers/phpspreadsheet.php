@@ -56,12 +56,36 @@ class phpspreadsheet
         ]);
     }
 
+    public static function addBottomBorder($spreadsheet, $range, $borderStyle = \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN, $color = 'FF000000')
+    {
+        $spreadsheet->getActiveSheet()->getStyle($range)->applyFromArray([
+            'borders' => [
+                'bottom' => [
+                    'borderStyle' => $borderStyle,
+                    'color' => ['argb' => $color],
+                ],
+            ],
+        ]);
+    }
+
     // border titik-titik
     public static function addFullBorderDotted($spreadsheet, $range, $borderStyle = \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_DOTTED, $color = 'FF000000')
     {
         $spreadsheet->getActiveSheet()->getStyle($range)->applyFromArray([
             'borders' => [
                 'allBorders' => [
+                    'borderStyle' => $borderStyle,
+                    'color' => ['argb' => $color],
+                ],
+            ],
+        ]);
+    }
+
+    public static function addBottomBorderDotted($spreadsheet, $range, $borderStyle = \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_DOTTED, $color = 'FF000000')
+    {
+        $spreadsheet->getActiveSheet()->getStyle($range)->applyFromArray([
+            'borders' => [
+                'bottom' => [
                     'borderStyle' => $borderStyle,
                     'color' => ['argb' => $color],
                 ],

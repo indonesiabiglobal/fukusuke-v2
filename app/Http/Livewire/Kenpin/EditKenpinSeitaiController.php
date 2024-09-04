@@ -25,6 +25,7 @@ class EditKenpinSeitaiController extends Component
     public $kenpin_date;
     public $name;
     public $code;
+    public $code_alias;
     public $empname;
     public $employeeno;
     public $details;
@@ -39,6 +40,7 @@ class EditKenpinSeitaiController extends Component
     public $status;
     public $idKenpinGoodDetailUpdate;
     public $beratLossTotal = 0;
+    public $qtyProduksiTotal = 0;
 
     // data master produk
     public $masterKatanuki;
@@ -56,6 +58,7 @@ class EditKenpinSeitaiController extends Component
         $this->kenpin_no = $data->kenpin_no;
         $this->kenpin_date = Carbon::parse($data->kenpin_date)->format('d-m-Y');
         $this->code = $product->code;
+        $this->code_alias = $product->code_alias;
         $this->empname = $employee->empname;
         $this->employeeno = $employee->employeeno;
         $this->qty_loss = $data->qty_loss;
@@ -70,6 +73,7 @@ class EditKenpinSeitaiController extends Component
                 'tdpg.production_date AS production_date',
                 'tdpg.lpk_id AS lpk_id',
                 'tdpg.product_id AS product_id',
+                'tdpg.work_shift AS work_shift',
                 'msp.code AS code',
                 'msp.name AS namaproduk',
                 'tdpg.qty_produksi AS qty_produksi',
@@ -87,6 +91,7 @@ class EditKenpinSeitaiController extends Component
             ->get();
 
         $this->beratLossTotal = $this->details->sum('qty_loss');
+        $this->qtyProduksiTotal = $this->details->sum('qty_produksi');
     }
 
     public function rules()
@@ -342,10 +347,12 @@ class EditKenpinSeitaiController extends Component
         $activeWorksheet->getPageMargins()->setFooter(0.75 / 2.54);
 
         $startColumn = 'B';
+        $endColumn = 'U';
         // Set Title Kenpin
         $rowTitleCard = 2;
         $spreadsheet->getActiveSheet()->setCellValue($startColumn . $rowTitleCard, 'KARTU KENPIN SEITAI');
         phpspreadsheet::styleFont($spreadsheet, $startColumn . $rowTitleCard, false, 20, 'Tahoma');
+        phpspreadsheet::addBottomBorder($spreadsheet, $startColumn . $rowTitleCard . ':' . $endColumn . $rowTitleCard, 'FF000000');
 
         /**
          * Header Kenpin
@@ -361,20 +368,21 @@ class EditKenpinSeitaiController extends Component
         $columnHeaderTanggalKenpinStart = 'F';
         $columnHeaderTanggalKenpinEnd = 'I';
         $spreadsheet->getActiveSheet()->mergeCells($columnHeaderTanggalKenpinStart . $rowItem . ':' . $columnHeaderTanggalKenpinEnd . $rowItem);
-        $spreadsheet->getActiveSheet()->setCellValue($columnHeaderTanggalKenpinStart . $rowItem , 'Tanggal Kenpin');
+        $spreadsheet->getActiveSheet()->setCellValue($columnHeaderTanggalKenpinStart . $rowItem, 'Tanggal Kenpin');
 
         // header pic
         $columnHeaderPicStart = 'J';
         $columnHeaderPicEnd = 'P';
         $spreadsheet->getActiveSheet()->mergeCells($columnHeaderPicStart . $rowItem . ':' . $columnHeaderPicEnd . $rowItem);
-        $spreadsheet->getActiveSheet()->setCellValue($columnHeaderPicStart . $rowItem , 'PIC');
+        $spreadsheet->getActiveSheet()->setCellValue($columnHeaderPicStart . $rowItem, 'PIC');
+        phpspreadsheet::addBottomBorderDotted($spreadsheet, $startColumn . $rowItem . ':' . $endColumn . $rowItem);
 
         // header kenpin kosong
         $columnHeaderKosongStart = 'Q';
         $columnHeaderKosongEnd = 'U';
         $spreadsheet->getActiveSheet()->mergeCells($columnHeaderKosongStart . $rowItem . ':' . $columnHeaderKosongEnd . $rowItem);
 
-        phpSpreadsheet::styleFont($spreadsheet, $columnHeaderNoKenpinStart . $rowItem .':'. $columnHeaderPicEnd . $rowItem, true, 12, 'Tahoma');
+        phpSpreadsheet::styleFont($spreadsheet, $columnHeaderNoKenpinStart . $rowItem . ':' . $columnHeaderPicEnd . $rowItem, false, 8, 'Tahoma');
         phpSpreadsheet::textAlignCenter($spreadsheet, $columnHeaderNoKenpinStart . $rowItem . ':' . $columnHeaderPicEnd . $rowItem);
         $rowItem++;
 
@@ -392,11 +400,201 @@ class EditKenpinSeitaiController extends Component
         $spreadsheet->getActiveSheet()->mergeCells($columnHeaderTanggalKenpinStart . $rowItem . ':' . $columnHeaderTanggalKenpinEnd . $rowItem);
         $spreadsheet->getActiveSheet()->setCellValue($columnHeaderTanggalKenpinStart . $rowItem, $this->kenpin_date);
         phpspreadsheet::styleFont($spreadsheet, $columnHeaderTanggalKenpinStart . $rowItem, false, 14, 'Tahoma');
+        phpspreadsheet::textAlignCenter($spreadsheet, $columnHeaderTanggalKenpinStart . $rowItem);
 
         // value pic
         $spreadsheet->getActiveSheet()->mergeCells($columnHeaderPicStart . $rowItem . ':' . $columnHeaderPicEnd . $rowItem);
         $spreadsheet->getActiveSheet()->setCellValue($columnHeaderPicStart . $rowItem, $this->empname);
         phpspreadsheet::styleFont($spreadsheet, $columnHeaderPicStart . $rowItem, false, 14, 'Tahoma');
+        phpspreadsheet::textAlignCenter($spreadsheet, $columnHeaderPicStart . $rowItem);
+        phpspreadsheet::addBottomBorderDotted($spreadsheet, $startColumn . $rowItem . ':' . $endColumn . $rowItem);
+        $rowItem++;
+
+        /**
+         * Header Order
+         */
+        // header no order
+        $endColumnNoOrder = 'D';
+        $spreadsheet->getActiveSheet()->mergeCells($startColumn . $rowItem . ':' . $endColumnNoOrder . $rowItem);
+        $spreadsheet->getActiveSheet()->setCellValue($startColumn . $rowItem, 'No Order');
+        phpspreadsheet::styleFont($spreadsheet, $startColumn . $rowItem, false, 8, 'Tahoma');
+
+        // header kode produk
+        $startColumnKodeProduk = 'E';
+        $endColumnKodeProduk = 'G';
+        $spreadsheet->getActiveSheet()->mergeCells($startColumnKodeProduk . $rowItem . ':' . $endColumnKodeProduk . $rowItem);
+        $spreadsheet->getActiveSheet()->setCellValue($startColumnKodeProduk . $rowItem, 'Kode Produk');
+        phpspreadsheet::styleFont($spreadsheet, $startColumnKodeProduk . $rowItem, false, 8, 'Tahoma');
+
+        // header nama produk
+        $startColumnNamaProduk = 'H';
+        $endColumnNamaProduk = 'U';
+        $spreadsheet->getActiveSheet()->mergeCells($startColumnNamaProduk . $rowItem . ':' . $endColumnNamaProduk . $rowItem);
+        $spreadsheet->getActiveSheet()->setCellValue($startColumnNamaProduk . $rowItem, 'Nama Produk');
+        phpspreadsheet::styleFont($spreadsheet, $startColumnNamaProduk . $rowItem, false, 8, 'Tahoma');
+        phpspreadsheet::addBottomBorderDotted($spreadsheet, $startColumn . $rowItem . ':' . $endColumn . $rowItem);
+        $rowItem++;
+
+        /**
+         * Value Order
+        */
+        // value no order
+        $spreadsheet->getActiveSheet()->mergeCells($startColumn . $rowItem . ':' . $endColumnNoOrder . $rowItem);
+        $spreadsheet->getActiveSheet()->setCellValue($startColumn . $rowItem, $this->code);
+        phpspreadsheet::styleFont($spreadsheet, $startColumn . $rowItem, false, 14, 'Tahoma');
+
+        // value kode produk
+        $spreadsheet->getActiveSheet()->mergeCells($startColumnKodeProduk . $rowItem . ':' . $endColumnKodeProduk . $rowItem);
+        $spreadsheet->getActiveSheet()->setCellValue($startColumnKodeProduk . $rowItem, $this->code_alias);
+        phpspreadsheet::styleFont($spreadsheet, $startColumnKodeProduk . $rowItem, false, 14, 'Tahoma');
+
+        // value nama produk
+        $spreadsheet->getActiveSheet()->mergeCells($startColumnNamaProduk . $rowItem . ':' . $endColumnNamaProduk . $rowItem);
+        $spreadsheet->getActiveSheet()->setCellValue($startColumnNamaProduk . $rowItem, $this->name);
+        phpspreadsheet::styleFont($spreadsheet, $startColumnNamaProduk . $rowItem, false, 14, 'Tahoma');
+        phpspreadsheet::addBottomBorderDotted($spreadsheet, $startColumn . $rowItem . ':' . $endColumn . $rowItem);
+        $rowItem++;
+
+        /**
+         * Masalah
+         */
+        // header masalah
+        $spreadsheet->getActiveSheet()->mergeCells($startColumn . $rowItem . ':' . $endColumnNoOrder . $rowItem);
+        $spreadsheet->getActiveSheet()->setCellValue($startColumn . $rowItem, 'Masalah :');
+        phpspreadsheet::styleFont($spreadsheet, $startColumn . $rowItem, false, 10, 'Tahoma');
+
+        // value masalah
+        $startColumnMasalah = 'E';
+        $spreadsheet->getActiveSheet()->mergeCells($startColumnMasalah . $rowItem . ':' . $endColumn . $rowItem);
+        $spreadsheet->getActiveSheet()->setCellValue($startColumnMasalah . $rowItem, $this->remark);
+        phpspreadsheet::styleFont($spreadsheet, $startColumnMasalah . $rowItem, false, 14, 'Tahoma');
+        phpspreadsheet::addBottomBorderDotted($spreadsheet, $startColumn . $rowItem . ':' . $endColumn . $rowItem);
+        $rowItem++;
+
+        /**
+         * Header Jumlah
+         */
+        // header jumlah
+        $startColumnJumlah = 'O';
+        $endColumnJumlah = 'R';
+        $spreadsheet->getActiveSheet()->mergeCells($startColumnJumlah . $rowItem . ':' . $endColumnJumlah . $rowItem);
+        $spreadsheet->getActiveSheet()->setCellValue($startColumnJumlah . $rowItem, 'Jumlah');
+        phpspreadsheet::styleFont($spreadsheet, $startColumnJumlah . $rowItem, false, 14, 'Tahoma');
+        phpspreadsheet::textAlignCenter($spreadsheet, $startColumnJumlah . $rowItem);
+
+        /**
+         * Value Jumlah
+         */
+        // value jumlah
+        $startColumnValueJumlah = 'S';
+        $spreadsheet->getActiveSheet()->mergeCells($startColumnValueJumlah . $rowItem . ':' . $endColumn . $rowItem);
+        $spreadsheet->getActiveSheet()->setCellValue($startColumnValueJumlah . $rowItem, number_format($this->qtyProduksiTotal));
+        phpspreadsheet::styleFont($spreadsheet, $startColumnValueJumlah . $rowItem, false, 14, 'Tahoma');
+        phpspreadsheet::textAlignCenter($spreadsheet, $startColumnValueJumlah . $rowItem);
+        phpspreadsheet::addBottomBorder($spreadsheet, $startColumn . $rowItem . ':' . $endColumn . $rowItem);
+        $rowItem++;
+
+        /**
+         * Header Details
+         */
+        // no lpk
+        $endColumnNoLPK = 'E';
+        $spreadsheet->getActiveSheet()->mergeCells($startColumn . $rowItem . ':' . $endColumnNoOrder . $rowItem);
+        $spreadsheet->getActiveSheet()->setCellValue($startColumn . $rowItem, 'No LPK');
+        phpspreadsheet::styleFont($spreadsheet, $startColumn . $rowItem, false, 11, 'Tahoma');
+        phpspreadsheet::textAlignCenter($spreadsheet, $startColumn . $rowItem);
+
+        // no palet
+        $startColumnNoPalet = 'F';
+        $endColumnNoPalet = 'H';
+        $spreadsheet->getActiveSheet()->mergeCells($startColumnNoPalet . $rowItem . ':' . $endColumnNoPalet . $rowItem);
+        $spreadsheet->getActiveSheet()->setCellValue($startColumnNoPalet . $rowItem, 'No Palet');
+        phpspreadsheet::styleFont($spreadsheet, $startColumnNoPalet . $rowItem, false, 11, 'Tahoma');
+        phpspreadsheet::textAlignCenter($spreadsheet, $startColumnNoPalet . $rowItem);
+
+        // tanggal produksi
+        $startColumnTanggalProduksi = 'I';
+        $endColumnTanggalProduksi = 'L';
+        $spreadsheet->getActiveSheet()->mergeCells($startColumnTanggalProduksi . $rowItem . ':' . $endColumnTanggalProduksi . $rowItem);
+        $spreadsheet->getActiveSheet()->setCellValue($startColumnTanggalProduksi . $rowItem, 'Tanggal Produksi');
+        phpspreadsheet::styleFont($spreadsheet, $startColumnTanggalProduksi . $rowItem, false, 11, 'Tahoma');
+        phpspreadsheet::textAlignCenter($spreadsheet, $startColumnTanggalProduksi . $rowItem);
+
+        // SHift
+        $startColumnShift = 'M';
+        $endColumnShift = 'N';
+        $spreadsheet->getActiveSheet()->mergeCells($startColumnShift . $rowItem . ':' . $endColumnShift . $rowItem);
+        $spreadsheet->getActiveSheet()->setCellValue($startColumnShift . $rowItem, 'Shift');
+        phpspreadsheet::styleFont($spreadsheet, $startColumnShift . $rowItem, false, 11, 'Tahoma');
+        phpspreadsheet::textAlignCenter($spreadsheet, $startColumnShift . $rowItem);
+
+        // Nomor lot
+        $startColumnNomorLot = 'O';
+        $endColumnNomorLot = 'R';
+        $spreadsheet->getActiveSheet()->mergeCells($startColumnNomorLot . $rowItem . ':' . $endColumnNomorLot . $rowItem);
+        $spreadsheet->getActiveSheet()->setCellValue($startColumnNomorLot . $rowItem, 'Nomor Lot');
+        phpspreadsheet::styleFont($spreadsheet, $startColumnNomorLot . $rowItem, false, 11, 'Tahoma');
+        phpspreadsheet::textAlignCenter($spreadsheet, $startColumnNomorLot . $rowItem);
+
+        // quantity
+        $startColumnQuantity = 'S';
+        $endColumnQuantity = 'U';
+        $spreadsheet->getActiveSheet()->mergeCells($startColumnQuantity . $rowItem . ':' . $endColumnQuantity . $rowItem);
+        $spreadsheet->getActiveSheet()->setCellValue($startColumnQuantity . $rowItem, 'Quantity');
+        phpspreadsheet::styleFont($spreadsheet, $startColumnQuantity . $rowItem, false, 11, 'Tahoma');
+        phpspreadsheet::textAlignCenter($spreadsheet, $startColumnQuantity . $rowItem);
+        phpspreadsheet::addBottomBorder($spreadsheet, $startColumn . $rowItem . ':' . $endColumn . $rowItem);
+        $rowItem++;
+
+        /**
+         * Value detail
+         */
+        foreach ($this->details as $detail) {
+            // value no lpk
+            $spreadsheet->getActiveSheet()->mergeCells($startColumn . $rowItem . ':' . $endColumnNoOrder . $rowItem);
+            $spreadsheet->getActiveSheet()->setCellValue($startColumn . $rowItem, $detail->lpk_no);
+            phpspreadsheet::styleFont($spreadsheet, $startColumn . $rowItem, false, 11, 'Tahoma');
+            phpspreadsheet::textAlignCenter($spreadsheet, $startColumn . $rowItem);
+
+            // value no palet
+            $spreadsheet->getActiveSheet()->mergeCells($startColumnNoPalet . $rowItem . ':' . $endColumnNoPalet . $rowItem);
+            $spreadsheet->getActiveSheet()->setCellValue($startColumnNoPalet . $rowItem, $detail->nomor_palet);
+            phpspreadsheet::styleFont($spreadsheet, $startColumnNoPalet . $rowItem, false, 11, 'Tahoma');
+            phpspreadsheet::textAlignCenter($spreadsheet, $startColumnNoPalet . $rowItem);
+
+            // value tanggal produksi
+            $spreadsheet->getActiveSheet()->mergeCells($startColumnTanggalProduksi . $rowItem . ':' . $endColumnTanggalProduksi . $rowItem);
+            $spreadsheet->getActiveSheet()->setCellValue($startColumnTanggalProduksi . $rowItem, Carbon::parse($detail->production_date));
+            phpspreadsheet::styleFont($spreadsheet, $startColumnTanggalProduksi . $rowItem, false, 11, 'Tahoma');
+            phpspreadsheet::textAlignCenter($spreadsheet, $startColumnTanggalProduksi . $rowItem);
+
+            // value shift
+            $spreadsheet->getActiveSheet()->mergeCells($startColumnShift . $rowItem . ':' . $endColumnShift . $rowItem);
+            $spreadsheet->getActiveSheet()->setCellValue($startColumnShift . $rowItem, $detail->work_shift);
+            phpspreadsheet::styleFont($spreadsheet, $startColumnShift . $rowItem, false, 11, 'Tahoma');
+            phpspreadsheet::textAlignCenter($spreadsheet, $startColumnShift . $rowItem);
+
+            // value nomor lot
+            $spreadsheet->getActiveSheet()->mergeCells($startColumnNomorLot . $rowItem . ':' . $endColumnNomorLot . $rowItem);
+            $spreadsheet->getActiveSheet()->setCellValue($startColumnNomorLot . $rowItem, $detail->nomor_lot);
+            phpspreadsheet::styleFont($spreadsheet, $startColumnNomorLot . $rowItem, false, 11, 'Tahoma');
+            phpspreadsheet::textAlignCenter($spreadsheet, $startColumnNomorLot . $rowItem);
+
+            // value quantity
+            $spreadsheet->getActiveSheet()->mergeCells($startColumnQuantity . $rowItem . ':' . $endColumnQuantity . $rowItem);
+            $spreadsheet->getActiveSheet()->setCellValue($startColumnQuantity . $rowItem, number_format($detail->qty_produksi));
+            phpspreadsheet::styleFont($spreadsheet, $startColumnQuantity . $rowItem, false, 11, 'Tahoma');
+            phpspreadsheet::textAlignCenter($spreadsheet, $startColumnQuantity . $rowItem);
+            phpspreadsheet::addBottomBorderDotted($spreadsheet, $startColumn . $rowItem . ':' . $endColumn . $rowItem);
+            $rowItem++;
+        }
+
+        // membuat border untuk seluruh cell
+        while ($startColumn !== $endColumn) {
+            $spreadsheet->getActiveSheet()->getColumnDimension($startColumn)->setWidth(35, 'px');
+
+            $startColumn++;
+        }
 
         $writer = new Xlsx($spreadsheet);
         $writer->save('asset/report/KKSeitai-' . $this->kenpin_no . '.xlsx');
