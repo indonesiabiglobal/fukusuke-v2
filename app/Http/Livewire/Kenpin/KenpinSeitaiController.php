@@ -35,7 +35,9 @@ class KenpinSeitaiController extends Component
 
     public function mount()
     {
-        $this->products = MsProduct::get();
+        $this->products = MsProduct::active()
+            ->orderBy('code_alias', 'ASC')
+            ->orderBy('name', 'ASC')->get();
         if (empty($this->tglMasuk)) {
             $this->tglMasuk = Carbon::now()->format('d-m-Y');
         }
