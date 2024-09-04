@@ -62,7 +62,8 @@
         <div class="col">
             <div class="h-100">
                 <div class="row">
-                    <div class="col-xl-12">
+                    {{-- kadou jikan seitai --}}
+                    <div class="col-12 col-xl-4">
                         <div class="card">
                             <div class="card-header border-0 align-items-center d-flex">
                             </div>
@@ -73,6 +74,32 @@
                             </div><!-- end card body -->
                         </div><!-- end card -->
                     </div><!-- end col -->
+                    {{-- counter trouble seitai --}}
+                    <div class="col-12 col-xl-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title mb-0">SEITAI Counter Trouble </h4>
+                            </div><!-- end card header -->
+
+                            <div class="card-body">
+                                <div id="counterTroubleSeitai" data-colors='["--tb-info"]' class="apex-charts"
+                                    dir="ltr">
+                                </div>
+                            </div><!-- end card-body -->
+                        </div><!-- end card -->
+                    </div>
+                    {{-- Hasil produksi --}}
+                    <div class="col-12 col-xl-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title mb-0">SEITAI Hasil Produksi Tertinggi dan Terendah</h4>
+                            </div><!-- end card header -->
+                            <div class="card-body">
+                                <div id="hasilProduksiSeitai" data-colors='["--tb-primary", "--tb-success"]'
+                                    class="apex-charts" dir="ltr"></div>
+                            </div><!-- end card-body -->
+                        </div><!-- end card -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -168,36 +195,8 @@
     </div>
     {{-- end Loss --}}
 
-    {{-- TOP Trouble --}}
-    <div class="row">
-        {{-- Counter Trouble --}}
-        <div class="col-xl-12">
-            <div class="card">
-                <div class="card-header">
-                    <h4 class="card-title mb-0">SEITAI Counter Trouble </h4>
-                </div><!-- end card header -->
-
-                <div class="card-body">
-                    <div id="counterTroubleSeitai" data-colors='["--tb-info"]' class="apex-charts" dir="ltr">
-                    </div>
-                </div><!-- end card-body -->
-            </div><!-- end card -->
-        </div>
-    </div> <!-- end row-->
-
     {{-- Hsail Produksi --}}
     <div class="row">
-        <div class="col-xl-12">
-            <div class="card">
-                <div class="card-header">
-                    <h4 class="card-title mb-0">SEITAI Hasil Produksi Tertinggi dan Terendah</h4>
-                </div><!-- end card header -->
-                <div class="card-body">
-                    <div id="hasilProduksiSeitai" data-colors='["--tb-primary", "--tb-success"]' class="apex-charts"
-                        dir="ltr"></div>
-                </div><!-- end card-body -->
-            </div><!-- end card -->
-        </div>
     </div>
     {{-- List mesin --}}
     {{-- <div class="row">
@@ -297,14 +296,14 @@
                                             <td>{{ $department['department_name'] }}</td>
                                             @foreach ($kadouJikanSeitaiMesin as $machine)
                                                 @if ($machine->department_id == $department['department_id'])
-                                                <td style="padding: 1px;">
-                                                    <div class="{{ $machine->persenmesinkerja > 50 ? 'bg-success' : ($machine->persenmesinkerja > 0 ? 'bg-warning' : 'bg-danger') }}"
-                                                        style="padding: 10px; width: 100%; height: 100%;"
-                                                        data-bs-toggle="tooltip" data-bs-placement="top"
-                                                        data-bs-title="{{ $machine->machineno . ': ' . $machine->persenmesinkerja }}%">
-                                                        {{ $machine->machine_no }}
-                                                    </div>
-                                                </td>
+                                                    <td style="padding: 1px;">
+                                                        <div class="{{ $machine->persenmesinkerja > 50 ? 'bg-success' : ($machine->persenmesinkerja > 0 ? 'bg-warning' : 'bg-danger') }}"
+                                                            style="padding: 10px; width: 100%; height: 100%;"
+                                                            data-bs-toggle="tooltip" data-bs-placement="top"
+                                                            data-bs-title="{{ $machine->machineno . ': ' . $machine->persenmesinkerja }}%">
+                                                            {{ $machine->machine_no }}
+                                                        </div>
+                                                    </td>
                                                 @endif
                                             @endforeach
                                         </tr>
@@ -376,7 +375,8 @@
             // Kadou Jikan Seitai
             Highcharts.chart('kadouJikanSeitai', {
                 chart: {
-                    type: 'column'
+                    type: 'column',
+                    height: 330,
                 },
                 title: {
                     align: 'left',
@@ -448,7 +448,7 @@
             if (linechartDatalabelColors) {
                 let options = {
                     chart: {
-                        height: 380,
+                        height: 280,
                         type: 'line',
                         zoom: {
                             enabled: false
@@ -672,7 +672,7 @@
                 //     }]
                 // },
                 chart: {
-                    height: 350,
+                    height: 280,
                     type: 'bar',
                     toolbar: {
                         show: false,
