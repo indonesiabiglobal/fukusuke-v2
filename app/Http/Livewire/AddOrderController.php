@@ -135,7 +135,7 @@ class AddOrderController extends Component
 
     public function mount()
     {
-        $this->process_date = Carbon::now()->format('Y-m-d');
+        $this->process_date = Carbon::now()->format('d-m-Y');
         $this->buyer = MsBuyer::get();
 
         // master produk
@@ -283,6 +283,9 @@ class AddOrderController extends Component
             $product = MsProduct::where('code', $this->product_id)->first();
             if ($product == null) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Order ' . $this->product_id . ' Tidak Terdaftar']);
+                $this->product_name = '';
+                $this->dimensi = '';
+                $this->product_id = '';
             } else {
                 $this->product_name = $product->name;
                 $this->dimensi = $product->ketebalan . 'x' . $product->diameterlipat . 'x' . $product->productlength;
