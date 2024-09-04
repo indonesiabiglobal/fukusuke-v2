@@ -105,7 +105,9 @@ class DashboardSeitaiController extends Controller
             FROM (
                 SELECT
                     RIGHT(mac.machineno, 2) AS machine_no,
-                    mac.machineno AS machine_name,
+                    mac.machineno AS machineno,
+                    mac.machinename AS machine_name,
+                    dep.id AS department_id,
                     dep.name AS department_name,
                     dep.division_code,
                     COALESCE(jam.work_hour_mm, 0) AS work_hour_mm,

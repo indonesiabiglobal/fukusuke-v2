@@ -294,9 +294,16 @@
                                 @foreach ($listMachineInfure['listDepartment'] as $department)
                                     <tr>
                                         <td>{{ $department['department_name'] }}</td>
-                                        @foreach ($listMachineInfure['listMachineInfure'] as $machine)
+                                        @foreach ($kadouJikanInfureMesin as $machine)
                                             @if ($machine->department_id == $department['department_id'])
-                                                <td class="bg-danger">{{ $machine->machineno }}</td>
+                                                <td style="padding: 1px;">
+                                                    <div class="{{ $machine->persenmesinkerja > 50 ? 'bg-success' : ($machine->persenmesinkerja > 0 ? 'bg-warning' : 'bg-danger') }}"
+                                                        style="padding: 10px; width: 100%; height: 100%;"
+                                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                                        data-bs-title="{{ $machine->machineno . ': ' . $machine->persenmesinkerja }}%">
+                                                        {{ $machine->machine_no }}
+                                                    </div>
+                                                </td>
                                             @endif
                                         @endforeach
                                     </tr>
