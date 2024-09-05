@@ -55,6 +55,9 @@ class EditNippoController extends Component
     public $selisih;
     public $berat_produksi;
     public $seq_no;
+    public $ketebalan;
+    public $diameterlipat;
+    public $berat_jenis;
 
     // data master produk
     public $masterKatanuki;
@@ -77,6 +80,7 @@ class EditNippoController extends Component
             ->join('msemployee AS mse', 'mse.id', '=', 'tda.employee_id')
             ->join('msproduct AS msp', 'msp.id', '=', 'tda.product_id')
             ->join('tdorder AS tdo', 'tdol.order_id', '=', 'tdo.id')
+            ->leftJoin('msproduct_type as mt', 'mt.id', '=', 'msp.product_type_id')
             ->leftJoin('tdproduct_goods as tdpg', 'tdpg.lpk_id', '=', 'tdol.id')
             ->select(
                 'tda.id AS id',
@@ -111,11 +115,11 @@ class EditNippoController extends Component
                 'tdol.lpk_no AS lpk_no',
                 'tdol.lpk_date AS lpk_date',
                 'tdol.panjang_lpk AS panjang_lpk',
-                'tdol.qty_gentan AS qty_gentan',
-                'tdol.qty_gulung AS qty_gulung',
-                'tdol.qty_lpk AS qty_lpk',
-                'tdol.total_assembly_line AS total_assembly_line',
-                'tdol.total_assembly_qty AS total_assembly_qty',
+                'tdol.qty_gentan',
+                'tdol.qty_gulung',
+                'tdol.qty_lpk',
+                'tdol.total_assembly_line',
+                'tdol.total_assembly_qty',
                 'msm.machineno',
                 'msm.machinename',
                 'tdo.product_code',
@@ -125,6 +129,7 @@ class EditNippoController extends Component
                 'msp.name',
                 'msp.ketebalan',
                 'msp.diameterlipat',
+                'mt.berat_jenis',
                 // DB::raw("CASE WHEN tdpg.id IS NOT NULL THEN 1 ELSE 0 END as tdpg")
             )
             ->where('tda.id', $request->query('orderId'))
@@ -158,13 +163,17 @@ class EditNippoController extends Component
         $this->nomor_han = $data->nomor_han;
         $this->seq_no = $data->seq_no;
         $this->panjang_produksi = $data->panjang_produksi;
+        $this->ketebalan = $data->ketebalan;
+        $this->diameterlipat = $data->diameterlipat;
         $this->dimensiinfure = $data->ketebalan . 'x' . $data->diameterlipat;
         $this->qty_gulung = number_format($data->qty_gulung, 0, ',', ',');
         $this->berat_standard = round($data->berat_standard, 2);
         $this->total_assembly_line = number_format($data->total_assembly_line, 0, ',', ',');
+        $this->qty_gentan = number_format($data->qty_gentan, 0, ',', ',');
         $selisih = $data->total_assembly_line - $data->panjang_lpk;
         $this->selisih = number_format(round($selisih, 2), 0, ',', ',');
         $this->berat_produksi = $data->berat_produksi;
+        $this->berat_jenis = $data->berat_jenis;
 
         $this->details = DB::table('tdproduct_assembly_loss as tal')
             ->select(
@@ -575,14 +584,26 @@ class EditNippoController extends Component
             }
         }
 
+        if (isset($this->panjang_produksi) && $this->panjang_produksi != '') {
+            $total_assembly_line = (int)$this->total_assembly_line - (int)$this->panjang_produksi;
+            $this->total_assembly_line = $total_assembly_line;
+
+            $this->berat_standard = ($this->ketebalan * $this->diameterlipat * (int)str_replace(',', '', $this->panjang_produksi) * 2 * $this->berat_jenis) / 1000;
+        }
+
+        if (isset($this->berat_produksi) && $this->berat_produksi != '') {
+            $selisih = (float)$this->berat_produksi - (float)$this->panjang_lpk;
+            $this->selisih = $selisih;
+        }
+
+        if (isset($this->berat_produksi) && isset($this->berat_standard)) {
+            $this->rasio = round(((int)str_replace(',', '', $this->berat_produksi) / $this->berat_standard) * 100, 2);
+        }
+
         if (isset($this->nomor_barcode) && $this->nomor_barcode != '') {
             if ($this->code != $this->nomor_barcode) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Barcode ' . $this->nomor_barcode . ' Tidak Terdaftar']);
             }
-        }
-
-        if (isset($this->berat_produksi) && $this->berat_produksi != '') {
-            $this->rasio = round(($this->berat_produksi / $this->berat_standard) * 100, 2);
         }
 
         return view('livewire.nippo-infure.edit-nippo')->extends('layouts.master');
