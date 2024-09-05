@@ -66,6 +66,12 @@
                     <div class="col-12 col-xl-4">
                         <div class="card">
                             <div class="card-header border-0 align-items-center d-flex">
+                                <div class="card-header border-0 align-items-center d-flex">
+                                    <h4 class="card-title mb-0">
+                                        <a href="#" id="kadouJikanTitle" class="text-muted">
+                                            INFURE Machine Running Rate (Kadou Jikan)
+                                        </a></h4>
+                                </div>
                             </div>
                             <div class="card-body p-0 pb-2">
                                 <div class="w-100">
@@ -387,24 +393,23 @@
             */
             let kadouJikanDepartment = @json($kadouJikanDepartment);
             kadouJikanDepartment = Object.values(kadouJikanDepartment);
+            let kadouJikanInfureMesin = @json($kadouJikanInfureMesin);
+            kadouJikanInfureMesin = Object.values(kadouJikanInfureMesin);
+
 
             // Kadou Jikan Infure
             Highcharts.chart('kadouJikanInfure', {
                 chart: {
                     type: 'column',
-                    height: 330,
+                    height: 280,
                 },
                 title: {
                     align: 'left',
-                    text: `<a href="#" id="kadouJikanTitle" class="text-muted">
-                               INFURE Machine Running Rate (Kadou Jikan)
-                            </a>`,
-                    useHTML: true
+                    text: ``,
+                    style: {
+                        fontWeight: 500,
+                    },
                 },
-                // subtitle: {
-                //     align: 'left',
-                //     text: 'Click the columns to view versions. Source: <a href="http://statcounter.com" target="_blank">statcounter.com</a>'
-                // },
                 accessibility: {
                     announceNewData: {
                         enabled: true
@@ -447,10 +452,28 @@
                         return {
                             name: item.departmentName,
                             y: parseFloat(item.persenMesinDepartment),
-                            // drilldown: item.departmentName
+                            drilldown: item.departmentId
                         }
                     })
-                }]
+                }],
+                drilldown: {
+                    breadcrumbs: {
+                        position: {
+                            align: 'right'
+                        }
+                    },
+                    series: kadouJikanDepartment.map(item => {
+                        return {
+                            name: item.departmentName,
+                            id: item.departmentId,
+                            data: kadouJikanInfureMesin.filter(mesin => mesin.department_id == item
+                                .departmentId).map(mesin => {
+                                return [mesin.machine_no, parseFloat(mesin
+                                    .persenmesinkerja)]
+                            })
+                        }
+                    })
+                }
             });
 
             document.getElementById('kadouJikanTitle').addEventListener('click', function() {

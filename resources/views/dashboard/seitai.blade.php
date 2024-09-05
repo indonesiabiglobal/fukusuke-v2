@@ -66,6 +66,9 @@
                     <div class="col-12 col-xl-4">
                         <div class="card">
                             <div class="card-header border-0 align-items-center d-flex">
+                                <h4 class="card-title mb-0"><a href="#" id="kadouJikanTitle" class="text-muted">
+                                    SEITAI Machine Running Rate (Kadou Jikan)
+                                 </a></h4>
                             </div>
                             <div class="card-body p-0 pb-2">
                                 <div class="w-100">
@@ -370,20 +373,19 @@
             */
             let kadouJikanDepartment = @json($kadouJikanDepartment);
             kadouJikanDepartment = Object.values(kadouJikanDepartment);
+            let kadouJikanSeitaiMesin = @json($kadouJikanSeitaiMesin);
+            kadouJikanSeitaiMesin = Object.values(kadouJikanSeitaiMesin);
 
 
             // Kadou Jikan Seitai
             Highcharts.chart('kadouJikanSeitai', {
                 chart: {
                     type: 'column',
-                    height: 330,
+                    height: 280,
                 },
                 title: {
                     align: 'left',
-                    text: `<a href="#" id="kadouJikanTitle" class="text-muted">
-                               SEITAI Machine Running Rate (Kadou Jikan)
-                            </a>`,
-                    useHTML: true
+                    text: ``,
                 },
                 // subtitle: {
                 //     align: 'left',
@@ -432,9 +434,21 @@
                         return {
                             name: item.departmentName,
                             y: parseFloat(item.persenMesinDepartment),
+                            drilldown: item.departmentId
                         };
                     })
-                }]
+                }],
+                drilldown: {
+                    series: kadouJikanDepartment.map(item => {
+                        return {
+                            name: item.departmentName,
+                            id: item.departmentId,
+                            data: kadouJikanSeitaiMesin.filter(mesin => mesin.department_id == item.departmentId).map(mesin => {
+                                return [mesin.machine_no, parseFloat(mesin.persenmesinkerja)];
+                            })
+                        };
+                    })
+                }
             });
 
             document.getElementById('kadouJikanTitle').addEventListener('click', function() {
