@@ -333,7 +333,7 @@
                         <td>{{ number_format($item->qty_lpk, 0, ',', ',') }}</td>
                         <td>{{ number_format($item->qty_produksi, 0, ',', ',') }}</td>
                         <td>-</td>
-                        <td>{{ $item->seitai_berat_loss }}</td>
+                        <td>{{ number_format($item->seitai_berat_loss, 2, ',', ',') }}</td>
                         <td>-</td>
                         <td>{{ $item->product_name }}</td>
                         <td>{{ $item->code }}</td>

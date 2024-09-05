@@ -525,7 +525,7 @@ class EditSeitaiController extends Component
                 $this->qty_gentan = $tdorderlpk->qty_gentan;
                 $this->qty_lpk = $tdorderlpk->qty_lpk;
                 $this->total_assembly_qty = $tdorderlpk->total_assembly_qty;
-                $this->selisih = $tdorderlpk->panjang_lpk - $tdorderlpk->total_assembly_qty;
+                $this->selisih = $tdorderlpk->qty_lpk - $tdorderlpk->total_assembly_qty;
 
                 $this->detailsGentan = DB::table('tdproduct_assembly as tdpa')
                     ->join('tdproduct_goods_assembly as tga', 'tga.product_assembly_id', '=', 'tdpa.id')

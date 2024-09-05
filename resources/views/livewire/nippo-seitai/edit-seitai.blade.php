@@ -159,7 +159,7 @@
                                 <label class="control-label col-3">Nomor LOT</label>
                                 <input type="text" placeholder="----------" class="form-control" wire:model="nomor_lot" />
 
-                                <input type="text" class="form-control readonly bg-light" readonly="readonly" wire:model="selisih" />
+                                <input type="text" class="form-control readonly bg-light" readonly="readonly" wire:model="" />
                             </div>
                         </div>
                     </div>

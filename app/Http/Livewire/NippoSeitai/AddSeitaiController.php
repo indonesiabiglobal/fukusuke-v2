@@ -600,7 +600,7 @@ class AddSeitaiController extends Component
                 $this->qty_gentan = $tdorderlpk->qty_gentan;
                 $this->total_assembly_qty = number_format($tdorderlpk->total_assembly_qty);
                 $this->qty_lpk = number_format($tdorderlpk->qty_lpk);
-                $this->selisih = number_format($tdorderlpk->panjang_lpk - $tdorderlpk->total_assembly_qty);
+                $this->selisih = $tdorderlpk->qty_lpk - $tdorderlpk->total_assembly_qty;
             }
         }
 
