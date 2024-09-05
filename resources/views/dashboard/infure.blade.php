@@ -62,7 +62,8 @@
         <div class="col">
             <div class="h-100">
                 <div class="row">
-                    <div class="col-xl-12">
+                    {{-- kadou jikan infure --}}
+                    <div class="col-12 col-xl-4">
                         <div class="card">
                             <div class="card-header border-0 align-items-center d-flex">
                             </div>
@@ -73,9 +74,36 @@
                             </div><!-- end card body -->
                         </div><!-- end card -->
                     </div><!-- end col -->
+
+                    {{-- infure counter trouble --}}
+                    <div class="col-12 col-xl-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title mb-0">INFURE Counter Trouble </h4>
+                            </div><!-- end card header -->
+
+                            <div class="card-body">
+                                <div id="counterTroubleInfure" data-colors='["--tb-info"]' class="apex-charts"
+                                    dir="ltr">
+                                </div>
+                            </div><!-- end card-body -->
+                        </div><!-- end card -->
+                    </div>
+                    <div class="col-12 col-xl-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title mb-0">INFURE Hasil Produksi Tertinggi dan Terendah</h4>
+                            </div><!-- end card header -->
+                            <div class="card-body">
+                                <div id="hasilProduksiInfure" data-colors='["--tb-primary", "--tb-success"]'
+                                    class="apex-charts" dir="ltr"></div>
+                            </div><!-- end card-body -->
+                        </div><!-- end card -->
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 
     {{-- Loss --}}
@@ -169,35 +197,25 @@
     {{-- end Loss --}}
 
     {{-- TOP Trouble --}}
-    <div class="row">
-        {{-- Counter Trouble --}}
+    {{-- Counter Trouble --}}
+    {{-- <div class="row">
         <div class="col-xl-12">
             <div class="card">
                 <div class="card-header">
                     <h4 class="card-title mb-0">INFURE Counter Trouble </h4>
-                </div><!-- end card header -->
+                </div>
 
                 <div class="card-body">
                     <div id="counterTroubleInfure" data-colors='["--tb-info"]' class="apex-charts" dir="ltr">
                     </div>
-                </div><!-- end card-body -->
-            </div><!-- end card -->
+                </div>
+            </div>
         </div>
-    </div> <!-- end row-->
+    </div> --}}
 
     {{-- Hsail Produksi --}}
     <div class="row">
-        <div class="col-xl-12">
-            <div class="card">
-                <div class="card-header">
-                    <h4 class="card-title mb-0">INFURE Hasil Produksi Tertinggi dan Terendah</h4>
-                </div><!-- end card header -->
-                <div class="card-body">
-                    <div id="hasilProduksiInfure" data-colors='["--tb-primary", "--tb-success"]' class="apex-charts"
-                        dir="ltr"></div>
-                </div><!-- end card-body -->
-            </div><!-- end card -->
-        </div>
+
     </div>
     {{-- List mesin --}}
     {{-- <div class="row">
@@ -373,7 +391,8 @@
             // Kadou Jikan Infure
             Highcharts.chart('kadouJikanInfure', {
                 chart: {
-                    type: 'column'
+                    type: 'column',
+                    height: 330,
                 },
                 title: {
                     align: 'left',
@@ -445,7 +464,7 @@
             if (linechartDatalabelColors) {
                 let options = {
                     chart: {
-                        height: 380,
+                        height: 280,
                         type: 'line',
                         zoom: {
                             enabled: false
@@ -670,7 +689,7 @@
                 //     }]
                 // },
                 chart: {
-                    height: 350,
+                    height: 280,
                     type: 'bar',
                     toolbar: {
                         show: false,
@@ -698,7 +717,7 @@
                 },
                 yaxis: {
                     title: {
-                        text: 'Servings',
+                        text: 'Counter Loss',
                     },
                 },
                 fill: {
