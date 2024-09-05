@@ -67,8 +67,8 @@
                         <div class="card">
                             <div class="card-header border-0 align-items-center d-flex">
                                 <h4 class="card-title mb-0"><a href="#" id="kadouJikanTitle" class="text-muted">
-                                    SEITAI Machine Running Rate (Kadou Jikan)
-                                 </a></h4>
+                                        SEITAI Machine Running Rate (Kadou Jikan)
+                                    </a></h4>
                             </div>
                             <div class="card-body p-0 pb-2">
                                 <div class="w-100">
@@ -77,22 +77,8 @@
                             </div><!-- end card body -->
                         </div><!-- end card -->
                     </div><!-- end col -->
-                    {{-- counter trouble seitai --}}
-                    <div class="col-12 col-xl-4">
-                        <div class="card">
-                            <div class="card-header">
-                                <h4 class="card-title mb-0">SEITAI Counter Trouble </h4>
-                            </div><!-- end card header -->
-
-                            <div class="card-body">
-                                <div id="counterTroubleSeitai" data-colors='["--tb-info"]' class="apex-charts"
-                                    dir="ltr">
-                                </div>
-                            </div><!-- end card-body -->
-                        </div><!-- end card -->
-                    </div>
                     {{-- Hasil produksi --}}
-                    <div class="col-12 col-xl-4">
+                    <div class="col-12 col-xl-8">
                         <div class="card">
                             <div class="card-header">
                                 <h4 class="card-title mb-0">SEITAI Hasil Produksi Tertinggi dan Terendah</h4>
@@ -198,8 +184,21 @@
     </div>
     {{-- end Loss --}}
 
-    {{-- Hsail Produksi --}}
+    {{-- counter trouble seitai --}}
     <div class="row">
+        {{-- counter trouble seitai --}}
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">SEITAI Counter Trouble </h4>
+                </div><!-- end card header -->
+
+                <div class="card-body">
+                    <div id="counterTroubleSeitai">
+                    </div>
+                </div><!-- end card-body -->
+            </div><!-- end card -->
+        </div>
     </div>
     {{-- List mesin --}}
     {{-- <div class="row">
@@ -443,8 +442,10 @@
                         return {
                             name: item.departmentName,
                             id: item.departmentId,
-                            data: kadouJikanSeitaiMesin.filter(mesin => mesin.department_id == item.departmentId).map(mesin => {
-                                return [mesin.machine_no, parseFloat(mesin.persenmesinkerja)];
+                            data: kadouJikanSeitaiMesin.filter(mesin => mesin.department_id == item
+                                .departmentId).map(mesin => {
+                                return [mesin.machine_no, parseFloat(mesin
+                                    .persenmesinkerja)];
                             })
                         };
                     })
@@ -663,79 +664,102 @@
 
         // Counter Table Seitai
         let counterTroubleSeitai = @json($counterTroubleSeitai);
-        var chartColumnRotateLabelsColors = getChartColorsArray("counterTroubleSeitai");
-        if (chartColumnRotateLabelsColors) {
-            var options = {
-                series: [{
-                    name: 'Counter Loss',
-                    data: counterTroubleSeitai.map(item => parseFloat(item.counterloss))
-                }],
-                // annotations: {
-                //     points: [{
-                //         x: 'Bananas',
-                //         seriesIndex: 0,
-                //         label: {
-                //             borderColor: '#775DD0',
-                //             offsetY: 0,
-                //             style: {
-                //                 color: '#fff',
-                //                 background: '#775DD0',
-                //             },
-                //             text: 'Bananas are good',
-                //         }
-                //     }]
-                // },
-                chart: {
-                    height: 280,
-                    type: 'bar',
-                    toolbar: {
-                        show: false,
-                    }
-                },
-                plotOptions: {
-                    bar: {
-                        borderRadius: 10,
-                        columnWidth: '50%',
-                    }
-                },
-                dataLabels: {
-                    enabled: false
-                },
-                stroke: {
-                    width: 2
-                },
-                colors: chartColumnRotateLabelsColors,
-                xaxis: {
-                    labels: {
-                        rotate: -45
-                    },
-                    categories: counterTroubleSeitai.map(item => item.loss_name),
-                    tickPlacement: 'on'
-                },
-                yaxis: {
-                    title: {
-                        text: 'Servings',
-                    },
-                },
-                fill: {
-                    type: 'gradient',
-                    gradient: {
-                        shade: 'light',
-                        type: "horizontal",
-                        shadeIntensity: 0.25,
-                        gradientToColors: undefined,
-                        inverseColors: true,
-                        opacityFrom: 0.85,
-                        opacityTo: 0.85,
-                        stops: [50, 0, 100]
-                    },
+        Highcharts.chart('counterTroubleSeitai', {
+            chart: {
+                zooming: {
+                    type: 'xy'
                 }
-            };
+            },
+            title: {
+                text: '',
+                align: 'left'
+            },
+            xAxis: [{
+                categories: counterTroubleSeitai.map(item => item.loss_name),
+                crosshair: true
+            }],
+            yAxis: [{ // Primary yAxis
+                labels: {
+                    format: '{value}',
+                    style: {
+                        color: Highcharts.getOptions().colors[1]
+                    }
+                },
+                title: {
+                    text: 'Counter Loss',
+                    style: {
+                        color: Highcharts.getOptions().colors[1]
+                    }
+                }
+            }, { // Secondary yAxis
+                title: {
+                    text: 'Counter Loss',
+                    style: {
+                        color: Highcharts.getOptions().colors[0]
+                    }
+                },
+                labels: {
+                    format: '{value}',
+                    style: {
+                        color: Highcharts.getOptions().colors[0]
+                    }
+                },
+                opposite: true
+            }],
+            tooltip: {
+                shared: true
+            },
+            legend: {
+                align: 'left',
+                verticalAlign: 'top',
+                backgroundColor: Highcharts.defaultOptions.legend.backgroundColor || // theme
+                    'rgba(255,255,255,0.25)'
+            },
+            series: [{
+                name: 'Loss',
+                type: 'column',
+                yAxis: 1,
+                data: counterTroubleSeitai.map(item => parseFloat(item.counterloss)),
 
-            var chart = new ApexCharts(document.querySelector("#counterTroubleSeitai"),
-                options);
-            chart.render();
-        }
+            }, {
+                name: 'Loss',
+                type: 'spline',
+                data: counterTroubleSeitai.map(item => parseFloat(item.counterloss)),
+            }]
+        });
+        // Highcharts.chart('counterTroubleSeitai', {
+        //     chart: {
+        //         type: 'column',
+        //         height: 330,
+        //     },
+        //     title: {
+        //         text: '',
+        //         align: 'left'
+        //     },
+        //     xAxis: {
+        //         categories: counterTroubleSeitai.map(item => item.loss_name),
+        //         crosshair: true,
+        //     },
+        //     yAxis: {
+        //         min: 0,
+        //         title: {
+        //             text: 'Counter Loss'
+        //         }
+        //     },
+        //     tooltip: {
+        //         valueSuffix: ''
+        //     },
+        //     plotOptions: {
+        //         column: {
+        //             pointPadding: 0.2,
+        //             borderWidth: 0
+        //         }
+        //     },
+        //     series: [{
+        //         name: 'Loss',
+        //         data: counterTroubleSeitai.map(item => parseFloat(item.counterloss))
+        //     }, ]
+        // });
 
         // end Counter Table Seitai
     </script>

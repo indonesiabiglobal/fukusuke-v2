@@ -70,7 +70,8 @@
                                     <h4 class="card-title mb-0">
                                         <a href="#" id="kadouJikanTitle" class="text-muted">
                                             INFURE Machine Running Rate (Kadou Jikan)
-                                        </a></h4>
+                                        </a>
+                                    </h4>
                                 </div>
                             </div>
                             <div class="card-body p-0 pb-2">
@@ -81,21 +82,7 @@
                         </div><!-- end card -->
                     </div><!-- end col -->
 
-                    {{-- infure counter trouble --}}
-                    <div class="col-12 col-xl-4">
-                        <div class="card">
-                            <div class="card-header">
-                                <h4 class="card-title mb-0">INFURE Counter Trouble </h4>
-                            </div><!-- end card header -->
-
-                            <div class="card-body">
-                                <div id="counterTroubleInfure" data-colors='["--tb-info"]' class="apex-charts"
-                                    dir="ltr">
-                                </div>
-                            </div><!-- end card-body -->
-                        </div><!-- end card -->
-                    </div>
-                    <div class="col-12 col-xl-4">
+                    <div class="col-12 col-xl-8">
                         <div class="card">
                             <div class="card-header">
                                 <h4 class="card-title mb-0">INFURE Hasil Produksi Tertinggi dan Terendah</h4>
@@ -200,6 +187,21 @@
             </div>
         </div><!-- end col -->
     </div>
+
+    <div class="row">
+        {{-- infure counter trouble --}}
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">INFURE Counter Trouble </h4>
+                </div><!-- end card header -->
+
+                <div class="card-body">
+                    <div id="counterTroubleInfure"></div>
+                </div><!-- end card-body -->
+            </div><!-- end card -->
+        </div>
+    </div>
     {{-- end Loss --}}
 
     {{-- TOP Trouble --}}
@@ -219,10 +221,6 @@
         </div>
     </div> --}}
 
-    {{-- Hsail Produksi --}}
-    <div class="row">
-
-    </div>
     {{-- List mesin --}}
     {{-- <div class="row">
         <div class="col-xxl-9">
@@ -401,7 +399,7 @@
             Highcharts.chart('kadouJikanInfure', {
                 chart: {
                     type: 'column',
-                    height: 280,
+                    height: 300,
                 },
                 title: {
                     align: 'left',
@@ -689,79 +687,110 @@
 
         // Counter Table Infure
         let counterTroubleInfure = @json($counterTroubleInfure);
-        var chartColumnRotateLabelsColors = getChartColorsArray("counterTroubleInfure");
-        if (chartColumnRotateLabelsColors) {
-            var options = {
-                series: [{
-                    name: 'Counter Loss',
-                    data: counterTroubleInfure.map(item => parseFloat(item.counterloss))
-                }],
-                // annotations: {
-                //     points: [{
-                //         x: 'Bananas',
-                //         seriesIndex: 0,
-                //         label: {
-                //             borderColor: '#775DD0',
-                //             offsetY: 0,
-                //             style: {
-                //                 color: '#fff',
-                //                 background: '#775DD0',
-                //             },
-                //             text: 'Bananas are good',
-                //         }
-                //     }]
-                // },
-                chart: {
-                    height: 280,
-                    type: 'bar',
-                    toolbar: {
-                        show: false,
-                    }
-                },
-                plotOptions: {
-                    bar: {
-                        borderRadius: 10,
-                        columnWidth: '50%',
-                    }
-                },
-                dataLabels: {
-                    enabled: false
-                },
-                stroke: {
-                    width: 2
-                },
-                colors: chartColumnRotateLabelsColors,
-                xaxis: {
-                    labels: {
-                        rotate: -45
-                    },
-                    categories: counterTroubleInfure.map(item => item.loss_name),
-                    tickPlacement: 'on'
-                },
-                yaxis: {
-                    title: {
-                        text: 'Counter Loss',
-                    },
-                },
-                fill: {
-                    type: 'gradient',
-                    gradient: {
-                        shade: 'light',
-                        type: "horizontal",
-                        shadeIntensity: 0.25,
-                        gradientToColors: undefined,
-                        inverseColors: true,
-                        opacityFrom: 0.85,
-                        opacityTo: 0.85,
-                        stops: [50, 0, 100]
-                    },
+        Highcharts.chart('counterTroubleInfure', {
+            chart: {
+                zooming: {
+                    type: 'xy'
                 }
-            };
+            },
+            title: {
+                text: '',
+                align: 'left'
+            },
+            xAxis: [{
+                categories: counterTroubleInfure.map(item => item.loss_name),
+                crosshair: true
+            }],
+            yAxis: [{ // Primary yAxis
+                labels: {
+                    format: '{value}',
+                    style: {
+                        color: Highcharts.getOptions().colors[1]
+                    }
+                },
+                title: {
+                    text: 'Counter Loss',
+                    style: {
+                        color: Highcharts.getOptions().colors[1]
+                    }
+                }
+            }, { // Secondary yAxis
+                title: {
+                    text: 'Counter Loss',
+                    style: {
+                        color: Highcharts.getOptions().colors[0]
+                    }
+                },
+                labels: {
+                    format: '{value}',
+                    style: {
+                        color: Highcharts.getOptions().colors[0]
+                    }
+                },
+                opposite: true
+            }],
+            tooltip: {
+                shared: true
+            },
+            legend: {
+                align: 'left',
+                verticalAlign: 'top',
+                backgroundColor: Highcharts.defaultOptions.legend.backgroundColor || // theme
+                    'rgba(255,255,255,0.25)'
+            },
+            series: [{
+                name: 'Loss',
+                type: 'column',
+                yAxis: 1,
+                data: counterTroubleInfure.map(item => parseFloat(item.counterloss)),
 
-            var chart = new ApexCharts(document.querySelector("#counterTroubleInfure"),
-                options);
-            chart.render();
-        }
+            }, {
+                name: 'Loss',
+                type: 'spline',
+                data: counterTroubleInfure.map(item => parseFloat(item.counterloss)),
+            }]
+        });
+        // Highcharts.chart('counterTroubleInfure', {
+        //     chart: {
+        //         type: 'column',
+        //         height: 330,
+        //     },
+        //     title: {
+        //         text: '',
+        //         align: 'left'
+        //     },
+        //     // subtitle: {
+        //     //     text: 'Source: <a target="_blank" ' +
+        //     //         'href="https://www.indexmundi.com/agriculture/?commodity=corn">indexmundi</a>',
+        //     //     align: 'left'
+        //     // },
+        //     xAxis: {
+        //         categories: counterTroubleInfure.map(item => item.loss_name),
+        //         crosshair: true,
+        //         // accessibility: {
+        //         //     description: 'Countries'
+        //         // }
+        //     },
+        //     yAxis: {
+        //         min: 0,
+        //         title: {
+        //             text: 'Counter Loss'
+        //         }
+        //     },
+        //     tooltip: {
+        //         valueSuffix: ''
+        //     },
+        //     plotOptions: {
+        //         column: {
+        //             pointPadding: 0.2,
+        //             borderWidth: 0
+        //         }
+        //     },
+        //     series: [{
+        //         name: 'Loss',
+        //         data: counterTroubleInfure.map(item => parseFloat(item.counterloss))
+        //     }, ]
+        // });
 
         // end Counter Table Infure
     </script>
