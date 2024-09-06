@@ -66,9 +66,11 @@
                     <div class="col-12 col-xl-4">
                         <div class="card">
                             <div class="card-header border-0 align-items-center d-flex">
-                                <h4 class="card-title mb-0"><a href="#" id="kadouJikanTitle" class="text-muted">
+                                <h4 class="card-title mb-0">
+                                    <a href="#" id="kadouJikanTitle">
                                         SEITAI Machine Running Rate (Kadou Jikan)
-                                    </a></h4>
+                                    </a>
+                                </h4>
                             </div>
                             <div class="card-body p-0 pb-2">
                                 <div class="w-100">

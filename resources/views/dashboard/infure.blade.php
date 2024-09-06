@@ -68,7 +68,7 @@
                             <div class="card-header border-0 align-items-center d-flex">
                                 <div class="card-header border-0 align-items-center d-flex">
                                     <h4 class="card-title mb-0">
-                                        <a href="#" id="kadouJikanTitle" class="text-muted">
+                                        <a href="#" id="kadouJikanTitle" >
                                             INFURE Machine Running Rate (Kadou Jikan)
                                         </a>
                                     </h4>

@@ -111,6 +111,7 @@ class CheckListInfureController extends Component
 
     public function checklistInfure($tglAwal, $tglAkhir, $jenisReport = 'Checklist')
     {
+        ini_set('max_execution_time', '300');
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
@@ -318,12 +319,9 @@ class CheckListInfureController extends Component
         $dataLoss = [];
 
         foreach ($data as $item) {
-            $tglProduksi = $item->tglproduksi;
-            $noMesin = str_replace('00I', '', $item->nomesin);
-
             // Data Utama
-            if (!isset($dataFiltered[$noMesin][$tglProduksi])) {
-                $dataFiltered[$noMesin][$tglProduksi][$item->gentan_no] = [
+            if (!isset($dataFiltered[$item->nomesin][$item->tglproduksi])) {
+                $dataFiltered[$item->nomesin][$item->tglproduksi][$item->gentan_no] = [
                     'tanggal_proses' => $item->tanggal_proses,
                     'seq_no' => $item->seq_no,
                     'tglproduksi' => $item->tglproduksi,
@@ -347,8 +345,8 @@ class CheckListInfureController extends Component
             }
 
             // Data Loss
-            if (!isset($dataLoss[$noMesin][$tglProduksi][$item->gentan_no][$item->losscode])) {
-                $dataLoss[$noMesin][$tglProduksi][$item->gentan_no][$item->losscode] = (object)[
+            if (!isset($dataLoss[$item->nomesin][$item->tglproduksi][$item->gentan_no][$item->losscode])) {
+                $dataLoss[$item->nomesin][$item->tglproduksi][$item->gentan_no][$item->losscode] = (object)[
                     'lossname' => $item->lossname,
                     'berat_loss' => $item->berat_loss,
                 ];
