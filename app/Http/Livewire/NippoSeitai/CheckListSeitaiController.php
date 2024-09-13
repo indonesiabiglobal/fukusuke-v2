@@ -876,28 +876,6 @@ class CheckListSeitaiController extends Component
         phpspreadsheet::styleFont($spreadsheet, $columnPetugas . $rowHeaderStart . ':' . $columnPetugas . $rowHeaderEnd, true, 9, 'Calibri');
         phpspreadsheet::textAlignCenter($spreadsheet, $columnPetugas . $rowHeaderStart . ':' . $columnPetugas . $rowHeaderEnd);
 
-        // // Quantity
-        // $columnQty = 'G';
-        // $spreadsheet->getActiveSheet()->mergeCells($columnQty . $rowHeaderStart . ':' . $columnQty . $rowHeaderEnd);
-        // $activeWorksheet->setCellValue($columnQty . $rowHeaderStart, 'Quantity (Lembar)');
-        // phpspreadsheet::styleFont($spreadsheet, $columnQty . $rowHeaderStart . ':' . $columnQty . $rowHeaderEnd, true, 9, 'Calibri');
-        // phpspreadsheet::textAlignCenter($spreadsheet, $columnQty . $rowHeaderStart . ':' . $columnQty . $rowHeaderEnd);
-        // $activeWorksheet->getStyle($columnQty . $rowHeaderStart)->getAlignment()->setWrapText(true);
-
-        // // Loss Infure
-        // $columnLoss = 'H';
-        // $activeWorksheet->setCellValue($columnLoss . $rowHeaderStart, 'Loss Infure');
-        // $activeWorksheet->setCellValue($columnLoss . $rowHeaderEnd, 'NIK');
-        // phpspreadsheet::styleFont($spreadsheet, $columnLoss . $rowHeaderStart . ':' . $columnLoss . $rowHeaderEnd, true, 9, 'Calibri');
-        // phpspreadsheet::textAlignCenter($spreadsheet, $columnLoss . $rowHeaderStart . ':' . $columnLoss . $rowHeaderEnd);
-        // $activeWorksheet->getStyle($columnLoss . $rowHeaderStart)->getAlignment()->setWrapText(true);
-
-        // // Nomor palet
-        // $columnPalet = 'I';
-        // $activeWorksheet->setCellValue($columnPalet . $rowHeaderStart, 'Nomor Palet');
-        // $activeWorksheet->setCellValue($columnPalet . $rowHeaderEnd, 'Nomor LOT');
-        // phpspreadsheet::styleFont($spreadsheet, $columnPalet . $rowHeaderStart . ':' . $columnPalet . $rowHeaderEnd, true, 9, 'Calibri');
-        // phpspreadsheet::textAlignCenter($spreadsheet, $columnPalet . $rowHeaderStart . ':' . $columnPalet . $rowHeaderEnd);
 
         // Nama Loss
         $columnNamaLoss = 'G';
@@ -973,36 +951,9 @@ class CheckListSeitaiController extends Component
                 // $spreadsheet->getActiveSheet()->mergeCells($columnPetugas . $rowItemEnd . ':' . $columnLpk . $rowItemEnd);
                 phpspreadsheet::styleFont($spreadsheet, $columnPetugas . $rowItemEnd, false, 8, 'Calibri');
                 // phpspreadsheet::textAlignCenter($spreadsheet, $columnPetugas . $rowItemEnd);
-                // // Quantity
-                // $activeWorksheet->setCellValue($columnQty . $rowItemStart, $item['qty_produksi']);
-                // phpspreadsheet::styleFont($spreadsheet, $columnQty . $rowItemStart, false, 8, 'Calibri');
-                // phpSpreadsheet::numberFormatThousands($spreadsheet, $columnQty . $rowItemStart);
-                // // Loss Infure
-                // $activeWorksheet->setCellValue($columnLoss . $rowItemStart, $item['infure_berat_loss']);
-                // phpspreadsheet::styleFont($spreadsheet, $columnLoss . $rowItemStart, false, 8, 'Calibri');
-                // // NIK
-                // $activeWorksheet->setCellValue($columnLoss . $rowItemEnd, $item['nikpetugasinfure']);
-                // phpspreadsheet::styleFont($spreadsheet, $columnLoss . $rowItemEnd, false, 8, 'Calibri');
-                // // Nomor Palet
-                // $activeWorksheet->setCellValue($columnPalet . $rowItemStart, $item['nomor_palet']);
-                // phpspreadsheet::styleFont($spreadsheet, $columnPalet . $rowItemStart, false, 8, 'Calibri');
-                // phpspreadsheet::textAlignCenter($spreadsheet, $columnPalet . $rowItemStart);
-                // // Nomor LOT
-                // $activeWorksheet->setCellValue($columnPalet . $rowItemEnd, $item['nomor_lot']);
-                // phpspreadsheet::styleFont($spreadsheet, $columnPalet . $rowItemEnd, false, 8, 'Calibri');
-                // phpspreadsheet::textAlignCenter($spreadsheet, $columnPalet . $rowItemEnd);
 
                 // border
                 phpspreadsheet::addFullBorder($spreadsheet, $startColumn . $rowItemStart . ':' . $columnPetugas . $rowItemEnd);
-
-                // Nomor Gentan
-                // $rowGentan = $rowItemStart;
-                // foreach ($dataGentan[$productionDate][$id_tdpg] as $gentan) {
-                //     $activeWorksheet->setCellValue($columnNamaLoss . $rowGentan, $gentan->gentannomorline);
-                //     phpspreadsheet::styleFont($spreadsheet, $columnNamaLoss . $rowGentan, false, 8, 'Calibri');
-                //     phpspreadsheet::textAlignCenter($spreadsheet, $columnNamaLoss . $rowGentan);
-                //     $rowGentan++;
-                // }
 
                 // Nama Loss
                 $rowLoss = $rowItemStart;
@@ -1034,24 +985,6 @@ class CheckListSeitaiController extends Component
         $spreadsheet->getActiveSheet()->mergeCells('A' . $rowGrandTotal . ':' . $columnGrandTotalEnd . $rowGrandTotal);
         $activeWorksheet->setCellValue($startColumn . $rowGrandTotal, 'Grand Total');
         $columnGrandTotalEnd++;
-
-        // // total quantity
-        // $totalQty = array_reduce($dataFiltered, function ($carry, $item) {
-        //     $carry += array_sum(array_column($item, 'qty_produksi'));
-        //     return $carry;
-        // }, 0);
-        // $activeWorksheet->setCellValue($columnQty . $rowGrandTotal, $totalQty);
-        // phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnQty . $rowGrandTotal);
-        // $columnGrandTotalEnd++;
-
-        // // total loss
-        // $totalLoss = array_reduce($dataFiltered, function ($carry, $item) {
-        //     $carry += array_sum(array_column($item, 'infure_berat_loss'));
-        //     return $carry;
-        // }, 0);
-        // $activeWorksheet->setCellValue($columnLoss . $rowGrandTotal, $totalLoss);
-        // phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnQty . $rowGrandTotal);
-        // $columnGrandTotalEnd++;
 
         // berat loss
         $columnBerat = 'H';

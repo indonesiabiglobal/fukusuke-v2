@@ -81,19 +81,6 @@ class NippoSeitaiController extends Component
 
     public function export()
     {
-        // pengecekan inputan jam awal dan jam akhir
-        // if (is_array($this->jamMasuk)) {
-        //     $this->jamMasuk = $this->jamMasuk['value'];
-        // } else {
-        //     $this->jamMasuk = $this->jamMasuk;
-        // }
-
-        // if (is_array($this->jamAkhir)) {
-        //     $this->jamAkhir = $this->jamAkhir['value'];
-        // } else {
-        //     $this->jamAkhir = $this->jamAkhir;
-        // }
-
         $tglAwal = Carbon::parse($this->tglMasuk . ' ' . '00:00:00');
         $tglAkhir = Carbon::parse($this->tglKeluar . ' ' . '23:59:59');
 
@@ -262,45 +249,6 @@ class NippoSeitaiController extends Component
                 ];
             }
         }
-
-        // $listProductionDate = array_reduce($data, function ($carry, $item) {
-        //     $carry[$item->tglproduksi] = $item->tglproduksi;
-        //     return $carry;
-        // }, []);
-
-        // $dataFilter = array_reduce($data, function ($carry, $item) {
-        //     $carry[$item->tglproduksi][$item->noproses] = [
-        //         'tglproses' => $item->tglproses,
-        //         'noproses' => $item->noproses,
-        //         'tglproduksi' => $item->tglproduksi,
-        //         'shift' => $item->work_shift,
-        //         'nikpetugas' => $item->nikpetugas,
-        //         'namapetugas' => $item->namapetugas,
-        //         'mesinno' => $item->mesinno,
-        //         'mesinnama' => $item->mesinnama,
-        //         'nolpk' => $item->nolpk,
-        //         'namaproduk' => $item->namaproduk,
-        //         'noorder' => $item->noorder,
-        //         'qty_produksi' => $item->qty_produksi,
-        //         'infure_berat_loss' => $item->infure_berat_loss,
-        //         'nikpetugasinfure' => $item->nikpetugasinfure,
-        //         'nomor_palet' => $item->nomor_palet,
-        //         'nomor_lot' => $item->nomor_lot,
-        //         'gentan' => [],
-        //         'loss' => []
-        //     ];
-
-        //     $carry[$item->tglproduksi][$item->noproses]['gentan'][$item->gentannomor] = [
-        //         'gentannomorline' => $item->gentannomorline
-        //     ];
-
-        //     $carry[$item->tglproduksi][$item->noproses]['loss'][$item->losscode] = [
-        //         'losscode' => $item->losscode,
-        //         'lossname' => $item->lossname,
-        //         'berat_loss' => $item->berat_loss
-        //     ];
-        //     return $carry;
-        // }, []);
 
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
