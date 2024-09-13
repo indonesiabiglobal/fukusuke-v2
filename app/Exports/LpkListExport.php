@@ -20,14 +20,8 @@ class LpkListExport implements FromCollection, WithHeadings
 
     public function collection()
     {
-        $tglMasuk = Carbon::now()->startOfDay();
-        if (isset($this->tglMasuk) && $this->tglMasuk != '') {
-            $tglMasuk = Carbon::createFromFormat('d-m-Y', $this->tglMasuk)->startOfDay();
-        }
-        $tglKeluar = Carbon::now()->startOfDay();
-        if (isset($this->tglKeluar) && $this->tglKeluar != '') {
-            $tglKeluar = Carbon::createFromFormat('d-m-Y', $this->tglKeluar)->endOfDay();
-        }
+        $tglMasuk = Carbon::createFromFormat('d M Y', $this->tglMasuk)->startOfDay();
+        $tglKeluar =Carbon::createFromFormat('d M Y', $this->tglKeluar)->endOfDay();
 
         $data = collect(DB::select("
         select
