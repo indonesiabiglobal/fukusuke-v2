@@ -39,9 +39,7 @@
             <div class="col-12 col-lg-9 mb-1">
                 <div class="input-group">
                     <input wire:model="lpk_no" class="form-control" style="padding:0.44rem" type="text"
-                        placeholder="000000-000"
-                        x-data="{ lpk_no: '', status: true }"
-                        x-init="$watch('lpk_no', value => {
+                        placeholder="000000-000" x-data="{ lpk_no: '', status: true }" x-init="$watch('lpk_no', value => {
                             if (value.length === 6 && !value.includes('-') && status) {
                                 lpk_no = value + '-';
                             }
@@ -54,10 +52,8 @@
                             if (value.length > 10) {
                                 lpk_no = value.substring(0, 11);
                             }
-                        })"
-                        x-model="lpk_no"
-                        maxlength="10"
-                    />
+                        })" x-model="lpk_no"
+                        maxlength="10" />
                 </div>
                 {{-- <div class="input-group">
                     <input wire:model.defer="lpk_no" class="form-control" style="padding:0.44rem" type="text"
@@ -417,22 +413,6 @@
 @script
     <script>
         // memilih seluruh data pada table
-        // livewire load
-        $('#checkAll').click(function() {
-            var isChecked = $(this).is(':checked');
-            $('.checkListLPK').each(function() {
-                $(this).prop('checked', isChecked);
-                $(this).trigger('change');
-            });
-            @this.set('checkListLPK', $('.checkListLPK:checked').map(function() {
-                return this.value;
-            }).get());
-        });
-
-        // jika ada perubahan pada checkbox
-        $('.checkListLPK').change(function() {
-            $('#checkAll').prop('checked', $('.checkListLPK:checked').length == $('.checkListLPK').length);
-        });
 
         $wire.on('redirectToPrint', (lpk_id) => {
             var printUrl = '{{ route('report-lpk') }}?lpk_id=' + lpk_id
@@ -466,6 +446,10 @@
                     "order": [
                         [2, "asc"]
                     ],
+                    "columnDefs": [{
+                        "orderable": false,
+                        "targets": 0
+                    }],
                     "language": {
                         "emptyTable": `
                             <div class="text-center">
@@ -487,6 +471,30 @@
                 $('.toggle-column').off('change').on('change', function() {
                     let column = table.column($(this).attr('data-column'));
                     column.visible(!column.visible());
+                });
+
+                // Meng-handle check all
+                $('#checkAll').click(function() {
+                    var isChecked = $(this).is(':checked');
+                    $('.checkListLPK').each(function() {
+                        $(this).prop('checked', isChecked);
+                        $(this).trigger('change');
+                    });
+                    // Update Livewire saat "check all" berubah
+                    @this.set('checkListLPK', $('.checkListLPK:checked').map(function() {
+                        return this.value;
+                    }).get(), false);
+                });
+
+                // Jika ada perubahan pada checkbox individual
+                $('.checkListLPK').change(function() {
+                    // Perbarui status "check all"
+                    $('#checkAll').prop('checked', $('.checkListLPK:checked').length == $('.checkListLPK')
+                        .length);
+                    // Update Livewire saat checkbox individual berubah
+                    @this.set('checkListLPK', $('.checkListLPK:checked').map(function() {
+                        return this.value;
+                    }).get(), false);
                 });
             }, 500);
         }
