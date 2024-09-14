@@ -524,17 +524,12 @@ class AddNippoController extends Component
         }
 
         if (isset($this->panjang_produksi) && $this->panjang_produksi != '') {
-            $total_assembly_line = (int)$this->total_assembly_line - (int)str_replace(',', '', $this->panjang_produksi);
+            $total_assembly_line = (int)$this->total_assembly_line + (int)str_replace(',', '', $this->panjang_produksi);
             $this->total_assembly_line = $total_assembly_line;
 
             $this->berat_standard = ($this->ketebalan * $this->diameterlipat * (int)str_replace(',', '', $this->panjang_produksi) * 2 * $this->berat_jenis) / 1000;
 
             $this->selisih = (int)$this->selisih + (int)str_replace(',', '', $this->panjang_produksi);
-        }
-
-        if (isset($this->berat_produksi) && $this->berat_produksi != '') {
-            $selisih = (float)$this->berat_produksi - (float)$this->panjang_lpk;
-            $this->selisih = $selisih;
         }
 
         if (isset($this->machineno) && $this->machineno != '') {
@@ -583,7 +578,7 @@ class AddNippoController extends Component
             if ($this->berat_standard == 0) {
                 $this->rasio = 0;
             } else {
-                $this->rasio = round(((int)str_replace(',', '', $this->berat_produksi) / $this->berat_standard) * 100, 2);
+                $this->rasio = round(((float)str_replace(',', '', $this->berat_produksi) / $this->berat_standard) * 100, 2);
             }
         }
 

@@ -251,8 +251,8 @@
                                 <span class="input-group-text">
                                     m
                                 </span>
-                                @if ($panjang_produksi > 25000)
-                                    <span class="text-danger">Panjang Produksi melebihi 25.000 m</span>
+                                @if ((int)str_replace(',', '', $panjang_produksi) > 25000)
+                                <span class="text-danger">Panjang Produksi melebihi 25.000 m</span>
                                 @endif
                                 @error('panjang_produksi')
                                     <span class="invalid-feedback">{{ $message }}</span>
@@ -331,7 +331,8 @@
                                         <span class="text-danger">Rasio dibawah</span>
                                     @elseif ($rasio > 150)
                                         <span class="text-danger">Rasio melebihi</span>
-                                    @endif</label>
+                                    @endif
+                                </label>
                                 <input type="text" placeholder="0" class="form-control readonly bg-light" readonly="readonly" wire:model="rasio" />
                                 <span class="input-group-text">
                                     %

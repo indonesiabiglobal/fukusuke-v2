@@ -71,7 +71,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label pe-2">Panjang LPK</label>
-                                <input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="panjang_lpk" />
+                                <input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" value="{{ number_format($panjang_lpk) }}" />
                                 <span class="input-group-text">
                                     m
                                 </span>
@@ -102,7 +102,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Nomor Mesin</label>
-                                <input type="text" placeholder=" ... " class="form-control 
+                                <input type="text" placeholder=" ... " class="form-control
                                 @if($statusEditLoss) readonly bg-light @endif
                                 " @if($statusEditLoss) readonly="readonly" @endif
                                 wire:model.change="machineno" x-on:keydown.tab="$event.preventDefault(); $refs.employeeno.focus();"
@@ -126,7 +126,7 @@
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Petugas</label>
                                 <input type="text" placeholder=" ... " class="form-control @if($statusEditLoss) readonly bg-light @endif
-                                " @if($statusEditLoss) readonly="readonly" @endif wire:model.change="employeeno" 
+                                " @if($statusEditLoss) readonly="readonly" @endif wire:model.change="employeeno"
                                 x-on:keydown.tab="$event.preventDefault(); $refs.panjang_produksi.focus();"
                                 x-ref="employeeno" />
                                 @error('employeeno')
@@ -176,12 +176,15 @@
                             <div class="input-group">
                                 <label class="control-label col-5">Panjang Produksi</label>
                                 <input type="text" placeholder="-" class="form-control @error('panjang_produksi') is-invalid @enderror @if($statusEditLoss) readonly bg-light @endif
-                                " @if($statusEditLoss) readonly="readonly" @endif wire:model.change="panjang_produksi" oninput="this.value = window.formatNumber(this.value)" 
+                                " @if($statusEditLoss) readonly="readonly" @endif wire:model.change="panjang_produksi" oninput="this.value = window.formatNumber(this.value)"
                                 x-on:keydown.tab="$event.preventDefault(); $refs.berat_produksi.focus();"
                                 x-ref="panjang_produksi"/>
                                 <span class="input-group-text">
                                     m
                                 </span>
+                                @if ((int)str_replace(',', '', $panjang_produksi) > 25000)
+                                    <span class="text-danger">Panjang Produksi melebihi 25.000 m</span>
+                                @endif
                                 @error('panjang_produksi')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -192,7 +195,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-6">Total Panjang Produksi</label>
-                                <input type="text" placeholder="0" class="form-control readonly bg-light" readonly="readonly" wire:model="total_assembly_line" />
+                                <input type="text" placeholder="0" class="form-control readonly bg-light" readonly="readonly" value="{{ number_format($total_assembly_line) }}" />
                                 <span class="input-group-text">
                                     m
                                 </span>
@@ -203,7 +206,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-3">Selisih</label>
-                                <input type="text" placeholder="0" class="form-control readonly bg-light" readonly="readonly" wire:model="selisih" />
+                                <input type="text" placeholder="0" class="form-control readonly bg-light" readonly="readonly" value="{{ number_format($selisih) }}" />
                                 <span class="input-group-text">
                                     m
                                 </span>
@@ -215,12 +218,15 @@
                             <div class="input-group">
                                 <label class="control-label col-5">Berat Gentan</label>
                                 <input type="number" class="form-control @if($statusEditLoss) readonly bg-light @endif
-                                " @if($statusEditLoss) readonly="readonly" @endif  wire:model.change="berat_produksi" 
+                                " @if($statusEditLoss) readonly="readonly" @endif  wire:model.change="berat_produksi"
                                 x-on:keydown.tab="$event.preventDefault(); $refs.work_hour.focus();"
                                 x-ref="berat_produksi"/>
                                 <span class="input-group-text">
                                     kg
                                 </span>
+                                @if ($berat_produksi > 900)
+                                    <span class="text-danger">Berat Gentan melebihi 900 kg</span>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -228,7 +234,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-6">Berat Standard</label>
-                                <input type="text" placeholder="0" class="form-control readonly bg-light" readonly="readonly" wire:model="berat_standard" />
+                                <input type="text" placeholder="0" class="form-control readonly bg-light" readonly="readonly" value="{{ number_format($berat_standard, 2) }}" />
                                 <span class="input-group-text">
                                     kg
                                 </span>
@@ -238,7 +244,15 @@
                     <div class="col-12 col-lg-3 mt-1">
                         <div class="form-group">
                             <div class="input-group">
-                                <label class="control-label col-3">Rasio</label>
+                                <label class="control-label col-3">
+                                    @if ($rasio == 0 || ($rasio >= 50 && $rasio <=150))
+                                        Rasio
+                                    @elseif ($rasio < 50)
+                                        <span class="text-danger">Rasio dibawah</span>
+                                    @elseif ($rasio > 150)
+                                        <span class="text-danger">Rasio melebihi</span>
+                                    @endif
+                                </label>
                                 <input type="text" placeholder="0" class="form-control readonly bg-light" readonly="readonly"  wire:model="rasio" />
                                 <span class="input-group-text">
                                     %
@@ -294,13 +308,13 @@
                                             nomor_han = value.substring(0, 12);
                                         }
                                     })">
-                                    <input 
+                                    <input
                                         class="form-control @if($statusEditLoss) readonly bg-light @endif
-                                        " @if($statusEditLoss) readonly="readonly" @endif 
-                                        style="padding:0.44rem" 
+                                        " @if($statusEditLoss) readonly="readonly" @endif
+                                        style="padding:0.44rem"
                                         type="text"
                                         placeholder="00-00-00-00A"
-                                        x-model="nomor_han" 
+                                        x-model="nomor_han"
                                         maxlength="12"
                                         x-on:keydown.tab="$event.preventDefault(); $refs.nomor_barcode.focus();"
                                     />
