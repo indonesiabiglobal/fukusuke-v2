@@ -240,14 +240,16 @@ class AddNippoController extends Component
     public function save()
     {
         $this->panjang_produksi = (int)str_replace(',', '', $this->panjang_produksi);
+        $this->berat_produksi = (int)str_replace(',', '', $this->berat_produksi);
+
         $validatedData = $this->validate([
             'production_date' => 'required',
             'created_on' => 'required',
             'lpk_no' => 'required',
             'machineno' => 'required',
             'employeeno' => 'required',
-            'panjang_produksi' => 'required',
-            'berat_produksi' => 'required'
+            'panjang_produksi' => 'required|max:25000',
+            'berat_produksi' => 'required|max:900',
         ]);
 
         DB::beginTransaction();
@@ -576,7 +578,11 @@ class AddNippoController extends Component
         }
 
         if (isset($this->berat_produksi) && isset($this->berat_standard)) {
-            $this->rasio = round(((int)str_replace(',', '', $this->berat_produksi) / $this->berat_standard) * 100, 2);
+            if ($this->berat_standard == 0) {
+                $this->rasio = 0;
+            } else {
+                $this->rasio = round(((int)str_replace(',', '', $this->berat_produksi) / $this->berat_standard) * 100, 2);
+            }
         }
 
         // dd($this->details);
