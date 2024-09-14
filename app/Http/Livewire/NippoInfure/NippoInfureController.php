@@ -107,6 +107,8 @@ class NippoInfureController extends Component
                 'tda.panjang_printing_inline AS panjang_printing_inline',
                 'tda.berat_standard AS berat_standard',
                 'tda.berat_produksi AS berat_produksi',
+                DB::raw('tda.berat_produksi / tda.berat_standard * 100 AS rasio'),
+                DB::raw('tdol.total_assembly_line - tdol.panjang_lpk AS selisih'),
                 'tda.nomor_han AS nomor_han',
                 'tda.gentan_no AS gentan_no',
                 'tda.seq_no AS seq_no',
@@ -190,6 +192,7 @@ class NippoInfureController extends Component
                     ->orWhere('tda.nomor_han', 'ilike', "%{$this->searchTerm}%");
             });
         }
+        $data->orderBy('tda.created_on', 'desc');
         $data = $data->get();
 
         return view('livewire.nippo-infure.nippo-infure', [
