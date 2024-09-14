@@ -2,13 +2,14 @@
 
 namespace App\Http\Livewire\MasterTabel;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
 
-class Machine extends Component
+class JadwalMachineController extends Component
 {
     use WithPagination, WithoutUrlPagination;
     protected $paginationTheme = 'bootstrap';
@@ -25,6 +26,11 @@ class Machine extends Component
     public $idUpdate;
     public $idDelete;
     public $status;
+    public $jadwal_mesin;
+    public $jam;
+    public $percent;
+    public $startDate;
+    public $endDate;
     public $statusIsVisible = false;
 
 
@@ -106,47 +112,34 @@ class Machine extends Component
         $this->dispatch('showModalUpdate');
     }
 
-    public function jadwal($id)
-    {
-        dd($id);
-        $machine = DB::table('msmachine')->where('id', $id)->first();
-        $this->idUpdate = $machine->id;
-        $this->machineno = $machine->machineno;
-        $this->machinename = $machine->machinename;
-        $this->department_id = $machine->department_id;
-        $this->product_group_id = $machine->product_group_id;
-        $this->capacity_kg = $machine->capacity_kg;
-        $this->capacity_lembar = $machine->capacity_lembar;
-        $this->capacity_size = $machine->capacity_size;
-        $this->status = $machine->status;
-        $this->statusIsVisible = $machine->status == 0 ? true : false;
-        $this->skipRender();
-        $this->dispatch('showModalUpdate');
-    }
-
     public function update()
     {
         $this->validate([
-            'machineno' => 'required|unique:msmachine,machineno,' . $this->idUpdate,
-            'machinename' => 'required',
-            'department_id' => 'required',
+            'jadwal_mesin' => 'required',
+            'jam' => 'required',
+            'percent' => 'required',
         ]);
+
+        $dates = explode(' to ', $this->jadwal_mesin);
+
+        $startDate = isset($dates[0]) ? Carbon::createFromFormat('d M, Y', trim($dates[0])) : null;
+        $endDate = isset($dates[1]) ? Carbon::createFromFormat('d M, Y', trim($dates[1])) : null;
+
 
         DB::beginTransaction();
         try {
-            DB::table('msmachine')->where('id', $this->idUpdate)->update([
-                'machineno' => $this->machineno,
-                'machinename' => $this->machinename,
-                'department_id' => $this->department_id,
-                'product_group_id' => $this->product_group_id,
-                'capacity_kg' => $this->capacity_kg,
-                'capacity_lembar' => $this->capacity_lembar,
-                'capacity_size' => $this->capacity_size,
-                'status' => $this->status,
-                'updated_by' => auth()->user()->username,
-                'updated_on' => now(),
-            ]);
-            DB::commit();
+            while ($startDate->lte($endDate)) {
+                DB::table('msjadwalmachine')->insert([
+                    'jam' => $this->jam,
+                    'percent' => $this->percent,
+                    'jadwal' => $startDate->format('j M Y'),
+                    'idmachine' => $this->idUpdate,
+                ]);
+                DB::commit();
+
+                // $dates[] = $startDate->format('j M Y');
+                $startDate->addDay();
+            }
             $this->resetFields();
             $this->dispatch('closeModalUpdate');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Machine updated successfully.']);
@@ -192,19 +185,18 @@ class Machine extends Component
                 'msm.id',
                 'msm.machinename',
                 'msm.machineno',
-                'msd.name as departmentname',
-                'mpg.name as productgroupname',
                 'msm.capacity_kg',
                 'msm.capacity_lembar',
                 'msm.status',
-                'msm.updated_by',
-                'msm.updated_on'
+                'msj.jam',
+                'msj.jadwal',
+                'msj.percent'
             )
-            ->leftJoin('msdepartment as msd', 'msd.id', '=', 'msm.department_id')
-            ->leftJoin('msproduct_group as mpg', 'mpg.id', '=', 'msm.product_group_id')
+            ->Join('msjadwalmachine as msj', 'msj.idmachine', '=', 'msm.id')
+            ->where('msm.status', 1)
             ->get();
 
-        return view('livewire.master-tabel.machine', [
+        return view('livewire.master-tabel.jadwal-machine', [
             'data' => $data
         ])->extends('layouts.master');
     }
