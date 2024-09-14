@@ -68,7 +68,7 @@
                             <div class="card-header border-0 align-items-center d-flex">
                                 <div class="card-header border-0 align-items-center d-flex">
                                     <h4 class="card-title mb-0">
-                                        <a href="#" id="kadouJikanTitle" >
+                                        <a href="#" id="kadouJikanTitle">
                                             INFURE Machine Running Rate (Kadou Jikan)
                                         </a>
                                     </h4>
@@ -122,7 +122,7 @@
                                 <tr>
                                     <td>{{ $loop->iteration }} </td>
                                     <td>{{ $data->loss_name }} </td>
-                                    <td>{{ round($data->berat_loss, 2) }}</td>
+                                    <td>{{ round($data->berat_loss, 2) }} Kg</td>
                                     <td>
                                         @php
                                             $loss = round(
@@ -149,23 +149,24 @@
                 <div class="col-12 col-md-6 col-xl-12 mb-1">
                     <div class="card">
                         <div class="card-body">
-                            <div class="d-flex justify-content-between flex-sm-row flex-column gap-3">
-                                <div class="d-flex flex-sm-column flex-row align-items-start justify-content-between">
+                            <div class="d-flex justify-content-between flex-sm-row flex-column">
+                                <div class="d-flex flex-sm-column flex-row align-items-start justify-content-between col-7 align-self-center">
                                     <div class="card-title">
                                         <h5 class="text-nowrap mb-2">Loss Tertinggi</h5>
                                         <span class="badge bg-warning rounded-pill">{{ $filterDate }}</span>
                                     </div>
                                     <div class="mt-sm-auto">
-                                        <small class="text-danger text-nowrap fw-semibold"><i
-                                                class="bx bx-chevron-down"></i>
-                                            {{ $higherLossPercentage }}%
-                                            dari loss
-                                        </small>
-                                        <h3 class="mb-0">{{ $higherLoss }}</h3>
+                                        <h4 class="mb-0">{{ $higherLossName }}</h4>
+                                        <p class="mb-0 fw-bold text-muted">{{ $higherLoss }} Kg
+                                            <small class="text-danger text-nowrap fw-semibold"><i
+                                                    class="bx bx-chevrons-down"></i>
+                                                {{ $higherLossPercentage }}%
+                                                dari loss
+                                            </small></p>
                                     </div>
                                 </div>
-                                <div id="profileReportChart"></div>
-                                <div id="growthChart"></div>
+                                {{-- <div id="profileReportChart"></div> --}}
+                                <div id="growthChart" class="col-5"></div>
                             </div>
                         </div>
                     </div>
@@ -204,133 +205,39 @@
     </div>
     {{-- end Loss --}}
 
-    {{-- TOP Trouble --}}
-    {{-- Counter Trouble --}}
-    {{-- <div class="row">
-        <div class="col-xl-12">
-            <div class="card">
-                <div class="card-header">
-                    <h4 class="card-title mb-0">INFURE Counter Trouble </h4>
-                </div>
-
-                <div class="card-body">
-                    <div id="counterTroubleInfure" data-colors='["--tb-info"]' class="apex-charts" dir="ltr">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> --}}
-
-    {{-- List mesin --}}
-    {{-- <div class="row">
-        <div class="col-xxl-9">
-            <div class="card card-height-100">
-                <div class="card-header align-items-center d-flex">
-                    <h4 class="card-title mb-0 flex-grow-1">LIST MESIN</h4>
-                    <div class="flex-shrink-0">
-                        <button type="button" class="btn btn-soft-primary btn-sm">
-                            Export Report
-                        </button>
-                    </div>
-                </div>
-
-                <div class="card-body">
-
-                    <div id="listMesinHidup"
-                        data-colors='["--tb-success", "--tb-info", "--tb-primary", "--tb-warning", "--tb-secondary"]'
-                        class="apex-charts mt-n3" dir="ltr"></div>
-
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <div class="d-flex mb-3">
-                                <div class="flex-grow-1">
-                                    <p class="text-truncate text-muted fs-14 mb-0">
-                                        <i class="mdi mdi-circle align-middle text-primary me-2"></i>www.google.com
-                                    </p>
-                                </div>
-                                <div class="flex-shrink-0">
-                                    <p class="mb-0">24.58%</p>
-                                </div>
-                            </div><!-- end -->
-                            <div class="d-flex mb-3">
-                                <div class="flex-grow-1">
-                                    <p class="text-truncate text-muted fs-14 mb-0">
-                                        <i class="mdi mdi-circle align-middle text-warning me-2"></i>www.medium.com
-                                    </p>
-                                </div>
-                                <div class="flex-shrink-0">
-                                    <p class="mb-0">12.22%</p>
-                                </div>
-                            </div><!-- end -->
-                            <div class="d-flex">
-                                <div class="flex-grow-1">
-                                    <p class="text-truncate text-muted fs-14 mb-0">
-                                        <i class="mdi mdi-circle align-middle text-secondary me-2"></i>Other
-                                    </p>
-                                </div>
-                                <div class="flex-shrink-0">
-                                    <p class="mb-0">17.58%</p>
-                                </div>
-                            </div><!-- end -->
-                        </div>
-                        <div class="col-md-6">
-                            <div class="d-flex mb-3">
-                                <div class="flex-grow-1">
-                                    <p class="text-truncate text-muted fs-14 mb-0">
-                                        <i class="mdi mdi-circle align-middle text-info me-2"></i>www.youtube.com
-                                    </p>
-                                </div>
-                                <div class="flex-shrink-0">
-                                    <p class="mb-0">17.51%</p>
-                                </div>
-                            </div><!-- end -->
-                            <div class="d-flex mb-3">
-                                <div class="flex-grow-1">
-                                    <p class="text-truncate text-muted fs-14 mb-0">
-                                        <i class="mdi mdi-circle align-middle text-success me-2"></i>www.meta.com
-                                    </p>
-                                </div>
-                                <div class="flex-shrink-0">
-                                    <p class="mb-0">23.05%</p>
-                                </div>
-                            </div><!-- end -->
-                        </div>
-                    </div>
-                </div><!-- end card body -->
-            </div>
-        </div>
-    </div> --}}
     <!-- end row-->
     {{-- Modal Infure Kadou jikan  --}}
     <div class="modal  fade bs-example-modal-center" id="modalListMesinInfure" tabindex="-1" role="dialog"
         aria-labelledby="mySmallModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-body text-center p-5">
+                <div class="modal-body text-center p-1">
                     <div class="card card-height-100">
                         <div class="card-header align-items-center d-flex">
                             <h4 class="card-title mb-0 flex-grow-1">INFURE Machine Running Rate (Kadou Jikan)</h4>
                         </div>
                         <div class="card-body">
-                            <table class="table">
-                                @foreach ($listMachineInfure['listDepartment'] as $department)
-                                    <tr>
-                                        <td>{{ $department['department_name'] }}</td>
-                                        @foreach ($kadouJikanInfureMesin as $machine)
-                                            @if ($machine->department_id == $department['department_id'])
-                                                <td style="padding: 1px;">
-                                                    <div class="{{ $machine->persenmesinkerja > 50 ? 'bg-success' : ($machine->persenmesinkerja > 0 ? 'bg-warning' : 'bg-danger') }}"
-                                                        style="padding: 10px; width: 100%; height: 100%;"
-                                                        data-bs-toggle="tooltip" data-bs-placement="top"
-                                                        data-bs-title="{{ $machine->machineno . ': ' . $machine->persenmesinkerja }}%">
-                                                        {{ $machine->machine_no }}
-                                                    </div>
-                                                </td>
-                                            @endif
-                                        @endforeach
-                                    </tr>
-                                @endforeach
-                            </table>
+                            <div style="max-height: 400px; overflow-y: auto; max-width: 100%; overflow-x: auto;">
+                                <table class="table">
+                                    @foreach ($listMachineInfure['listDepartment'] as $department)
+                                        <tr>
+                                            <td>{{ $department['department_name'] }}</td>
+                                            @foreach ($kadouJikanInfureMesin as $machine)
+                                                @if ($machine->department_id == $department['department_id'])
+                                                    <td style="padding: 1px;">
+                                                        <div class="{{ $machine->persenmesinkerja > 50 ? 'bg-success' : ($machine->persenmesinkerja > 0 ? 'bg-warning' : 'bg-danger') }}"
+                                                            style="padding: 10px; width: 100%; height: 100%;"
+                                                            data-bs-toggle="tooltip" data-bs-placement="top"
+                                                            data-bs-title="{{ $machine->machineno . ': ' . $machine->persenmesinkerja }}%">
+                                                            {{ $machine->machine_no }}
+                                                        </div>
+                                                    </td>
+                                                @endif
+                                            @endforeach
+                                        </tr>
+                                    @endforeach
+                                </table>
+                            </div>
                         </div><!-- end card body -->
                     </div>
                     <div class="mt-4">
@@ -592,7 +499,7 @@
                                         <span class="badge text bg-primary">LOSS</span> ${item.loss_name}
                                     </h5>
                                     <a href="#" class="text-reset fs-14 mb-0">
-                                        <span class="badge text bg-danger">Berat</span> ${parseFloat(item.berat_loss).toFixed(3)}
+                                        <span class="badge text bg-danger">Berat</span> ${parseFloat(item.berat_loss).toFixed(3)} Kg
                                     </a>
                                 </div>
                             </div>

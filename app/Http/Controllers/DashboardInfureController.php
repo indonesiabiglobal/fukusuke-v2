@@ -23,12 +23,13 @@ class DashboardInfureController extends Controller
                 $endDate = Carbon::parse($filterDate[1])->format('d-m-Y 23:59:59');
             }
         } else {
-            $startDate = Carbon::now()->subMonth()->format('d-m-Y 00:00:00');
+            $startDate = Carbon::now()->startOfMonth()->format('d-m-Y 00:00:00');
             $endDate = Carbon::now()->format('d-m-Y 23:59:59');
             $requestFilterDate = $startDate . ' to ' . $endDate;
         }
         $divisionCodeInfure = MsDepartment::where('name', 'INFURE')->first()->division_code;
 
+        // LOSS INFURE
         $lossInfure = $this->getLossInfure($startDate, $endDate, $divisionCodeInfure);
         $topLossInfure = $this->getTopLossInfure($startDate, $endDate, $divisionCodeInfure);
 
@@ -43,6 +44,9 @@ class DashboardInfureController extends Controller
         } else {
             $higherLossPercentage = 0;
         }
+
+        $higherLossName = $topLossInfure[0]->loss_name;
+
         $listMachineInfure = $this->getListMachineInfure($startDate, $endDate, $divisionCodeInfure);
         $kadouJikan = $this->getKadouJikanInfure($startDate, $endDate, $divisionCodeInfure);
         $kadouJikanDepartment = array_reduce($listMachineInfure['listDepartment'], function ($carry, $item) use ($kadouJikan) {
@@ -80,6 +84,7 @@ class DashboardInfureController extends Controller
             'topLossInfure' => $topLossInfure,
             'higherLoss' => round($higherLoss, 2),
             'higherLossPercentage' => $higherLossPercentage,
+            'higherLossName' => $higherLossName
         ];
         return view('dashboard.infure', $data);
     }
@@ -156,7 +161,7 @@ class DashboardInfureController extends Controller
                 mac.status = 1
                     and dep.division_code= ?
             ) as x ) as y
-                WHERE y.persenmesinkerja > 0
+                -- WHERE y.persenmesinkerja > 0
             ORDER BY
                 y.machine_no
 

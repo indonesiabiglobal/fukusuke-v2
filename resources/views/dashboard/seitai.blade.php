@@ -119,7 +119,7 @@
                                 <tr>
                                     <td>{{ $loop->iteration }} </td>
                                     <td>{{ $data->loss_name }} </td>
-                                    <td>{{ round($data->berat_loss, 2) }}</td>
+                                    <td>{{ round($data->berat_loss, 2) }} Kg</td>
                                     <td>
                                         @php
                                             $loss = round(
@@ -146,23 +146,24 @@
                 <div class="col-12 col-md-6 col-xl-12 mb-1">
                     <div class="card">
                         <div class="card-body">
-                            <div class="d-flex justify-content-between flex-sm-row flex-column gap-3">
-                                <div class="d-flex flex-sm-column flex-row align-items-start justify-content-between">
+                            <div class="d-flex justify-content-between flex-sm-row flex-column">
+                                <div class="d-flex flex-sm-column flex-row align-items-start justify-content-between col-7 align-self-center">
                                     <div class="card-title">
                                         <h5 class="text-nowrap mb-2">Loss Tertinggi</h5>
                                         <span class="badge bg-warning rounded-pill">{{ $filterDate }}</span>
                                     </div>
                                     <div class="mt-sm-auto">
-                                        <small class="text-danger text-nowrap fw-semibold"><i
-                                                class="bx bx-chevron-down"></i>
-                                            {{ $higherLossPercentage }}%
-                                            dari loss
-                                        </small>
-                                        <h3 class="mb-0">{{ $higherLoss }}</h3>
+                                        <h4 class="mb-0">{{ $higherLossName }}</h4>
+                                        <p class="mb-0 fw-bold text-muted">{{ $higherLoss }} Kg
+                                            <small class="text-danger text-nowrap fw-semibold"><i
+                                                    class="bx bx-chevrons-down"></i>
+                                                {{ $higherLossPercentage }}%
+                                                dari loss
+                                            </small></p>
                                     </div>
                                 </div>
-                                <div id="profileReportChart"></div>
-                                <div id="growthChart"></div>
+                                {{-- <div id="profileReportChart"></div> --}}
+                                <div id="growthChart" class="col-5"></div>
                             </div>
                         </div>
                     </div>
@@ -287,7 +288,7 @@
         aria-labelledby="mySmallModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-body text-center p-5">
+                <div class="modal-body text-center p-1">
                     <div class="card card-height-100">
                         <div class="card-header align-items-center d-flex">
                             <h4 class="card-title mb-0 flex-grow-1">SEITAI Machine Running Rate (Kadou Jikan)</h4>
@@ -572,7 +573,7 @@
                                         <span class="badge text bg-primary">LOSS</span> ${item.loss_name}
                                     </h5>
                                     <a href="#" class="text-reset fs-14 mb-0">
-                                        <span class="badge text bg-danger">Berat</span> ${parseFloat(item.berat_loss).toFixed(3)}
+                                        <span class="badge text bg-danger">Berat</span> ${parseFloat(item.berat_loss).toFixed(3)} Kg
                                     </a>
                                 </div>
                             </div>
