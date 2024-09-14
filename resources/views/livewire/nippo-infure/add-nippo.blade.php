@@ -264,7 +264,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-6">Total Panjang Produksi</label>
-                                <input type="text" placeholder="0" class="form-control readonly bg-light" readonly="readonly" wire:model="total_assembly_line"/>
+                                <input type="text" placeholder="0" class="form-control readonly bg-light" readonly="readonly" value="{{ number_format($total_assembly_line) }}"/>
                                 <span class="input-group-text">
                                     m
                                 </span>
@@ -440,13 +440,18 @@
         </div>
         <hr/>
         <div class="row">
-            <div class="col-lg-9">
+            <div class="col-lg-3">
                 <button wire:click="addLossInfure" type="button" class="btn btn-success">
                     <i class="ri-add-line"></i> Add Loss Infure
                 </button>
                 {{-- <button data-bs-toggle="modal" data-bs-target="#modal-add" type="button" class="btn btn-success">
                     <i class="ri-add-line"></i> Add Loss Infure
                 </button> --}}
+            </div>
+            <div class="col-lg-6 col-12">
+                @if ($selisih > 0)
+                    <h4 class="text-danger text-center">Total panjang melebihi LPK ..!</h4>
+                @endif
             </div>
             <div class="col-lg-3">
                 <div class="toolbar float-end">
