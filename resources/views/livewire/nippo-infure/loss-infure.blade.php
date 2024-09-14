@@ -331,8 +331,8 @@
                         <td>{{ $item->qty_gentan }}</td>
                         <td>{{ $item->gentan_no }}</td>
                         <td>{{ number_format($item->berat_standard, 0, ',', ',') }}</td>
-                        <td> - </td>
-                        <td> - </td>
+                        <td>{{ number_format($item->rasio, 2, ',', ',') }}</td>
+                        <td>{{ number_format($item->selisih, 0, ',', ',') }}</td>
                         <td>{{ $item->product_name }}</td>
                         <td>{{ $item->code }}</td>
                         <td>{{ $item->machineno }}</td>
@@ -340,7 +340,7 @@
                         <td>{{ \Carbon\Carbon::parse($item->created_on)->format('d M Y') }}</td>
                         <td>{{ $item->work_shift }} - {{ $item->work_hour }}</td>
                         <td>{{ $item->seq_no }}</td>
-                        <td> - </td>
+                        <td>{{ $item->infure_berat_loss }}</td>
                         <td>{{ $item->updated_by }}</td>
                         <td>{{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y H:i') }}</td>
                     </tr>

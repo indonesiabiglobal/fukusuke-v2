@@ -359,8 +359,8 @@
                         <td> {{ number_format($item->berat_produksi, 0, ',', ',') }} </td>
                         <td> {{ $item->gentan_no }} </td>
                         <td> {{ number_format($item->berat_standard, 0, ',', ',') }} </td>
-                        <td> - </td>
-                        <td> - </td>
+                        <td>{{ number_format($item->rasio, 2, ',', ',') }}</td>
+                        <td>{{ number_format($item->selisih, 0, ',', ',') }}</td>
                         <td> {{ $item->product_name }} </td>
                         <td> {{ $item->product_code }} </td>
                         <td> {{ $item->machineno }} </td>

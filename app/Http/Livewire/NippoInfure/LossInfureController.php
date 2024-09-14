@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
 use Livewire\Attributes\Session;
+use PhpOffice\PhpSpreadsheet\Calculation\MathTrig\Sum;
 
 class LossInfureController extends Component
 {
@@ -122,6 +123,8 @@ class LossInfureController extends Component
                 'tdpa.panjang_printing_inline AS panjang_printing_inline',
                 'tdpa.berat_standard AS berat_standard',
                 'tdpa.berat_produksi AS berat_produksi',
+                DB::raw('tdpa.berat_produksi / tdpa.berat_standard * 100 AS rasio'),
+                DB::raw('tdol.total_assembly_line - tdol.panjang_lpk AS selisih'),
                 'tdpa.nomor_han AS nomor_han',
                 'tdpa.gentan_no AS gentan_no',
                 'tdpa.seq_no AS seq_no',
@@ -147,7 +150,7 @@ class LossInfureController extends Component
                 'tdol.total_assembly_line AS total_assembly_line',
                 'tdol.total_assembly_qty AS total_assembly_qty',
                 'mp.name AS product_name',
-                'mp.code AS code'
+                'mp.code AS code',
             ])
             ->join('tdorderlpk AS tdol', 'tdpa.lpk_id', '=', 'tdol.id')
             ->leftJoin('msproduct AS mp', 'mp.id', '=', 'tdol.product_id')
@@ -201,6 +204,7 @@ class LossInfureController extends Component
                     ->orWhere('tdpa.nomor_han', 'ilike', "%{$this->searchTerm}%");
             });
         }
+        $data->orderBy('tdpa.created_on', 'desc');
         // $data = $data->paginate(8);
         $data = $data->get();
 

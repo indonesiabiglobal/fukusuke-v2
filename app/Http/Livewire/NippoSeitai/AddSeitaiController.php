@@ -705,18 +705,10 @@ class AddSeitaiController extends Component
             $this->work_shift = $workingShift->id;
         }
 
-
-        // $this->gentan_no = 1;
-        // if (!empty($lpkid)) {
-        //     $lastGentan = TdProductAssembly::where('lpk_id', $lpkid->lpk_id)
-        //         ->max('gentan_no');
-
-        //     $nogentan = 1;
-        //     if(!empty($lastGentan)){
-        //         $nogentan = $lastGentan->seq_no + 1;
-        //     }
-        //     $this->gentan_no=$nogentan;
-        // }
+        if (isset($this->qty_produksi) && $this->qty_produksi != '' && isset($this->qty_lpk) && $this->qty_lpk != '') {
+            $this->total_assembly_qty = number_format((int)str_replace(',', '', $this->total_assembly_qty) + (int)str_replace(',', '', $this->qty_produksi));
+            $this->selisih = $this->selisih - (int)str_replace(',', '', $this->qty_produksi);
+        }
 
         return view('livewire.nippo-seitai.add-seitai')->extends('layouts.master');
     }
