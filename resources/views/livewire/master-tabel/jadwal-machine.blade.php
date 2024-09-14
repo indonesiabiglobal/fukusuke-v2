@@ -43,7 +43,7 @@
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="modal-addLabel">Add Master Machine</h5> <button
+                                <h5 class="modal-title" id="modal-addLabel">Add Jadwal Machine</h5> <button
                                     type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
@@ -52,16 +52,17 @@
                                     <div class="row g-3">
                                         <div class="col-xxl-12">
                                             <div>
-                                                <label for="machinename" class="form-label">Nama Mesin</label>
+                                                <label for="machineno" class="form-label">Nomor Machine</label>
                                                 <input type="text"
-                                                    class="form-control @error('machinename') is-invalid @enderror"
-                                                    id="machinename" wire:model.defer="machinename" placeholder="Nama">
-                                                @error('machinename')
+                                                    class="form-control @error('machineno') is-invalid @enderror"
+                                                    id="machineno" wire:model.defer="machineno" maxlength="5"
+                                                    placeholder="Kode/Nomor">
+                                                @error('machineno')
                                                     <span class="invalid-feedback">{{ $message }}</span>
                                                 @enderror
                                             </div>
                                         </div>
-                                        <div class="col-xxl-12" wire:ignore>
+                                        <div class="col-xxl-12">
                                             <div class="row">
                                                 <label class="form-label">Tanggal</label>
                                                 <div class="input-group">
@@ -158,7 +159,7 @@
                                             <div class="row">
                                                 <label class="form-label">Tanggal</label>
                                                 <div class="input-group">
-                                                    <input type="text" class="form-control" data-provider="flatpickr" data-date-format="d M, Y" data-range-date="true" wire:model="jadwal_mesin">
+                                                    <input type="text" class="form-control" data-provider="flatpickr" data-date-format="d M, Y" wire:model="jadwal_mesin">
                                                     <span class="input-group-text py-0">
                                                         <i class="ri-calendar-event-fill fs-4"></i>
                                                     </span>
@@ -367,8 +368,6 @@
                     <th>Action</th>
                     <th>Nama Mesin</th>
                     <th>No Mesin</th>
-                    <th>Kapasitas (Kg)</th>
-                    <th>Kapasitas (Qty)</th>
                     <th>Jadwal</th>
                     <th>Jam</th>
                     <th>Percent</th>
@@ -391,8 +390,6 @@
                         </td>
                         <td>{{ $item->machinename }}</td>
                         <td>{{ $item->machineno }}</td>
-                        <td>{{ number_format($item->capacity_kg, 2) }}</td>
-                        <td>{{ number_format($item->capacity_lembar, 2) }}</td>
                         <td>{{ $item->jadwal }}</td>
                         <td>{{ $item->jam }}</td>
                         <td>{{ $item->percent }}</td>

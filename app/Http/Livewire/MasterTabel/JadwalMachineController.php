@@ -44,11 +44,9 @@ class JadwalMachineController extends Component
     {
         $this->machineno = '';
         $this->machinename = '';
-        $this->department_id = '';
-        $this->product_group_id = '';
-        $this->capacity_kg = '';
-        $this->capacity_lembar = '';
-        $this->capacity_size = '';
+        $this->jadwal_mesin = '';
+        $this->jam = '';
+        $this->percent = '';
     }
 
     public function showModalCreate()
@@ -62,52 +60,52 @@ class JadwalMachineController extends Component
     public function store()
     {
         $this->validate([
-            'machineno' => 'required|unique:msmachine,machineno',
-            'machinename' => 'required',
-            'department_id' => 'required',
+            'machineno' => 'required',
+            'jadwal_mesin' => 'required',
+            'jam' => 'required',
+            'percent' => 'required',
         ]);
+
+        $machine = DB::table('msmachine')->where('machineno', $this->machineno)->first();
+
+        $dates = explode(' to ', $this->jadwal_mesin);
+
+        $startDate = isset($dates[0]) ? Carbon::createFromFormat('d M, Y', trim($dates[0])) : null;
+        $endDate = isset($dates[1]) ? Carbon::createFromFormat('d M, Y', trim($dates[1])) : null;
 
         DB::beginTransaction();
         try {
-            $statusActive = 1;
-            DB::table('msmachine')->insert([
-                'machineno' => $this->machineno,
-                'machinename' => $this->machinename,
-                'department_id' => $this->department_id['value'],
-                'product_group_id' => $this->product_group_id['value'],
-                'capacity_kg' => $this->capacity_kg,
-                'capacity_lembar' => $this->capacity_lembar,
-                'capacity_size' => $this->capacity_size,
-                'status' => $statusActive,
-                'created_by' => auth()->user()->username,
-                'created_on' => now(),
-                'updated_by' => auth()->user()->username,
-                'updated_on' => now(),
-            ]);
-            DB::commit();
+            while ($startDate->lte($endDate)) {
+                DB::table('msjadwalmachine')->insert([
+                    'jam' => $this->jam,
+                    'percent' => $this->percent,
+                    'jadwal' => $startDate->format('j M Y'),
+                    'idmachine' => $machine->id,
+                ]);
+                DB::commit();
+                $startDate->addDay();
+            }
+
             $this->resetFields();
             $this->dispatch('closeModalCreate');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Machine created successfully.']);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to save master Machine: ' . $e->getMessage());
-            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the Machine: ' . $e->getMessage()]);
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Nomor Mesin tidak ditemukan']);
         }
     }
 
     public function edit($id)
     {
-        $machine = DB::table('msmachine')->where('id', $id)->first();
-        $this->idUpdate = $machine->id;
+        $jadwalMachine = DB::table('msjadwalmachine')->where('id', $id)->first();
+        $machine = DB::table('msmachine')->where('id', $jadwalMachine->idmachine)->first();
+        $this->idUpdate = $jadwalMachine->id;
         $this->machineno = $machine->machineno;
         $this->machinename = $machine->machinename;
-        $this->department_id = $machine->department_id;
-        $this->product_group_id = $machine->product_group_id;
-        $this->capacity_kg = $machine->capacity_kg;
-        $this->capacity_lembar = $machine->capacity_lembar;
-        $this->capacity_size = $machine->capacity_size;
-        $this->status = $machine->status;
-        $this->statusIsVisible = $machine->status == 0 ? true : false;
+        $this->jam = $jadwalMachine->jam;
+        $this->jadwal_mesin = $jadwalMachine->jadwal;
+        $this->percent = $jadwalMachine->percent;
         $this->skipRender();
         $this->dispatch('showModalUpdate');
     }
@@ -120,26 +118,25 @@ class JadwalMachineController extends Component
             'percent' => 'required',
         ]);
 
-        $dates = explode(' to ', $this->jadwal_mesin);
+        // $dates = explode(' to ', $this->jadwal_mesin);
 
-        $startDate = isset($dates[0]) ? Carbon::createFromFormat('d M, Y', trim($dates[0])) : null;
-        $endDate = isset($dates[1]) ? Carbon::createFromFormat('d M, Y', trim($dates[1])) : null;
+        // $startDate = isset($dates[0]) ? Carbon::createFromFormat('d M, Y', trim($dates[0])) : null;
+        // $endDate = isset($dates[1]) ? Carbon::createFromFormat('d M, Y', trim($dates[1])) : null;
 
 
         DB::beginTransaction();
         try {
-            while ($startDate->lte($endDate)) {
-                DB::table('msjadwalmachine')->insert([
-                    'jam' => $this->jam,
-                    'percent' => $this->percent,
-                    'jadwal' => $startDate->format('j M Y'),
-                    'idmachine' => $this->idUpdate,
-                ]);
-                DB::commit();
-
-                // $dates[] = $startDate->format('j M Y');
-                $startDate->addDay();
-            }
+            // while ($startDate->lte($endDate)) {
+            DB::table('msjadwalmachine')->where('id', $this->idUpdate)->update([
+                'jam' => $this->jam,
+                'percent' => $this->percent,
+                // 'jadwal' => $startDate->format('j M Y'),
+                'jadwal' => $this->jadwal_mesin,
+                'idmachine' => $this->idUpdate,
+            ]);
+            DB::commit();
+            // $startDate->addDay();
+            // }
             $this->resetFields();
             $this->dispatch('closeModalUpdate');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Machine updated successfully.']);
@@ -162,12 +159,8 @@ class JadwalMachineController extends Component
     {
         DB::beginTransaction();
         try {
-            $statusInactive = 0;
-            DB::table('msmachine')->where('id', $this->idDelete)->update([
-                'status' => $statusInactive,
-                'updated_by' => auth()->user()->username,
-                'updated_on' => now(),
-            ]);
+            DB::table('msjadwalmachine')->where('id', $this->idDelete)->delete();
+
             DB::commit();
             $this->dispatch('closeModalDelete');
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Machine deleted successfully.']);
@@ -182,7 +175,7 @@ class JadwalMachineController extends Component
     {
         $data = DB::table('msmachine as msm')
             ->select(
-                'msm.id',
+                'msj.id',
                 'msm.machinename',
                 'msm.machineno',
                 'msm.capacity_kg',
