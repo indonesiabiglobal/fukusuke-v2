@@ -44,6 +44,7 @@ class EditSeitaiController extends Component
     public $work_shift;
     public $nomor_lot;
     public $qty_produksi;
+    public $qty_produksi_old;
     public $nomor_palet;
     public $infure_berat_loss;
     public $production_no;
@@ -63,6 +64,9 @@ class EditSeitaiController extends Component
     public $frekuensi_fr;
     public $jumlahBeratProduksi;
     public $jumlahBeratLoss;
+    public $seq_no;
+    public $selisih;
+    public $selisihOld;
 
     // data master produk
     public $masterKatanuki;
@@ -70,7 +74,7 @@ class EditSeitaiController extends Component
     public $photoKatanuki;
     public $katanuki_id;
     public $total_assembly_qty;
-    public $selisih;
+    public $selisihMaster;
 
     // data LPK
     public $orderLPK;
@@ -132,7 +136,7 @@ class EditSeitaiController extends Component
         $this->tdpgId = $data->id;
         $this->production_no = $data->production_no;
         $this->production_date = Carbon::parse($data->production_date)->format('Y-m-d');
-        $this->created_on = Carbon::parse($data->created_on)->format('Y-m-d H:i:s');
+        $this->created_on = Carbon::parse($data->created_on)->format('Y-m-d') . ' - Nomor: ' . $data->seq_no;
         $this->lpk_no = $data->lpk_no;
         $this->lpk_date = $data->lpk_date;
         $this->qty_lpk = $data->qty_lpk;
@@ -142,7 +146,8 @@ class EditSeitaiController extends Component
         $this->machinename = $data->machinename;
         $this->employeeno = $data->employeeno;
         $this->empname = $data->empname;
-        $this->qty_produksi = $data->qty_produksi;
+        $this->qty_produksi = number_format($data->qty_produksi);
+        $this->qty_produksi_old = $data->qty_produksi;
         $this->nomor_palet = $data->nomor_palet;
         $this->nomor_lot = $data->nomor_lot;
         $this->infure_berat_loss = $data->infure_berat_loss;
@@ -499,6 +504,7 @@ class EditSeitaiController extends Component
                     'tolp.panjang_lpk',
                     'tolp.created_on',
                     'tolp.qty_lpk',
+                    'tolp.seq_no',
                     'mp.code',
                     'mp.name',
                     'mp.ketebalan',
@@ -517,15 +523,15 @@ class EditSeitaiController extends Component
             } else {
                 $this->lpk_date = Carbon::parse($tdorderlpk->lpk_date)->format('Y-m-d');
                 $this->panjang_lpk = $tdorderlpk->panjang_lpk;
-                $this->created_on = Carbon::parse($tdorderlpk->created_on)->format('Y-m-d H:i:s');
+                // $this->created_on = Carbon::parse($tdorderlpk->created_on)->format('Y-m-d') . ' - Nomor: ' . $tdorderlpk->seq_no;
                 $this->code = $tdorderlpk->code;
                 $this->name = $tdorderlpk->name;
                 $this->dimensiinfure = $tdorderlpk->ketebalan . 'x' . $tdorderlpk->diameterlipat;
                 $this->qty_gulung = $tdorderlpk->qty_gulung;
                 $this->qty_gentan = $tdorderlpk->qty_gentan;
                 $this->qty_lpk = $tdorderlpk->qty_lpk;
-                $this->total_assembly_qty = $tdorderlpk->total_assembly_qty;
-                $this->selisih = $tdorderlpk->qty_lpk - $tdorderlpk->total_assembly_qty;
+                $this->total_assembly_qty = number_format($tdorderlpk->total_assembly_qty - $this->qty_produksi_old);
+                $this->selisihOld = number_format($tdorderlpk->qty_lpk - $tdorderlpk->total_assembly_qty + $this->qty_produksi_old);
 
                 $this->detailsGentan = DB::table('tdproduct_assembly as tdpa')
                     ->join('tdproduct_goods_assembly as tga', 'tga.product_assembly_id', '=', 'tdpa.id')
@@ -576,6 +582,8 @@ class EditSeitaiController extends Component
             $msemployee = MsEmployee::where('employeeno', 'ilike', '%' . $this->employeeno . '%')->first();
 
             if ($msemployee == null) {
+                $this->employeeno = '';
+                $this->empname = '';
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
             } else {
                 $this->employeeno = $msemployee->employeeno;
@@ -583,13 +591,17 @@ class EditSeitaiController extends Component
             }
         }
 
+        // dd($this->employeenoinfure);
         if (isset($this->employeenoinfure) && $this->employeenoinfure != '' && strlen($this->employeenoinfure) >= 3) {
             $msemployeeinfure = MsEmployee::where('employeeno', 'ilike', '%' . $this->employeenoinfure . '%')->first();
 
             if ($msemployeeinfure == null) {
+                $this->employeenoinfure = '';
+                $this->empnameinfure = '';
                 // session()->flash('error', 'Nomor PO ' . $this->po_no . ' Tidak Terdaftar');
                 $this->dispatch('notification', ['type' => 'error', 'message' => 'Employee ' . $this->employeenoinfure . ' Tidak Terdaftar']);
             } else {
+                $this->employeenoinfure = $msemployeeinfure->employeeno;
                 $this->empnameinfure = $msemployeeinfure->empname;
             }
         }
@@ -626,6 +638,11 @@ class EditSeitaiController extends Component
             } else {
                 $this->namaloss = $lossSeitai->name;
             }
+        }
+
+        if (isset($this->qty_produksi) && $this->qty_produksi != '' && isset($this->qty_lpk) && $this->qty_lpk != '') {
+            $this->total_assembly_qty = number_format((int)str_replace(',', '', $this->total_assembly_qty) + (int)str_replace(',', '', $this->qty_produksi));
+            $this->selisih = (int)str_replace(',', '', $this->selisihOld) - (int)str_replace(',', '', $this->qty_produksi);
         }
 
         // $lpkid = TdOrderLpk::where('lpk_no', $this->lpk_no)->first();

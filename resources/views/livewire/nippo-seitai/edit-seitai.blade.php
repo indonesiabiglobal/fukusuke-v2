@@ -27,7 +27,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5">Tanggal Proses</label>
-                                <input class="form-control datepicker-input readonly bg-light" readonly="readonly" type="datetime-local" wire:model.defer="created_on" placeholder="yyyy/mm/dd"/>
+                                <input type="text" class="form-control readonly bg-light" readonly="readonly" wire:model="created_on"/>
                             </div>
                         </div>
                     </div>
@@ -56,7 +56,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label pe-2">Jumlah LPK</label>
-                                <input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="qty_lpk" />
+                                <input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" value="{{ number_format($qty_lpk) }}" />
                             </div>
                         </div>
                     </div>
@@ -100,7 +100,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Petugas</label>
-                                <input type="text" placeholder=" ... " class="form-control" wire:model="employeeno" />
+                                <input type="text" placeholder=" ... " class="form-control" wire:model.change="employeeno" />
                             </div>
                         </div>
                     </div>
@@ -116,7 +116,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5">Jumlah Produksi</label>
-                                <input type="text" placeholder="-" class="form-control" wire:model="qty_produksi" oninput="this.value = window.formatNumber(this.value)"/>
+                                <input type="text" placeholder="-" class="form-control" wire:model.change="qty_produksi" oninput="this.value = window.formatNumber(this.value)"/>
                                 <span class="input-group-text">
                                     mm
                                 </span>
@@ -159,7 +159,7 @@
                                 <label class="control-label col-3">Nomor LOT</label>
                                 <input type="text" placeholder="----------" class="form-control" wire:model="nomor_lot" />
 
-                                <input type="text" class="form-control readonly bg-light" readonly="readonly" wire:model="" />
+                                <input type="text" class="form-control readonly bg-light" readonly="readonly" />
                             </div>
                         </div>
                     </div>
@@ -179,7 +179,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-3">Petugas Infure</label>
-                                <input type="text" placeholder="..." class="form-control" wire:model="employeenoinfure" />
+                                <input type="text" placeholder="..." class="form-control" wire:model.change="employeenoinfure" />
 
                                 <input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="empnameinfure" />
                             </div>
@@ -205,6 +205,15 @@
             </div>
         </div>
         <hr/>
+
+        <div class="row">
+            <div class="col-lg-6 col-12">
+                @if ($selisih < 0)
+                <h4 class="text-danger text-center">Total jumlah produksi sudah melebihi jumlah LPK ..!</h4>
+                @endif
+            </div>
+        </div>
+
         <div class="row">
             <div class="col-lg-7">
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -212,7 +221,7 @@
                         <button class="nav-link active" id="periode1SP-tab" data-bs-toggle="tab" data-bs-target="#periode1SP" type="button" role="tab" aria-controls="periode1SP" aria-selected="true">Gentan(s)</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="periode2SP-tab" data-bs-toggle="tab" data-bs-target="#periode2SP" type="button" role="tab" aria-controls="periode2SP" aria-selected="false">Loss(s)</button>
+                        <button class="nav-link" id="periode2SP-tab" data-bs-toggle="tab" data-bs-target="#periode2SP" type="button" role="tab" aria-controls="periode2SP" aria-selected="false">Loss(<span class="text-danger">{{ $jumlahBeratLoss }} kg</span>)</button>
                     </li>
                 </ul>
             </div>
