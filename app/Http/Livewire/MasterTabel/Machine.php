@@ -108,7 +108,6 @@ class Machine extends Component
 
     public function jadwal($id)
     {
-        dd($id);
         $machine = DB::table('msmachine')->where('id', $id)->first();
         $this->idUpdate = $machine->id;
         $this->machineno = $machine->machineno;
