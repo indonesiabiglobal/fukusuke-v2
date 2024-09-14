@@ -66,6 +66,7 @@ use App\Http\Livewire\MasterTabel\Loss\MenuLossInfureController;
 use App\Http\Livewire\MasterTabel\Loss\MenuLossSeitaiController;
 use App\Http\Livewire\Administration\SecurityManagementController;
 use App\Http\Livewire\Kenpin\EditKenpinSeitaiController;
+use App\Http\Livewire\MasterTabel\JadwalMachineController;
 use App\Http\Livewire\MasterTabel\Loss\MenuLossKatagoriController;
 use App\Http\Livewire\MasterTabel\Loss\MenuLossKenpinController;
 use App\Http\Livewire\MasterTabel\Loss\MenuLossKlasifikisasiController;
@@ -172,6 +173,8 @@ Route::group(['middleware' => 'auth'], function () {
     // master table mesin
     Route::get('/mesin', Machine::class)->name('mesin');
 
+    Route::get('/jadwal-mesin', JadwalMachineController::class)->name('jadwal-mesin');
+
     // master table karyawan
     Route::get('/karyawan', Employee::class)->name('karyawan');
 
@@ -263,7 +266,7 @@ Route::group(['middleware' => 'auth'], function () {
         $nomor_han = $request->query('nomor_han');
         $nik = $request->query('nik');
         $empname = $request->query('empname');
-        return view('livewire.nippo-infure.report-gentan', compact('lpk_no','name', 'code', 'product_type_code', 'production_date', 'work_hour', 'work_shift', 'machineno', 'berat_produksi', 'nomor_han', 'nik', 'empname'));
+        return view('livewire.nippo-infure.report-gentan', compact('lpk_no', 'name', 'code', 'product_type_code', 'production_date', 'work_hour', 'work_shift', 'machineno', 'berat_produksi', 'nomor_han', 'nik', 'empname'));
     })->name('report-gentan');
 
     Route::get('/test', function () {
