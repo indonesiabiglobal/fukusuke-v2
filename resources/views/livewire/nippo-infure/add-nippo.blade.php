@@ -43,13 +43,13 @@
                                 </label>
                                 {{-- <input type="text" class="form-control @error('lpk_no') is-invalid @enderror" wire:model.live.debounce.300ms="lpk_no" /> --}}
                                 {{-- <div x-data="{ lpk_no: @entangle('lpk_no').change, status: true }">
-                                    <input 
-                                        wire:model.change="lpk_no" 
-                                        class="form-control" 
-                                        style="padding:0.44rem" 
+                                    <input
+                                        wire:model.change="lpk_no"
+                                        class="form-control"
+                                        style="padding:0.44rem"
                                         type="text"
                                         placeholder="000000-000"
-                                        x-on:keydown.tab="$event.preventDefault(); $refs.machineInput.focus();" 
+                                        x-on:keydown.tab="$event.preventDefault(); $refs.machineInput.focus();"
                                         x-init="$watch('lpk_no', value => {
                                             if (value.length === 6 && !value.includes('-') && status) {
                                                 lpk_no = value + '-';
@@ -81,14 +81,14 @@
                                             lpk_no = value.substring(0, 10);
                                         }
                                     })">
-                                    <input 
-                                        class="form-control" 
-                                        style="padding:0.44rem" 
+                                    <input
+                                        class="form-control"
+                                        style="padding:0.44rem"
                                         type="text"
                                         placeholder="000000-000"
-                                        x-model="lpk_no" 
+                                        x-model="lpk_no"
                                         maxlength="10"
-                                        x-on:keydown.tab="$event.preventDefault(); $refs.machineInput.focus();" 
+                                        x-on:keydown.tab="$event.preventDefault(); $refs.machineInput.focus();"
                                     />
                                 </div>
                                 @error('lpk_no')
@@ -101,14 +101,14 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label pe-2">Tanggal LPK</label>
-                                {{-- <input class="form-control readonly datepicker-input bg-light" readonly="readonly" type="date" wire:model.defer="lpk_date" placeholder="yyyy/mm/dd"/> 
+                                {{-- <input class="form-control readonly datepicker-input bg-light" readonly="readonly" type="date" wire:model.defer="lpk_date" placeholder="yyyy/mm/dd"/>
                                 <span class="input-group-text py-0">
                                     <i class="ri-calendar-event-fill fs-4"></i>
                                 </span> --}}
                                 <input class="form-control readonly datepicker-input bg-light" readonly="readonly" type="text" style="padding:0.44rem" wire:model.defer="lpk_date" placeholder="yyyy/mm/dd"/>
                                 <span class="input-group-text py-0">
                                     <i class="ri-calendar-event-fill fs-4"></i>
-                                </span>                                
+                                </span>
                                 @error('lpk_date')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -161,7 +161,7 @@
                                 <label class="control-label col-5 pe-2">Nomor Mesin</label>
                                 <input type="text" placeholder=" ... " class="form-control @error('machineno') is-invalid @enderror" wire:model.change="machineno"
                                 x-on:keydown.tab="$event.preventDefault(); $refs.employeeno.focus();"
-                                x-ref="machineInput" 
+                                x-ref="machineInput"
                                 />
                                 @error('machineno')
                                     <span class="invalid-feedback">{{ $message }}</span>
@@ -251,6 +251,9 @@
                                 <span class="input-group-text">
                                     m
                                 </span>
+                                @if ((int)str_replace(',', '', $panjang_produksi) > 25000)
+                                <span class="text-danger">Panjang Produksi melebihi 25.000 m</span>
+                                @endif
                                 @error('panjang_produksi')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -261,7 +264,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-6">Total Panjang Produksi</label>
-                                <input type="text" placeholder="0" class="form-control readonly bg-light" readonly="readonly" wire:model="total_assembly_line"/>
+                                <input type="text" placeholder="0" class="form-control readonly bg-light" readonly="readonly" value="{{ number_format($total_assembly_line) }}"/>
                                 <span class="input-group-text">
                                     m
                                 </span>
@@ -289,12 +292,15 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5">Berat Gentan</label>
-                                <input type="number" class="form-control @error('berat_produksi') is-invalid @enderror" wire:model.change="berat_produksi"
+                                <input type="text" class="form-control @error('berat_produksi') is-invalid @enderror" wire:model.change="berat_produksi" oninput="this.value = window.formatNumber(this.value)"
                                 x-on:keydown.tab="$event.preventDefault(); $refs.work_hour.focus();"
                                 x-ref="berat_produksi" />
                                 <span class="input-group-text">
                                     kg
                                 </span>
+                                @if ($berat_produksi > 900)
+                                    <span class="text-danger">Berat Gentan melebihi 900 kg</span>
+                                @endif
                                 @error('berat_produksi')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -318,7 +324,15 @@
                     <div class="col-12 col-lg-3 mt-1">
                         <div class="form-group">
                             <div class="input-group">
-                                <label class="control-label col-3">Rasio</label>
+                                <label class="control-label col-3">
+                                    @if ($rasio == 0)
+                                        Rasio
+                                    @elseif ($rasio < 50)
+                                        <span class="text-danger">Rasio dibawah</span>
+                                    @elseif ($rasio > 150)
+                                        <span class="text-danger">Rasio melebihi</span>
+                                    @endif
+                                </label>
                                 <input type="text" placeholder="0" class="form-control readonly bg-light" readonly="readonly" wire:model="rasio" />
                                 <span class="input-group-text">
                                     %
@@ -381,12 +395,12 @@
                                             nomor_han = value.substring(0, 12);
                                         }
                                     })">
-                                    <input 
-                                        class="form-control" 
-                                        style="padding:0.44rem" 
+                                    <input
+                                        class="form-control"
+                                        style="padding:0.44rem"
                                         type="text"
                                         placeholder="00-00-00-00A"
-                                        x-model="nomor_han" 
+                                        x-model="nomor_han"
                                         maxlength="12"
                                         x-on:keydown.tab="$event.preventDefault(); $refs.nomor_barcode.focus();"
                                     />
@@ -427,13 +441,18 @@
         </div>
         <hr/>
         <div class="row">
-            <div class="col-lg-9">
+            <div class="col-lg-3">
                 <button wire:click="addLossInfure" type="button" class="btn btn-success">
                     <i class="ri-add-line"></i> Add Loss Infure
                 </button>
                 {{-- <button data-bs-toggle="modal" data-bs-target="#modal-add" type="button" class="btn btn-success">
                     <i class="ri-add-line"></i> Add Loss Infure
                 </button> --}}
+            </div>
+            <div class="col-lg-6 col-12">
+                @if ($selisih > 0)
+                    <h4 class="text-danger text-center">Total panjang melebihi LPK ..!</h4>
+                @endif
             </div>
             <div class="col-lg-3">
                 <div class="toolbar float-end">

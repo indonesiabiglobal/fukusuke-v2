@@ -51,8 +51,10 @@ class EditNippoController extends Component
     public $statusSeitai;
     public $berat_standard;
     public $total_assembly_line;
+    public $total_assembly_line_old;
     public $rasio;
     public $selisih;
+    public $selisih_old;
     public $berat_produksi;
     public $seq_no;
     public $ketebalan;
@@ -150,7 +152,7 @@ class EditNippoController extends Component
         $this->created_on = Carbon::parse($data->created_on)->format('d/m/Y') . ' - Nomor: ' . $data->seq_no;
         $this->lpk_no = $data->lpk_no;
         $this->lpk_date = Carbon::parse($data->lpk_date)->format('d/M/Y');
-        $this->panjang_lpk = number_format($data->panjang_lpk, 0, ',', ',');
+        $this->panjang_lpk = $data->panjang_lpk;
         $this->machineno = $data->machineno;
         $this->machinename = $data->machinename;
         $this->code = $data->code;
@@ -168,10 +170,14 @@ class EditNippoController extends Component
         $this->dimensiinfure = $data->ketebalan . 'x' . $data->diameterlipat;
         $this->qty_gulung = number_format($data->qty_gulung, 0, ',', ',');
         $this->berat_standard = round($data->berat_standard, 2);
-        $this->total_assembly_line = number_format($data->total_assembly_line, 0, ',', ',');
+        $selisih = $data->total_assembly_line - $data->panjang_lpk - $data->panjang_produksi;
+        $this->selisih_old = $selisih;
+        $this->selisih = $selisih;
+
+        $totalAssemblyLine = $data->total_assembly_line - $data->panjang_produksi;
+        $this->total_assembly_line_old = $totalAssemblyLine;
+        $this->total_assembly_line = $totalAssemblyLine;
         $this->qty_gentan = number_format($data->qty_gentan, 0, ',', ',');
-        $selisih = $data->total_assembly_line - $data->panjang_lpk;
-        $this->selisih = number_format(round($selisih, 2), 0, ',', ',');
         $this->berat_produksi = $data->berat_produksi;
         $this->berat_jenis = $data->berat_jenis;
 
@@ -585,19 +591,20 @@ class EditNippoController extends Component
         }
 
         if (isset($this->panjang_produksi) && $this->panjang_produksi != '') {
-            $total_assembly_line = (int)$this->total_assembly_line - (int)$this->panjang_produksi;
+            $total_assembly_line = (int)$this->total_assembly_line_old + (int)str_replace(',', '', $this->panjang_produksi);
             $this->total_assembly_line = $total_assembly_line;
 
             $this->berat_standard = ($this->ketebalan * $this->diameterlipat * (int)str_replace(',', '', $this->panjang_produksi) * 2 * $this->berat_jenis) / 1000;
-        }
 
-        if (isset($this->berat_produksi) && $this->berat_produksi != '') {
-            $selisih = (float)$this->berat_produksi - (float)$this->panjang_lpk;
-            $this->selisih = $selisih;
+            $this->selisih = (int)$this->selisih_old + (int)str_replace(',', '', $this->panjang_produksi);
         }
 
         if (isset($this->berat_produksi) && isset($this->berat_standard)) {
-            $this->rasio = round(((int)str_replace(',', '', $this->berat_produksi) / $this->berat_standard) * 100, 2);
+            if ($this->berat_standard == 0) {
+                $this->rasio = 0;
+            } else {
+                $this->rasio = round(((float)str_replace(',', '', $this->berat_produksi) / $this->berat_standard) * 100, 2);
+            }
         }
 
         if (isset($this->nomor_barcode) && $this->nomor_barcode != '') {
