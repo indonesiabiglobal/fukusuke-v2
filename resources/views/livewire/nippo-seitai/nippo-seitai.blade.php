@@ -50,12 +50,12 @@
                         lpk_no = value.substring(0, 10);
                     }
                 })">
-                <input 
-                    class="form-control" 
-                    style="padding:0.44rem" 
+                <input
+                    class="form-control"
+                    style="padding:0.44rem"
                     type="text"
                     placeholder="000000-000"
-                    x-model="lpk_no" 
+                    x-model="lpk_no"
                     maxlength="10"
                 />
             </div>
@@ -332,13 +332,13 @@
                         <td>{{ \Carbon\Carbon::parse($item->lpk_date)->format('d M Y') }}</td>
                         <td>{{ number_format($item->qty_lpk, 0, ',', ',') }}</td>
                         <td>{{ number_format($item->qty_produksi, 0, ',', ',') }}</td>
-                        <td>-</td>
+                        <td>{{ number_format($item->selisih) }}</td>
                         <td>{{ number_format($item->seitai_berat_loss, 2, ',', ',') }}</td>
-                        <td>-</td>
+                        <td>{{ number_format($item->infure_berat_loss, 2) }}</td>
                         <td>{{ $item->product_name }}</td>
                         <td>{{ $item->code }}</td>
                         <td>{{ $item->machineno }}</td>
-                        <td>{{ $item->production_date }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->production_date)->format('d M Y') }}</td>
                         <td>{{ \Carbon\Carbon::parse($item->created_on)->format('d M Y') }}</td>
                         <td>{{ $item->work_hour }}</td>
                         <td>{{ $item->work_shift }}</td>

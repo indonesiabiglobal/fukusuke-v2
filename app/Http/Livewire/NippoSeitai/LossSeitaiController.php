@@ -565,6 +565,7 @@ class LossSeitaiController extends Component
                     'tdol.qty_gulung AS qty_gulung',
                     'tdol.qty_lpk AS qty_lpk',
                     'tdol.total_assembly_qty AS total_assembly_qty',
+                    DB::raw('tdol.qty_lpk - tdol.total_assembly_qty AS selisih'),
                     'mp.name AS product_name',
                     'mp.code',
                     'msm.machineno'
@@ -649,6 +650,7 @@ class LossSeitaiController extends Component
                     'tdol.qty_gulung AS qty_gulung',
                     'tdol.qty_lpk AS qty_lpk',
                     'tdol.total_assembly_qty AS total_assembly_qty',
+                    DB::raw('tdol.qty_lpk - tdol.total_assembly_qty AS selisih'),
                     'mp.name AS product_name',
                     'mp.code',
                     'msm.machineno'
@@ -695,6 +697,7 @@ class LossSeitaiController extends Component
                     $data->where('tdpg.status_warehouse', 1);
                 }
             }
+            $data->orderBy('tdpg.production_date', 'desc');
             $data = $data->get();
         }
         return view('livewire.nippo-seitai.loss-seitai', [
