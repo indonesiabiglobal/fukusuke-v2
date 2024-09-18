@@ -264,12 +264,11 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Jam Produksi</label>
-                                {{-- <input class="form-control" wire:model="work_hour" type="time" placeholder="hh:mm"
-                                x-on:keydown.tab="$event.preventDefault(); $refs.nomor_han.focus();"
-                                x-ref="work_hour"> --}}
-                                <input type="text" class="form-control @if($statusEditLoss) readonly bg-light @endif
-                                " @if($statusEditLoss) readonly="readonly" @endif wire:model="work_hour" data-provider="timepickr" data-time-hrs="true" id="timepicker-24hrs" x-on:keydown.tab="$event.preventDefault(); $refs.nomor_han.focus();"
+                                <input class="form-control" wire:model="work_hour" type="time" placeholder="hh:mm"
                                 x-ref="work_hour">
+                                {{-- <input type="text" class="form-control @if($statusEditLoss) readonly bg-light @endif
+                                " @if($statusEditLoss) readonly="readonly" @endif wire:model="work_hour" data-provider="timepickr" data-time-hrs="true" id="timepicker-24hrs" x-on:keydown.tab="$event.preventDefault(); $refs.nomor_han.focus();"
+                                x-ref="work_hour"> --}}
                             </div>
                         </div>
                     </div>
@@ -358,7 +357,7 @@
                 @if ($statusSeitai)
                     <h3 class="text-danger">Data sudah di Seitai!</h3>
                 @else
-                    <button data-bs-toggle="modal" data-bs-target="#modal-add" type="button" class="btn btn-success">
+                    <button wire:click="addLossInfure" type="button" class="btn btn-success">
                         <i class="ri-add-line"></i> Add Loss Infure
                     </button>
                 @endif
@@ -454,6 +453,188 @@
                             <div class="row">
                                 <div class="col-lg-12 mb-1">
                                     <div class="form-group">
+                                        <div class="input-group">
+                                            <label class="col-12 col-lg-2 fw-bold text-muted">Kode Loss </label>
+                                            <input id="inputKodeLoss" class="form-control" type="text" wire:model.change="loss_infure_id" placeholder="..."/>
+                                            @error('loss_infure_id')
+                                                <span class="invalid-feedback">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 mb-1">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <label class="col-12 col-lg-2 fw-bold text-muted">Nama Loss </label>
+                                            <input class="form-control readonly bg-light" readonly="readonly" type="text" wire:model.defer="name_infure" placeholder="..." />
+                                            @error('name')
+                                                <span class="invalid-feedback">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 mb-1">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <label class="col-12 col-lg-2 fw-bold text-muted">Berat Loss </label>
+                                            <input class="form-control" type="text" wire:model.defer="berat_loss" placeholder="0" x-ref="berat_loss"/>
+                                            @error('berat_loss')
+                                                <span class="invalid-feedback">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                                {{-- <div class="col-lg-12 mb-1">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <label class="col-12 col-lg-2 fw-bold text-muted">Berat </label>
+                                            <input class="form-control" type="text" wire:model.defer="berat" placeholder="0" />
+                                            @error('berat')
+                                                <span class="invalid-feedback">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div> --}}
+                                <div class="col-lg-12 mb-1">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <label class="col-12 col-lg-2 fw-bold text-muted">Frekuensi </label>
+                                            <input class="form-control" type="text" wire:model.defer="frekuensi" placeholder="0" />
+                                            @error('frekuensi')
+                                                <span class="invalid-feedback">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            {{-- <button type="button" class="btn btn-secondary">Accept</button> --}}
+                            <button type="button" class="btn btn-link text-gray-600 ms-auto" data-bs-dismiss="modal">Close</button>
+                            {{-- <button type="button" class="btn btn-success" wire:click="saveInfure">
+                                Save
+                            </button> --}}
+                            <button type="button" class="btn btn-success" wire:click="saveInfure">
+                                <span wire:loading.remove wire:target="saveInfure">
+                                    <i class="ri-save-3-line"></i> Save
+                                </span>
+                                <div wire:loading wire:target="saveInfure">
+                                    <span class="d-flex align-items-center">
+                                        <span class="spinner-border flex-shrink-0" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </span>
+                                        <span class="flex-grow-1 ms-1">
+                                            Loading...
+                                        </span>
+                                    </span>
+                                </div>
+                            </button>
+                        </div>
+                </div>
+            </div>
+        </div><div class="modal fade" id="modal-add" tabindex="-1" role="dialog" aria-labelledby="modal-add" aria-hidden="true" wire:ignore.self>
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="h6 modal-title">Add Loss Infure</h2>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-lg-12 mb-1">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <label class="col-12 col-lg-2 fw-bold text-muted">Kode Loss </label>
+                                            <input id="inputKodeLoss" class="form-control" type="text" wire:model.change="loss_infure_id" placeholder="..."
+                                            x-on:keydown.tab="$event.preventDefault(); $refs.berat_loss.focus();"/>
+                                            @error('loss_infure_id')
+                                                <span class="invalid-feedback">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 mb-1">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <label class="col-12 col-lg-2 fw-bold text-muted">Nama Loss </label>
+                                            <input class="form-control readonly bg-light" readonly="readonly" type="text" wire:model.defer="name_infure" placeholder="..." />
+                                            @error('name')
+                                                <span class="invalid-feedback">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 mb-1">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <label class="col-12 col-lg-2 fw-bold text-muted">Berat Loss </label>
+                                            <input class="form-control" type="text" wire:model.defer="berat_loss" placeholder="0" x-ref="berat_loss"/>
+                                            @error('berat_loss')
+                                                <span class="invalid-feedback">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                                {{-- <div class="col-lg-12 mb-1">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <label class="col-12 col-lg-2 fw-bold text-muted">Berat </label>
+                                            <input class="form-control" type="text" wire:model.defer="berat" placeholder="0" />
+                                            @error('berat')
+                                                <span class="invalid-feedback">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div> --}}
+                                <div class="col-lg-12 mb-1">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <label class="col-12 col-lg-2 fw-bold text-muted">Frekuensi </label>
+                                            <input class="form-control" type="text" wire:model.defer="frekuensi" placeholder="0" />
+                                            @error('frekuensi')
+                                                <span class="invalid-feedback">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            {{-- <button type="button" class="btn btn-secondary">Accept</button> --}}
+                            <button type="button" class="btn btn-link text-gray-600 ms-auto" data-bs-dismiss="modal">Close</button>
+                            {{-- <button type="button" class="btn btn-success" wire:click="saveInfure">
+                                Save
+                            </button> --}}
+                            <button type="button" class="btn btn-success" wire:click="saveInfure">
+                                <span wire:loading.remove wire:target="saveInfure">
+                                    <i class="ri-save-3-line"></i> Save
+                                </span>
+                                <div wire:loading wire:target="saveInfure">
+                                    <span class="d-flex align-items-center">
+                                        <span class="spinner-border flex-shrink-0" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </span>
+                                        <span class="flex-grow-1 ms-1">
+                                            Loading...
+                                        </span>
+                                    </span>
+                                </div>
+                            </button>
+                        </div>
+                </div>
+            </div>
+        </div>
+        {{-- <div class="modal fade" id="modal-add" tabindex="-1" role="dialog" aria-labelledby="modal-add" aria-hidden="true" wire:ignore.self>
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="h6 modal-title">Add Loss Infure</h2>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-lg-12 mb-1">
+                                    <div class="form-group">
                                         <label>Kode Loss </label>
                                         <div class="input-group col-md-9 col-xs-8">
                                             <input class="form-control" type="text" wire:model.change="loss_infure_id" placeholder="..." />
@@ -518,7 +699,7 @@
                         </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
         <div class="card border-0 shadow mb-4 mt-4">
             <div class="card-body">
                 <div class="table-responsive">
@@ -529,7 +710,7 @@
                                 <th class="border-0">Kode</th>
                                 <th class="border-0">Nama Loss</th>
                                 <th class="border-0">Berat (kg)</th>
-                                <th class="border-0">Berat</th>
+                                {{-- <th class="border-0">Berat</th> --}}
                                 <th class="border-0 rounded-end">Frekuensi</th>
                             </tr>
                         </thead>
@@ -553,9 +734,9 @@
                                     <td>
                                         {{ $item->berat_loss }}
                                     </td>
-                                    <td>
+                                    {{-- <td>
                                         {{ $item->berat }}
-                                    </td>
+                                    </td> --}}
                                     <td>
                                         {{ $item->frekuensi }}
                                     </td>
@@ -565,11 +746,11 @@
                                 @endphp
                             @empty
                                 <tr>
-                                    <td colspan="6" class="text-center">No results found</td>
+                                    <td colspan="5" class="text-center">No results found</td>
                                 </tr>
                             @endforelse
                             <tr>
-                                <td colspan="5" class="text-end">Berat Loss Total (kg):</td>
+                                <td colspan="4" class="text-end">Berat Loss Total (kg):</td>
                                 <td colspan="1" class="text-center">{{ $total }}</td>
                             </tr>
                         </tbody>
@@ -1356,6 +1537,15 @@
         </div><!-- /.modal -->
     </form>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var modalAdd = document.getElementById('modal-add');
+        
+        modalAdd.addEventListener('shown.bs.modal', function () {
+            document.getElementById('inputKodeLoss').focus();
+        });
+    });
+</script>
 @script
     <script>
         // format number

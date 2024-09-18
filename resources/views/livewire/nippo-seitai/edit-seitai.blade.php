@@ -447,7 +447,8 @@
                                     <div class="form-group">
                                         <label>Nomor Gentan </label>
                                         <div class="input-group col-md-9 col-xs-8">
-                                            <input class="form-control" type="text" wire:model.live.debounce.300ms="gentan_no" placeholder="..." />
+                                            <input id="inputKodeGentan" class="form-control" type="text" wire:model.live.debounce.300ms="gentan_no"
+                                            x-on:keydown.tab="$event.preventDefault(); $refs.gentan_line.focus();" placeholder="..." />
                                             @error('gentan_no')
                                                 <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror
@@ -479,16 +480,20 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-12 mb-1">
-                                    <div class="form-group">
-                                        <label>Line Gentan </label>
-                                        <div class="input-group col-md-9 col-xs-8">
-                                            <input class="form-control" type="text" wire:model.defer="gentan_line" placeholder="Enter A atau B" />
-                                            @error('gentan_line')
-                                                <span class="invalid-feedback">{{ $message }}</span>
-                                            @enderror
-                                        </div>
+                                <div class="form-group">
+                                    <label>Line Gentan </label>
+                                    <div class="input-group col-md-9 col-xs-8">
+                                        <select class="form-select" wire:model.defer="gentan_line" x-ref="gentan_line">
+                                            <option value="">Pilih Line</option>
+                                            <option value="A">A</option>
+                                            <option value="B">B</option>
+                                        </select>
+                                        @error('gentan_line')
+                                            <span class="invalid-feedback">{{ $message }}</span>
+                                        @enderror
                                     </div>
                                 </div>
+                            </div>
                                 {{-- <div class="col-lg-12 mb-1">
                                     <div class="form-group">
                                         <label>Berat</label>
@@ -529,7 +534,7 @@
                                     <div class="form-group">
                                         <label>Kode Loss </label>
                                         <div class="input-group col-md-9 col-xs-8">
-                                            <input class="form-control" type="text" wire:model.live.debounce.300ms="loss_seitai_id" placeholder="..." />
+                                            <input id="inputKodeLoss" class="form-control" type="text" wire:model.live.debounce.300ms="loss_seitai_id" placeholder="..." x-on:keydown.tab="$event.preventDefault(); $refs.berat_loss.focus();" />
                                             @error('loss_seitai_id')
                                                 <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror
@@ -548,7 +553,7 @@
                                     <div class="form-group">
                                         <label>Berat Loss </label>
                                         <div class="input-group col-md-9 col-xs-8">
-                                            <input class="form-control" type="text" wire:model.defer="berat_loss" placeholder="0" />
+                                            <input class="form-control" type="text" wire:model.defer="berat_loss" placeholder="0"  x-ref="berat_loss"/>
                                             @error('berat_loss')
                                                 <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror
@@ -1367,6 +1372,23 @@
         </div><!-- /.modal -->
     </form>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var modalAdd = document.getElementById('modal-gentan');
+        
+        modalAdd.addEventListener('shown.bs.modal', function () {
+            document.getElementById('inputKodeGentan').focus();
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var modalAdd = document.getElementById('modal-loss');
+        
+        modalAdd.addEventListener('shown.bs.modal', function () {
+            document.getElementById('inputKodeLoss').focus();
+        });
+    });
+</script>
 @script
     <script>
         $wire.on('showModalGentan', () => {

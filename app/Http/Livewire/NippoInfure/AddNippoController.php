@@ -277,7 +277,7 @@ class AddNippoController extends Component
 
             $product = new TdProductAssembly();
             $product->production_no = $today->format('dmy') . '-' . $seqno;
-            $product->production_date = Carbon::parse($this->production_date . ' ' . $this->work_hour)->format('d/m/y H:i:s');
+            $product->production_date = $this->production_date . ' ' . $this->work_hour;
             $product->created_on = $this->created_on;
             $product->machine_id = $machine->id;
             $product->employee_id = $employe->id;
@@ -492,7 +492,7 @@ class AddNippoController extends Component
                 $this->resetLpkNo();
             } else {
                 $this->lpk_date = Carbon::parse($tdorderlpk->lpk_date)->format('d/m/Y');
-                $this->panjang_lpk = number_format($tdorderlpk->panjang_lpk, 0, ',', ',');;
+                $this->panjang_lpk = number_format($tdorderlpk->panjang_lpk, 0, ',', ',');
                 $this->created_on = Carbon::parse($tdorderlpk->created_on)->format('d/m/Y');
                 $this->code = $tdorderlpk->code;
                 $this->name = $tdorderlpk->name;
@@ -521,7 +521,6 @@ class AddNippoController extends Component
                 //     ->where('tal.lpk_id', $tdorderlpk->id)
                 //     ->get();
             }
-
         }
 
         if (isset($this->panjang_produksi) && $this->panjang_produksi != '') {

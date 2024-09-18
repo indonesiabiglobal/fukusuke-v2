@@ -201,7 +201,7 @@
                                         nomor_palet = value.substring(0, 12);
                                     }
                                 })">
-                                    <input class="form-control" style="padding:0.44rem" type="text"
+                                    <input class="form-control @error('nomor_palet') is-invalid @enderror" style="padding:0.44rem" type="text"
                                         placeholder="A0000-000000" x-model="nomor_palet" maxlength="12"
                                         x-on:keydown.tab="$event.preventDefault(); $refs.nomor_lot.focus();" />
                                 </div>
@@ -513,8 +513,8 @@
                                 <div class="form-group">
                                     <label>Nomor Gentan </label>
                                     <div class="input-group col-md-9 col-xs-8">
-                                        <input class="form-control" type="number" wire:model.change="gentan_no"
-                                            placeholder="..." />
+                                        <input id="inputKodeGentan" class="form-control" type="number" wire:model.change="gentan_no"
+                                            placeholder="..." x-on:keydown.tab="$event.preventDefault(); $refs.gentan_line.focus();" />
                                         @error('gentan_no')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror
@@ -553,7 +553,7 @@
                                     <label>Line Gentan </label>
                                     <div class="input-group col-md-9 col-xs-8">
                                         {{-- <input class="form-control" type="text" wire:model.defer="gentan_line" placeholder="Enter A atau B" /> --}}
-                                        <select class="form-select" wire:model.defer="gentan_line">
+                                        <select class="form-select" wire:model.defer="gentan_line" x-ref="gentan_line">
                                             <option value="">Pilih Line</option>
                                             <option value="A">A</option>
                                             <option value="B">B</option>
@@ -614,8 +614,8 @@
                                 <div class="form-group">
                                     <label>Kode Loss </label>
                                     <div class="input-group col-md-9 col-xs-8">
-                                        <input class="form-control" type="text" wire:model.change="loss_seitai_id"
-                                            placeholder="..." />
+                                        <input id="inputKodeLoss" class="form-control" type="text" wire:model.change="loss_seitai_id"
+                                            placeholder="..." x-on:keydown.tab="$event.preventDefault(); $refs.berat_loss.focus();" />
                                         @error('loss_seitai_id')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror
@@ -636,7 +636,7 @@
                                     <label>Berat Loss </label>
                                     <div class="input-group col-md-9 col-xs-8">
                                         <input class="form-control" type="text" wire:model.defer="berat_loss"
-                                            placeholder="0" />
+                                            placeholder="0" x-ref="berat_loss" />
                                         @error('berat_loss')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror
@@ -1581,6 +1581,23 @@
         </div><!-- /.modal -->
     </form>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var modalAdd = document.getElementById('modal-gentan');
+        
+        modalAdd.addEventListener('shown.bs.modal', function () {
+            document.getElementById('inputKodeGentan').focus();
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var modalAdd = document.getElementById('modal-loss');
+        
+        modalAdd.addEventListener('shown.bs.modal', function () {
+            document.getElementById('inputKodeLoss').focus();
+        });
+    });
+</script>
 @script
     <script>
         $wire.on('showModalGentan', () => {

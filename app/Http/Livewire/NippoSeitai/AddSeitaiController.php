@@ -256,6 +256,7 @@ class AddSeitaiController extends Component
         ]);
 
         if ($validatedData) {
+            $this->gentan_no = '';
             $this->dispatch('showModalGentan');
         }
     }
@@ -269,6 +270,9 @@ class AddSeitaiController extends Component
         ]);
 
         if ($validatedData) {
+            $this->loss_seitai_id = '';
+            $this->berat_loss = '';
+            $this->frekuensi_fr = '';
             $this->dispatch('showModalLoss');
         }
     }
