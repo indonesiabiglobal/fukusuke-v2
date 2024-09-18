@@ -457,7 +457,7 @@ class AddNippoController extends Component
 
     public function render()
     {
-        if (strlen($this->lpk_no) >= 9) {
+        if (strlen($this->lpk_no) >= 10) {
             $prefix = substr($this->lpk_no, 0, 6);
             $suffix = substr($this->lpk_no, -3);
 
