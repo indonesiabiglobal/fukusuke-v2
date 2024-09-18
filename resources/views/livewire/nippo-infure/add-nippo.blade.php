@@ -347,9 +347,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Jam Produksi</label>
-                                <input class="form-control" wire:model="work_hour" type="time" placeholder="hh:mm"
-                                x-on:keydown.tab="$event.preventDefault(); $refs.nomor_han.focus();"
-                                x-ref="work_hour">
+                                <input class="form-control" wire:model="work_hour" type="time" placeholder="hh:mm">
                                 {{-- <input class="form-control" type="time" placeholder="hh:mm" wire:model="work_hour"> --}}
                                 @error('work_hour')
                                     <span class="invalid-feedback">{{ $message }}</span>
