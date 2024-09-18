@@ -229,7 +229,6 @@ class MutasiIsiPaletController extends Component
             if (count($dataByIndex) > 0) {
                 $dataIndex = key($dataByIndex);
 
-                // $dataByIndex = array_search($value['id'], array_column($this->data, 'id'));
                 $this->data[$dataIndex]->qty_produksi = $this->data[$dataIndex]->qty_produksi + $value['qty_mutasi'];
             } else {
                 $this->data[] = (object)[
@@ -243,7 +242,6 @@ class MutasiIsiPaletController extends Component
             }
 
             // menghapus data mutasi dari palet tujuan
-            // $resultByIndex = array_search($value['id'], array_column($this->result, 'id'));
             $resultByIndex = array_filter($this->result, function ($item) use ($id) {
                 return $item->id == $id;
             });
