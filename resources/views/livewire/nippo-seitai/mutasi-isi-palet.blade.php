@@ -263,11 +263,11 @@
                     <button id="btnFilter" type="button" class="btn btn-warning" wire:click="cancel">
                         <i class="ri-close-line"></i> Close
                     </button>
-                    <button id="btnFilter" type="button" class="btn btn-danger" wire:click="delete">
-                        <span wire:loading.remove wire:target="delete">
+                    <button id="btnFilter" type="button" class="btn btn-danger" wire:click="undo">
+                        <span wire:loading.remove wire:target="undo">
                             <i class="ri-repeat-line"></i> Undo
                         </span>
-                        <div wire:loading wire:target="delete">
+                        <div wire:loading wire:target="undo">
                             <span class="d-flex align-items-center">
                                 <span class="spinner-border flex-shrink-0" role="status">
                                     <span class="visually-hidden">Loading...</span>

@@ -142,7 +142,7 @@ class MutasiIsiPaletController extends Component
         $this->result[] = (object)[
             'id' => $this->orderId,
             'nomor_lot' => $this->nomor_lot,
-            'qty_produksi' => $this->qty_seitai,
+            'qty_produksi' => $this->qty_mutasi,
             'machineno' => $this->machineno,
             'production_date' => $this->production_date,
             'case_box_count' => $this->case_box_count
@@ -163,49 +163,50 @@ class MutasiIsiPaletController extends Component
 
     public function saveMutasi()
     {
-        dd($this->dataMutasi);
-        if ($this->qty_seitai == $this->qty_mutasi) {
-            $save = TdProductGoods::where('id', $this->orderId)->update([
-                'nomor_palet' => $this->searchNew
-            ]);
-        } else {
-            $save = TdProductGoods::where('id', $this->orderId)->update([
-                'nomor_palet' => $this->searchOld,
-                'qty_produksi' => ((int)$this->qty_seitai * (int)$this->case_box_count) - ((int)$this->qty_mutasi * (int)$this->case_box_count)
-            ]);
+        foreach ($this->dataMutasi as $key => $value) {
+            if ($value['qty_seitai'] == $value['qty_mutasi']) {
+                $save = TdProductGoods::where('id', $value['id'])->update([
+                    'nomor_palet' => $this->searchNew
+                ]);
+            } else {
+                $save = TdProductGoods::where('id', $value['id'])->update([
+                    'nomor_palet' => $this->searchOld,
+                    'qty_produksi' => ((int)$value['qty_seitai'] * (int)$value['case_box_count']) - ((int)$value['qty_mutasi'] * (int)$value['case_box_count'])
+                ]);
 
-            $data = TdProductGoods::where('id', $this->orderId)->first();
+                $data = TdProductGoods::where('id', $value['id'])->first();
 
-            $datas = new TdProductGoods();
-            $datas->production_no = $data['production_no'];
-            $datas->production_date = $data['production_date'];
-            $datas->employee_id = $data['employee_id'];
-            $datas->employee_id_infure = $data['employee_id_infure'];
-            $datas->work_shift = $data['work_shift'];
-            $datas->work_hour = $data['work_hour'];
-            $datas->machine_id = $data['machine_id'];
-            $datas->lpk_id = $data['lpk_id'];
-            $datas->product_id = $data['product_id'];
-            $datas->qty_produksi = (int)$this->qty_mutasi * (int)$this->case_box_count;
-            $datas->seitai_berat_loss = $data['seitai_berat_loss'];
-            $datas->infure_berat_loss = $data['infure_berat_loss'];
-            $datas->seq_no = $data['seq_no'];
-            $datas->nomor_palet = $this->searchNew;
-            $datas->nomor_lot = $data['nomor_lot'];
-            $datas->status_production = $data['status_production'];
-            $datas->status_warehouse = $data['status_warehouse'];
-            $datas->kenpin_qty_loss = $data['kenpin_qty_loss'];
-            $datas->kenpin_qty_loss_proses = $data['kenpin_qty_loss_proses'];
-            $datas->created_by = $data['created_by'];
-            $datas->created_on = $data['created_on'];
-            $datas->updated_by = $data['updated_by'];
-            $datas->updated_on = $data['updated_on'];
-            $datas->save();
+                $datas = new TdProductGoods();
+                $datas->production_no = $data['production_no'];
+                $datas->production_date = $data['production_date'];
+                $datas->employee_id = $data['employee_id'];
+                $datas->employee_id_infure = $data['employee_id_infure'];
+                $datas->work_shift = $data['work_shift'];
+                $datas->work_hour = $data['work_hour'];
+                $datas->machine_id = $data['machine_id'];
+                $datas->lpk_id = $data['lpk_id'];
+                $datas->product_id = $data['product_id'];
+                $datas->qty_produksi = (int)$value['qty_mutasi'] * (int)$value['case_box_count'];
+                $datas->seitai_berat_loss = $data['seitai_berat_loss'];
+                $datas->infure_berat_loss = $data['infure_berat_loss'];
+                $datas->seq_no = $data['seq_no'];
+                $datas->nomor_palet = $this->searchNew;
+                $datas->nomor_lot = $data['nomor_lot'];
+                $datas->status_production = $data['status_production'];
+                $datas->status_warehouse = $data['status_warehouse'];
+                $datas->kenpin_qty_loss = $data['kenpin_qty_loss'];
+                $datas->kenpin_qty_loss_proses = $data['kenpin_qty_loss_proses'];
+                $datas->created_by = $data['created_by'];
+                $datas->created_on = $data['created_on'];
+                $datas->updated_by = $data['updated_by'];
+                $datas->updated_on = $data['updated_on'];
+                $datas->save();
 
-            // $save = TdProductGoods::where('id', $this->orderId)->update([
-            //     'nomor_palet' => $this->searchNew,
-            //     'qty_produksi' => ((int)$this->qty_mutasi * (int)$this->case_box_count)
-            // ]);
+                // $save = TdProductGoods::where('id', $this->orderId)->update([
+                //     'nomor_palet' => $this->searchNew,
+                //     'qty_produksi' => ((int)$this->qty_mutasi * (int)$this->case_box_count)
+                // ]);
+            }
         }
 
         if ($save) {
@@ -217,11 +218,11 @@ class MutasiIsiPaletController extends Component
     {
         foreach ($this->dataMutasi as $key => $value) {
             // menambahkan kembali data yang dimutasi ke palet sumber
-            $dataByIndex = array_search($value->id, array_column($this->data, 'id'));
-            $this->data[$dataByIndex]->qty_produksi = $this->data[$dataByIndex]->qty_produksi + $value->qty_mutasi;
+            $dataByIndex = array_search($value['id'], array_column($this->data, 'id'));
+            $this->data[$dataByIndex]->qty_produksi = $this->data[$dataByIndex]->qty_produksi + $value['qty_mutasi'];
 
             // menghapus data mutasi dari palet tujuan
-            $resultByIndex = array_search($value->id, array_column($this->result, 'id'));
+            $resultByIndex = array_search($value['id'], array_column($this->result, 'id'));
 
             // Jika ditemukan, hapus elemen dari array
             if ($resultByIndex !== false) {
