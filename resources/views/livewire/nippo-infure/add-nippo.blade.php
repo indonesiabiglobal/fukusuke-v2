@@ -347,7 +347,8 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Jam Produksi</label>
-                                <input class="form-control" wire:model="work_hour" type="time" placeholder="hh:mm">
+                                <input class="form-control" wire:model="work_hour" type="time" placeholder="hh:mm"
+                                x-ref="work_hour">
                                 {{-- <input class="form-control" type="time" placeholder="hh:mm" wire:model="work_hour"> --}}
                                 @error('work_hour')
                                     <span class="invalid-feedback">{{ $message }}</span>
@@ -500,7 +501,8 @@
                                     <div class="form-group">
                                         <div class="input-group">
                                             <label class="col-12 col-lg-2 fw-bold text-muted">Kode Loss </label>
-                                            <input class="form-control" type="text" wire:model.change="loss_infure_id" placeholder="..." />
+                                            <input id="inputKodeLoss" class="form-control" type="text" wire:model.change="loss_infure_id" placeholder="..."
+                                            x-on:keydown.tab="$event.preventDefault(); $refs.berat_loss.focus();"/>
                                             @error('loss_infure_id')
                                                 <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror
@@ -522,7 +524,7 @@
                                     <div class="form-group">
                                         <div class="input-group">
                                             <label class="col-12 col-lg-2 fw-bold text-muted">Berat Loss </label>
-                                            <input class="form-control" type="text" wire:model.defer="berat_loss" placeholder="0" />
+                                            <input class="form-control" type="text" wire:model.defer="berat_loss" placeholder="0" x-ref="berat_loss"/>
                                             @error('berat_loss')
                                                 <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror
@@ -1404,6 +1406,15 @@
         </div><!-- /.modal -->
     </form>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var modalAdd = document.getElementById('modal-add');
+        
+        modalAdd.addEventListener('shown.bs.modal', function () {
+            document.getElementById('inputKodeLoss').focus();
+        });
+    });
+</script>
 @script
 <script>
     // format number
