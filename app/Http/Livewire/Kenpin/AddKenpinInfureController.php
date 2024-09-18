@@ -353,7 +353,7 @@ class AddKenpinInfureController extends Component
 
     public function render()
     {
-        if (isset($this->lpk_no) && $this->lpk_no != '') {
+        if (isset($this->lpk_no) && $this->lpk_no != '' && strlen($this->lpk_no) >= 10) {
             $tdorderlpk = DB::table('tdorderlpk as tolp')
                 ->select(
                     'tolp.lpk_no',

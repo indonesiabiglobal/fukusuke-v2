@@ -559,14 +559,14 @@ class AddSeitaiController extends Component
         $this->dimensiinfure = '';
         $this->qty_gulung = '';
         $this->qty_gentan = '';
-        $this->total_assembly_qty = '';
+        $this->total_assembly_qty = 0;
         $this->qty_lpk = '';
         $this->selisih = '';
     }
 
     public function render()
     {
-        if (strlen($this->lpk_no) == 10) {
+        if (strlen($this->lpk_no) >= 10) {
             $tdorderlpk = DB::table('tdorderlpk as tolp')
                 ->select(
                     'tolp.id',
