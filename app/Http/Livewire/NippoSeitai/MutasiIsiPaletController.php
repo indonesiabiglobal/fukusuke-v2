@@ -148,14 +148,18 @@ class MutasiIsiPaletController extends Component
             'case_box_count' => $this->case_box_count
         ];
 
+        $orderId = $this->orderId;
         // mengurangi data box pada palet sumber di table
-        $dataByIndex = array_search($this->orderId, array_column($this->data, 'id'));
-        $this->data[$dataByIndex]->qty_produksi = $this->data[$dataByIndex]->qty_produksi - $this->qty_mutasi;
+        $dataByIndex = array_filter($this->data, function ($item) use ($orderId) {
+            return $item->id == $orderId;
+        });
+        $dataIndex = key($dataByIndex);
+        $this->data[$dataIndex]->qty_produksi = $this->data[$dataIndex]->qty_produksi - $this->qty_mutasi;
         $this->qty_seitai = $this->qty_seitai - $this->qty_mutasi;
 
         // menghapus data di data palet sumber jika qty_seitai == 0
         if ($this->qty_seitai == 0) {
-            unset($this->data[$dataByIndex]);
+            unset($this->data[$dataIndex]);
         }
 
         $this->dispatch('closeModalMutasi');
@@ -217,16 +221,37 @@ class MutasiIsiPaletController extends Component
     public function undo()
     {
         foreach ($this->dataMutasi as $key => $value) {
+            $id = $value['id'];
             // menambahkan kembali data yang dimutasi ke palet sumber
-            $dataByIndex = array_search($value['id'], array_column($this->data, 'id'));
-            $this->data[$dataByIndex]->qty_produksi = $this->data[$dataByIndex]->qty_produksi + $value['qty_mutasi'];
+            $dataByIndex = array_filter($this->data, function ($item) use ($id) {
+                return $item->id == $id;
+            });
+            if (count($dataByIndex) > 0) {
+                $dataIndex = key($dataByIndex);
+
+                // $dataByIndex = array_search($value['id'], array_column($this->data, 'id'));
+                $this->data[$dataIndex]->qty_produksi = $this->data[$dataIndex]->qty_produksi + $value['qty_mutasi'];
+            } else {
+                $this->data[] = (object)[
+                    'id' => $value['id'],
+                    'nomor_lot' => $value['nomor_lot'],
+                    'qty_produksi' => $value['qty_mutasi'],
+                    'machineno' => $value['machineno'],
+                    'production_date' => $value['production_date'],
+                    'case_box_count' => $value['case_box_count']
+                ];
+            }
 
             // menghapus data mutasi dari palet tujuan
-            $resultByIndex = array_search($value['id'], array_column($this->result, 'id'));
+            // $resultByIndex = array_search($value['id'], array_column($this->result, 'id'));
+            $resultByIndex = array_filter($this->result, function ($item) use ($id) {
+                return $item->id == $id;
+            });
+            $resultIndex = key($resultByIndex);
 
             // Jika ditemukan, hapus elemen dari array
             if ($resultByIndex !== false) {
-                unset($this->result[$resultByIndex]);
+                unset($this->result[$resultIndex]);
             }
 
             // Untuk memastikan array tetap terurut setelah penghapusan
