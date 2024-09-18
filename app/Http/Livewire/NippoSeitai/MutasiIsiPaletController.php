@@ -13,7 +13,10 @@ class MutasiIsiPaletController extends Component
     public $searchNew;
     public $data = [];
     public $result = [];
+    public $dataMutasi = [];
     public $nomor_lot;
+    public $machineno;
+    public $production_date;
     public $qty_seitai;
     public $qty_mutasi;
     public $orderId;
@@ -27,53 +30,140 @@ class MutasiIsiPaletController extends Component
 
     public function search()
     {
-        $this->render();
+        if (isset($this->searchOld) && $this->searchOld != '') {
+            $this->data = DB::select("
+            SELECT
+                tdpg.id,
+                tdpg.nomor_lot,
+                msm.machineno,
+                tdpg.production_date,
+                tdpg.qty_produksi / msp.case_box_count as qty_produksi,
+                tdpg.nomor_palet
+            FROM
+                tdproduct_goods AS tdpg
+                INNER JOIN msmachine AS msm ON msm.id = tdpg.machine_id
+                INNER JOIN msproduct as msp on msp.id = tdpg.product_id
+            WHERE
+                tdpg.nomor_palet = '$this->searchOld'");
+
+            if ($this->data == null) {
+                $this->dispatch('notification', ['type' => 'error', 'message' => 'Palet ' . $this->searchOld . ' Tidak Terdaftar']);
+            }
+        }
     }
 
     public function searchTujuan()
     {
-        $this->render();
+        if (isset($this->searchNew) && $this->searchNew != '') {
+            $this->result = DB::select("
+            SELECT
+                tdpg.id,
+                tdpg.nomor_lot,
+                msm.machineno,
+                tdpg.production_date,
+                tdpg.qty_produksi / msp.case_box_count as qty_produksi,
+                tdpg.nomor_palet
+            FROM
+                tdproduct_goods AS tdpg
+                INNER JOIN msmachine AS msm ON msm.id = tdpg.machine_id
+                INNER JOIN msproduct as msp on msp.id = tdpg.product_id
+            WHERE
+                tdpg.nomor_palet = '$this->searchNew'");
+
+            if ($this->result == null) {
+                $this->dispatch('notification', ['type' => 'error', 'message' => 'Palet ' . $this->searchNew . ' Tidak Terdaftar']);
+            }
+        }
     }
 
-    public function import()
+    public function import($id)
     {
-        // $validatedData = $this->validate([
-        //     'lpk_no' => 'required',
-        //     'machineno' => 'required',
-        //     'employeeno' => 'required',
-        //     // 'panjang_produksi' => 'required',
-        //     // 'qty_gentan' => 'required'
-        // ]);
-
-        // $paletTujuan = TdProductGoods::where('nomor_palet', $this->searchOld)->first();
-        $paletTujuan = DB::table('tdproduct_goods as tdpg')
+        $paletSumber = DB::table('tdproduct_goods as tdpg')
             ->select([
                 'tdpg.id',
                 'tdpg.nomor_lot',
                 'msm.machineno',
                 'tdpg.production_date',
                 'msp.case_box_count',
+                'tdpg.qty_produksi as qty_produksi_old',
                 DB::raw('tdpg.qty_produksi / msp.case_box_count as qty_produksi'),
                 'tdpg.nomor_palet'
             ])
             ->join('msmachine as msm', 'msm.id', '=', 'tdpg.machine_id')
             ->join('msproduct as msp', 'msp.id', '=', 'tdpg.product_id')
-            ->where('tdpg.nomor_palet', $this->searchOld)
+            ->where('tdpg.id', $id)
             ->first();
 
-        $this->orderId = $paletTujuan->id;
-        $this->nomor_lot = $paletTujuan->nomor_lot;
-        $this->qty_seitai = $paletTujuan->qty_produksi;
-        $this->qty_mutasi = $paletTujuan->qty_produksi;
-        $this->case_box_count = $paletTujuan->case_box_count;
+        $this->orderId = $paletSumber->id;
+        $this->searchOld = $paletSumber->nomor_palet;
+        $this->nomor_lot = $paletSumber->nomor_lot;
+        $this->qty_seitai = $paletSumber->qty_produksi;
+        $this->qty_mutasi = $paletSumber->qty_produksi;
+        $this->case_box_count = $paletSumber->case_box_count;
+        $this->machineno = $paletSumber->machineno;
+        $this->production_date = $paletSumber->production_date;
 
         if (!$this->searchNew) {
             $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Palet Tujuan ' . $this->searchNew . ' Tidak Terisi']);
         }
     }
 
+    public function addMutasi()
+    {
+        if ($this->qty_mutasi == '' || $this->qty_mutasi == 0 || $this->qty_mutasi == null) {
+            $this->dispatch('notification', ['type' => 'warning', 'message' => 'Box Mutasi Harus Diisi']);
+            return;
+        }
+        if ($this->qty_mutasi > $this->qty_seitai) {
+            $this->dispatch('notification', ['type' => 'warning', 'message' => 'Box Mutasi Tidak Boleh Melebihi Box Seitai']);
+            return;
+        }
+
+        // check apakah palet tujuan ada
+        if ($this->searchNew == '') {
+            $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Palet Tujuan ' . $this->searchNew . ' Tidak Terisi']);
+            $this->dispatch('closeModalMutasi');
+            return;
+        }
+
+        // menambahkan data mutasi
+        $this->dataMutasi[$this->orderId] = [
+            'id' => $this->orderId,
+            'nomor_lot' => $this->nomor_lot,
+            'qty_produksi' => $this->qty_seitai,
+            'qty_seitai' => $this->qty_seitai,
+            'qty_mutasi' => $this->qty_mutasi,
+            'machineno' => $this->machineno,
+            'production_date' => $this->production_date,
+            'case_box_count' => $this->case_box_count
+        ];
+
+        // menambahkan data mutasi ke dalam array result
+        $this->result[] = (object)[
+            'id' => $this->orderId,
+            'nomor_lot' => $this->nomor_lot,
+            'qty_produksi' => $this->qty_seitai,
+            'machineno' => $this->machineno,
+            'production_date' => $this->production_date,
+            'case_box_count' => $this->case_box_count
+        ];
+
+        // mengurangi data box pada palet sumber di table
+        $dataByIndex = array_search($this->orderId, array_column($this->data, 'id'));
+        $this->data[$dataByIndex]->qty_produksi = $this->data[$dataByIndex]->qty_produksi - $this->qty_mutasi;
+        $this->qty_seitai = $this->qty_seitai - $this->qty_mutasi;
+
+        // menghapus data di data palet sumber jika qty_seitai == 0
+        if ($this->qty_seitai == 0) {
+            unset($this->data[$dataByIndex]);
+        }
+
+        $this->dispatch('closeModalMutasi');
+    }
+
     public function saveMutasi()
     {
+        dd($this->dataMutasi);
         if ($this->qty_seitai == $this->qty_mutasi) {
             $save = TdProductGoods::where('id', $this->orderId)->update([
                 'nomor_palet' => $this->searchNew
@@ -90,7 +180,7 @@ class MutasiIsiPaletController extends Component
             $datas->production_no = $data['production_no'];
             $datas->production_date = $data['production_date'];
             $datas->employee_id = $data['employee_id'];
-            $datas->employee_id_infure = $data['employee_id_infure'];;
+            $datas->employee_id_infure = $data['employee_id_infure'];
             $datas->work_shift = $data['work_shift'];
             $datas->work_hour = $data['work_hour'];
             $datas->machine_id = $data['machine_id'];
@@ -123,6 +213,26 @@ class MutasiIsiPaletController extends Component
         }
     }
 
+    public function undo()
+    {
+        foreach ($this->dataMutasi as $key => $value) {
+            // menambahkan kembali data yang dimutasi ke palet sumber
+            $dataByIndex = array_search($value->id, array_column($this->data, 'id'));
+            $this->data[$dataByIndex]->qty_produksi = $this->data[$dataByIndex]->qty_produksi + $value->qty_mutasi;
+
+            // menghapus data mutasi dari palet tujuan
+            $resultByIndex = array_search($value->id, array_column($this->result, 'id'));
+
+            // Jika ditemukan, hapus elemen dari array
+            if ($resultByIndex !== false) {
+                unset($this->result[$resultByIndex]);
+            }
+
+            // Untuk memastikan array tetap terurut setelah penghapusan
+            $this->result = array_values($this->result);
+        }
+    }
+
     public function delete()
     {
         $save = TdProductGoods::where('id', $this->orderId)->update([
@@ -147,48 +257,6 @@ class MutasiIsiPaletController extends Component
 
     public function render()
     {
-        if (isset($this->searchOld) && $this->searchOld != '') {
-            $this->data = DB::select("
-            SELECT
-                tdpg.id,
-                tdpg.nomor_lot,
-                msm.machineno,
-                tdpg.production_date,
-                tdpg.qty_produksi / msp.case_box_count as qty_produksi,
-                tdpg.nomor_palet
-            FROM
-                tdproduct_goods AS tdpg
-                INNER JOIN msmachine AS msm ON msm.id = tdpg.machine_id
-                INNER JOIN msproduct as msp on msp.id = tdpg.product_id
-            WHERE
-                tdpg.nomor_palet = '$this->searchOld'");
-
-            if ($this->data == null) {
-                $this->dispatch('notification', ['type' => 'error', 'message' => 'Palet ' . $this->searchOld . ' Tidak Terdaftar']);
-            }
-        }
-
-        if (isset($this->searchNew) && $this->searchNew != '') {
-            $this->result = DB::select("
-            SELECT
-                tdpg.id,
-                tdpg.nomor_lot,
-                msm.machineno,
-                tdpg.production_date,
-                tdpg.qty_produksi / msp.case_box_count as qty_produksi,
-                tdpg.nomor_palet
-            FROM
-                tdproduct_goods AS tdpg
-                INNER JOIN msmachine AS msm ON msm.id = tdpg.machine_id
-                INNER JOIN msproduct as msp on msp.id = tdpg.product_id
-            WHERE
-                tdpg.nomor_palet = '$this->searchNew'");
-
-            if ($this->result == null) {
-                $this->dispatch('notification', ['type' => 'error', 'message' => 'Palet ' . $this->searchNew . ' Tidak Terdaftar']);
-            }
-        }
-
         return view('livewire.nippo-seitai.mutasi-isi-palet')->extends('layouts.master');
     }
 }
