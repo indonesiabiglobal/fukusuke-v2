@@ -450,8 +450,8 @@ class AddNippoController extends Component
         $this->qty_gulung = '';
         $this->lpk_no = '';
         $this->qty_gentan = '';
-        $this->berat_standard = '';
-        $this->total_assembly_line = '';
+        $this->berat_standard = 0;
+        $this->total_assembly_line = 0;
         $this->selisih = '';
     }
 
@@ -521,6 +521,7 @@ class AddNippoController extends Component
                 //     ->where('tal.lpk_id', $tdorderlpk->id)
                 //     ->get();
             }
+
         }
 
         if (isset($this->panjang_produksi) && $this->panjang_produksi != '') {
