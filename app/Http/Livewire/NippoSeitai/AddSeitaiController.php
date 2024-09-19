@@ -701,7 +701,7 @@ class AddSeitaiController extends Component
                     AND (
                         '$this->work_hour' BETWEEN work_hour_from AND '23:59:59'
                         OR
-                        '$this->work_hour' BETWEEN '00:00:00' AND work_hour_till
+                        '$this->work_hour' BETWEEN '00:00:01' AND work_hour_till
                     )
                 )
                 ORDER BY work_hour_till ASC

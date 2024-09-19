@@ -154,6 +154,7 @@
                                 <input type="text" placeholder="-" class="form-control"
                                     wire:model.change="qty_produksi"
                                     oninput="this.value = window.formatNumber(this.value)"
+                                    x-on:keydown.tab="$event.preventDefault(); document.querySelector('#nomor_palet').focus();"
                                     x-ref="qty_produksi" />
                                 <span class="input-group-text">
                                     lbr
@@ -203,7 +204,7 @@
                                     }
                                 })">
                                     <input class="form-control @error('nomor_palet') is-invalid @enderror" style="padding:0.44rem" type="text"
-                                        placeholder="A0000-000000" x-model="nomor_palet" maxlength="12"
+                                        placeholder="A0000-000000" x-model="nomor_palet" maxlength="12" id="nomor_palet"
                                         x-on:keydown.tab="$event.preventDefault(); $refs.nomor_lot.focus();" />
                                 </div>
                                 {{-- <input type="text" placeholder="A0000-000000" class="form-control text-uppercase @error('nomor_palet') is-invalid @enderror" wire:model.change="nomor_palet" x-on:keydown.tab="$event.preventDefault(); $refs.nomor_lot.focus();" x-ref="nomor_palet" /> --}}
@@ -267,7 +268,7 @@
                                 {{-- <input class="form-control col-12 col-md-9 col-lg-5" wire:model.change="work_hour"
                                     type="time" placeholder="hh:mm" x-ref="work_hour"> --}}
                                 <input class="form-control col-12 col-md-9 col-lg-5 @error('work_hour') is-invalid @enderror" wire:model="work_hour" type="text" placeholder="HH:mm"
-                                x-ref="work_hour" 
+                                x-ref="work_hour"
                                 pattern="[0-9]{2}:[0-9]{2}" >
                             </div>
                         </div>
@@ -1588,7 +1589,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         var modalAdd = document.getElementById('modal-gentan');
-        
+
         modalAdd.addEventListener('shown.bs.modal', function () {
             document.getElementById('inputKodeGentan').focus();
         });
@@ -1596,7 +1597,7 @@
 
     document.addEventListener('DOMContentLoaded', function () {
         var modalAdd = document.getElementById('modal-loss');
-        
+
         modalAdd.addEventListener('shown.bs.modal', function () {
             document.getElementById('inputKodeLoss').focus();
         });
