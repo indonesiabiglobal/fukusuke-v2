@@ -84,7 +84,9 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Nomor Mesin</label>
-                                <input type="text" placeholder=" ... " class="form-control" wire:model.debounce.300ms="machineno" />
+                                <input type="text" placeholder=" ... " class="form-control" wire:model.debounce.300ms="machineno"
+                                x-on:keydown.tab="$event.preventDefault(); $refs.employeeno.focus();"
+                                x-ref="machineInput" />
                             </div>
                         </div>
                     </div>
@@ -100,7 +102,9 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Petugas</label>
-                                <input type="text" placeholder=" ... " class="form-control" wire:model.change="employeeno" />
+                                <input type="text" placeholder=" ... " class="form-control" wire:model.change="employeeno"
+                                x-on:keydown.tab="$event.preventDefault(); $refs.qty_produksi.focus();"
+                                x-ref="employeeno" />
                             </div>
                         </div>
                     </div>
@@ -116,7 +120,10 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5">Jumlah Produksi</label>
-                                <input type="text" placeholder="-" class="form-control" wire:model.change="qty_produksi" oninput="this.value = window.formatNumber(this.value)"/>
+                                <input type="text" placeholder="-" class="form-control" wire:model.change="qty_produksi"
+                                x-on:keydown.tab="$event.preventDefault(); $refs.nomor_palet.focus();"
+                                x-ref="qty_produksi"
+                                oninput="this.value = window.formatNumber(this.value)"/>
                                 <span class="input-group-text">
                                     mm
                                 </span>
@@ -149,7 +156,9 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5">Nomor Palet</label>
-                                <input type="text" placeholder="A0000-000000" class="form-control" wire:model="nomor_palet" />
+                                <input type="text" placeholder="A0000-000000" class="form-control" wire:model="nomor_palet"
+                                x-on:keydown.tab="$event.preventDefault(); $refs.nomor_lot.focus();"
+                                x-ref="nomor_palet" />
                             </div>
                         </div>
                     </div>
@@ -157,7 +166,9 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-3">Nomor LOT</label>
-                                <input type="text" placeholder="----------" class="form-control" wire:model="nomor_lot" />
+                                <input type="text" placeholder="----------" class="form-control" wire:model="nomor_lot"
+                                x-on:keydown.tab="$event.preventDefault(); $refs.infure_berat_loss.focus();"
+                                x-ref="nomor_lot"/>
 
                                 <input type="text" class="form-control readonly bg-light" readonly="readonly" />
                             </div>
@@ -168,7 +179,8 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5">Loss Infure</label>
-                                <input type="text" class="form-control"  wire:model="infure_berat_loss" />
+                                <input type="text" class="form-control"  wire:model="infure_berat_loss"
+                                x-ref="infure_berat_loss" />
                                 <span class="input-group-text">
                                     kg
                                 </span>
@@ -179,7 +191,8 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-3">Petugas Infure</label>
-                                <input type="text" placeholder="..." class="form-control" wire:model.change="employeenoinfure" />
+                                <input type="text" placeholder="..." class="form-control" wire:model.change="employeenoinfure"
+                                x-on:keydown.tab="$event.preventDefault(); $refs.work_hour.focus();" />
 
                                 <input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="empnameinfure" />
                             </div>
@@ -189,7 +202,13 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Jam Produksi</label>
-                                <input class="form-control" type="time" placeholder="hh:mm" wire:model="work_hour">
+                                {{-- <input class="form-control" type="time" placeholder="hh:mm" wire:model="work_hour"> --}}
+                                <input class="form-control @error('work_hour') is-invalid @enderror" wire:model="work_hour" type="text" placeholder="HH:mm"
+                                x-ref="work_hour" 
+                                pattern="[0-9]{2}:[0-9]{2}" >
+                                <span class="input-group-text py-0">
+                                    <i class="ri-time-line fs-5"></i>
+                                </span>
                             </div>
                         </div>
                     </div>

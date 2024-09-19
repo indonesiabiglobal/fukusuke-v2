@@ -286,7 +286,8 @@ class AddSeitaiController extends Component
             'lpk_no' => 'required',
             'nomor_palet' => 'required',
             'nomor_lot' => 'required',
-            'infure_berat_loss' => 'required'
+            'infure_berat_loss' => 'required',
+            'work_hour' => 'required|regex:/^[0-9]{2}:[0-9]{2}$/',
         ]);
 
         try {

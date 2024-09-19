@@ -457,7 +457,8 @@ class EditSeitaiController extends Component
         $validatedData = $this->validate([
             'lpk_no' => 'required',
             'nomor_palet' => 'required',
-            'nomor_lot' => 'required'
+            'nomor_lot' => 'required',
+            'work_hour' => 'required|regex:/^[0-9]{2}:[0-9]{2}$/',
         ]);
 
         try {
