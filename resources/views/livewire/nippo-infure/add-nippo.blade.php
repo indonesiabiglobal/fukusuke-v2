@@ -349,9 +349,15 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Jam Produksi</label>
-                                <input class="form-control" wire:model="work_hour" type="time" placeholder="hh:mm"
-                                x-ref="work_hour">
-                                {{-- <input class="form-control" type="time" placeholder="hh:mm" wire:model="work_hour"> --}}
+                                {{-- <input class="form-control" wire:model="work_hour" type="time" placeholder="hh:mm"
+                                x-ref="work_hour"> --}}
+                                <input class="form-control @error('work_hour') is-invalid @enderror" wire:model="work_hour" type="text" placeholder="HH:mm" 
+                                x-ref="work_hour" 
+                                pattern="[0-9]{2}:[0-9]{2}" title="Format waktu harus HH:mm">
+                                <span class="input-group-text py-0">
+                                    <i class="ri-time-line fs-5"></i>
+                                </span>
+
                                 @error('work_hour')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -416,7 +422,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Nomor Barcode</label>
-                                <input type="text" class="form-control" wire:model.live.debounce.300ms="nomor_barcode"
+                                <input type="text" class="form-control" readonly="readonly" wire:model.live.debounce.300ms="nomor_barcode"
                                 x-on:keydown.tab="$event.preventDefault(); $refs.gentan_no.focus();"
                                 x-ref="nomor_barcode" />
                                 @error('nomor_barcode')
@@ -429,7 +435,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Nomor Gentan</label>
-                                <input type="text" class="form-control"  wire:model="gentan_no" x-ref="gentan_no"/>
+                                <input type="text" class="form-control bg-light" readonly="readonly" wire:model="gentan_no" x-ref="gentan_no"/>
                                 @error('gentan_no')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror

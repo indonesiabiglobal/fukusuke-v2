@@ -265,11 +265,12 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Jam Produksi</label>
-                                <input class="form-control" wire:model="work_hour" type="time" placeholder="hh:mm"
-                                x-ref="work_hour">
-                                {{-- <input type="text" class="form-control @if($statusEditLoss) readonly bg-light @endif
-                                " @if($statusEditLoss) readonly="readonly" @endif wire:model="work_hour" data-provider="timepickr" data-time-hrs="true" id="timepicker-24hrs" x-on:keydown.tab="$event.preventDefault(); $refs.nomor_han.focus();"
-                                x-ref="work_hour"> --}}
+                                <input class="form-control @error('work_hour') is-invalid @enderror" wire:model="work_hour" type="text" placeholder="HH:mm"
+                                x-ref="work_hour" 
+                                pattern="[0-9]{2}:[0-9]{2}" >
+                                <span class="input-group-text py-0">
+                                    <i class="ri-time-line fs-5"></i>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -316,6 +317,7 @@
                                         placeholder="00-00-00-00A"
                                         x-model="nomor_han"
                                         maxlength="12"
+                                        x-ref="nomor_han" 
                                         x-on:keydown.tab="$event.preventDefault(); $refs.nomor_barcode.focus();"
                                     />
                                 </div>

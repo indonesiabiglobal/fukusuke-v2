@@ -36,7 +36,7 @@ class AddNippoController extends Component
     public $berat_produksi;
     public $work_hour;
     public $work_shift;
-    public $gentan_no = 0;
+    public $gentan_no;
     public $nomor_han;
     public $name_infure;
     public $loss_infure_id;
@@ -70,6 +70,7 @@ class AddNippoController extends Component
         if (!empty($request->query('lpk_no'))) {
             $this->lpk_no = $request->query('lpk_no');
         }
+
         $this->production_date = Carbon::now()->format('d/m/Y');
         $this->created_on = Carbon::now()->format('d/m/Y');
         $this->work_hour = Carbon::now()->format('H:i');
@@ -250,6 +251,7 @@ class AddNippoController extends Component
             'employeeno' => 'required',
             'panjang_produksi' => 'required|max:25000',
             'berat_produksi' => 'required|max:900',
+            'work_hour' => 'required|regex:/^[0-9]{2}:[0-9]{2}$/',
         ]);
 
         DB::beginTransaction();
@@ -507,6 +509,12 @@ class AddNippoController extends Component
                 $this->total_assembly_line = $tdorderlpk->total_assembly_line;
                 $selisih = $tdorderlpk->total_assembly_line - $tdorderlpk->panjang_lpk;
                 $this->selisih = round($selisih, 2);
+
+                $maxGentan = TdProductAssembly::where('lpk_id', $tdorderlpk->id)
+                    ->orderBy('gentan_no', 'DESC')
+                    ->first();
+
+                $this->gentan_no = $maxGentan->gentan_no + 1;
 
                 // $this->details = DB::table('tdproduct_assembly_loss as tal')
                 //     ->select(

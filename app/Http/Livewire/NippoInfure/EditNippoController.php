@@ -339,14 +339,10 @@ class EditNippoController extends Component
     {
         $this->panjang_produksi = (int)str_replace(',', '', $this->panjang_produksi);
         $this->berat_produksi = (float)str_replace(',', '', $this->berat_produksi);
-        // $validatedData = $this->validate([
-        //     'production_date' => 'required',
-        //     'created_on' => 'required',
-        //     'lpk_no' => 'required',
-        //     'machineno' => 'required',
-        //     'employeeno' => 'required',
-        //     'nomor_barcode' => 'required'
-        // ]);
+
+        $validatedData = $this->validate([
+            'work_hour' => 'required|regex:/^[0-9]{2}:[0-9]{2}$/',
+        ]);
 
         DB::beginTransaction();
         try {
