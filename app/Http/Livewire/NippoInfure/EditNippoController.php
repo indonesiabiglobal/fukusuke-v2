@@ -338,6 +338,7 @@ class EditNippoController extends Component
     public function save()
     {
         $this->panjang_produksi = (int)str_replace(',', '', $this->panjang_produksi);
+        $this->berat_produksi = (float)str_replace(',', '', $this->berat_produksi);
         // $validatedData = $this->validate([
         //     'production_date' => 'required',
         //     'created_on' => 'required',
@@ -377,6 +378,9 @@ class EditNippoController extends Component
             $product->nomor_han = $this->nomor_han;
             $product->product_id = $products->id;
             $product->panjang_produksi = $this->panjang_produksi;
+            $product->berat_produksi = $this->berat_produksi;
+            $product->berat_standard = $this->berat_standard;
+            $product->infure_cost = $this->berat_produksi * $products->harga_sat_infure;
 
             $totalAssembly = DB::select("
                 SELECT

@@ -292,7 +292,9 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5">Berat Gentan</label>
-                                <input type="text" class="form-control @error('berat_produksi') is-invalid @enderror" wire:model.change="berat_produksi" oninput="this.value = window.formatNumber(this.value)"
+                                <input type="text" class="form-control @error('berat_produksi') is-invalid @enderror" 
+                                wire:model.change="berat_produksi" 
+                                oninput="this.value = window.formatNumber(this.value)"
                                 x-on:keydown.tab="$event.preventDefault(); $refs.work_hour.focus();"
                                 x-ref="berat_produksi" />
                                 <span class="input-group-text">
@@ -1418,25 +1420,54 @@
 @script
 <script>
     // format number
-    window.formatNumber = function(value) {
+    // window.formatNumber = function(value) {
+    //     console.log(value);
+
+    //     // Hapus koma jika ada
+    //     value = value.replace(/,/g, '');
+
+    //     // Hapus karakter yang bukan angka
+    //     value = value.replace(/[^0-9]/g, '');
+
+    //     // Hapus nol di depan angka
+    //     value = value.replace(/^0+/, '');
+
+    //     // Jika value adalah angka yang valid, format dengan pemisah ribuan
+    //     if (!isNaN(value) && value !== '') {
+    //         return Number(value).toLocaleString('en-US');
+    //     }
+
+    //     // Kembalikan value tanpa modifikasi jika tidak valid
+    //     return value;
+    // };
+
+    window.formatNumber = function(value) { 
         console.log(value);
 
-        // Hapus koma jika ada
+        // Hapus koma jika ada untuk pemrosesan angka (kecuali koma desimal)
         value = value.replace(/,/g, '');
 
-        // Hapus karakter yang bukan angka
-        value = value.replace(/[^0-9]/g, '');
+        // Pertahankan hanya angka dan satu titik desimal
+        value = value.replace(/[^0-9.]/g, '');
 
-        // Hapus nol di depan angka
-        value = value.replace(/^0+/, '');
-
-        // Jika value adalah angka yang valid, format dengan pemisah ribuan
-        if (!isNaN(value) && value !== '') {
-            return Number(value).toLocaleString('en-US');
+        // Jika ada lebih dari satu titik, hapus titik tambahan
+        let parts = value.split('.');
+        if (parts.length > 2) {
+            value = parts[0] + '.' + parts[1]; // Gabungkan bagian sebelum titik dan satu bagian desimal
         }
 
-        // Kembalikan value tanpa modifikasi jika tidak valid
-        return value;
+        // Hapus nol di depan angka
+        if (parts[0] !== '') {
+            parts[0] = parts[0].replace(/^0+/, '');
+        }
+
+        // Jika value adalah angka yang valid, format dengan pemisah ribuan
+        if (!isNaN(parts[0])) {
+            parts[0] = Number(parts[0]).toLocaleString('en-US');
+        }
+
+        // Gabungkan kembali angka dengan desimal (jika ada)
+        return parts.length > 1 ? parts[0] + '.' + parts[1] : parts[0];
     };
     $wire.on('showModal', () => {
 
