@@ -189,17 +189,22 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-12 col-md-3 col-lg-5">Nomor Palet</label>
-                                <div x-data="{ nomor_palet: @entangle('nomor_palet'), status: true }" x-init="$watch('nomor_palet', value => {
+                                <div x-data="{ nomor_palet: @entangle('nomor_palet').change, status: true }" x-init="$watch('nomor_palet', value => {
+                                    // Membuat karakter pertama kapital
+                                    nomor_palet = value.charAt(0).toUpperCase() + value.slice(1).replace(/[^0-9-]/g, '');
                                     if (value.length === 5 && !value.includes('-') && status) {
                                         nomor_palet = value + '-';
                                     }
-                                    if (value.length < 6) {
+                                    if (value.length < 5) {
                                         status = true;
                                     }
-                                    if (value.length === 7) {
+                                    if (value.length === 6) {
                                         status = false;
                                     }
-                                    if (value.length > 12) {
+                                    {{-- membatasi 12 karakter --}}
+                                    if (value.length == 11 && !value.includes('-') && status) {
+                                        nomor_palet = value.substring(0, 5) + '-' + value.substring(5, 11);
+                                    } else if (value.length > 12) {
                                         nomor_palet = value.substring(0, 12);
                                     }
                                 })">
