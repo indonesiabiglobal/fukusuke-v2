@@ -117,7 +117,7 @@
                 </div>
             </div>
             <div class="col-12 col-lg-2">
-                <label class="form-label text-muted fw-bold">GentanNo</label>
+                <label class="form-label text-muted fw-bold">Nomor Gentan</label>
             </div>
             <div class="col-12 col-lg-10">
                 <div class="input-group">
