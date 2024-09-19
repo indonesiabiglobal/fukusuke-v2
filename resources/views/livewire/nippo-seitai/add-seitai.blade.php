@@ -189,7 +189,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-12 col-md-3 col-lg-5">Nomor Palet</label>
-                                <div x-data="{ nomor_palet: @entangle('nomor_palet').change, status: true }" x-init="$watch('nomor_palet', value => {
+                                <div x-data="{ nomor_palet: @entangle('nomor_palet'), status: true }" x-init="$watch('nomor_palet', value => {
                                     // Membuat karakter pertama kapital
                                     nomor_palet = value.charAt(0).toUpperCase() + value.slice(1).replace(/[^0-9-]/g, '');
                                     if (value.length === 5 && !value.includes('-') && status) {
@@ -209,7 +209,7 @@
                                     }
                                 })">
                                     <input class="form-control @error('nomor_palet') is-invalid @enderror" style="padding:0.44rem" type="text"
-                                        placeholder="A0000-000000" x-model="nomor_palet" maxlength="12" id="nomor_palet"
+                                        placeholder="A0000-000000" x-model="nomor_palet" maxlength="12"
                                         x-on:keydown.tab="$event.preventDefault(); $refs.nomor_lot.focus();" />
                                 </div>
                                 {{-- <input type="text" placeholder="A0000-000000" class="form-control text-uppercase @error('nomor_palet') is-invalid @enderror" wire:model.change="nomor_palet" x-on:keydown.tab="$event.preventDefault(); $refs.nomor_lot.focus();" x-ref="nomor_palet" /> --}}
