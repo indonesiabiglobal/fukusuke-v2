@@ -468,6 +468,12 @@ class EditNippoController extends Component
         );
     }
 
+    public function delete()
+    {
+        $this->dispatch('showModalDelete');
+        $this->skipRender();
+    }
+
     public function destroy()
     {
         DB::beginTransaction();
