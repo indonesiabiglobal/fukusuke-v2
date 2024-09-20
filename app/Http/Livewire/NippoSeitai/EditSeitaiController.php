@@ -67,6 +67,7 @@ class EditSeitaiController extends Component
     public $seq_no;
     public $selisih;
     public $selisihOld;
+    public $idDelete;
 
     // data master produk
     public $masterKatanuki;
@@ -352,6 +353,12 @@ class EditSeitaiController extends Component
         if ($validatedData) {
             $this->dispatch('showModalLoss');
         }
+    }
+
+    public function delete()
+    {
+        $this->dispatch('showModalDelete');
+        $this->skipRender();
     }
 
     public function deleteGentan($orderId)
