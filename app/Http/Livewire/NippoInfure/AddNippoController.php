@@ -514,7 +514,11 @@ class AddNippoController extends Component
                     ->orderBy('gentan_no', 'DESC')
                     ->first();
 
-                $this->gentan_no = $maxGentan->gentan_no + 1;
+                if ($maxGentan == null) {
+                    $this->gentan_no = 1;
+                } else {
+                    $this->gentan_no = $maxGentan->gentan_no + 1;
+                }
 
                 // $this->details = DB::table('tdproduct_assembly_loss as tal')
                 //     ->select(
