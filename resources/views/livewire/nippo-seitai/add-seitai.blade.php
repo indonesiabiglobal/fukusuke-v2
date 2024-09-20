@@ -178,7 +178,8 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-12 col-md-3 col-lg-5">Selisih</label>
-                                <input type="text" class="form-control readonly bg-light" readonly="readonly" value="{{ number_format($selisih) }}" />
+                                <input type="text" class="form-control readonly bg-light" readonly="readonly"
+                                    value="{{ number_format($selisih) }}" />
                                 <span class="input-group-text">
                                     lbr
                                 </span>
@@ -208,8 +209,9 @@
                                         nomor_palet = value.substring(0, 12);
                                     }
                                 })">
-                                    <input class="form-control @error('nomor_palet') is-invalid @enderror" style="padding:0.44rem" type="text"
-                                        placeholder="A0000-000000" x-model="nomor_palet" maxlength="12"
+                                    <input class="form-control @error('nomor_palet') is-invalid @enderror"
+                                        style="padding:0.44rem" type="text" placeholder="A0000-000000" id="nomor_palet"
+                                        x-model="nomor_palet" maxlength="12"
                                         x-on:keydown.tab="$event.preventDefault(); $refs.nomor_lot.focus();" />
                                 </div>
                                 {{-- <input type="text" placeholder="A0000-000000" class="form-control text-uppercase @error('nomor_palet') is-invalid @enderror" wire:model.change="nomor_palet" x-on:keydown.tab="$event.preventDefault(); $refs.nomor_lot.focus();" x-ref="nomor_palet" /> --}}
@@ -272,8 +274,9 @@
                                 <label class="control-label col-12 col-md-3 col-lg-7 pe-2">Jam Produksi</label>
                                 {{-- <input class="form-control col-12 col-md-9 col-lg-5" wire:model.change="work_hour"
                                     type="time" placeholder="hh:mm" x-ref="work_hour"> --}}
-                                <input class="form-control col-12 col-md-9 col-lg-5 @error('work_hour') is-invalid @enderror" wire:model="work_hour" type="time" placeholder="HH:mm"
-                                x-ref="work_hour">
+                                <input
+                                    class="form-control col-12 col-md-9 col-lg-5 @error('work_hour') is-invalid @enderror"
+                                    wire:model="work_hour" type="time" placeholder="HH:mm" x-ref="work_hour">
                             </div>
                         </div>
                     </div>
@@ -294,25 +297,28 @@
         <div class="row">
             <div class="col-lg-6 col-12">
                 @if ($selisih < 0)
-                <h4 class="text-danger text-center">Total jumlah produksi sudah melebihi jumlah LPK ..!</h4>
+                    <h4 class="text-danger text-center">Total jumlah produksi sudah melebihi jumlah LPK ..!</h4>
                 @endif
             </div>
         </div>
 
         <div class="row">
             <div class="col-lg-8">
-                <ul class="nav nav-tabs" id="myTab" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="periode1SP-tab" data-bs-toggle="tab"
-                            data-bs-target="#periode1SP" type="button" role="tab" aria-controls="periode1SP"
-                            aria-selected="true">Gentan(s)</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="periode2SP-tab" data-bs-toggle="tab"
-                            data-bs-target="#periode2SP" type="button" role="tab" aria-controls="periode2SP"
-                            aria-selected="false">Loss(s)</button>
-                    </li>
-                </ul>
+                <div x-data="{ activeTab: @entangle('activeTab') }">
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link @if ($activeTab == 'Gentan') active @endif"
+                                id="periode1SP-tab" data-bs-toggle="tab" data-bs-target="#periode1SP" type="button"
+                                role="tab" aria-controls="periode1SP" aria-selected="true">Gentan(s)</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link @if ($activeTab == 'Loss') active @endif"
+                                id="periode2SP-tab" data-bs-toggle="tab" wire:click="changeTab('Loss')"
+                                data-bs-target="#periode2SP" type="button" role="tab"
+                                aria-controls="periode2SP" aria-selected="false">Loss(s)</button>
+                        </li>
+                    </ul>
+                </div>
             </div>
             <div class="col-lg-4">
                 {{-- <div class="toolbar">
@@ -361,7 +367,7 @@
 
 
         <div class="tab-content" id="myTabContent">
-            <div class="tab-pane fade show active" id="periode1SP" role="tabpanel" aria-labelledby="periode1SP-tab">
+            <div class="tab-pane fade @if ($activeTab == 'Gentan') show active @endif " id="periode1SP" role="tabpanel" aria-labelledby="periode1SP-tab">
                 <div class="row justify-content-start">
                     <div class="row mt-3">
                         <div class="col-lg-8">
@@ -441,7 +447,7 @@
                     </div>
                 </div>
             </div>
-            <div class="tab-pane fade" id="periode2SP" role="tabpanel" aria-labelledby="periode2SP-tab">
+            <div class="tab-pane fade @if ($activeTab == 'Loss') show active @endif" id="periode2SP" role="tabpanel" aria-labelledby="periode2SP-tab">
                 <div class="row justify-content-start">
                     <div class="row mt-3">
                         <div class="col-lg-8">
@@ -522,8 +528,9 @@
                                 <div class="form-group">
                                     <label>Nomor Gentan </label>
                                     <div class="input-group col-md-9 col-xs-8">
-                                        <input id="inputKodeGentan" class="form-control" type="number" wire:model.change="gentan_no"
-                                            placeholder="..." x-on:keydown.tab="$event.preventDefault(); $refs.gentan_line.focus();" />
+                                        <input id="inputKodeGentan" class="form-control" type="number"
+                                            wire:model.change="gentan_no" placeholder="..."
+                                            x-on:keydown.tab="$event.preventDefault(); $refs.gentan_line.focus();" />
                                         @error('gentan_no')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror
@@ -562,7 +569,8 @@
                                     <label>Line Gentan </label>
                                     <div class="input-group col-md-9 col-xs-8">
                                         {{-- <input class="form-control" type="text" wire:model.defer="gentan_line" placeholder="Enter A atau B" /> --}}
-                                        <select class="form-select" wire:model.defer="gentan_line" x-ref="gentan_line">
+                                        <select class="form-select" wire:model.defer="gentan_line"
+                                            x-ref="gentan_line">
                                             <option value="">Pilih Line</option>
                                             <option value="A">A</option>
                                             <option value="B">B</option>
@@ -600,8 +608,20 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-link text-gray-600 ms-auto"
                             data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-success" wire:click="saveGentan">
-                            Save
+                        <button type="button" wire:click="saveGentan" class="btn btn-success">
+                            <span wire:loading.remove wire:target="saveGentan">
+                                <i class="ri-save-3-line"></i> Save
+                            </span>
+                            <div wire:loading wire:target="saveGentan">
+                                <span class="d-flex align-items-center">
+                                    <span class="spinner-border flex-shrink-0" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </span>
+                                    <span class="flex-grow-1 ms-1">
+                                        Loading...
+                                    </span>
+                                </span>
+                            </div>
                         </button>
                     </div>
                 </div>
@@ -623,8 +643,9 @@
                                 <div class="form-group">
                                     <label>Kode Loss </label>
                                     <div class="input-group col-md-9 col-xs-8">
-                                        <input id="inputKodeLoss" class="form-control" type="text" wire:model.change="loss_seitai_id"
-                                            placeholder="..." x-on:keydown.tab="$event.preventDefault(); $refs.berat_loss.focus();" />
+                                        <input id="inputKodeLoss" class="form-control" type="text"
+                                            wire:model.change="loss_seitai_id" placeholder="..."
+                                            x-on:keydown.tab="$event.preventDefault(); $refs.berat_loss.focus();" />
                                         @error('loss_seitai_id')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror
@@ -696,8 +717,20 @@
 
                         <button type="button" class="btn btn-link text-gray-600 ms-auto"
                             data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-success" wire:click="saveLoss">
-                            Save
+                        <button type="button" wire:click="saveLoss" class="btn btn-success">
+                            <span wire:loading.remove wire:target="saveLoss">
+                                <i class="ri-save-3-line"></i> Save
+                            </span>
+                            <div wire:loading wire:target="saveLoss">
+                                <span class="d-flex align-items-center">
+                                    <span class="spinner-border flex-shrink-0" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </span>
+                                    <span class="flex-grow-1 ms-1">
+                                        Loading...
+                                    </span>
+                                </span>
+                            </div>
                         </button>
                     </div>
                 </div>
@@ -1591,18 +1624,18 @@
     </form>
 </div>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         var modalAdd = document.getElementById('modal-gentan');
 
-        modalAdd.addEventListener('shown.bs.modal', function () {
+        modalAdd.addEventListener('shown.bs.modal', function() {
             document.getElementById('inputKodeGentan').focus();
         });
     });
 
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         var modalAdd = document.getElementById('modal-loss');
 
-        modalAdd.addEventListener('shown.bs.modal', function () {
+        modalAdd.addEventListener('shown.bs.modal', function() {
             document.getElementById('inputKodeLoss').focus();
         });
     });

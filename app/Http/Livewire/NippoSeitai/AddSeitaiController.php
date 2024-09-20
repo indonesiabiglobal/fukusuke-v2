@@ -67,6 +67,7 @@ class AddSeitaiController extends Component
     public $currentGentanId = 1;
     public $total_assembly_qty;
     public $selisih;
+    public $activeTab = 'Gentan';
 
     // data master produk
     public $masterKatanuki;
@@ -245,6 +246,11 @@ class AddSeitaiController extends Component
         } else {
             $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor LPK tidak boleh kosong']);
         }
+    }
+
+    public function changeTab($tab)
+    {
+        $this->activeTab = $tab;
     }
 
     public function addGentan()
