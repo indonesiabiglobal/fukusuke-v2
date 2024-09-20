@@ -121,7 +121,7 @@
                             <div class="input-group">
                                 <label class="control-label col-5">Jumlah Produksi</label>
                                 <input type="text" placeholder="-" class="form-control" wire:model.change="qty_produksi"
-                                x-on:keydown.tab="$event.preventDefault(); $refs.nomor_palet.focus();"
+                                x-on:keydown.tab="$event.preventDefault(); document.querySelector('#nomor_palet').focus();"
                                 x-ref="qty_produksi"
                                 oninput="this.value = window.formatNumber(this.value)"/>
                                 <span class="input-group-text">
@@ -156,9 +156,28 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5">Nomor Palet</label>
-                                <input type="text" placeholder="A0000-000000" class="form-control" wire:model="nomor_palet"
+                                <div x-data="{ nomor_palet: @entangle('nomor_palet'), status: true }" x-init="$watch('nomor_palet', value => {
+                                    nomor_palet = value.charAt(0).toUpperCase() + value.slice(1).replace(/[^0-9-]/g, '');
+                                    if (value.length === 5 && !value.includes('-') && status) {
+                                        nomor_palet = value + '-';
+                                    }
+                                    if (value.length < 6) {
+                                        status = true;
+                                    }
+                                    if (value.length === 7) {
+                                        status = false;
+                                    }
+                                    if (value.length > 12) {
+                                        nomor_palet = value.substring(0, 12);
+                                    }
+                                })">
+                                    <input class="form-control @error('nomor_palet') is-invalid @enderror" style="padding:0.44rem" type="text"
+                                        placeholder="A0000-000000" x-model="nomor_palet" maxlength="12" id="nomor_palet"
+                                        x-on:keydown.tab="$event.preventDefault(); $refs.nomor_lot.focus();" />
+                                </div>
+                                {{-- <input type="text" placeholder="A0000-000000" class="form-control" wire:model="nomor_palet"
                                 x-on:keydown.tab="$event.preventDefault(); $refs.nomor_lot.focus();"
-                                x-ref="nomor_palet" />
+                                x-ref="nomor_palet" /> --}}
                             </div>
                         </div>
                     </div>
@@ -204,7 +223,7 @@
                                 <label class="control-label col-5 pe-2">Jam Produksi</label>
                                 {{-- <input class="form-control" type="time" placeholder="hh:mm" wire:model="work_hour"> --}}
                                 <input class="form-control @error('work_hour') is-invalid @enderror" wire:model="work_hour" type="text" placeholder="HH:mm"
-                                x-ref="work_hour" 
+                                x-ref="work_hour"
                                 pattern="[0-9]{2}:[0-9]{2}" >
                                 <span class="input-group-text py-0">
                                     <i class="ri-time-line fs-5"></i>
@@ -1438,7 +1457,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         var modalAdd = document.getElementById('modal-gentan');
-        
+
         modalAdd.addEventListener('shown.bs.modal', function () {
             document.getElementById('inputKodeGentan').focus();
         });
@@ -1446,7 +1465,7 @@
 
     document.addEventListener('DOMContentLoaded', function () {
         var modalAdd = document.getElementById('modal-loss');
-        
+
         modalAdd.addEventListener('shown.bs.modal', function () {
             document.getElementById('inputKodeLoss').focus();
         });
