@@ -22,7 +22,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Tanggal Proses</label>
-                                <input class="form-control bg-light" readonly="readonly" type="text" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d/m/Y" wire:model.defer="created_on" placeholder="yyyy/mm/dd"/>
+                                <input class="form-control bg-light" readonly="readonly" disabled type="text" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d/m/Y" wire:model.defer="created_on" placeholder="yyyy/mm/dd"/>
                                 <span class="input-group-text py-0">
                                     <i class="ri-calendar-event-fill fs-4"></i>
                                 </span>
