@@ -292,8 +292,8 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5">Berat Gentan</label>
-                                <input type="text" class="form-control @error('berat_produksi') is-invalid @enderror" 
-                                wire:model.change="berat_produksi" 
+                                <input type="text" class="form-control @error('berat_produksi') is-invalid @enderror"
+                                wire:model.change="berat_produksi"
                                 oninput="this.value = window.formatNumber(this.value)"
                                 x-on:keydown.tab="$event.preventDefault(); $refs.work_hour.focus();"
                                 x-ref="berat_produksi" />
@@ -351,12 +351,11 @@
                                 <label class="control-label col-5 pe-2">Jam Produksi</label>
                                 {{-- <input class="form-control" wire:model="work_hour" type="time" placeholder="hh:mm"
                                 x-ref="work_hour"> --}}
-                                <input class="form-control @error('work_hour') is-invalid @enderror" wire:model="work_hour" type="text" placeholder="HH:mm" 
-                                x-ref="work_hour" 
-                                pattern="[0-9]{2}:[0-9]{2}" title="Format waktu harus HH:mm">
-                                <span class="input-group-text py-0">
+                                <input class="form-control @error('work_hour') is-invalid @enderror" wire:model="work_hour" type="time" placeholder="HH:mm"
+                                x-ref="work_hour"  title="Format waktu harus HH:mm">
+                                {{-- <span class="input-group-text py-0">
                                     <i class="ri-time-line fs-5"></i>
-                                </span>
+                                </span> --}}
 
                                 @error('work_hour')
                                     <span class="invalid-feedback">{{ $message }}</span>
@@ -1417,7 +1416,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         var modalAdd = document.getElementById('modal-add');
-        
+
         modalAdd.addEventListener('shown.bs.modal', function () {
             document.getElementById('inputKodeLoss').focus();
         });
@@ -1447,7 +1446,7 @@
     //     return value;
     // };
 
-    window.formatNumber = function(value) { 
+    window.formatNumber = function(value) {
         console.log(value);
 
         // Hapus koma jika ada untuk pemrosesan angka (kecuali koma desimal)
