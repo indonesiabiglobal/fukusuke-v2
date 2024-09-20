@@ -308,8 +308,8 @@
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
                         <li class="nav-item" role="presentation">
                             <button class="nav-link @if ($activeTab == 'Gentan') active @endif"
-                                id="periode1SP-tab" data-bs-toggle="tab" data-bs-target="#periode1SP" type="button"
-                                role="tab" aria-controls="periode1SP" aria-selected="true">Gentan(s)</button>
+                                id="periode1SP-tab" data-bs-toggle="tab" wire:click="changeTab('Gentan')"
+                                data-bs-target="#periode1SP" type="button" role="tab" aria-controls="periode1SP" aria-selected="true">Gentan(s)</button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link @if ($activeTab == 'Loss') active @endif"
