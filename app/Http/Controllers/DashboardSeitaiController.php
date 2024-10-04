@@ -35,8 +35,10 @@ class DashboardSeitaiController extends Controller
 
         if ($topLossSeitai != null) {
             $higherLoss = $topLossSeitai[0]->berat_loss;
+            $higherLossName = $topLossSeitai[0]->loss_name;
         } else {
             $higherLoss = 0;
+            $higherLossName = null;
         }
 
         if ($lossSeitai['totalLossSeitai'] != 0) {
@@ -44,8 +46,6 @@ class DashboardSeitaiController extends Controller
         } else {
             $higherLossPercentage = 0;
         }
-
-        $higherLossName = $topLossSeitai[0]->loss_name;
 
         $listMachineSeitai = $this->getListMachineSeitai($startDate, $endDate, $divisionCodeSeitai);
         $kadouJikan = $this->getkadouJikanSeitai($startDate, $endDate, $divisionCodeSeitai);

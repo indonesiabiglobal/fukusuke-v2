@@ -35,8 +35,10 @@ class DashboardInfureController extends Controller
 
         if ($topLossInfure != null) {
             $higherLoss = $topLossInfure[0]->berat_loss;
+            $higherLossName = $topLossInfure[0]->loss_name;
         } else {
             $higherLoss = 0;
+            $higherLossName = null;
         }
 
         if ($lossInfure['totalLossInfure'] != 0) {
@@ -44,8 +46,6 @@ class DashboardInfureController extends Controller
         } else {
             $higherLossPercentage = 0;
         }
-
-        $higherLossName = $topLossInfure[0]->loss_name;
 
         $listMachineInfure = $this->getListMachineInfure($startDate, $endDate, $divisionCodeInfure);
         $kadouJikan = $this->getKadouJikanInfure($startDate, $endDate, $divisionCodeInfure);
