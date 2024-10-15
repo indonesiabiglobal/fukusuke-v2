@@ -208,6 +208,9 @@ class AddLpkController extends Component
             $orderlpk->product_panjanggulung = $this->defaultgulung;
             // $orderlpk->warnalpkid = $this->warnalpkid['value'];
             $orderlpk->created_on = Carbon::now()->format('d-m-Y H:i:s');
+            $orderlpk->created_by = auth()->user()->username;
+            $orderlpk->updated_on = Carbon::now()->format('d-m-Y H:i:s');
+            $orderlpk->updated_by = auth()->user()->username;
 
             $orderlpk->save();
 
