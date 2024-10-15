@@ -51,8 +51,8 @@ class LpkEntryController extends Component
         $this->buyer = MsBuyer::get();
 
         // mengambil data dari session terlebih dahulu jika ada
-        $this->tglMasuk = session('tglMasuk', Carbon::now()->format('d M Y'));
-        $this->tglKeluar = session('tglKeluar', Carbon::now()->format('d M Y'));
+        $this->tglMasuk = session('tglMasuk', Carbon::now()->startOfDay()->format('d M Y'));
+        $this->tglKeluar = session('tglKeluar', Carbon::now()->endOfDay()->format('d M Y'));
     }
 
     public function search()
@@ -139,23 +139,31 @@ class LpkEntryController extends Component
             // ->leftJoin('mswarnalpk AS mwl', 'mwl.id', '=', 'tolp.warnalpkid')
             ->join('msbuyer AS mbu', 'mbu.id', '=', 'tod.buyer_id');
 
+        if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
+            $tglMasuk = Carbon::parse($this->tglMasuk)->startOfDay()->format('Y-m-d H:i:s');
+        }
+
+        if (isset($this->tglKeluar) && $this->tglKeluar != "" && $this->tglKeluar != "undefined") {
+            $tglKeluar = Carbon::parse($this->tglKeluar)->endOfDay()->format('Y-m-d H:i:s');
+        }
+
         if ($this->transaksi == 2) {
             if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
-                $data = $data->where('tolp.lpk_date', '>=', $this->tglMasuk);
+                $data = $data->where('tolp.lpk_date', '>=', $tglMasuk);
             }
 
             if (isset($this->tglKeluar) && $this->tglKeluar != "" && $this->tglKeluar != "undefined") {
-                $data = $data->where('tolp.lpk_date', '<=', $this->tglKeluar);
+                $data = $data->where('tolp.lpk_date', '<=', $tglKeluar);
             }
         } else {
             if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
                 // $tglMasuk = Carbon::createFromFormat('d M Y', $this->tglMasuk)->startOfDay();
-                $data = $data->where('tolp.created_on', '>=', $this->tglMasuk);
+                $data = $data->where('tolp.created_on', '>=', $tglMasuk);
             }
 
             if (isset($this->tglKeluar) && $this->tglKeluar != "" && $this->tglKeluar != "undefined") {
                 // $tglKeluar = Carbon::createFromFormat('d M Y', $this->tglKeluar)->endOfDay();
-                $data = $data->where('tolp.created_on', '<=', $this->tglKeluar);
+                $data = $data->where('tolp.created_on', '<=', $tglKeluar);
             }
         }
 
