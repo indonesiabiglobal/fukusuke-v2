@@ -6,9 +6,11 @@ use App\Models\MsMachine;
 use App\Models\TdOrderLpk;
 use App\Models\TdOrders;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class LpkEntryImport implements ToModel, WithHeadingRow
 {
@@ -23,6 +25,11 @@ class LpkEntryImport implements ToModel, WithHeadingRow
     public function model(array $row)
     {
         try {
+            // Pastikan baris tidak kosong
+            if (empty(array_filter($row))) {
+                return null; // Lewati baris kosong
+            }
+
             // mengambil data order berdasarkan po number
             $order = TdOrders::where('po_no', $row['po_number'])->first();
             if (!$order) {
@@ -53,10 +60,24 @@ class LpkEntryImport implements ToModel, WithHeadingRow
                 $seqno = $lastSeq->seq_no + 1;
             }
 
+            // mengecek format tanggal LPK
+            if (is_numeric($row['tg_lpk'])) {
+                $tanggalLPK = Date::excelToDateTimeObject($row['tg_lpk']);
+            } else {
+                $tanggalLPK = $row['tg_lpk'];
+            }
+
+            // mengecek format tanggal proses
+            if (is_numeric($row['tg_proses'])) {
+                $tanggalProses = Date::excelToDateTimeObject($row['tg_proses']);
+            } else {
+                $tanggalProses = $row['tg_proses'];
+            }
+
             // simpan data ke dalam tabel td_order_lpk
             return new TdOrderLpk([
                 'lpk_no' => $row['nomor_lpk'],
-                'lpk_date' => $row['tg_lpk'],
+                'lpk_date' => $tanggalLPK,
                 'order_id' => $order->id,
                 'product_id' => $order->product_id,
                 'machine_id' => $machine->id,
@@ -69,7 +90,7 @@ class LpkEntryImport implements ToModel, WithHeadingRow
                 'seq_no' => $seqno,
                 'qty_gulung' => $qty_gulung,
                 // 'qty_gulung' => $row['meter_gulung'],
-                'created_on' => $row['tg_proses'],
+                'created_on' => $tanggalProses,
                 'created_by' => auth()->user()->username,
                 'updated_on' => Carbon::now(),
                 'updated_by' => auth()->user()->username,
