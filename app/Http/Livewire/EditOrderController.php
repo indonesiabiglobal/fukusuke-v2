@@ -248,7 +248,6 @@ class EditOrderController extends Component
             $order->product_id = $product->id;
             $order->product_code = $product->code;
             $order->order_qty = $this->order_qty;
-            $order->processdate = $this->process_date;
             $order->stufingdate = $this->stufingdate;
             $order->etddate = $this->etddate;
             $order->etadate = $this->etadate;
