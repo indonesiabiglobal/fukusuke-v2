@@ -50,6 +50,10 @@ class OrderEntryImport implements ToModel, WithHeadingRow
                 'etddate' => $row['tg_etd'],
                 'etadate' => $row['tg_eta'],
                 'buyer_id' => $buyer->id,
+                'created_on' => Carbon::now(),
+                'created_by' => auth()->user()->username,
+                'updated_on' => Carbon::now(),
+                'updated_by' => auth()->user()->username,
             ]);
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
