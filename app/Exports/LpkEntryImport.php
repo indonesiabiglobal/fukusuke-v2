@@ -23,12 +23,11 @@ class LpkEntryImport implements ToModel, WithHeadingRow
     public function model(array $row)
     {
         try {
-            // mengubah format tanggal excel ke format tanggal yang bisa dibaca oleh laravel
-            // $row['tg_lpk'] = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['tg_lpk']);
-            // $row['tg_proses'] = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['tg_proses']);
-            // dd($row);
             // mengambil data order berdasarkan po number
             $order = TdOrders::where('po_no', $row['po_number'])->first();
+            if (!$order) {
+                throw new \Exception('Order dengan nomor PO ' . $row['po_number'] . ' tidak ditemukan');
+            }
 
             // mengambil data mesin berdasarkan nomor mesin
             $machine = MsMachine::where('machineno', $row['nomor_mesin'])->first();
