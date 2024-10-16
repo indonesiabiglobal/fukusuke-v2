@@ -146,7 +146,7 @@
                     </div>
                 </button>
 
-                <button type="button" class="btn btn-success w-lg p-1" onclick="window.location.href='/add-seitai?lpk_no={{ $lpk_no }}'">
+                <button type="button" class="btn btn-success w-lg p-1" onclick="window.location.href='/add-seitai'">
                     <i class="ri-add-line"> </i> Add
                 </button>
             </div>
