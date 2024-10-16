@@ -536,6 +536,14 @@ class AddNippoController extends Component
         }
 
         if (isset($this->work_hour) && $this->work_hour != '') {
+            if (
+                Carbon::createFromFormat('d/m/Y', $this->production_date)->isSameDay(Carbon::now())
+                && Carbon::parse($this->work_hour)->format('H:i') > Carbon::now()->format('H:i')
+            ) {
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Jam Kerja Tidak Boleh Melebihi Jam Sekarang']);
+                $this->work_hour = Carbon::now()->format('H:i');
+            }
+
             $workingShift = DB::select("
             SELECT *
             FROM msworkingshift

@@ -10,7 +10,7 @@
                                 {{-- <input class="form-control datepicker-input" type="datetime-local" wire:model.defer="production_date" /> --}}
                                 <input class="form-control" type="text" style="padding:0.44rem"
                                     data-provider="flatpickr" data-date-format="d/m/Y" data-maxDate="{{ now()->format('d/m/Y') }}"
-                                    wire:model.defer="production_date" placeholder="yyyy/mm/dd" />
+                                    wire:model.change="production_date" placeholder="yyyy/mm/dd" />
                             </div>
                         </div>
                     </div>
@@ -276,7 +276,7 @@
                                     type="time" placeholder="hh:mm" x-ref="work_hour"> --}}
                                 <input
                                     class="form-control col-12 col-md-9 col-lg-5 @error('work_hour') is-invalid @enderror"
-                                    wire:model="work_hour" type="time" placeholder="HH:mm" x-ref="work_hour">
+                                    wire:model.change="work_hour" type="time" placeholder="HH:mm" x-ref="work_hour">
                             </div>
                         </div>
                     </div>
