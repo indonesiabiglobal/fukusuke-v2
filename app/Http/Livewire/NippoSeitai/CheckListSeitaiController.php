@@ -1021,28 +1021,6 @@ class CheckListSeitaiController extends Component
         phpspreadsheet::styleFont($spreadsheet, 'A' . $rowGrandTotal . ':' . $columnBerat . $rowGrandTotal, true, 9, 'Calibri');
 
         // size auto
-        // while ($startColumn !== $columnBerat) {
-
-        //     switch ($startColumn) {
-        //         // case $columnQty:
-        //         //     $spreadsheet->getActiveSheet()->getColumnDimension($columnQty)->setWidth(90, 'px');
-        //         //     break;
-        //         case $columnNamaLoss:
-        //             $spreadsheet->getActiveSheet()->getColumnDimension($columnNamaLoss)->setWidth(180, 'px');
-        //             // wrap text
-        //             $activeWorksheet->getStyle($columnNamaLoss . $rowHeaderStart)->getAlignment()->setWrapText(true);
-        //             break;
-        //         case $columnBerat:
-        //             $spreadsheet->getActiveSheet()->getColumnDimension($columnBerat)->setWidth(80, 'px');
-        //             break;
-        //         default:
-        //             $spreadsheet->getActiveSheet()->getColumnDimension($startColumn)->setAutoSize(true);
-        //             break;
-        //     }
-
-        //     $startColumn++;
-        // }
-
         $spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(15.0);
         $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(15.0);
         $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(12.0);
