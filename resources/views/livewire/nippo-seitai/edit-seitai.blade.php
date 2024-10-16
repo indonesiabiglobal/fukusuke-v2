@@ -8,7 +8,7 @@
                             <div class="input-group">
                                 <label class="control-label col-5">Tanggal Produksi</label>
                                 {{-- <input class="form-control datepicker-input" type="datetime-local" wire:model.defer="production_date" placeholder="yyyy/mm/dd"/> --}}
-                                <input class="form-control" type="text" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y" data-maxDate="{{ now()->format('d/m/Y') }}" wire:model.defer="production_date" placeholder="yyyy/mm/dd"/>
+                                <input class="form-control" type="text" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d/m/Y" data-default-date="{{ $production_date }}" data-maxDate="{{ now()->format('d/m/Y') }}" wire:model.change="production_date" placeholder="dd/mm/yyyy"/>
                             </div>
                         </div>
                     </div>
@@ -222,9 +222,8 @@
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Jam Produksi</label>
                                 {{-- <input class="form-control" type="time" placeholder="hh:mm" wire:model="work_hour"> --}}
-                                <input class="form-control @error('work_hour') is-invalid @enderror" wire:model="work_hour" type="text" placeholder="HH:mm"
-                                x-ref="work_hour"
-                                pattern="[0-9]{2}:[0-9]{2}" >
+                                <input class="form-control @error('work_hour') is-invalid @enderror" wire:model.change="work_hour" type="time" placeholder="HH:mm"
+                                x-ref="work_hour" >
                                 <span class="input-group-text py-0">
                                     <i class="ri-time-line fs-5"></i>
                                 </span>

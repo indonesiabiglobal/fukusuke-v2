@@ -148,7 +148,7 @@ class EditNippoController extends Component
         $this->statusSeitai = $data->status_production;
         $this->orderId = $request->query('orderId');
         $this->production_no = $data->production_no;
-        $this->production_date = Carbon::parse($data->production_date)->format('d M Y');
+        $this->production_date = Carbon::parse($data->production_date)->format('d/m/Y');
         $this->created_on = Carbon::parse($data->created_on)->format('d/m/Y') . ' - Nomor: ' . $data->seq_no;
         $this->lpk_no = $data->lpk_no;
         $this->lpk_date = Carbon::parse($data->lpk_date)->format('d/M/Y');
@@ -340,10 +340,6 @@ class EditNippoController extends Component
         $this->panjang_produksi = (int)str_replace(',', '', $this->panjang_produksi);
         $this->berat_produksi = (float)str_replace(',', '', $this->berat_produksi);
 
-        $validatedData = $this->validate([
-            'work_hour' => 'required|regex:/^[0-9]{2}:[0-9]{2}$/',
-        ]);
-
         DB::beginTransaction();
         try {
 
@@ -360,7 +356,7 @@ class EditNippoController extends Component
                 ->first();
 
             $product = TdProductAssembly::findOrFail($this->orderId);
-            $product->production_date = Carbon::parse($this->production_date . ' ' . $this->work_hour)->format('Y-m-d H:i:s');
+            $product->production_date = $this->production_date . ' ' . $this->work_hour;
             // $product->created_on = $this->created_on;
             $product->machine_id = $machine->id;
             $product->employee_id = $employe->id;
@@ -581,6 +577,38 @@ class EditNippoController extends Component
                 $this->machineno = $machine->machineno;
                 $this->machinename = $machine->machinename;
             }
+        }
+
+        if (isset($this->work_hour) && $this->work_hour != '') {
+            if (
+                Carbon::createFromFormat('d/m/Y', $this->production_date)->isSameDay(Carbon::now())
+                && Carbon::parse($this->work_hour)->format('H:i') > Carbon::now()->format('H:i')
+            ) {
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Jam Kerja Tidak Boleh Melebihi Jam Sekarang']);
+                $this->work_hour = Carbon::now()->format('H:i');
+            }
+
+            $workingShift = DB::select("
+            SELECT *
+            FROM msworkingshift
+            WHERE (
+                -- Shift does not cross midnight
+                work_hour_from <= work_hour_till
+                AND '$this->work_hour' BETWEEN work_hour_from AND work_hour_till
+            ) OR (
+                -- Shift crosses midnight
+                work_hour_from > work_hour_till
+                AND (
+                    '$this->work_hour' BETWEEN work_hour_from AND '23:59:59'
+                    OR
+                    '$this->work_hour' BETWEEN '00:00:00' AND work_hour_till
+                )
+            )
+            ORDER BY work_hour_till ASC
+            LIMIT 1;
+        ")[0];
+
+            $this->work_shift = $workingShift->id;
         }
 
         if (isset($this->employeeno) && $this->employeeno != '' && strlen($this->employeeno) >= 3) {
