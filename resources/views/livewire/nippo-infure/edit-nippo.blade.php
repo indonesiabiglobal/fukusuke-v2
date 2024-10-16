@@ -9,7 +9,7 @@
                                 <label class="control-label col-5">Tanggal Produksi</label>
                                 {{-- <input class="form-control datepicker-input"  style="padding:0.44rem" type="datetime-local" wire:model.defer="production_date" /> --}}
                                 <input class="form-control @if($statusEditLoss) readonly bg-light @endif
-                                " @if($statusEditLoss) readonly="readonly" @endif type="text" style="padding:0.44rem" @if(!$statusEditLoss) data-provider="flatpickr" @endif data-date-format="d-m-Y" wire:model.defer="production_date" placeholder="yyyy/mm/dd"/>
+                                " @if($statusEditLoss) readonly="readonly" @endif type="text" style="padding:0.44rem" @if(!$statusEditLoss) data-provider="flatpickr" @endif data-date-format="d-m-Y" data-maxDate="{{ now()->format('d/m/Y') }}" wire:model.defer="production_date" placeholder="yyyy/mm/dd"/>
                                 <span class="input-group-text py-0">
                                     <i class="ri-calendar-event-fill fs-4"></i>
                                 </span>
@@ -266,7 +266,7 @@
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Jam Produksi</label>
                                 <input class="form-control @error('work_hour') is-invalid @enderror" wire:model="work_hour" type="text" placeholder="HH:mm"
-                                x-ref="work_hour" 
+                                x-ref="work_hour"
                                 pattern="[0-9]{2}:[0-9]{2}" >
                                 <span class="input-group-text py-0">
                                     <i class="ri-time-line fs-5"></i>
@@ -317,7 +317,7 @@
                                         placeholder="00-00-00-00A"
                                         x-model="nomor_han"
                                         maxlength="12"
-                                        x-ref="nomor_han" 
+                                        x-ref="nomor_han"
                                         x-on:keydown.tab="$event.preventDefault(); $refs.nomor_barcode.focus();"
                                     />
                                 </div>
@@ -1539,7 +1539,7 @@
             </div><!-- /.modal-dialog -->
         </div><!-- /.modal -->
 
-        
+
         <div id="modal-delete" class="modal fade zoomIn" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
@@ -1588,7 +1588,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         var modalAdd = document.getElementById('modal-add');
-        
+
         modalAdd.addEventListener('shown.bs.modal', function () {
             document.getElementById('inputKodeLoss').focus();
         });
@@ -1617,7 +1617,7 @@
         //     // Kembalikan value tanpa modifikasi jika tidak valid
         //     return value;
         // };
-        window.formatNumber = function(value) { 
+        window.formatNumber = function(value) {
             console.log(value);
 
             // Hapus koma jika ada untuk pemrosesan angka (kecuali koma desimal)

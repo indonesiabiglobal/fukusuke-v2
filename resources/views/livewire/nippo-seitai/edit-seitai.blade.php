@@ -8,7 +8,7 @@
                             <div class="input-group">
                                 <label class="control-label col-5">Tanggal Produksi</label>
                                 {{-- <input class="form-control datepicker-input" type="datetime-local" wire:model.defer="production_date" placeholder="yyyy/mm/dd"/> --}}
-                                <input class="form-control" type="text" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y" wire:model.defer="production_date" placeholder="yyyy/mm/dd"/>
+                                <input class="form-control" type="text" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y" data-maxDate="{{ now()->format('d/m/Y') }}" wire:model.defer="production_date" placeholder="yyyy/mm/dd"/>
                             </div>
                         </div>
                     </div>
