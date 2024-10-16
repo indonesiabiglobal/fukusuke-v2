@@ -513,26 +513,27 @@ class CheckListInfureController extends Component
 
 
         // mengatur lebar kolom
-        $spreadsheet->getActiveSheet()->getColumnDimension('C')->setAutoSize(true);
+        // $spreadsheet->getActiveSheet()->getColumnDimension('C')->setAutoSize(true);
         $spreadsheet->getActiveSheet()->getColumnDimension('F')->setAutoSize(true);
 
         $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(3.00);
+        $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(8.50);
         $activeWorksheet->getStyle('B' . $rowItemStart . ':' . 'B' . $rowFooterStart)->getAlignment()->setWrapText(true);
         $spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(3.78);
-        $spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(3.67);
-        $spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(8.20);
+        $spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(4.0);
+        $spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(15.50);
         $activeWorksheet->getStyle('G' . $rowItemStart . ':' . 'G' . $rowFooterStart)->getAlignment()->setWrapText(true);
         $spreadsheet->getActiveSheet()->getColumnDimension('H')->setWidth(5.50);
-        $spreadsheet->getActiveSheet()->getColumnDimension('I')->setWidth(7.56);
-        $spreadsheet->getActiveSheet()->getColumnDimension('J')->setWidth(5.60);
-        $spreadsheet->getActiveSheet()->getColumnDimension('K')->setWidth(12.00);
+        $spreadsheet->getActiveSheet()->getColumnDimension('I')->setWidth(7.8);
+        $spreadsheet->getActiveSheet()->getColumnDimension('J')->setWidth(6.5);
+        $spreadsheet->getActiveSheet()->getColumnDimension('K')->setWidth(17.00);
         $activeWorksheet->getStyle('K' . $rowItemStart . ':' . 'K' . $rowFooterStart)->getAlignment()->setWrapText(true);
         $spreadsheet->getActiveSheet()->getColumnDimension('L')->setWidth(6.70);
-        $spreadsheet->getActiveSheet()->getColumnDimension('M')->setWidth(8.25);
+        $spreadsheet->getActiveSheet()->getColumnDimension('M')->setWidth(9.25);
         $spreadsheet->getActiveSheet()->getColumnDimension('N')->setWidth(7.50);
         $spreadsheet->getActiveSheet()->getColumnDimension('O')->setWidth(6.70);
         $spreadsheet->getActiveSheet()->getColumnDimension('P')->setWidth(6.70);
-        $spreadsheet->getActiveSheet()->getColumnDimension('Q')->setWidth(6.00);
+        $spreadsheet->getActiveSheet()->getColumnDimension('Q')->setWidth(9.00);
         $activeWorksheet->getStyle('Q' . $rowItemStart . ':' . 'Q' . $rowFooterStart)->getAlignment()->setWrapText(true);
         $spreadsheet->getActiveSheet()->getColumnDimension('R')->setWidth(5.10);
 
