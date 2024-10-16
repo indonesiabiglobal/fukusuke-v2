@@ -521,7 +521,7 @@ class CheckListSeitaiController extends Component
             phpspreadsheet::styleFont($spreadsheet, $columnPetugas . $rowItemEnd, false, 8, 'Calibri');
             phpspreadsheet::textAlignCenter($spreadsheet, $columnPetugas . $rowItemEnd . ':' . $columnLpk . $rowItemEnd);
             // Nomor Mesin
-            $activeWorksheet->setCellValue($columnMesin . $rowItemStart, $item['mesinno'] . ' - ' . $item['mesinnama']);
+            $activeWorksheet->setCellValue($columnMesin . $rowItemStart, $item['mesinno']);
             phpspreadsheet::styleFont($spreadsheet, $columnMesin . $rowItemStart, false, 8, 'Calibri');
             phpspreadsheet::textAlignCenter($spreadsheet, $columnMesin . $rowItemStart);
             $activeWorksheet->getStyle($columnMesin . $rowItemStart)->getAlignment()->setWrapText(true);
@@ -575,7 +575,7 @@ class CheckListSeitaiController extends Component
             foreach ($dataLoss[$id_tdpg] as $itemLoss) {
                 $activeWorksheet->setCellValue($columnNamaLoss . $rowLoss, $itemLoss->losscode . '. ' . $itemLoss->lossname);
                 phpspreadsheet::styleFont($spreadsheet, $columnNamaLoss . $rowLoss, false, 8, 'Calibri');
-                $activeWorksheet->getStyle($columnNamaLoss . $rowLoss)->getAlignment()->setWrapText(true);
+                $activeWorksheet->getStyle($columnNamaLoss)->getAlignment()->setWrapText(true);
                 $activeWorksheet->getRowDimension($rowLoss)->setRowHeight(-1);
                 // Berat
                 $activeWorksheet->setCellValue($columnBerat . $rowLoss, $itemLoss->berat_loss);
@@ -635,16 +635,16 @@ class CheckListSeitaiController extends Component
         phpspreadsheet::styleFont($spreadsheet, 'A' . $rowFooterStart . ':A' . ($rowFooterStart + 1), false, 9, 'Calibri');
         $startColumn++;
 
-        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(9.50);
-        $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(7.60);
-        $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(6.3);
-        $spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(11.5);
-        $spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(7.6);
-        $spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(11.3);
-        $spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(6.5);
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(10.0);
+        $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(10.0);
+        $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(10.0);
+        $spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(15.0);
+        $spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(10.0);
+        $spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(25.0);
+        $spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(10.5);
         $spreadsheet->getActiveSheet()->getColumnDimension('H')->setWidth(7.5);
-        $spreadsheet->getActiveSheet()->getColumnDimension('I')->setWidth(9.1);
-        $spreadsheet->getActiveSheet()->getColumnDimension('J')->setWidth(5.3);
+        $spreadsheet->getActiveSheet()->getColumnDimension('I')->setWidth(15.0);
+        $spreadsheet->getActiveSheet()->getColumnDimension('J')->setWidth(6.0);
         $spreadsheet->getActiveSheet()->getColumnDimension('K')->setWidth(15.0);
         $spreadsheet->getActiveSheet()->getColumnDimension('L')->setWidth(8.2);
 
@@ -820,6 +820,27 @@ class CheckListSeitaiController extends Component
         $activeWorksheet->setShowGridlines(false);
         $activeWorksheet->freezePane('A5');
 
+        // Mengatur ukuran kertas menjadi A4
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        // Mengatur orientasi menjadi landscape
+        $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+        // Mengatur agar semua kolom muat dalam satu halaman
+        $activeWorksheet->getPageSetup()->setFitToWidth(1);
+        $activeWorksheet->getPageSetup()->setFitToHeight(0); // Biarkan tinggi menyesuaikan otomatis
+
+        // Jika ingin memastikan rasio tetap terjaga
+        $activeWorksheet->getPageSetup()->setFitToPage(true);
+
+        // Mengatur margin halaman menjadi 0.75 cm di semua sisi
+        $activeWorksheet->getPageMargins()->setTop(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setBottom(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setLeft(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setRight(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setHeader(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setFooter(0.75 / 2.54);
+        // Mengatur tinggi sel agar otomatis menyesuaikan dengan konten
+        $activeWorksheet->getDefaultRowDimension()->setRowHeight(-1);
+
         // Judul
         $startColumn = 'A';
         $endColumn = 'L';
@@ -961,6 +982,7 @@ class CheckListSeitaiController extends Component
                     // Nama Loss
                     $activeWorksheet->setCellValue($columnNamaLoss . $rowLoss, $itemLoss->lossname);
                     phpspreadsheet::styleFont($spreadsheet, $columnNamaLoss . $rowLoss, false, 8, 'Calibri');
+                    $activeWorksheet->getStyle($columnNamaLoss . $rowLoss)->getAlignment()->setWrapText(true);
                     // kode loss
                     $activeWorksheet->setCellValue($columnKodeLoss . $rowLoss, $itemLoss->losscode);
                     phpspreadsheet::styleFont($spreadsheet, $columnKodeLoss . $rowLoss, false, 8, 'Calibri');
@@ -999,40 +1021,38 @@ class CheckListSeitaiController extends Component
         phpspreadsheet::styleFont($spreadsheet, 'A' . $rowGrandTotal . ':' . $columnBerat . $rowGrandTotal, true, 9, 'Calibri');
 
         // size auto
-        while ($startColumn !== $columnBerat) {
+        // while ($startColumn !== $columnBerat) {
 
-            switch ($startColumn) {
-                // case $columnQty:
-                //     $spreadsheet->getActiveSheet()->getColumnDimension($columnQty)->setWidth(90, 'px');
-                //     break;
-                case $columnNamaLoss:
-                    $spreadsheet->getActiveSheet()->getColumnDimension($columnNamaLoss)->setWidth(180, 'px');
-                    // wrap text
-                    $activeWorksheet->getStyle($columnNamaLoss . $rowHeaderStart)->getAlignment()->setWrapText(true);
-                    break;
-                case $columnBerat:
-                    $spreadsheet->getActiveSheet()->getColumnDimension($columnBerat)->setWidth(80, 'px');
-                    break;
-                default:
-                    $spreadsheet->getActiveSheet()->getColumnDimension($startColumn)->setAutoSize(true);
-                    break;
-            }
+        //     switch ($startColumn) {
+        //         // case $columnQty:
+        //         //     $spreadsheet->getActiveSheet()->getColumnDimension($columnQty)->setWidth(90, 'px');
+        //         //     break;
+        //         case $columnNamaLoss:
+        //             $spreadsheet->getActiveSheet()->getColumnDimension($columnNamaLoss)->setWidth(180, 'px');
+        //             // wrap text
+        //             $activeWorksheet->getStyle($columnNamaLoss . $rowHeaderStart)->getAlignment()->setWrapText(true);
+        //             break;
+        //         case $columnBerat:
+        //             $spreadsheet->getActiveSheet()->getColumnDimension($columnBerat)->setWidth(80, 'px');
+        //             break;
+        //         default:
+        //             $spreadsheet->getActiveSheet()->getColumnDimension($startColumn)->setAutoSize(true);
+        //             break;
+        //     }
 
-            $startColumn++;
-        }
+        //     $startColumn++;
+        // }
 
-        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(9.50);
-        $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(7.60);
-        $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(6.3);
-        $spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(11.5);
-        $spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(7.6);
-        $spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(11.3);
-        // $spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(6.5);
-        $spreadsheet->getActiveSheet()->getColumnDimension('H')->setWidth(7.5);
-        $spreadsheet->getActiveSheet()->getColumnDimension('I')->setWidth(9.1);
-        // $spreadsheet->getActiveSheet()->getColumnDimension('J')->setWidth(5.3);
-        // $spreadsheet->getActiveSheet()->getColumnDimension('K')->setWidth(15.0);
-        $spreadsheet->getActiveSheet()->getColumnDimension('L')->setWidth(8.2);
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(15.0);
+        $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(15.0);
+        $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(12.0);
+        $spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(27.0);
+        $spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(12.0);
+        $spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(15.0);
+        $spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(25.0);
+        // $activeWorksheet->getStyle('G' . $rowHeaderStart)->getAlignment()->setWrapText(true);
+        $spreadsheet->getActiveSheet()->getColumnDimension('H')->setWidth(10.5);
+        $spreadsheet->getActiveSheet()->getColumnDimension('I')->setWidth(12.0);
 
         $writer = new Xlsx($spreadsheet);
         $filename = 'NippoSeitai-' . $this->jenisReport . '.xlsx';
