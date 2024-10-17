@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PHPUnit\TextUI\Configuration\Php;
 
 class CheckListInfureController extends Component
 {
@@ -424,11 +425,12 @@ class CheckListInfureController extends Component
 
             // berat standard
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['berat_standard']);
+            phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnPanjangProduksi . $rowItem . ':' . $columnItemEnd . $rowItem, 1);
             $columnItemEnd++;
 
             // berat produksi
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['berat_produksi']);
-            phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnPanjangProduksi . $rowItem . ':' . $columnItemEnd . $rowItem);
+            phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnPanjangProduksi . $rowItem . ':' . $columnItemEnd . $rowItem, 1);
             phpspreadsheet::addBorderDottedHorizontal($spreadsheet, $columnItemStart . $rowItem . ':' . $columnItemEnd . $rowItem);
             $columnItemEnd++;
 
