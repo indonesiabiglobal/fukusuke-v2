@@ -255,10 +255,10 @@
             <div class="col-lg-7">
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="periode1SP-tab" data-bs-toggle="tab" data-bs-target="#periode1SP" type="button" role="tab" aria-controls="periode1SP" aria-selected="true">Gentan(s)</button>
+                        <button class="nav-link {{ $activeTab == 'Gentan' ? 'active' : '' }}" id="periode1SP-tab" data-bs-toggle="tab" data-bs-target="#periode1SP" type="button" role="tab" aria-controls="periode1SP" aria-selected="true">Gentan(s)</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="periode2SP-tab" data-bs-toggle="tab" data-bs-target="#periode2SP" type="button" role="tab" aria-controls="periode2SP" aria-selected="false">Loss(<span class="text-danger">{{ $jumlahBeratLoss }} kg</span>)</button>
+                        <button class="nav-link {{ $activeTab == 'Loss' ? 'active' : '' }}" id="periode2SP-tab" data-bs-toggle="tab" data-bs-target="#periode2SP" type="button" role="tab" aria-controls="periode2SP" aria-selected="false">Loss(<span class="text-danger">{{ $jumlahBeratLoss }} kg</span>)</button>
                     </li>
                 </ul>
             </div>
@@ -327,7 +327,7 @@
 
 
         <div class="tab-content" id="myTabContent">
-            <div class="tab-pane fade show active" id="periode1SP" role="tabpanel" aria-labelledby="periode1SP-tab">
+            <div class="tab-pane fade {{ $activeTab == 'Gentan' ? 'show active' : '' }}" id="periode1SP" role="tabpanel" aria-labelledby="periode1SP-tab">
                 <div class="row justify-content-start">
                     <div class="row mt-3">
                         <div class="col-lg-8">
@@ -406,7 +406,7 @@
                     </div>
                 </div>
             </div>
-            <div class="tab-pane fade" id="periode2SP" role="tabpanel" aria-labelledby="periode2SP-tab">
+            <div class="tab-pane fade {{ $activeTab == 'Loss' ? 'show active' : '' }}" id="periode2SP" role="tabpanel" aria-labelledby="periode2SP-tab">
                 <div class="row justify-content-start">
                     <div class="row mt-3">
                         <div class="col-lg-8">
@@ -551,8 +551,20 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-link text-gray-600 ms-auto" data-bs-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-success" wire:click="saveGentan">
-                                Save
+                            <button type="button" wire:click="saveGentan" class="btn btn-success">
+                                <span wire:loading.remove wire:target="saveGentan">
+                                    <i class="ri-save-3-line"></i> Save
+                                </span>
+                                <div wire:loading wire:target="saveGentan">
+                                    <span class="d-flex align-items-center">
+                                        <span class="spinner-border flex-shrink-0" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </span>
+                                        <span class="flex-grow-1 ms-1">
+                                            Loading...
+                                        </span>
+                                    </span>
+                                </div>
                             </button>
                         </div>
                 </div>
@@ -623,8 +635,20 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-link text-gray-600 ms-auto" data-bs-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-success" wire:click="saveLoss">
-                                Save
+                            <button type="button" wire:click="saveLoss" class="btn btn-success">
+                                <span wire:loading.remove wire:target="saveLoss">
+                                    <i class="ri-save-3-line"></i> Save
+                                </span>
+                                <div wire:loading wire:target="saveLoss">
+                                    <span class="d-flex align-items-center">
+                                        <span class="spinner-border flex-shrink-0" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </span>
+                                        <span class="flex-grow-1 ms-1">
+                                            Loading...
+                                        </span>
+                                    </span>
+                                </div>
                             </button>
                         </div>
                 </div>

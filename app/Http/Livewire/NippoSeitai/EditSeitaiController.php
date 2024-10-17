@@ -68,6 +68,7 @@ class EditSeitaiController extends Component
     public $selisih;
     public $selisihOld;
     public $idDelete;
+    public $activeTab = 'Gentan';
 
     // data master produk
     public $masterKatanuki;
@@ -338,6 +339,7 @@ class EditSeitaiController extends Component
         ]);
 
         if ($validatedData) {
+            $this->activeTab = 'Gentan';
             $this->dispatch('showModalGentan');
         }
     }
@@ -351,6 +353,7 @@ class EditSeitaiController extends Component
         ]);
 
         if ($validatedData) {
+            $this->activeTab = 'Loss';
             $this->dispatch('showModalLoss');
         }
     }
@@ -405,8 +408,8 @@ class EditSeitaiController extends Component
     public function clearLoss()
     {
         $this->loss_seitai_id = '';
+        $this->namaloss = '';
         $this->berat_loss = '';
-        $this->berat_fr = '';
         $this->frekuensi_fr = '';
     }
 
@@ -420,7 +423,6 @@ class EditSeitaiController extends Component
         $datas->product_goods_id = $this->tdpgId;
         $datas->loss_seitai_id = $loss->id;
         $datas->berat_loss = $this->berat_loss;
-        $datas->berat = $this->berat_fr;
         $datas->frekuensi = $this->frekuensi_fr;
         $datas->lpk_id = $lpkid->id;
 
