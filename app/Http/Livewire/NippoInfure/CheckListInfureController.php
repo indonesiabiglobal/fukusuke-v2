@@ -346,6 +346,7 @@ class CheckListInfureController extends Component
 
             // Add loss data to the corresponding key
             $dataMap[$key]['loss_data'][$item->losscode] = [
+                'losscode' => $item->losscode,
                 'lossname' => $item->lossname,
                 'berat_loss' => $item->berat_loss,
             ];
@@ -445,7 +446,7 @@ class CheckListInfureController extends Component
                     break;
                 }
 
-                $activeWorksheet->setCellValue($columnLoss . $rowItem, $lossItem['lossname']);
+                $activeWorksheet->setCellValue($columnLoss . $rowItem, $lossItem['losscode'] .'. '.$lossItem['lossname']);
                 $columnLoss++;
                 $activeWorksheet->setCellValue($columnLoss . $rowItem, $lossItem['berat_loss']);
                 phpspreadsheet::addBorderDottedHorizontal($spreadsheet, $columnLossStart . $rowItem . ':' . $columnLoss . $rowItem);
