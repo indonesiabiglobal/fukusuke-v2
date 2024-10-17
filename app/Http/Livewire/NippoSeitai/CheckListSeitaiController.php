@@ -30,7 +30,7 @@ class CheckListSeitaiController extends Component
     public $noorder;
     public $department;
     public $departmentId;
-    public $transaksi;
+    public $transaksi = 'produksi';
     public $nomorPalet;
     public $nomorLot;
     public $jenisReport = 'CheckList';
@@ -569,6 +569,7 @@ class CheckListSeitaiController extends Component
                 phpspreadsheet::textAlignCenter($spreadsheet, $columnGentan . $rowGentan);
                 $rowGentan++;
             }
+            $rowGentan--;
 
             // Nama Loss
             $rowLoss = $rowItemStart;
@@ -582,11 +583,20 @@ class CheckListSeitaiController extends Component
                 phpspreadsheet::styleFont($spreadsheet, $columnBerat . $rowLoss, false, 8, 'Calibri');
                 $rowLoss++;
             }
+            $rowLoss--;
+
+            $rowBorderStart = $rowItemStart;
+            if (count($dataGentan[$id_tdpg]) < 2 && count($dataLoss[$id_tdpg]) < 2) {
+                $rowBorderEnd = $rowItemStart + 1;
+                $rowItemStart = $rowItemStart + 3;
+            } else {
+                $rowItemStart = ($rowLoss < $rowGentan) ? $rowGentan + 2 : $rowLoss + 2;
+                $rowBorderEnd = ($rowLoss < $rowGentan) ? $rowGentan : $rowLoss;
+            }
 
             // border
-            phpspreadsheet::addFullBorder($spreadsheet, $columnGentan . $rowItemStart . ':' . $columnBerat . ($rowLoss > $rowGentan ? $rowLoss : $rowGentan));
+            phpspreadsheet::addFullBorder($spreadsheet, $columnGentan . $rowBorderStart . ':' . $columnBerat . $rowBorderEnd);
 
-            $rowItemStart = ($rowLoss < $rowGentan) ? $rowGentan + 2 : $rowLoss + 2;
             $rowItemEnd = $rowItemStart + 1;
         }
 
