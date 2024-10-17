@@ -439,7 +439,7 @@ class CheckListInfureController extends Component
                 $columnLossStart = 'Q';
                 $columnLoss = $columnLossStart;
 
-                if ($losscode === '') {
+                if ($losscode === '' && $lossItem['lossname'] === '' && $lossItem['berat_loss'] === '') {
                     $columnLoss++;
                     phpspreadsheet::addBorderDottedHorizontal($spreadsheet, $columnLossStart . $rowItem . ':' . $columnLoss . $rowItem);
                     break;
@@ -477,11 +477,11 @@ class CheckListInfureController extends Component
         $totalLoss = 0;
 
         // menghitung total
-        foreach ($data as $item) {
-            $totalPanjangProduksi += $item->panjang_produksi;
-            $totalBeratStandard += $item->berat_standard;
-            $totalBeratProduksi += $item->berat_produksi;
-            $totalLoss += $item->berat_loss;
+        foreach ($dataMap as $item) {
+            $totalPanjangProduksi += $item['panjang_produksi'];
+            $totalBeratStandard += $item['berat_standard'];
+            $totalBeratProduksi += $item['berat_produksi'];
+            $totalLoss += array_sum(array_column($item['loss_data'], 'berat_loss'));
         }
 
         // panjang produksi
@@ -491,18 +491,18 @@ class CheckListInfureController extends Component
 
         // berat standard
         $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $totalBeratStandard);
-        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItemEnd . $rowItem);
+        phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnItemEnd . $rowItem, 1);
         $columnItemEnd++;
 
         // berat produksi
         $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $totalBeratProduksi);
-        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItemEnd . $rowItem);
+        phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnItemEnd . $rowItem, 1);
         $columnItemEnd++;
 
         // Loss
         $columnItemEnd = 'R';
         $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $totalLoss);
-        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItemEnd . $rowItem);
+        phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnItemEnd . $rowItem, 1);
         phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItem . ':' . $columnItemEnd . $rowItem, true, 8, 'Calibri');
         phpspreadsheet::addFullBorder($spreadsheet, $columnItemStart . $rowItem . ':' . $columnItemEnd . $rowItem);
         $columnItemEnd++;
