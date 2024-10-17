@@ -631,8 +631,10 @@ class CheckListSeitaiController extends Component
         $columnBerat = 'K';
         $spreadsheet->getActiveSheet()->mergeCells($columnGrandTotalEnd . $rowGrandTotal . ':' . $columnBerat . $rowGrandTotal);
         $columnBerat++;
-        $totalBeratLoss = array_sum(array_column($data, 'berat_loss'));
-        // dd($totalLoss);
+        $totalBeratLoss = array_reduce($dataLoss, function ($carry, $item) {
+            $carry += array_sum(array_column($item, 'berat_loss'));
+            return $carry;
+        }, 0);
         $activeWorksheet->setCellValue($columnBerat . $rowGrandTotal, $totalBeratLoss);
         phpspreadsheet::addFullBorder($spreadsheet, 'A' . $rowGrandTotal . ':' . $columnBerat . $rowGrandTotal);
         phpSpreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnQty . $rowGrandTotal);
@@ -1022,8 +1024,14 @@ class CheckListSeitaiController extends Component
         $columnBerat = 'H';
         $spreadsheet->getActiveSheet()->mergeCells($columnGrandTotalEnd . $rowGrandTotal . ':' . $columnBerat . $rowGrandTotal);
         $columnBerat++;
-        $totalBeratLoss = array_sum(array_column($data, 'berat_loss'));
-        // dd($totalLoss);
+        $totalBeratLoss = 0;
+        foreach ($dataLoss as $productionDate) {
+            foreach ($productionDate as $productGoods) {
+                foreach ($productGoods as $itemLoss) {
+                    $totalBeratLoss += $itemLoss->berat_loss;
+                }
+            }
+        }
         $activeWorksheet->setCellValue($columnBerat . $rowGrandTotal, $totalBeratLoss);
         phpspreadsheet::addFullBorder($spreadsheet, 'A' . $rowGrandTotal . ':' . $columnBerat . $rowGrandTotal);
         // phpSpreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnQty . $rowGrandTotal);
