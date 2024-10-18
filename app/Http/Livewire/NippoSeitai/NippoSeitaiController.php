@@ -34,11 +34,11 @@ class NippoSeitaiController extends Component
     public $machineid;
     #[Session]
     public $searchTerm;
-    // #[Session]
+    #[Session]
     public $lpk_no;
     #[Session]
     public $idProduct;
-    // #[Session]
+    #[Session]
     public $status;
 
     use WithPagination, WithoutUrlPagination;
