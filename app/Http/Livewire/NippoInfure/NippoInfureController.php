@@ -8,6 +8,7 @@ use App\Models\TdOrderLpk;
 use App\Models\MsProduct;
 use App\Models\MsBuyer;
 use App\Models\MsMachine;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
@@ -45,6 +46,9 @@ class NippoInfureController extends Component
 
     public function mount()
     {
+        // menghapus session kondisi bukan dari nippo infure
+        $this->shouldForgetSession();
+
         $this->products = MsProduct::get();
         $this->tdOrderLpk = TdOrderLpk::get();
         $this->buyer = MsBuyer::get();
@@ -54,6 +58,17 @@ class NippoInfureController extends Component
         }
         if (empty($this->tglKeluar)) {
             $this->tglKeluar = Carbon::now()->format('d M Y');
+        }
+    }
+
+    protected function shouldForgetSession()
+    {
+        // Periksa jika URL saat ini bukan 'nippo-infure/edit-infure' atau 'nippo-infure/add-infure'
+        $previousUrl = url()->previous();
+        $previousUrl = last(explode('/', $previousUrl));
+        if (!(Str::contains($previousUrl, 'edit-nippo') || $previousUrl === 'add-nippo' || $previousUrl === 'nippo-infure'))
+        {
+            $this->reset('tglMasuk', 'tglKeluar', 'transaksi', 'machineId', 'status', 'lpk_no', 'searchTerm', 'idProduct');
         }
     }
 

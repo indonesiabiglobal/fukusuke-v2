@@ -10,6 +10,7 @@ use App\Models\MsProduct;
 use App\Models\MsBuyer;
 use App\Models\MsMachine;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
 use Maatwebsite\Excel\Facades\Excel;
@@ -45,6 +46,9 @@ class NippoSeitaiController extends Component
 
     public function mount()
     {
+        // menghapus session kondisi bukan dari nippo seitai
+        $this->shouldForgetSession();
+
         $this->products = MsProduct::get();
         $this->buyer = MsBuyer::get();
         $this->machine = MsMachine::where('machineno',  'LIKE', '00S%')->orderBy('machineno')->get();
@@ -53,6 +57,17 @@ class NippoSeitaiController extends Component
         }
         if (empty($this->tglKeluar)) {
             $this->tglKeluar = Carbon::now()->format('d M Y');
+        }
+    }
+
+    protected function shouldForgetSession()
+    {
+        // Periksa jika URL saat ini bukan 'nippo-seitai/edit-seitai' atau 'nippo-seitai/add-seitai'
+        $previousUrl = url()->previous();
+        $previousUrl = last(explode('/', $previousUrl));
+        if (!(Str::contains($previousUrl, 'edit-seitai') || $previousUrl === 'add-seitai' || $previousUrl === 'nippo-seitai'))
+        {
+            $this->reset('tglMasuk', 'tglKeluar', 'gentan_no', 'machineid', 'searchTerm', 'lpk_no', 'idProduct', 'status');
         }
     }
 
