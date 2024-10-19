@@ -350,7 +350,7 @@
                                             <th class="border-0">Shift</th>
                                             <th class="border-0">Petugas</th>
                                             <th class="border-0">Tg. Produksi</th>
-                                            <th class="border-0">Frekuensi</th>
+                                            {{-- <th class="border-0">Frekuensi</th> --}}
                                             <th class="border-0 rounded-end">Berat Produksi (kg)</th>
                                         </tr>
                                     </thead>
@@ -383,9 +383,9 @@
                                                 <td>
                                                     {{ $item->production_date }}
                                                 </td>
-                                                <td>
+                                                {{-- <td>
                                                     {{ $item->frekuensi }}
-                                                </td>
+                                                </td> --}}
                                                 <td>
                                                     {{ number_format($item->berat_produksi, 2) }}
                                                 </td>

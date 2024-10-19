@@ -388,7 +388,8 @@ class EditSeitaiController extends Component
     public function saveGentan()
     {
         $lpkid = TdOrderLpk::where('lpk_no', $this->lpk_no)->first();
-        $assembly = TdProductAssembly::where('lpk_id', $lpkid->id)
+        $assembly = TdProductAssembly::where('gentan_no', $this->gentan_no)
+            ->where('lpk_id', $lpkid->id)
             ->first();
 
         $datas = new TdProductGoodsAssembly();

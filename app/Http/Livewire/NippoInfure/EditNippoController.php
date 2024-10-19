@@ -145,7 +145,6 @@ class EditNippoController extends Component
         // $this->lpk_no = $request->query('lpk_no');
         // $this->tglKeluar = $request->query('tglKeluar');
 
-        $this->statusSeitai = $data->status_production;
         $this->orderId = $request->query('orderId');
         $this->production_no = $data->production_no;
         $this->production_date = Carbon::parse($data->production_date)->format('d/m/Y');
@@ -193,6 +192,16 @@ class EditNippoController extends Component
             ->join('mslossinfure as msi', 'msi.id', '=', 'tal.loss_infure_id')
             ->where('tal.product_assembly_id', $this->orderId)
             ->get();
+
+        $productGoodsAssembly = DB::table('tdproduct_goods_assembly AS tdpg')
+            ->where('tdpg.product_assembly_id', $data->id)
+            ->get();
+
+        if ($productGoodsAssembly->count() > 0) {
+            $this->statusSeitai = 1;
+        } else {
+            $this->statusSeitai = 0;
+        }
     }
 
     public function showModalNoOrder()
