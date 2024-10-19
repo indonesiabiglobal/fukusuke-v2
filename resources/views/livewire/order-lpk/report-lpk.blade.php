@@ -307,12 +307,22 @@ crossorigin="anonymous">
                                             <td style="text-align: center;">
                                                 <span style="font-size: 13.5px">Tebal</span>
                                                 <br>
-                                                <span style="font-size: 14.5px;font-weight: bold;">{{ $data->t }} x </span>
+                                                <span style="font-size: 14.5px;font-weight: bold;">{{ $data->t }}</span>
+                                            </td>
+                                            <td style="text-align: center;">
+                                                <span style="font-size: 13.5px"></span>
+                                                <br>
+                                                <span style="font-size: 14.5px;font-weight: bold;"> X </span>
                                             </td>
                                             <td style="text-align: center;">
                                                 <span style="font-size: 13.5px">Lebar</span>
                                                 <br>
-                                                <span style="font-size: 14.5px;font-weight: bold;">{{ $data->l }} x </span>
+                                                <span style="font-size: 14.5px;font-weight: bold;">{{ $data->l }}</span>
+                                            </td>
+                                            <td style="text-align: center;">
+                                                <span style="font-size: 13.5px"></span>
+                                                <br>
+                                                <span style="font-size: 14.5px;font-weight: bold;"> X </span>
                                             </td>
                                             <td style="text-align: center;">
                                                 <span style="font-size: 13.5px">Panjang</span>
