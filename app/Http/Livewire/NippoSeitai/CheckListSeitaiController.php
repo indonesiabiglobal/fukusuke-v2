@@ -609,11 +609,10 @@ class CheckListSeitaiController extends Component
         $columnGrandTotalEnd++;
 
         // total quantity
-        // dd(array_sum(array_column($data, 'qty_produksi')));
-        $totalQty = array_reduce($dataFiltered, function ($carry, $item) {
-            $carry += array_sum(array_column($item, 'qty_produksi'));
-            return $carry;
-        }, 0);
+        $totalQty = 0;
+        foreach ($dataFiltered as $item) {
+            $totalQty += $item['qty_produksi'];
+        }
         $activeWorksheet->setCellValue($columnQty . $rowGrandTotal, $totalQty);
         phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnQty . $rowGrandTotal);
         $columnGrandTotalEnd++;
@@ -624,7 +623,7 @@ class CheckListSeitaiController extends Component
             return $carry;
         }, 0);
         $activeWorksheet->setCellValue($columnLoss . $rowGrandTotal, $totalLoss);
-        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnQty . $rowGrandTotal);
+        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnLoss . $rowGrandTotal);
         $columnGrandTotalEnd++;
 
         // berat loss
@@ -637,7 +636,7 @@ class CheckListSeitaiController extends Component
         }, 0);
         $activeWorksheet->setCellValue($columnBerat . $rowGrandTotal, $totalBeratLoss);
         phpspreadsheet::addFullBorder($spreadsheet, 'A' . $rowGrandTotal . ':' . $columnBerat . $rowGrandTotal);
-        phpSpreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnQty . $rowGrandTotal);
+        phpSpreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnBerat . $rowGrandTotal);
 
         phpspreadsheet::styleFont($spreadsheet, 'A' . $rowGrandTotal . ':' . $columnBerat . $rowGrandTotal, true, 9, 'Calibri');
 
