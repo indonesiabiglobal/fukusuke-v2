@@ -420,18 +420,17 @@ class CheckListInfureController extends Component
             $columnItemEnd++;
 
             // panjang produksi
-            $columnPanjangProduksi = $columnItemEnd;
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['panjang_produksi']);
             $columnItemEnd++;
 
             // berat standard
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['berat_standard']);
-            phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnPanjangProduksi . $rowItem . ':' . $columnItemEnd . $rowItem, 1);
+            phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItemEnd . $rowItem . ':' . $columnItemEnd . $rowItem, 1);
             $columnItemEnd++;
 
             // berat produksi
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['berat_produksi']);
-            phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnPanjangProduksi . $rowItem . ':' . $columnItemEnd . $rowItem, 1);
+            phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItemEnd . $rowItem . ':' . $columnItemEnd . $rowItem, 1);
             phpspreadsheet::addBorderDottedHorizontal($spreadsheet, $columnItemStart . $rowItem . ':' . $columnItemEnd . $rowItem);
             $columnItemEnd++;
 
@@ -440,7 +439,7 @@ class CheckListInfureController extends Component
                 $columnLossStart = 'Q';
                 $columnLoss = $columnLossStart;
 
-                if ($losscode === '' && $lossItem['lossname'] === '' && $lossItem['berat_loss'] === '') {
+                if ($losscode === '' && $lossItem['lossname'] == null  && $lossItem['berat_loss'] == null) {
                     $columnLoss++;
                     phpspreadsheet::addBorderDottedHorizontal($spreadsheet, $columnLossStart . $rowItem . ':' . $columnLoss . $rowItem);
                     break;
