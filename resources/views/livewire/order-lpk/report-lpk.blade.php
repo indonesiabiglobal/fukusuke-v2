@@ -209,35 +209,35 @@ crossorigin="anonymous">
                         </table>
                         <table width="100%" cellspacing="0" cellpadding="0">
                             <tr>
-                                <td style="padding: 3px;border: 1px solid black;">
+                                <td style="padding: 3px;border: 1px solid black; text-align:center">
                                     <span style="font-size: 13.5px">Nomor Order</span>
                                     <br>
                                     <span >
-                                        <font style="font-size: 20px;font-weight: bold;">{{ $data->code }}</font>
+                                        <font style="font-size: 30px;font-weight: bold">{{ $data->code }}</font>
                                     </span>
                                 </td>
                                 <td style="padding: 3px;border: 1px solid black;text-align: center;">
                                     <h3 style="font-size: 21.5px">{{ $data->product_name }}</h3>
                                 </td>
-                                <td style="padding: 3px;border: 1px solid black;">
+                                <td style="padding: 3px;border: 1px solid black;  text-align:center">
                                     <span style="font-size: 13.5px">Nomor Produk</span>
                                     <br>
                                     <span>
-                                        <font style="font-size: 20px;font-weight: bold;">{{ $data->code_alias }}</font>
+                                        <font style="font-size: 45px;font-weight: bold;">{{ $data->code_alias }}</font>
                                     </span>
                                 </td>
                             </tr>
                         </table>
                         <table width="100%" cellspacing="0" cellpadding="0">
                             <tr>
-                                <td style="padding: 3px;border: 1px solid black;">
+                                <td style="padding: 3px;border: 1px solid black;text-align:center">
                                     <span style="font-size: 13.5px">PO Number</span>
                                     <br>
                                     <span>
                                         <font style="font-size: 20px;">{{ $data->po_no }}</font>
                                     </span>
                                 </td>
-                                <td style="padding: 3px;border: 1px solid black;">
+                                <td style="padding: 3px;border: 1px solid black; text-align:center">
                                     <span style="font-size: 13.5px">Tgl. Order</span>
                                     <br>
                                     <span>
@@ -245,7 +245,7 @@ crossorigin="anonymous">
                                             {{ Carbon::parse($data->order_date)->format('d-M-Y') }}</font>
                                     </span>
                                 </td>
-                                <td style="padding: 3px;border: 1px solid black;">
+                                <td style="padding: 3px;border: 1px solid black; text-align:center">
                                     <span style="font-size: 13.5px">Tgl. Stuffing</span>
                                     <br>
                                     <span>
@@ -253,14 +253,14 @@ crossorigin="anonymous">
                                             {{ Carbon::parse($data->stufingdate)->format('d-M-Y') }}</font>
                                     </span>
                                 </td>
-                                <td style="padding: 3px;border: 1px solid black;">
+                                <td style="padding: 3px;border: 1px solid black; text-align:center">
                                     <span style="font-size: 13.5px">Jml.Order/case</span>
                                     <br>
                                     <span>
                                         <font style="font-size: 16px;">{{ $data->order_qty }} box</font>
                                     </span>
                                 </td>
-                                <td style="padding: 3px;border: 1px solid black;">
+                                <td style="padding: 3px;border: 1px solid black; text-align:center">
                                     <span style="font-size: 13.5px">Jumlah LPK</span>
                                     <br>
                                     <span>
@@ -268,14 +268,14 @@ crossorigin="anonymous">
                                         lbr
                                     </span>
                                 </td>
-                                <td style="padding: 3px;border: 1px solid black;">
+                                <td style="padding: 3px;border: 1px solid black; text-align:center">
                                     <span style="font-size: 13.5px">Panjang Order</span>
                                     <br>
                                     <span>
                                         <font style="font-size: 16px;">{{ $data->panjang_lpk }}</font>
                                     </span>
                                 </td>
-                                <td style="padding: 3px;border: 1px solid black;">
+                                <td style="padding: 3px;border: 1px solid black; text-align:center">
                                     <span style="font-size: 13.5px">berat Order</span>
                                     <br>
                                     <span>
@@ -287,7 +287,7 @@ crossorigin="anonymous">
                         </table>
                         <table width="100%" cellspacing="0" cellpadding="0">
                             <tr>
-                                <td style="padding: 3px;border: 1px solid black;">
+                                <td style="padding: 3px;border: 1px solid black; text-align:center">
                                     <span style="font-size: 13.5px">Tipe Produk</span>
                                     <br>
                                     <span>
@@ -307,17 +307,17 @@ crossorigin="anonymous">
                                             <td>
                                                 <span style="font-size: 13.5px">Tebal</span>
                                                 <br>
-                                                <span style="font-size: 14.5px">{{ $data->t }} x </span>
+                                                <span style="font-size: 14.5px;font-weight: bold;">{{ $data->t }} x </span>
                                             </td>
                                             <td>
                                                 <span style="font-size: 13.5px">Lebar</span>
                                                 <br>
-                                                <span style="font-size: 14.5px">{{ $data->l }} x </span>
+                                                <span style="font-size: 14.5px;font-weight: bold;">{{ $data->l }} x </span>
                                             </td>
                                             <td>
                                                 <span style="font-size: 13.5px">Panjang</span>
                                                 <br>
-                                                <span style="font-size: 14.5px">{{ $data->p }}</span>
+                                                <span style="font-size: 14.5px;font-weight: bold;">{{ $data->p }}</span>
                                             </td>
                                         </tr>
                                     </table>
@@ -712,12 +712,12 @@ crossorigin="anonymous">
                     </td>
                 </tr>
         </table>
-        <table width="100%" cellspacing="0" cellpadding="0">
+        <table width="100%" cellspacing="0" cellpadding="0" style="text-align:center;">
             <tr>
                 <td style="padding: 3px;border: 1px solid black;" width="79%"> - </td>
                 <td style="padding: 3px;border-right: 1px solid black; border-bottom: 1px solid black; text-align:center"
                     width="21%">
-                    <table>
+                    <table style="margin: 0 auto;">
                         <tr>
                             <td style="text-align:center">
                                 <span style="font-weight: bold;font-size: 14.5px;color:red;">A=</span>
@@ -731,11 +731,11 @@ crossorigin="anonymous">
                                 <span style="font-weight: bold;font-size: 14.5px;">{{ $data->hagata_c }}</span><br>
                             </td>
                         </tr>
-
                     </table>
                 </td>
             </tr>
         </table>
+
         <table width="100%" cellspacing="0" cellpadding="0">
             <tr>
                 <td style="padding: 3px;border: 1px solid black;">
@@ -749,7 +749,7 @@ crossorigin="anonymous">
             <tr>
                 <td style="padding: 3px;border: 1px solid black; font-size: 13.5px" width="70%">
                     {{-- <font style="font-weight: bold;font-size: 14.5px;">{{ $data->seitai_catatan }}</font><br> --}}
-                    <textarea name="" id="" cols="90" rows="12"  style="border: none;font-weight: bold;font-size: 14.5px;">{{ $data->seitai_catatan }}</textarea>
+                    <textarea name="" id="" cols="90" rows="12"  style="border: none;font-weight: bold;font-size: 14.5px;font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">{{ $data->seitai_catatan }}</textarea>
                 </td>
                 <td style="padding: 3px;border: 1px solid black;">
                     <span>
