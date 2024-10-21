@@ -66,10 +66,17 @@ use App\Http\Livewire\MasterTabel\Loss\MenuLossInfureController;
 use App\Http\Livewire\MasterTabel\Loss\MenuLossSeitaiController;
 use App\Http\Livewire\Administration\SecurityManagementController;
 use App\Http\Livewire\Kenpin\EditKenpinSeitaiController;
+use App\Http\Livewire\MasterTabel\Inventory\BahanBakuController;
+use App\Http\Livewire\MasterTabel\Inventory\BarangJadiController;
+use App\Http\Livewire\MasterTabel\Inventory\BarangRejectController;
+use App\Http\Livewire\MasterTabel\Inventory\MesinPeralatanController;
 use App\Http\Livewire\MasterTabel\JadwalMachineController;
 use App\Http\Livewire\MasterTabel\Loss\MenuLossKatagoriController;
 use App\Http\Livewire\MasterTabel\Loss\MenuLossKenpinController;
 use App\Http\Livewire\MasterTabel\Loss\MenuLossKlasifikisasiController;
+use App\Http\Livewire\MasterTabel\Inventory\PemasukanBarangController;
+use App\Http\Livewire\MasterTabel\Inventory\PengeluaranBarangController;
+use App\Http\Livewire\MasterTabel\Inventory\PosisiWipController;
 
 /*
 |--------------------------------------------------------------------------
@@ -202,6 +209,14 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/add-user', AddUserController::class)->name('add-user');
     Route::get('/edit-user', EditUserController::class)->name('edit-user');
 
+    Route::get('/pemasukan-barang', PemasukanBarangController::class)->name('pemasukan-barang');
+    Route::get('/pengeluaran-barang', PengeluaranBarangController::class)->name('pengeluaran-barang');
+    Route::get('/posisi-wip', PosisiWipController::class)->name('posisi-wip');
+    Route::get('/bahan-baku', BahanBakuController::class)->name('bahan-baku');
+    Route::get('/barang-jadi', BarangJadiController::class)->name('barang-jadi');
+    Route::get('/mesin-peralatan', MesinPeralatanController::class)->name('mesin-peralatan');
+    Route::get('/barang-reject', BarangRejectController::class)->name('barang-reject');
+
     Route::get('/report-lpk', function (Request $request) {
         $lpk_id = $request->query('lpk_id');
         return view('livewire.order-lpk.report-lpk', compact('lpk_id'));
@@ -316,4 +331,6 @@ Route::group(['middleware' => 'auth'], function () {
     });
 
     Route::get('{any}', [App\Http\Controllers\HomeController::class, 'index']);
+
+    
 });
