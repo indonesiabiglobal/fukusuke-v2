@@ -350,8 +350,8 @@
                 </li>
                 @endif
 
-                @if (in_array("Admin", $userRoles))
-                <li class="nav-item">
+                @if (in_array("Admin", $userRoles) )
+                <li class="nav-item d-none">
                     <a class="nav-link menu-link" href="#inventory" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="inventory">
                         <i class=" ri-store-line"></i> <span data-key="t-pages">inventory</span>
                     </a>
