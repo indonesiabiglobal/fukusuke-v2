@@ -349,6 +349,39 @@
                     </div>
                 </li>
                 @endif
+
+                @if (in_array("Admin", $userRoles))
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="#inventory" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="inventory">
+                        <i class=" ri-store-line"></i> <span data-key="t-pages">inventory</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="inventory">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a href="pemasukan-barang" class="nav-link" data-key="t-security"> Pemasukan Barang </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="pengeluaran-barang" class="nav-link" data-key="t-security"> Pengeluaran Barang </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="posisi-wip" class="nav-link" data-key="t-security"> Posisi WIP </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="bahan-baku" class="nav-link" data-key="t-security"> Bahan Baku/penolong </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="barang-jadi" class="nav-link" data-key="t-security"> Barang Jadi </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="mesin-peralatan" class="nav-link" data-key="t-security"> Mesin & Peralatan </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="barang-reject" class="nav-link" data-key="t-security"> Barang Reject & Scrap </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                @endif
             </ul>
         </div>
         <!-- Sidebar -->
