@@ -6969,7 +6969,7 @@ class GeneralReportController extends Component
         $activeWorksheet->setShowGridlines(false);
 
         // Judul
-        $activeWorksheet->setCellValue('B1', 'DAFTAR LOSS PER PETUGAS INFURE');
+        $activeWorksheet->setCellValue('B1', 'DAFTAR LOSS PER PETUGAS SEITAI');
         $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
