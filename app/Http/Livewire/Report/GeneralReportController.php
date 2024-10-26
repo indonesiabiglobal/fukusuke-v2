@@ -8356,7 +8356,7 @@ class GeneralReportController extends Component
 
         // grand total
         $grandTotal = [
-            'panjang_produksi' => 0,
+            'qty_produksi' => 0,
             'berat_produksi' => 0,
             'capacity_kg' => 0,
             'capacity_lembar' => 0
@@ -8364,7 +8364,7 @@ class GeneralReportController extends Component
 
         foreach ($dataFilter as $productGroupCode => $productGroup) {
             foreach ($productGroup as $machineNo => $machine) {
-                $grandTotal['panjang_produksi'] += $machine->panjang_produksi;
+                $grandTotal['qty_produksi'] += $machine->qty_produksi;
                 $grandTotal['berat_produksi'] += $machine->berat_produksi;
                 $grandTotal['capacity_kg'] += $machine->capacity_kg;
                 $grandTotal['capacity_lembar'] += $machine->capacity_lembar;
