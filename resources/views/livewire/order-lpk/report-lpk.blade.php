@@ -177,13 +177,14 @@ crossorigin="anonymous">
     <div align="center">
         <table class="bayangprint" cellspacing="0" cellpadding="0" bgcolor="#FFFFFF" border="0" width="950"
             style="padding:25px">
-            <tbody>
                 <tr>
                     <td>
                         <table width="100%" cellspacing="0" border="0" cellpadding="3">
                             <tr>
                                 <td width="60%">
-                                    <h1 style="font-size: 27px">LPK {{ $data->lpk_no }}</h1>
+                                    <div style="width: 220px; text-align:center">
+                                        <h1 style="font-size: 27px; border: 1px solid grey;">LPK {{ $data->lpk_no }}</h1>
+                                    </div>
                                 </td>
                                 <td width="30%" style="border: 1px solid black;">
                                     <p style="font-size: 13px">Panjang Sebenarnya <span class="" style="font-size: 14.5px">{{ $data->panjang_lpk }} m</span></p>
@@ -200,7 +201,7 @@ crossorigin="anonymous">
                         </table>
                         <table width="100%" cellspacing="0" cellpadding="0" style="margin-top: 15px;">
                             <tr>
-                                <td style="padding: 3px;border: 1px solid black;">
+                                <td style="padding: 3px; border: 1px solid black;">
                                     <span>
                                         <font style="font-size: 16px;font-weight: bold;">1. ORDER</font>
                                     </span>
@@ -209,17 +210,17 @@ crossorigin="anonymous">
                         </table>
                         <table width="100%" cellspacing="0" cellpadding="0">
                             <tr>
-                                <td style="padding: 3px;border: 1px solid black; text-align:center">
+                                <td style="padding: 3px; text-align:center; border-left: 1px solid black; border-right: 1px solid grey;">
                                     <span style="font-size: 13.5px">Nomor Order</span>
                                     <br>
                                     <span >
                                         <font style="font-size: 30px;font-weight: bold">{{ $data->code }}</font>
                                     </span>
                                 </td>
-                                <td style="padding: 3px;border: 1px solid black;text-align: center;">
+                                <td style="padding: 3px;border-right: 1px solid grey;text-align: center;">
                                     <h3 style="font-size: 21.5px">{{ $data->product_name }}</h3>
                                 </td>
-                                <td style="padding: 3px;border: 1px solid black;  text-align:center">
+                                <td style="padding: 3px;border-right: 1px solid black;  text-align:center">
                                     <span style="font-size: 13.5px">Nomor Produk</span>
                                     <br>
                                     <span>
@@ -230,14 +231,14 @@ crossorigin="anonymous">
                         </table>
                         <table width="100%" cellspacing="0" cellpadding="0">
                             <tr>
-                                <td style="padding: 3px;border: 1px solid black;text-align:center">
+                                <td style="padding: 3px;border-right: 1px solid grey;border-top: 1px solid grey;border-bottom: 1px solid grey;border-left: 1px solid black;text-align:center">
                                     <span style="font-size: 13.5px">PO Number</span>
                                     <br>
                                     <span>
                                         <font style="font-size: 20px;">{{ $data->po_no }}</font>
                                     </span>
                                 </td>
-                                <td style="padding: 3px;border: 1px solid black; text-align:center">
+                                <td style="padding: 3px;border-right: 1px solid grey;border-top: 1px solid grey;border-bottom: 1px solid grey; text-align:center">
                                     <span style="font-size: 13.5px">Tgl. Order</span>
                                     <br>
                                     <span>
@@ -245,7 +246,7 @@ crossorigin="anonymous">
                                             {{ Carbon::parse($data->order_date)->format('d-M-Y') }}</font>
                                     </span>
                                 </td>
-                                <td style="padding: 3px;border: 1px solid black; text-align:center">
+                                <td style="padding: 3px;border-right: 1px solid grey;border-top: 1px solid grey;border-bottom: 1px solid grey; text-align:center">
                                     <span style="font-size: 13.5px">Tgl. Stuffing</span>
                                     <br>
                                     <span>
@@ -253,14 +254,14 @@ crossorigin="anonymous">
                                             {{ Carbon::parse($data->stufingdate)->format('d-M-Y') }}</font>
                                     </span>
                                 </td>
-                                <td style="padding: 3px;border: 1px solid black; text-align:center">
+                                <td style="padding: 3px;border-right: 1px solid grey;border-top: 1px solid grey;border-bottom: 1px solid grey; text-align:center">
                                     <span style="font-size: 13.5px">Jml.Order/case</span>
                                     <br>
                                     <span>
                                         <font style="font-size: 16px;">{{ $data->order_qty }} box</font>
                                     </span>
                                 </td>
-                                <td style="padding: 3px;border: 1px solid black; text-align:center">
+                                <td style="padding: 3px;border-right: 1px solid grey;border-top: 1px solid grey;border-bottom: 1px solid grey; text-align:center">
                                     <span style="font-size: 13.5px">Jumlah LPK</span>
                                     <br>
                                     <span>
@@ -268,14 +269,14 @@ crossorigin="anonymous">
                                         lbr
                                     </span>
                                 </td>
-                                <td style="padding: 3px;border: 1px solid black; text-align:center">
+                                <td style="padding: 3px;border-right: 1px solid grey;border-top: 1px solid grey;border-bottom: 1px solid grey; text-align:center">
                                     <span style="font-size: 13.5px">Panjang Order</span>
                                     <br>
                                     <span>
                                         <font style="font-size: 16px;">{{ $data->panjang_lpk }}</font>
                                     </span>
                                 </td>
-                                <td style="padding: 3px;border: 1px solid black; text-align:center">
+                                <td style="padding: 3px;border-right: 1px solid black;border-top: 1px solid grey;border-bottom: 1px solid grey; text-align:center">
                                     <span style="font-size: 13.5px">berat Order</span>
                                     <br>
                                     <span>
@@ -287,21 +288,21 @@ crossorigin="anonymous">
                         </table>
                         <table width="100%" cellspacing="0" cellpadding="0">
                             <tr>
-                                <td style="padding: 3px;border: 1px solid black; text-align:center">
+                                <td style="padding: 3px;border-right: 1px solid grey; border-left: 1px solid black; border-bottom: 1px solid grey; text-align:center">
                                     <span style="font-size: 13.5px">Tipe Produk</span>
                                     <br>
                                     <span>
                                         <font style="font-size: 14.5px;">{{ $data->tipe }}</font>
                                     </span>
                                 </td>
-                                <td style="padding: 3px;border: 1px solid black;text-align: center;">
+                                <td style="padding: 3px;border-right: 1px solid grey; border-bottom: 1px solid grey;text-align: center;">
                                     <span style="font-size: 13.5px">Nama Tipe</span>
                                     <br>
                                     <span>
                                         <font style="font-size: 14.5px;">{{ $data->tipename }}</font>
                                     </span>
                                 </td>
-                                <td style="padding: 3px;border: 1px solid black;">
+                                <td style="padding: 3px;border-right: 1px solid black; border-bottom: 1px solid grey;">
                                     <table width="100%" cellspacing="0" cellpadding="0" style="margin: 0 auto;">
                                         <tr>
                                             <td style="text-align: center;">
@@ -336,11 +337,11 @@ crossorigin="anonymous">
                         </table>
                         <table width="100%" cellspacing="0" cellpadding="0">
                             <tr style="font-size: 18px;">
-                                <td style="padding: 3px;border: 1px solid black;">
+                                <td style="padding: 3px;border-left: 1px solid black; border-right: 1px solid grey;">
                                     <span style="font-size: 13.5px">Warna LPK : </span>
                                     <span style="font-size: 14.5px">{{ $data->warnalpk }}</span>
                                 </td>
-                                <td style="padding: 3px;border: 1px solid black;">
+                                <td style="padding: 3px; border-right: 1px solid black;">
                                     <span style="font-size: 13.5px">Nomor Barcode : </span>
                                     <span style="font-weight: bold; font-size: 14.5px">{{ $data->codebarcode }}</span>
                                 </td>
@@ -357,21 +358,21 @@ crossorigin="anonymous">
                         </table>
                         <table width="100%" cellspacing="0" cellpadding="0">
                             <tr>
-                                <td style="padding: 3px;border: 1px solid black;text-align: center;">
+                                <td style="padding: 3px;border-left: 1px solid black; border-right: 1px solid grey; text-align: center;">
                                     <span style="font-size: 13.5px">Nomor Mesin</span>
                                     <br>
                                     <span>
                                         <font style="font-size: 21.5px;font-weight: bold;">{{ $data->nomesin }}</font>
                                     </span>
                                 </td>
-                                <td style="padding: 3px;border: 1px solid black;text-align: center;">
+                                <td style="padding: 3px;border-right: 1px solid grey; text-align: center;">
                                     <span style="font-size: 13.5px">Dimensi Infure</span>
                                     <br>
                                     <span>
                                         <font style="font-size: 16px;">{{ $data->infure_dimensi }}</font>
                                     </span>
                                 </td>
-                                <td style="padding: 3px;border: 1px solid black;text-align: center;">
+                                <td style="padding: 3px;border-right: 1px solid grey; text-align: center;">
                                     <span style="font-size: 13.5px">Panjang Gulung</span>
                                     <br>
                                     <span>
@@ -379,7 +380,7 @@ crossorigin="anonymous">
                                             {{ $data->infure_pjgulunglpk }} m</font>
                                     </span>
                                 </td>
-                                <td style="padding: 3px;border: 1px solid black;text-align: center;">
+                                <td style="padding: 3px;border-right: 1px solid grey; text-align: center;">
                                     <span style="font-size: 13.5px">Jml Gentan</span>
                                     <br>
                                     <span>
@@ -387,7 +388,7 @@ crossorigin="anonymous">
                                         </font>
                                     </span>
                                 </td>
-                                <td style="padding: 3px;border: 1px solid black;text-align: center;">
+                                <td style="padding: 3px;border-right: 1px solid grey; text-align: center;">
                                     <span style="font-size: 13.5px">Berat Standar</span>
                                     <br>
                                     <span>
@@ -395,14 +396,14 @@ crossorigin="anonymous">
                                         </font> Kg
                                     </span>
                                 </td>
-                                <td style="padding: 3px;border: 1px solid black;text-align: center;">
+                                <td style="padding: 3px;border-right: 1px solid grey; text-align: center;">
                                     <span style="font-size: 13.5px">Material</span>
                                     <br>
                                     <span>
                                         <font style="font-size: 16px;">{{ $data->infure_material }}</font>
                                     </span>
                                 </td>
-                                <td style="padding: 3px;border: 1px solid black;text-align: center;">
+                                <td style="padding: 3px;border-right: 1px solid black; text-align: center;">
                                     <span style="font-size: 13.5px">Arah Gulung</span>
                                     <br>
                                     <span>
@@ -413,7 +414,7 @@ crossorigin="anonymous">
                         </table>
                         <table width="100%" cellspacing="0" cellpadding="0">
                             <tr>
-                                <td style="padding: 3px;border: 1px solid black;" width="45%">
+                                <td style="padding: 3px;border-left: 1px solid black; border-top: 1px solid grey; border-right: 1px solid grey;" width="45%">
                                     <span style="font-size: 13.5px">Master Batch</span> <br>
                                     <span style="font-size: 14.5px; font-weight: bold;">1.
                                         {{ $data->infure_mb1_masterbatch }}</span><br>
@@ -435,17 +436,17 @@ crossorigin="anonymous">
                                         </tr>
                                     </table>
                                 </td>
-                                <td style="border: 1px solid black;" width="20%">
+                                <td style="border-top: 1px solid grey; border-right: 1px solid grey;" width="20%">
                                     <table width="100%" cellspacing="0" cellpadding="0">
                                         <tr>
-                                            <td style="border-bottom: 1px solid black;text-align: center;">
+                                            <td style="border-top: 1px solid grey; text-align: center;">
                                                 <span style="font-size: 13.5px">Embos</span><br>
                                                 <span
                                                     style="font-size: 14.5px; font-weight: bold;">{{ $data->infure_embose }}</span>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td style="border-bottom: 1px solid black;text-align: center;">
+                                            <td style="border-top: 1px solid grey; text-align: center;">
                                                 <span style="font-size: 13.5px">Corona Discharge</span><br>
                                                 <span
                                                     style="font-size: 14.5px; font-weight: bold;">{{ $data->infure_corona }}</span>
@@ -460,10 +461,10 @@ crossorigin="anonymous">
                                         </tr>
                                     </table>
                                 </td>
-                                <td style="border: 1px solid black; border-bottom:none">
+                                <td style="border-top: 1px solid grey; border-right: 1px solid black; border-bottom:none">
                                     <table width="100%" cellspacing="0" cellpadding="0">
                                         <tr>
-                                            <td style="border-bottom: 1px solid black;text-align:center">
+                                            <td style="border-bottom: 1px solid grey;text-align:center">
                                                 <span style="font-size: 13.5px">{{ $data->infure_gazette }}</span><br>
                                             </td>
                                         </tr>
@@ -496,7 +497,7 @@ crossorigin="anonymous">
                         </table>
                         <table width="100%" cellspacing="0" cellpadding="0">
                             <tr>
-                                <td style="padding: 3px;border: 1px solid black;" width="40%">
+                                <td style="padding: 3px;border-left: 1px solid black; border-right: 1px solid grey;" width="40%">
                                     <span style="font-size: 13.5px">Warna Depan : {{ $data->printing_warnadepan }} warna </span> <br>
                                     <span style="font-size: 14.5px; font-weight: bold;">1.
                                         {{ $data->printing_warnadepan1 }}</span><br>
@@ -509,7 +510,7 @@ crossorigin="anonymous">
                                     <span style="font-size: 14.5px; font-weight: bold;">5.
                                         {{ $data->printing_warnadepan5 }}</span><br>
                                 </td>
-                                <td style="padding: 3px;border: 1px solid black;" width="40%">
+                                <td style="padding: 3px;border-right: 1px solid grey;" width="40%">
                                     <span style="font-size: 13.5px">Warna Belakang : {{ $data->printing_warnabelakang }} warna </span> <br>
                                     <span style="font-size: 14.5px; font-weight: bold;">1.
                                         {{ $data->printing_warnabelakang1 }}</span><br>
@@ -522,23 +523,23 @@ crossorigin="anonymous">
                                     <span style="font-size: 14.5px; font-weight: bold;">5.
                                         {{ $data->printing_warnabelakang5 }}</span><br>
                                 </td>
-                                <td style="padding: 3px;border: 1px solid black;" width="40%">
+                                <td style="padding: 3px;border-right: 1px solid black;" width="40%">
                                     <table width="100%" cellspacing="0" cellpadding="0">
                                         <tr>
-                                            <td style="border-bottom: 1px solid black;text-align: center;">
+                                            <td style="border-bottom: 1px solid grey;text-align: center;">
                                                 <span style="font-size: 13.5px">Jenis Cetak</span><br>
                                                 <span style="font-size: 14.5px; font-weight: bold;">{{ $data->printing_jeniscetak }}</span>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td style="border-bottom: 1px solid black;text-align: center;">
+                                            <td style="border-bottom: 1px solid grey;text-align: center;">
                                                 <span style="font-size: 13.5px">Jenis Tinta</span><br>
                                                 <span
                                                     style="font-size: 14.5px; font-weight: bold;">{{ $data->printing_sifattinta }}</span>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td style="border-bottom: 1px solid black;text-align: center;">
+                                            <td style="border-bottom: 1px solid grey;text-align: center;">
                                                 <span style="font-size: 13.5px">Cetak Endless</span><br>
                                                 <span
                                                     style="font-size: 14.5px; font-weight: bold;">{{ $data->printing_endless }}</span>
@@ -566,42 +567,42 @@ crossorigin="anonymous">
                         </table>
                         <table width="100%" cellspacing="0" cellpadding="0">
                             <tr>
-                                <td style="padding: 3px;border: 1px solid black;">
+                                <td style="padding: 3px;border-left: 1px solid black; border-right: 1px solid grey;">
                                     <span style="font-size: 13.5px">
                                         Seal <br>
                                         <font style="font-size: 14.5px;font-weight: bold;">
                                             {{ $data->seitai_klasifikasiseal }}</font>
                                     </span>
                                 </td>
-                                <td style="padding: 3px;border: 1px solid black;">
+                                <td style="padding: 3px;border-right: 1px solid grey;">
                                     <span style="font-size: 13.5px">
                                         Jarak Seal Bawah <br>
                                         <font style="font-size: 14.5px;font-weight: bold;">
                                             {{ $data->seitai_jaraksealbawah }} mm</font>
                                     </span>
                                 </td>
-                                <td style="padding: 3px;border: 1px solid black;">
+                                <td style="padding: 3px;border-right: 1px solid grey;">
                                     <span style="font-size: 13.5px">
                                         Jarak Seal Dari Pola <br>
                                         <font style="font-size: 14.5px;font-weight: bold;">
                                             {{ $data->seitai_jaraksealdaripola }} mm</font>
                                     </span>
                                 </td>
-                                <td style="padding: 3px;border: 1px solid black;">
+                                <td style="padding: 3px;border-right: 1px solid grey;">
                                     <span style="font-size: 13.5px">
                                         Jumlah Baris Palet <br>
                                         <font style="font-size: 14.5px;font-weight: bold;">
                                             {{ $data->seitai_jmlhbarispalet }}</font>
                                     </span>
                                 </td>
-                                <td style="padding: 3px;border: 1px solid black;">
+                                <td style="padding: 3px;border-right: 1px solid grey;">
                                     <span style="font-size: 13.5px">
                                         Isi Baris Palet <br>
                                         <font style="font-size: 14.5px;font-weight: bold;">
                                             {{ $data->seitai_isibarispalet }}</font>
                                     </span>
                                 </td>
-                                <td style="padding: 3px;border: 1px solid black;">
+                                <td style="padding: 3px;border-right: 1px solid black;">
                                     <span style="font-size: 13.5px">
                                         Kode Hagata <br>
                                         <font style="font-size: 14.5px;font-weight: bold;">{{ $data->kodehagata }}
@@ -612,7 +613,7 @@ crossorigin="anonymous">
                         </table>
                         <table width="100%" cellspacing="0" cellpadding="0">
                             <tr>
-                                <td style="padding: 3px;border: 1px solid black;" width="8%">
+                                <td style="padding: 3px;border-top: 1px solid grey; border-right: 1px solid grey; border-left: 1px solid black;" width="8%">
                                     <span>
                                         -
                                     </span>
@@ -628,7 +629,7 @@ crossorigin="anonymous">
                                         </tr>
                                     </table>
                                 </td>
-                                <td style="padding: 3px;border: 1px solid black;text-align: center; vertical-align: top;"
+                                <td style="padding: 3px;border-top: 1px solid grey; border-right: 1px solid grey;text-align: center; vertical-align: top;"
                                     width="8%">
                                     <span style="font-size: 13.5px">
                                         Kode
@@ -650,7 +651,7 @@ crossorigin="anonymous">
                                         </tr>
                                     </table>
                                 </td>
-                                <td style="padding: 3px;border: 1px solid black;text-align: center; vertical-align: top;"
+                                <td style="padding: 3px;border-top: 1px solid grey; border-right: 1px solid grey;text-align: center; vertical-align: top;"
                                     width="12%">
                                     <span style="font-size: 13.5px">
                                         Isi
@@ -669,7 +670,7 @@ crossorigin="anonymous">
                             </tr>
                         </table>
                     </td>
-                    <td style="padding: 3px;border: 1px solid black;text-align: center; vertical-align: top;"
+                    <td style="padding: 3px;border-top: 1px solid grey; border-right: 1px solid grey;text-align: center; vertical-align: top;"
                         width="8%">
                         <span style="font-size: 13.5px">
                             Jenis
@@ -686,7 +687,7 @@ crossorigin="anonymous">
                             </tr>
                         </table>
                     </td>
-                    <td style="padding: 3px;border: 1px solid black;text-align: center; vertical-align: top;"
+                    <td style="padding: 3px;border-top: 1px solid grey; border-right: 1px solid grey;text-align: center; vertical-align: top;"
                         width="10%">
                         <span style="font-size: 13.5px">
                             Stample
@@ -699,7 +700,7 @@ crossorigin="anonymous">
                             </tr>
                         </table>
                     </td>
-                    <td style="padding: 3px;border: 1px solid black;vertical-align: top;"
+                    <td style="padding: 3px;border-top: 1px solid grey; border-right: 1px solid grey;vertical-align: top;"
                         width="33%">
                         <span style="font-size: 13.5px">
                             Nama
@@ -716,7 +717,7 @@ crossorigin="anonymous">
                             </tr>
                         </table>
                     </td>
-                    <td style="padding: 3px;border-right: 1px solid black; text-align:center">
+                    <td style="padding: 3px;border-top: 1px solid grey; border-right: 1px solid black; text-align:center">
                         <img src="{{ asset('storage/' . $data->filename) }}" alt=""
                             style="height:100%; width:100%">
                     </td>
@@ -724,8 +725,8 @@ crossorigin="anonymous">
         </table>
         <table width="100%" cellspacing="0" cellpadding="0" style="text-align:center;">
             <tr>
-                <td style="padding: 3px;border: 1px solid black;" width="79%"> - </td>
-                <td style="padding: 3px;border-right: 1px solid black; border-bottom: 1px solid black; text-align:center"
+                <td style="padding: 3px;border-top: 1px solid grey; border-right: 1px solid grey; border-left: 1px solid black;" width="79%"> - </td>
+                <td style="padding: 3px;border-right: 1px solid black; text-align:center"
                     width="21%">
                     <table style="margin: 0 auto;">
                         <tr>
@@ -757,11 +758,11 @@ crossorigin="anonymous">
         </table>
         <table width="100%" cellspacing="0" cellpadding="0">
             <tr>
-                <td style="padding: 3px;border: 1px solid black; font-size: 13.5px" width="70%">
+                <td style="padding: 3px;border-left: 1px solid black; border-bottom: 1px solid black; border-right: 1px solid grey; font-size: 13.5px" width="70%">
                     {{-- <font style="font-weight: bold;font-size: 14.5px;">{{ $data->seitai_catatan }}</font><br> --}}
                     <textarea name="" id="" cols="90" rows="12"  style="border: none;font-weight: bold;font-size: 14.5px;font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">{{ $data->seitai_catatan }}</textarea>
                 </td>
-                <td style="padding: 3px;border: 1px solid black;">
+                <td style="padding: 3px;border-bottom: 1px solid black; border-right: 1px solid black;">
                     <span>
                         <p style="font-size: 13.5px">Blow Ratio</p>
                         <p style="font-size: 13.5px">Diameter KB</p>
@@ -773,10 +774,6 @@ crossorigin="anonymous">
                     </span>
                 </td>
             </tr>
-        </table>
-        </td>
-        </tr>
-        </tbody>
         </table>
     </div>
 </body>
