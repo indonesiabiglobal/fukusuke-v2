@@ -216,12 +216,9 @@ class AddNippoController extends Component
         }
     }
 
-    public function save()
+    public function rules()
     {
-        $this->panjang_produksi = (int)str_replace(',', '', $this->panjang_produksi);
-        $this->berat_produksi = (float)str_replace(',', '', $this->berat_produksi);
-
-        $validatedData = $this->validate([
+        return [
             'production_date' => 'required',
             'created_on' => 'required',
             'lpk_no' => 'required',
@@ -230,7 +227,34 @@ class AddNippoController extends Component
             'panjang_produksi' => 'required|max:25000',
             'berat_produksi' => 'required|max:900',
             'work_hour' => 'required|regex:/^[0-9]{2}:[0-9]{2}$/',
-        ]);
+            'nomor_barcode' => 'required',
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'production_date.required' => 'Tanggal Produksi harus diisi',
+            'created_on.required' => 'Tanggal Proses harus diisi',
+            'lpk_no.required' => 'Nomor LPK harus diisi',
+            'machineno.required' => 'Nomor Mesin harus diisi',
+            'employeeno.required' => 'Nomor Karyawan harus diisi',
+            'panjang_produksi.required' => 'Panjang Produksi harus diisi',
+            'panjang_produksi.max' => 'Panjang Produksi maksimal 25000',
+            'berat_produksi.required' => 'Berat Produksi harus diisi',
+            'berat_produksi.max' => 'Berat Produksi maksimal 900',
+            'work_hour.required' => 'Jam Kerja harus diisi',
+            'work_hour.regex' => 'Format Jam Kerja tidak sesuai',
+            'nomor_barcode.required' => 'Nomor Barcode harus diisi',
+        ];
+    }
+
+    public function save()
+    {
+        $this->panjang_produksi = (int)str_replace(',', '', $this->panjang_produksi);
+        $this->berat_produksi = (float)str_replace(',', '', $this->berat_produksi);
+
+        $this->validate();
 
         DB::beginTransaction();
         try {
@@ -248,6 +272,16 @@ class AddNippoController extends Component
             $maxGentan = TdProductAssembly::where('lpk_id', $lpkid->id)
                 ->orderBy('gentan_no', 'DESC')
                 ->first();
+
+            // mengecek apakah nomor barcode sesuai dengan barcode produk
+            if (isset($this->nomor_barcode)) {
+                if ($products->codebarcode != $this->nomor_barcode) {
+                    $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Barcode ' . $this->nomor_barcode . ' Tidak Sesuai']);
+                }
+                return;
+            } else {
+                $this->dispatch('notification', ['type' => 'success', 'message' => 'Nomor Barcode ' . $this->nomor_barcode . ' Harus diisi']);
+            }
 
             $seqno = 1;
             if (!empty($lastSeq)) {
@@ -476,7 +510,6 @@ class AddNippoController extends Component
                 $this->panjang_lpk = number_format($tdorderlpk->panjang_lpk, 0, ',', ',');
                 // $this->created_on = Carbon::parse($tdorderlpk->created_on)->format('d/m/Y');
                 $this->code = $tdorderlpk->code;
-                $this->nomor_barcode = $tdorderlpk->codebarcode;
                 $this->name = $tdorderlpk->name;
                 $this->ketebalan = $tdorderlpk->ketebalan;
                 $this->diameterlipat = $tdorderlpk->diameterlipat;
@@ -592,11 +625,12 @@ class AddNippoController extends Component
             }
         }
 
-        // if (isset($this->nomor_barcode) && $this->nomor_barcode != '') {
-        //     if ($this->code != $this->nomor_barcode) {
-        //         $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Barcode ' . $this->nomor_barcode . ' Tidak Terdaftar']);
-        //     }
-        // }
+        if (isset($this->nomor_barcode) && $this->nomor_barcode != '') {
+            if ($tdorderlpk->codebarcode != $this->nomor_barcode) {
+                $this->nomor_barcode = '';
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Barcode ' . $this->nomor_barcode . ' Tidak Sesuai']);
+            }
+        }
 
         if (isset($this->berat_produksi) && isset($this->berat_standard)) {
             if ($this->berat_standard == 0) {

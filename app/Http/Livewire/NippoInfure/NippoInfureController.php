@@ -122,7 +122,7 @@ class NippoInfureController extends Component
                 'tda.panjang_printing_inline AS panjang_printing_inline',
                 'tda.berat_standard AS berat_standard',
                 'tda.berat_produksi AS berat_produksi',
-                DB::raw('tda.berat_produksi / tda.berat_standard * 100 AS rasio'),
+                DB::raw('CASE WHEN tda.berat_standard = 0 THEN 0 ELSE (tda.berat_produksi / tda.berat_standard * 100) END AS rasio'),
                 DB::raw('tdol.total_assembly_line - tdol.panjang_lpk AS selisih'),
                 'tda.nomor_han AS nomor_han',
                 'tda.gentan_no AS gentan_no',

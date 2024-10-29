@@ -366,6 +366,17 @@ class EditNippoController extends Component
                 ->orderBy('gentan_no', 'DESC')
                 ->first();
 
+
+            // mengecek apakah nomor barcode sesuai dengan barcode produk
+            if (isset($this->nomor_barcode)) {
+                if ($products->codebarcode != $this->nomor_barcode) {
+                    $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Barcode ' . $this->nomor_barcode . ' Tidak Sesuai']);
+                }
+                return;
+            } else {
+                $this->dispatch('notification', ['type' => 'success', 'message' => 'Nomor Barcode ' . $this->nomor_barcode . ' Harus diisi']);
+            }
+
             $product = TdProductAssembly::findOrFail($this->orderId);
             $product->production_date = $this->production_date . ' ' . $this->work_hour;
             // $product->created_on = $this->created_on;
@@ -652,11 +663,11 @@ class EditNippoController extends Component
             }
         }
 
-        // if (isset($this->nomor_barcode) && $this->nomor_barcode != '') {
-        //     if ($this->code != $this->nomor_barcode) {
-        //         $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Barcode ' . $this->nomor_barcode . ' Tidak Terdaftar']);
-        //     }
-        // }
+        if (isset($this->nomor_barcode) && $this->nomor_barcode != '') {
+            if ($this->code != $this->nomor_barcode) {
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Barcode ' . $this->nomor_barcode . ' Tidak Terdaftar']);
+            }
+        }
 
         return view('livewire.nippo-infure.edit-nippo')->extends('layouts.master');
     }
