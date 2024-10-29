@@ -470,7 +470,7 @@ crossorigin="anonymous">
                                         </tr>
                                         @if ($data->infure_gazette != 'Tidak Ada Gazet')
                                             <tr>
-                                                <td style="border-bottom: 2px solid black; text-align:center">
+                                                <td style="text-align:center">
                                                     <div class="image-container">
                                                         <img src="{{ asset('asset/image/Gazette.png') }}" alt=""
                                                         style="height:100%; width:100%">
