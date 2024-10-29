@@ -452,6 +452,7 @@ class AddNippoController extends Component
                     'mp.name',
                     'mp.ketebalan',
                     'mp.diameterlipat',
+                    'mp.codebarcode',
                     'tolp.qty_gulung',
                     'tolp.qty_gentan',
                     'tda.gentan_no',
@@ -475,6 +476,7 @@ class AddNippoController extends Component
                 $this->panjang_lpk = number_format($tdorderlpk->panjang_lpk, 0, ',', ',');
                 // $this->created_on = Carbon::parse($tdorderlpk->created_on)->format('d/m/Y');
                 $this->code = $tdorderlpk->code;
+                $this->nomor_barcode = $tdorderlpk->codebarcode;
                 $this->name = $tdorderlpk->name;
                 $this->ketebalan = $tdorderlpk->ketebalan;
                 $this->diameterlipat = $tdorderlpk->diameterlipat;
@@ -590,11 +592,11 @@ class AddNippoController extends Component
             }
         }
 
-        if (isset($this->nomor_barcode) && $this->nomor_barcode != '') {
-            if ($this->code != $this->nomor_barcode) {
-                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Barcode ' . $this->nomor_barcode . ' Tidak Terdaftar']);
-            }
-        }
+        // if (isset($this->nomor_barcode) && $this->nomor_barcode != '') {
+        //     if ($this->code != $this->nomor_barcode) {
+        //         $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Barcode ' . $this->nomor_barcode . ' Tidak Terdaftar']);
+        //     }
+        // }
 
         if (isset($this->berat_produksi) && isset($this->berat_standard)) {
             if ($this->berat_standard == 0) {

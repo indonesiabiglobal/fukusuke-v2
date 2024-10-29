@@ -446,8 +446,8 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Nomor Barcode</label>
-                                <input type="text" class="form-control" readonly="readonly"
-                                    wire:model.live.debounce.300ms="nomor_barcode"
+                                <input type="text" class="form-control bg-light" readonly="readonly"
+                                    wire:model="nomor_barcode"
                                     x-on:keydown.tab="$event.preventDefault(); $refs.gentan_no.focus();"
                                     x-ref="nomor_barcode" />
                                 @error('nomor_barcode')
