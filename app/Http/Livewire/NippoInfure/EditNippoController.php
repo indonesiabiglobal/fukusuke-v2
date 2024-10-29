@@ -131,6 +131,7 @@ class EditNippoController extends Component
                 'msp.name',
                 'msp.ketebalan',
                 'msp.diameterlipat',
+                'msp.codebarcode',
                 'mt.berat_jenis',
                 // DB::raw("CASE WHEN tdpg.id IS NOT NULL THEN 1 ELSE 0 END as tdpg")
             )
@@ -155,6 +156,7 @@ class EditNippoController extends Component
         $this->machineno = $data->machineno;
         $this->machinename = $data->machinename;
         $this->code = $data->code;
+        $this->nomor_barcode = $data->codebarcode;
         $this->name = $data->name;
         $this->employeeno = $data->employeeno;
         $this->empname = $data->empname;
@@ -650,11 +652,11 @@ class EditNippoController extends Component
             }
         }
 
-        if (isset($this->nomor_barcode) && $this->nomor_barcode != '') {
-            if ($this->code != $this->nomor_barcode) {
-                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Barcode ' . $this->nomor_barcode . ' Tidak Terdaftar']);
-            }
-        }
+        // if (isset($this->nomor_barcode) && $this->nomor_barcode != '') {
+        //     if ($this->code != $this->nomor_barcode) {
+        //         $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Barcode ' . $this->nomor_barcode . ' Tidak Terdaftar']);
+        //     }
+        // }
 
         return view('livewire.nippo-infure.edit-nippo')->extends('layouts.master');
     }
