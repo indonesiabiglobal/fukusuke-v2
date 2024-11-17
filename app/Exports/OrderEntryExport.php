@@ -25,7 +25,7 @@ class OrderEntryExport implements FromCollection, WithHeadings, WithColumnFormat
                 'TG_PROSES' => Carbon::now()->format('d/m/Y'),
                 'PO_NUMBER' => 'PO001',
                 'TG_ORDER' => Carbon::now()->format('d/m/Y'),
-                'NO_ORDER' => 'UH244R1',
+                'NO_ORDER' => '(XX)UHS76R1',
                 'QTY_ORDER' => '12',
                 'UNIT' => '1',
                 'TG_STUFING' => Carbon::now()->format('d/m/Y'),
