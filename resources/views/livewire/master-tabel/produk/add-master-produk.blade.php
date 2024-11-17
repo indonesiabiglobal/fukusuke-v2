@@ -8,7 +8,8 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Nomor Order</label>
                             <input type="text" class="form-control col-12 col-lg-8" wire:model="code"
-                                placeholder="KODE" required style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()"/>
+                                placeholder="KODE" required style="text-transform: uppercase;"
+                                oninput="this.value = this.value.toUpperCase()" />
                             @error('code')
                                 <span class="invalid-feedback">{{ $message }}</span>
                             @enderror
@@ -63,6 +64,39 @@
                             <input type="text" class="form-control col-12 col-lg-8" wire:model="codebarcode"
                                 placeholder="KODE" />
                             @error('codebarcode')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+                    {{-- warna LPK --}}
+                    <div class="form-group mt-1">
+                        <div class="input-group">
+                            <label class="control-label col-12 col-lg-4">Warna LPK</label>
+                            <div class="col-12 col-lg-8" wire:ignore>
+                                <select required data-choices data-choices-sorting-false
+                                    class="form-select @error('warnalpkid') is-invalid @enderror"
+                                    wire:model.live="warnalpkid">
+                                    <option value="" selected>
+                                        Silahkan Pilih
+                                    </option>
+                                    @foreach ($masterWarnaLPK as $item)
+                                        <option value="{{ $item->id }}">
+                                            {{ $item->name }}
+                                        </option>
+                                    @endforeach
+                                    <option value="lainnya">
+                                        Lainnya
+                                    </option>
+                                </select>
+                            </div>
+                            @if (($warnalpkid['value'] ?? '') == 'lainnya')
+                                <input required type="text" class="form-control mt-2" wire:model="custom_warna_lpk"
+                                    placeholder="Masukkan warna LPK" />
+                            @endif
+                            @error('warnalpkid')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
+                            @error('custom_warna_lpk')
                                 <span class="invalid-feedback">{{ $message }}</span>
                             @enderror
                         </div>
@@ -141,7 +175,7 @@
                     <div class="form-group">
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Dimensi</label>
-                            <input required type="text" class="form-control" wire:model="inflation_thickness"
+                            <input required type="number" class="form-control" wire:model="inflation_thickness"
                                 placeholder="Tebal" />
                             @error('inflation_thickness')
                                 <span class="invalid-feedback">{{ $message }}</span>
@@ -149,7 +183,7 @@
                             <span class="input-group-text">
                                 x
                             </span>
-                            <input required type="text" class="form-control" wire:model="inflation_fold_diameter"
+                            <input required type="number" class="form-control" wire:model="inflation_fold_diameter"
                                 placeholder="Lebar" />
                             @error('inflation_fold_diameter')
                                 <span class="invalid-feedback">{{ $message }}</span>
@@ -162,7 +196,7 @@
                     <div class="form-group mt-1">
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Panjang Gulung</label>
-                            <input required type="text" class="form-control col-12 col-lg-8"
+                            <input required type="number" class="form-control col-12 col-lg-8"
                                 wire:model="one_winding_m_number" placeholder="0" />
                             <span class="input-group-text">
                                 m
@@ -236,6 +270,39 @@
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
                             </div>
+                        </div>
+                    </div>
+                    {{-- Lakban Infure --}}
+                    <div class="form-group mt-1">
+                        <div class="input-group">
+                            <label class="control-label col-12 col-lg-4">Lakban Infure</label>
+                            <div class="col-12 col-lg-8" wire:ignore>
+                                <select data-choices data-choices-sorting-false
+                                    class="form-select @error('lakbaninfureid') is-invalid @enderror"
+                                    wire:model.live="lakbaninfureid" placeholder="">
+                                    <option value="" selected>
+                                        Silahkan Pilih
+                                    </option>
+                                    @foreach ($masterLakbanInfure as $item)
+                                        <option value="{{ $item->id }}">
+                                            {{ $item->name }}
+                                        </option>
+                                    @endforeach
+                                    <option value="lainnya">
+                                        Lainnya
+                                    </option>
+                                </select>
+                            </div>
+                            @if (($lakbaninfureid['value'] ?? '') === 'lainnya')
+                                <input required type="text" class="form-control mt-2"
+                                    wire:model="custom_lakban_infure" placeholder="Masukkan lakban infure lainnya" />
+                            @endif
+                            @error('lakbaninfureid')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
+                            @error('custom_lakban_infure')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
                         </div>
                     </div>
                 </div>
@@ -390,7 +457,7 @@
                 <div class="col-12 col-lg-6">
                     <div class="form-group">
                         <div class="input-group">
-                            <label class="control-label col-12 col-lg-4">Kode Nukigata</label>
+                            <label class="control-label col-12 col-lg-4">Tipe Hagata</label>
                             <div class="col-12 col-lg-8" wire:ignore>
                                 <select data-choices data-choices-sorting="true"
                                     class="form-select @error('katanuki_id') is-invalid @enderror"
@@ -408,6 +475,13 @@
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
                             </div>
+                        </div>
+                    </div>
+                    <div class="form-group mt-1">
+                        <div class="input-group">
+                            <label class="control-label col-12 col-lg-4">Kode Hagata</label>
+                            <input required type="number" class="form-control col-12 col-lg-8"
+                                wire:model="kodehagata" placeholder="..." />
                         </div>
                     </div>
                     <div class="form-group mt-1">
@@ -624,6 +698,14 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="form-group mt-1">
+                        <div class="input-group">
+                            <label class="control-label col-12 col-lg-4">Kode Plate</label>
+                            <input required type="text" class="form-control col-12 col-lg-8"
+                                wire:model="kode_plate" placeholder="..." />
+                        </div>
+                    </div>
                 </div>
                 <div class="col-12">
                     <p class="text-success">SEITAI</p>
@@ -714,8 +796,7 @@
                             </div>
                             @if (($lakbanseitaiid['value'] ?? '') === 'lainnya')
                                 <input required type="text" class="form-control mt-2"
-                                    wire:model="custom_lakban_seitai"
-                                    placeholder="Masukkan lakban seitai lainnya" />
+                                    wire:model="custom_lakban_seitai" placeholder="Masukkan lakban seitai lainnya" />
                             @endif
                             @error('lakbanseitaiid')
                                 <span class="invalid-feedback">{{ $message }}</span>
@@ -725,38 +806,10 @@
                             @enderror
                         </div>
                     </div>
-                    <div class="form-group mt-1">
-                        <div class="input-group">
-                            <label class="control-label col-12 col-lg-6">Stempel Seitai</label>
-                            {{-- <div class="col-12 col-lg-6" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
-                                    class="form-select @error('stampelseitaiid') is-invalid @enderror"
-                                    wire:model="stampelseitaiid" placeholder="">
-                                    <option value="" selected>
-                                        Silahkan Pilih
-                                    </option>
-                                    @foreach ($masterStampleSeitai as $item)
-                                        <option value="{{ $item->id }}">
-                                            {{ $item->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('stampelseitaiid')
-                                    <span class="invalid-feedback">{{ $message }}</span>
-                                @enderror
-                            </div> --}}
-                            <input required type="text"
-                                class="form-control @error('stampelseitaiid') is-invalid @enderror"
-                                wire:model="stampelseitaiid" placeholder="..." />
-                            @error('stampelseitaiid')
-                                <span class="invalid-feedback">{{ $message }}</span>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="form-group mt-1">
+                    {{-- <div class="form-group mt-1">
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-6">Hagata Seitai</label>
-                            {{-- <div class="col-12 col-lg-6" wire:ignore>
+                            <div class="col-12 col-lg-6" wire:ignore>
                                 <select data-choices data-choices-sorting="true"
                                     class="form-select @error('hagataseitaiid') is-invalid @enderror"
                                     wire:model="hagataseitaiid" placeholder="">
@@ -772,7 +825,7 @@
                                 @error('hagataseitaiid')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
-                            </div> --}}
+                            </div>
                             <input required type="text"
                                 class="form-control @error('hagataseitaiid') is-invalid @enderror"
                                 wire:model="hagataseitaiid" placeholder="..." />
@@ -780,41 +833,7 @@
                                 <span class="invalid-feedback">{{ $message }}</span>
                             @enderror
                         </div>
-                    </div>
-                    {{-- warna LPK --}}
-                    <div class="form-group mt-1">
-                        <div class="input-group">
-                            <label class="control-label col-12 col-lg-6">Warna LPK {{ ($warnalpkid['value'] ?? '') }}</label>
-                            <div class="col-12 col-lg-6" wire:ignore>
-                                <select required data-choices data-choices-sorting-false
-                                    class="form-select @error('warnalpkid') is-invalid @enderror"
-                                    wire:model.live="warnalpkid">
-                                    <option value="" selected>
-                                        Silahkan Pilih
-                                    </option>
-                                    @foreach ($masterWarnaLPK as $item)
-                                        <option value="{{ $item->id }}">
-                                            {{ $item->name }}
-                                        </option>
-                                    @endforeach
-                                    <option value="lainnya">
-                                        Lainnya
-                                    </option>
-                                </select>
-                            </div>
-                            @if (($warnalpkid['value'] ?? '') == 'lainnya')
-                                <input required type="text" class="form-control mt-2"
-                                    wire:model="custom_warna_lpk"
-                                    placeholder="Masukkan warna LPK" />
-                            @endif
-                            @error('warnalpkid')
-                                <span class="invalid-feedback">{{ $message }}</span>
-                            @enderror
-                            @error('custom_warna_lpk')
-                                <span class="invalid-feedback">{{ $message }}</span>
-                            @enderror
-                        </div>
-                    </div>
+                    </div> --}}
                     {{-- <div class="form-group mt-1">
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-6">Jenis Seal Seitai</label>
@@ -838,10 +857,10 @@
                         </div>
                     </div> --}}
                 </div>
-                <div class="col-12 col-lg-5">
+                <div class="col-12 col-lg-3">
                     <div class="form-group">
                         <div class="input-group">
-                            <label class="control-label col-12 col-lg-3">Kode Gasio</label>
+                            <label class="control-label col-12 col-lg-3">Kode Gaiso</label>
                             <div class="col-12 col-lg-9" wire:ignore>
                                 <select data-choices data-choices-sorting="true"
                                     class="form-select @error('pack_gaiso_id') is-invalid @enderror"
@@ -945,71 +964,131 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-12 col-lg-3">
-                    <div class="form-group">
-                        <div class="input-group" wire:ignore>
-                            <label class="control-label col-12 col-lg-2">Isi</label>
-                            <input required type="number" class="form-control" wire:model="case_gaiso_count"
-                                placeholder="0" />
-                            <select data-choices data-choices-sorting="true"
-                                class="form-control @error('case_gaiso_count_unit') is-invalid @enderror"
-                                wire:model="case_gaiso_count_unit" placeholder="">
-                                <option value="" selected>
-                                    Unit
-                                </option>
-                                @foreach ($masterUnit as $item)
-                                    <option value="{{ $item->id }}">
-                                        {{ $item->name }}
-                                    </option>
-                                @endforeach`
-                            </select>
-                            @error('case_gaiso_count_unit')
-                                <span class="invalid-feedback">{{ $message }}</span>
-                            @enderror
-                        </div>
-                    </div>
+                <div class="col-12 col-lg-5">
+                    {{-- Isi gaiso --}}
                     <div class="form-group mt-1">
                         <div class="input-group" wire:ignore>
-                            <label class="control-label col-12 col-lg-2">Isi</label>
-                            <input type="number" class="form-control" wire:model="case_box_count"
-                                placeholder="0" />
-                            <select required data-choices data-choices-sorting="true"
-                                class="form-control @error('case_box_count_unit') is-invalid @enderror"
-                                wire:model="case_box_count_unit" placeholder="">
-                                <option value="" selected>
-                                    Unit
-                                </option>
-                                @foreach ($masterUnit as $item)
-                                    <option value="{{ $item->id }}">
-                                        {{ $item->name }}
+                            <label class="control-label col-12 col-lg-1 me-2">Isi</label>
+                            <div class="col-12 col-lg-2 me-2">
+                                <input required type="number" class="form-control" wire:model="case_gaiso_count"
+                                    placeholder="0" />
+                            </div>
+                            <div class="col-12 col-lg-2 me-2">
+                                <select data-choices data-choices-sorting="true"
+                                    class="form-control @error('case_gaiso_count_unit') is-invalid @enderror"
+                                    wire:model="case_gaiso_count_unit" placeholder="">
+                                    <option value="" selected>
+                                        Unit
                                     </option>
-                                @endforeach`
-                            </select>
-                            @error('case_box_count_unit')
-                                <span class="invalid-feedback">{{ $message }}</span>
-                            @enderror
+                                    @foreach ($masterUnit as $item)
+                                        <option value="{{ $item->id }}">
+                                            {{ $item->name }}
+                                        </option>
+                                    @endforeach`
+                                </select>
+                                @error('case_gaiso_count_unit')
+                                    <span class="invalid-feedback">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="col-12 col-lg-5 me-2">
+                                <div class="form-group mt-1">
+                                    <div class="input-group">
+                                        <label class="control-label col-12 col-lg-6">Stempel</label>
+                                        <div class="col-12 col-lg-6">
+                                            <input required type="text"
+                                            class="form-control @error('case_gaiso_stampel') is-invalid @enderror"
+                                            wire:model="case_gaiso_stampel" placeholder="..." />
+                                            @error('case_gaiso_stampel')
+                                            <span class="invalid-feedback">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                    {{-- Isi box --}}
                     <div class="form-group mt-1">
                         <div class="input-group" wire:ignore>
-                            <label class="control-label col-12 col-lg-2">Isi</label>
-                            <input required type="number" class="form-control" wire:model="case_inner_count"
-                                placeholder="0" />
-                            <select data-choices data-choices-sorting="true"
-                                class="form-control @error('case_inner_count_unit') is-invalid @enderror"
-                                wire:model="case_inner_count_unit" placeholder="">
-                                <option value="" selected>
-                                    Unit
-                                </option>
-                                @foreach ($masterUnit as $item)
-                                    <option value="{{ $item->id }}">
-                                        {{ $item->name }}
+                            <label class="control-label col-12 col-lg-1 me-2">Isi</label>
+                            <div class="col-12 col-lg-2 me-2">
+                                <input required type="number" class="form-control" wire:model="case_box_count"
+                                    placeholder="0" />
+                            </div>
+                            <div class="col-12 col-lg-2 me-2">
+                                <select data-choices data-choices-sorting="true"
+                                    class="form-control @error('case_box_count_unit') is-invalid @enderror"
+                                    wire:model="case_box_count_unit" placeholder="">
+                                    <option value="" selected>
+                                        Unit
                                     </option>
-                                @endforeach`
-                            </select>
-                            @error('case_inner_count_unit')
-                                <span class="invalid-feedback">{{ $message }}</span>
-                            @enderror
+                                    @foreach ($masterUnit as $item)
+                                        <option value="{{ $item->id }}">
+                                            {{ $item->name }}
+                                        </option>
+                                    @endforeach`
+                                </select>
+                                @error('case_box_count_unit')
+                                    <span class="invalid-feedback">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="col-12 col-lg-5 me-2">
+                                <div class="form-group mt-1">
+                                    <div class="input-group">
+                                        <label class="control-label col-12 col-lg-6">Stempel</label>
+                                        <div class="col-12 col-lg-6">
+                                            <input required type="text"
+                                            class="form-control @error('case_box_stampel') is-invalid @enderror"
+                                            wire:model="case_box_stampel" placeholder="..." />
+                                            @error('case_box_stampel')
+                                            <span class="invalid-feedback">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {{-- Isi inner --}}
+                    <div class="form-group mt-1">
+                        <div class="input-group" wire:ignore>
+                            <label class="control-label col-12 col-lg-1 me-2">Isi</label>
+                            <div class="col-12 col-lg-2 me-2">
+                                <input required type="number" class="form-control" wire:model="case_inner_count"
+                                    placeholder="0" />
+                            </div>
+                            <div class="col-12 col-lg-2 me-2">
+                                <select data-choices data-choices-sorting="true"
+                                    class="form-control @error('case_inner_count_unit') is-invalid @enderror"
+                                    wire:model="case_inner_count_unit" placeholder="">
+                                    <option value="" selected>
+                                        Unit
+                                    </option>
+                                    @foreach ($masterUnit as $item)
+                                        <option value="{{ $item->id }}">
+                                            {{ $item->name }}
+                                        </option>
+                                    @endforeach`
+                                </select>
+                                @error('case_inner_count_unit')
+                                    <span class="invalid-feedback">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="col-12 col-lg-5 me-2">
+                                <div class="form-group mt-1">
+                                    <div class="input-group">
+                                        <label class="control-label col-12 col-lg-6">Stempel</label>
+                                        <div class="col-12 col-lg-6">
+                                            <input required type="text"
+                                            class="form-control @error('case_inner_stampel') is-invalid @enderror"
+                                            wire:model="case_inner_stampel" placeholder="..." />
+                                            @error('case_inner_stampel')
+                                            <span class="invalid-feedback">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
