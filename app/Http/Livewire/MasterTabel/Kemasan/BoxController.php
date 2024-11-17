@@ -58,7 +58,6 @@ class BoxController extends Component
 
     public function store()
     {
-        dd($this->box_class);
         $this->validate();
 
         DB::beginTransaction();
