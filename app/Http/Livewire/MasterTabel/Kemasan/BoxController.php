@@ -42,6 +42,7 @@ class BoxController extends Component
     {
         $this->code = '';
         $this->name = '';
+        $this->box_class['value'] = 1;
         $this->panjang = '';
         $this->lebar = '';
         $this->tinggi = '';
@@ -57,6 +58,7 @@ class BoxController extends Component
 
     public function store()
     {
+        dd($this->box_class);
         $this->validate();
 
         DB::beginTransaction();
