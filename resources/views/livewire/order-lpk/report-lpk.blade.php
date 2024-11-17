@@ -139,6 +139,7 @@ crossorigin="anonymous">
                 mp.endless_printing,mse.name as printing_endless,mp.winding_direction_of_the_web as printing_araggulungan,
                 mp.seal_classification, mks.name as seitai_klasifikasiseal,
                 mp.from_seal_design as seitai_jaraksealdaripola,
+                mp.kode_plate,
                 mp.lower_sealing_length as seitai_jaraksealbawah,mp.palet_jumlah_baris as seitai_jmlhbarispalet,
                 mp.palet_isi_baris as seitai_isibarispalet,	mpb.code as seitai_kodebox , mpb.name as seitai_namabox,
                 mp.case_box_count as seitai_isibox,
@@ -549,7 +550,7 @@ crossorigin="anonymous">
                                             <td style="text-align: center;">
                                                 <span style="font-size: 13.5px">Kode Plate</span><br>
                                                 <span
-                                                    style="font-size: 14.5px; font-weight: bold;">{{ $data->kodeplate }}</span>
+                                                    style="font-size: 14.5px; font-weight: bold;">{{ $data->kode_plate }}</span>
                                             </td>
                                         </tr>
                                     </table>
