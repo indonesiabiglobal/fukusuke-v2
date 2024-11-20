@@ -251,7 +251,7 @@
                                 <div class="form-group">
                                     <label>Berat Loss </label>
                                     <div class="input-group col-md-9 col-xs-8">
-                                        <input class="form-control" type="text" wire:model.defer="berat_loss"
+                                        <input class="form-control" type="number" wire:model.defer="berat_loss"
                                             placeholder="0" x-ref="beratLossAddInput" oninput="this.value = window.formatNumberDecimal(this.value)" />
                                         <span class="input-group-text">
                                             m
@@ -278,7 +278,7 @@
                                 <div class="form-group">
                                     <label>Frekuensi </label>
                                     <div class="input-group col-md-9 col-xs-8">
-                                        <input class="form-control" type="text" wire:model.defer="frekuensi"
+                                        <input class="form-control" type="number" wire:model.defer="frekuensi"
                                             placeholder="0" />
                                         @error('frekuensi')
                                             <span class="invalid-feedback">{{ $message }}</span>
