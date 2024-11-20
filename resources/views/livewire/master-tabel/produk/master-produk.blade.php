@@ -332,9 +332,9 @@
                     "searching": true,
                     "responsive": true,
                     "scrollX": true,
-                    "order": [
-                        [2, "asc"]
-                    ],
+                    // "order": [
+                    //     [2, "asc"]
+                    // ],
                     "language": {
                         "emptyTable": `
                     <div class="text-center">

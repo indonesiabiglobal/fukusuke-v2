@@ -81,6 +81,7 @@ class MasterProduk extends Component
             ->when(isset($this->product_type_id) && $this->product_type_id != "" && $this->product_type_id != "undefined" && $this->product_type_id['value'] != "", function ($query) {
                 $query->where('msp.product_type_id', $this->product_type_id);
             })
+            ->orderBy('msp.updated_on', 'DESC')
             ->get();
 
         return view('livewire.master-tabel.produk.master-produk', [
