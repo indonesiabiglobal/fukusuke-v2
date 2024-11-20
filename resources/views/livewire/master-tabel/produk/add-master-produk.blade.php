@@ -892,15 +892,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group mt-1">
-                        <div class="input-group">
-                            <label class="control-label col-12 col-lg-3">Catatan Produksi</label>
-                            <textarea class="form-control" rows="2" placeholder="Catatan Produksi" wire:model="manufacturing_summary"></textarea>
-                            @error('manufacturing_summary')
-                                <span class="invalid-feedback">{{ $message }}</span>
-                            @enderror
-                        </div>
-                    </div>
                 </div>
                 <div class="col-12 col-lg-5">
                     {{-- Isi gaiso --}}
@@ -1091,6 +1082,17 @@
                         <img src="{{ asset('storage/' . $photoKatanuki) }}" width="240" height="130"
                             alt="img">
                     @endif
+                </div>
+                <div class="col-12">
+                    <div class="form-group mt-1">
+                        <div class="input-group">
+                            <label class="control-label col-12 col-lg-2">Catatan Produksi</label>
+                            <textarea class="form-control" rows="2" placeholder="Catatan Produksi" wire:model="manufacturing_summary"></textarea>
+                            @error('manufacturing_summary')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
                 </div>
             </div>
             <hr />
