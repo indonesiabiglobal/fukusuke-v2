@@ -422,22 +422,21 @@
                             </span>
                             <input required type="text" class="form-control col-12 col-lg-8"
                                 wire:model="gazette_dimension_a" placeholder="0" />
-
                             <span class="input-group-text">
-                                B
+                                C
                             </span>
                             <input required type="text" class="form-control col-12 col-lg-8"
-                                wire:model="gazette_dimension_b" placeholder="0" />
+                                wire:model="gazette_dimension_c" placeholder="0" />
                         </div>
                     </div>
                     <div class="form-group mt-1">
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">-</label>
                             <span class="input-group-text">
-                                C
+                                B
                             </span>
                             <input required type="text" class="form-control col-12 col-lg-8"
-                                wire:model="gazette_dimension_c" placeholder="0" />
+                                wire:model="gazette_dimension_b" placeholder="0" />
 
                             <span class="input-group-text">
                                 D
@@ -450,67 +449,6 @@
                 <div class="col-12 col-lg-6 mt-3 d-flex justify-content-center">
                     <img src="{{ asset('asset/image/Gazette-ent.png') }}" width="240" height="130"
                         alt="img">
-                </div>
-                <div class="col-12">
-                    <p class="text-success">HAGATA</p>
-                </div>
-                <div class="col-12 col-lg-6">
-                    <div class="form-group">
-                        <div class="input-group">
-                            <label class="control-label col-12 col-lg-4">Tipe Hagata</label>
-                            <div class="col-12 col-lg-8" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
-                                    class="form-select @error('katanuki_id') is-invalid @enderror"
-                                    wire:model.live="katanuki_id" placeholder="">
-                                    <option value="" selected>
-                                        Silahkan Pilih
-                                    </option>
-                                    @foreach ($masterKatanuki as $item)
-                                        <option value="{{ $item->id }}">
-                                            {{ $item->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('katanuki_id')
-                                    <span class="invalid-feedback">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group mt-1">
-                        <div class="input-group">
-                            <label class="control-label col-12 col-lg-4">Kode Hagata</label>
-                            <input required type="number" class="form-control col-12 col-lg-8"
-                                wire:model="kodehagata" placeholder="..." />
-                        </div>
-                    </div>
-                    <div class="form-group mt-1">
-                        <div class="input-group">
-                            <label class="control-label col-12 col-lg-4">A.</label>
-                            <input required type="number" class="form-control col-12 col-lg-8"
-                                wire:model="extracted_dimension_a" placeholder="0" />
-                        </div>
-                    </div>
-                    <div class="form-group mt-1">
-                        <div class="input-group">
-                            <label class="control-label col-12 col-lg-4">B.</label>
-                            <input required type="number" class="form-control col-12 col-lg-8"
-                                wire:model="extracted_dimension_b" placeholder="0" />
-                        </div>
-                    </div>
-                    <div class="form-group mt-1">
-                        <div class="input-group">
-                            <label class="control-label col-12 col-lg-4">C.</label>
-                            <input required type="number" class="form-control col-12 col-lg-8"
-                                wire:model="extracted_dimension_c" placeholder="0" />
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-lg-6 mt-3 d-flex justify-content-center">
-                    @if ($photoKatanuki)
-                        <img src="{{ asset('storage/' . $photoKatanuki) }}" width="240" height="130"
-                            alt="img">
-                    @endif
                 </div>
                 <div class="col-12">
                     <p class="text-success">PRINTING</p>
@@ -996,10 +934,10 @@
                                         <label class="control-label col-12 col-lg-6">Stempel</label>
                                         <div class="col-12 col-lg-6">
                                             <input required type="text"
-                                            class="form-control @error('case_gaiso_stampel') is-invalid @enderror"
-                                            wire:model="case_gaiso_stampel" placeholder="..." />
+                                                class="form-control @error('case_gaiso_stampel') is-invalid @enderror"
+                                                wire:model="case_gaiso_stampel" placeholder="..." />
                                             @error('case_gaiso_stampel')
-                                            <span class="invalid-feedback">{{ $message }}</span>
+                                                <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror
                                         </div>
                                     </div>
@@ -1038,10 +976,10 @@
                                         <label class="control-label col-12 col-lg-6">Stempel</label>
                                         <div class="col-12 col-lg-6">
                                             <input required type="text"
-                                            class="form-control @error('case_box_stampel') is-invalid @enderror"
-                                            wire:model="case_box_stampel" placeholder="..." />
+                                                class="form-control @error('case_box_stampel') is-invalid @enderror"
+                                                wire:model="case_box_stampel" placeholder="..." />
                                             @error('case_box_stampel')
-                                            <span class="invalid-feedback">{{ $message }}</span>
+                                                <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror
                                         </div>
                                     </div>
@@ -1080,10 +1018,10 @@
                                         <label class="control-label col-12 col-lg-6">Stempel</label>
                                         <div class="col-12 col-lg-6">
                                             <input required type="text"
-                                            class="form-control @error('case_inner_stampel') is-invalid @enderror"
-                                            wire:model="case_inner_stampel" placeholder="..." />
+                                                class="form-control @error('case_inner_stampel') is-invalid @enderror"
+                                                wire:model="case_inner_stampel" placeholder="..." />
                                             @error('case_inner_stampel')
-                                            <span class="invalid-feedback">{{ $message }}</span>
+                                                <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror
                                         </div>
                                     </div>
@@ -1091,6 +1029,68 @@
                             </div>
                         </div>
                     </div>
+                </div>
+                {{-- HAGATA --}}
+                <div class="col-12">
+                    <p class="text-success">HAGATA</p>
+                </div>
+                <div class="col-12 col-lg-6">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <label class="control-label col-12 col-lg-4">Tipe Hagata</label>
+                            <div class="col-12 col-lg-8" wire:ignore>
+                                <select data-choices data-choices-sorting="true"
+                                    class="form-select @error('katanuki_id') is-invalid @enderror"
+                                    wire:model.live="katanuki_id" placeholder="">
+                                    <option value="" selected>
+                                        Silahkan Pilih
+                                    </option>
+                                    @foreach ($masterKatanuki as $item)
+                                        <option value="{{ $item->id }}">
+                                            {{ $item->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('katanuki_id')
+                                    <span class="invalid-feedback">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mt-1">
+                        <div class="input-group">
+                            <label class="control-label col-12 col-lg-4">Kode Hagata</label>
+                            <input required type="number" class="form-control col-12 col-lg-8"
+                                wire:model="kodehagata" placeholder="..." />
+                        </div>
+                    </div>
+                    <div class="form-group mt-1">
+                        <div class="input-group">
+                            <label class="control-label col-12 col-lg-4">A.</label>
+                            <input required type="number" class="form-control col-12 col-lg-8"
+                                wire:model="extracted_dimension_a" placeholder="0" />
+                        </div>
+                    </div>
+                    <div class="form-group mt-1">
+                        <div class="input-group">
+                            <label class="control-label col-12 col-lg-4">B.</label>
+                            <input required type="number" class="form-control col-12 col-lg-8"
+                                wire:model="extracted_dimension_b" placeholder="0" />
+                        </div>
+                    </div>
+                    <div class="form-group mt-1">
+                        <div class="input-group">
+                            <label class="control-label col-12 col-lg-4">C.</label>
+                            <input required type="number" class="form-control col-12 col-lg-8"
+                                wire:model="extracted_dimension_c" placeholder="0" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6 mt-3 d-flex justify-content-center">
+                    @if ($photoKatanuki)
+                        <img src="{{ asset('storage/' . $photoKatanuki) }}" width="240" height="130"
+                            alt="img">
+                    @endif
                 </div>
             </div>
             <hr />
