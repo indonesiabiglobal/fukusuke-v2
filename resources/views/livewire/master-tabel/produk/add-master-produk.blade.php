@@ -461,7 +461,7 @@
                                 Warna Depan:
                             </span>
                             <input required type="number" class="form-control" wire:model="number_of_color"
-                                placeholder="..." />
+                                placeholder="0" />
                         </div>
                     </div>
                     <div class="form-group mt-1">
@@ -507,8 +507,8 @@
                             <span class="input-group-text">
                                 Warna Belakang:
                             </span>
-                            <input required type="text" class="form-control" wire:model="back_color_number"
-                                placeholder="..." />
+                            <input required type="number" class="form-control" wire:model="back_color_number"
+                                placeholder="0" />
                         </div>
                     </div>
                     <div class="form-group mt-1">
@@ -799,6 +799,7 @@
                     <div class="form-group">
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-3">Kode Gaiso</label>
+                            {{-- tanda1 --}}
                             <div class="col-12 col-lg-9" wire:ignore>
                                 <select data-choices data-choices-sorting="true"
                                     class="form-select @error('pack_gaiso_id') is-invalid @enderror"
@@ -807,10 +808,13 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterPackagingGaiso as $item)
-                                        <option value="{{ $item->id }}"
+                                        {{-- <option value="{{ $item->id }}"
                                             data-custom-properties='{"code": "{{ $item->code }}"}'>
                                             {{ $item->code }}, {{ $item->box_class == 1 ? 'Standar' : 'Khusus' }},
                                             {{ $item->name }}
+                                        </option> --}}
+                                        <option value="{{ $item->id }}">
+                                            {{ $item->code }}, {{ $item->box_class == 1 ? 'Standar' : 'Khusus' }}, {{ $item->name }}
                                         </option>
                                     @endforeach`
                                 </select>
@@ -831,10 +835,13 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterPackagingBox as $item)
-                                        <option value="{{ $item->id }}"
+                                        {{-- <option value="{{ $item->id }}"
                                             data-custom-properties='{"code": "{{ $item->code }}"}'>
                                             {{ $item->code }}, {{ $item->box_class == 1 ? 'Standar' : 'Khusus' }},
                                             {{ $item->name }}
+                                        </option> --}}
+                                        <option value="{{ $item->id }}">
+                                            {{ $item->code }}, {{ $item->box_class == 1 ? 'Standar' : 'Khusus' }}, {{ $item->name }}
                                         </option>
                                     @endforeach`
                                 </select>
@@ -855,10 +862,13 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterPackagingInner as $item)
-                                        <option value="{{ $item->id }}"
+                                        {{-- <option value="{{ $item->id }}"
                                             data-custom-properties='{"code": "{{ $item->code }}"}'>
                                             {{ $item->code }}, {{ $item->box_class == 1 ? 'Standar' : 'Khusus' }},
                                             {{ $item->name }}
+                                        </option> --}}
+                                        <option value="{{ $item->id }}">
+                                            {{ $item->code }}, {{ $item->box_class == 1 ? 'Standar' : 'Khusus' }}, {{ $item->name }}
                                         </option>
                                     @endforeach`
                                 </select>
@@ -880,9 +890,12 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterPackagingLayer as $item)
-                                        <option value="{{ $item->id }}">
+                                        {{-- <option value="{{ $item->id }}">
                                             {{ $item->code }}, {{ $item->box_class == 1 ? 'Standar' : 'Khusus' }},
                                             {{ $item->name }}
+                                        </option> --}}
+                                        <option value="{{ $item->id }}">
+                                            {{ $item->code }}, {{ $item->box_class == 1 ? 'Standar' : 'Khusus' }}, {{ $item->name }}
                                         </option>
                                     @endforeach`
                                 </select>
@@ -1051,7 +1064,7 @@
                     <div class="form-group mt-1">
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Kode Hagata</label>
-                            <input required type="number" class="form-control col-12 col-lg-8"
+                            <input required type="text" class="form-control col-12 col-lg-8"
                                 wire:model="kodehagata" placeholder="..." />
                         </div>
                     </div>
