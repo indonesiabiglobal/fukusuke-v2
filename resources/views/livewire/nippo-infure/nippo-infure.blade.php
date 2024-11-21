@@ -78,7 +78,7 @@
                     class="form-control"
                     style="padding:0.44rem"
                     type="text"
-                    placeholder="000000-000"
+                    placeholder="I-000000-000"
                     x-model="lpk_no"
                     maxlength="10"
                 />
