@@ -163,7 +163,7 @@
                         <select wire:model="status_kenpin"
                             class="form-control @error('status_kenpin') is-invalid @enderror" placeholder="- all -">
                             <option value="1">Proses</option>
-                            <option value="2">Finish</option>
+                            {{-- <option value="2">Finish</option> --}}
                         </select>
                     </div>
                     @error('status_kenpin')
