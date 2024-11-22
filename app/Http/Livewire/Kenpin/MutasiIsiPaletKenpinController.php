@@ -22,6 +22,7 @@ class mutasiIsiPaletKenpinController extends Component
     public $orderId;
     public $products;
     public $case_box_count;
+    public $isButtonDisabled = true;
 
     public function mount()
     {
@@ -50,6 +51,7 @@ class mutasiIsiPaletKenpinController extends Component
                 $this->dispatch('notification', ['type' => 'error', 'message' => 'Palet ' . $this->searchOld . ' Tidak Terdaftar']);
             }
         }
+        $this->checkButtonStatus();
     }
 
     public function searchTujuan()
@@ -74,6 +76,7 @@ class mutasiIsiPaletKenpinController extends Component
                 $this->dispatch('notification', ['type' => 'error', 'message' => 'Palet ' . $this->searchNew . ' Tidak Terdaftar']);
             }
         }
+        $this->checkButtonStatus();
     }
 
     public function import($id)
@@ -275,6 +278,15 @@ class mutasiIsiPaletKenpinController extends Component
 
     public function render()
     {
-        return view('livewire.nippo-seitai.mutasi-isi-palet')->extends('layouts.master');
+        return view('livewire.nippo-seitai.mutasi-isi-palet', [
+            'isButtonDisabled' => $this->isButtonDisabled,
+        ])->extends('layouts.master');
     }
+
+    public function checkButtonStatus()
+    {
+        // Jika kedua input terisi, tombol diaktifkan; jika tidak, tombol dinonaktifkan
+        $this->isButtonDisabled = empty($this->searchOld) || empty($this->searchNew);
+    }
+
 }

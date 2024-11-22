@@ -278,7 +278,7 @@
                             </span>
                         </div>
                     </button>
-                    <button id="btnFilter" type="button" class="btn btn-success" wire:click="saveMutasi">
+                    <button id="btnFilter" type="button" class="btn btn-success" wire:click="saveMutasi" :disabled="{{ $isButtonDisabled ? 'true' : 'false' }}">
                         <span wire:loading.remove wire:target="saveMutasi">
                             <i class="fa fa-floppy-disk"></i> Proses Mutasi
                         </span>
