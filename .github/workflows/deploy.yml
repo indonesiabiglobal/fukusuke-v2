@@ -34,9 +34,9 @@ jobs:
         with:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SOURCE: "."
-          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
-          REMOTE_USER: ${{ secrets.REMOTE_USER }}
-          REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
+          REMOTE_HOST: "203.142.86.243"
+          REMOTE_USER: "fki"
+          REMOTE_PORT: "9090"
           TARGET: "/opt/fukusuke-v2"
 
       - name: Run Remote Commands
