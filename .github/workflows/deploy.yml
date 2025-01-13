@@ -13,21 +13,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
+      # - name: Setup Node.js
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     node-version: '20'
 
-      - name: Install dependencies
-        run: npm install
+      # - name: Install dependencies
+      #   run: npm install
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
+      # - name: Setup PHP
+      #   uses: shivammathur/setup-php@v2
+      #   with:
+      #     php-version: '8.2'
 
-      - name: Install Composer
-        run: composer install --optimize-autoloader --no-dev --no-interaction --no-progress --prefer-dist
+      # - name: Install Composer
+      #   run: composer install --optimize-autoloader --no-dev --no-interaction --no-progress --prefer-dist
 
       - name: Sync files to production server
         uses: easingthemes/ssh-deploy@v2.1.5
