@@ -49,8 +49,8 @@ jobs:
           port: ${{ secrets.REMOTE_PORT }}
           script: |
             cd /opt/fukusuke-v2
-            sudo git pull origin main
-            sudo php artisan config:cache
-            sudo php artisan route:cache
-            sudo php artisan view:cache
-            sudo php artisan optimize
+            echo "$password" | sudo -S git pull origin main
+            echo "$password" | sudo -S php artisan config:cache
+            echo "$password" | sudo -S php artisan route:cache
+            echo "$password" | sudo -S php artisan view:cache
+            echo "$password" | sudo -S php artisan optimize
