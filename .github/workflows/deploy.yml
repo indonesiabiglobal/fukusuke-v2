@@ -30,17 +30,17 @@ jobs:
       #   run: composer install --optimize-autoloader --no-dev --no-interaction --no-progress --prefer-dist
 
       - name: Sync files to production server
-        uses: easingthemes/ssh-deploy@v2.1.5
-        env:
+        uses: easingthemes/ssh-deploy@v5.1.0
+        with:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SOURCE: '.'
+          SOURCE: "."
           REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
-          TARGET: '/opt/fukusuke-v2'
+          TARGET: "/opt/fukusuke-v2"
 
       - name: Run Remote Commands
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@1.2.0
         with:
           host: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.REMOTE_USER }}
