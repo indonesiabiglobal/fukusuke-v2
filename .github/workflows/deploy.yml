@@ -44,12 +44,12 @@ jobs:
         with:
           host: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.REMOTE_USER }}
-          password: fki2024
+          password: ${{ secrets.REMOTE_PASSWORD }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.REMOTE_PORT }}
           script: |
             cd /opt/fukusuke-v2
-            echo "fki2024" | sudo -S git pull origin main
+            echo `${{ secrets.REMOTE_PASSWORD }}` | sudo -S git pull origin main
             # echo "$password" | sudo -S php artisan config:cache
             # echo "$password" | sudo -S php artisan route:cache
             # echo "$password" | sudo -S php artisan view:cache
