@@ -202,7 +202,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/kemasan-box', BoxController::class)->name('kemasan-box');
     Route::get('/kemasan-gasio', GaisoController::class)->name('kemasan-gasio');
     Route::get('/kemasan-inner', InnerController::class)->name('kemasan-inner');
-    Route::get('/kemasan-layer', LayerController::class)->name('kemasan-inner');
+    Route::get('/kemasan-layer', LayerController::class)->name('kemasan-layer');
 
     // Administration
     Route::get('/security-management', SecurityManagementController::class)->name('security-management');
@@ -332,5 +332,5 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('{any}', [App\Http\Controllers\HomeController::class, 'index']);
 
-    
+
 });
