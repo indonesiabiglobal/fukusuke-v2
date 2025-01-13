@@ -305,7 +305,7 @@ Route::group(['middleware' => 'auth'], function () {
         // Seitai
         Route::get('/kadou-jikan/seitai', 'getkadouJikanSeitai')->name('kadou-jikan-seitai');
         Route::get('/hasil-produksi/seitai', 'getHasilProduksiSeitai')->name('hasil-produksi-seitai');
-        Route::get('/loss/seitai', 'getLossSeitai')->name('loss-seitai');
+        Route::get('/loss/seitai', 'getLossSeitai')->name('get-loss-seitai');
         Route::get('/top-loss/seitai', 'getTopLossSeitai')->name('top-loss-seitai');
         Route::get('/counter-trouble/seitai', 'getCounterTroubleSeitai')->name('counter-trouble-seitai');
     });
