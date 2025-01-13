@@ -299,7 +299,7 @@ Route::group(['middleware' => 'auth'], function () {
         // Infure
         Route::get('/kadou-jikan/infure', 'getkadouJikanInfure')->name('kadou-jikan-infure');
         Route::get('/hasil-produksi/infure', 'getHasilProduksiInfure')->name('hasil-produksi-infure');
-        Route::get('/loss/infure', 'getLossInfure')->name('loss-infure');
+        Route::get('/loss/infure', 'getLossInfure')->name('get-loss-infure');
         Route::get('/top-loss/infure', 'getTopLossInfure')->name('top-loss-infure');
         Route::get('/counter-trouble/infure', 'getCounterTroubleInfure')->name('counter-trouble-infure');
         // Seitai
