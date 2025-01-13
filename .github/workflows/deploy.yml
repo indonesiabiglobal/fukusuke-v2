@@ -50,7 +50,7 @@ jobs:
           script: |
             cd /opt/fukusuke-v2
             echo "${{ secrets.REMOTE_PASSWORD }}" | sudo -S git pull origin main
-            # echo "$password" | sudo -S php artisan config:cache
-            # echo "$password" | sudo -S php artisan route:cache
-            # echo "$password" | sudo -S php artisan view:cache
-            # echo "$password" | sudo -S php artisan optimize
+            echo "${{ secrets.REMOTE_PASSWORD }}" | sudo -S php artisan config:cache
+            echo "${{ secrets.REMOTE_PASSWORD }}" | sudo -S php artisan route:cache
+            echo "${{ secrets.REMOTE_PASSWORD }}" | sudo -S php artisan view:cache
+            echo "${{ secrets.REMOTE_PASSWORD }}" | sudo -S php artisan optimize
