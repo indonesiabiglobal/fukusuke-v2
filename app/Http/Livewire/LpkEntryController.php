@@ -131,12 +131,13 @@ class LpkEntryController extends Component
                 tolp.created_on AS tglproses,
                 tolp.seq_no,
                 tolp.updated_by,
-                tolp.updated_on AS updatedt
+                tolp.updated_on AS updatedt,
+                mwl.name as warna_lpk
             ")
             ->join('tdorder AS tod', 'tod.id', '=', 'tolp.order_id')
             ->leftJoin('msproduct AS mp', 'mp.id', '=', 'tolp.product_id')
             ->join('msmachine AS mm', 'mm.id', '=', 'tolp.machine_id')
-            // ->leftJoin('mswarnalpk AS mwl', 'mwl.id', '=', 'tolp.warnalpkid')
+            ->leftJoin('mswarnalpk AS mwl', 'mwl.id', '=', 'mp.warnalpkid')
             ->join('msbuyer AS mbu', 'mbu.id', '=', 'tod.buyer_id');
 
         if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {

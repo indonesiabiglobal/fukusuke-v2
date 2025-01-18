@@ -106,70 +106,165 @@ crossorigin="anonymous">
 
     $data = collect(
         DB::select("
-                SELECT tdol.lpk_no,tdo.po_no,tdo.order_date, tdo.stufingdate,tdo.order_qty/mp.case_box_count as order_qty,tdol.qty_lpk,
-                ((tdol.qty_lpk *mp.unit_weight)/mp.case_box_count)/1000 as order_berat,mwl.name as warnalpk,
-                (mp.ketebalan * mp.diameterlipat * tdol.qty_gulung * 2 * mpt.berat_jenis ) / 1000 AS berat_standard,
-                tdol.panjang_lpk,mm.machineno as nomesin,mp.codebarcode,tdol.qty_gentan as infure_qtygentan,tdol.qty_gulung as infure_pjgulunglpk,
-                mp.id, mp.name as product_name,mp.code_alias,mp.code,
-                mpt.code as tipe , mpt.name as tipename,mp.ketebalan as t, mp.diameterlipat as l, mp.productlength as p,
-                mp.ketebalan ||'x'||mp.diameterlipat||'x'||mp.productlength as dimensi_txlxp,
-                mp.unit_weight as beratsatuan,mp.inflation_thickness ||'x'||mp.inflation_fold_diameter as infure_dimensi,
-                mp.one_winding_m_number as infure_panjanggulung,
-                 case when mp.material_classification='0' then 'HD' when mp.material_classification='1' then 'LD' ELSE 'lld' END  as infure_material,
-               case when mp.embossed_classification='0' then 'Tidak Ada' else 'Ada' end as infure_embose,case when mp.surface_classification='0' then 'Tidak Ada' when mp.surface_classification='1' then 'Satu sisi' when mp.surface_classification='2' then 'Dua sisi' when mp.surface_classification='3' then 'Satu Sisi Parsial' else 'Dua Sisi Parsial' end as infure_corona,
-                case when mp.winding_direction_of_the_web='0' then 'Gulungan Kepala depan' when mp.winding_direction_of_the_web='1' then 'Zugara shiri dashi insatsu-men-hyō maki' when mp.winding_direction_of_the_web='2' then 'Zugara atama dashi insatsu-men ura maki' ELSE 'Zugara shiri dashi insatsu-men ura maki' END  as infur_arahgulungan,
-                mli.name as infure_lakbanwarna,
-                mp.coloring_1 as infure_mb1_masterbatch,
-                mp.coloring_2 as infure_mb2, mp.coloring_3 as infure_mb3,mp.coloring_4 as infure_mb4,mp.coloring_5 as infure_mb5,
-                mp.inflation_notes as infure_catatan,
-                mp.gentan_classification as infure_gentan,(case when mp.gazette_classification='0' then 'Gazet Biasa'
-		when mp.gazette_classification='1' then 'Hineri Gazet' when mp.gazette_classification='2' then 'Soko Gazet'  when mp.gazette_classification='3' then 'Ato Gazet'  when mp.gazette_classification='4' then 'Kata Gazet' else 'Tidak Ada Gazet' end ) as infure_gazette,
-                mp.gazette_dimension_a as infure_gz_dimensi_a,mp.gazette_dimension_b as infure_gz_dimensi_b,
-                mp.gazette_dimension_c as infure_gz_dimensi_c,mp.gazette_dimension_d as infure_gz_dimensi_d,
-                mk.code ||','||mk.name as hagata_kodenukigata,mp.extracted_dimension_a as hagata_a,
-                mk.filename,mp.kodehagata,
-                mp.extracted_dimension_b as hagata_b,mp.extracted_dimension_c as hagata_c,
-                mp.number_of_color as printing_warnadepan,mp.color_spec_1 as printing_warnadepan1,mp.color_spec_2 as printing_warnadepan2,mp.color_spec_3 as printing_warnadepan3,
-                mp.color_spec_4 as printing_warnadepan4,mp.color_spec_5 as printing_warnadepan5,
-                mp.back_color_number as printing_warnabelakang,mp.back_color_1 as printing_warnabelakang1,
-                mp.back_color_2 as printing_warnabelakang2,mp.back_color_3 as printing_warnabelakang3,
-                mp.back_color_4 as printing_warnabelakang4,mp.back_color_5 as printing_warnabelakang5,
-                mp.print_type,mjc.name as printing_jeniscetak,
-                mp.ink_characteristic,msi.name as printing_sifattinta,
-                mp.endless_printing,mse.name as printing_endless,mp.winding_direction_of_the_web as printing_araggulungan,
-                mp.seal_classification, mks.name as seitai_klasifikasiseal,
-                mp.from_seal_design as seitai_jaraksealdaripola,
-                mp.kode_plate,
-                mp.lower_sealing_length as seitai_jaraksealbawah,mp.palet_jumlah_baris as seitai_jmlhbarispalet,
-                mp.palet_isi_baris as seitai_isibarispalet,	mpb.code as seitai_kodebox , mpb.name as seitai_namabox,
-                mp.case_box_count as seitai_isibox,
-                mpg.code as seitai_kodegaiso ,mpg.name as seitai_namagaiso,mp.case_gaiso_count as seitai_isigaiso,
-                mpi.code as seitai_kodeinner, mpi.name as seitai_namainner,mp.case_inner_count as seitai_isiinner,
-                mpl.code as seitai_kodelayer,mpl.name as seitai_namalayer,
-                mls.code as seitai_kodelakban,mls.name as seitai_namalakban,mp.stampelseitaiid as seitai_stample,
-                case when mpb.box_class='1' then 'Khusus' when  mpb.box_class='2' then 'Standar' else '' end as jns_box,
-				case when mpg.box_class='1' then 'Khusus' when  mpg.box_class='2' then 'Standar' else '' end as jns_gaiso,
-				case when mpi.box_class='1' then 'Khusus' when  mpi.box_class='2' then 'Standar' else '' end as jns_inner,
-				case when mpl.box_class='1' then 'Khusus' when  mpl.box_class='2' then 'Standar' else '' end as jns_layer,'' as kodeplate,
-                mp.manufacturing_summary as seitai_catatan, tdol.total_assembly_line
-                from tdorderlpk as tdol
-                left join tdorder as tdo on tdo.id=tdol.order_id
-                left JOIN msproduct as mp on mp.id=tdol.product_id
-                left JOIN msproduct_type as mpt on mp.product_type_id=mpt.id
-                left JOIN mskatanuki as mk on mp.katanuki_id=mk.id
-                left JOIN mspackagingbox as mpb on mp.pack_box_id=mpb.id
-                left jOIN mspackaginggaiso as mpg on  mp.pack_gaiso_id=mpg.id
-                left join mspackaginginner as mpi on mp.pack_inner_id=mpi.id
-                left join mspackaginglayer as mpl on mp.pack_layer_id=mpl.id
-                left join msmachine as mm on mm.id=tdol.machine_id
-                left join mswarnalpk as mwl on mwl.id=mp.warnalpkid
-                left join mslakbaninfure as mli on mli.id=mp.lakbaninfureid
-                left join mslakbanseitai as mls on mls.id=mp.lakbanseitaiid
-                left join msklasifikasiseal as mks on mks.code=mp.seal_classification
-                left join msendless as mse on mse.code=mp.endless_printing
-                left join mssifattinta as msi  on msi.code=mp.ink_characteristic
-				left join msjeniscetak as mjc  on mjc.code=mp.print_type
-                where tdol.id='$lpk_id'
+                SELECT 
+                    tdol.lpk_no,
+                    tdo.po_no,
+                    tdo.order_date,
+                    tdo.stufingdate,
+                    tdo.order_qty / mp.case_box_count AS order_qty,
+                    tdol.qty_lpk,
+                    CAST(ROUND(((tdol.qty_lpk::FLOAT8 * mp.unit_weight::FLOAT8) / mp.case_box_count::FLOAT8) / 1000.0) AS NUMERIC(10, 0)) AS order_berat,
+                    mwl.name AS warnalpk,
+                    ROUND(CAST((mp.ketebalan * mp.diameterlipat * tdol.qty_gulung * 2 * mpt.berat_jenis) / 1000 AS NUMERIC), 1) AS berat_standard,
+                    tdol.panjang_lpk,
+                    mm.machineno AS nomesin,
+                    mp.codebarcode,
+                    tdol.qty_gentan AS infure_qtygentan,
+                    tdol.qty_gulung AS infure_pjgulunglpk,
+                    mp.id,
+                    mp.name AS product_name,
+                    mp.code_alias,
+                    mp.code,
+                    mpt.code AS tipe,
+                    mpt.name AS tipename,
+                    mp.ketebalan AS t,
+                    mp.diameterlipat AS l,
+                    mp.productlength AS p,
+                    mp.ketebalan || 'x' || mp.diameterlipat || 'x' || mp.productlength AS dimensi_txlxp,
+                    mp.unit_weight AS beratsatuan,
+                    mp.inflation_thickness || 'x' || mp.inflation_fold_diameter AS infure_dimensi,
+                    mp.one_winding_m_number AS infure_panjanggulung,
+                    CASE 
+                        WHEN mp.material_classification = '0' THEN 'HD' 
+                        WHEN mp.material_classification = '1' THEN 'LD' 
+                        ELSE 'LLD' 
+                    END AS infure_material,
+                    CASE 
+                        WHEN mp.embossed_classification = '0' THEN 'Tidak Ada' 
+                        ELSE 'Ada' 
+                    END AS infure_embose,
+                    CASE 
+                        WHEN mp.surface_classification = '0' THEN 'Tidak Ada' 
+                        WHEN mp.surface_classification = '1' THEN 'Satu sisi' 
+                        WHEN mp.surface_classification = '2' THEN 'Dua sisi' 
+                        WHEN mp.surface_classification = '3' THEN 'Satu Sisi Parsial' 
+                        ELSE 'Dua Sisi Parsial' 
+                    END AS infure_corona,
+                    CASE 
+                        WHEN mp.winding_direction_of_the_web = '0' THEN 'Gulungan Kepala depan' 
+                        WHEN mp.winding_direction_of_the_web = '1' THEN 'Zugara shiri dashi insatsu-men-hyō maki' 
+                        WHEN mp.winding_direction_of_the_web = '2' THEN 'Zugara atama dashi insatsu-men ura maki' 
+                        ELSE 'Zugara shiri dashi insatsu-men ura maki' 
+                    END AS infur_arahgulungan,
+                    mli.name AS infure_lakbanwarna,
+                    mp.coloring_1 AS infure_mb1_masterbatch,
+                    mp.coloring_2 AS infure_mb2,
+                    mp.coloring_3 AS infure_mb3,
+                    mp.coloring_4 AS infure_mb4,
+                    mp.coloring_5 AS infure_mb5,
+                    mp.inflation_notes AS infure_catatan,
+                    mp.gentan_classification AS infure_gentan,
+                    CASE 
+                        WHEN mp.gazette_classification = '0' THEN 'Gazet Biasa'
+                        WHEN mp.gazette_classification = '1' THEN 'Hineri Gazet'
+                        WHEN mp.gazette_classification = '2' THEN 'Soko Gazet'
+                        WHEN mp.gazette_classification = '3' THEN 'Ato Gazet'
+                        WHEN mp.gazette_classification = '4' THEN 'Kata Gazet'
+                        ELSE 'Tidak Ada Gazet' 
+                    END AS infure_gazette,
+                    mp.gazette_dimension_a AS infure_gz_dimensi_a,
+                    mp.gazette_dimension_b AS infure_gz_dimensi_b,
+                    mp.gazette_dimension_c AS infure_gz_dimensi_c,
+                    mp.gazette_dimension_d AS infure_gz_dimensi_d,
+                    mk.code || ',' || mk.name AS hagata_kodenukigata,
+                    mp.extracted_dimension_a AS hagata_a,
+                    mk.filename,
+                    mp.kodehagata,
+                    mp.extracted_dimension_b AS hagata_b,
+                    mp.extracted_dimension_c AS hagata_c,
+                    mp.number_of_color AS printing_warnadepan,
+                    mp.color_spec_1 AS printing_warnadepan1,
+                    mp.color_spec_2 AS printing_warnadepan2,
+                    mp.color_spec_3 AS printing_warnadepan3,
+                    mp.color_spec_4 AS printing_warnadepan4,
+                    mp.color_spec_5 AS printing_warnadepan5,
+                    mp.back_color_number AS printing_warnabelakang,
+                    mp.back_color_1 AS printing_warnabelakang1,
+                    mp.back_color_2 AS printing_warnabelakang2,
+                    mp.back_color_3 AS printing_warnabelakang3,
+                    mp.back_color_4 AS printing_warnabelakang4,
+                    mp.back_color_5 AS printing_warnabelakang5,
+                    mp.print_type,
+                    mjc.name AS printing_jeniscetak,
+                    mp.ink_characteristic,
+                    msi.name AS printing_sifattinta,
+                    mp.endless_printing,
+                    mse.name AS printing_endless,
+                    mp.winding_direction_of_the_web AS printing_araggulungan,
+                    mp.seal_classification,
+                    mks.name AS seitai_klasifikasiseal,
+                    mp.from_seal_design AS seitai_jaraksealdaripola,
+                    mp.kode_plate,
+                    mp.lower_sealing_length AS seitai_jaraksealbawah,
+                    mp.palet_jumlah_baris AS seitai_jmlhbarispalet,
+                    mp.palet_isi_baris AS seitai_isibarispalet,
+                    mpb.code AS seitai_kodebox,
+                    mpb.name AS seitai_namabox,
+                    mp.case_box_count AS seitai_isibox,
+                    mpg.code AS seitai_kodegaiso,
+                    mpg.name AS seitai_namagaiso,
+                    mp.case_gaiso_count AS seitai_isigaiso,
+                    mpi.code AS seitai_kodeinner,
+                    mpi.name AS seitai_namainner,
+                    mp.case_inner_count AS seitai_isiinner,
+                    mpl.code AS seitai_kodelayer,
+                    mpl.name AS seitai_namalayer,
+                    mls.code AS seitai_kodelakban,
+                    mls.name AS seitai_namalakban,
+                    mp.stampelseitaiid AS seitai_stample,
+                    CASE 
+                        WHEN mpb.box_class = '1' THEN 'Khusus' 
+                        WHEN mpb.box_class = '2' THEN 'Standar' 
+                        ELSE '' 
+                    END AS jns_box,
+                    CASE 
+                        WHEN mpg.box_class = '1' THEN 'Khusus' 
+                        WHEN mpg.box_class = '2' THEN 'Standar' 
+                        ELSE '' 
+                    END AS jns_gaiso,
+                    CASE 
+                        WHEN mpi.box_class = '1' THEN 'Khusus' 
+                        WHEN mpi.box_class = '2' THEN 'Standar' 
+                        ELSE '' 
+                    END AS jns_inner,
+                    CASE 
+                        WHEN mpl.box_class = '1' THEN 'Khusus' 
+                        WHEN mpl.box_class = '2' THEN 'Standar' 
+                        ELSE '' 
+                    END AS jns_layer,
+                    '' AS kodeplate,
+                    mp.manufacturing_summary AS seitai_catatan,
+                    tdol.total_assembly_line
+                FROM 
+                    tdorderlpk AS tdol
+                    LEFT JOIN tdorder AS tdo ON tdo.id = tdol.order_id
+                    LEFT JOIN msproduct AS mp ON mp.id = tdol.product_id
+                    LEFT JOIN msproduct_type AS mpt ON mp.product_type_id = mpt.id
+                    LEFT JOIN mskatanuki AS mk ON mp.katanuki_id = mk.id
+                    LEFT JOIN mspackagingbox AS mpb ON mp.pack_box_id = mpb.id
+                    LEFT JOIN mspackaginggaiso AS mpg ON mp.pack_gaiso_id = mpg.id
+                    LEFT JOIN mspackaginginner AS mpi ON mp.pack_inner_id = mpi.id
+                    LEFT JOIN mspackaginglayer AS mpl ON mp.pack_layer_id = mpl.id
+                    LEFT JOIN msmachine AS mm ON mm.id = tdol.machine_id
+                    LEFT JOIN mswarnalpk AS mwl ON mwl.id = mp.warnalpkid
+                    LEFT JOIN mslakbaninfure AS mli ON mli.id = mp.lakbaninfureid
+                    LEFT JOIN mslakbanseitai AS mls ON mls.id = mp.lakbanseitaiid
+                    LEFT JOIN msklasifikasiseal AS mks ON mks.code = mp.seal_classification
+                    LEFT JOIN msendless AS mse ON mse.code = mp.endless_printing
+                    LEFT JOIN mssifattinta AS msi ON msi.code = mp.ink_characteristic
+                    LEFT JOIN msjeniscetak AS mjc ON mjc.code = mp.print_type
+                WHERE 
+                    tdol.id = '$lpk_id';
         "),
     )->first();
 @endphp
@@ -278,7 +373,7 @@ crossorigin="anonymous">
                                     </span>
                                 </td>
                                 <td style="padding: 3px;border-right: 2px solid black;border-top: 2px solid grey;border-bottom: 2px solid grey; text-align:center">
-                                    <span style="font-size: 13.5px">berat Order</span>
+                                    <span style="font-size: 13.5px">Berat Order</span>
                                     <br>
                                     <span>
                                         <font style="font-size: 16px;font-weight: bold;">

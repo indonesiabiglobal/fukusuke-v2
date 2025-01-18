@@ -22,7 +22,8 @@ class MutasiIsiPaletController extends Component
     public $orderId;
     public $products;
     public $case_box_count;
-
+    public $isButtonDisabled = false; 
+    
     public function mount()
     {
         $this->products = MsProduct::get();

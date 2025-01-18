@@ -340,6 +340,7 @@
                     </th>
                     <th></th>
                     <th>No LPK</th>
+                    <th>Warna LPK</th>
                     <th>Tgl LPK</th>
                     <th>Panjang LPK</th>
                     <th>Jumlah LPK</th>
@@ -376,6 +377,7 @@
                             </a>
                         </td>
                         <td>{{ $item->lpk_no }}</td>
+                        <td>{{ $item->warna_lpk }}</td>
                         <td>{{ \Carbon\Carbon::parse($item->lpk_date)->format('d M Y') }}</td>
                         <td>{{ number_format($item->panjang_lpk) }}</td>
                         <td>{{ number_format($item->qty_lpk) }}</td>
