@@ -264,7 +264,7 @@ class AddNippoController extends Component
             $lpkid = TdOrderLpk::where('lpk_no', $this->lpk_no)->first();
             $machine = MsMachine::where('machineno', $this->machineno)->first();
             $employe = MsEmployee::where('employeeno', $this->employeeno)->first();
-            $products = MsProduct::select('msproduct.id', 'mpt.harga_sat_infure')
+            $products = MsProduct::select('msproduct.id', 'mpt.harga_sat_infure', 'msproduct.codebarcode')
                 ->join('msproduct_type as mpt', 'msproduct.product_type_id', '=', 'mpt.id')
                 ->where('msproduct.code', $this->code)
                 ->first();
@@ -277,8 +277,8 @@ class AddNippoController extends Component
             if (isset($this->nomor_barcode)) {
                 if ($products->codebarcode != $this->nomor_barcode) {
                     $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Barcode ' . $this->nomor_barcode . ' Tidak Sesuai']);
+                    return;
                 }
-                return;
             } else {
                 $this->dispatch('notification', ['type' => 'success', 'message' => 'Nomor Barcode ' . $this->nomor_barcode . ' Harus diisi']);
             }

@@ -135,7 +135,7 @@ class AddOrderController extends Component
 
     public function mount()
     {
-        $this->process_date = Carbon::now()->format('d-m-Y');
+        $this->process_date = Carbon::now()->format('Y-m-d');
         $this->buyer = MsBuyer::get();
 
         // master produk

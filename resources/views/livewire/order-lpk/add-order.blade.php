@@ -6,7 +6,7 @@
                 <div class="input-group">
                     <label class="control-label col-12 col-lg-3 fw-bold text-muted">Tanggal Proses</label>
                     <input class="form-control datepicker-input @error('process_date') is-invalid @enderror"
-                        type="date" wire:model="process_date" placeholder="yyyy/mm/dd"/ disabled>
+                        type="date" wire:model="process_date" placeholder="yyyy/mm/dd" readonly>
                     <span class="input-group-text py-0">
                         <i class="ri-calendar-event-fill fs-4"></i>
                     </span>
@@ -96,9 +96,9 @@
                     <select class="form-control @error('unit_id') is-invalid @enderror" wire:model="unit_id"
                         placeholder="" required>
                         <option value=""></option>
-                        <option value="0">Set</option>
                         <option value="1">Lembar</option>
                         <option value="2">Meter</option>
+                        <option value="3">Set</option>
                     </select>
                     @error('unit_id')
                         <span class="invalid-feedback">{{ $message }}</span>
