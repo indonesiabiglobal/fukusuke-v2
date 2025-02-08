@@ -52,7 +52,7 @@ crossorigin="anonymous">
         @media print {
             /* Menyembunyikan header, footer, dan URL */
             @page {
-                margin: 0;
+                margin: 4px;
             }
             header, footer, .page-header, .page-footer {
                 display: none;
@@ -106,16 +106,16 @@ crossorigin="anonymous">
 
     $data = collect(
         DB::select("
-                SELECT 
+                SELECT
                     tdol.lpk_no,
                     tdo.po_no,
                     tdo.order_date,
                     tdo.stufingdate,
                     tdo.order_qty / mp.case_box_count AS order_qty,
                     tdol.qty_lpk,
-                    CAST(ROUND(((tdol.qty_lpk::FLOAT8 * mp.unit_weight::FLOAT8) / mp.case_box_count::FLOAT8) / 1000.0) AS NUMERIC(10, 0)) AS order_berat,
+                    CAST(ROUND(((tdol.qty_lpk::FLOAT8 * mp.unit_weight::FLOAT8) / mp.case_box_count::FLOAT8)) AS NUMERIC(10, 0)) AS order_berat,
                     mwl.name AS warnalpk,
-                    ROUND(CAST((mp.ketebalan * mp.diameterlipat * tdol.qty_gulung * 2 * mpt.berat_jenis) / 1000 AS NUMERIC), 1) AS berat_standard,
+                    REPLACE(TO_CHAR(ROUND(CAST((mp.ketebalan * mp.diameterlipat * tdol.qty_gulung * 2 * mpt.berat_jenis) / 1000 AS NUMERIC), 1), 'FM999999990.0'), '.', ',') AS berat_standard,
                     tdol.panjang_lpk,
                     mm.machineno AS nomesin,
                     mp.codebarcode,
@@ -127,34 +127,34 @@ crossorigin="anonymous">
                     mp.code,
                     mpt.code AS tipe,
                     mpt.name AS tipename,
-                    mp.ketebalan AS t,
+                    REPLACE(TO_CHAR(mp.ketebalan, 'FM999999990.000'), '.', ',') AS tebal,
                     mp.diameterlipat AS l,
                     mp.productlength AS p,
-                    mp.ketebalan || 'x' || mp.diameterlipat || 'x' || mp.productlength AS dimensi_txlxp,
                     mp.unit_weight AS beratsatuan,
-                    mp.inflation_thickness || 'x' || mp.inflation_fold_diameter AS infure_dimensi,
+                    REPLACE(TO_CHAR(mp.inflation_thickness, 'FM9999999990.999'), '.', ',') || 'x' ||
+                    mp.inflation_fold_diameter AS infure_dimensi,
                     mp.one_winding_m_number AS infure_panjanggulung,
-                    CASE 
-                        WHEN mp.material_classification = '0' THEN 'HD' 
-                        WHEN mp.material_classification = '1' THEN 'LD' 
-                        ELSE 'LLD' 
+                    CASE
+                        WHEN mp.material_classification = '0' THEN 'HD'
+                        WHEN mp.material_classification = '1' THEN 'LD'
+                        ELSE 'LLD'
                     END AS infure_material,
-                    CASE 
-                        WHEN mp.embossed_classification = '0' THEN 'Tidak Ada' 
-                        ELSE 'Ada' 
+                    CASE
+                        WHEN mp.embossed_classification = '0' THEN 'Tidak Ada'
+                        ELSE 'Ada'
                     END AS infure_embose,
-                    CASE 
-                        WHEN mp.surface_classification = '0' THEN 'Tidak Ada' 
-                        WHEN mp.surface_classification = '1' THEN 'Satu sisi' 
-                        WHEN mp.surface_classification = '2' THEN 'Dua sisi' 
-                        WHEN mp.surface_classification = '3' THEN 'Satu Sisi Parsial' 
-                        ELSE 'Dua Sisi Parsial' 
+                    CASE
+                        WHEN mp.surface_classification = '0' THEN 'Tidak Ada'
+                        WHEN mp.surface_classification = '1' THEN 'Satu sisi'
+                        WHEN mp.surface_classification = '2' THEN 'Dua sisi'
+                        WHEN mp.surface_classification = '3' THEN 'Satu Sisi Parsial'
+                        ELSE 'Dua Sisi Parsial'
                     END AS infure_corona,
-                    CASE 
-                        WHEN mp.winding_direction_of_the_web = '0' THEN 'Gulungan Kepala depan' 
-                        WHEN mp.winding_direction_of_the_web = '1' THEN 'Zugara shiri dashi insatsu-men-hyō maki' 
-                        WHEN mp.winding_direction_of_the_web = '2' THEN 'Zugara atama dashi insatsu-men ura maki' 
-                        ELSE 'Zugara shiri dashi insatsu-men ura maki' 
+                    CASE
+                        WHEN mp.winding_direction_of_the_web = '0' THEN 'Gulungan Kepala depan'
+                        WHEN mp.winding_direction_of_the_web = '1' THEN 'Zugara shiri dashi insatsu-men-hyō maki'
+                        WHEN mp.winding_direction_of_the_web = '2' THEN 'Zugara atama dashi insatsu-men ura maki'
+                        ELSE 'Zugara shiri dashi insatsu-men ura maki'
                     END AS infur_arahgulungan,
                     mli.name AS infure_lakbanwarna,
                     mp.coloring_1 AS infure_mb1_masterbatch,
@@ -164,13 +164,13 @@ crossorigin="anonymous">
                     mp.coloring_5 AS infure_mb5,
                     mp.inflation_notes AS infure_catatan,
                     mp.gentan_classification AS infure_gentan,
-                    CASE 
+                    CASE
                         WHEN mp.gazette_classification = '0' THEN 'Gazet Biasa'
                         WHEN mp.gazette_classification = '1' THEN 'Hineri Gazet'
                         WHEN mp.gazette_classification = '2' THEN 'Soko Gazet'
                         WHEN mp.gazette_classification = '3' THEN 'Ato Gazet'
                         WHEN mp.gazette_classification = '4' THEN 'Kata Gazet'
-                        ELSE 'Tidak Ada Gazet' 
+                        ELSE 'Tidak Ada Gazet'
                     END AS infure_gazette,
                     mp.gazette_dimension_a AS infure_gz_dimensi_a,
                     mp.gazette_dimension_b AS infure_gz_dimensi_b,
@@ -222,30 +222,30 @@ crossorigin="anonymous">
                     mls.code AS seitai_kodelakban,
                     mls.name AS seitai_namalakban,
                     mp.stampelseitaiid AS seitai_stample,
-                    CASE 
-                        WHEN mpb.box_class = '1' THEN 'Khusus' 
-                        WHEN mpb.box_class = '2' THEN 'Standar' 
-                        ELSE '' 
+                    CASE
+                        WHEN mpb.box_class = '1' THEN 'Khusus'
+                        WHEN mpb.box_class = '2' THEN 'Standar'
+                        ELSE ''
                     END AS jns_box,
-                    CASE 
-                        WHEN mpg.box_class = '1' THEN 'Khusus' 
-                        WHEN mpg.box_class = '2' THEN 'Standar' 
-                        ELSE '' 
+                    CASE
+                        WHEN mpg.box_class = '1' THEN 'Khusus'
+                        WHEN mpg.box_class = '2' THEN 'Standar'
+                        ELSE ''
                     END AS jns_gaiso,
-                    CASE 
-                        WHEN mpi.box_class = '1' THEN 'Khusus' 
-                        WHEN mpi.box_class = '2' THEN 'Standar' 
-                        ELSE '' 
+                    CASE
+                        WHEN mpi.box_class = '1' THEN 'Khusus'
+                        WHEN mpi.box_class = '2' THEN 'Standar'
+                        ELSE ''
                     END AS jns_inner,
-                    CASE 
-                        WHEN mpl.box_class = '1' THEN 'Khusus' 
-                        WHEN mpl.box_class = '2' THEN 'Standar' 
-                        ELSE '' 
+                    CASE
+                        WHEN mpl.box_class = '1' THEN 'Khusus'
+                        WHEN mpl.box_class = '2' THEN 'Standar'
+                        ELSE ''
                     END AS jns_layer,
                     '' AS kodeplate,
                     mp.manufacturing_summary AS seitai_catatan,
-                    tdol.total_assembly_line
-                FROM 
+                    tdol.qty_lpk * mp.productlength / 1000 AS total_assembly_line
+                FROM
                     tdorderlpk AS tdol
                     LEFT JOIN tdorder AS tdo ON tdo.id = tdol.order_id
                     LEFT JOIN msproduct AS mp ON mp.id = tdol.product_id
@@ -263,10 +263,11 @@ crossorigin="anonymous">
                     LEFT JOIN msendless AS mse ON mse.code = mp.endless_printing
                     LEFT JOIN mssifattinta AS msi ON msi.code = mp.ink_characteristic
                     LEFT JOIN msjeniscetak AS mjc ON mjc.code = mp.print_type
-                WHERE 
+                WHERE
                     tdol.id = '$lpk_id';
         "),
     )->first();
+    // dd($data);
 @endphp
 
 <body style="background-color: #CCCCCC;margin: 0">
@@ -277,16 +278,32 @@ crossorigin="anonymous">
                     <td>
                         <table width="100%" cellspacing="0" border="0" cellpadding="3">
                             <tr>
-                                <td width="60%">
+                                <td width="60%" style="vertical-align: bottom">
                                     <div style="width: 220px; text-align:center">
-                                        <h1 style="font-size: 27px; border: 2px solid grey;">LPK {{ $data->lpk_no }}</h1>
+                                        <h1 style="font-size: 27px; border: 2px solid grey; margin: 0px">LPK {{ $data->lpk_no }}</h1>
                                     </div>
                                 </td>
-                                <td width="30%" style="border: 2px solid black;">
-                                    <p style="font-size: 13px">Panjang Sebenarnya <span class="" style="font-size: 14.5px">{{ $data->panjang_lpk }} m</span></p>
-                                    <p style="font-size: 13px">Selisih - <span style="font-size: 14.5px">{{ $data->panjang_lpk - $data->total_assembly_line }} m</span></p>
+                                <td width="30%" style="vertical-align: bottom">
+                                    <table width="100%" cellspacing="0" border="0" style="border: 2px solid black;">
+                                        <tr>
+                                            <td class="text-right">
+                                                <p style="font-size: 13px; margin: 0px">Panjang Sebenarnya</p>
+                                            </td>
+                                            <td class="text-right">
+                                                <span class="" style="font-size: 14.5px">{{ FormatAngka::ribuanCetak($data->panjang_lpk) }} m</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-right">
+                                                <p style="font-size: 13px; margin: 0px">Selisih</p>
+                                            </td>
+                                            <td class="text-right">
+                                                <span style="font-size: 14.5px">{{ FormatAngka::ribuanCetak($data->panjang_lpk - $data->total_assembly_line) }} m</span>
+                                            </td>
+                                        </tr>
+                                    </table>
                                 </td>
-                                <td width="10%">
+                                <td width="10%" style="vertical-align: bottom">
                                     @php
                                         $url = $data->lpk_no;
                                         $qrCode = \SimpleSoftwareIO\QrCode\Facades\QrCode::size(80)->generate($url);
@@ -361,7 +378,7 @@ crossorigin="anonymous">
                                     <span style="font-size: 13.5px">Jumlah LPK</span>
                                     <br>
                                     <span>
-                                        <font style="font-size: 16px;font-weight: bold;">{{ $data->qty_lpk }}</font>
+                                        <font style="font-size: 16px;font-weight: bold;">{{ FormatAngka::ribuanCetak($data->qty_lpk) }}</font>
                                         lbr
                                     </span>
                                 </td>
@@ -369,7 +386,7 @@ crossorigin="anonymous">
                                     <span style="font-size: 13.5px">Panjang Order</span>
                                     <br>
                                     <span>
-                                        <font style="font-size: 16px;">{{ $data->panjang_lpk }}</font>
+                                        <font style="font-size: 16px;">{{ FormatAngka::ribuanCetak($data->panjang_lpk) }}</font>
                                     </span>
                                 </td>
                                 <td style="padding: 3px;border-right: 2px solid black;border-top: 2px solid grey;border-bottom: 2px solid grey; text-align:center">
@@ -377,7 +394,7 @@ crossorigin="anonymous">
                                     <br>
                                     <span>
                                         <font style="font-size: 16px;font-weight: bold;">
-                                            {{ $data->order_berat }}</font> kg
+                                            {{ FormatAngka::ribuanCetak($data->order_berat) }}</font> kg
                                     </span>
                                 </td>
                             </tr>
@@ -404,7 +421,7 @@ crossorigin="anonymous">
                                             <td style="text-align: center;">
                                                 <span style="font-size: 13.5px">Tebal</span>
                                                 <br>
-                                                <span style="font-size: 14.5px;font-weight: bold;">{{ $data->t }}</span>
+                                                <span style="font-size: 14.5px;font-weight: bold;">{{ $data->tebal }}</span>
                                             </td>
                                             <td style="text-align: center;">
                                                 <span style="font-size: 13.5px"></span>
@@ -473,7 +490,7 @@ crossorigin="anonymous">
                                     <br>
                                     <span>
                                         <font style="font-size: 16px;font-weight: bold;text-align: center;">
-                                            {{ $data->infure_pjgulunglpk }} m</font>
+                                            {{ FormatAngka::ribuanCetak($data->infure_pjgulunglpk) }} m</font>
                                     </span>
                                 </td>
                                 <td style="padding: 3px;border-right: 2px solid grey; text-align: center;">
@@ -875,3 +892,9 @@ crossorigin="anonymous">
 </body>
 
 </html>
+
+<style>
+    .text-right {
+        text-align: right;
+    }
+</style>

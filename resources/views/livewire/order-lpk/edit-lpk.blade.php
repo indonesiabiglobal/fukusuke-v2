@@ -84,7 +84,7 @@
                 <div class="form-group mt-1">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-3 fw-bold text-muted">PO Number</label>
-                        <input type="text" class="form-control bg-light" readonly="readonly"
+                        <input type="text" class="form-control bg-light" readonly="readonly" style="text-transform: uppercase;"
                             wire:model.change="po_no" placeholder="PO NUMBER" />
                     </div>
                 </div>
@@ -198,21 +198,10 @@
                 <div class="form-group">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-3 fw-bold text-muted">Tanggal Proses</label>
-                        {{-- <input class="form-control datepicker-input readonly bg-light" readonly="readonly"
-                            type="date" wire:model.defer="processdate" placeholder="yyyy/mm/dd" /> --}}
                         <input type="text" class="form-control readonly bg-light" readonly="readonly" wire:model="processdate" />
                         <span class="input-group-text py-0">
                             <i class="ri-calendar-event-fill fs-4"></i>
-                        </span>                        
-                        {{-- <input wire:model.defer="processdate" type="text"
-                            class="form-control @error('processdate') is-invalid @enderror" style="padding:0.44rem"
-                            data-provider="flatpickr" data-date-format="d/m/Y">
-                        <span class="input-group-text py-0">
-                            <i class="ri-calendar-event-fill fs-4"></i>
                         </span>
-                        @error('processdate')
-                            <span class="invalid-feedback">{{ $message }}</span>
-                        @enderror --}}
                     </div>
                 </div>
 
@@ -248,7 +237,7 @@
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-3 fw-bold text-muted">Panjang Total</label>
                         <input type="text" class="form-control readonly bg-light" readonly="readonly"
-                            wire:model="total_assembly_line" oninput="this.value = window.formatNumber(this.value)" />
+                            wire:model="total_assembly_line"  />
                         <span class="input-group-text">
                             meter
                         </span>
