@@ -637,6 +637,7 @@
                         </div>
                     </div>
 
+                    {{-- Kode Plate --}}
                     <div class="form-group mt-1">
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Kode Plate</label>
@@ -796,6 +797,7 @@
                     </div> --}}
                 </div>
                 <div class="col-12 col-lg-3">
+                    {{-- Kode Gaiso --}}
                     <div class="form-group">
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-3">Kode Gaiso</label>

@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\MasterTabel\Produk;
 
 use App\Models\MsKlasifikasiSeal;
+use App\Models\MsLakbanInfure;
 use App\Models\MsLakbanSeitai;
 use App\Models\MsProduct;
 use App\Models\MsWarnaLPK;
@@ -111,10 +112,14 @@ class EditProduk extends Component
     public $custom_lakban_seitai;
     public $lakbaninfureid;
     public $stampelseitaiid;
-    public $hagataseitaiid;
+    public $kodehagata;
     public $jenissealseitaiid;
     public $warnalpkid;
     public $custom_warna_lpk;
+    public $kode_plate;
+    public $case_box_stampel;
+    public $case_gaiso_stampel;
+    public $case_inner_stampel;
 
     protected $rules = [
         'code' => 'required',
@@ -274,9 +279,13 @@ class EditProduk extends Component
         $this->lakbanseitaiid['value'] = $this->product->lakbanseitaiid;
         $this->lakbaninfureid['value'] = $this->product->lakbaninfureid;
         $this->stampelseitaiid = $this->product->stampelseitaiid;
-        $this->hagataseitaiid = $this->product->kodehagata;
+        $this->kodehagata = $this->product->kodehagata;
         $this->jenissealseitaiid['value'] = $this->product->jenissealseitaiid;
         $this->warnalpkid['value'] = $this->product->warnalpkid;
+        $this->kode_plate = $this->product->kode_plate;
+        $this->case_box_stampel = $this->product->case_box_stampel;
+        $this->case_gaiso_stampel = $this->product->case_gaiso_stampel;
+        $this->case_inner_stampel = $this->product->case_inner_stampel;
     }
 
     public function update()
@@ -430,11 +439,14 @@ class EditProduk extends Component
             $product->pack_layer_id = isset($this->pack_layer_id) ? $this->pack_layer_id['value'] : null;;
             $product->manufacturing_summary = isset($this->manufacturing_summary) ? $this->manufacturing_summary : null;
             $product->case_gaiso_count = isset($this->case_gaiso_count) ? $this->case_gaiso_count : null;
-            $product->case_gaiso_count_unit = isset($this->case_gaiso_count_unit) ? $this->case_gaiso_count_unit['value'] : null;;
+            $product->case_gaiso_count_unit = isset($this->case_gaiso_count_unit) ? $this->case_gaiso_count_unit['value'] : null;
+            $product->case_gaiso_stampel = isset($this->case_gaiso_stampel) ? $this->case_gaiso_stampel : null;
             $product->case_box_count = isset($this->case_box_count) ? $this->case_box_count : null;
-            $product->case_box_count_unit = isset($this->case_box_count_unit) ? $this->case_box_count_unit['value'] : null;;
+            $product->case_box_count_unit = isset($this->case_box_count_unit) ? $this->case_box_count_unit['value'] : null;
+            $product->case_box_stampel = isset($this->case_box_stampel) ? $this->case_box_stampel : null;
             $product->case_inner_count = isset($this->case_inner_count) ? $this->case_inner_count : null;
-            $product->case_inner_count_unit = isset($this->case_inner_count_unit) ? $this->case_inner_count_unit['value'] : null;;
+            $product->case_inner_count_unit = isset($this->case_inner_count_unit) ? $this->case_inner_count_unit['value'] : null;
+            $product->case_inner_stampel = isset($this->case_inner_stampel) ? $this->case_inner_stampel : null;
 
             // lakban seitai
             if (isset($this->lakbanseitaiid) && $this->lakbanseitaiid['value'] != null) {
@@ -456,9 +468,28 @@ class EditProduk extends Component
                 }
             }
 
-            $product->lakbaninfureid = isset($this->lakbaninfureid) ? $this->lakbaninfureid['value'] : null;;
-            $product->stampelseitaiid = isset($this->stampelseitaiid) ? $this->stampelseitaiid : null;;
-            $product->kodehagata = isset($this->hagataseitaiid) ? $this->hagataseitaiid : null;;
+            // kakban infure
+            if (isset($this->lakbaninfureid) && $this->lakbaninfureid['value'] != null) {
+                if ($this->lakbaninfureid['value'] == 'lainnya') {
+                    // insert new seal classification
+                    $maxCode = MsLakbanInfure::max('code');
+                    $lakbanInfure = MsLakbanInfure::insertGetId([
+                        'code' => str_pad($maxCode + 1, 2, '0', STR_PAD_LEFT),
+                        'name' => $this->custom_lakban_infure,
+                        'status' => 1,
+                        'created_by' => auth()->user()->username,
+                        'created_on' => Carbon::now(),
+                        'updated_by' => auth()->user()->username,
+                        'updated_on' => Carbon::now(),
+                    ]);
+                    $product->lakbaninfureid = $lakbanInfure;
+                } else {
+                    $product->lakbaninfureid = $this->lakbaninfureid['value'];
+                }
+            }
+            // $product->stampelseitaiid = isset($this->stampelseitaiid) ? $this->stampelseitaiid : null;;
+            $product->kodehagata = isset($this->kodehagata) ? $this->kodehagata : null;
+            $product->kode_plate = isset($this->kode_plate) ? $this->kode_plate : null;
             // warna LPK
             if (isset($this->warnalpkid) && $this->warnalpkid['value'] != null) {
                 if ($this->warnalpkid['value'] == 'lainnya') {

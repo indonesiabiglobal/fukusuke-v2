@@ -435,6 +435,8 @@ class AddMasterProduk extends Component
                 } else {
                     $product->lakbaninfureid = $this->lakbaninfureid['value'];
                 }
+            } else {
+                $product->lakbaninfureid = null;
             }
             // lakban seitai
             if (isset($this->lakbanseitaiid) && $this->lakbanseitaiid['value'] != null) {
@@ -455,9 +457,7 @@ class AddMasterProduk extends Component
                     $product->lakbanseitaiid = $this->lakbanseitaiid['value'];
                 }
             }
-            $product->lakbaninfureid = isset($this->lakbaninfureid) ? $this->lakbaninfureid['value'] : null;;
             $product->kodehagata = isset($this->kodehagata) ? $this->kodehagata : null;
-            $product->warnalpkid = isset($this->warnalpkid) ? $this->warnalpkid['value'] : null;
             $product->kode_plate = isset($this->kode_plate) ? $this->kode_plate : null;
 
             // warna LPK
@@ -478,6 +478,8 @@ class AddMasterProduk extends Component
                 } else {
                     $product->warnalpkid = $this->warnalpkid['value'];
                 }
+            } else {
+                $product->warnalpkid = null;
             }
             // $product->jenissealseitaiid = isset($this->jenissealseitaiid) ? $this->jenissealseitaiid['value'] : null;;
             $product->status = 1;
