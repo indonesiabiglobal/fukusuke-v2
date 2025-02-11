@@ -599,6 +599,7 @@ class GeneralReportController extends Component
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
+        $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER MESIN INFURE');
@@ -1028,6 +1029,7 @@ class GeneralReportController extends Component
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
+        $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER MESIN SEITAI');
@@ -1445,6 +1447,7 @@ class GeneralReportController extends Component
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
+        $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER TIPE PER MESIN INFURE');
@@ -1847,6 +1850,7 @@ class GeneralReportController extends Component
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
+        $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
 
         // Judul
         $activeWorksheet->setCellValue('A1', 'DAFTAR PRODUKSI PER TIPE PER MESIN SEITAI');
@@ -2221,6 +2225,7 @@ class GeneralReportController extends Component
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
+        $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER JENIS INFURE');
@@ -2464,6 +2469,7 @@ class GeneralReportController extends Component
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
+        $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER JENIS SEITAI');
@@ -2698,6 +2704,7 @@ class GeneralReportController extends Component
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
+        $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER TIPE INFURE');
@@ -2943,6 +2950,7 @@ class GeneralReportController extends Component
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
+        $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER TIPE SEITAI');
@@ -3179,6 +3187,7 @@ class GeneralReportController extends Component
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
         $spreadsheet->getActiveSheet()->freezePane('A4');
+        $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER PRODUK INFURE');
@@ -3425,6 +3434,7 @@ class GeneralReportController extends Component
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
         $spreadsheet->getActiveSheet()->freezePane('A4');
+        $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER PRODUK SEITAI');
@@ -3653,6 +3663,7 @@ class GeneralReportController extends Component
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
+        $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
         $spreadsheet->getActiveSheet()->freezePane('A4');
 
         // Judul
@@ -3940,6 +3951,7 @@ class GeneralReportController extends Component
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
+        $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER DEPARTEMEN PER JENIS SEITAI');
@@ -4217,6 +4229,7 @@ class GeneralReportController extends Component
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
+        $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
         $spreadsheet->getActiveSheet()->freezePane('A4');
 
         // Judul
@@ -4504,6 +4517,7 @@ class GeneralReportController extends Component
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
+        $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
         $spreadsheet->getActiveSheet()->freezePane('A4');
 
         // Judul
@@ -4783,6 +4797,7 @@ class GeneralReportController extends Component
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
+        $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
         $spreadsheet->getActiveSheet()->freezePane('A4');
 
         // Judul
@@ -5070,6 +5085,7 @@ class GeneralReportController extends Component
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
+        $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
         $spreadsheet->getActiveSheet()->freezePane('A4');
 
         // Judul
@@ -5349,6 +5365,7 @@ class GeneralReportController extends Component
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
+        $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR LOSS PER DEPARTEMEN INFURE');
@@ -5631,6 +5648,7 @@ class GeneralReportController extends Component
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
+        $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR LOSS PER DEPARTEMEN SEITAI');
@@ -5912,6 +5930,7 @@ class GeneralReportController extends Component
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
+        $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR LOSS PER DEPARTEMEN PER JENIS INFURE');
@@ -6204,6 +6223,7 @@ class GeneralReportController extends Component
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
+        $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR LOSS PER DEPARTEMEN PER JENIS SEITAI');
@@ -6497,6 +6517,7 @@ class GeneralReportController extends Component
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
+        $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR LOSS PER PETUGAS INFURE');
@@ -6967,6 +6988,7 @@ class GeneralReportController extends Component
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
+        $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR LOSS PER PETUGAS SEITAI');
@@ -7327,6 +7349,7 @@ class GeneralReportController extends Component
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
+        $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR LOSS PER MESIN INFURE');
@@ -7595,6 +7618,7 @@ class GeneralReportController extends Component
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
+        $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR LOSS PER MESIN SEITAI');
@@ -7863,6 +7887,7 @@ class GeneralReportController extends Component
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
+        $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'KAPASITAS PRODUKSI INFURE');
@@ -8147,6 +8172,7 @@ class GeneralReportController extends Component
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
+        $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'KAPASITAS PRODUKSI SEITAI');
@@ -8447,6 +8473,7 @@ class GeneralReportController extends Component
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
+        $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
         $spreadsheet->getActiveSheet()->freezePane('A5');
 
         // Judul
@@ -8872,6 +8899,7 @@ class GeneralReportController extends Component
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
+        $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER MESIN PER PRODUK INFURE');
@@ -9226,6 +9254,7 @@ class GeneralReportController extends Component
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
+        $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
 
         // Judul
         $activeWorksheet->setCellValue('A1', 'DAFTAR PRODUKSI PER MESIN PER PRODUK SEITAI');
