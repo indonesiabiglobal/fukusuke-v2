@@ -290,7 +290,7 @@ crossorigin="anonymous">
                                                 <p style="font-size: 13px; margin: 0px">Panjang Sebenarnya</p>
                                             </td>
                                             <td class="text-right">
-                                                <span class="" style="font-size: 14.5px">{{ FormatAngka::ribuanCetak($data->panjang_lpk) }} m</span>
+                                                <span class="" style="font-size: 14.5px">{{ formatAngka::ribuanCetak($data->panjang_lpk) }} m</span>
                                             </td>
                                         </tr>
                                         <tr>
@@ -298,7 +298,7 @@ crossorigin="anonymous">
                                                 <p style="font-size: 13px; margin: 0px">Selisih</p>
                                             </td>
                                             <td class="text-right">
-                                                <span style="font-size: 14.5px">{{ FormatAngka::ribuanCetak($data->panjang_lpk - $data->total_assembly_line) }} m</span>
+                                                <span style="font-size: 14.5px">{{ formatAngka::ribuanCetak($data->panjang_lpk - $data->total_assembly_line) }} m</span>
                                             </td>
                                         </tr>
                                     </table>
@@ -371,14 +371,14 @@ crossorigin="anonymous">
                                     <span style="font-size: 13.5px">Jml.Order/case</span>
                                     <br>
                                     <span>
-                                        <font style="font-size: 16px;">{{ FormatAngka::ribuanCetak($data->order_qty) }} box</font>
+                                        <font style="font-size: 16px;">{{ formatAngka::ribuanCetak($data->order_qty) }} box</font>
                                     </span>
                                 </td>
                                 <td style="padding: 3px;border-right: 2px solid grey;border-top: 2px solid grey;border-bottom: 2px solid grey; text-align:center">
                                     <span style="font-size: 13.5px">Jumlah LPK</span>
                                     <br>
                                     <span>
-                                        <font style="font-size: 16px;font-weight: bold;">{{ FormatAngka::ribuanCetak($data->qty_lpk) }}</font>
+                                        <font style="font-size: 16px;font-weight: bold;">{{ formatAngka::ribuanCetak($data->qty_lpk) }}</font>
                                         lbr
                                     </span>
                                 </td>
@@ -386,7 +386,7 @@ crossorigin="anonymous">
                                     <span style="font-size: 13.5px">Panjang Order</span>
                                     <br>
                                     <span>
-                                        <font style="font-size: 16px;">{{ FormatAngka::ribuanCetak($data->panjang_lpk) }}</font>
+                                        <font style="font-size: 16px;">{{ formatAngka::ribuanCetak($data->panjang_lpk) }}</font>
                                     </span>
                                 </td>
                                 <td style="padding: 3px;border-right: 2px solid black;border-top: 2px solid grey;border-bottom: 2px solid grey; text-align:center">
@@ -394,7 +394,7 @@ crossorigin="anonymous">
                                     <br>
                                     <span>
                                         <font style="font-size: 16px;font-weight: bold;">
-                                            {{ FormatAngka::ribuanCetak($data->order_berat) }}</font> kg
+                                            {{ formatAngka::ribuanCetak($data->order_berat) }}</font> kg
                                     </span>
                                 </td>
                             </tr>
@@ -490,7 +490,7 @@ crossorigin="anonymous">
                                     <br>
                                     <span>
                                         <font style="font-size: 16px;font-weight: bold;text-align: center;">
-                                            {{ FormatAngka::ribuanCetak($data->infure_pjgulunglpk) }} m</font>
+                                            {{ formatAngka::ribuanCetak($data->infure_pjgulunglpk) }} m</font>
                                     </span>
                                 </td>
                                 <td style="padding: 3px;border-right: 2px solid grey; text-align: center;">

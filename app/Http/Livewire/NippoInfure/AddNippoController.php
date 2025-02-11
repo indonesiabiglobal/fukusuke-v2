@@ -2,7 +2,7 @@
 
 namespace App\Http\Livewire\NippoInfure;
 
-use App\Helpers\FormatAngka;
+use App\Helpers\formatAngka;
 use Livewire\Component;
 use App\Models\MsEmployee;
 use App\Models\MsLossInfure;
@@ -516,7 +516,7 @@ class AddNippoController extends Component
                 $this->diameterlipat = $tdorderlpk->diameterlipat;
                 $this->berat_jenis = $tdorderlpk->berat_jenis;
                 $this->dimensiinfure = $tdorderlpk->ketebalan . 'x' . $tdorderlpk->diameterlipat;
-                $this->qty_gulung = FormatAngka::ribuan($tdorderlpk->qty_gulung);
+                $this->qty_gulung = formatAngka::ribuan($tdorderlpk->qty_gulung);
                 $this->lpk_no = $tdorderlpk->lpk_no;
                 $this->qty_gentan = $tdorderlpk->qty_gentan;
                 // $this->berat_standard = round($tdorderlpk->berat_standard, 2);

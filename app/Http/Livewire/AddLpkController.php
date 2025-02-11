@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use App\Exports\LpkEntryExport;
 use App\Exports\LpkEntryImport;
+use App\Helpers\formatAngka;
 use Livewire\Component;
 use App\Models\MsMachine;
 use App\Models\MsProduct;
@@ -35,6 +36,7 @@ class AddLpkController extends Component
     public $machinename;
     public $dimensi;
     public $total_assembly_line;
+    public $panjang_total;
     public $productlength;
     public $defaultgulung;
     public $qty_gulung;
@@ -205,7 +207,7 @@ class AddLpkController extends Component
             $orderlpk->seq_no = $seqno;
             $orderlpk->qty_gulung = (int)str_replace(',', '', $this->qty_gulung);
             $orderlpk->product_panjang = $this->productlength;
-            $orderlpk->product_panjanggulung = $this->defaultgulung;
+            $orderlpk->product_panjanggulung = (int)str_replace(',', '', $this->defaultgulung);
             // $orderlpk->warnalpkid = $this->warnalpkid['value'];
             $orderlpk->created_on = Carbon::now()->format('d-m-Y H:i:s');
             $orderlpk->created_by = auth()->user()->username;
@@ -300,21 +302,21 @@ class AddLpkController extends Component
 
         if (isset($this->qty_gentan) && $this->qty_gentan != $this->qty_gentan_old) {
             $this->qty_gentan_old = $this->qty_gentan;
-            $qty_gulung = floor((int)str_replace(',', '', $this->total_assembly_line) / (int)str_replace(',', '', $this->qty_gentan) / 10) * 10;
+            $qty_gulung = floor((int)str_replace(',', '', $this->panjang_total) / (int)str_replace(',', '', $this->qty_gentan) / 10) * 10;
             $this->qty_gulung = $qty_gulung;
 
             $this->panjang_lpk = (int)str_replace(',', '', $this->qty_gentan) * (int)str_replace(',', '', $this->qty_gulung);
 
-            $this->selisihkurang = (int)str_replace(',', '', $this->total_assembly_line) - (int)str_replace(',', '', $this->panjang_lpk);
+            $this->selisihkurang = (int)str_replace(',', '', $this->panjang_total) - (int)str_replace(',', '', $this->panjang_lpk);
         } else if (isset($this->qty_gulung) && $this->qty_gulung != $this->qty_gulung_old) {
             $this->qty_gulung_old = $this->qty_gulung;
 
             $this->panjang_lpk = (int)str_replace(',', '', $this->qty_gentan) * (int)str_replace(',', '', $this->qty_gulung);
-            $this->selisihkurang = (int)str_replace(',', '', $this->total_assembly_line) - (int)str_replace(',', '', $this->panjang_lpk);
+            $this->selisihkurang = (int)str_replace(',', '', $this->panjang_total) - (int)str_replace(',', '', $this->panjang_lpk);
         } else if (isset($this->qty_lpk) && $this->qty_lpk != '') {
-            $this->total_assembly_line = (int)str_replace(',', '', $this->qty_lpk) * ((int)str_replace(',', '', $this->productlength) / 1000);
+            $this->panjang_total = (int)str_replace(',', '', $this->qty_lpk) * ((int)str_replace(',', '', $this->productlength) / 1000);
 
-            $qty_gentan = (int)str_replace(',', '', $this->total_assembly_line) / (int)str_replace(',', '', $this->defaultgulung);
+            $qty_gentan = (int)str_replace(',', '', $this->panjang_total) / (int)str_replace(',', '', $this->defaultgulung);
             $this->qty_gentan = (round(round($qty_gentan) / 2)) * 2;
 
             if ($this->qty_gentan < 2) {
@@ -323,20 +325,23 @@ class AddLpkController extends Component
 
             $this->qty_gentan_old = $this->qty_gentan;
 
-            $qty_gulung = floor((int)str_replace(',', '', $this->total_assembly_line) / (int)str_replace(',', '', $this->qty_gentan) / 10) * 10;
+            $qty_gulung = floor((int)str_replace(',', '', $this->panjang_total) / (int)str_replace(',', '', $this->qty_gentan) / 10) * 10;
             $this->qty_gulung = $qty_gulung;
             $this->qty_gulung_old = $this->qty_gulung;
 
             $this->panjang_lpk = (int)str_replace(',', '', $this->qty_gentan) * (int)str_replace(',', '', $this->qty_gulung);
 
-            $this->selisihkurang = (int)str_replace(',', '', $this->total_assembly_line) - (int)str_replace(',', '', $this->panjang_lpk);
+            $this->selisihkurang = (int)str_replace(',', '', $this->panjang_total) - (int)str_replace(',', '', $this->panjang_lpk);
         }
+
+        $this->panjang_total = formatAngka::ribuan($this->panjang_total);
+        $this->defaultgulung = formatAngka::ribuan($this->defaultgulung);
 
         // if (isset($this->qty_gentan) && isset($this->qty_gulung)) {
         //     $this->panjang_lpk = (int)str_replace(',', '', $this->qty_gentan) * (int)str_replace(',', '', (int)$this->qty_gulung);
         // }
-        // if (isset($this->panjang_lpk) && isset($this->total_assembly_line)) {
-        //     $this->selisihkurang = (int)str_replace(',', '', $this->total_assembly_line) - (int)str_replace(',', '', $this->panjang_lpk);
+        // if (isset($this->panjang_lpk) && isset($this->panjang_total)) {
+        //     $this->selisihkurang = (int)str_replace(',', '', $this->panjang_total) - (int)str_replace(',', '', $this->panjang_lpk);
         // }
 
         return view('livewire.order-lpk.add-lpk')->extends('layouts.master');

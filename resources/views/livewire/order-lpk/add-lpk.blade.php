@@ -225,7 +225,7 @@
                 <div class="form-group mt-1">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-3 fw-bold text-muted">Panjang Total</label>
-                        <input type="text" class="form-control readonly bg-light"  readonly="readonly" wire:model="total_assembly_line" />
+                        <input type="text" class="form-control readonly bg-light"  readonly="readonly" wire:model="panjang_total" />
                         <span class="input-group-text">
                             meter
                         </span>

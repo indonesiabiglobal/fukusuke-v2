@@ -4,7 +4,7 @@ namespace App\Http\Livewire;
 
 use App\Exports\LpkEntryExport;
 use App\Exports\LpkEntryImport;
-use App\Helpers\FormatAngka;
+use App\Helpers\formatAngka;
 use Livewire\Component;
 use App\Models\TdOrderLpk;
 use App\Models\MsBuyer;
@@ -41,6 +41,7 @@ class EditLpkController extends Component
     public $order_date;
     public $no_order;
     public $total_assembly_line;
+    public $panjang_total;
     public $productlength;
     public $defaultgulung;
     public $selisihkurang;
@@ -353,29 +354,29 @@ class EditLpkController extends Component
                 $this->qty_gentan = 0;
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'jumlah Gentan tidak boleh kosong']);
             } else if (isset($this->qty_lpk) && isset($this->qty_gentan) && isset($this->qty_gulung)) {
-                $this->total_assembly_line = (int) str_replace(',', '', $this->qty_lpk) * ((int) str_replace(',', '', $this->productlength) / 1000);
+                $this->panjang_total = (int) str_replace(',', '', $this->qty_lpk) * ((int) str_replace(',', '', $this->productlength) / 1000);
 
                 $this->panjang_lpk = (int)str_replace(',', '', $this->qty_gentan) * (int)str_replace(',', '', $this->qty_gulung);
 
-                $this->selisihkurang = (int)str_replace(',', '', $this->panjang_lpk) - (int)str_replace(',', '', $this->total_assembly_line);
+                $this->selisihkurang = (int)str_replace(',', '', $this->panjang_lpk) - (int)str_replace(',', '', $this->panjang_total);
             } else {
                 $this->qty_gentan_old = $this->qty_gentan;
-                $qty_gulung = floor((int) str_replace(',', '', $this->total_assembly_line) / (int) str_replace(',', '', $this->qty_gentan) / 10) * 10;
+                $qty_gulung = floor((int) str_replace(',', '', $this->panjang_total) / (int) str_replace(',', '', $this->qty_gentan) / 10) * 10;
                 $this->qty_gulung = $qty_gulung;
                 $this->panjang_lpk = (int) str_replace(',', '', $this->qty_gentan) * (int) str_replace(',', '', $this->qty_gulung);
 
-                $this->selisihkurang = (int)str_replace(',', '', $this->panjang_lpk) - (int)str_replace(',', '', $this->total_assembly_line);
+                $this->selisihkurang = (int)str_replace(',', '', $this->panjang_lpk) - (int)str_replace(',', '', $this->panjang_total);
             }
         } else if (isset($this->qty_gulung) && $this->qty_gulung != $this->qty_gulung_old) {
             $this->qty_gulung_old = $this->qty_gulung;
 
             $this->panjang_lpk = (int) str_replace(',', '', $this->qty_gentan) * (int) str_replace(',', '', $this->qty_gulung);
-            $this->selisihkurang = (int)str_replace(',', '', $this->panjang_lpk) - (int)str_replace(',', '', $this->total_assembly_line);
+            $this->selisihkurang = (int)str_replace(',', '', $this->panjang_lpk) - (int)str_replace(',', '', $this->panjang_total);
             // dd((int) str_replace(',', '', $this->qty_gulung));
         } else if (isset($this->qty_lpk) && $this->qty_lpk != '') {
-            $this->total_assembly_line = (int) str_replace(',', '', $this->qty_lpk) * ((int) str_replace(',', '', $this->productlength) / 1000);
+            $this->panjang_total = (int) str_replace(',', '', $this->qty_lpk) * ((int) str_replace(',', '', $this->productlength) / 1000);
 
-            $qty_gentan = (int) str_replace(',', '', $this->total_assembly_line) / (int) str_replace(',', '', $this->defaultgulung);
+            $qty_gentan = (int) str_replace(',', '', $this->panjang_total) / (int) str_replace(',', '', $this->defaultgulung);
             $this->qty_gentan = (round(round($qty_gentan) / 2)) * 2;
 
             if ($this->qty_gentan < 2) {
@@ -384,22 +385,22 @@ class EditLpkController extends Component
 
             $this->qty_gentan_old = $this->qty_gentan;
 
-            $qty_gulung = floor((int)str_replace(',', '', $this->total_assembly_line) / (int)str_replace(',', '', $this->qty_gentan) / 10) * 10;
+            $qty_gulung = floor((int)str_replace(',', '', $this->panjang_total) / (int)str_replace(',', '', $this->qty_gentan) / 10) * 10;
             $this->qty_gulung = $qty_gulung;
             $this->qty_gulung_old = $this->qty_gulung;
 
             $this->panjang_lpk = (int)str_replace(',', '', $this->qty_gentan) * (int)str_replace(',', '', $this->qty_gulung);
 
-            $this->selisihkurang = (int)str_replace(',', '', $this->panjang_lpk) - (int)str_replace(',', '', $this->total_assembly_line);
+            $this->selisihkurang = (int)str_replace(',', '', $this->panjang_lpk) - (int)str_replace(',', '', $this->panjang_total);
         }
 
         // merubah format angka
-        $this->total_assembly_line = FormatAngka::ribuan($this->total_assembly_line);
-        $this->qty_lpk = FormatAngka::ribuan((int) str_replace(',', '', $this->qty_lpk));
-        $this->qty_gulung = FormatAngka::ribuan((int) str_replace(',', '', $this->qty_gulung));
-        $this->panjang_lpk = FormatAngka::ribuan($this->panjang_lpk);
-        $this->defaultgulung = FormatAngka::ribuan($this->defaultgulung);
-        $this->selisihkurang = FormatAngka::ribuan($this->selisihkurang);
+        $this->panjang_total = formatAngka::ribuan($this->panjang_total);
+        $this->qty_lpk = formatAngka::ribuan((int) str_replace(',', '', $this->qty_lpk));
+        $this->qty_gulung = formatAngka::ribuan((int) str_replace(',', '', $this->qty_gulung));
+        $this->panjang_lpk = formatAngka::ribuan($this->panjang_lpk);
+        $this->defaultgulung = formatAngka::ribuan($this->defaultgulung);
+        $this->selisihkurang = formatAngka::ribuan($this->selisihkurang);
 
         // if (isset($this->qty_gentan) && isset($this->qty_gulung)) {
         //     $this->panjang_lpk = (int)str_replace(',', '', $this->qty_gentan) * (int)str_replace(',', '', (int)$this->qty_gulung);

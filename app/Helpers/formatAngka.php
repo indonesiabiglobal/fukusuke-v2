@@ -2,7 +2,7 @@
 
 namespace App\Helpers;
 
-class FormatAngka
+class formatAngka
 {
     public static function rupiah($angka)
     {
