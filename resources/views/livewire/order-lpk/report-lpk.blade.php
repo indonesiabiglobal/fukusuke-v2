@@ -113,7 +113,7 @@ crossorigin="anonymous">
                     tdo.stufingdate,
                     tdo.order_qty / mp.case_box_count AS order_qty,
                     tdol.qty_lpk,
-                    CAST(ROUND((tdo.order_qty / mp.case_box_count * mp.unit_weight::FLOAT8)) AS NUMERIC(10, 0)) AS order_berat,
+                    CAST(ROUND((tdo.order_qty / 1000 * mp.unit_weight::FLOAT8)) AS NUMERIC(10, 0)) AS order_berat,
                     mwl.name AS warnalpk,
                     REPLACE(TO_CHAR(ROUND(CAST((mp.ketebalan * mp.diameterlipat * tdol.qty_gulung * 2 * mpt.berat_jenis) / 1000 AS NUMERIC), 1), 'FM999999990.0'), '.', ',') AS berat_standard,
                     tdol.panjang_lpk,
