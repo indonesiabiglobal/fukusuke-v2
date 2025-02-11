@@ -148,7 +148,6 @@ class LpkEntryController extends Component
         if (isset($this->tglKeluar) && $this->tglKeluar != "" && $this->tglKeluar != "undefined") {
             $tglKeluar = Carbon::parse($this->tglKeluar)->endOfDay()->format('Y-m-d H:i:s');
         }
-        dd($this->tglMasuk, $this->tglKeluar);
 
         if ($this->transaksi == 2) {
             if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
