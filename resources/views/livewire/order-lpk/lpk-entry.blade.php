@@ -228,103 +228,109 @@
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="3"
-                            checked> Tgl LPK
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="3">
+                        Warna LPK
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
                         <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="4"
-                            checked> Panjang LPK
+                            checked> Tgl LPK
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
                         <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="5"
-                            checked> Jumlah LPK
+                            checked> Panjang LPK
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
                         <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="6"
-                            checked> Jumlah Gentan
+                            checked> Jumlah LPK
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
                         <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="7"
+                            checked> Jumlah Gentan
+                    </label>
+                </li>
+                <li>
+                    <label style="cursor: pointer;">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="8"
                             checked> Meter Gulung
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="8">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="9">
                         Selisih
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="9"
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="10"
                             checked> Progres Infure
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="10"
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="11"
                             checked> Progres Seitai
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="11"
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="12"
                             checked> Nomor PO
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="12">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="13">
                         Nama Produk
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="13"
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="14"
                             checked> Kode Produk
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="14">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="15">
                         Mesin
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="15">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="16">
                         Buyer
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="16"
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="17"
                             checked> Tanggal Proses
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="17">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="18">
                         seq
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="18">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="19">
                         Update By
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="19">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="20">
                         Updated
                     </label>
                 </li>
