@@ -383,7 +383,7 @@
                         <td>{{ number_format($item->qty_lpk) }}</td>
                         <td>{{ $item->qty_gentan }}</td>
                         <td>{{ number_format($item->qty_gulung) }}</td>
-                        <td>-</td>
+                        <td>{{ number_format($item->selisih) }}</td>
                         <td>{{ number_format($item->infure) }}</td>
                         <td>{{ number_format($item->total_assembly_qty) }}</td>
                         <td>{{ $item->po_no }}</td>

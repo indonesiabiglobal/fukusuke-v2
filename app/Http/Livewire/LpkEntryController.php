@@ -122,6 +122,7 @@ class LpkEntryController extends Component
                 tolp.qty_gentan,
                 tolp.qty_gulung,
                 tolp.total_assembly_line AS infure,
+                tolp.panjang_lpk - (tolp.qty_lpk * mp.productlength / 1000) AS selisih,
                 tolp.total_assembly_qty,
                 tod.po_no,
                 mp.NAME AS product_name,
