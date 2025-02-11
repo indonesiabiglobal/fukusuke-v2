@@ -113,7 +113,7 @@ crossorigin="anonymous">
                     tdo.stufingdate,
                     tdo.order_qty / mp.case_box_count AS order_qty,
                     tdol.qty_lpk,
-                    CAST(ROUND(((tdol.qty_lpk::FLOAT8 * mp.unit_weight::FLOAT8) / mp.case_box_count::FLOAT8)) AS NUMERIC(10, 0)) AS order_berat,
+                    CAST(ROUND((tdo.order_qty / mp.case_box_count * mp.unit_weight::FLOAT8)) AS NUMERIC(10, 0)) AS order_berat,
                     mwl.name AS warnalpk,
                     REPLACE(TO_CHAR(ROUND(CAST((mp.ketebalan * mp.diameterlipat * tdol.qty_gulung * 2 * mpt.berat_jenis) / 1000 AS NUMERIC), 1), 'FM999999990.0'), '.', ',') AS berat_standard,
                     tdol.panjang_lpk,
@@ -348,7 +348,7 @@ crossorigin="anonymous">
                                     <span style="font-size: 13.5px">PO Number</span>
                                     <br>
                                     <span>
-                                        <font style="font-size: 20px;">{{ $data->po_no }}</font>
+                                        <font style="font-size: 20px; text-transform: uppercase">{{ $data->po_no }}</font>
                                     </span>
                                 </td>
                                 <td style="padding: 3px;border-right: 2px solid grey;border-top: 2px solid grey;border-bottom: 2px solid grey; text-align:center">
@@ -371,7 +371,7 @@ crossorigin="anonymous">
                                     <span style="font-size: 13.5px">Jml.Order/case</span>
                                     <br>
                                     <span>
-                                        <font style="font-size: 16px;">{{ $data->order_qty }} box</font>
+                                        <font style="font-size: 16px;">{{ FormatAngka::ribuanCetak($data->order_qty) }} box</font>
                                     </span>
                                 </td>
                                 <td style="padding: 3px;border-right: 2px solid grey;border-top: 2px solid grey;border-bottom: 2px solid grey; text-align:center">
