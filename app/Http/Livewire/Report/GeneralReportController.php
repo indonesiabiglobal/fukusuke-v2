@@ -8635,6 +8635,17 @@ class GeneralReportController extends Component
         $startRowItem = 5;
         $rowItem = $startRowItem;
 
+        $grandTotal = [
+            'qty_produksi' => 0,
+            'qty_produksi_box' => 0,
+            'kenpin_qty_loss_proses' => 0,
+            'kenpin_qty_box_proses' => 0,
+            'kenpin_qty_loss' => 0,
+            'kenpin_qty_box' => 0,
+            'qty_produksi' => 0,
+            'qty_produksi_box' => 0
+        ];
+
         // create excel
         foreach ($listProduct as $productCode => $productName) {
             // Menulis data produk
@@ -8656,6 +8667,7 @@ class GeneralReportController extends Component
 
                     // memasukkan data
                     $dataItem = $dataFilter[$productCode][$noLPK][$palet];
+                    $startRowItemData = $rowItem;
                     foreach ($dataItem as $item) {
                         $columnItem = $startColumnItemData;
                         // tanggal produksi
@@ -8677,6 +8689,7 @@ class GeneralReportController extends Component
                         $activeWorksheet->setCellValue($columnItem . $rowItem, $item->qty_produksi ?? '');
                         phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
                         $columnItem++;
+                        $dataQtyProduksi[] = $item->qty_produksi;
                         // box
                         $activeWorksheet->setCellValue($columnItem . $rowItem, $item->qty_produksi_box ?? '');
                         phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
@@ -8715,11 +8728,20 @@ class GeneralReportController extends Component
                         phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
                         phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
                         $columnItem++;
+                        $rowItem++;
+
+                        // perhitungan grand total
+                        $grandTotal['qty_produksi'] += $item->qty_produksi;
+                        $grandTotal['qty_produksi_box'] += $item->qty_produksi_box;
+                        $grandTotal['kenpin_qty_loss_proses'] += $item->kenpin_qty_loss_proses;
+                        $grandTotal['kenpin_qty_box_proses'] += $item->kenpin_qty_box_proses;
+                        $grandTotal['kenpin_qty_loss'] += $item->kenpin_qty_loss;
+                        $grandTotal['kenpin_qty_box'] += $item->kenpin_qty_box;
                     }
 
-                    phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem, false, 8, 'Calibri');
-                    $rowItem++;
+                    phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $startRowItemData . ':' . $columnItem . $rowItem, false, 8, 'Calibri');
                 }
+                // $rowItem++;
             }
             // perhitungan jumlah berdasarkan produk
             $spreadsheet->getActiveSheet()->mergeCells($startColumnItem . $rowItem . ':' . 'F' . $rowItem);
@@ -8771,7 +8793,6 @@ class GeneralReportController extends Component
             // box
             $activeWorksheet->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
             phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
-            $columnItem++;
             phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
             phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem, true, 8, 'Calibri');
             $columnItem++;
@@ -8785,49 +8806,9 @@ class GeneralReportController extends Component
         $spreadsheet->getActiveSheet()->mergeCells($startColumnItem . $rowGrandTotal . ':' . 'E' . $rowGrandTotal);
         $spreadsheet->getActiveSheet()->setCellValue($startColumnItem . $rowGrandTotal, 'GRAND TOTAL');
         phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $rowGrandTotal . ':' . $columnHeaderEnd . $rowGrandTotal, true, 8, 'Calibri');
-        // $this->addFullBorder($spreadsheet, $startColumnItem . $rowGrandTotal . ':' . $columnValueAvg . $rowGrandTotal);
-
-        $grandTotal = [
-            'qty_produksi' => 0,
-            'qty_produksi_box' => 0,
-            'kenpin_qty_loss_proses' => 0,
-            'kenpin_qty_box_proses' => 0,
-            'kenpin_qty_loss' => 0,
-            'kenpin_qty_box' => 0,
-            'qty_produksi' => 0,
-            'qty_produksi_box' => 0
-        ];
-
-        foreach ($listProduct as $product_code => $product_name) {
-            foreach ($listLpk[$product_code] as $lpkNo) {
-                foreach ($listPalet[$product_code][$lpkNo] as $nomor_palet) {
-                    if (isset($dataFilter[$product_code][$lpkNo][$nomor_palet])) {
-                        $dataItem = $dataFilter[$product_code][$lpkNo][$nomor_palet];
-                        foreach ($dataItem as $item) {
-                            $grandTotal['qty_produksi'] += $item->qty_produksi;
-                            $grandTotal['qty_produksi_box'] += $item->qty_produksi_box;
-                            $grandTotal['kenpin_qty_loss_proses'] += $item->kenpin_qty_loss_proses;
-                            $grandTotal['kenpin_qty_box_proses'] += $item->kenpin_qty_box_proses;
-                            $grandTotal['kenpin_qty_loss'] += $item->kenpin_qty_loss;
-                            $grandTotal['kenpin_qty_box'] += $item->kenpin_qty_box;
-                        }
-                    } else {
-                        $dataItem = (object)[
-                            'qty_produksi' => 0,
-                            'qty_produksi_box' => 0,
-                            'kenpin_qty_loss_proses' => 0,
-                            'kenpin_qty_box_proses' => 0,
-                            'kenpin_qty_loss' => 0,
-                            'kenpin_qty_box' => 0,
-                            'qty_produksi' => 0,
-                            'qty_produksi_box' => 0
-                        ];
-                    }
-                }
-            }
-        }
 
         $columnItem = $startColumnItemData;
+        $columnItem++;
         $columnItem++;
         $columnItem++;
         $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['qty_produksi']);
