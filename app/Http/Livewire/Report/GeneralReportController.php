@@ -645,44 +645,49 @@ class GeneralReportController extends Component
         phpspreadsheet::textAlignCenter($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
 
         $data = DB::select("
-            SELECT MAX
-                ( mac.machineNo ) AS machine_no,
-                MAX ( mac.machineName ) AS machine_name,
-                MAX ( dep.ID ) AS department_id,
-                MAX ( dep.NAME ) AS department_name,
-                SUM ( asy.berat_standard ) AS berat_standard,
-                SUM ( asy.berat_produksi ) AS berat_produksi,
-                SUM ( asy.infure_cost ) AS infure_cost,
-                SUM ( asy.infure_berat_loss ) AS infure_berat_loss,
-                SUM ( asy.panjang_produksi ) AS panjang_produksi,
-                SUM ( asy.panjang_printing_inline ) AS panjang_printing_inline,
-                SUM ( asy.infure_cost_printing ) AS infure_cost_printing,
-                COALESCE ( MAX ( jam.work_hour ), 0 ) AS work_hour_mm,
-                COALESCE ( MAX ( jam.off_hour ), 0 ) AS work_hour_off_mm,
-                COALESCE ( MAX ( jam.on_hour ), 0 ) AS work_hour_on_mm
-            FROM
-                tdProduct_Assembly AS asy
-                LEFT JOIN LATERAL (
-                SELECT SUM
-                    ( EXTRACT ( EPOCH FROM work_hour ) / 60 ) AS work_hour,
-                    SUM ( EXTRACT ( EPOCH FROM off_hour ) / 60 ) AS off_hour,
-                    SUM ( EXTRACT ( EPOCH FROM on_hour ) / 60 ) AS on_hour
+            WITH jam AS (
+                SELECT
+                    jam_.machine_id,
+                    SUM(EXTRACT(EPOCH FROM work_hour) / 60) AS work_hour,
+                    SUM(EXTRACT(EPOCH FROM off_hour) / 60) AS off_hour,
+                    SUM(EXTRACT(EPOCH FROM on_hour) / 60) AS on_hour
                 FROM
                     tdJamKerjaMesin AS jam_
-                    INNER JOIN msworkingshift AS ws ON jam_.work_shift = ws.work_shift
+                INNER JOIN
+                    msworkingshift AS ws ON jam_.work_shift = ws.work_shift
                 WHERE
-                    asy.machine_id = jam_.machine_id
-                    AND ( working_date :: TEXT || ' ' || work_hour_from :: TEXT ) :: TIMESTAMP BETWEEN '$tglMasuk' AND '$tglKeluar'
-
+                    (working_date || ' ' || work_hour_from)::TIMESTAMP
+                    BETWEEN '$tglMasuk' AND '$tglKeluar'
                 GROUP BY
                     jam_.machine_id
-                ) AS jam
-                ON TRUE LEFT JOIN msMachine AS mac ON asy.machine_id = mac.
-                ID LEFT JOIN msDepartment AS dep ON mac.department_id = dep.ID
+            )
+            SELECT
+                MAX(mac.machineNo) AS machine_no,
+                MAX(mac.machineName) AS machine_name,
+                MAX(dep.ID) AS department_id,
+                MAX(dep.NAME) AS department_name,
+                SUM(asy.berat_standard) AS berat_standard,
+                SUM(asy.berat_produksi) AS berat_produksi,
+                SUM(asy.infure_cost) AS infure_cost,
+                SUM(asy.infure_berat_loss) AS infure_berat_loss,
+                SUM(asy.panjang_produksi) AS panjang_produksi,
+                SUM(asy.panjang_printing_inline) AS panjang_printing_inline,
+                SUM(asy.infure_cost_printing) AS infure_cost_printing,
+                COALESCE(MAX(jam.work_hour), 0) AS work_hour_mm,
+                COALESCE(MAX(jam.off_hour), 0) AS work_hour_off_mm,
+                COALESCE(MAX(jam.on_hour), 0) AS work_hour_on_mm
+            FROM
+                tdProduct_Assembly AS asy
+            LEFT JOIN
+                jam ON asy.machine_id = jam.machine_id
+            LEFT JOIN
+                msMachine AS mac ON asy.machine_id = mac.ID
+            LEFT JOIN
+                msDepartment AS dep ON mac.department_id = dep.ID
             WHERE
                 asy.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
             GROUP BY
-                asy.machine_id
+                asy.machine_id;
         ");
 
         if (count($data) == 0) {
@@ -905,7 +910,9 @@ class GeneralReportController extends Component
             $activeWorksheet->setCellValue($columnItem . $rowItem, $formatedOffHours);
             $columnItem++;
 
-            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, $jamKerjaMesin['workHours'] > 0 ? $jamKerjaMesin['workHours'] / ($jamKerjaMesin['offHours'] + $jamKerjaMesin['workHours']) : 0);
+            $avgJamKerjaMesin = $jamKerjaMesin['workHours'] > 0 ? $jamKerjaMesin['workHours'] / ($jamKerjaMesin['offHours'] + $jamKerjaMesin['workHours']) : 0;
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, $avgJamKerjaMesin);
+            phpspreadsheet::numberPercentageOrZero($spreadsheet, $columnItem . $rowItem);
             phpspreadsheet::addFullBorder($spreadsheet, $columnMachineNo . $rowItem . ':' . $columnItem . $rowItem);
             phpspreadsheet::styleFont($spreadsheet, $columnMachineNo . $rowItem . ':' . $columnItem . $rowItem, true, 8, 'Calibri');
             $columnItem++;
@@ -1316,7 +1323,9 @@ class GeneralReportController extends Component
             $totalJalanMesin = $jamKerjaMesin['workHours'] + $jamKerjaMesin['offHours'];
             $hours = floor($totalJalanMesin / 60); // Hitung jumlah jam
             $minutes = $totalJalanMesin % 60; // Hitung sisa menit
-            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, $jamKerjaMesin['workHours'] > 0 ? $jamKerjaMesin['workHours'] / ($jamKerjaMesin['offHours'] + $jamKerjaMesin['workHours']) : 0);
+
+            $avgJamKerjaMesin = $jamKerjaMesin['workHours'] > 0 ? $jamKerjaMesin['workHours'] / $totalJalanMesin : 0;
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, $avgJamKerjaMesin);
             phpspreadsheet::numberPercentageOrZero($spreadsheet, $columnItem . $rowItem);
             $columnItem++;
 
