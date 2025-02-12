@@ -8600,39 +8600,20 @@ class GeneralReportController extends Component
             return $response;
         }
 
-        // list produk
-        $listProduct = array_reduce($data, function ($carry, $item) {
-            $carry[$item->product_code] = $item->product_name;
-            return $carry;
-        }, []);
+        $dataFilter = [];
 
-        // nomor lpk
-        $listLpk = array_reduce($data, function ($carry, $item) {
-            $carry[$item->product_code][$item->lpk_no] = $item->lpk_no;
-            return $carry;
-        }, []);
+        foreach ($data as $item) {
+            // List Produk
+            $listProduct[$item->product_code] = $item->product_name;
 
-        // nomor palet
-        $listPalet = array_reduce($data, function ($carry, $item) {
-            $carry[$item->product_code][$item->lpk_no][$item->nomor_palet] = $item->nomor_palet;
-            return $carry;
-        }, []);
+            // List LPK
+            $listLpk[$item->product_code][$item->lpk_no] = $item->lpk_no;
 
-        $dataFilter = array_reduce($data, function ($carry, $item) {
-            if (!isset($carry[$item->product_code])) {
-                $carry[$item->product_code] = [];
-            }
+            // List Palet
+            $listPalet[$item->product_code][$item->lpk_no][$item->nomor_palet] = $item->nomor_palet;
 
-            if (!isset($carry[$item->product_code][$item->lpk_no])) {
-                $carry[$item->product_code][$item->lpk_no] = [];
-            }
-
-            if (!isset($carry[$item->product_code][$item->lpk_no][$item->nomor_palet])) {
-                $carry[$item->product_code][$item->lpk_no][$item->nomor_palet] = [];
-            }
-
-            $carry[$item->product_code][$item->lpk_no][$item->nomor_palet][$item->production_date] = (object)[
-                // 'product_code' => $item->product_code,
+            // Data Filter
+            $dataFilter[$item->product_code][$item->lpk_no][$item->nomor_palet][$item->production_date] = (object) [
                 'production_date' => $item->production_date,
                 'work_shift' => $item->work_shift,
                 'nomor_lot' => $item->nomor_lot,
@@ -8642,11 +8623,8 @@ class GeneralReportController extends Component
                 'kenpin_qty_box_proses' => $item->kenpin_qty_box_proses,
                 'kenpin_qty_loss' => $item->kenpin_qty_loss,
                 'kenpin_qty_box' => $item->kenpin_qty_box,
-
             ];
-
-            return $carry;
-        }, []);
+        }
 
         // index
         $startColumnItem = 'B';
@@ -8656,7 +8634,8 @@ class GeneralReportController extends Component
         $columnNoPalet = 'C';
         $startRowItem = 5;
         $rowItem = $startRowItem;
-        // daftar departemen
+
+        // create excel
         foreach ($listProduct as $productCode => $productName) {
             // Menulis data produk
             $activeWorksheet->setCellValue($startColumnItem . $rowItem, $productName);
@@ -8667,9 +8646,6 @@ class GeneralReportController extends Component
             foreach ($listLpk[$productCode] as $noLPK) {
                 // Menulis data no lpk
                 $activeWorksheet->setCellValue($columnNoLPK . $rowItem, $noLPK);
-                // $spreadsheet->getActiveSheet()->mergeCells($columnNoLPK . $rowItem . ':' . $columnNoLPKEnd . $rowItem);
-                // phpspreadsheet::styleFont($spreadsheet, $columnNoLPK . $rowItem, true, 9, 'Calibri');
-                // $rowItem++;
                 // daftar palet
                 foreach ($listPalet[$productCode][$noLPK] as $palet) {
                     if ($dataFilter[$productCode][$noLPK][$palet] == null) {
@@ -8677,12 +8653,10 @@ class GeneralReportController extends Component
                     }
                     // Menulis data palet
                     $spreadsheet->getActiveSheet()->setCellValue($columnNoPalet . $rowItem, $palet);
-                    // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
 
                     // memasukkan data
                     $dataItem = $dataFilter[$productCode][$noLPK][$palet];
                     foreach ($dataItem as $item) {
-                        // $spreadsheet->getActiveSheet()->mergeCells($columnProductGroup . $rowItem . ':' . $columnProductGroupEnd . $rowItem);
                         $columnItem = $startColumnItemData;
                         // tanggal produksi
                         $activeWorksheet->setCellValue($columnItem . $rowItem, $item->production_date);
