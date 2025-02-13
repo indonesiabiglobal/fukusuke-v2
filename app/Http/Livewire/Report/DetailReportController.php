@@ -218,18 +218,29 @@ class DetailReportController extends Component
             return $response;
         }
 
-        $listProduct = array_reduce($data, function ($carry, $item) {
-            $carry[$item->product_id] = $item->produkcode . ' - ' . $item->namaproduk;
-            return $carry;
-        }, []);
+        $listProduct = [];
+        $listProductionDate = [];
+        $listWorkHour = [];
+        $dataFiltered = [];
 
-        $listProductionDate = array_reduce($data, function ($carry, $item) {
-            $carry[$item->product_id][$item->tglproduksi] = $item->tglproduksi;
-            return $carry;
-        }, []);
+        // grand total
+        $totalPanjangProduksi = 0;
+        $totalBeratProduksi = 0;
+        $totalLoss = 0;
 
-        $listWorkHour = array_reduce($data, function ($carry, $item) {
-            $carry[$item->product_id][$item->tglproduksi][$item->jam] = [
+        foreach ($data as $item) {
+            // Menyusun daftar produk
+            if (!isset($listProduct[$item->product_id])) {
+                $listProduct[$item->product_id] = $item->produkcode . ' - ' . $item->namaproduk;
+            }
+
+            // Menyusun daftar tanggal produksi
+            if (!isset($listProductionDate[$item->product_id][$item->tglproduksi])) {
+                $listProductionDate[$item->product_id][$item->tglproduksi] = $item->tglproduksi;
+            }
+
+            // Menyusun daftar jam kerja
+            $listWorkHour[$item->product_id][$item->tglproduksi][$item->jam] = [
                 'tglproduksi' => $item->tglproduksi,
                 'shift' => $item->shift,
                 'jam' => $item->jam,
@@ -245,16 +256,17 @@ class DetailReportController extends Component
                 'losscode' => $item->losscode,
                 'lossname' => $item->lossname,
             ];
-            return $carry;
-        }, []);
 
-        $dataFiltered = array_reduce($data, function ($carry, $item) {
-            $carry[$item->product_id][$item->tglproduksi][$item->jam][$item->losscode] = (object)[
+            // Menyusun data terfilter
+            $dataFiltered[$item->product_id][$item->tglproduksi][$item->jam][$item->losscode] = (object)[
                 'lossname' => $item->lossname,
                 'berat_loss' => $item->berat_loss,
             ];
-            return $carry;
-        }, []);
+
+            $totalPanjangProduksi += $item->panjang_produksi;
+            $totalBeratProduksi += $item->berat_produksi;
+            $totalLoss += $item->berat_loss;
+        }
 
         // index
         $rowItemStart = 4;
@@ -264,7 +276,6 @@ class DetailReportController extends Component
         foreach ($listProduct as $productId => $productName) {
             // Menulis data produk
             $activeWorksheet->setCellValue($columnItemStart . $rowItem, $productName);
-            // $spreadsheet->getActiveSheet()->mergeCells($columnItemStart . $rowItem . ':' . $endColumnItem . $rowItem);
             phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItem, true, 9, 'Calibri');
             $columnItemEnd = $columnItemStart;
             $rowItem++;
@@ -355,30 +366,18 @@ class DetailReportController extends Component
         phpSpreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItem, true, 9, 'Calibri');
         $columnItemEnd++;
 
-        // panjang produksi
-        $totalPanjangProduksi = array_reduce($data, function ($carry, $item) {
-            $carry += $item->panjang_produksi;
-            return $carry;
-        }, 0);
+        // Set Panjang Produksi
         $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $totalPanjangProduksi);
         phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItemEnd . $rowItem);
         $columnItemEnd++;
 
-        // berat produksi
-        $totalBeratProduksi = array_reduce($data, function ($carry, $item) {
-            $carry += $item->berat_produksi;
-            return $carry;
-        }, 0);
+        // Set Berat Produksi
         $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $totalBeratProduksi);
         phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItemEnd . $rowItem);
         $columnItemEnd++;
 
         // Loss
-        $columnItemEnd = 'O';
-        $totalLoss = array_reduce($data, function ($carry, $item) {
-            $carry += $item->berat_loss;
-            return $carry;
-        }, 0);
+        $columnItemEnd = 'N';
         $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $totalLoss);
         phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItemEnd . $rowItem);
         phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItem . ':' . $columnItemEnd . $rowItem, true, 8, 'Calibri');
@@ -743,7 +742,6 @@ class DetailReportController extends Component
                     $activeWorksheet->setCellValue($columnItem . $rowItemGentan, $item['infure_berat_loss']);
                     phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItemGentan);
                     $rowItemGentan++;
-
                 }
 
                 $rowItem = $rowItemGentan > $rowItemLoss ? $rowItemGentan : $rowItemLoss;
