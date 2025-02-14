@@ -10,6 +10,8 @@ use App\Models\MsWorkingShift;
 use App\Helpers\phpspreadsheet;
 use Illuminate\Support\Facades\DB;
 use App\Exports\DetailReportExport;
+use App\Exports\InfureReportExport;
+use App\Http\Livewire\Report\DetailReportInfureController;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -87,13 +89,30 @@ class DetailReportController extends Component
         $tglAkhir = Carbon::parse($this->tglAkhir . ' ' . $this->jamAkhir);
 
         if ($this->nippo == 'Infure') {
-            $response = $this->reportInfure($tglAwal, $tglAkhir);
-            if ($response['status'] == 'success') {
-                return response()->download($response['filename']);
-            } else if ($response['status'] == 'error') {
-                $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
-                return;
-            }
+            // $response = $this->reportInfure($tglAwal, $tglAkhir);
+            // if ($response['status'] == 'success') {
+            //     return response()->download($response['filename']);
+            // } else if ($response['status'] == 'error') {
+            //     $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+            //     return;
+            // }
+
+            $report = new DetailReportInfureController();
+            $result = $report->generateReport(
+                $tglAwal,
+                $tglAkhir,
+                [
+                    'lpk_no' => $this->lpk_no,
+                    'machine_id' => $this->machineId,
+                    'nippo' => $this->nippo,
+                    'nomorOrder' => $this->nomorOrder,
+                    'departmentId' => $this->departmentId,
+                    'nomorHan' => $this->nomorHan,
+                    // tambahkan filter lain yang diperlukan
+                ]
+            );
+
+            return response()->download($result['filename']);
         } else if ($this->nippo == 'Seitai') {
             $response = $this->reportSeitai($tglAwal, $tglAkhir);
             if ($response['status'] == 'success') {
