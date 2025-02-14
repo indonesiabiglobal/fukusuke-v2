@@ -95,6 +95,7 @@ Route::get('/forget-password', \App\Http\Livewire\Auth\ForgetPassword::class)->n
 Route::get('/new-password', \App\Http\Livewire\Auth\NewPassword::class);
 Route::get('/logout', [App\Http\Controllers\HomeController::class, 'logout']);
 Route::get('index/{locale}', [App\Http\Controllers\HomeController::class, 'lang']);
+Route::get('phpinfo', [App\Http\Controllers\HomeController::class, 'phpinfo']);
 
 Route::group(['middleware' => 'auth'], function () {
     // Order LPK
