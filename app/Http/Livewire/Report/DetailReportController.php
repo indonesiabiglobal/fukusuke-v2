@@ -108,19 +108,35 @@ class DetailReportController extends Component
                     'nomorOrder' => $this->nomorOrder,
                     'departmentId' => $this->departmentId,
                     'nomorHan' => $this->nomorHan,
-                    // tambahkan filter lain yang diperlukan
                 ]
             );
 
             return response()->download($result['filename']);
         } else if ($this->nippo == 'Seitai') {
-            $response = $this->reportSeitai($tglAwal, $tglAkhir);
-            if ($response['status'] == 'success') {
-                return response()->download($response['filename']);
-            } else if ($response['status'] == 'error') {
-                $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
-                return;
-            }
+            // $response = $this->reportSeitai($tglAwal, $tglAkhir);
+            // if ($response['status'] == 'success') {
+            //     return response()->download($response['filename']);
+            // } else if ($response['status'] == 'error') {
+            //     $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+            //     return;
+            // }
+
+            $report = new DetailReportSeitaiController();
+            $result = $report->generateReport(
+                $tglAwal,
+                $tglAkhir,
+                [
+                    'lpk_no' => $this->lpk_no,
+                    'machine_id' => $this->machineId,
+                    'nippo' => $this->nippo,
+                    'nomorOrder' => $this->nomorOrder,
+                    'departmentId' => $this->departmentId,
+                    'nomorPalet' => $this->nomorPalet,
+                    'nomorLot' => $this->nomorLot,
+                ]
+            );
+
+            return response()->download($result['filename']);
         }
     }
 
