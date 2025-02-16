@@ -302,7 +302,7 @@ class DetailReportSeitaiController
 
 
         // Cache header styles
-        $this->cacheStyle('A3:N3', [
+        $this->cacheStyle('A3:V3', [
             'font' => ['bold' => true, 'size' => 9, 'name' => 'Calibri'],
             'alignment' => ['horizontal' => 'center', 'vertical' => 'center'],
             'borders' => ['allBorders' => ['borderStyle' => 'thin']]
@@ -320,13 +320,15 @@ class DetailReportSeitaiController
                 'font' => ['bold' => true, 'size' => 9, 'name' => 'Calibri']
             ]);
             $currentRow++;
+            $startRow = $currentRow;
 
             foreach ($data['productionDates'][$productCode] as $date => $baseData) {
                 $rowItemStart = $currentRow;
                 $maxRow = $currentRow;
+                $productionDate = Carbon::parse($date)->translatedFormat('d-M-Y');
 
                 // Write base data
-                $this->writeBaseData($currentRow, $baseData);
+                $this->writeBaseData($currentRow, $baseData, $productionDate);
 
                 // Write loss data if exists
                 $rowLoss = $currentRow;
@@ -347,21 +349,39 @@ class DetailReportSeitaiController
                     }
                     $maxRow = max($maxRow, $rowGentan);
                 }
-
                 // Apply styles for the entire data block
                 $this->applyDataBlockStyles($rowItemStart, $maxRow);
 
                 $currentRow = $maxRow + 1;
             }
+            $this->applyProductBlockStyles($startRow, $maxRow);
         }
+
+        // Cache number format for quantity
+        $this->cacheStyle("J", [
+            'numberFormat' => ['formatCode' => '#,##0']
+        ]);
+
+        // Cache number format for weight
+        $this->cacheStyle("L", [
+            'numberFormat' => ['formatCode' => '#,##0']
+        ]);
+
+        // Cache number formats
+        $this->cacheStyle("N", [
+            'numberFormat' => ['formatCode' => '#,##0']
+        ]);
+        $this->cacheStyle("V", [
+            'numberFormat' => ['formatCode' => '#,##0']
+        ]);
 
         $this->currentRow = $currentRow; // Save for grand total
     }
 
-    private function writeBaseData($row, $data)
+    private function writeBaseData($row, $data, $productionDate)
     {
         $columns = [
-            'A' => Carbon::parse($data['production_date'])->translatedFormat('d-M-Y'),
+            'A' => $productionDate,
             'B' => $data['namapetugas'],
             'C' => $data['deptpetugas'],
             'D' => $data['nomesin'],
@@ -376,22 +396,12 @@ class DetailReportSeitaiController
         foreach ($columns as $column => $value) {
             $this->worksheet->setCellValue($column . $row, $value);
         }
-
-        // Cache number format for quantity
-        $this->cacheStyle("J{$row}", [
-            'numberFormat' => ['formatCode' => '#,##0']
-        ]);
     }
 
     private function writeLossData($row, $data)
     {
         $this->worksheet->setCellValue('K' . $row, $data['name']);
         $this->worksheet->setCellValue('L' . $row, $data['weight']);
-
-        // Cache number format for weight
-        $this->cacheStyle("L{$row}", [
-            'numberFormat' => ['formatCode' => '#,##0']
-        ]);
     }
 
     private function writeGentanData($row, $data)
@@ -412,21 +422,24 @@ class DetailReportSeitaiController
         foreach ($columns as $column => $value) {
             $this->worksheet->setCellValue($column . $row, $value);
         }
-
-        // Cache number formats
-        $this->cacheStyle("N{$row}", [
-            'numberFormat' => ['formatCode' => '#,##0']
-        ]);
-        $this->cacheStyle("V{$row}", [
-            'numberFormat' => ['formatCode' => '#,##0']
-        ]);
     }
 
     private function applyDataBlockStyles($startRow, $endRow)
     {
         // Apply font and alignment for the entire block
+        $this->cacheStyle("A{$startRow}:V{$startRow}", [
+            'borders' => ['allBorders' => ['borderStyle' => 'thin']]
+        ]);
+        $this->cacheStyle("K{$startRow}:V{$endRow}", [
+            'borders' => ['allBorders' => ['borderStyle' => 'thin']]
+        ]);
+    }
+
+    private function applyProductBlockStyles($startRow, $endRow)
+    {
+        // Apply font and alignment for the entire block
         $this->cacheStyle("A{$startRow}:V{$endRow}", [
-            'font' => ['size' => 8, 'name' => 'Calibri']
+            'font' => ['size' => 8, 'name' => 'Calibri'],
         ]);
 
         // Center align specific columns
@@ -438,11 +451,6 @@ class DetailReportSeitaiController
         ]);
         $this->cacheStyle("O{$startRow}:S{$endRow}", [
             'alignment' => ['horizontal' => 'center']
-        ]);
-
-        // Add borders
-        $this->cacheStyle("A{$startRow}:V{$endRow}", [
-            'borders' => ['allBorders' => ['borderStyle' => 'thin']]
         ]);
     }
 
@@ -493,15 +501,8 @@ class DetailReportSeitaiController
 
         // Set auto width untuk semua kolom yang digunakan
         $columnItemStart = 'A';
-        $columnItemEnd = 'N';
+        $columnItemEnd = 'V';
         $this->worksheet->getStyle($columnItemStart . 3 . ':' . $columnItemEnd . 3)->getAlignment()->setWrapText(true);
-        $this->worksheet->getColumnDimension('A')->setWidth(9.0);
-
-        $columnItemStart++;
-        while ($columnItemStart !== $columnItemEnd) {
-            $this->worksheet->getColumnDimension($columnItemStart)->setAutoSize(true);
-            $columnItemStart++;
-        }
     }
 
     private function saveReport($nippo)
