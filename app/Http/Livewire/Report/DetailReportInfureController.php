@@ -310,19 +310,16 @@ class DetailReportInfureController
                             $this->worksheet->setCellValue('N' . $currentRow, $loss['weight']);
                             $currentRow++;
                         }
-                        $this->applyLossDataBlockStyles($rowItemStart, $currentRow);
-                    } else {
-                        $currentRow++;
+                        if (count($details['loss']) > 1) {
+                            $this->applyLossDataBlockStyles($rowItemStart, $currentRow);
+                        }
                     }
+                    $currentRow++;
                     $this->applyDataBlockStyles($rowItemStart);
                 }
             }
             $this->applyProductBlockStyles($startRow, $currentRow);
         }
-
-        $this->cacheStyle("K4:L{$currentRow}", [
-            'numberFormat' => ['formatCode' => '#,##0']
-        ]);
 
         $this->currentRow = $currentRow; // Simpan posisi baris terakhir untuk grand total
     }
@@ -349,9 +346,6 @@ class DetailReportInfureController
             'font' => ['size' => 8, 'name' => 'Calibri'],
         ]);
         $this->cacheStyle("A{$startRow}:F{$endRow}", [
-            'alignment' => ['horizontal' => 'center'],
-        ]);
-        $this->cacheStyle("H{$startRow}:J{$endRow}", [
             'alignment' => ['horizontal' => 'center'],
         ]);
     }
@@ -392,16 +386,14 @@ class DetailReportInfureController
         ]);
 
         // Format angka untuk kolom total
-        $this->cacheStyle("K{$row}:L{$row}", [
+        $this->cacheStyle("K5:L{$row}", [
             'numberFormat' => [
                 'formatCode' => '#,##0'
             ]
         ]);
 
-        $this->cacheStyle("N{$row}", [
-            'numberFormat' => [
-                'formatCode' => '#,##0'
-            ]
+        $this->cacheStyle("H5:J{$row}", [
+            'alignment' => ['horizontal' => 'center'],
         ]);
     }
 }
