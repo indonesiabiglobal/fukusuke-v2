@@ -228,7 +228,6 @@ class DetailReportInfureController
         }
 
         $this->worksheet->freezePane('A4');
-        $this->worksheet->setShowGridlines(false);
         $this->worksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
 
 
@@ -255,13 +254,6 @@ class DetailReportInfureController
         $columnItemStart = 'A';
         $columnItemEnd = 'N';
         $this->worksheet->getStyle($columnItemStart . 3 . ':' . $columnItemEnd . 3)->getAlignment()->setWrapText(true);
-        $this->worksheet->getColumnDimension('A')->setWidth(9.0);
-
-        $columnItemStart++;
-        while ($columnItemStart !== $columnItemEnd) {
-            $this->worksheet->getColumnDimension($columnItemStart)->setAutoSize(true);
-            $columnItemStart++;
-        }
     }
 
     private function saveReport($nippo)
@@ -292,6 +284,7 @@ class DetailReportInfureController
             // Tulis detail untuk setiap produk
             foreach ($data['workHours'][$productId] as $date => $hours) {
                 foreach ($hours as $hour => $details) {
+                    $rowItemStart = $currentRow;
                     $baseData = $details['base'];
 
                     // Tulis data dasar dalam satu baris
@@ -310,57 +303,57 @@ class DetailReportInfureController
                         $baseData['berat_produksi']
                     ]);
 
-                    // Cache style untuk center alignment
-                    // $this->cacheStyle("A{$currentRow}:N{$currentRow}", [
-                    //     'font' => ['size' => 8, 'name' => 'Calibri'],
-                    //     'alignment' => ['horizontal' => 'center'],
-                    // ]);
-
-                    // Format angka untuk kolom panjang dan berat produksi
-                    $this->cacheStyle("K{$currentRow}:L{$currentRow}", [
-                        'numberFormat' => ['formatCode' => '#,##0']
-                    ]);
-
                     // Tulis data loss jika ada
                     if (!empty($details['loss'])) {
                         foreach ($details['loss'] as $loss) {
                             $this->worksheet->setCellValue('M' . $currentRow, $loss['name']);
                             $this->worksheet->setCellValue('N' . $currentRow, $loss['weight']);
-
-                            // Format angka untuk berat loss
-                            $this->cacheStyle("N{$currentRow}", [
-                                'numberFormat' => ['formatCode' => '#,##0']
-                            ]);
-
-                            // Border untuk baris loss
-                            $this->cacheStyle("A{$currentRow}:N{$currentRow}", [
-                                'borders' => ['allBorders' => ['borderStyle' => 'thin']]
-                            ]);
-
                             $currentRow++;
                         }
+                        $this->applyLossDataBlockStyles($rowItemStart, $currentRow);
                     } else {
-                        // Jika tidak ada loss, tetap beri border
-                        $this->cacheStyle("A{$currentRow}:N{$currentRow}", [
-                            'borders' => ['allBorders' => ['borderStyle' => 'thin']]
-                        ]);
                         $currentRow++;
                     }
+                    $this->applyDataBlockStyles($rowItemStart);
                 }
             }
-            $this->cacheStyle("A{$startRow}:N{$currentRow}", [
-                'font' => ['size' => 8, 'name' => 'Calibri'],
-            ]);
-            $this->cacheStyle("A{$startRow}:F{$currentRow}", [
-                'alignment' => ['horizontal' => 'center'],
-            ]);
-            $this->cacheStyle("H{$startRow}:J{$currentRow}", [
-                'alignment' => ['horizontal' => 'center'],
-            ]);
-            $currentRow++; // Tambah spasi setelah setiap produk
+            $this->applyProductBlockStyles($startRow, $currentRow);
         }
 
+        $this->cacheStyle("K4:L{$currentRow}", [
+            'numberFormat' => ['formatCode' => '#,##0']
+        ]);
+
         $this->currentRow = $currentRow; // Simpan posisi baris terakhir untuk grand total
+    }
+
+    private function applyDataBlockStyles($startRow)
+    {
+        // Apply font and alignment for the entire block
+        $this->cacheStyle("A{$startRow}:N{$startRow}", [
+            'borders' => ['allBorders' => ['borderStyle' => 'thin']]
+        ]);
+    }
+
+    private function applyLossDataBlockStyles($startRow, $endRow)
+    {
+        $startRow++;
+        $this->cacheStyle("M{$startRow}:N{$endRow}", [
+            'borders' => ['allBorders' => ['borderStyle' => 'thin']]
+        ]);
+    }
+
+    private function applyProductBlockStyles($startRow, $endRow)
+    {
+        $this->cacheStyle("A{$startRow}:N{$endRow}", [
+            'font' => ['size' => 8, 'name' => 'Calibri'],
+        ]);
+        $this->cacheStyle("A{$startRow}:F{$endRow}", [
+            'alignment' => ['horizontal' => 'center'],
+        ]);
+        $this->cacheStyle("H{$startRow}:J{$endRow}", [
+            'alignment' => ['horizontal' => 'center'],
+        ]);
     }
 
     private function writeRowData($row, $data)
