@@ -357,24 +357,6 @@ class DetailReportSeitaiController
             $this->applyProductBlockStyles($startRow, $maxRow);
         }
 
-        // Cache number format for quantity
-        $this->cacheStyle("J", [
-            'numberFormat' => ['formatCode' => '#,##0']
-        ]);
-
-        // Cache number format for weight
-        $this->cacheStyle("L", [
-            'numberFormat' => ['formatCode' => '#,##0']
-        ]);
-
-        // Cache number formats
-        $this->cacheStyle("N", [
-            'numberFormat' => ['formatCode' => '#,##0']
-        ]);
-        $this->cacheStyle("V", [
-            'numberFormat' => ['formatCode' => '#,##0']
-        ]);
-
         $this->currentRow = $currentRow; // Save for grand total
     }
 
@@ -430,6 +412,8 @@ class DetailReportSeitaiController
         $this->cacheStyle("A{$startRow}:V{$startRow}", [
             'borders' => ['allBorders' => ['borderStyle' => 'thin']]
         ]);
+
+        $startRow++;
         $this->cacheStyle("K{$startRow}:V{$endRow}", [
             'borders' => ['allBorders' => ['borderStyle' => 'thin']]
         ]);
@@ -443,14 +427,23 @@ class DetailReportSeitaiController
         ]);
 
         // Center align specific columns
-        $this->cacheStyle("A{$startRow}:C{$endRow}", [
+        $this->cacheStyle("A{$startRow}:C{$startRow}", [
             'alignment' => ['horizontal' => 'center']
         ]);
-        $this->cacheStyle("E{$startRow}:I{$endRow}", [
+        $this->cacheStyle("E{$startRow}:I{$startRow}", [
             'alignment' => ['horizontal' => 'center']
         ]);
         $this->cacheStyle("O{$startRow}:S{$endRow}", [
             'alignment' => ['horizontal' => 'center']
+        ]);
+
+        $this->cacheStyle("J{$startRow}", [
+            'numberFormat' => ['formatCode' => '#,##0']
+        ]);
+
+        // Cache number formats
+        $this->cacheStyle("N{$startRow}:N{$endRow}", [
+            'numberFormat' => ['formatCode' => '#,##0']
         ]);
     }
 
@@ -500,14 +493,12 @@ class DetailReportSeitaiController
         }
 
         // Set auto width untuk semua kolom yang digunakan
-        $columnItemStart = 'A';
-        $columnItemEnd = 'V';
-        $this->worksheet->getStyle($columnItemStart . 3 . ':' . $columnItemEnd . 3)->getAlignment()->setWrapText(true);
+        $this->worksheet->getStyle('A3:V3')->getAlignment()->setWrapText(true);
     }
 
     private function saveReport($nippo)
     {
-        $filename = 'Detail-Produksi-' . $nippo . '-New.xlsx';
+        $filename = 'Detail-Produksi-' . $nippo . '.xlsx';
         $writer = new Xlsx($this->spreadsheet);
         $writer->save($filename);
 
