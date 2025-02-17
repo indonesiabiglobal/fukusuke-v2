@@ -111,7 +111,7 @@ class DetailReportController extends Component
                 ]
             );
 
-            return response()->download($result['filename'])->deleteFileAfterSend(true);;
+            return response()->download($result['filename'])->deleteFileAfterSend(true);
         } else if ($this->nippo == 'Seitai') {
             // $response = $this->reportSeitai($tglAwal, $tglAkhir);
             // if ($response['status'] == 'success') {
@@ -136,7 +136,7 @@ class DetailReportController extends Component
                 ]
             );
 
-            return response()->download($result['filename'])->deleteFileAfterSend(true); ;
+            return response()->download($result['filename'])->deleteFileAfterSend(true);
         }
     }
 
