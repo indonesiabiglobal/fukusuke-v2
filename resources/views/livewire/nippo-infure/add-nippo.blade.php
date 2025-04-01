@@ -8,8 +8,8 @@
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Tanggal Produksi</label>
                                 {{-- <input class="form-control datepicker-input"  style="padding:0.44rem" type="datetime-local" wire:model.defer="production_date" /> --}}
-                                <input class="form-control @error('production_date') is-invalid @enderror" type="text" style="padding:0.44rem"
-                                    data-provider="flatpickr" data-date-format="d/m/Y"
+                                <input class="form-control @error('production_date') is-invalid @enderror" type="text"
+                                    style="padding:0.44rem" data-provider="flatpickr" data-date-format="d/m/Y"
                                     data-maxDate="{{ now()->format('d/m/Y') }}" wire:model.change="production_date"
                                     placeholder="yyyy/mm/dd" />
                                 <span class="input-group-text py-0">
@@ -25,9 +25,10 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Tanggal Proses</label>
-                                <input class="form-control bg-light @error('created_on') is-invalid @enderror" readonly="readonly" disabled type="text"
-                                    style="padding:0.44rem" data-provider="flatpickr" data-date-format="d/m/Y"
-                                    wire:model.defer="created_on" placeholder="yyyy/mm/dd" />
+                                <input class="form-control bg-light @error('created_on') is-invalid @enderror"
+                                    readonly="readonly" disabled type="text" style="padding:0.44rem"
+                                    data-provider="flatpickr" data-date-format="d/m/Y" wire:model.defer="created_on"
+                                    placeholder="yyyy/mm/dd" />
                                 <span class="input-group-text py-0">
                                     <i class="ri-calendar-event-fill fs-4"></i>
                                 </span>
@@ -88,8 +89,9 @@
                                         lpk_no = value.substring(0, 10);
                                     }
                                 })">
-                                    <input class="form-control @error('lpk_no') is-invalid @enderror" style="padding:0.44rem" type="text"
-                                        placeholder="000000-000" x-model="lpk_no" maxlength="10"
+                                    <input class="form-control @error('lpk_no') is-invalid @enderror"
+                                        style="padding:0.44rem" type="text" placeholder="000000-000" x-model="lpk_no"
+                                        maxlength="10"
                                         x-on:keydown.tab="$event.preventDefault(); $refs.machineInput.focus();" />
                                 </div>
                                 @error('lpk_no')
@@ -106,9 +108,10 @@
                                 <span class="input-group-text py-0">
                                     <i class="ri-calendar-event-fill fs-4"></i>
                                 </span> --}}
-                                <input class="form-control readonly datepicker-input bg-light @error('lpk_date') is-invalid @enderror" readonly="readonly"
-                                    type="text" style="padding:0.44rem" wire:model.defer="lpk_date"
-                                    placeholder="yyyy/mm/dd" />
+                                <input
+                                    class="form-control readonly datepicker-input bg-light @error('lpk_date') is-invalid @enderror"
+                                    readonly="readonly" type="text" style="padding:0.44rem"
+                                    wire:model.defer="lpk_date" placeholder="yyyy/mm/dd" />
                                 <span class="input-group-text py-0">
                                     <i class="ri-calendar-event-fill fs-4"></i>
                                 </span>
@@ -122,7 +125,8 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label pe-2">Panjang LPK</label>
-                                <input type="text" placeholder="-" class="form-control readonly bg-light @error('panjang_lpk') is-invalid @enderror"
+                                <input type="text" placeholder="-"
+                                    class="form-control readonly bg-light @error('panjang_lpk') is-invalid @enderror"
                                     readonly="readonly" wire:model="panjang_lpk" />
                                 <span class="input-group-text">
                                     m
@@ -143,7 +147,8 @@
                                         Nomor Order
                                     </a>
                                 </label>
-                                <input type="text" placeholder="-" class="form-control readonly bg-light @error('code') is-invalid @enderror"
+                                <input type="text" placeholder="-"
+                                    class="form-control readonly bg-light @error('code') is-invalid @enderror"
                                     readonly="readonly" wire:model="code" />
                                 @error('code')
                                     <span class="invalid-feedback">{{ $message }}</span>
@@ -155,7 +160,8 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label"></label>
-                                <input type="text" placeholder="-" class="form-control readonly bg-light @error('name') is-invalid @enderror"
+                                <input type="text" placeholder="-"
+                                    class="form-control readonly bg-light @error('name') is-invalid @enderror"
                                     readonly="readonly" wire:model="name" />
                                 @error('name')
                                     <span class="invalid-feedback">{{ $message }}</span>
@@ -209,7 +215,8 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label"></label>
-                                <input type="text" placeholder="-" class="form-control readonly bg-light @error('empname') is-invalid @enderror"
+                                <input type="text" placeholder="-"
+                                    class="form-control readonly bg-light @error('empname') is-invalid @enderror"
                                     readonly="readonly" wire:model="empname" />
                                 @error('empname')
                                     <span class="invalid-feedback">{{ $message }}</span>
@@ -221,7 +228,8 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5">Dimensi Infure</label>
-                                <input type="text" placeholder="-" class="form-control readonly bg-light @error('dimensiinfure') is-invalid @enderror"
+                                <input type="text" placeholder="-"
+                                    class="form-control readonly bg-light @error('dimensiinfure') is-invalid @enderror"
                                     readonly="readonly" wire:model="dimensiinfure" />
                                 <span class="input-group-text">
                                     mm
@@ -236,7 +244,8 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-3">Meter Gulung</label>
-                                <input type="text" placeholder="-" class="form-control readonly bg-light @error('qty_gulung') is-invalid @enderror"
+                                <input type="text" placeholder="-"
+                                    class="form-control readonly bg-light @error('qty_gulung') is-invalid @enderror"
                                     readonly="readonly" wire:model="qty_gulung" />
                                 <span class="input-group-text">
                                     m
@@ -247,8 +256,9 @@
 
                                 <input type="text" class="form-control readonly bg-light" readonly="readonly"
                                     placeholder=" .. X .." />
-                                <input type="text" class="form-control readonly bg-light @error('qty_gentan') is-invalid @enderror" readonly="readonly"
-                                    wire:model="qty_gentan" />
+                                <input type="text"
+                                    class="form-control readonly bg-light @error('qty_gentan') is-invalid @enderror"
+                                    readonly="readonly" wire:model="qty_gentan" />
                                 <span class="input-group-text">
                                     roll
                                 </span>
@@ -284,7 +294,8 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-6">Total Panjang Produksi</label>
-                                <input type="text" placeholder="0" class="form-control readonly bg-light @error('total_assembly_line') is-invalid @enderror"
+                                <input type="text" placeholder="0"
+                                    class="form-control readonly bg-light @error('total_assembly_line') is-invalid @enderror"
                                     readonly="readonly" value="{{ number_format($total_assembly_line) }}" />
                                 <span class="input-group-text">
                                     m
@@ -299,7 +310,8 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-3">Selisih</label>
-                                <input type="text" placeholder="0" class="form-control readonly bg-light @error('selisih') is-invalid @enderror"
+                                <input type="text" placeholder="0"
+                                    class="form-control readonly bg-light @error('selisih') is-invalid @enderror"
                                     readonly="readonly" wire:model="selisih" />
                                 <span class="input-group-text">
                                     m
@@ -336,7 +348,8 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-6">Berat Standard</label>
-                                <input type="text" placeholder="0" class="form-control readonly bg-light @error('berat_standard') is-invalid @enderror"
+                                <input type="text" placeholder="0"
+                                    class="form-control readonly bg-light @error('berat_standard') is-invalid @enderror"
                                     readonly="readonly" wire:model="berat_standard" />
                                 <span class="input-group-text">
                                     kg
@@ -359,7 +372,8 @@
                                         <span class="text-danger">Rasio melebihi</span>
                                     @endif
                                 </label>
-                                <input type="text" placeholder="0" class="form-control readonly bg-light @error('rasio') is-invalid @enderror"
+                                <input type="text" placeholder="0"
+                                    class="form-control readonly bg-light @error('rasio') is-invalid @enderror"
                                     readonly="readonly" wire:model="rasio" />
                                 <span class="input-group-text">
                                     %
@@ -377,8 +391,9 @@
                                 {{-- <input class="form-control" wire:model="work_hour" type="time" placeholder="hh:mm"
                                 x-ref="work_hour"> --}}
                                 <input class="form-control @error('work_hour') is-invalid @enderror"
-                                    wire:model.change="work_hour" type="time" placeholder="HH:mm" max="{{ now()->format('H:i') }}"
-                                    x-ref="work_hour" title="Format waktu harus HH:mm">
+                                    wire:model.change="work_hour" type="time" placeholder="HH:mm"
+                                    max="{{ now()->format('H:i') }}" x-ref="work_hour"
+                                    title="Format waktu harus HH:mm">
                                 {{-- <span class="input-group-text py-0">
                                     <i class="ri-time-line fs-5"></i>
                                 </span> --}}
@@ -393,8 +408,9 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-4">Shift Kerja</label>
-                                <input type="text" class="form-control readonly bg-light @error('work_shift') is-invalid @enderror" readonly="readonly"
-                                    wire:model="work_shift" />
+                                <input type="text"
+                                    class="form-control readonly bg-light @error('work_shift') is-invalid @enderror"
+                                    readonly="readonly" wire:model="work_shift" />
                                 @error('work_shift')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -432,8 +448,9 @@
                                         nomor_han = value.substring(0, 12);
                                     }
                                 })">
-                                    <input class="form-control @error('nomor_han') is-invalid @enderror" style="padding:0.44rem" type="text"
-                                        placeholder="00-00-00-00A" x-model="nomor_han" maxlength="12"
+                                    <input class="form-control @error('nomor_han') is-invalid @enderror"
+                                        style="padding:0.44rem" type="text" placeholder="00-00-00-00A"
+                                        x-model="nomor_han" maxlength="12"
                                         x-on:keydown.tab="$event.preventDefault(); $refs.nomor_barcode.focus();" />
                                 </div>
                                 @error('nomor_han')
@@ -447,10 +464,10 @@
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Nomor Barcode</label>
                                 <input type="text"
-                                       class="form-control @error('nomor_barcode') is-invalid @enderror"
-                                       wire:model.change="nomor_barcode"
-                                       x-on:keydown.tab="$event.preventDefault(); $refs.gentan_no.focus();"
-                                       x-ref="nomor_barcode" required/>
+                                    class="form-control @error('nomor_barcode') is-invalid @enderror"
+                                    wire:model.change="nomor_barcode"
+                                    x-on:keydown.tab="$event.preventDefault(); $refs.gentan_no.focus();"
+                                    x-ref="nomor_barcode" required />
                                 @error('nomor_barcode')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -461,8 +478,9 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Nomor Gentan</label>
-                                <input type="text" class="form-control bg-light @error('gentan_no') is-invalid @enderror" readonly="readonly"
-                                    wire:model="gentan_no" x-ref="gentan_no" />
+                                <input type="text"
+                                    class="form-control bg-light @error('gentan_no') is-invalid @enderror"
+                                    readonly="readonly" wire:model="gentan_no" x-ref="gentan_no" />
                                 @error('gentan_no')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -539,9 +557,9 @@
                                     <div class="input-group">
                                         <label class="col-12 col-lg-2 fw-bold text-muted">Kode Loss </label>
                                         <input id="inputKodeLoss" class="form-control" type="text"
-                                            wire:model.change="loss_infure_id" placeholder="..."
+                                            wire:model.change="loss_infure_code" placeholder="..."
                                             x-on:keydown.tab="$event.preventDefault(); $refs.berat_loss.focus();" />
-                                        @error('loss_infure_id')
+                                        @error('loss_infure_code')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror
                                     </div>
@@ -643,12 +661,23 @@
                             @forelse ($details as $item)
                                 <tr>
                                     <td>
-                                        <button type="button" class="btn btn-danger"
-                                            wire:click="deleteInfure({{ $item['id'] }})">
-                                            <i class="fa fa-trash"></i> Delete
+                                        <button type="button" class="btn btn-danger" wire:click="deleteInfure({{ $item['id'] }})">
+                                            <span wire:loading.remove wire:target="deleteInfure({{ $item['id'] }})">
+                                                <i class="fa fa-trash"></i> Delete
+                                            </span>
+                                            <div wire:loading wire:target="deleteInfure({{ $item['id'] }})">
+                                                <span class="d-flex align-items-center">
+                                                    <span class="spinner-border flex-shrink-0" role="status">
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </span>
+                                                    <span class="flex-grow-1 ms-1">
+                                                        Loading...
+                                                    </span>
+                                                </span>
+                                            </div>
                                         </button>
                                     </td>
-                                    <td>{{ $item['loss_infure_id'] }}</td>
+                                    <td>{{ $item['loss_infure_code'] }}</td>
                                     <td>{{ $item['name_infure'] ?? '' }}</td> {{-- Adjust if you have a 'name_infure' field --}}
                                     <td>{{ $item['berat_loss'] }}</td>
                                     {{-- <td>{{ $item['berat'] }}</td> --}}

@@ -40,6 +40,7 @@ class AddNippoController extends Component
     public $gentan_no;
     public $nomor_han;
     public $name_infure;
+    public $loss_infure_code;
     public $loss_infure_id;
     public $berat_loss;
     public $berat;
@@ -385,6 +386,7 @@ class AddNippoController extends Component
 
         if ($validatedData) {
             $this->loss_infure_id = '';
+            $this->loss_infure_code = '';
             $this->name_infure = '';
             $this->berat_loss = 0;
             $this->berat = 0;
@@ -404,6 +406,7 @@ class AddNippoController extends Component
             $data = [
                 'id' => $this->nextId(),
                 'loss_infure_id' => $this->loss_infure_id,
+                'loss_infure_code' => $this->loss_infure_code,
                 'berat_loss' => $this->berat_loss,
                 'berat' => $this->berat,
                 'frekuensi' => $this->frekuensi,
@@ -616,12 +619,13 @@ class AddNippoController extends Component
             }
         }
 
-        if (isset($this->loss_infure_id) && $this->loss_infure_id != '') {
-            $lossinfure = MsLossInfure::where('code', $this->loss_infure_id)->first();
+        if (isset($this->loss_infure_code) && $this->loss_infure_code != '') {
+            $lossinfure = MsLossInfure::where('code', $this->loss_infure_code)->first();
 
             if ($lossinfure == null) {
-                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->loss_infure_id . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->loss_infure_code . ' Tidak Terdaftar']);
             } else {
+                $this->loss_infure_id = $lossinfure->id;
                 $this->name_infure = $lossinfure->name;
             }
         }
@@ -640,8 +644,6 @@ class AddNippoController extends Component
                 $this->rasio = round(((float)str_replace(',', '', $this->berat_produksi) / $this->berat_standard) * 100, 2);
             }
         }
-
-        // dd($this->details);
 
         return view('livewire.nippo-infure.add-nippo')->extends('layouts.master');
     }
