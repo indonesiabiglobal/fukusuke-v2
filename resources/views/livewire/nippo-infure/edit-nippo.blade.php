@@ -457,8 +457,8 @@
                                     <div class="form-group">
                                         <div class="input-group">
                                             <label class="col-12 col-lg-2 fw-bold text-muted">Kode Loss </label>
-                                            <input id="inputKodeLoss" class="form-control" type="text" wire:model.change="loss_infure_id" placeholder="..."/>
-                                            @error('loss_infure_id')
+                                            <input id="inputKodeLoss" class="form-control" type="text" wire:model.change="loss_infure_code" placeholder="..."/>
+                                            @error('loss_infure_code')
                                                 <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror
                                         </div>
@@ -547,9 +547,9 @@
                                     <div class="form-group">
                                         <div class="input-group">
                                             <label class="col-12 col-lg-2 fw-bold text-muted">Kode Loss </label>
-                                            <input id="inputKodeLoss" class="form-control" type="text" wire:model.change="loss_infure_id" placeholder="..."
+                                            <input id="inputKodeLoss" class="form-control" type="text" wire:model.change="loss_infure_code" placeholder="..."
                                             x-on:keydown.tab="$event.preventDefault(); $refs.berat_loss.focus();"/>
-                                            @error('loss_infure_id')
+                                            @error('loss_infure_code')
                                                 <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror
                                         </div>
@@ -724,11 +724,23 @@
                                 <tr>
                                     <td>
                                         <button type="button" class="btn btn-danger" wire:click="deleteInfure({{$item->loss_infure_id}})">
-                                            <i class="fa fa-trash"></i> Delete
+                                            <span wire:loading.remove wire:target="deleteInfure({{$item->loss_infure_id}})">
+                                                <i class="fa fa-trash"></i> Delete
+                                            </span>
+                                            <div wire:loading wire:target="deleteInfure({{$item->loss_infure_id}})">
+                                                <span class="d-flex align-items-center">
+                                                    <span class="spinner-border flex-shrink-0" role="status">
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </span>
+                                                    <span class="flex-grow-1 ms-1">
+                                                        Loading...
+                                                    </span>
+                                                </span>
+                                            </div>
                                         </button>
                                     </td>
                                     <td>
-                                        {{ $item->loss_infure_id }}
+                                        {{ $item->loss_infure_code }}
                                     </td>
                                     <td>
                                         {{ $item->name_infure }}
