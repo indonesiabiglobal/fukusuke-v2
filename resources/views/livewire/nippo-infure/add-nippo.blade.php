@@ -392,7 +392,7 @@
                                 x-ref="work_hour"> --}}
                                 <input class="form-control @error('work_hour') is-invalid @enderror"
                                     wire:model.change="work_hour" type="time" placeholder="HH:mm"
-                                    max="{{ now()->format('H:i') }}" x-ref="work_hour"
+                                    max="{{ now()->format('H:i:s') }}" x-ref="work_hour"
                                     title="Format waktu harus HH:mm">
                                 {{-- <span class="input-group-text py-0">
                                     <i class="ri-time-line fs-5"></i>

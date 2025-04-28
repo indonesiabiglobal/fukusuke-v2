@@ -75,7 +75,7 @@ class AddNippoController extends Component
 
         $this->production_date = Carbon::now()->format('d/m/Y');
         $this->created_on = Carbon::now()->format('d/m/Y');
-        $this->work_hour = Carbon::now()->format('H:i');
+        $this->work_hour = Carbon::now()->format('H:i:s');
     }
 
     public function showModalNoOrder()

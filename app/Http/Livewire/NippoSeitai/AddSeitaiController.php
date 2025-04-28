@@ -85,7 +85,7 @@ class AddSeitaiController extends Component
         }
         $this->production_date = Carbon::now()->format('d/m/Y');
         $this->created_on = Carbon::now()->format('d/m/Y');
-        $this->work_hour = Carbon::now()->format('H:i');
+        $this->work_hour = Carbon::now()->format('H:i:s');
         $workingShift = DB::select("
             SELECT *
             FROM msworkingshift
@@ -695,10 +695,10 @@ class AddSeitaiController extends Component
         if (isset($this->work_hour) && $this->work_hour != '') {
             if (
                 Carbon::createFromFormat('d/m/Y', $this->production_date)->isSameDay(Carbon::now())
-                && Carbon::parse($this->work_hour)->format('H:i') > Carbon::now()->format('H:i')
+                && Carbon::parse($this->work_hour)->format('H:i:s') > Carbon::now()->format('H:i:s')
             ) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Jam Kerja Tidak Boleh Melebihi Jam Sekarang']);
-                $this->work_hour = Carbon::now()->format('H:i');
+                $this->work_hour = Carbon::now()->format('H:i:s');
             }
 
             $workingShift = DB::select("
