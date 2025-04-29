@@ -556,7 +556,7 @@
                                 <div class="form-group">
                                     <div class="input-group">
                                         <label class="col-12 col-lg-2 fw-bold text-muted">Kode Loss </label>
-                                        <input id="inputKodeLoss" class="form-control" type="text"
+                                        <input id="inputKodeLoss" class="form-control @error('loss_infure_code') is-invalid @enderror" type="text"
                                             wire:model.change="loss_infure_code" placeholder="..."
                                             x-on:keydown.tab="$event.preventDefault(); $refs.berat_loss.focus();" />
                                         @error('loss_infure_code')
@@ -581,7 +581,7 @@
                                 <div class="form-group">
                                     <div class="input-group">
                                         <label class="col-12 col-lg-2 fw-bold text-muted">Berat Loss </label>
-                                        <input class="form-control" type="text" wire:model.defer="berat_loss"
+                                        <input class="form-control @error('berat_loss') is-invalid @enderror" type="number" step="4" wire:model.defer="berat_loss"
                                             placeholder="0" x-ref="berat_loss" />
                                         @error('berat_loss')
                                             <span class="invalid-feedback">{{ $message }}</span>
@@ -604,7 +604,7 @@
                                 <div class="form-group">
                                     <div class="input-group">
                                         <label class="col-12 col-lg-2 fw-bold text-muted">Frekuensi </label>
-                                        <input class="form-control" type="text" wire:model.defer="frekuensi"
+                                        <input class="form-control @error('frekuensi') is-invalid @enderror" type="text" wire:model.defer="frekuensi"
                                             placeholder="0" />
                                         @error('frekuensi')
                                             <span class="invalid-feedback">{{ $message }}</span>

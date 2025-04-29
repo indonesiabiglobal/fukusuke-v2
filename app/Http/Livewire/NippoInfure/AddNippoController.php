@@ -228,7 +228,7 @@ class AddNippoController extends Component
             'employeeno' => 'required',
             'panjang_produksi' => 'required|max:25000',
             'berat_produksi' => 'required|max:900',
-            'work_hour' => 'required|regex:/^[0-9]{2}:[0-9]{2}$/',
+            'work_hour' => 'required',
             'nomor_barcode' => 'required',
         ];
     }
@@ -246,7 +246,6 @@ class AddNippoController extends Component
             'berat_produksi.required' => 'Berat Produksi harus diisi',
             'berat_produksi.max' => 'Berat Produksi maksimal 900',
             'work_hour.required' => 'Jam Kerja harus diisi',
-            'work_hour.regex' => 'Format Jam Kerja tidak sesuai',
             'nomor_barcode.required' => 'Nomor Barcode harus diisi',
         ];
     }
@@ -388,9 +387,9 @@ class AddNippoController extends Component
             $this->loss_infure_id = '';
             $this->loss_infure_code = '';
             $this->name_infure = '';
-            $this->berat_loss = 0;
-            $this->berat = 0;
-            $this->frekuensi = 0;
+            // $this->berat_loss = 0;
+            // $this->berat = 0;
+            // $this->frekuensi = 0;
 
             $this->dispatch('showModal');
         }
@@ -398,8 +397,13 @@ class AddNippoController extends Component
 
     public function saveInfure()
     {
-        $lpkid = TdOrderLpk::where('lpk_no', $this->lpk_no)->first();
-
+        // validated
+        $this->validate([
+            'loss_infure_code' => 'required',
+            'name_infure' => 'required',
+            'berat_loss' => 'required|numeric',
+            'frekuensi' => 'required|numeric',
+        ]);
         try {
             DB::beginTransaction();
 
@@ -407,7 +411,7 @@ class AddNippoController extends Component
                 'id' => $this->nextId(),
                 'loss_infure_id' => $this->loss_infure_id,
                 'loss_infure_code' => $this->loss_infure_code,
-                'berat_loss' => $this->berat_loss,
+                'berat_loss' => floatval($this->berat_loss),
                 'berat' => $this->berat,
                 'frekuensi' => $this->frekuensi,
                 'name_infure' => $this->name_infure,
