@@ -108,7 +108,21 @@
                         onclick="window.location.href='{{ route('add-master-product') }}'">
                         <i class="ri-add-line"> </i> Add
                     </button>
-
+                    <button class="btn btn-warning w-lg p-1" wire:click="export" type="button">
+                        <span wire:loading.remove wire:target="export">
+                            <i class="ri-download-cloud-2-line"> </i> Export
+                        </span>
+                        <div wire:loading wire:target="export">
+                            <span class="d-flex align-items-center">
+                                <span class="spinner-border flex-shrink-0" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </span>
+                                <span class="flex-grow-1 ms-1">
+                                    Loading...
+                                </span>
+                            </span>
+                        </div>
+                    </button>
                 </div>
             </div>
             {{-- </form> --}}
