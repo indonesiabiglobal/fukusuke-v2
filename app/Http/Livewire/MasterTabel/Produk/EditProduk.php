@@ -91,7 +91,7 @@ class EditProduk extends Component
     public $ink_characteristic;
     public $endless_printing;
     public $winding_direction_of_the_web;
-    public $seal_classification;
+    public $seal_classification_id;
     public $custom_seal_classification;
     public $from_seal_design;
     public $lower_sealing_length;
@@ -259,7 +259,7 @@ class EditProduk extends Component
         $this->ink_characteristic['value'] = $this->product->ink_characteristic;
         $this->endless_printing['value'] = $this->product->endless_printing;
         $this->winding_direction_of_the_web['value'] = $this->product->winding_direction_of_the_web;
-        $this->seal_classification['value'] = $this->product->seal_classification;
+        $this->seal_classification_id['value'] = $this->product->seal_classification_id;
         $this->from_seal_design = $this->product->from_seal_design;
         $this->lower_sealing_length = $this->product->lower_sealing_length;
         $this->palet_jumlah_baris = $this->product->palet_jumlah_baris;
@@ -407,8 +407,8 @@ class EditProduk extends Component
                 $product->winding_direction_of_the_web = $windingDirection->code;
             }
 
-            if (isset($this->seal_classification) && $this->seal_classification['value'] != null) {
-                if ($this->seal_classification['value'] == 'lainnya') {
+            if (isset($this->seal_classification_id) && $this->seal_classification_id['value'] != null) {
+                if ($this->seal_classification_id['value'] == 'lainnya') {
                     // insert new seal classification
                     $maxCode = MsKlasifikasiSeal::max('code');
                     $sealClassification = MsKlasifikasiSeal::insertGetId([
@@ -423,7 +423,7 @@ class EditProduk extends Component
                     $product->seal_classification_id = $sealClassification;
                     $product->seal_classification = $sealClassification;
                 } else {
-                    $sealClassification = MsKlasifikasiSeal::where('id', $this->seal_classification['value'])->first();
+                    $sealClassification = MsKlasifikasiSeal::where('id', $this->seal_classification_id['value'])->first();
                     $product->seal_classification_id = $sealClassification->id;
                     $product->seal_classification = $sealClassification->code;
                 }
@@ -468,7 +468,7 @@ class EditProduk extends Component
                 }
             }
 
-            // kakban infure
+            // lakban infure
             if (isset($this->lakbaninfureid) && $this->lakbaninfureid['value'] != null) {
                 if ($this->lakbaninfureid['value'] == 'lainnya') {
                     // insert new seal classification

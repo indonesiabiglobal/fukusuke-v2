@@ -291,7 +291,8 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterLakbanInfure as $item)
-                                        <option value="{{ $item->id }}">
+                                        <option value="{{ $item->id }}"
+                                            {{ $lakbaninfureid['value'] != null ? ($item->id == $lakbaninfureid['value'] ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -679,14 +680,14 @@
                             <label class="control-label col-12 col-lg-6">Klarifikasi Seal</label>
                             <div class="col-12 col-lg-6" wire:ignore>
                                 <select data-choices data-choices-sorting="true"
-                                    class="form-select @error('seal_classification') is-invalid @enderror"
-                                    wire:model.live="seal_classification">
+                                    class="form-select @error('seal_classification_id') is-invalid @enderror"
+                                    wire:model.live="seal_classification_id">
                                     <option value="">
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterKlasifikasiSeal as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ $item->id == $seal_classification['value'] ? 'selected' : '' }}>
+                                            {{ $seal_classification_id['value'] != null ? ($item->id == $seal_classification_id['value'] ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -695,16 +696,16 @@
                                     </option>
                                 </select>
                             </div>
-                            @if (($seal_classification['value'] ?? '') === 'lainnya')
+                            @if (($seal_classification_id['value'] ?? '') === 'lainnya')
                                 <input required type="text" class="form-control mt-2"
-                                    wire:model="custom_seal_classification"
+                                    wire:model="custom_seal_classification_id"
                                     placeholder="Masukkan klasifikasi seal lainnya" />
                             @endif
 
-                            @error('seal_classification')
+                            @error('seal_classification_id')
                                 <span class="invalid-feedback">{{ $message }}</span>
                             @enderror
-                            @error('custom_seal_classification')
+                            @error('custom_seal_classification_id')
                                 <span class="invalid-feedback">{{ $message }}</span>
                             @enderror
                         </div>
