@@ -544,9 +544,9 @@ class AddSeitaiController extends Component
         $index = array_search($orderId, array_column($this->detailsLoss, 'id'));
 
         if ($index !== false) {
+            $this->jumlahBeratLoss -= $this->detailsLoss[$index]['berat_loss'];
             array_splice($this->detailsLoss, $index, 1);
             // mengurangi dari jumlah berat loss
-            $this->jumlahBeratLoss -= $this->detailsLoss[$index]['berat_loss'];
         }
 
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Hapus']);
