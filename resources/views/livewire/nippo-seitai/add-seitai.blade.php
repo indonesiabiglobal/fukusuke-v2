@@ -51,7 +51,7 @@
                                         lpk_no = value.substring(0, 10);
                                     }
                                 })">
-                                    <input class="form-control" style="padding:0.44rem" type="text"
+                                    <input class="form-control  @error('lpk_no') is-invalid @enderror" style="padding:0.44rem" type="text"
                                         placeholder="000000-000" x-model="lpk_no" maxlength="10"
                                         x-on:keydown.tab="$event.preventDefault(); $refs.machineInput.focus();" />
                                 </div>

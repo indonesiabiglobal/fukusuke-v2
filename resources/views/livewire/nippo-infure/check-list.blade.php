@@ -124,7 +124,7 @@
 				</div>
 				<div class="col-12 col-lg-9">
 					<div class="mb-1" wire:ignore>
-						<select class="form-control" wire:model.defer="departemenId" data-choices data-choices-sorting-false data-choices-removeItem>
+						<select class="form-control" wire:model.defer="departmentId" data-choices data-choices-sorting-false data-choices-removeItem>
 							<option value="">- All -</option>
 							@foreach ($department as $item)
 							<option value="{{ $item->id }}">{{ $item->name }}</option>
