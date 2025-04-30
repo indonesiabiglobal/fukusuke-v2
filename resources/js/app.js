@@ -187,6 +187,24 @@ File: Main Js File
 			if (isChoicesVal["data-choices-text-disabled-true"]) {
 				choiceData.addItems = false;
 			}
+			if (isChoicesVal["data-choices-search-field"]) {
+				choiceData.searchFields = ['value']
+			}
+			if (isChoicesVal["data-choices-sorter"]) {
+				choiceData.sorter = function(a, b) {
+                    return b.label.length - a.label.length;
+                  }
+			}
+            // excat match
+            if (isChoicesVal["data-choices-exact-match"]) {
+                choiceData.fuseOptions= {
+                    includeScore: true,
+                    includeMatches: true,
+                    threshold: 0.0,
+                    distance: 10,
+                    shouldSort: true
+                  };
+            }
 			isChoicesVal["data-choices-text-disabled-true"] ? new Choices(item, choiceData).disable() : new Choices(item, choiceData);
 		});
 

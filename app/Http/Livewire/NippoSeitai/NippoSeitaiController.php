@@ -32,7 +32,7 @@ class NippoSeitaiController extends Component
     #[Session]
     public $gentan_no;
     #[Session]
-    public $machineid;
+    public $machineId;
     #[Session]
     public $searchTerm;
     #[Session]
@@ -52,6 +52,10 @@ class NippoSeitaiController extends Component
         $this->products = MsProduct::get();
         $this->buyer = MsBuyer::get();
         $this->machine = MsMachine::where('machineno',  'LIKE', '00S%')->orderBy('machineno')->get();
+        $this->machine = $this->machine->map(function ($item) {
+            $item->machinenumber = str_replace('00S', '', $item->machineno);
+            return $item;
+        });
         if (empty($this->tglMasuk)) {
             $this->tglMasuk = Carbon::now()->format('d M Y');
         }
@@ -67,7 +71,7 @@ class NippoSeitaiController extends Component
         $previousUrl = last(explode('/', $previousUrl));
         if (!(Str::contains($previousUrl, 'edit-seitai') || $previousUrl === 'add-seitai' || $previousUrl === 'nippo-seitai'))
         {
-            $this->reset('tglMasuk', 'tglKeluar', 'gentan_no', 'machineid', 'searchTerm', 'lpk_no', 'idProduct', 'status');
+            $this->reset('tglMasuk', 'tglKeluar', 'gentan_no', 'machineId', 'searchTerm', 'lpk_no', 'idProduct', 'status');
         }
     }
 
@@ -107,8 +111,8 @@ class NippoSeitaiController extends Component
             $filterDate = "tdpg.created_on BETWEEN '$tglAwal' AND '$tglAkhir'";
         }
         $filterNoLPK = $this->lpk_no ? " AND (tdol.lpk_no = '$this->lpk_no')" : '';
-        $machineid = $this->machineid ? (is_array($this->machineid) ? $this->machineid['value'] : $this->machineid) : '';
-        $filterMachine = $machineid ? " AND (tdpg.machine_id = '$machineid')" : '';
+        $machineId = $this->machineId ? (is_array($this->machineId) ? $this->machineId['value'] : $this->machineId) : '';
+        $filterMachine = $machineId ? " AND (tdpg.machine_id = '$machineId')" : '';
         $filterProductionNo = "";
         $filterProductID = "";
         $filterNomorPalet = "";
@@ -615,8 +619,8 @@ class NippoSeitaiController extends Component
             if (isset($this->idProduct) && $this->idProduct['value'] != "" && $this->idProduct != "undefined") {
                 $data = $data->where('tdpg.product_id', $this->idProduct['value']);
             }
-            if (isset($this->machineid) && $this->machineid['value'] != "" && $this->machineid != "undefined") {
-                $data = $data->where('tdpg.machine_id', $this->machineid['value']);
+            if (isset($this->machineId) && $this->machineId['value'] != "" && $this->machineId != "undefined") {
+                $data = $data->where('tdpg.machine_id', $this->machineId['value']);
             }
             if (isset($this->gentan_no) && $this->gentan_no != "" && $this->gentan_no != "undefined") {
                 $data = $data->where('ta.gentan_no', $this->gentan_no);
@@ -701,8 +705,8 @@ class NippoSeitaiController extends Component
             if (isset($this->idProduct) && $this->idProduct['value'] != "" && $this->idProduct != "undefined") {
                 $data = $data->where('tdpg.product_id', $this->idProduct['value']);
             }
-            if (isset($this->machineid) && $this->machineid['value'] != "" && $this->machineid != "undefined") {
-                $data = $data->where('tdpg.machine_id', $this->machineid['value']);
+            if (isset($this->machineId) && $this->machineId['value'] != "" && $this->machineId != "undefined") {
+                $data = $data->where('tdpg.machine_id', $this->machineId['value']);
             }
             if (isset($this->gentan_no) && $this->gentan_no != '') {
                 $data = $data->where('ta.gentan_no', $this->gentan_no);

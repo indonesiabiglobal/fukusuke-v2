@@ -37,27 +37,21 @@
                 <label class="form-label text-muted fw-bold">Nomor LPK</label>
             </div>
             <div class="col-12 col-lg-9 mb-1" x-data="{ lpk_no: @entangle('lpk_no').live, status: true }" x-init="$watch('lpk_no', value => {
-                    if (value.length === 6 && !value.includes('-') && status) {
-                        lpk_no = value + '-';
-                    }
-                    if (value.length < 6) {
-                        status = true;
-                    }
-                    if (value.length === 7) {
-                        status = false;
-                    }
-                    if (value.length > 10) {
-                        lpk_no = value.substring(0, 10);
-                    }
-                })">
-                <input
-                    class="form-control"
-                    style="padding:0.44rem"
-                    type="text"
-                    placeholder="S-000000-000"
-                    x-model="lpk_no"
-                    maxlength="10"
-                />
+                if (value.length === 6 && !value.includes('-') && status) {
+                    lpk_no = value + '-';
+                }
+                if (value.length < 6) {
+                    status = true;
+                }
+                if (value.length === 7) {
+                    status = false;
+                }
+                if (value.length > 10) {
+                    lpk_no = value.substring(0, 10);
+                }
+            })">
+                <input class="form-control" style="padding:0.44rem" type="text" placeholder="S-000000-000"
+                    x-model="lpk_no" maxlength="10" />
             </div>
             <div class="col-12 col-lg-3">
                 <label class="form-label text-muted fw-bold">Search</label>
@@ -82,7 +76,8 @@
                         <option value="">- All -</option>
                         @foreach ($products as $item)
                             <option data-custom-properties='{"code": "{{ $item->code }}"}' value="{{ $item->id }}"
-                                @if ($item->id == ($idProduct['value'] ?? null)) selected @endif>{{ $item->name }}, {{ $item->code }}</option>
+                                @if ($item->id == ($idProduct['value'] ?? null)) selected @endif>{{ $item->name }},
+                                {{ $item->code }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -92,12 +87,13 @@
             </div>
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
-                    <select class="form-control" wire:model.defer="machineid" data-choices data-choices-sorting-false
-                        data-choices-removeItem>
+                    <select class="form-control" wire:model.defer="machineId" data-choices data-choices-sorting-true
+                        data-choices-removeItem data-choices-exact-match data-choices-sorter>
                         <option value="">- All -</option>
                         @foreach ($machine as $item)
-                            <option value="{{ $item->id }}" @if ($item->id == ($machineid['value'] ?? null)) selected @endif>
-                                {{ $item->machineno }} - {{ $item->machinename }}</option>
+                            <option data-custom-properties='{"code": "{{ $item->machinenumber }}"}' value="{{ $item->id }}" @if ($item->id == ($machineId['value'] ?? null)) selected @endif>
+                                {{ $item->machineno }} | {{ $item->machinename }}
+                            </option>
                         @endforeach
                     </select>
                 </div>

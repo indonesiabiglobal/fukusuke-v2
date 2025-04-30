@@ -85,7 +85,7 @@ class AddSeitaiController extends Component
         }
         $this->production_date = Carbon::now()->format('d/m/Y');
         $this->created_on = Carbon::now()->format('d/m/Y');
-        $this->work_hour = Carbon::now()->format('H:i:s');
+        $this->work_hour = Carbon::now()->format('H:i');
         $workingShift = DB::select("
             SELECT *
             FROM msworkingshift
@@ -695,11 +695,12 @@ class AddSeitaiController extends Component
         if (isset($this->work_hour) && $this->work_hour != '') {
             if (
                 Carbon::createFromFormat('d/m/Y', $this->production_date)->isSameDay(Carbon::now())
-                && Carbon::parse($this->work_hour)->format('H:i:s') > Carbon::now()->format('H:i:s')
+                && Carbon::parse($this->work_hour)->format('H:i') > Carbon::now()->format('H:i')
             ) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Jam Kerja Tidak Boleh Melebihi Jam Sekarang']);
-                $this->work_hour = Carbon::now()->format('H:i:s');
+                $this->work_hour = Carbon::now()->format('H:i');
             }
+            $workHourFormatted = Carbon::parse($this->work_hour)->format('H:i:s');
 
             $workingShift = DB::select("
             SELECT *
@@ -707,14 +708,14 @@ class AddSeitaiController extends Component
                 WHERE (
                     -- Shift does not cross midnight
                     work_hour_from <= work_hour_till
-                    AND '$this->work_hour' BETWEEN work_hour_from AND work_hour_till
+                    AND '$workHourFormatted' BETWEEN work_hour_from AND work_hour_till
                 ) OR (
                     -- Shift crosses midnight
                     work_hour_from > work_hour_till
                     AND (
-                        '$this->work_hour' BETWEEN work_hour_from AND '23:59:59'
+                        '$workHourFormatted' BETWEEN work_hour_from AND '23:59:59'
                         OR
-                        '$this->work_hour' BETWEEN '00:00:01' AND work_hour_till
+                        '$workHourFormatted' BETWEEN '00:00:01' AND work_hour_till
                     )
                 )
                 ORDER BY work_hour_till ASC
