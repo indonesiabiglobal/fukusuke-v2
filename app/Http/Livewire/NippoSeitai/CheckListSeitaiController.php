@@ -396,7 +396,7 @@ class CheckListSeitaiController extends Component
         $spreadsheet->getActiveSheet()->mergeCells($startColumn . $rowTitleCardStart . ':' . $endColumn . $rowTitleCardStart);
         $activeWorksheet->setCellValue($startColumn . $rowTitleCardStart, 'CHECK LIST NIPPO SEITAI');
         $spreadsheet->getActiveSheet()->mergeCells($startColumn . $rowTitleCardEnd . ':' . $endColumn . $rowTitleCardEnd);
-        $activeWorksheet->setCellValue($startColumn . $rowTitleCardEnd, 'Tanggal Produksi : ' . $tglAwal . ' s/d ' . $tglAkhir);
+        $activeWorksheet->setCellValue($startColumn . $rowTitleCardEnd, 'Tanggal ' . ucfirst($this->transaksi) . ' : ' . $tglAwal . ' s/d ' . $tglAkhir);
         phpspreadsheet::styleFont($spreadsheet, $startColumn . $rowTitleCardStart . ':' . $startColumn . $rowTitleCardEnd, true, 11, 'Calibri');
 
         /* Header */

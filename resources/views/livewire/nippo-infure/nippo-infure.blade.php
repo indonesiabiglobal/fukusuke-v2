@@ -61,27 +61,21 @@
                 </div>
             </div> --}}
             <div class="col-12 col-lg-9 mb-1" x-data="{ lpk_no: @entangle('lpk_no').live, status: true }" x-init="$watch('lpk_no', value => {
-                    if (value.length === 6 && !value.includes('-') && status) {
-                        lpk_no = value + '-';
-                    }
-                    if (value.length < 6) {
-                        status = true;
-                    }
-                    if (value.length === 7) {
-                        status = false;
-                    }
-                    if (value.length > 10) {
-                        lpk_no = value.substring(0, 10);
-                    }
-                })">
-                <input
-                    class="form-control"
-                    style="padding:0.44rem"
-                    type="text"
-                    placeholder="I-000000-000"
-                    x-model="lpk_no"
-                    maxlength="10"
-                />
+                if (value.length === 6 && !value.includes('-') && status) {
+                    lpk_no = value + '-';
+                }
+                if (value.length < 6) {
+                    status = true;
+                }
+                if (value.length === 7) {
+                    status = false;
+                }
+                if (value.length > 10) {
+                    lpk_no = value.substring(0, 10);
+                }
+            })">
+                <input class="form-control" style="padding:0.44rem" type="text" placeholder="I-000000-000"
+                    x-model="lpk_no" maxlength="10" />
             </div>
             <div class="col-12 col-lg-3">
                 <label class="form-label text-muted fw-bold">Search</label>
@@ -107,7 +101,8 @@
                         <option value="">- All -</option>
                         @foreach ($products as $item)
                             <option data-custom-properties='{"code": "{{ $item->code }}"}' value="{{ $item->id }}"
-                                @if ($item->id == ($idProduct['value'] ?? null)) selected @endif>{{ $item->name }}, {{ $item->code }}</option>
+                                @if ($item->id == ($idProduct['value'] ?? null)) selected @endif>{{ $item->name }},
+                                {{ $item->code }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -416,15 +411,21 @@
             }
 
             setTimeout(() => {
+                const savedOrder = localStorage.getItem('tableInfureSort');
+                let defaultOrder = [
+                    [1, "asc"]
+                ];
+                if (savedOrder) {
+                    defaultOrder = JSON.parse(savedOrder);
+                }
+
                 // Inisialisasi ulang DataTable
                 let table = $('#tableInfure').DataTable({
                     "pageLength": 10,
                     "searching": true,
                     "responsive": true,
                     "scrollX": true,
-                    "order": [
-                        [1, "asc"]
-                    ],
+                    "order": defaultOrder,
                     "language": {
                         "emptyTable": `
                             <div class="text-center">
@@ -434,6 +435,14 @@
                             </div>
                         `
                     },
+                });
+
+                // Listen to sort event
+                table.on('order.dt', function() {
+                    const order = table.order();
+
+                    // Simpan ke localStorage
+                    localStorage.setItem('tableInfureSort', JSON.stringify(order));
                 });
 
                 // default column visibility

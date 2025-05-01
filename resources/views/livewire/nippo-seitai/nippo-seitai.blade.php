@@ -91,7 +91,8 @@
                         data-choices-removeItem data-choices-exact-match data-choices-sorter>
                         <option value="">- All -</option>
                         @foreach ($machine as $item)
-                            <option data-custom-properties='{"code": "{{ $item->machinenumber }}"}' value="{{ $item->id }}" @if ($item->id == ($machineId['value'] ?? null)) selected @endif>
+                            <option data-custom-properties='{"code": "{{ $item->machinenumber }}"}'
+                                value="{{ $item->id }}" @if ($item->id == ($machineId['value'] ?? null)) selected @endif>
                                 {{ $item->machineno }} | {{ $item->machinename }}
                             </option>
                         @endforeach
@@ -378,14 +379,21 @@
             }
 
             setTimeout(() => {
+                const savedOrder = localStorage.getItem('seitaiTableSort');
+                let defaultOrder = [
+                    [1, "asc"]
+                ];
+                if (savedOrder) {
+                    defaultOrder = JSON.parse(savedOrder);
+                }
+
                 // Inisialisasi ulang DataTable
                 let table = $('#seitaiTable').DataTable({
                     "pageLength": 10,
                     "searching": true,
                     "responsive": true,
-                    "order": [
-                        [1, "asc"]
-                    ],
+                    "order": defaultOrder,
+                    "multiColumnSort": true,
                     "scrollX": true,
                     "language": {
                         "emptyTable": `
@@ -396,6 +404,14 @@
                             </div>
                         `
                     }
+                });
+
+                // Listen to sort event
+                table.on('order.dt', function() {
+                    const order = table.order();
+
+                    // Simpan ke localStorage
+                    localStorage.setItem('seitaiTableSort', JSON.stringify(order));
                 });
 
                 // default column visibility
