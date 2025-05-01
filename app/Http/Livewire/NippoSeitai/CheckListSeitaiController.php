@@ -148,7 +148,6 @@ class CheckListSeitaiController extends Component
         $filterSearchTerm = '';
         if ($isNippo) {
             $filterStatus = $this->status == 0 ? " AND (tdpg.status_production = 0 AND tdpg.status_warehouse = 0)" : ($this->status == 1 ? " AND (tdpg.status_production = 1)" : " AND (tdpg.status_warehouse = 1)");
-
             $filterSearchTerm = $this->searchTerm ? " AND (tdpg.production_no ILIKE '%$this->searchTerm%' OR  mp.code ILIKE '%$this->searchTerm%' OR mp.name ILIKE '%$this->searchTerm%' OR tdpa.machine_id ILIKE '%$this->searchTerm%' OR nomor_lot.nomor_lot ILIKE '%$this->searchTerm%')" : '';
         }
 
@@ -246,7 +245,7 @@ class CheckListSeitaiController extends Component
                     $filterProduct
                     $filterStatus
                     $filterSearchTerm
-                ORDER BY $fieldDate, tdpg.seq_no
+                ORDER BY $fieldDate, tdpg.seq_no, mm.machineno, tdpg.work_shift
                 ");
         } else {
             $data = DB::select("
