@@ -320,7 +320,7 @@ class AddSeitaiController extends Component
 
             $data = new TdProductGoods();
             $data->production_no = $today->format('dmy') . '-' . $seqno;
-            $data->production_date = $this->production_date . ' ' . now()->format('H:i:s');
+            $data->production_date = $this->production_date . ' ' . $this->work_hour;
             $data->employee_id = $employe->id;
             if (isset($this->employeenoinfure)) {
                 $data->employee_id_infure = $employeinfure->id;

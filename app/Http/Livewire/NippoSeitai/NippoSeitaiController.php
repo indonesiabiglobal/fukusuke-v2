@@ -28,7 +28,7 @@ class NippoSeitaiController extends Component
     #[Session]
     public $tglKeluar;
     public $machine;
-    public $transaksi;
+    public $transaksi = 1;
     #[Session]
     public $gentan_no;
     #[Session]
@@ -69,8 +69,7 @@ class NippoSeitaiController extends Component
         // Periksa jika URL saat ini bukan 'nippo-seitai/edit-seitai' atau 'nippo-seitai/add-seitai'
         $previousUrl = url()->previous();
         $previousUrl = last(explode('/', $previousUrl));
-        if (!(Str::contains($previousUrl, 'edit-seitai') || $previousUrl === 'add-seitai' || $previousUrl === 'nippo-seitai'))
-        {
+        if (!(Str::contains($previousUrl, 'edit-seitai') || $previousUrl === 'add-seitai' || $previousUrl === 'nippo-seitai')) {
             $this->reset('tglMasuk', 'tglKeluar', 'gentan_no', 'machineId', 'searchTerm', 'lpk_no', 'idProduct', 'status');
         }
     }
@@ -97,15 +96,44 @@ class NippoSeitaiController extends Component
         ), 'NippoSeitai-CheckList.xlsx');
     }
 
-
     public function export()
+    {
+        $filter = [
+            'tglAwal' => Carbon::parse($this->tglMasuk)->format('d-m-Y'),
+            'tglAkhir' => Carbon::parse($this->tglKeluar)->format('d-m-Y'),
+            'jamAwal' => '00:00:00',
+            'jamAkhir' => '23:59:59',
+            'transaksi' => $this->transaksi == 1 ? 'proses' : 'produksi',
+            'lpk_no' => $this->lpk_no ?? null,
+            'machineId' => $this->machineId['value'] ?? null,
+            'idProduct' => $this->idProduct['value'] ?? null,
+            'status' => $this->status['value'] ?? null,
+            'gentan_no' => $this->gentan_no ?? null,
+            'jenisReport' => 'CheckList',
+            'searchTerm' => $this->searchTerm ?? null,
+        ];
+
+        $checklistInfure = new CheckListSeitaiController();
+        $response = $checklistInfure->checklist(true, $filter);
+        if ($response['status'] == 'success') {
+            return response()->download($response['filename']);
+        } else if ($response['status'] == 'error') {
+            $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+            return;
+        }
+    }
+
+    public function exportOld()
     {
         $tglAwal = Carbon::parse($this->tglMasuk . ' ' . '00:00:00');
         $tglAkhir = Carbon::parse($this->tglKeluar . ' ' . '23:59:59');
 
-        if ($this->transaksi == 'produksi') {
-            $fieldDate = 'tdpg.production_date';
-            $filterDate = "tdpg.production_date BETWEEN '$tglAwal' AND '$tglAkhir'";
+        if ($this->transaksi == 2) {
+            // Buat field tanggal dengan jam yang digabung dari kolom work_hour
+            $fieldDate = "(tdpg.production_date::date || ' ' || tdpg.work_hour)::timestamp";
+
+            // Filter berdasarkan datetime hasil gabungan
+            $filterDate = "$fieldDate BETWEEN '$tglAwal' AND '$tglAkhir'";
         } else {
             $fieldDate = 'tdpg.created_on';
             $filterDate = "tdpg.created_on BETWEEN '$tglAwal' AND '$tglAkhir'";
@@ -551,6 +579,7 @@ class NippoSeitaiController extends Component
         $tglAkhir = Carbon::parse($this->tglKeluar)->format('d-m-Y 23:59:59');
 
         if ($this->transaksi == 2) {
+            // produksi
             $data = DB::table('tdproduct_goods AS tdpg')
                 ->select(
                     'tdpg.id AS id',
@@ -597,11 +626,18 @@ class NippoSeitaiController extends Component
                 ->leftJoin('msmachine AS mc', 'mc.id', '=', 'tdpg.machine_id')
                 ->leftJoin('tdproduct_assembly AS ta', 'ta.id', '=', 'tga.product_assembly_id');
 
-            if (isset($this->tglMasuk) && $this->tglMasuk != '') {
-                $data = $data->where('tdpg.production_date', '>=', $tglAwal);
+            if (!empty($this->tglMasuk)) {
+                $data = $data->whereRaw(
+                    "(tdpg.production_date::date + tdpg.work_hour::time) >= ?",
+                    [$tglAwal]
+                );
             }
-            if (isset($this->tglKeluar) && $this->tglKeluar != '') {
-                $data = $data->where('tdpg.production_date', '<=', $tglAkhir);
+
+            if (!empty($this->tglKeluar)) {
+                $data = $data->whereRaw(
+                    "(tdpg.production_date::date + tdpg.work_hour::time) <= ?",
+                    [$tglAkhir]
+                );
             }
             if (isset($this->lpk_no) && $this->lpk_no != "" && $this->lpk_no != "undefined") {
                 $data = $data->where('tdol.lpk_no', 'ilike', "%{$this->lpk_no}%");
@@ -637,6 +673,7 @@ class NippoSeitaiController extends Component
             }
             // $data = $data->paginate(8);
         } else {
+            // proses
             $data = DB::table('tdproduct_goods AS tdpg')
                 ->select([
                     'tdpg.id AS id',

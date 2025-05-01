@@ -36,6 +36,9 @@ class CheckListSeitaiController extends Component
     public $jenisReport = 'CheckList';
     public $products;
     public $productId;
+    public $status;
+    public $searchTerm;
+    public $gentan_no;
 
     public function mount()
     {
@@ -85,8 +88,23 @@ class CheckListSeitaiController extends Component
         }
     }
 
-    public function checklist()
+    public function checklist($isNippo = false, $filter = null)
     {
+        if ($isNippo) {
+            $this->tglAwal = $filter['tglAwal'];
+            $this->tglAkhir = $filter['tglAkhir'];
+            $this->jamAwal = $filter['jamAwal'];
+            $this->jamAkhir = $filter['jamAkhir'];
+            $this->transaksi = $filter['transaksi'];
+            $this->lpk_no = $filter['lpk_no'];
+            $this->machineId = $filter['machineId'];
+            $this->productId = $filter['idProduct'];
+            $this->status = $filter['status'];
+            $this->gentan_no = $filter['gentan_no'];
+            $this->searchTerm = $filter['searchTerm'];
+            $this->jenisReport = $filter['jenisReport'];
+        }
+
         // pengecekan inputan jam awal dan jam akhir
         if (is_array($this->jamAwal)) {
             $this->jamAwal = $this->jamAwal['value'];
@@ -104,8 +122,11 @@ class CheckListSeitaiController extends Component
         $tglAkhir = Carbon::parse($this->tglAkhir . ' ' . $this->jamAkhir);
 
         if ($this->transaksi == 'produksi') {
-            $fieldDate = 'tdpg.production_date';
-            $filterDate = "tdpg.production_date BETWEEN '$tglAwal' AND '$tglAkhir'";
+            // Buat field tanggal dengan jam yang digabung dari kolom work_hour
+            $fieldDate = "(tdpg.production_date::date || ' ' || tdpg.work_hour)::timestamp";
+
+            // Filter berdasarkan datetime hasil gabungan
+            $filterDate = "$fieldDate BETWEEN '$tglAwal' AND '$tglAkhir'";
         } else {
             $fieldDate = 'tdpg.created_on';
             $filterDate = "tdpg.created_on BETWEEN '$tglAwal' AND '$tglAkhir'";
@@ -122,6 +143,14 @@ class CheckListSeitaiController extends Component
         $filterNomorLot = $this->nomorLot ? " AND (tdpg.nomor_lot = '$this->nomorLot')" : '';
         $this->productId = $this->productId ? (is_array($this->productId) ? $this->productId['value'] : $this->productId) : '';
         $filterProduct = $this->productId ? " AND (tdpg.product_id = '$this->productId')" : '';
+
+        $filterStatus = '';
+        $filterSearchTerm = '';
+        if ($isNippo) {
+            $filterStatus = $this->status == 0 ? " AND (tdpg.status_production = 0 AND tdpg.status_warehouse = 0)" : ($this->status == 1 ? " AND (tdpg.status_production = 1)" : " AND (tdpg.status_warehouse = 1)");
+
+            $filterSearchTerm = $this->searchTerm ? " AND (tdpg.production_no ILIKE '%$this->searchTerm%' OR  mp.code ILIKE '%$this->searchTerm%' OR mp.name ILIKE '%$this->searchTerm%' OR tdpa.machine_id ILIKE '%$this->searchTerm%' OR nomor_lot.nomor_lot ILIKE '%$this->searchTerm%')" : '';
+        }
 
         if ($this->jenisReport == 'CheckList') {
             $data = DB::select("
@@ -215,6 +244,8 @@ class CheckListSeitaiController extends Component
                     $filterDepartment
                     $filterNomorLot
                     $filterProduct
+                    $filterStatus
+                    $filterSearchTerm
                 ORDER BY $fieldDate, tdpg.seq_no
                 ");
         } else {

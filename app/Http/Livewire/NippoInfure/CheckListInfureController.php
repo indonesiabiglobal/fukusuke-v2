@@ -198,6 +198,7 @@ class CheckListInfureController extends Component
 
         // filter print nippo
         $filterSearchTerm = '';
+        $filterStatus = '';
         if ($isNippo) {
             $this->lpk_no = $filter['lpk_no'];
             $this->machineId = $filter['machineId'];
