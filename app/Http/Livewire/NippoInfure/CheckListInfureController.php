@@ -38,6 +38,8 @@ class CheckListInfureController extends Component
     public $transaksi = 1;
     public $products;
     public $productId;
+    public $status;
+    public $searchTerm;
 
     public function mount()
     {
@@ -110,7 +112,7 @@ class CheckListInfureController extends Component
         }
     }
 
-    public function checklistInfure($tglAwal, $tglAkhir, $jenisReport = 'Checklist')
+    public function checklistInfure($tglAwal, $tglAkhir, $jenisReport = 'Checklist', $isNippo = false, $filter = null)
     {
         ini_set('max_execution_time', '300');
         $spreadsheet = new Spreadsheet();
@@ -193,6 +195,21 @@ class CheckListInfureController extends Component
         } else if ($this->transaksi == '2') {
             $filterDate = "tdpa.created_on BETWEEN '$tglAwal' AND '$tglAkhir'";
         }
+
+        // filter print nippo
+        $filterSearchTerm = '';
+        if ($isNippo) {
+            $this->lpk_no = $filter['lpk_no'];
+            $this->machineId = $filter['machineId'];
+            $this->productId = $filter['idProduct'];
+            $this->status = $filter['status'];
+            $this->searchTerm = $filter['searchTerm'];
+
+            $filterStatus = $this->status == 0 ? " AND (tdpa.status_production = 0 AND tdpa.status_kenpin = 0)" :
+                ($this->status == 1 ? " AND (tdpa.status_production = 1)" : " AND (tdpa.status_kenpin = 1)");
+            $filterSearchTerm = $this->searchTerm ? " AND (tdpa.production_no ILIKE '%$this->searchTerm%' OR msp.code ILIKE '%$this->searchTerm%' OR msp.name ILIKE '%$this->searchTerm%' OR tdpa.machine_id ILIKE '%$this->searchTerm%' OR tdpa.nomor_han ILIKE '%$this->searchTerm%')" : '';
+        }
+
         // Filter Query
         $filterSeqNo = $this->noprosesawal ? " AND (tdpa.seq_no >= '$this->noprosesawal')" : '';
         $filterSeqNo .= $this->noprosesakhir ? " AND (tdpa.seq_no <= '$this->noprosesakhir')" : '';
@@ -252,6 +269,9 @@ class CheckListInfureController extends Component
                         $filterMachine
                         $filterNomorHan
                         $filterProduct
+                        $filterSeqNo
+                        $filterStatus
+                        $filterSearchTerm
                     ORDER BY nomesin ASC, tglproduksi ASC, jam ASC
                     ",
             );
@@ -301,6 +321,7 @@ class CheckListInfureController extends Component
                         $filterMachine
                         $filterNomorHan
                         $filterProduct
+                        $filterSeqNo
                     ORDER BY nomesin ASC, tglproduksi ASC, jam ASC
                     ",
             );
@@ -445,7 +466,7 @@ class CheckListInfureController extends Component
                     break;
                 }
 
-                $activeWorksheet->setCellValue($columnLoss . $rowItem, $lossItem['losscode'] .'. '.$lossItem['lossname']);
+                $activeWorksheet->setCellValue($columnLoss . $rowItem, $lossItem['losscode'] . '. ' . $lossItem['lossname']);
                 $columnLoss++;
                 $activeWorksheet->setCellValue($columnLoss . $rowItem, $lossItem['berat_loss']);
                 phpspreadsheet::addBorderDottedHorizontal($spreadsheet, $columnLossStart . $rowItem . ':' . $columnLoss . $rowItem);

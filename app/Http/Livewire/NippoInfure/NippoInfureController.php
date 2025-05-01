@@ -89,9 +89,16 @@ class NippoInfureController extends Component
     {
         $tglMasuk = Carbon::parse($this->tglMasuk . " 00:00:00");
         $tglKeluar = Carbon::parse($this->tglKeluar . " 23:59:59");
+        $filter = [
+            'lpk_no' => $this->lpk_no ?? null,
+            'machineId' => $this->machineId['value'] ?? null,
+            'idProduct' => $this->idProduct['value'] ?? null,
+            'status' => $this->status['value'] ?? null,
+            'searchTerm' => $this->searchTerm ?? null,
+        ];
 
         $checklistInfure = new CheckListInfureController();
-        $response = $checklistInfure->checklistInfure($tglMasuk, $tglKeluar, 'Checklist');
+        $response = $checklistInfure->checklistInfure($tglMasuk, $tglKeluar, 'Checklist', true, $filter);
         if ($response['status'] == 'success') {
             return response()->download($response['filename']);
         } else if ($response['status'] == 'error') {
