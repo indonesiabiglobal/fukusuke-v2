@@ -172,7 +172,7 @@ class CheckListSeitaiController extends Component
                         INNER JOIN tdproduct_assembly AS tdpa ON tdpa.ID = tpga.product_assembly_id
                         INNER JOIN msmachine AS msm ON msm.ID = tdpa.machine_id
                         INNER JOIN msemployee AS mse ON mse.ID = tdpa.employee_id
-                        INNER JOIN msDepartment AS msd ON msd.ID = mse.department_id
+                        INNER JOIN msDepartment AS msd ON msd.ID = msm.department_id
                     ),
                     lossgoods AS (
                     SELECT
@@ -231,7 +231,7 @@ class CheckListSeitaiController extends Component
                     ID INNER JOIN msmachine AS mm ON mm.ID = tdpg.machine_id
                     INNER JOIN msemployee AS maPetugas ON maPetugas.ID = tdpg.employee_id
                     LEFT JOIN msemployee AS maInfure ON tdpg.employee_id_infure = maInfure.
-                    ID INNER JOIN msDepartment AS msd ON msd.ID = maPetugas.department_id
+                    ID INNER JOIN msDepartment AS msd ON msd.ID = mm.department_id
                     INNER JOIN msProduct AS mp ON mp.ID = tdpg.product_id
                 WHERE
                     $filterDate
@@ -268,7 +268,7 @@ class CheckListSeitaiController extends Component
                         INNER JOIN tdproduct_assembly AS tdpa ON tdpa.ID = tpga.product_assembly_id
                         INNER JOIN msmachine AS msm ON msm.ID = tdpa.machine_id
                         INNER JOIN msemployee AS mse ON mse.ID = tdpa.employee_id
-                        INNER JOIN msDepartment AS msd ON msd.ID = mse.department_id
+                        INNER JOIN msDepartment AS msd ON msd.ID = msm.department_id
                     ),
                     lossgoods AS (
                     SELECT
@@ -327,7 +327,7 @@ class CheckListSeitaiController extends Component
                     ID INNER JOIN msmachine AS mm ON mm.ID = tdpg.machine_id
                     INNER JOIN msemployee AS maPetugas ON maPetugas.ID = tdpg.employee_id
                     LEFT JOIN msemployee AS maInfure ON tdpg.employee_id_infure = maInfure.
-                    ID INNER JOIN msDepartment AS msd ON msd.ID = maPetugas.department_id
+                    ID INNER JOIN msDepartment AS msd ON msd.ID = mm.department_id
                     INNER JOIN msProduct AS mp ON mp.ID = tdpg.product_id
                 WHERE
                     $filterDate
@@ -795,7 +795,7 @@ class CheckListSeitaiController extends Component
                     ID LEFT JOIN msmachine AS mm ON mm.ID = tdpg.machine_id
                     LEFT JOIN msemployee AS maPetugas ON maPetugas.ID = tdpg.employee_id
                     LEFT JOIN msemployee AS maInfure ON tdpg.employee_id_infure = maInfure.
-                    ID LEFT JOIN msDepartment AS msd ON msd.ID = maPetugas.department_id
+                    ID LEFT JOIN msDepartment AS msd ON msd.ID = mm.department_id
                     LEFT JOIN msProduct AS mp ON mp.ID = tdpg.product_id
                 WHERE
                     $filterDate

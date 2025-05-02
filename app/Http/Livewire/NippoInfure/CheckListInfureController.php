@@ -259,7 +259,7 @@ class CheckListInfureController extends Component
                         INNER JOIN msEmployee AS mse ON mse.ID = tdpa.employee_id
                         INNER JOIN msMachine AS msm ON msm.ID = tdpa.machine_id
                         INNER JOIN msProduct AS msp ON msp.ID = tdpa.product_id
-                        INNER JOIN msDepartment AS msd ON msd.ID = mse.department_id
+                        INNER JOIN msDepartment AS msd ON msd.ID = msm.department_id
                         LEFT JOIN tdProduct_Assembly_Loss AS tdpal ON tdpal.product_assembly_id = tdpa.
                         ID LEFT JOIN msLossInfure AS msli ON msli.ID = tdpal.loss_infure_id
                     WHERE
@@ -311,7 +311,7 @@ class CheckListInfureController extends Component
                         INNER JOIN msEmployee AS mse ON mse.ID = tdpa.employee_id
                         INNER JOIN msMachine AS msm ON msm.ID = tdpa.machine_id
                         INNER JOIN msProduct AS msp ON msp.ID = tdpa.product_id
-                        INNER JOIN msDepartment AS msd ON msd.ID = mse.department_id
+                        INNER JOIN msDepartment AS msd ON msd.ID = msm.department_id
                         INNER JOIN tdProduct_Assembly_Loss AS tdpal ON tdpal.product_assembly_id = tdpa.id
                         LEFT JOIN msLossInfure AS msli ON msli.ID = tdpal.loss_infure_id
                     WHERE
