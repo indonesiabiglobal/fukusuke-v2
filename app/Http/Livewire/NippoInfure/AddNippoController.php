@@ -270,6 +270,29 @@ class AddNippoController extends Component
                 ->where('msproduct.code', $this->code)
                 ->first();
 
+            $workHourFormatted = Carbon::parse($this->work_hour)->format('H:i:s');
+            $workingShift = DB::select("
+            SELECT *
+                FROM msworkingshift
+                WHERE (
+                    -- Shift does not cross midnight
+                    work_hour_from <= work_hour_till
+                    AND '$workHourFormatted' BETWEEN work_hour_from AND work_hour_till
+                ) OR (
+                    -- Shift crosses midnight
+                    work_hour_from > work_hour_till
+                    AND (
+                        '$workHourFormatted' BETWEEN work_hour_from AND '23:59:59'
+                        OR
+                        '$workHourFormatted' BETWEEN '00:00:00' AND work_hour_till
+                    )
+                )
+                ORDER BY work_hour_till ASC
+                LIMIT 1;
+            ")[0];
+
+            $this->work_shift = $workingShift->id;
+
             $maxGentan = TdProductAssembly::where('lpk_id', $lpkid->id)
                 ->orderBy('gentan_no', 'DESC')
                 ->first();
