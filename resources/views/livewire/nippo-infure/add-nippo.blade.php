@@ -661,6 +661,21 @@
                             @forelse ($details as $item)
                                 <tr>
                                     <td>
+                                        <button type="button" class="btn btn-warning" wire:click="editLossInfure({{$item['id']}})">
+                                            <span wire:loading.remove wire:target="editLossInfure({{$item['id']}})">
+                                                <i class="fa fa-edit"></i> Edit 
+                                            </span>
+                                            <div wire:loading wire:target="editLossInfure({{$item['id']}})">
+                                                <span class="d-flex align-items-center">
+                                                    <span class="spinner-border flex-shrink-0" role="status">
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </span>
+                                                    <span class="flex-grow-1 ms-1">
+                                                        Loading...
+                                                    </span>
+                                                </span>
+                                            </div>
+                                        </button>
                                         <button type="button" class="btn btn-danger" wire:click="deleteInfure({{ $item['id'] }})">
                                             <span wire:loading.remove wire:target="deleteInfure({{ $item['id'] }})">
                                                 <i class="fa fa-trash"></i> Delete

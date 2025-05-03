@@ -677,21 +677,22 @@ class AddNippoController extends Component
         return view('livewire.nippo-infure.add-nippo')->extends('layouts.master');
     }
 
-    public function editLossInfure($id)
+    public function editLossInfure($orderId)
     {
-        $infureItem = DB::table('tdproduct_assembly_loss')
-            ->where('id', $id)
-            ->first();
+        $index = array_search($orderId, array_column($this->details, 'id'));
+        
+        if ($index !== false) {
+
+            $infureItem = $this->details[$index];
+
+            // array_splice($this->details, $index, 1);
+            $this->editing_id = $infureItem['id']; 
+            $this->loss_infure_id = $infureItem['loss_infure_id'];
+            $this->loss_infure_code = DB::table('mslossinfure')->where('id', $infureItem['loss_infure_id'])->value('code');
+            $this->name_infure = DB::table('mslossinfure')->where('id', $infureItem['loss_infure_id'])->value('name');
+            $this->berat_loss = $infureItem['berat_loss'];
+            $this->frekuensi = $infureItem['frekuensi'];
             
-        if ($infureItem) {
-            $this->editing_id = $infureItem->id;
-            $this->loss_infure_id = $infureItem->loss_infure_id;
-            $this->loss_infure_code = DB::table('mslossinfure')->where('id', $infureItem->loss_infure_id)->value('code');
-            $this->name_infure = DB::table('mslossinfure')->where('id', $infureItem->loss_infure_id)->value('name');
-            $this->berat_loss = $infureItem->berat_loss;
-            $this->frekuensi = $infureItem->frekuensi;
-            
-            // Buka modal edit
             $this->dispatch('openModal', 'modal-edit');
         } else {
             $this->dispatch('notification', ['type' => 'error', 'message' => 'Data tidak ditemukan']);
