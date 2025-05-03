@@ -56,6 +56,7 @@ class AddNippoController extends Component
     public $ketebalan;
     public $diameterlipat;
     public $berat_jenis;
+    public $editing_id = null;
 
     // data master produk
     public $masterKatanuki;
@@ -674,5 +675,63 @@ class AddNippoController extends Component
         }
 
         return view('livewire.nippo-infure.add-nippo')->extends('layouts.master');
+    }
+
+    public function editLossInfure($id)
+    {
+        $infureItem = DB::table('tdproduct_assembly_loss')
+            ->where('id', $id)
+            ->first();
+            
+        if ($infureItem) {
+            $this->editing_id = $infureItem->id;
+            $this->loss_infure_id = $infureItem->loss_infure_id;
+            $this->loss_infure_code = DB::table('mslossinfure')->where('id', $infureItem->loss_infure_id)->value('code');
+            $this->name_infure = DB::table('mslossinfure')->where('id', $infureItem->loss_infure_id)->value('name');
+            $this->berat_loss = $infureItem->berat_loss;
+            $this->frekuensi = $infureItem->frekuensi;
+            
+            // Buka modal edit
+            $this->dispatch('openModal', 'modal-edit');
+        } else {
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Data tidak ditemukan']);
+        }
+    }
+    
+    public function updateLossInfure()
+    {
+        $this->validate([
+            'loss_infure_id' => 'required',
+            'berat_loss' => 'required|numeric',
+            'frekuensi' => 'required|numeric',
+        ]);
+
+        DB::table('tdproduct_assembly_loss')
+            ->where('id', $this->editing_id)
+            ->update([
+                'loss_infure_id' => $this->loss_infure_id,
+                'berat_loss' => $this->berat_loss,
+                'frekuensi' => $this->frekuensi,
+                // 'updated_at' => now(),
+            ]);
+
+        $this->resetInputFields();
+        $this->dispatch('notification', ['type' => 'success', 'message' => 'Loss Infure berhasil diupdate']);
+        $this->dispatch('closeModal', 'modal-edit');
+    }
+
+    public function resetForm()
+    {
+        $this->resetInputFields();
+    }
+
+    private function resetInputFields()
+    {
+        $this->editing_id = null;
+        $this->loss_infure_id = null;
+        $this->loss_infure_code = '';
+        $this->name_infure = '';
+        $this->berat_loss = '';
+        $this->frekuensi = '';
     }
 }
