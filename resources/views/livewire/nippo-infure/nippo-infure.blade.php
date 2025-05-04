@@ -60,22 +60,31 @@
                     />
                 </div>
             </div> --}}
-            <div class="col-12 col-lg-9 mb-1" x-data="{ lpk_no: @entangle('lpk_no').live, status: true }" x-init="$watch('lpk_no', value => {
+            <div class="col-12 col-lg-9 mb-1" x-data="{
+                lpk_no_local: '',
+                status: true,
+                timeout: null,
+                updateLivewire(value) {
+                    if (value.length === 10) {
+                        clearTimeout(this.timeout);
+                        this.timeout = setTimeout(() => {
+                            $wire.set('lpk_no', value);
+                        }, 500); // delay kirim ke Livewire setelah 500ms
+                    }
+                }
+            }" x-init="$watch('lpk_no_local', value => {
                 if (value.length === 6 && !value.includes('-') && status) {
-                    lpk_no = value + '-';
+                    lpk_no_local = value + '-';
                 }
-                if (value.length < 6) {
-                    status = true;
-                }
-                if (value.length === 7) {
-                    status = false;
-                }
-                if (value.length > 10) {
-                    lpk_no = value.substring(0, 10);
-                }
+                if (value.length < 6) status = true;
+                if (value.length === 7) status = false;
+                if (value.length > 10) lpk_no_local = value.substring(0, 10);
+
+                updateLivewire(value);
             })">
+
                 <input class="form-control" style="padding:0.44rem" type="text" placeholder="I-000000-000"
-                    x-model="lpk_no" maxlength="10" />
+                    x-model="lpk_no_local" maxlength="10" />
             </div>
             <div class="col-12 col-lg-3">
                 <label class="form-label text-muted fw-bold">Search</label>
