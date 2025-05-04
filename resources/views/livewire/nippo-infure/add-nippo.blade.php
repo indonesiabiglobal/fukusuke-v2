@@ -661,6 +661,21 @@
                             @forelse ($details as $item)
                                 <tr>
                                     <td>
+                                        <button type="button" class="btn btn-warning" wire:click="editLossInfure({{$item['id']}})">
+                                            <span wire:loading.remove wire:target="editLossInfure({{$item['id']}})">
+                                                <i class="fa fa-edit"></i> Edit 
+                                            </span>
+                                            <div wire:loading wire:target="editLossInfure({{$item['id']}})">
+                                                <span class="d-flex align-items-center">
+                                                    <span class="spinner-border flex-shrink-0" role="status">
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </span>
+                                                    <span class="flex-grow-1 ms-1">
+                                                        Loading...
+                                                    </span>
+                                                </span>
+                                            </div>
+                                        </button>
                                         <button type="button" class="btn btn-danger" wire:click="deleteInfure({{ $item['id'] }})">
                                             <span wire:loading.remove wire:target="deleteInfure({{ $item['id'] }})">
                                                 <i class="fa fa-trash"></i> Delete
@@ -1583,6 +1598,84 @@
                 </div><!-- /.modal-content -->
             </div><!-- /.modal-dialog -->
         </div><!-- /.modal -->
+
+        <!-- modal edit loss infure-->
+        <div class="modal fade" id="modal-edit" tabindex="-1" role="dialog" aria-labelledby="modal-edit" aria-hidden="true" wire:ignore.self>
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="h6 modal-title">Edit Loss Infure</h2>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-lg-12 mb-1">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <label class="col-12 col-lg-2 fw-bold text-muted">Kode Loss </label>
+                                        <input id="inputKodeLoss" class="form-control" type="text" wire:model.change="loss_infure_code" placeholder="..."/>
+                                        @error('loss_infure_code')
+                                            <span class="invalid-feedback">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 mb-1">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <label class="col-12 col-lg-2 fw-bold text-muted">Nama Loss </label>
+                                        <input class="form-control readonly bg-light" readonly="readonly" type="text" wire:model.defer="name_infure" placeholder="..." />
+                                        @error('name')
+                                            <span class="invalid-feedback">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 mb-1">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <label class="col-12 col-lg-2 fw-bold text-muted">Berat Loss </label>
+                                        <input class="form-control" type="text" wire:model.defer="berat_loss" placeholder="0" x-ref="berat_loss"/>
+                                        @error('berat_loss')
+                                            <span class="invalid-feedback">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 mb-1">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <label class="col-12 col-lg-2 fw-bold text-muted">Frekuensi </label>
+                                        <input class="form-control" type="text" wire:model.defer="frekuensi" placeholder="0" />
+                                        @error('frekuensi')
+                                            <span class="invalid-feedback">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-link text-gray-600 ms-auto" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-success" wire:click="updateLossInfure">
+                            <span wire:loading.remove wire:target="updateLossInfure">
+                                <i class="ri-save-3-line"></i> Update
+                            </span>
+                            <div wire:loading wire:target="updateLossInfure">
+                                <span class="d-flex align-items-center">
+                                    <span class="spinner-border flex-shrink-0" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </span>
+                                    <span class="flex-grow-1 ms-1">
+                                        Loading...
+                                    </span>
+                                </span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </form>
 </div>
 <script>
@@ -1591,6 +1684,16 @@
 
         modalAdd.addEventListener('shown.bs.modal', function() {
             document.getElementById('inputKodeLoss').focus();
+        });
+    });
+
+    document.addEventListener('livewire:initialized', () => {
+        Livewire.on('openModal', (modalId) => {
+            new bootstrap.Modal(document.getElementById(modalId)).show();
+        });
+        
+        Livewire.on('closeModal', (modalId) => {
+            bootstrap.Modal.getInstance(document.getElementById(modalId)).hide();
         });
     });
 </script>
