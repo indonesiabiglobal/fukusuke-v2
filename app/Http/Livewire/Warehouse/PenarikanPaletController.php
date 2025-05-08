@@ -20,6 +20,8 @@ class PenarikanPaletController extends Component
     public $transaksi;
     public $products;
     public $product_id;
+    #[Session]
+    public $sortingTable;
 
     public function mount()
     {
@@ -27,6 +29,15 @@ class PenarikanPaletController extends Component
         $this->machine = MsMachine::get();
         $this->tglMasuk = session('tglMasuk', Carbon::now()->format('d-m-Y'));
         $this->tglKeluar = session('tglKeluar', Carbon::now()->format('d-m-Y'));
+        if (empty($this->sortingTable)) {
+            $this->sortingTable = [[2, 'asc']];
+        }
+    }
+
+    public function updateSortingTable($value)
+    {
+        $this->sortingTable = $value;
+        $this->skipRender();
     }
 
     public function search(){

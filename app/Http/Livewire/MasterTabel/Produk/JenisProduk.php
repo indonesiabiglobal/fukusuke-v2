@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
+use Livewire\Attributes\Session;
 
 class JenisProduk extends Component
 {
@@ -22,6 +23,8 @@ class JenisProduk extends Component
     public $idDelete;
     public $status;
     public $statusIsVisible = false;
+    #[Session]
+    public $sortingTable;
 
     // public function mount()
     // {
@@ -34,6 +37,18 @@ class JenisProduk extends Component
     {
         $this->code = '';
         $this->name = '';
+    }
+    public function mount()
+    {
+        if (empty($this->sortingTable)) {
+            $this->sortingTable = [[2, 'asc']];
+        }
+    }
+
+    public function updateSortingTable($value)
+    {
+        $this->sortingTable = $value;
+        $this->skipRender();
     }
 
     public function showModalCreate()

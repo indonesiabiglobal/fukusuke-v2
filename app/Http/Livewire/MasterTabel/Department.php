@@ -7,12 +7,13 @@ use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
+use Livewire\Attributes\Session;
 
 class Department extends Component
 {
     use WithPagination, WithoutUrlPagination;
     protected $paginationTheme = 'bootstrap';
-    protected $listeners = ['delete','edit'];
+    protected $listeners = ['delete', 'edit'];
     public $departments;
     public $searchTerm;
     public $code;
@@ -22,11 +23,22 @@ class Department extends Component
     public $idDelete;
     public $status;
     public $statusIsVisible = false;
+    #[Session]
+    public $sortingTable;
 
     public function mount()
     {
         $this->departments = DB::table('msdepartment')
             ->get(['id', 'code', 'name', 'division_code', 'status', 'updated_by', 'updated_on']);
+        if (empty($this->sortingTable)) {
+            $this->sortingTable = [[2, 'asc']];
+        }
+    }
+
+    public function updateSortingTable($value)
+    {
+        $this->sortingTable = $value;
+        $this->skipRender();
     }
 
     public function resetFields()

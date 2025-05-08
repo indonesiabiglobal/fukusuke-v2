@@ -41,6 +41,8 @@ class LpkEntryController extends Component
     public $idProduct;
     public $checkListLPK = [];
     public $paginate = 10;
+    #[Session]
+    public $sortingTable;
 
     use WithFileUploads, WithoutUrlPagination;
     public $file;
@@ -53,6 +55,15 @@ class LpkEntryController extends Component
         // mengambil data dari session terlebih dahulu jika ada
         $this->tglMasuk = session('tglMasuk', Carbon::now()->startOfDay()->format('d M Y'));
         $this->tglKeluar = session('tglKeluar', Carbon::now()->endOfDay()->format('d M Y'));
+        if (empty($this->sortingTable)) {
+            $this->sortingTable = [[2, 'asc']];
+        }
+    }
+
+    public function updateSortingTable($value)
+    {
+        $this->sortingTable = $value;
+        $this->skipRender();
     }
 
     public function search()

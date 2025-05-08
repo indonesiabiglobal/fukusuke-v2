@@ -25,6 +25,7 @@ class LossSeitaiController extends Component
     #[Session]
     public $tglKeluar;
     public $machine;
+    #[Session]
     public $transaksi;
     #[Session]
     public $machineid;
@@ -36,6 +37,8 @@ class LossSeitaiController extends Component
     public $idProduct;
     #[Session]
     public $status;
+    #[Session]
+    public $sortingTable;
 
     use WithPagination, WithoutUrlPagination;
 
@@ -44,12 +47,25 @@ class LossSeitaiController extends Component
         $this->products = MsProduct::get();
         // $this->buyer = MsBuyer::get();
         $this->machine = MsMachine::where('machineno',  'LIKE', '00S%')->orderBy('machineno')->get();
+        
+        if (empty($this->transaksi)) {
+            $this->transaksi = 1;
+        }
         if (empty($this->tglMasuk)) {
             $this->tglMasuk = Carbon::now()->format('d M Y');
         }
         if (empty($this->tglKeluar)) {
             $this->tglKeluar = Carbon::now()->format('d M Y');
         }
+        if (empty($this->sortingTable)) {
+            $this->sortingTable = [[1, 'asc']];
+        }
+    }
+
+    public function updateSortingTable($value)
+    {
+        $this->sortingTable = $value;
+        $this->skipRender();
     }
 
     public function search()

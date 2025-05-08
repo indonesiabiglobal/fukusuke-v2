@@ -35,6 +35,8 @@ class BarangRejectController extends Component
     public $transaksi;
     #[Session]
     public $status;
+    #[Session]
+    public $sortingTable;
 
     use WithFileUploads;
     public $file;
@@ -63,6 +65,15 @@ class BarangRejectController extends Component
         // mengambil data dari session terlebih dahulu jika ada
         $this->tglMasuk = session('tglMasuk', Carbon::now()->format('d M Y'));
         $this->tglKeluar = session('tglKeluar', Carbon::now()->format('d M Y'));
+        if (empty($this->sortingTable)) {
+            $this->sortingTable = [[1, 'asc']];
+        }
+    }
+
+    public function updateSortingTable($value)
+    {
+        $this->sortingTable = $value;
+        $this->skipRender();
     }
 
     public function search()

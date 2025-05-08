@@ -10,6 +10,7 @@ use Livewire\Attributes\Validate;
 use Illuminate\Support\Facades\DB;
 use Livewire\WithoutUrlPagination;
 use Illuminate\Support\Facades\Log;
+use Livewire\Attributes\Session;
 
 class KatanukiController extends Component
 {
@@ -28,14 +29,26 @@ class KatanukiController extends Component
     public $status;
     public $statusIsVisible = false;
 
+    #[Session]
+    public $sortingTable;
+
     #[Validate('image|max:10240')] // 10MB Max
 
 
-    // public function mount()
-    // {
-    //     $this->katanukis = DB::table('mskatanuki')
-    //         ->get(['id', 'code', 'name', 'filename', 'status', 'updated_by', 'updated_on']);
-    // }
+    public function mount()
+    {
+        //     $this->katanukis = DB::table('mskatanuki')
+        //         ->get(['id', 'code', 'name', 'filename', 'status', 'updated_by', 'updated_on']);
+        if (empty($this->sortingTable)) {
+            $this->sortingTable = [[2, 'asc']];
+        }
+    }
+
+    public function updateSortingTable($value)
+    {
+        $this->sortingTable = $value;
+        $this->skipRender();
+    }
 
     public function resetFields()
     {
@@ -105,7 +118,7 @@ class KatanukiController extends Component
     {
         $katanuki = DB::table('mskatanuki')
             ->where('id', $id)
-            ->first(['code', 'name', 'filename','status']);
+            ->first(['code', 'name', 'filename', 'status']);
         $this->code = $katanuki->code;
         $this->name = $katanuki->name;
         $this->filename = $katanuki->filename;

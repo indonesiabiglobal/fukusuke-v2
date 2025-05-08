@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
+use Livewire\Attributes\Session;
 
 class MenuLossKlasifikisasiController extends Component
 {
@@ -26,11 +27,25 @@ class MenuLossKlasifikisasiController extends Component
     public $class;
     public $status;
     public $statusIsVisible = false;
+    #[Session]
+    public $sortingTable;
 
     protected $rules = [
         'code' => 'required',
         'name' => 'required',
     ];
+    public function mount()
+    {
+        if (empty($this->sortingTable)) {
+            $this->sortingTable = [[2, 'asc']];
+        }
+    }
+
+    public function updateSortingTable($value)
+    {
+        $this->sortingTable = $value;
+        $this->skipRender();
+    }
 
     public function resetFields()
     {

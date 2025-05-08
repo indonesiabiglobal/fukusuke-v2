@@ -370,6 +370,13 @@
 
         // Fungsi untuk menginisialisasi ulang DataTable
         function initDataTable() {
+            const savedOrder = $wire.get('sortingTable');
+            let defaultOrder = [
+                [1, "asc"]
+            ];
+            if (savedOrder) {
+                defaultOrder = savedOrder;
+            }
             // Hapus DataTable jika sudah ada
             if ($.fn.dataTable.isDataTable('#seitaiTable')) {
                 let table = $('#seitaiTable').DataTable();
@@ -379,14 +386,6 @@
             }
 
             setTimeout(() => {
-                const savedOrder = localStorage.getItem('seitaiTableSort');
-                let defaultOrder = [
-                    [1, "asc"]
-                ];
-                if (savedOrder) {
-                    defaultOrder = JSON.parse(savedOrder);
-                }
-
                 // Inisialisasi ulang DataTable
                 let table = $('#seitaiTable').DataTable({
                     "pageLength": 10,
@@ -408,10 +407,11 @@
 
                 // Listen to sort event
                 table.on('order.dt', function() {
-                    const order = table.order();
-
-                    // Simpan ke localStorage
-                    localStorage.setItem('seitaiTableSort', JSON.stringify(order));
+                    let order = table.order();
+                    if (order.length == 0 && defaultOrder.length > 0) {
+                        order = defaultOrder;
+                    }
+                    $wire.call('updateSortingTable', order);
                 });
 
                 // default column visibility

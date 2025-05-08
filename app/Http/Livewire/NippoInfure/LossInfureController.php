@@ -23,6 +23,7 @@ class LossInfureController extends Component
     public $tglMasuk;
     #[Session]
     public $tglKeluar;
+    #[Session]
     public $transaksi;
     #[Session]
     public $machineId;
@@ -34,6 +35,8 @@ class LossInfureController extends Component
     public $searchTerm;
     #[Session]
     public $idProduct;
+    #[Session]
+    public $sortingTable;
 
     use WithPagination, WithoutUrlPagination;
 
@@ -43,12 +46,24 @@ class LossInfureController extends Component
         $this->buyer = MsBuyer::get();
         $this->machine = MsMachine::get();
 
+        if (empty($this->transaksi)) {
+            $this->transaksi = 1;
+        }
         if (empty($this->tglMasuk)) {
             $this->tglMasuk = Carbon::now()->format('d M Y');
         }
         if (empty($this->tglKeluar)) {
             $this->tglKeluar = Carbon::now()->format('d M Y');
         }
+        if (empty($this->sortingTable)) {
+            $this->sortingTable = [[1, 'asc']];
+        }
+    }
+
+    public function updateSortingTable($value)
+    {
+        $this->sortingTable = $value;
+        $this->skipRender();
     }
 
     public function add()

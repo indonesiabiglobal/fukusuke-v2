@@ -44,6 +44,8 @@ class SeitaiJamKerjaController extends Component
     #[Session]
     public $searchTerm;
     public $idDelete;
+    #[Session]
+    public $sortingTable;
 
     use WithPagination, WithoutUrlPagination;
 
@@ -57,6 +59,15 @@ class SeitaiJamKerjaController extends Component
         }
         $this->machine  = MsMachine::whereNotIn('department_id', [10, 12, 15, 2, 4, 10])->orderBy('machineno', 'ASC')->get();
         $this->workShift  = MsWorkingShift::where('status', 1)->get();
+        if (empty($this->sortingTable)) {
+            $this->sortingTable = [[1, 'asc']];
+        }
+    }
+
+    public function updateSortingTable($value)
+    {
+        $this->sortingTable = $value;
+        $this->skipRender();
     }
 
     public function search()

@@ -13,6 +13,7 @@ use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Livewire\Attributes\Session;
 
 class MasterProduk extends Component
 {
@@ -25,7 +26,21 @@ class MasterProduk extends Component
     public $idUpdate;
     public $idDelete;
     public $paginate = 10;
+    #[Session]
+    public $sortingTable;
 
+    public function mount()
+    {
+        if (empty($this->sortingTable)) {
+            $this->sortingTable = [[2, 'asc']];
+        }
+    }
+
+    public function updateSortingTable($value)
+    {
+        $this->sortingTable = $value;
+        $this->skipRender();
+    }
     public function search()
     {
         $this->resetPage();

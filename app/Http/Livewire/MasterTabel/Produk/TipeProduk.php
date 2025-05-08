@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
+use Livewire\Attributes\Session;
 
 class TipeProduk extends Component
 {
@@ -33,6 +34,8 @@ class TipeProduk extends Component
     public $idUpdate;
     public $idDelete;
     public $paginate = 10;
+    #[Session]
+    public $sortingTable;
 
     public $rules = [
         'code' => 'required|numeric|unique:msproduct_type,code',
@@ -46,6 +49,18 @@ class TipeProduk extends Component
         'harga_sat_seitai_loss' => 'required',
         'berat_jenis' => 'required',
     ];
+    public function mount()
+    {
+        if (empty($this->sortingTable)) {
+            $this->sortingTable = [[2, 'asc']];
+        }
+    }
+
+    public function updateSortingTable($value)
+    {
+        $this->sortingTable = $value;
+        $this->skipRender();
+    }
 
     public function resetFields()
     {

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
+use Livewire\Attributes\Session;
 
 class Warehouse extends Component
 {
@@ -25,7 +26,23 @@ class Warehouse extends Component
     public $idDelete;
     public $status;
     public $statusIsVisible;
+    #[Session]
+    public $sortingTable;
 
+
+    public function mount()
+    {
+        if (empty($this->sortingTable)) {
+            $this->sortingTable = [[2, 'asc']];
+        }
+    }
+
+    public function updateSortingTable($value)
+    {
+        $this->sortingTable = $value;
+        $this->skipRender();
+    }
+    
     public function resetFields()
     {
         $this->name = '';

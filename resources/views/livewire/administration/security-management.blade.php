@@ -202,6 +202,15 @@
 
         // Fungsi untuk menginisialisasi ulang DataTable
         function initDataTable() {
+
+            const savedOrder = $wire.get('sortingTable');
+            
+            let defaultOrder = [
+                [1, "asc"]
+            ];
+            if (savedOrder) {
+                defaultOrder = savedOrder;
+            }
             // Hapus DataTable jika sudah ada
             if ($.fn.dataTable.isDataTable('#securityTable')) {
                 let table = $('#securityTable').DataTable();
@@ -216,9 +225,7 @@
                     "pageLength": 10,
                     "searching": true,
                     "responsive": true,
-                    "order": [
-                        [1, "asc"]
-                    ],
+                    "order": defaultOrder,
                     "scrollX": true,
                     "language": {
                         "emptyTable": `
@@ -229,6 +236,16 @@
                             </div>
                         `
                     }
+                });
+
+
+                // Listen to sort event
+                table.on('order.dt', function() {
+                    let order = table.order();
+                    if (order.length == 0 && defaultOrder.length > 0) {
+                        order = defaultOrder;
+                    }
+                    $wire.call('updateSortingTable', order);
                 });
 
                 // default column visibility

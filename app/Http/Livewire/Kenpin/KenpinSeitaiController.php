@@ -31,6 +31,8 @@ class KenpinSeitaiController extends Component
     public $nomor_palet;
     #[Session]
     public $nomor_lot;
+    #[Session]
+    public $sortingTable;
 
 
     public function mount()
@@ -44,6 +46,15 @@ class KenpinSeitaiController extends Component
         if (empty($this->tglKeluar)) {
             $this->tglKeluar = Carbon::now()->format('d-m-Y');
         }
+        if (empty($this->sortingTable)) {
+            $this->sortingTable = [[1, 'asc']];
+        }
+    }
+
+    public function updateSortingTable($value)
+    {
+        $this->sortingTable = $value;
+        $this->skipRender();
     }
 
     public function search()

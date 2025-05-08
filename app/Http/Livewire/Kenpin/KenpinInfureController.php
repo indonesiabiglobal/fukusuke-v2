@@ -30,6 +30,8 @@ class KenpinInfureController extends Component
     public $status;
     #[Session]
     public $no_han;
+    #[Session]
+    public $sortingTable;
 
     public function mount()
     {
@@ -43,8 +45,17 @@ class KenpinInfureController extends Component
         if (empty($this->tglKeluar)) {
             $this->tglKeluar = Carbon::now()->format('d-m-Y');
         }
+        if (empty($this->sortingTable)) {
+            $this->sortingTable = [[1, 'asc']];
+        }
     }
 
+    public function updateSortingTable($value)
+    {
+        $this->sortingTable = $value;
+        $this->skipRender();
+    }
+    
     public function search()
     {
         $this->resetPage();

@@ -27,6 +27,7 @@ class NippoInfureController extends Component
     public $tglMasuk;
     #[Session]
     public $tglKeluar;
+    #[Session]
     public $transaksi;
     #[Session]
     public $machineId;
@@ -38,6 +39,8 @@ class NippoInfureController extends Component
     public $searchTerm;
     #[Session]
     public $idProduct;
+    #[Session]
+    public $sortingTable;
 
     use WithFileUploads;
     public $file;
@@ -53,12 +56,24 @@ class NippoInfureController extends Component
         $this->tdOrderLpk = TdOrderLpk::get();
         $this->buyer = MsBuyer::get();
         $this->machine = MsMachine::whereIn('department_id', [10, 12, 15, 2, 4, 10])->orderBy('machineno')->get();
+        if (empty($this->transaksi)) {
+            $this->transaksi = 1;
+        }
         if (empty($this->tglMasuk)) {
             $this->tglMasuk = Carbon::now()->format('d M Y');
         }
         if (empty($this->tglKeluar)) {
             $this->tglKeluar = Carbon::now()->format('d M Y');
         }
+        if (empty($this->sortingTable)) {
+            $this->sortingTable = [[1, 'asc']];
+        }
+    }
+
+    public function updateSortingTable($value)
+    {
+        $this->sortingTable = $value;
+        $this->skipRender();
     }
 
     protected function shouldForgetSession()
@@ -67,7 +82,7 @@ class NippoInfureController extends Component
         $previousUrl = url()->previous();
         $previousUrl = last(explode('/', $previousUrl));
         if (!(Str::contains($previousUrl, 'edit-nippo') || $previousUrl === 'add-nippo' || $previousUrl === 'nippo-infure')) {
-            $this->reset('tglMasuk', 'tglKeluar', 'transaksi', 'machineId', 'status', 'lpk_no', 'searchTerm', 'idProduct');
+            $this->reset('tglMasuk', 'tglKeluar', 'transaksi', 'machineId', 'status', 'lpk_no', 'searchTerm', 'idProduct', 'sortingTable');
         }
     }
 

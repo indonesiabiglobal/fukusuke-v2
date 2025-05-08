@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
+use Livewire\Attributes\Session;
 
 class BuyerController extends Component
 {
@@ -29,6 +30,8 @@ class BuyerController extends Component
     public $statusIsVisible = false;
 
     public $perPage = 10;
+    #[Session]
+    public $sortingTable;
 
     protected $rules = [
         'code' => 'required',
@@ -41,6 +44,15 @@ class BuyerController extends Component
     public function mount()
     {
         $this->buyers = MsBuyer::get(['id', 'code', 'name', 'address', 'country', 'status', 'updated_by', 'updated_on']);
+        if (empty($this->sortingTable)) {
+            $this->sortingTable = [[2, 'asc']];
+        }
+    }
+
+    public function updateSortingTable($value)
+    {
+        $this->sortingTable = $value;
+        $this->skipRender();
     }
 
     public function resetFields()

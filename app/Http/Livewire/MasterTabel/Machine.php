@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
+use Livewire\Attributes\Session;
 
 class Machine extends Component
 {
@@ -26,13 +27,25 @@ class Machine extends Component
     public $idDelete;
     public $status;
     public $statusIsVisible = false;
+    #[Session]
+    public $sortingTable;
 
 
-    // public function mount()
-    // {
-    //     $this->machines = DB::table('msmachine')
-    //         ->get(['id', 'machinename', 'machineno', 'department_id', 'product_group_id', 'capacity_kg', 'capacity_lembar', 'status', 'updated_by', 'updated_on']);
-    // }
+    public function mount()
+    {
+        //     $this->machines = DB::table('msmachine')
+        //         ->get(['id', 'machinename', 'machineno', 'department_id', 'product_group_id', 'capacity_kg', 'capacity_lembar', 'status', 'updated_by', 'updated_on']);
+
+        if (empty($this->sortingTable)) {
+            $this->sortingTable = [[2, 'asc']];
+        }
+    }
+
+    public function updateSortingTable($value)
+    {
+        $this->sortingTable = $value;
+        $this->skipRender();
+    }
 
     public function resetFields()
     {

@@ -79,7 +79,7 @@
                 if (value.length < 6) status = true;
                 if (value.length === 7) status = false;
                 if (value.length > 10) lpk_no_local = value.substring(0, 10);
-
+            
                 updateLivewire(value);
             })">
 
@@ -151,7 +151,8 @@
     <div class="col-lg-10 mt-2">
         <div class="row">
             <div class="col-12 col-lg-6">
-                <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1" wire:loading.attr="disabled">
+                <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1"
+                    wire:loading.attr="disabled">
                     <span wire:loading.remove wire:target="search">
                         <i class="ri-search-line"></i> Filter
                     </span>
@@ -411,23 +412,22 @@
 
         // Fungsi untuk menginisialisasi ulang DataTable
         function initDataTable() {
+            const savedOrder = $wire.get('sortingTable');
+            
+            let defaultOrder = [
+                [1, "asc"]
+            ];
+            if (savedOrder) {
+                defaultOrder = savedOrder;
+            }
             // Hapus DataTable jika sudah ada
             if ($.fn.dataTable.isDataTable('#tableInfure')) {
                 let table = $('#tableInfure').DataTable();
                 table.clear(); // Bersihkan data tabel
                 table.destroy(); // Hancurkan DataTable
-                // Hindari penggunaan $('#tableInfure').empty(); di sini
             }
 
             setTimeout(() => {
-                const savedOrder = localStorage.getItem('tableInfureSort');
-                let defaultOrder = [
-                    [1, "asc"]
-                ];
-                if (savedOrder) {
-                    defaultOrder = JSON.parse(savedOrder);
-                }
-
                 // Inisialisasi ulang DataTable
                 let table = $('#tableInfure').DataTable({
                     "pageLength": 10,
@@ -448,10 +448,11 @@
 
                 // Listen to sort event
                 table.on('order.dt', function() {
-                    const order = table.order();
-
-                    // Simpan ke localStorage
-                    localStorage.setItem('tableInfureSort', JSON.stringify(order));
+                    let order = table.order();
+                    if (order.length == 0 && defaultOrder.length > 0) {
+                        order = defaultOrder;
+                    }
+                    $wire.call('updateSortingTable', order);
                 });
 
                 // default column visibility

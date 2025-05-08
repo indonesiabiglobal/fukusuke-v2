@@ -45,6 +45,8 @@ class InfureJamKerjaController extends Component
     #[Session]
     public $searchTerm;
     public $idDelete;
+    #[Session]
+    public $sortingTable;
 
     use WithPagination, WithoutUrlPagination;
 
@@ -59,6 +61,15 @@ class InfureJamKerjaController extends Component
         $this->machine  = MsMachine::whereIn('department_id', [10, 12, 15, 2, 4, 10])->get();
         $this->workShift  = MsWorkingShift::where('status', 1)->get();
         $this->working_date = Carbon::now()->format('d-m-Y');
+        if (empty($this->sortingTable)) {
+            $this->sortingTable = [[1, 'asc']];
+        }
+    }
+
+    public function updateSortingTable($value)
+    {
+        $this->sortingTable = $value;
+        $this->skipRender();
     }
 
     public function search()

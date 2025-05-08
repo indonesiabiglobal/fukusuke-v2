@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
+use Livewire\Attributes\Session;
 
 class BoxController extends Component
 {
@@ -28,6 +29,8 @@ class BoxController extends Component
     public $class;
     public $status;
     public $statusIsVisible = false;
+    #[Session]
+    public $sortingTable;
 
     protected $rules = [
         'code' => 'required',
@@ -37,6 +40,19 @@ class BoxController extends Component
         'lebar' => 'required',
         'tinggi' => 'required',
     ];
+    
+    public function mount()
+    {
+        if (empty($this->sortingTable)) {
+            $this->sortingTable = [[2, 'asc']];
+        }
+    }
+
+    public function updateSortingTable($value)
+    {
+        $this->sortingTable = $value;
+        $this->skipRender();
+    }
 
     public function resetFields()
     {

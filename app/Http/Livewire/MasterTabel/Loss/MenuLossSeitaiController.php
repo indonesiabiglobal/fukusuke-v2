@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
+use Livewire\Attributes\Session;
 
 class MenuLossSeitaiController extends Component
 {
@@ -27,6 +28,8 @@ class MenuLossSeitaiController extends Component
     public $class;
     public $status;
     public $statusIsVisible = false;
+    #[Session]
+    public $sortingTable;
 
     protected $rules = [
         'code' => 'required',
@@ -35,6 +38,16 @@ class MenuLossSeitaiController extends Component
 
     public function mount(){
         $this->class = MsLossClass::get();
+    
+        if (empty($this->sortingTable)) {
+            $this->sortingTable = [[1, 'asc']];
+        }
+    }
+
+    public function updateSortingTable($value)
+    {
+        $this->sortingTable = $value;
+        $this->skipRender();
     }
 
     public function resetFields()

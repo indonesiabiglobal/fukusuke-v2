@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
+use Livewire\Attributes\Session;
 
 class MenuLossInfureController extends Component
 {
@@ -28,6 +29,8 @@ class MenuLossInfureController extends Component
     public $class;
     public $status;
     public $statusIsVisible = false;
+    #[Session]
+    public $sortingTable;
 
     protected $rules = [
         'code' => 'required',
@@ -37,6 +40,16 @@ class MenuLossInfureController extends Component
     public function mount()
     {
         $this->class = MsLossClass::get();
+    
+        if (empty($this->sortingTable)) {
+            $this->sortingTable = [[2, 'asc']];
+        }
+    }
+
+    public function updateSortingTable($value)
+    {
+        $this->sortingTable = $value;
+        $this->skipRender();
     }
 
     public function resetFields()

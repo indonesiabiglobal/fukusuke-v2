@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
+use Livewire\Attributes\Session;
 
 class WorkingShift extends Component
 {
@@ -25,10 +26,25 @@ class WorkingShift extends Component
     public $status;
     public $statusIsVisible;
 
+    #[Session]
+    public $sortingTable;
     // public function mount()
     // {
     //     $this->workingShifts = MsWorkingShift::get(['id', 'work_shift', 'work_hour_from', 'work_hour_till', 'status', 'updated_by', 'updated_on']);
     // }
+    
+    public function mount()
+    {
+        if (empty($this->sortingTable)) {
+            $this->sortingTable = [[2, 'asc']];
+        }
+    }
+
+    public function updateSortingTable($value)
+    {
+        $this->sortingTable = $value;
+        $this->skipRender();
+    }
 
     public function resetFields()
     {

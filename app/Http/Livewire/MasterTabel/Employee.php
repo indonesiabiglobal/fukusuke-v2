@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
+use Livewire\Attributes\Session;
 
 class Employee extends Component
 {
@@ -24,6 +25,8 @@ class Employee extends Component
     public $status;
     public $statusIsVisible = false;
     public $paginate = 10;
+    #[Session]
+    public $sortingTable;
 
     public function mount()
     {
@@ -40,6 +43,16 @@ class Employee extends Component
             )
             ->leftJoin('msdepartment as msd', 'mse.department_id', '=', 'msd.id')
             ->get();
+
+        if (empty($this->sortingTable)) {
+            $this->sortingTable = [[2, 'asc']];
+        }
+    }
+
+    public function updateSortingTable($value)
+    {
+        $this->sortingTable = $value;
+        $this->skipRender();
     }
 
     public function resetFields()

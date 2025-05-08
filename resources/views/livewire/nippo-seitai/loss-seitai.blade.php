@@ -37,27 +37,21 @@
                 <label class="form-label text-muted fw-bold">Nomor LPK</label>
             </div>
             <div class="col-12 col-lg-9 mb-1" x-data="{ lpk_no: @entangle('lpk_no').live, status: true }" x-init="$watch('lpk_no', value => {
-                    if (value.length === 6 && !value.includes('-') && status) {
-                        lpk_no = value + '-';
-                    }
-                    if (value.length < 6) {
-                        status = true;
-                    }
-                    if (value.length === 7) {
-                        status = false;
-                    }
-                    if (value.length > 10) {
-                        lpk_no = value.substring(0, 10);
-                    }
-                })">
-                <input
-                    class="form-control"
-                    style="padding:0.44rem"
-                    type="text"
-                    placeholder="000000-000"
-                    x-model="lpk_no"
-                    maxlength="10"
-                />
+                if (value.length === 6 && !value.includes('-') && status) {
+                    lpk_no = value + '-';
+                }
+                if (value.length < 6) {
+                    status = true;
+                }
+                if (value.length === 7) {
+                    status = false;
+                }
+                if (value.length > 10) {
+                    lpk_no = value.substring(0, 10);
+                }
+            })">
+                <input class="form-control" style="padding:0.44rem" type="text" placeholder="000000-000"
+                    x-model="lpk_no" maxlength="10" />
             </div>
             <div class="col-12 col-lg-3">
                 <label class="form-label text-muted fw-bold">Search</label>
@@ -83,7 +77,8 @@
                         <option value="">- All -</option>
                         @foreach ($products as $item)
                             <option data-custom-properties='{"code": "{{ $item->code }}"}' value="{{ $item->id }}"
-                                @if ($item->id == ($idProduct['value'] ?? null)) selected @endif>{{ $item->name }}, {{ $item->code }}</option>
+                                @if ($item->id == ($idProduct['value'] ?? null)) selected @endif>{{ $item->name }},
+                                {{ $item->code }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -123,7 +118,8 @@
     <div class="col-lg-12 mt-2">
         <div class="row">
             <div class="col-12 col-lg-10">
-                <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1" wire:loading.attr="disabled">
+                <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1"
+                    wire:loading.attr="disabled">
                     <span wire:loading.remove wire:target="search">
                         <i class="ri-search-line"></i> Filter
                     </span>
@@ -140,7 +136,8 @@
                 </button>
             </div>
             <div class="col-12 col-lg-2 text-end">
-                <button class="btn btn-info w-lg p-1" wire:click="export" type="button" wire:loading.attr="disabled">
+                <button class="btn btn-info w-lg p-1" wire:click="export" type="button"
+                    wire:loading.attr="disabled">
                     <span wire:loading.remove wire:target="export">
                         <i class="ri-printer-line"> </i> Print
                     </span>
@@ -354,6 +351,13 @@
 
         // Fungsi untuk menginisialisasi ulang DataTable
         function initDataTable() {
+            const savedOrder = $wire.get('sortingTable');
+            let defaultOrder = [
+                [1, "asc"]
+            ];
+            if (savedOrder) {
+                defaultOrder = savedOrder;
+            }
             // Hapus DataTable jika sudah ada
             if ($.fn.dataTable.isDataTable('#lossSeitaiTable')) {
                 let table = $('#lossSeitaiTable').DataTable();
@@ -368,9 +372,7 @@
                     "pageLength": 10,
                     "searching": true,
                     "responsive": true,
-                    "order": [
-                        [1, "asc"]
-                    ],
+                    "order": defaultOrder,
                     "scrollX": true,
                     "language": {
                         "emptyTable": `
@@ -381,6 +383,14 @@
                             </div>
                         `
                     }
+                });
+                // Listen to sort event
+                table.on('order.dt', function() {
+                    let order = table.order();
+                    if (order.length == 0 && defaultOrder.length > 0) {
+                        order = defaultOrder;
+                    }
+                    $wire.call('updateSortingTable', order);
                 });
 
                 // default column visibility
