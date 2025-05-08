@@ -276,8 +276,8 @@
                             <div class="col-lg-4 col-md-6">
                                 <div class="mb-3">
                                     <label for="choices-single-no-sorting" class="form-label text-muted">Options added via config with no sorting</label>
-                                    <p class="text-muted">Set <code>data-choices data-choices-sorting-false data-choices-unlimited-search</code> attribute.</p>
-                                    <select class="form-control" id="choices-single-no-sorting" name="choices-single-no-sorting" data-choices data-choices-sorting-false data-choices-unlimited-search>
+                                    <p class="text-muted">Set <code>data-choices data-choices-sorting-false </code> attribute.</p>
+                                    <select class="form-control" id="choices-single-no-sorting" name="choices-single-no-sorting" data-choices data-choices-sorting-false >
                                         <option value="Madrid">Madrid</option>
                                         <option value="Toronto">Toronto</option>
                                         <option value="Vancouver">Vancouver</option>

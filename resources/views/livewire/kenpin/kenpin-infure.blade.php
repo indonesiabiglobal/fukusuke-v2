@@ -100,7 +100,7 @@
             </div>
             <div class="col-12 col-lg-10 mb-1">
                 <div wire:ignore>
-                    <select class="form-control" wire:model.defer="idProduct" data-choices data-choices-sorting-false data-choices-unlimited-search
+                    <select class="form-control" wire:model.defer="idProduct" data-choices data-choices-sorting-false
                         data-choices-removeItem>
                         <option value="">- All -</option>
                         @foreach ($products as $item)
@@ -155,7 +155,7 @@
             <div class="col-12 col-lg-10">
                 <div wire:ignore>
                     <select class="form-control" style="padding:0.44rem" wire:model.defer="status" id="status"
-                        name="status" data-choices data-choices-sorting-false data-choices-unlimited-search data-choices-removeItem>
+                        name="status" data-choices data-choices-sorting-false  data-choices-removeItem>
                         <option value="">- all -</option>
                         <option value="1" @if (($status['value'] ?? null) == 1) selected @endif>Proses</option>
                         <option value="2" @if (($status['value'] ?? null) == 2) selected @endif>Finish</option>

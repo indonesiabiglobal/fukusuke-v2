@@ -155,7 +155,7 @@
                     <div wire:ignore>
                         <select required id="buyerSelect"
                             class="form-control col-12 col-lg-3 @error('buyer_id') is-invalid @enderror"
-                            wire:model="buyer_id" placeholder="" data-choices data-choices-sorting-false data-choices-unlimited-search
+                            wire:model="buyer_id" placeholder="" data-choices data-choices-sorting-false
                             data-choices-removeItem>
                             <option value=""></option>
                             @foreach ($buyer as $item)

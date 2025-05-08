@@ -73,7 +73,7 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Warna LPK</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select required data-choices data-choices-sorting-false data-choices-unlimited-search
+                                <select required data-choices data-choices-sorting-false
                                     class="form-select @error('warnalpkid') is-invalid @enderror"
                                     wire:model.live="warnalpkid">
                                     <option value="" selected>
@@ -277,7 +277,7 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Lakban Infure</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select data-choices data-choices-sorting-false data-choices-unlimited-search
+                                <select data-choices data-choices-sorting-false
                                     class="form-select @error('lakbaninfureid') is-invalid @enderror"
                                     wire:model.live="lakbaninfureid" placeholder="">
                                     <option value="" selected>
@@ -717,7 +717,7 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-6">Lakban Seitai</label>
                             <div class="col-12 col-lg-6" wire:ignore>
-                                <select data-choices data-choices-sorting-false data-choices-unlimited-search
+                                <select data-choices data-choices-sorting-false
                                     class="form-select @error('lakbanseitaiid') is-invalid @enderror"
                                     wire:model.live="lakbanseitaiid" placeholder="">
                                     <option value="" selected>

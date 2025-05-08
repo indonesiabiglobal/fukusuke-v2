@@ -178,12 +178,6 @@ File: Main Js File
 			if (isChoicesVal["data-choices-limit"]) {
 				choiceData.maxItemCount = isChoicesVal["data-choices-limit"].value.toString();
 			}
-			if (isChoicesVal["data-choices-editItem-true"]) {
-				choiceData.maxItemCount = true;
-			}
-			if (isChoicesVal["data-choices-editItem-false"]) {
-				choiceData.maxItemCount = false;
-			}
 			if (isChoicesVal["data-choices-text-unique-true"]) {
 				choiceData.duplicateItemsAllowed = false;
 			}

@@ -151,7 +151,7 @@
             <div class="col-12 col-lg-9">
                 <div wire:ignore>
                     <select class="form-control" style="padding:0.44rem" wire:model.defer="status" id="status"
-                        name="status" data-choices data-choices-sorting-false data-choices-unlimited-search data-choices-removeItem>
+                        name="status" data-choices data-choices-sorting-false  data-choices-removeItem>
                         <option value="">- all -</option>
                         <option value="1" @if (($status['value'] ?? null) == 1) selected @endif>Proses</option>
                         <option value="2" @if (($status['value'] ?? null) == 2) selected @endif>Finish</option>
