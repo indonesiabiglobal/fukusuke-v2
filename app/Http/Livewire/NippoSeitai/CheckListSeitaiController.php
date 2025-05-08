@@ -432,11 +432,13 @@ class CheckListSeitaiController extends Component
         /* Header */
         $rowHeaderStart = 3;
         $rowHeaderEnd = 4;
-        // proses
-        $activeWorksheet->setCellValue($startColumn . $rowHeaderStart, 'Tanggal Proses');
-        $activeWorksheet->setCellValue($startColumn . $rowHeaderEnd, 'No. Proses');
-        phpspreadsheet::styleFont($spreadsheet, $startColumn . $rowHeaderStart . ':' . $startColumn . $rowHeaderEnd, true, 9, 'Calibri');
-        phpspreadsheet::textAlignCenter($spreadsheet, $startColumn . $rowHeaderStart . ':' . $startColumn . $rowHeaderEnd);
+
+        // Nomor mesin
+        $columnMesin = 'A';
+        $spreadsheet->getActiveSheet()->mergeCells($columnMesin . $rowHeaderStart . ':' . $columnMesin . $rowHeaderEnd);
+        $activeWorksheet->setCellValue($columnMesin . $rowHeaderStart, 'Nomor Mesin');
+        phpspreadsheet::styleFont($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnMesin . $rowHeaderEnd, true, 9, 'Calibri');
+        phpspreadsheet::textAlignCenter($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnMesin . $rowHeaderEnd);
 
         // produksi
         $columnProduksi = 'B';
@@ -445,19 +447,19 @@ class CheckListSeitaiController extends Component
         phpspreadsheet::styleFont($spreadsheet, $columnProduksi . $rowHeaderStart . ':' . $columnProduksi . $rowHeaderEnd, true, 9, 'Calibri');
         phpspreadsheet::textAlignCenter($spreadsheet, $columnProduksi . $rowHeaderStart . ':' . $columnProduksi . $rowHeaderEnd);
 
+        // proses
+        $columnProses = 'C';
+        $activeWorksheet->setCellValue($columnProses . $rowHeaderStart, 'Tanggal Proses');
+        $activeWorksheet->setCellValue($columnProses . $rowHeaderEnd, 'No. Proses');
+        phpspreadsheet::styleFont($spreadsheet, $columnProses . $rowHeaderStart . ':' . $columnProses . $rowHeaderEnd, true, 9, 'Calibri');
+        phpspreadsheet::textAlignCenter($spreadsheet, $columnProses . $rowHeaderStart . ':' . $columnProses . $rowHeaderEnd);
+
         // petugas
-        $columnPetugas = 'C';
+        $columnPetugas = 'D';
         $activeWorksheet->setCellValue($columnPetugas . $rowHeaderStart, 'NIK');
         $activeWorksheet->setCellValue($columnPetugas . $rowHeaderEnd, 'Petugas');
         phpspreadsheet::styleFont($spreadsheet, $columnPetugas . $rowHeaderStart . ':' . $columnPetugas . $rowHeaderEnd, true, 9, 'Calibri');
         phpspreadsheet::textAlignCenter($spreadsheet, $columnPetugas . $rowHeaderStart . ':' . $columnPetugas . $rowHeaderEnd);
-
-        // Nomor mesin
-        $columnMesin = 'D';
-        $spreadsheet->getActiveSheet()->mergeCells($columnMesin . $rowHeaderStart . ':' . $columnMesin . $rowHeaderEnd);
-        $activeWorksheet->setCellValue($columnMesin . $rowHeaderStart, 'Nomor Mesin');
-        phpspreadsheet::styleFont($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnMesin . $rowHeaderEnd, true, 9, 'Calibri');
-        phpspreadsheet::textAlignCenter($spreadsheet, $columnMesin . $rowHeaderStart . ':' . $columnMesin . $rowHeaderEnd);
 
         // Nomor LPK
         $columnLpk = 'E';
@@ -525,14 +527,11 @@ class CheckListSeitaiController extends Component
         $rowItemStart = 5;
         $rowItemEnd = 6;
         foreach ($dataFiltered as $id_tdpg => $item) {
-            // Tanggal Proses
-            $activeWorksheet->setCellValue($startColumn . $rowItemStart, Carbon::parse($item['tglproses'])->format('d-M-Y'));
-            phpspreadsheet::styleFont($spreadsheet, $startColumn . $rowItemStart, false, 8, 'Calibri');
-            phpspreadsheet::textAlignCenter($spreadsheet, $startColumn . $rowItemStart);
-            // No Proses
-            $activeWorksheet->setCellValue($startColumn . $rowItemEnd, $item['noproses']);
-            phpspreadsheet::styleFont($spreadsheet, $startColumn . $rowItemEnd, false, 8, 'Calibri');
-            phpspreadsheet::textAlignCenter($spreadsheet, $startColumn . $rowItemEnd);
+            // Nomor Mesin
+            $activeWorksheet->setCellValue($columnMesin . $rowItemStart, $item['mesinno']);
+            phpspreadsheet::styleFont($spreadsheet, $columnMesin . $rowItemStart, false, 8, 'Calibri');
+            phpspreadsheet::textAlignCenter($spreadsheet, $columnMesin . $rowItemStart);
+            $activeWorksheet->getStyle($columnMesin . $rowItemStart)->getAlignment()->setWrapText(true);
             // Tangga Produksi
             $activeWorksheet->setCellValue($columnProduksi . $rowItemStart, Carbon::parse($item['tglproduksi'])->format('d-M-Y'));
             phpspreadsheet::styleFont($spreadsheet, $columnProduksi . $rowItemStart, false, 8, 'Calibri');
@@ -541,6 +540,14 @@ class CheckListSeitaiController extends Component
             $activeWorksheet->setCellValue($columnProduksi . $rowItemEnd, $item['shift']);
             phpspreadsheet::styleFont($spreadsheet, $columnProduksi . $rowItemEnd, false, 8, 'Calibri');
             phpspreadsheet::textAlignCenter($spreadsheet, $columnProduksi . $rowItemEnd);
+            // Tanggal Proses
+            $activeWorksheet->setCellValue($columnProses . $rowItemStart, Carbon::parse($item['tglproses'])->format('d-M-Y'));
+            phpspreadsheet::styleFont($spreadsheet, $columnProses . $rowItemStart, false, 8, 'Calibri');
+            phpspreadsheet::textAlignCenter($spreadsheet, $columnProses . $rowItemStart);
+            // No Proses
+            $activeWorksheet->setCellValue($columnProses . $rowItemEnd, $item['noproses']);
+            phpspreadsheet::styleFont($spreadsheet, $columnProses . $rowItemEnd, false, 8, 'Calibri');
+            phpspreadsheet::textAlignCenter($spreadsheet, $columnProses . $rowItemEnd);
             // NIK
             $activeWorksheet->setCellValue($columnPetugas . $rowItemStart, $item['nikpetugas']);
             phpspreadsheet::styleFont($spreadsheet, $columnPetugas . $rowItemStart, false, 8, 'Calibri');
@@ -550,11 +557,6 @@ class CheckListSeitaiController extends Component
             $spreadsheet->getActiveSheet()->mergeCells($columnPetugas . $rowItemEnd . ':' . $columnLpk . $rowItemEnd);
             phpspreadsheet::styleFont($spreadsheet, $columnPetugas . $rowItemEnd, false, 8, 'Calibri');
             phpspreadsheet::textAlignCenter($spreadsheet, $columnPetugas . $rowItemEnd . ':' . $columnLpk . $rowItemEnd);
-            // Nomor Mesin
-            $activeWorksheet->setCellValue($columnMesin . $rowItemStart, $item['mesinno']);
-            phpspreadsheet::styleFont($spreadsheet, $columnMesin . $rowItemStart, false, 8, 'Calibri');
-            phpspreadsheet::textAlignCenter($spreadsheet, $columnMesin . $rowItemStart);
-            $activeWorksheet->getStyle($columnMesin . $rowItemStart)->getAlignment()->setWrapText(true);
             // Nomor LPK
             $activeWorksheet->setCellValue($columnLpk . $rowItemStart, $item['nolpk']);
             phpspreadsheet::styleFont($spreadsheet, $columnLpk . $rowItemStart, false, 8, 'Calibri');
@@ -676,10 +678,10 @@ class CheckListSeitaiController extends Component
         phpspreadsheet::styleFont($spreadsheet, 'A' . $rowFooterStart . ':A' . ($rowFooterStart + 1), false, 9, 'Calibri');
         $startColumn++;
 
-        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(10.0);
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(15.0);
         $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(10.0);
         $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(10.0);
-        $spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(15.0);
+        $spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(10.0);
         $spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(10.0);
         $spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(25.0);
         $spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(10.5);
