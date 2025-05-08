@@ -321,18 +321,7 @@
                 </div>
             </div>
             <div class="col-lg-4">
-                {{-- <div class="toolbar">
-                    <button id="btnFilter" type="button" class="btn btn-warning" wire:click="cancel">
-                        <i class="fa fa-back"></i> Close
-                    </button>
-                    <button id="btnCreate" type="submit" class="btn btn-success">
-                        <i class="fa fa-plus"></i> Save
-                    </button>
-                    <button type="button" class="btn btn-success btn-print" disabled="disabled">
-                        <i class="fa fa-print"></i> Print
-                    </button>
-                </div> --}}
-                <button type="button" class="btn btn-warning" wire:click="cancel">
+                <button type="button" class="btn btn-warning" wire:click="cancel" wire:loading.attr="disabled">
                     <span wire:loading.remove wire:target="cancel">
                         <i class="ri-close-line"> </i> Close
                     </span>
@@ -347,7 +336,7 @@
                         </span>
                     </div>
                 </button>
-                <button type="button" wire:click="save" class="btn btn-success">
+                <button type="button" wire:click="save" class="btn btn-success" wire:loading.attr="disabled">
                     <span wire:loading.remove wire:target="save">
                         <i class="ri-save-3-line"></i> Save
                     </span>
@@ -608,7 +597,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-link text-gray-600 ms-auto"
                             data-bs-dismiss="modal">Close</button>
-                        <button type="button" wire:click="saveGentan" class="btn btn-success">
+                        <button type="button" wire:click="saveGentan" class="btn btn-success" wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="saveGentan">
                                 <i class="ri-save-3-line"></i> Save
                             </span>
@@ -699,25 +688,10 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        {{-- <button id="btnFilter" type="button" class="btn btn-warning w-lg" wire:click="destroy">
-                                <span wire:loading.remove wire:target="destroy">
-                                    <i class="ri-save-3-line"> </i> delete
-                                </span>
-                                <div wire:loading wire:target="destroy">
-                                    <span class="d-flex align-items-center">
-                                        <span class="spinner-border flex-shrink-0" role="status">
-                                            <span class="visually-hidden">Loading...</span>
-                                        </span>
-                                        <span class="flex-grow-1 ms-1">
-                                            Loading...
-                                        </span>
-                                    </span>
-                                </div>
-                            </button> --}}
 
                         <button type="button" class="btn btn-link text-gray-600 ms-auto"
                             data-bs-dismiss="modal">Close</button>
-                        <button type="button" wire:click="saveLoss" class="btn btn-success">
+                        <button type="button" wire:click="saveLoss" class="btn btn-success" wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="saveLoss">
                                 <i class="ri-save-3-line"></i> Save
                             </span>

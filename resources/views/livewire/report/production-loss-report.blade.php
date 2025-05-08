@@ -68,8 +68,7 @@
 		<div class="form-group">
 			<label class="control-label col-md-4 col-xs-12"></label>
 			<div class="input-group col-md-8 col-xs-12">
-				{{-- <button type="button" class="btn btn-success btn-print" wire:click="export" style="width:99%"><i class="fa fa-print"></i> Generate Report</button> --}}
-                <button class="btn btn-success btn-print" wire:click="export" type="button" style="width:99%">
+                <button class="btn btn-success btn-print" wire:click="export" type="button" style="width:99%" wire:loading.attr="disabled">
                     <span wire:loading.remove wire:target="export">
                         <i class="fa fa-print"></i> Generate Report
                     </span>

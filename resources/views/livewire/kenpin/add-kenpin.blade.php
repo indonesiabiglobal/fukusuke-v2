@@ -184,7 +184,7 @@
                     <button type="button" class="btn btn-warning" wire:click="cancel">
                         <i class="ri-close-line"></i> Close
                     </button>
-                    <button wire:click="save" type="button" class="btn btn-success w-lg">
+                    <button wire:click="save" type="button" class="btn btn-success w-lg" wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="save">
                             <i class="ri-save-3-line"></i> Save
                         </span>

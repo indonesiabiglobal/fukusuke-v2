@@ -127,7 +127,7 @@
     <div class="col-lg-12 mt-2">
         <div class="row">
             <div class="col-12 col-lg-10">
-                <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1">
+                <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1" wire:loading.attr="disabled">
                     <span wire:loading.remove wire:target="search">
                         <i class="ri-search-line"></i> Filter
                     </span>
@@ -148,7 +148,7 @@
                 </button>
             </div>
             <div class="col-12 col-lg-2">
-                <button class="btn btn-info w-lg p-1" wire:click="export" type="button">
+                <button class="btn btn-info w-lg p-1" wire:click="export" type="button" wire:loading.attr="disabled">
                     <span wire:loading.remove wire:target="export">
                         <i class="ri-printer-line"> </i> Print
                     </span>

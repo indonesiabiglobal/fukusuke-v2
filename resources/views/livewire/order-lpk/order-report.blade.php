@@ -105,7 +105,7 @@
                 <hr />
                 <div class="form-group">
                     <div class="input-group">
-                        <button type="submit" class="btn btn-success btn-print" style="width:99%">
+                        <button type="submit" class="btn btn-success btn-print" style="width:99%" wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="export">
                                 <i class="ri-printer-line"></i> Generate Report
                             </span>

@@ -117,7 +117,7 @@
                                 maxlength="12" x-on:keydown.tab="$event.preventDefault(); $refs.lotnoInput.focus();"
                                 placeholder="A0000-000000" />
                         </div>
-                        <button wire:click="addPalet" type="button" class="btn btn-info">
+                        <button wire:click="addPalet" type="button" class="btn btn-info" wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="addPalet">
                                 <i class="ri-search-line"></i>
                             </span>
@@ -138,7 +138,7 @@
             <div class="col-lg-3"></div>
             <div class="col-lg-4">
                 <div class="toolbar">
-                    <button type="button" class="btn btn-warning" wire:click="cancel">
+                    <button type="button" class="btn btn-warning" wire:click="cancel" wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="cancel">
                             <i class="ri-close-line"> </i> Close
                         </span>
@@ -153,7 +153,7 @@
                             </span>
                         </div>
                     </button>
-                    <button type="submit" class="btn btn-success">
+                    <button type="submit" class="btn btn-success" wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="save">
                             <i class="ri-save-3-line"></i> Save
                         </span>
@@ -169,7 +169,7 @@
                         </div>
                     </button>
 
-                    <button type="button" class="btn btn-success btn-print" wire:click="export">
+                    <button type="button" class="btn btn-success btn-print" wire:click="export" wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="export">
                             <i class="bx bx-printer"></i> Print
                         </span>
@@ -264,7 +264,7 @@
                         {{-- <button type="button" class="btn btn-secondary">Accept</button> --}}
                         <button type="button" class="btn btn-link text-gray-600 ms-auto"
                             data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-success" wire:click="saveSeitai()">
+                        <button type="button" class="btn btn-success" wire:click="saveSeitai()" wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="saveSeitai">
                                 <i class="ri-save-3-line"></i> Save
                             </span>

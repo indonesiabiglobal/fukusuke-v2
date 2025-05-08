@@ -75,7 +75,7 @@ class AddNippoController extends Component
         }
 
         $this->production_date = Carbon::now()->format('d/m/Y');
-        $this->created_on = Carbon::now()->format('d/m/Y');
+        $this->created_on = Carbon::now()->format('d/m/Y H:i:s');
         $this->work_hour = Carbon::now()->format('H:i');
     }
 
@@ -378,15 +378,6 @@ class AddNippoController extends Component
                 'total_assembly_line' => $totalAssembly[0]->c1,
             ]);
 
-
-
-            // $product->panjang_printing_inline = $this->panjang_printing_inline;
-            // $product->berat_produksi = $this->berat_produksi;
-            // $product->status_production = $this->status_production;
-            // $product->status_kenpin = $this->status_kenpin;
-            // $product->infure_cost = $this->infure_cost;
-            // $product->product_id = $this->product_id;
-
             DB::commit();
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
             return redirect()->route('nippo-infure');
@@ -442,13 +433,6 @@ class AddNippoController extends Component
             ];
 
             $this->details[] = $data;
-
-            // $datas = new TdProductAssemblyLoss();
-            // $datas->loss_infure_id = $this->loss_infure_id;
-            // $datas->berat_loss = $this->berat_loss;
-            // $datas->berat = $this->berat;
-            // $datas->frekuensi = $this->frekuensi;
-            // $datas->lpk_id = $lpkid->id;
 
             // $datas->save();
             DB::commit();
@@ -707,14 +691,12 @@ class AddNippoController extends Component
             'frekuensi' => 'required|numeric',
         ]);
 
-        DB::table('tdproduct_assembly_loss')
-            ->where('id', $this->editing_id)
-            ->update([
-                'loss_infure_id' => $this->loss_infure_id,
-                'berat_loss' => $this->berat_loss,
-                'frekuensi' => $this->frekuensi,
-                // 'updated_at' => now(),
-            ]);
+        $index = array_search($this->editing_id, array_column($this->details, 'id'));
+        if ($index !== false) {
+            $this->details[$index]['loss_infure_id'] = $this->loss_infure_id;
+            $this->details[$index]['berat_loss'] = $this->berat_loss;
+            $this->details[$index]['frekuensi'] = $this->frekuensi;
+        }
 
         $this->resetInputFields();
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Loss Infure berhasil diupdate']);

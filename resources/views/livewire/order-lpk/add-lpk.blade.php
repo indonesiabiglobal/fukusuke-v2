@@ -17,7 +17,7 @@
                 </span>
             </div>
         </button>
-        <button class="btn btn-primary w-lg p-1" wire:click="download" type="button">
+        <button class="btn btn-primary w-lg p-1" wire:click="download" type="button" wire:loading.attr="disabled">
             <span wire:loading.remove wire:target="download">
                 <i class="ri-download-cloud-2-line"> </i> Download Template
             </span>
@@ -260,7 +260,7 @@
 
         <div class="col-lg-12 mt-2">
             <div class="toolbar">
-                <button type="button" class="btn btn-warning" wire:click="cancel">
+                <button type="button" class="btn btn-warning" wire:click="cancel" wire:loading.attr="disabled">
                     <span wire:loading.remove wire:target="cancel">
 						<i class="ri-close-line"> </i> Close
 					</span>
@@ -276,7 +276,7 @@
                     </div>
                 </button>
 
-                <button type="button" class="btn btn-success w-md" wire:click="save">
+                <button type="button" class="btn btn-success w-md" wire:click="save" wire:loading.attr="disabled">
                     <span wire:loading.remove wire:target="save">
                         <i class="ri-save-3-line"></i> Save
                     </span>

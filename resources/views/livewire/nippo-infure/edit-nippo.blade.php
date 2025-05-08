@@ -368,7 +368,7 @@
 
             <div class="col-lg-5">
                 <div class="toolbar float-end">
-                    <button type="button" class="btn btn-warning" wire:click="cancel">
+                    <button type="button" class="btn btn-warning" wire:click="cancel" wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="cancel">
                             <i class="ri-close-line"> </i> Close
                         </span>
@@ -384,7 +384,7 @@
                         </div>
                     </button>
                     @if ($statusEditLoss)
-                        <button type="button" class="btn btn-success" wire:click="save">
+                        <button type="button" class="btn btn-success" wire:click="save" wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="save">
                                 <i class="ri-save-3-line"></i> Update
                             </span>
@@ -401,7 +401,7 @@
                         </button>
                     @else
                         @if (!$statusSeitai)
-                        <button type="button" class="btn btn-danger" wire:click="delete">
+                        <button type="button" class="btn btn-danger" wire:click="delete" wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="delete">
                                 <i class="ri-delete-bin-line"> </i> delete
                             </span>
@@ -418,7 +418,7 @@
                         </button>
                         @endif
                         @if (empty($statusSeitai))
-                            <button type="button" class="btn btn-success" wire:click="save">
+                            <button type="button" class="btn btn-success" wire:click="save" wire:loading.attr="disabled">
                                 <span wire:loading.remove wire:target="save">
                                     <i class="ri-save-3-line"></i> Update
                                 </span>
@@ -516,7 +516,7 @@
                             {{-- <button type="button" class="btn btn-success" wire:click="saveInfure">
                                 Save
                             </button> --}}
-                            <button type="button" class="btn btn-success" wire:click="saveInfure">
+                            <button type="button" class="btn btn-success" wire:click="saveInfure" wire:loading.attr="disabled">
                                 <span wire:loading.remove wire:target="saveInfure">
                                     <i class="ri-save-3-line"></i> Save
                                 </span>
@@ -608,7 +608,7 @@
                             {{-- <button type="button" class="btn btn-success" wire:click="saveInfure">
                                 Save
                             </button> --}}
-                            <button type="button" class="btn btn-success" wire:click="saveInfure">
+                            <button type="button" class="btn btn-success" wire:click="saveInfure" wire:loading.attr="disabled">
                                 <span wire:loading.remove wire:target="saveInfure">
                                     <i class="ri-save-3-line"></i> Save
                                 </span>
@@ -725,7 +725,7 @@
                                 <tr>
                                     <td>
                                         <!-- tanda -->
-                                        <button type="button" class="btn btn-warning" wire:click="editLossInfure({{$item->id}})">
+                                        <button type="button" class="btn btn-warning" wire:click="editLossInfure({{$item->id}})" wire:loading.attr="disabled">
                                             <span wire:loading.remove wire:target="editLossInfure({{$item->id}})">
                                                 <i class="fa fa-edit"></i> Edit 
                                             </span>
@@ -740,7 +740,7 @@
                                                 </span>
                                             </div>
                                         </button>
-                                        <button type="button" class="btn btn-danger" wire:click="deleteInfure({{$item->loss_infure_id}})">
+                                        <button type="button" class="btn btn-danger" wire:click="deleteInfure({{$item->loss_infure_id}})" wire:loading.attr="disabled">
                                             <span wire:loading.remove wire:target="deleteInfure({{$item->loss_infure_id}})">
                                                 <i class="fa fa-trash"></i> Delete
                                             </span>
@@ -1590,7 +1590,7 @@
                             <button type="button" class="btn w-sm btn-light"
                                 data-bs-dismiss="modal">Close</button>
                             <button wire:click="destroy" id="btnCreate" type="button"
-                                class="btn w-sm btn-danger" id="remove-item">
+                                class="btn w-sm btn-danger" id="remove-item" wire:loading.attr="disabled">
                                 <span wire:loading.remove wire:target="destroy">
                                     <i class="ri-save-3-line"></i> Yes, Delete It!
                                 </span>
@@ -1669,7 +1669,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-link text-gray-600 ms-auto" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-success" wire:click="updateLossInfure">
+                        <button type="button" class="btn btn-success" wire:click="updateLossInfure" wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="updateLossInfure">
                                 <i class="ri-save-3-line"></i> Update
                             </span>

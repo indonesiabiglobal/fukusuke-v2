@@ -17,7 +17,7 @@
                 </span>
             </div>
         </button>
-        <button class="btn btn-primary w-lg p-1" wire:click="download" type="button">
+        <button class="btn btn-primary w-lg p-1" wire:click="download" type="button" wire:loading.attr="disabled">
             <span wire:loading.remove wire:target="download">
                 <i class="ri-download-cloud-2-line"> </i> Download Template
             </span>
@@ -32,7 +32,7 @@
                 </span>
             </div>
         </button>
-        <button class="btn btn-info w-lg p-1" wire:click="printLPK" type="button">
+        <button class="btn btn-info w-lg p-1" wire:click="printLPK" type="button" wire:loading.attr="disabled">
             <span wire:loading.remove wire:target="printLPK">
                 <i class="ri-printer-line"> </i> Cetak LPK
             </span>
@@ -275,7 +275,7 @@
         <hr />
         <div class="col-lg-12">
             <div class="toolbar">
-                <button type="button" class="btn btn-warning" wire:click="cancel">
+                <button type="button" class="btn btn-warning" wire:click="cancel" wire:loading.attr="disabled">
                     <span wire:loading.remove wire:target="cancel">
                         <i class="ri-close-line"> </i> Close
                     </span>
@@ -296,7 +296,7 @@
                         <i class="ri-delete-bin-line"></i> Delete
                     </button>
 
-                    <button type="button" wire:click="save" class="btn btn-success">
+                    <button type="button" wire:click="save" class="btn btn-success" wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="save">
                             <i class="ri-save-3-line"></i> Update
                         </span>

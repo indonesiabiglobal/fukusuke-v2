@@ -47,7 +47,7 @@
                                             <div class="hstack gap-2 justify-content-end">
                                                 <button type="button" class="btn btn-light"
                                                     data-bs-dismiss="modal">Close</button>
-                                                <button id="btnCreate" type="submit" class="btn btn-success w-lg">
+                                                <button id="btnCreate" type="submit" class="btn btn-success w-lg" wire:loading.attr="disabled">
                                                     <span wire:loading.remove wire:target="store">
                                                         <i class="ri-save-3-line"></i> Save
                                                     </span>
@@ -127,7 +127,7 @@
                                             <div class="hstack gap-2 justify-content-end">
                                                 <button type="button" class="btn btn-light"
                                                     data-bs-dismiss="modal">Close</button>
-                                                <button id="btnCreate" type="submit" class="btn btn-success w-lg">
+                                                <button id="btnCreate" type="submit" class="btn btn-success w-lg" wire:loading.attr="disabled">
                                                     <span wire:loading.remove wire:target="update">
                                                         <i class="ri-save-3-line"></i> Update
                                                     </span>
@@ -176,7 +176,7 @@
                                     <button type="button" class="btn w-sm btn-light"
                                         data-bs-dismiss="modal">Close</button>
                                     <button wire:click="destroy" id="btnCreate" type="button"
-                                        class="btn w-sm btn-danger" id="remove-item">
+                                        class="btn w-sm btn-danger" id="remove-item" wire:loading.attr="disabled">
                                         <span wire:loading.remove wire:target="destroy">
                                             <i class="ri-save-3-line"></i> Yes, Delete It!
                                         </span>
@@ -198,28 +198,6 @@
                 </div>
                 {{-- end modal delete buyer --}}
             </div>
-            {{-- filter search --}}
-            {{-- <div class="col-12 col-lg-6">
-                <div class="input-group">
-                    <input wire:model.defer="searchTerm" class="form-control"style="padding:0.44rem" type="text"
-                        placeholder="Pencarian" />
-                    <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1">
-                        <span wire:loading.remove wire:target="search">
-                            <i class="ri-search-line"></i> Filter
-                        </span>
-                        <div wire:loading wire:target="search">
-                            <span class="d-flex align-items-center">
-                                <span class="spinner-border flex-shrink-0" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </span>
-                                <span class="flex-grow-1 ms-1">
-                                    Loading...
-                                </span>
-                            </span>
-                        </div>
-                    </button>
-                </div>
-            </div> --}}
 
             {{-- toggle column table --}}
             <div class="col-12 col-lg-6">

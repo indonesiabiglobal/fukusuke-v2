@@ -26,7 +26,7 @@
                                     <button type="button" class="btn w-sm btn-light"
                                         data-bs-dismiss="modal">Close</button>
                                     <button wire:click="destroy" id="btnCreate" type="button"
-                                        class="btn w-sm btn-danger" id="remove-item">
+                                        class="btn w-sm btn-danger" id="remove-item" wire:loading.attr="disabled">
                                         <span wire:loading.remove wire:target="destroy">
                                             <i class="ri-save-3-line"></i> Yes, Delete It!
                                         </span>
@@ -88,7 +88,7 @@
                     </div>
                 </div>
                 <div class="col-12 col-lg-6 text-end">
-                    <button wire:click="search" type="submit" class="btn btn-primary btn-load w-lg p-1">
+                    <button wire:click="search" type="submit" class="btn btn-primary btn-load w-lg p-1" wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="search">
                             <i class="ri-search-line"></i> Filter
                         </span>
@@ -108,7 +108,7 @@
                         onclick="window.location.href='{{ route('add-master-product') }}'">
                         <i class="ri-add-line"> </i> Add
                     </button>
-                    <button class="btn btn-warning w-lg p-1" wire:click="export" type="button">
+                    <button class="btn btn-warning w-lg p-1" wire:click="export" type="button" wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="export">
                             <i class="ri-download-cloud-2-line"> </i> Export
                         </span>
@@ -126,38 +126,6 @@
                 </div>
             </div>
             {{-- </form> --}}
-            {{-- <div class="col-12 col-lg-6 text-end">
-                <button class="btn btn-primary w-lg p-1" wire:click="download" type="button">
-                    <span wire:loading.remove wire:target="download">
-                        <i class="ri-download-cloud-2-line"> </i> Download Template
-                    </span>
-                    <div wire:loading wire:target="download">
-                        <span class="d-flex align-items-center">
-                            <span class="spinner-border flex-shrink-0" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </span>
-                            <span class="flex-grow-1 ms-1">
-                                Loading...
-                            </span>
-                        </span>
-                    </div>
-                </button>
-                <button class="btn btn-info w-lg p-1" wire:click="print" type="button">
-                    <span wire:loading.remove wire:target="print">
-                        <i class="ri-printer-line"> </i> Print
-                    </span>
-                    <div wire:loading wire:target="print">
-                        <span class="d-flex align-items-center">
-                            <span class="spinner-border flex-shrink-0" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </span>
-                            <span class="flex-grow-1 ms-1">
-                                Loading...
-                            </span>
-                        </span>
-                    </div>
-                </button>
-            </div> --}}
         </div>
     </div>
     <div class="table-responsive table-card mt-3 mb-1">

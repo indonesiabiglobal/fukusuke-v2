@@ -172,7 +172,7 @@
             <hr />
             <div class="col-lg-12">
                 <div class="toolbar">
-                    <button id="btnFilter" type="button" class="btn btn-warning w-lg" wire:click="cancel">
+                    <button id="btnFilter" type="button" class="btn btn-warning w-lg" wire:click="cancel" wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="cancel">
                             <i class="ri-close-line"> </i> Close
                         </span>
@@ -188,7 +188,7 @@
                         </div>
                     </button>
                     <button wire:click="save" type="button" onclick="handleFormSubmit()"
-                        class="btn btn-success w-lg">
+                        class="btn btn-success w-lg" wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="save">
                             <i class="ri-save-3-line"></i> Save
                         </span>

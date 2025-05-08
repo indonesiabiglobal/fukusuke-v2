@@ -155,7 +155,7 @@
                     {{-- <button type="submit" class="btn btn-success">
                         <i class="ri-save-3-line"></i> Save
                     </button> --}}
-                    <button type="submit" class="btn btn-success">
+                    <button type="submit" class="btn btn-success" wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="save">
                             <i class="ri-save-3-line"></i> Save
                         </span>
@@ -250,7 +250,7 @@
                     <div class="modal-footer">
                         {{-- <button type="button" class="btn btn-secondary">Accept</button> --}}
                         <button type="button" class="btn btn-link text-gray-600 ms-auto" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-success" wire:click="saveGentan">
+                        <button type="button" class="btn btn-success" wire:click="saveGentan" wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="saveGentan">
 								<i class="ri-save-3-line"></i> Update
 							</span>

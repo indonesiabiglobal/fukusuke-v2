@@ -76,7 +76,7 @@
 
     <div class="col-lg-12">
         <div class="toolbar">
-            <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1">
+            <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1" wire:loading.attr="disabled">
                 <span wire:loading.remove wire:target="search">
                     <i class="ri-search-line"></i> Filter
                 </span>
@@ -192,7 +192,7 @@
                             {{-- <button type="submit" class="btn btn-success" wire:click="save">
                                 Save
                             </button> --}}
-                            <button type="submit" class="btn btn-success" wire:click="save">
+                            <button type="submit" class="btn btn-success" wire:click="save" wire:loading.attr="disabled">
                                 <span wire:loading.remove wire:target="save">
                                     <i class="ri-save-3-line"></i> Save
                                 </span>
@@ -313,7 +313,7 @@
                             {{-- <button type="button" class="btn btn-success" wire:click="save">
                                 Save
                             </button> --}}
-                            <button type="submit" class="btn btn-success" wire:click="save">
+                            <button type="submit" class="btn btn-success" wire:click="save" wire:loading.attr="disabled">
                                 <span wire:loading.remove wire:target="save">
                                     <i class="ri-save-3-line"></i> Save
                                 </span>
@@ -358,7 +358,7 @@
                                 <button type="button" class="btn w-sm btn-light"
                                     data-bs-dismiss="modal">Tutup</button>
                                 <button wire:click="destroy" id="btnCreate" type="button"
-                                    class="btn w-sm btn-danger" id="remove-item">
+                                    class="btn w-sm btn-danger" id="remove-item" wire:loading.attr="disabled">
                                     <span wire:loading.remove wire:target="destroy">
                                         <i class="ri-save-3-line"></i> Ya, Hapus!
                                     </span>

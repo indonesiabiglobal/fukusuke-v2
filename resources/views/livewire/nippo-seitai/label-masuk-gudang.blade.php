@@ -87,7 +87,7 @@
                     <input type="text" class="form-control readonly" readonly="readonly" wire:model="name" />
                 </div>
             </div>
-            <button type="button" class="btn btn-success btn-print mt-1" wire:click="export" style="width:99%">
+            <button type="button" class="btn btn-success btn-print mt-1" wire:click="export" style="width:99%" wire:loading.attr="disabled">
                 <span wire:loading.remove wire:target="export">
                     <i class="fa fa-print"></i> Print
                 </span>

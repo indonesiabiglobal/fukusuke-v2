@@ -31,7 +31,7 @@
 
     <div class="col-lg-12">
         <div class="toolbar">
-            <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1">
+            <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1" wire:loading.attr="disabled">
                 <span wire:loading.remove wire:target="search">
                     <i class="ri-search-line"></i> Filter
                 </span>

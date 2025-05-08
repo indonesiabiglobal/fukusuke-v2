@@ -203,85 +203,6 @@
             </div><!-- end card -->
         </div>
     </div>
-    {{-- List mesin --}}
-    {{-- <div class="row">
-        <div class="col-xxl-9">
-            <div class="card card-height-100">
-                <div class="card-header align-items-center d-flex">
-                    <h4 class="card-title mb-0 flex-grow-1">LIST MESIN</h4>
-                    <div class="flex-shrink-0">
-                        <button type="button" class="btn btn-soft-primary btn-sm">
-                            Export Report
-                        </button>
-                    </div>
-                </div>
-
-                <div class="card-body">
-
-                    <div id="listMesinHidup"
-                        data-colors='["--tb-success", "--tb-info", "--tb-primary", "--tb-warning", "--tb-secondary"]'
-                        class="apex-charts mt-n3" dir="ltr"></div>
-
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <div class="d-flex mb-3">
-                                <div class="flex-grow-1">
-                                    <p class="text-truncate text-muted fs-14 mb-0">
-                                        <i class="mdi mdi-circle align-middle text-primary me-2"></i>www.google.com
-                                    </p>
-                                </div>
-                                <div class="flex-shrink-0">
-                                    <p class="mb-0">24.58%</p>
-                                </div>
-                            </div><!-- end -->
-                            <div class="d-flex mb-3">
-                                <div class="flex-grow-1">
-                                    <p class="text-truncate text-muted fs-14 mb-0">
-                                        <i class="mdi mdi-circle align-middle text-warning me-2"></i>www.medium.com
-                                    </p>
-                                </div>
-                                <div class="flex-shrink-0">
-                                    <p class="mb-0">12.22%</p>
-                                </div>
-                            </div><!-- end -->
-                            <div class="d-flex">
-                                <div class="flex-grow-1">
-                                    <p class="text-truncate text-muted fs-14 mb-0">
-                                        <i class="mdi mdi-circle align-middle text-secondary me-2"></i>Other
-                                    </p>
-                                </div>
-                                <div class="flex-shrink-0">
-                                    <p class="mb-0">17.58%</p>
-                                </div>
-                            </div><!-- end -->
-                        </div>
-                        <div class="col-md-6">
-                            <div class="d-flex mb-3">
-                                <div class="flex-grow-1">
-                                    <p class="text-truncate text-muted fs-14 mb-0">
-                                        <i class="mdi mdi-circle align-middle text-info me-2"></i>www.youtube.com
-                                    </p>
-                                </div>
-                                <div class="flex-shrink-0">
-                                    <p class="mb-0">17.51%</p>
-                                </div>
-                            </div><!-- end -->
-                            <div class="d-flex mb-3">
-                                <div class="flex-grow-1">
-                                    <p class="text-truncate text-muted fs-14 mb-0">
-                                        <i class="mdi mdi-circle align-middle text-success me-2"></i>www.meta.com
-                                    </p>
-                                </div>
-                                <div class="flex-shrink-0">
-                                    <p class="mb-0">23.05%</p>
-                                </div>
-                            </div><!-- end -->
-                        </div>
-                    </div>
-                </div><!-- end card body -->
-            </div>
-        </div>
-    </div> --}}
     <!-- end row-->
     {{-- Modal Seitai Kadou jikan  --}}
     <div class="modal  fade bs-example-modal-center" id="modalListMesinSeitai" tabindex="-1" role="dialog"
@@ -320,7 +241,6 @@
                     <div class="mt-4">
                         <div class="hstack gap-2 justify-content-center">
                             <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                            {{-- <a href="javascript:void(0);" class="btn btn-danger">Try Again</a> --}}
                         </div>
                     </div>
                 </div>

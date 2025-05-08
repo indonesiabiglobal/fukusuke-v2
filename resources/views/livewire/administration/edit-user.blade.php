@@ -155,7 +155,7 @@
                 </div> 
             </div>
             <br>
-            <button type="button" class="btn btn-warning" wire:click="cancel">
+            <button type="button" class="btn btn-warning" wire:click="cancel" wire:loading.attr="disabled">
                 <span wire:loading.remove wire:target="cancel">
                     <i class="ri-close-line"> </i> Close
                 </span>
@@ -170,7 +170,7 @@
                     </span>                    
                 </div>
             </button>
-            <button type="submit" class="btn btn-success">
+            <button type="submit" class="btn btn-success" wire:loading.attr="disabled">
                 <span wire:loading.remove wire:target="save">
                     <i class="ri-save-3-line"></i> Save
                 </span>

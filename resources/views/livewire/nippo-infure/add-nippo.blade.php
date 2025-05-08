@@ -497,9 +497,6 @@
                 <button wire:click="addLossInfure" type="button" class="btn btn-success">
                     <i class="ri-add-line"></i> Add Loss Infure
                 </button>
-                {{-- <button data-bs-toggle="modal" data-bs-target="#modal-add" type="button" class="btn btn-success">
-                    <i class="ri-add-line"></i> Add Loss Infure
-                </button> --}}
             </div>
             <div class="col-lg-6 col-12">
                 @if ($selisih > 0)
@@ -508,7 +505,7 @@
             </div>
             <div class="col-lg-3">
                 <div class="toolbar float-end">
-                    <button type="button" class="btn btn-warning" wire:click="cancel">
+                    <button type="button" class="btn btn-warning" wire:click="cancel" wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="cancel">
                             <i class="ri-close-line"> </i> Close
                         </span>
@@ -523,7 +520,7 @@
                             </span>
                         </div>
                     </button>
-                    <button type="button" wire:click="save" class="btn btn-success">
+                    <button type="button" wire:click="save" class="btn btn-success" wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="save">
                             <i class="ri-save-3-line"></i> Save
                         </span>
@@ -537,7 +534,7 @@
                                 </span>
                             </span>
                         </div>
-                    </button>
+                    </button>   
                 </div>
             </div>
         </div>
@@ -581,7 +578,7 @@
                                 <div class="form-group">
                                     <div class="input-group">
                                         <label class="col-12 col-lg-2 fw-bold text-muted">Berat Loss </label>
-                                        <input class="form-control @error('berat_loss') is-invalid @enderror" type="number" step="4" wire:model.defer="berat_loss"
+                                        <input class="form-control @error('berat_loss') is-invalid @enderror" type="text" wire:model.defer="berat_loss"
                                             placeholder="0" x-ref="berat_loss" />
                                         @error('berat_loss')
                                             <span class="invalid-feedback">{{ $message }}</span>
@@ -621,7 +618,7 @@
                         {{-- <button type="button" class="btn btn-success" wire:click="saveInfure">
                                 Save
                             </button> --}}
-                        <button type="button" class="btn btn-success" wire:click="saveInfure">
+                        <button type="button" class="btn btn-success" wire:click="saveInfure" wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="saveInfure">
                                 <i class="ri-save-3-line"></i> Save
                             </span>
@@ -661,7 +658,7 @@
                             @forelse ($details as $item)
                                 <tr>
                                     <td>
-                                        <button type="button" class="btn btn-warning" wire:click="editLossInfure({{$item['id']}})">
+                                        <button type="button" class="btn btn-warning" wire:click="editLossInfure({{$item['id']}})" wire:loading.attr="disabled">
                                             <span wire:loading.remove wire:target="editLossInfure({{$item['id']}})">
                                                 <i class="fa fa-edit"></i> Edit 
                                             </span>
@@ -676,7 +673,7 @@
                                                 </span>
                                             </div>
                                         </button>
-                                        <button type="button" class="btn btn-danger" wire:click="deleteInfure({{ $item['id'] }})">
+                                        <button type="button" class="btn btn-danger" wire:click="deleteInfure({{ $item['id'] }})" wire:loading.attr="disabled">
                                             <span wire:loading.remove wire:target="deleteInfure({{ $item['id'] }})">
                                                 <i class="fa fa-trash"></i> Delete
                                             </span>
@@ -1613,7 +1610,8 @@
                                 <div class="form-group">
                                     <div class="input-group">
                                         <label class="col-12 col-lg-2 fw-bold text-muted">Kode Loss </label>
-                                        <input id="inputKodeLoss" class="form-control" type="text" wire:model.change="loss_infure_code" placeholder="..."/>
+                                        <input id="inputKodeLoss" class="form-control" type="text" wire:model.change="loss_infure_code" placeholder="..."
+                                        x-on:keydown.tab="$event.preventDefault(); $refs.edit_berat_loss.focus();"/>
                                         @error('loss_infure_code')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror
@@ -1635,7 +1633,7 @@
                                 <div class="form-group">
                                     <div class="input-group">
                                         <label class="col-12 col-lg-2 fw-bold text-muted">Berat Loss </label>
-                                        <input class="form-control" type="text" wire:model.defer="berat_loss" placeholder="0" x-ref="berat_loss"/>
+                                        <input class="form-control" type="text" wire:model.defer="berat_loss" placeholder="0" x-ref="edit_berat_loss"/>
                                         @error('berat_loss')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror
@@ -1657,7 +1655,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-link text-gray-600 ms-auto" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-success" wire:click="updateLossInfure">
+                        <button type="button" class="btn btn-success" wire:click="updateLossInfure" wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="updateLossInfure">
                                 <i class="ri-save-3-line"></i> Update
                             </span>

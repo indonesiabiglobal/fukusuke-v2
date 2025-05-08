@@ -1113,7 +1113,7 @@
             <hr />
             <div class="col-lg-12" style="border-top:1px solid #efefef">
                 <div class="toolbar">
-                    <button id="btnFilter" type="button" class="btn btn-warning w-lg" wire:click="cancel">
+                    <button id="btnFilter" type="button" class="btn btn-warning w-lg" wire:click="cancel" wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="cancel">
                             <i class="ri-close-line"> </i> Close
                         </span>
@@ -1128,7 +1128,7 @@
                             </span>
                         </div>
                     </button>
-                    <button type="button" wire:click="store" class="btn btn-success w-lg">
+                    <button type="button" wire:click="store" class="btn btn-success w-lg" wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="store">
                             <i class="ri-save-3-line"></i> Save
                         </span>

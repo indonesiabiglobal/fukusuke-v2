@@ -124,7 +124,7 @@
     <div class="col-lg-12 mt-2">
         <div class="row">
             <div class="col-12 col-lg-5">
-                <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1">
+                <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1" wire:loading.attr="disabled">
                     <span wire:loading.remove wire:target="search">
                         <i class="ri-search-line"></i> Filter
                     </span>
@@ -147,7 +147,7 @@
             <div class="col-12 col-lg-7 d-none d-sm-block">
                 <input type="file" id="fileInput" wire:model="file" style="display: none;">
                 <button class="btn btn-success w-lg p-1" type="button"
-                    onclick="document.getElementById('fileInput').click()">
+                    onclick="document.getElementById('fileInput').click()" wire:loading.attr="disabled">
                     <span wire:loading.remove wire:target="file">
                         <i class="ri-upload-2-fill"> </i> Upload Excel
                     </span>
@@ -163,7 +163,7 @@
                     </div>
                 </button>
 
-                <button class="btn btn-primary w-lg p-1" wire:click="download" type="button">
+                <button class="btn btn-primary w-lg p-1" wire:click="download" type="button" wire:loading.attr="disabled">
                     <span wire:loading.remove wire:target="download">
                         <i class="ri-download-cloud-2-line"> </i> Download Template
                     </span>
@@ -178,7 +178,7 @@
                         </span>
                     </div>
                 </button>
-                <button class="btn btn-info w-lg p-1" wire:click="print" type="button">
+                <button class="btn btn-info w-lg p-1" wire:click="print" type="button" wire:loading.attr="disabled">
                     <span wire:loading.remove wire:target="print">
                         <i class="ri-printer-line"> </i> Export
                     </span>
@@ -194,7 +194,7 @@
                     </div>
                 </button>
                 {{-- cetak lpk --}}
-                <button class="btn btn-info w-lg p-1" wire:click="printLPK" type="button">
+                <button class="btn btn-info w-lg p-1" wire:click="printLPK" type="button" wire:loading.attr="disabled">
                     <span wire:loading.remove wire:target="printLPK">
                         <i class="ri-printer-line"> </i> Cetak LPK
                     </span>

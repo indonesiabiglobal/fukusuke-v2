@@ -153,7 +153,7 @@
             <hr />
             <div class="col-lg-12">
                 <div class="toolbar">
-                    <button type="button" class="btn btn-warning w-lg" wire:click="cancel">
+                    <button type="button" class="btn btn-warning w-lg" wire:click="cancel" wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="cancel">
                             <i class="ri-close-line"> </i> Close
                         </span>
@@ -175,7 +175,7 @@
                             <i class="ri-delete-bin-line"></i> Delete
                         </button>
 
-                        <button type="button" class="btn btn-success w-lg" wire:click="save">
+                        <button type="button" class="btn btn-success w-lg" wire:click="save" wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="save">
                                 <i class="ri-save-3-line"></i> Update
                             </span>

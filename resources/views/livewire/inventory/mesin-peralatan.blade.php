@@ -42,7 +42,7 @@
     <div class="col-lg-12 mt-2">
         <div class="row">
             <div class="col-12 col-lg-6">
-                <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1" id="filterBtn">
+                <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1" id="filterBtn" wire:loading.attr="disabled">
                     <span wire:loading.remove wire:target="search">
                         <i class="ri-search-line"></i> Filter
                     </span>
@@ -59,7 +59,7 @@
                 </button>
             </div>
             <div class="col-12 col-lg-6 d-none d-sm-block text-end">
-                <button class="btn btn-info w-lg p-1" wire:click="print" type="button">
+                <button class="btn btn-info w-lg p-1" wire:click="print" type="button" wire:loading.attr="disabled">
                     <span wire:loading.remove wire:target="print">
                         <i class="ri-printer-line"> </i> Print
                     </span>

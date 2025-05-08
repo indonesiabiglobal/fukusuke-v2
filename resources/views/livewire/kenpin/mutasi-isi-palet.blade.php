@@ -7,7 +7,7 @@
 						Nomor Palet Sumber
 					</span>
 					<input wire:model.defer="searchOld" class="form-control" type="text" placeholder="A0000-000000" />
-					<button wire:click="search" type="button" class="btn btn-light">
+					<button wire:click="search" type="button" class="btn btn-light" wire:loading.attr="disabled">
 						<span wire:loading.remove wire:target="search">
 							<i class="ri-search-line"></i>
 						</span>
@@ -77,7 +77,7 @@
 						Nomor Palet Tujuan
 					</span>
 					<input wire:model.defer="searchNew" class="form-control" type="text" placeholder="A0000-000000" />
-					<button wire:click="searchTujuan" type="button" class="btn btn-light">
+					<button wire:click="searchTujuan" type="button" class="btn btn-light" wire:loading.attr="disabled">
 						<span wire:loading.remove wire:target="searchTujuan">
 							<i class="ri-search-line"></i>
 						</span>
@@ -175,7 +175,7 @@
 					<div class="modal-footer">
 						{{-- <button type="button" class="btn btn-secondary">Accept</button> --}}
 						<button type="button" class="btn btn-link text-gray-600 ms-auto" data-bs-dismiss="modal">Close</button>
-						<button type="button" class="btn btn-success" wire:click="saveMutasi">
+						<button type="button" class="btn btn-success" wire:click="saveMutasi" wire:loading.attr="disabled">
 							<span wire:loading.remove wire:target="saveMutasi">
 								Save
 							</span>
@@ -217,7 +217,7 @@
                     <button id="btnFilter" type="button" class="btn btn-warning" wire:click="cancel">
                         <i class="fa fa-back"></i> Close
                     </button>
-					<button id="btnFilter" type="button" class="btn btn-danger" wire:click="delete">
+					<button id="btnFilter" type="button" class="btn btn-danger" wire:click="delete" wire:loading.attr="disabled">
 						<span wire:loading.remove wire:target="delete">
 							<i class="ri-repeat-line"></i> Undo
 						</span>

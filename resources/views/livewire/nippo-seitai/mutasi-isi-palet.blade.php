@@ -26,7 +26,7 @@
                             class="form-control" />
                     </div>
 
-                    <button wire:click="search" type="button" class="btn btn-light">
+                    <button wire:click="search" type="button" class="btn btn-light" wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="search">
                             <i class="ri-search-line"></i>
                         </span>
@@ -182,7 +182,7 @@
                         <input type="text" placeholder="000000-000" x-model="searchNew" maxlength="12"
                             class="form-control" />
                     </div>
-                    <button wire:click="searchTujuan" type="button" class="btn btn-light">
+                    <button wire:click="searchTujuan" type="button" class="btn btn-light" wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="searchTujuan">
                             <i class="ri-search-line"></i>
                         </span>
@@ -263,7 +263,7 @@
                     <button id="btnFilter" type="button" class="btn btn-warning" wire:click="cancel">
                         <i class="ri-close-line"></i> Close
                     </button>
-                    <button id="btnFilter" type="button" class="btn btn-danger" wire:click="undo">
+                    <button id="btnFilter" type="button" class="btn btn-danger" wire:click="undo" wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="undo">
                             <i class="ri-repeat-line"></i> Undo
                         </span>
@@ -278,7 +278,7 @@
                             </span>
                         </div>
                     </button>
-                    <button id="btnFilter" type="button" class="btn btn-success" wire:click="saveMutasi" :disabled="{{ $isButtonDisabled ? 'true' : 'false' }}">
+                    <button id="btnFilter" type="button" class="btn btn-success" wire:click="saveMutasi" :disabled="{{ $isButtonDisabled ? 'true' : 'false' }}" wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="saveMutasi">
                             <i class="fa fa-floppy-disk"></i> Proses Mutasi
                         </span>

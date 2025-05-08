@@ -7,7 +7,7 @@
 						Nomor Palet Sumber
 					</span>
 					<input wire:model.defer="nomor_palet" class="form-control" type="text" placeholder="A0000-000000" />
-                    <button wire:click="search" type="button" class="btn btn-info">
+                    <button wire:click="search" type="button" class="btn btn-info" wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="search">
                             <i class="ri-search-line"></i>
                         </span>

@@ -82,7 +82,7 @@
             <div class="input-group">
                 <label class="control-label col-12 col-lg-2 fw-bold"></label>
                 <button type="button" class="btn btn-success btn-print" wire:click="print"
-                    {{ !$lpk_id ? 'disabled' : '' }}>
+                    {{ !$lpk_id ? 'disabled' : '' }} wire:loading.attr="disabled">
                     <span wire:loading.remove wire:target="print">
                         <i class="ri-printer-line"></i> Print
                     </span>
