@@ -88,7 +88,7 @@
                     <div class="col-12 col-lg-9">
                         <div class="mb-1" wire:ignore>
                             <select class="form-control" wire:model.defer="departmentId" data-choices
-                                data-choices-sorting-false data-choices-removeItem>
+                                data-choices-sorting-false data-choices-removeItem data-choices-search-field-label>
                                 <option value="">- All -</option>
                                 @foreach ($department as $item)
                                     <option value="{{ $item->id }}">{{ $item->name }}</option>
@@ -107,7 +107,7 @@
                     <div class="col-12 col-lg-9">
                         <div class="mb-1" wire:ignore>
                             <select class="form-control" wire:model.defer="machineId" data-choices
-                                data-choices-sorting-false data-choices-removeItem>
+                                data-choices-sorting-false data-choices-removeItem data-choices-search-field-label>
                                 <option value="">- All -</option>
                                 @foreach ($machine as $item)
                                     <option value="{{ $item->id }}">{{ $item->machinename }}</option>

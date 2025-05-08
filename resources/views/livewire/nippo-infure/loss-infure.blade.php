@@ -85,7 +85,7 @@
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
                     <select class="form-control" wire:model.defer="idProduct" data-choices data-choices-sorting-false
-                        data-choices-removeItem>
+                        data-choices-removeItem data-choices-search-field-label>
                         <option value="">- All -</option>
                         @foreach ($products as $item)
                             {{-- <option value="{{ $item->id }}">{{ $item->name }}</option> --}}
@@ -101,7 +101,7 @@
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
                     <select class="form-control" wire:model.defer="machineId" data-choices data-choices-sorting-false
-                        data-choices-removeItem>
+                        data-choices-removeItem data-choices-search-field-label>
                         <option value="">- All -</option>
                         @foreach ($machine as $item)
                             <option value="{{ $item->id }}" @if ($item->id == ($machineId['value'] ?? null)) selected @endif>
@@ -116,7 +116,7 @@
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
                     <select class="form-control" wire:model.defer="status" data-choices data-choices-sorting-false
-                        data-choices-removeItem>
+                        data-choices-removeItem data-choices-search-field-label>
                         <option value="">- all -</option>
                         <option value="0">Open</option>
                         <option value="1" @if (($status['value'] ?? null) == 1) selected @endif>Seitai</option>

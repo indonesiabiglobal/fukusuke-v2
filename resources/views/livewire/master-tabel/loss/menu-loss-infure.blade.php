@@ -49,7 +49,7 @@
                                                     Loss</label>
                                                 <select class="form-control" wire:model.defer="loss_class_id"
                                                     id="validationDefault04" required data-choices
-                                                    data-choices-sorting-false data-choices-removeItem>
+                                                    data-choices-sorting-false data-choices-removeItem data-choices-search-field-label>
                                                     <option value="">- All -</option>
                                                     @foreach ($class as $item)
                                                         <option value="{{ $item->id }}">{{ $item->name }}</option>
@@ -66,7 +66,7 @@
                                                 <select
                                                     class="form-control @error('loss_category_code') is-invalid @enderror"
                                                     wire:model.defer="loss_category_code" data-choices
-                                                    data-choices-sorting-false data-choices-removeItem>
+                                                    data-choices-sorting-false data-choices-removeItem data-choices-search-field-label>
                                                     <option value="">- All -</option>
                                                     <option value="0">Loss Produksi</option>
                                                     <option value="1">Loss Kebutuhan</option>
@@ -151,7 +151,7 @@
                                                 <select
                                                     class="form-control @error('loss_class_id') is-invalid @enderror"
                                                     wire:model.defer="loss_class_id" data-choices
-                                                    data-choices-sorting-false data-choices-removeItem>
+                                                    data-choices-sorting-false data-choices-removeItem data-choices-search-field-label>
                                                     @foreach ($class as $item)
                                                         <option value="{{ $item->id }}"
                                                             {{ $item->id == $loss_class_id ? 'selected' : '' }}>

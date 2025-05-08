@@ -260,8 +260,8 @@
                             <div class="col-lg-4 col-md-6">
                                 <div class="mb-3">
                                     <label for="choices-single-no-search" class="form-label text-muted">Options added via config with no search</label>
-                                    <p class="text-muted">Set <code>data-choices data-choices-search-false data-choices-removeItem</code></p>
-                                    <select class="form-control" id="choices-single-no-search" name="choices-single-no-search" data-choices data-choices-search-false data-choices-removeItem>
+                                    <p class="text-muted">Set <code>data-choices data-choices-search-false data-choices-removeItem data-choices-search-field-label</code></p>
+                                    <select class="form-control" id="choices-single-no-search" name="choices-single-no-search" data-choices data-choices-search-false data-choices-removeItem data-choices-search-field-label>
                                         <option value="Zero">Zero</option>
                                         <option value="One">One</option>
                                         <option value="Two">Two</option>
@@ -325,8 +325,8 @@
                             <div class="col-lg-4 col-md-6">
                                 <div class="mb-3">
                                     <label for="choices-multiple-remove-button" class="form-label text-muted">With remove button</label>
-                                    <p class="text-muted">Set <code>data-choices data-choices-removeItem multiple</code> attribute.</p>
-                                    <select class="form-control" id="choices-multiple-remove-button" data-choices data-choices-removeItem name="choices-multiple-remove-button" multiple>
+                                    <p class="text-muted">Set <code>data-choices data-choices-removeItem data-choices-search-field-label multiple</code> attribute.</p>
+                                    <select class="form-control" id="choices-multiple-remove-button" data-choices data-choices-removeItem data-choices-search-field-label name="choices-multiple-remove-button" multiple>
                                         <option value="Choice 1" selected>Choice 1</option>
                                         <option value="Choice 2">Choice 2</option>
                                         <option value="Choice 3">Choice 3</option>
@@ -387,8 +387,8 @@
                             <div class="col-lg-4 col-md-6">
                                 <div class="mb-3">
                                     <label for="choices-text-remove-button" class="form-label text-muted">Set limit values with remove button</label>
-                                    <p class="text-muted">Set <code>data-choices data-choices-limit="Required Limit" data-choices-removeItem</code> attribute.</p>
-                                    <input class="form-control" id="choices-text-remove-button" data-choices data-choices-limit="3" data-choices-removeItem type="text" value="Task-1" />
+                                    <p class="text-muted">Set <code>data-choices data-choices-limit="Required Limit" data-choices-removeItem data-choices-search-field-label</code> attribute.</p>
+                                    <input class="form-control" id="choices-text-remove-button" data-choices data-choices-limit="3" data-choices-removeItem data-choices-search-field-label type="text" value="Task-1" />
                                 </div>
                             </div>
                             <!-- end col -->

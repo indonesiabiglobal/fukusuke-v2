@@ -19,7 +19,7 @@
             </div>
             <div class="col-12 col-lg-6">
                 <div class="mb-1" wire:ignore>
-                    <select class="form-control" wire:model.defer="idRole" data-choices data-choices-sorting-false  data-choices-removeItem>
+                    <select class="form-control" wire:model.defer="idRole" data-choices data-choices-sorting-false  data-choices-removeItem data-choices-search-field-label>
                         <option value="">- All -</option>
                         @foreach ($userrole as $item)
                             <option value="{{ $item->id }}">{{ $item->description }}</option>
@@ -32,7 +32,7 @@
             </div>
             <div class="col-12 col-lg-4">
                 <div class="mb-1" wire:ignore>
-                    <select class="form-control" wire:model.defer="status" data-choices data-choices-sorting-false  data-choices-removeItem>
+                    <select class="form-control" wire:model.defer="status" data-choices data-choices-sorting-false  data-choices-removeItem data-choices-search-field-label>
                         <option value="">- All -</option>
                         <option value="1">Active</option>
                         <option value="0">Inactive</option>

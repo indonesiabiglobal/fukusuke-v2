@@ -54,7 +54,7 @@
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
                     <select class="form-control" wire:model.defer="idProduct" id="product" name="product" data-choices
-                        data-choices-sorting-false data-choices-removeItem>
+                        data-choices-sorting-false data-choices-removeItem data-choices-search-field-label>
                         <option value="">- All -</option>
                         @foreach ($products as $item)
                             <option data-custom-properties='{"code": "{{ $item->code }}"}' value="{{ $item->id }}"
@@ -71,7 +71,7 @@
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
                     <select class="form-control" wire:model.defer="idBuyer" data-choices data-choices-sorting-false
-                        data-choices-removeItem>
+                        data-choices-removeItem data-choices-search-field-label>
                         <option value="">- All -</option>
                         @foreach ($buyer as $item)
                             <option data-custom-properties='{"code": "{{ $item->code }}"}' value="{{ $item->id }}"
@@ -87,7 +87,7 @@
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
                     <select class="form-control" wire:model.defer="status" data-choices data-choices-sorting-false
-                        data-choices-removeItem>
+                        data-choices-removeItem data-choices-search-field-label>
                         <option value="">- All -</option>
                         <option value="0" @if (($status['value'] ?? '') == 0) selected @endif>Belum LPK</option>
                         <option value="1" @if (($status['value'] ?? '') == 1) selected @endif>Sudah LPK</option>

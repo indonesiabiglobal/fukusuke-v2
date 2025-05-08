@@ -157,7 +157,7 @@ File: Main Js File
 			if (isChoicesVal["data-choices-search-true"]) {
 				choiceData.searchEnabled = true;
 			}
-			if (isChoicesVal["data-choices-removeItem"]) {
+			if (isChoicesVal["data-choices-removeItem data-choices-search-field-label"]) {
 				choiceData.removeItemButton = true;
 			}
 			if (isChoicesVal["data-choices-sorting-false"]) {
@@ -186,6 +186,9 @@ File: Main Js File
 			}
 			if (isChoicesVal["data-choices-search-field"]) {
 				choiceData.searchFields = ['value']
+			}
+			if (isChoicesVal["data-choices-search-field-label"]) {
+				choiceData.searchFields = ['label']
 			}
 			if (isChoicesVal["data-choices-sorter"]) {
 				choiceData.sorter = function(a, b) {

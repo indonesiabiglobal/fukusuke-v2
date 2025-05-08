@@ -21,7 +21,7 @@
 						</span>
 
 						<div class="mb-1" wire:ignore>
-							<select class="form-control" wire:model.defer="jamAwal" data-choices data-choices-sorting-false  data-choices-removeItem>
+							<select class="form-control" wire:model.defer="jamAwal" data-choices data-choices-sorting-false  data-choices-removeItem data-choices-search-field-label>
 								<option value="">- All -</option>
 								@foreach ($workingShiftHour as $item)
 									<option value="{{ $item->work_hour_from }}" @if ($jamAwal == $item->work_hour_from) selected @endif>{{ $item->work_hour_from }}</option>
@@ -47,7 +47,7 @@
 						</span>
 
 						<div class="mb-1" wire:ignore>
-							<select class="form-control" wire:model.defer="jamAkhir" data-choices data-choices-sorting-false  data-choices-removeItem>
+							<select class="form-control" wire:model.defer="jamAkhir" data-choices data-choices-sorting-false  data-choices-removeItem data-choices-search-field-label>
 								<option value="">- All -</option>
 								@foreach ($workingShiftHour as $item)
 									<option value="{{ $item->work_hour_till }}" @if ($jamAkhir == $item->work_hour_till) selected @endif>{{ $item->work_hour_till }}</option>
@@ -124,7 +124,7 @@
 				</div>
 				<div class="col-12 col-lg-9">
 					<div class="mb-1" wire:ignore>
-						<select class="form-control" wire:model.defer="departmentId" data-choices data-choices-sorting-false  data-choices-removeItem>
+						<select class="form-control" wire:model.defer="departmentId" data-choices data-choices-sorting-false  data-choices-removeItem data-choices-search-field-label>
 							<option value="">- All -</option>
 							@foreach ($department as $item)
 							<option value="{{ $item->id }}">{{ $item->name }}</option>
@@ -141,7 +141,7 @@
 				</div>
 				<div class="col-12 col-lg-9">
 					<div class="mb-1" wire:ignore>
-						<select class="form-control" wire:model.defer="machineId" data-choices data-choices-sorting-false  data-choices-removeItem>
+						<select class="form-control" wire:model.defer="machineId" data-choices data-choices-sorting-false  data-choices-removeItem data-choices-search-field-label>
 							<option value="">- All -</option>
 							@foreach ($machine as $item)
 							<option value="{{ $item->id }}">{{ $item->machineno }} - {{ $item->machinename }}</option>
@@ -157,7 +157,7 @@
                 <span class="input-group-addon col-12 col-lg-3 text-muted fw-bold">Produk </span>
                 <div class="col-12 col-lg-9" wire:ignore>
                     <select class="form-control" wire:model.defer="productId" data-choices data-choices-sorting-false
-                        data-choices-removeItem>
+                        data-choices-removeItem data-choices-search-field-label>
                         <option value="">- All -</option>
                         @foreach ($products as $item)
                             <option data-custom-properties='{"code": "{{ $item->code }}"}' value="{{ $item->id }}">{{ $item->name }}

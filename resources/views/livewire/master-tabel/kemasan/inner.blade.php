@@ -45,7 +45,7 @@
                                                 <label for="name" class="form-label">Klasifikasi</label>
                                                 <select class="form-control @error('box_class') is-invalid @enderror"
                                                     wire:model.defer="box_class" data-choices data-choices-sorting-false
-                                                    data-choices-removeItem>
+                                                    data-choices-removeItem data-choices-search-field-label>
                                                     <option value="">- All -</option>
                                                     <option value="1">Khusus</option>
                                                     <option value="2">Standar</option>

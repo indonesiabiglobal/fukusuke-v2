@@ -48,7 +48,7 @@
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
                     <select class="form-control" wire:model.defer="jenis_pabean" data-choices
-                        data-choices-sorting-false data-choices-removeItem>
+                        data-choices-sorting-false data-choices-removeItem data-choices-search-field-label>
                         <option value=""></option>
                         <option value="BC 2.0">BC 2.0</option>
                         <option value="BC 2.3">BC 2.3</option>
@@ -69,7 +69,7 @@
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
                     <select class="form-control" wire:model.defer="idBuyer" data-choices data-choices-sorting-false
-                        data-choices-removeItem>
+                        data-choices-removeItem data-choices-search-field-label>
                         <option value=""></option>
                         <option value="">MATERIAL</option>
                         <option value="">WIP</option>
