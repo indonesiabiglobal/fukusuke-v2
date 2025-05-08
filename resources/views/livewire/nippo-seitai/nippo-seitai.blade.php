@@ -71,7 +71,7 @@
             </div>
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
-                    <select class="form-control" wire:model.defer="idProduct" data-choices data-choices-sorting-false
+                    <select class="form-control" wire:model.defer="idProduct" data-choices data-choices-unlimited-search data-choices-sorting-false
                         data-choices-removeItem>
                         <option value="">- All -</option>
                         @foreach ($products as $item)
@@ -87,7 +87,7 @@
             </div>
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
-                    <select class="form-control" wire:model.defer="machineId" data-choices data-choices-sorting-true
+                    <select class="form-control" wire:model.defer="machineId" data-choices data-choices-sorting-true data-choices-unlimited-search
                         data-choices-removeItem data-choices-exact-match data-choices-sorter>
                         <option value="">- All -</option>
                         @foreach ($machine as $item)
@@ -104,7 +104,7 @@
             </div>
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
-                    <select class="form-control" wire:model.defer="status" data-choices data-choices-sorting-false
+                    <select class="form-control" wire:model.defer="status" data-choices data-choices-sorting-false data-choices-unlimited-search
                         data-choices-removeItem>
                         <option value="">- All -</option>
                         <option value="0">Open</option>

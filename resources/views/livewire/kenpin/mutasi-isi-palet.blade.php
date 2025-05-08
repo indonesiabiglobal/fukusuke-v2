@@ -1,7 +1,7 @@
 <form>
 	<div class="row mt-3">
 		<div class="col-12 col-lg-6">
-			<div class="form-group">				
+			<div class="form-group">
 				<div class="input-group">
 					<span class="input-group-text readonly">
 						Nomor Palet Sumber
@@ -9,7 +9,7 @@
 					<input wire:model.defer="searchOld" class="form-control" type="text" placeholder="A0000-000000" />
 					<button wire:click="search" type="button" class="btn btn-light">
 						<span wire:loading.remove wire:target="search">
-							<i class="ri-search-line"></i>							
+							<i class="ri-search-line"></i>
 						</span>
 						<div wire:loading wire:target="search">
 							<span class="d-flex align-items-center">
@@ -71,7 +71,7 @@
 			</div>
 		</div>
 		<div class="col-12 col-lg-6">
-			<div class="form-group">				
+			<div class="form-group">
 				<div class="input-group">
 					<span class="input-group-text readonly">
 						Nomor Palet Tujuan
@@ -177,7 +177,7 @@
 						<button type="button" class="btn btn-link text-gray-600 ms-auto" data-bs-dismiss="modal">Close</button>
 						<button type="button" class="btn btn-success" wire:click="saveMutasi">
 							<span wire:loading.remove wire:target="saveMutasi">
-								Save					
+								Save
 							</span>
 							<div wire:loading wire:target="saveMutasi">
 								<span class="d-flex align-items-center">
@@ -201,7 +201,7 @@
 				</div>
 				<div class="col-12 col-lg-10">
 					<div class="mb-1" wire:ignore>
-						<select class="form-control"  wire:model.defer="idProduct" id="product" name="product" data-choices data-choices-sorting-false data-choices-removeItem>
+						<select class="form-control"  wire:model.defer="idProduct" id="product" name="product" data-choices data-choices-sorting-false data-choices-unlimited-search data-choices-removeItem>
 							<option value="">- All -</option>
 							@foreach ($products as $item)
 								<option value="{{ $item->id }}">{{ $item->name }}</option>
@@ -242,12 +242,12 @@
 </form>
 @script
 <script>
-    $wire.on('showModal', () => {      
-      $('#modal-add').modal('show');       
+    $wire.on('showModal', () => {
+      $('#modal-add').modal('show');
     });
 
-    $wire.on('closeModal', () => {      
-      $('#modal-add').modal('hide');       
+    $wire.on('closeModal', () => {
+      $('#modal-add').modal('hide');
     });
  </script>
  @endscript

@@ -48,12 +48,12 @@
                                 lpk_no = value.substring(0, 10);
                             }
                         })">
-                        <input 
-                            class="form-control" 
-                            style="padding:0.44rem" 
+                        <input
+                            class="form-control"
+                            style="padding:0.44rem"
                             type="text"
                             placeholder="000000-000"
-                            x-model="lpk_no" 
+                            x-model="lpk_no"
                             maxlength="10"
                         />
                     </div>
@@ -80,12 +80,12 @@
                                 searchTerm = value.substring(0, 8);
                             }
                         })">
-                        <input 
-                            class="form-control" 
-                            style="padding:0.44rem" 
+                        <input
+                            class="form-control"
+                            style="padding:0.44rem"
                             type="text"
                             placeholder="_____-_____"
-                            x-model="searchTerm" 
+                            x-model="searchTerm"
                             maxlength="8"
                         />
                     </div>
@@ -100,7 +100,7 @@
             </div>
             <div class="col-12 col-lg-10 mb-1">
                 <div wire:ignore>
-                    <select class="form-control" wire:model.defer="idProduct" data-choices data-choices-sorting-false
+                    <select class="form-control" wire:model.defer="idProduct" data-choices data-choices-sorting-false data-choices-unlimited-search
                         data-choices-removeItem>
                         <option value="">- All -</option>
                         @foreach ($products as $item)
@@ -139,12 +139,12 @@
                         no_han = value.substring(0, 12);
                     }
                 })">
-                <input 
-                    class="form-control" 
-                    style="padding:0.44rem" 
+                <input
+                    class="form-control"
+                    style="padding:0.44rem"
                     type="text"
                     placeholder="00-00-00-00A"
-                    x-model="no_han" 
+                    x-model="no_han"
                     maxlength="12"
                     x-on:keydown.tab="$event.preventDefault(); $refs.nomor_barcode.focus();"
                 />
@@ -155,7 +155,7 @@
             <div class="col-12 col-lg-10">
                 <div wire:ignore>
                     <select class="form-control" style="padding:0.44rem" wire:model.defer="status" id="status"
-                        name="status" data-choices data-choices-sorting-false data-choices-removeItem>
+                        name="status" data-choices data-choices-sorting-false data-choices-unlimited-search data-choices-removeItem>
                         <option value="">- all -</option>
                         <option value="1" @if (($status['value'] ?? null) == 1) selected @endif>Proses</option>
                         <option value="2" @if (($status['value'] ?? null) == 2) selected @endif>Finish</option>

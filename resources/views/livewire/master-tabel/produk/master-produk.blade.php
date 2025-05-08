@@ -74,7 +74,7 @@
                         <div class="col-12 col-lg-10">
                             <div class="mb-1" wire:ignore>
                                 <select class="form-control" wire:model.defer="product_type_id" id="productType"
-                                    name="productType" data-choices data-choices-sorting-false data-choices-removeItem>
+                                    name="productType" data-choices data-choices-sorting-false data-choices-unlimited-search data-choices-removeItem>
                                     <option value="">- All -</option>
                                     @foreach (\App\Models\MsProductType::select('id', 'name', 'code')->get() as $item)
                                         <option value="{{ $item->id }}"

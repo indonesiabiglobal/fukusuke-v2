@@ -145,7 +145,7 @@
             <div class="input-group">
                 <span class="input-group-addon col-12 col-lg-3 text-muted fw-bold">Mesin </span>
                 <div class="col-12 col-lg-9" wire:ignore>
-                    <select class="form-control" wire:model.defer="machineId" data-choices data-choices-sorting-false
+                    <select class="form-control" wire:model.defer="machineId" data-choices data-choices-sorting-false data-choices-unlimited-search
                         data-choices-removeItem>
                         <option value="">- All -</option>
                         @foreach ($machine as $item)
@@ -161,7 +161,7 @@
             <div class="input-group">
                 <span class="input-group-addon col-12 col-lg-3 text-muted fw-bold">Produk </span>
                 <div class="col-12 col-lg-9" wire:ignore>
-                    <select class="form-control" wire:model.defer="productId" data-choices data-choices-sorting-false
+                    <select class="form-control" wire:model.defer="productId" data-choices data-choices-sorting-false data-choices-unlimited-search
                         data-choices-removeItem>
                         <option value="">- All -</option>
                         @foreach ($products as $item)

@@ -169,6 +169,9 @@ File: Main Js File
 			if (isChoicesVal["data-choices-multiple-remove"]) {
 				choiceData.removeItemButton = true;
 			}
+			if (isChoicesVal["data-choices-unlimited-search"]) {
+				choiceData.searchResultLimit = -1;
+			}
 			if (isChoicesVal["data-choices-limit"]) {
 				choiceData.maxItemCount = isChoicesVal["data-choices-limit"].value.toString();
 			}

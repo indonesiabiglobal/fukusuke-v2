@@ -78,7 +78,7 @@
             </div>
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
-                    <select class="form-control" wire:model.defer="idProduct" data-choices data-choices-sorting-false
+                    <select class="form-control" wire:model.defer="idProduct" data-choices data-choices-sorting-false data-choices-unlimited-search
                         data-choices-removeItem>
                         <option value="">- All -</option>
                         @foreach ($products as $item)
