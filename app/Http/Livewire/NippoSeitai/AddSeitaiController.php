@@ -701,7 +701,6 @@ class AddSeitaiController extends Component
                 $this->work_hour = Carbon::now()->format('H:i');
             }
             $workHourFormatted = Carbon::parse($this->work_hour)->format('H:i:s');
-
             $workingShift = DB::select("
             SELECT *
                 FROM msworkingshift
@@ -715,7 +714,7 @@ class AddSeitaiController extends Component
                     AND (
                         '$workHourFormatted' BETWEEN work_hour_from AND '23:59:59'
                         OR
-                        '$workHourFormatted' BETWEEN '00:00:01' AND work_hour_till
+                        '$workHourFormatted' BETWEEN '00:00:00' AND work_hour_till
                     )
                 )
                 ORDER BY work_hour_till ASC
