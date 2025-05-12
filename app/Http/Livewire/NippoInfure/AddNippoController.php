@@ -487,6 +487,7 @@ class AddNippoController extends Component
 
     public function render()
     {
+        $tdorderlpk = null;
         if (strlen($this->lpk_no) >= 10) {
             $prefix = substr($this->lpk_no, 0, 6);
             $suffix = substr($this->lpk_no, -3);
@@ -643,7 +644,7 @@ class AddNippoController extends Component
             }
         }
 
-        if (isset($this->nomor_barcode) && $this->nomor_barcode != '') {
+        if (isset($this->nomor_barcode) && $this->nomor_barcode != '' && $tdorderlpk != null) {
             if ($tdorderlpk->codebarcode != $this->nomor_barcode) {
                 $this->nomor_barcode = '';
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Barcode ' . $this->nomor_barcode . ' Tidak Sesuai']);
@@ -664,25 +665,25 @@ class AddNippoController extends Component
     public function editLossInfure($orderId)
     {
         $index = array_search($orderId, array_column($this->details, 'id'));
-        
+
         if ($index !== false) {
 
             $infureItem = $this->details[$index];
 
             // array_splice($this->details, $index, 1);
-            $this->editing_id = $infureItem['id']; 
+            $this->editing_id = $infureItem['id'];
             $this->loss_infure_id = $infureItem['loss_infure_id'];
             $this->loss_infure_code = DB::table('mslossinfure')->where('id', $infureItem['loss_infure_id'])->value('code');
             $this->name_infure = DB::table('mslossinfure')->where('id', $infureItem['loss_infure_id'])->value('name');
             $this->berat_loss = $infureItem['berat_loss'];
             $this->frekuensi = $infureItem['frekuensi'];
-            
+
             $this->dispatch('openModal', 'modal-edit');
         } else {
             $this->dispatch('notification', ['type' => 'error', 'message' => 'Data tidak ditemukan']);
         }
     }
-    
+
     public function updateLossInfure()
     {
         $this->validate([

@@ -534,7 +534,7 @@
                                 </span>
                             </span>
                         </div>
-                    </button>   
+                    </button>
                 </div>
             </div>
         </div>
@@ -612,13 +612,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        {{-- <button type="button" class="btn btn-secondary">Accept</button> --}}
-                        <button type="button" class="btn btn-link text-gray-600 ms-auto"
-                            data-bs-dismiss="modal">Close</button>
-                        {{-- <button type="button" class="btn btn-success" wire:click="saveInfure">
-                                Save
-                            </button> --}}
-                        <button type="button" class="btn btn-success" wire:click="saveInfure" wire:loading.attr="disabled">
+                        <button type="button" class="btn btn-success ms-auto" wire:click="saveInfure" wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="saveInfure">
                                 <i class="ri-save-3-line"></i> Save
                             </span>
@@ -633,6 +627,8 @@
                                 </span>
                             </div>
                         </button>
+                        <button type="button" class="btn btn-link text-gray-600"
+                            data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
@@ -660,7 +656,7 @@
                                     <td>
                                         <button type="button" class="btn btn-warning" wire:click="editLossInfure({{$item['id']}})" wire:loading.attr="disabled">
                                             <span wire:loading.remove wire:target="editLossInfure({{$item['id']}})">
-                                                <i class="fa fa-edit"></i> Edit 
+                                                <i class="fa fa-edit"></i> Edit
                                             </span>
                                             <div wire:loading wire:target="editLossInfure({{$item['id']}})">
                                                 <span class="d-flex align-items-center">
@@ -1654,8 +1650,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-link text-gray-600 ms-auto" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-success" wire:click="updateLossInfure" wire:loading.attr="disabled">
+                        <button type="button" class="btn btn-success ms-auto" wire:click="updateLossInfure" wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="updateLossInfure">
                                 <i class="ri-save-3-line"></i> Update
                             </span>
@@ -1670,6 +1665,7 @@
                                 </span>
                             </div>
                         </button>
+                        <button type="button" class="btn btn-link text-gray-600 ms-auto" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
@@ -1689,7 +1685,7 @@
         Livewire.on('openModal', (modalId) => {
             new bootstrap.Modal(document.getElementById(modalId)).show();
         });
-        
+
         Livewire.on('closeModal', (modalId) => {
             bootstrap.Modal.getInstance(document.getElementById(modalId)).hide();
         });
