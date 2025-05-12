@@ -522,27 +522,10 @@
                                     </div>
                                 </div>
                             </div>
-                                {{-- <div class="col-lg-12 mb-1">
-                                    <div class="form-group">
-                                        <label>Berat</label>
-                                        <div class="input-group col-md-9 col-xs-8">
-                                            <input class="form-control" type="text" wire:model.defer="berat" placeholder="..." />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-12 mb-1">
-                                    <div class="form-group">
-                                        <label>Frekuensi</label>
-                                        <div class="input-group col-md-9 col-xs-8">
-                                            <input class="form-control" type="text" wire:model.defer="frekuensi" placeholder="..." />
-                                        </div>
-                                    </div>
-                                </div> --}}
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-link text-gray-600 ms-auto" data-bs-dismiss="modal">Close</button>
-                            <button type="button" wire:click="saveGentan" class="btn btn-success" wire:loading.attr="disabled">
+                            <button type="button" wire:click="saveGentan" class="btn btn-success ms-auto" wire:loading.attr="disabled">
                                 <span wire:loading.remove wire:target="saveGentan">
                                     <i class="ri-save-3-line"></i> Save
                                 </span>
@@ -557,6 +540,7 @@
                                     </span>
                                 </div>
                             </button>
+                            <button type="button" class="btn btn-link text-gray-600" data-bs-dismiss="modal">Close</button>
                         </div>
                 </div>
             </div>
@@ -600,17 +584,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                {{-- <div class="col-lg-12 mb-1">
-                                    <div class="form-group">
-                                        <label>Berat </label>
-                                        <div class="input-group col-md-9 col-xs-8">
-                                            <input class="form-control" type="text" wire:model.defer="berat_fr" placeholder="0" />
-                                            @error('berat_fr')
-                                                <span class="invalid-feedback">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div> --}}
                                 <div class="col-lg-12 mb-1">
                                     <div class="form-group">
                                         <label>Frekuensi </label>
@@ -625,8 +598,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-link text-gray-600 ms-auto" data-bs-dismiss="modal">Close</button>
-                            <button type="button" wire:click="saveLoss" class="btn btn-success" wire:loading.attr="disabled">
+                            <button type="button" wire:click="saveLoss" class="btn btn-success ms-auto" wire:loading.attr="disabled">
                                 <span wire:loading.remove wire:target="saveLoss">
                                     <i class="ri-save-3-line"></i> Save
                                 </span>
@@ -641,6 +613,7 @@
                                     </span>
                                 </div>
                             </button>
+                            <button type="button" class="btn btn-link text-gray-600" data-bs-dismiss="modal">Close</button>
                         </div>
                 </div>
             </div>
