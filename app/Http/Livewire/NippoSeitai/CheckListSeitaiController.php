@@ -245,7 +245,7 @@ class CheckListSeitaiController extends Component
                     $filterProduct
                     $filterStatus
                     $filterSearchTerm
-                ORDER BY $fieldDate, tdpg.seq_no, mm.machineno, tdpg.work_shift
+                ORDER BY mm.machineno, $fieldDate, tdpg.work_shift, tdpg.seq_no
                 ");
         } else {
             $data = DB::select("
@@ -339,7 +339,7 @@ class CheckListSeitaiController extends Component
                     $filterDepartment
                     $filterNomorLot
                     $filterProduct
-                ORDER BY $fieldDate, tdpg.seq_no
+                ORDER BY mm.machineno, $fieldDate, tdpg.work_shift, tdpg.seq_no
                 ");
         }
 
