@@ -550,18 +550,6 @@ class AddNippoController extends Component
                     $this->gentan_no = $maxGentan->gentan_no + 1;
                 }
 
-                // $this->details = DB::table('tdproduct_assembly_loss as tal')
-                //     ->select(
-                //         'tal.loss_infure_id',
-                //         'tal.berat_loss',
-                //         'tal.id',
-                //         'tal.berat',
-                //         'tal.frekuensi',
-                //         'msi.name as name_infure'
-                //     )
-                //     ->join('mslossinfure as msi', 'msi.id', '=', 'tal.loss_infure_id')
-                //     ->where('tal.lpk_id', $tdorderlpk->id)
-                //     ->get();
             }
         }
 

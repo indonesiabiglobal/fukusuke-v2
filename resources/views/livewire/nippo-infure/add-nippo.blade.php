@@ -224,6 +224,76 @@
                             </div>
                         </div>
                     </div>
+                    {{-- Nomor Barcode --}}
+                    <div class="col-12 col-lg-4 mt-1">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <label class="control-label col-5 pe-2">Nomor Barcode</label>
+                                <input type="text"
+                                    class="form-control @error('nomor_barcode') is-invalid @enderror"
+                                    wire:model.change="nomor_barcode"
+                                    x-on:keydown.tab="$event.preventDefault(); $refs.gentan_no.focus();"
+                                    x-ref="nomor_barcode" required />
+                                @error('nomor_barcode')
+                                    <span class="invalid-feedback">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                    {{-- Nomor Han --}}
+                    <div class="col-12 col-lg-4 mt-1">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <label class="control-label col-4">Nomor Han</label>
+                                <div x-data="{ nomor_han: @entangle('nomor_han'), status: true }" x-init="$watch('nomor_han', value => {
+                                    if (value.length === 2 && status) {
+                                        nomor_han = value + '-';
+                                    }
+                                    if (value.length === 5 && status) {
+                                        nomor_han = value + '-';
+                                    }
+                                    if (value.length === 8 && status) {
+                                        nomor_han = value + '-';
+                                    }
+                                    if (value.length < 10) {
+                                        status = true;
+                                    }
+                                    if (value.length === 3 || value.length === 6 || value.length === 9) {
+                                        status = false;
+                                    }
+                                    if (value.length === 12) {
+                                        // Capitalize the character at index 12
+                                        nomor_han = value.substring(0, 11) + value.charAt(11).toUpperCase();
+                                    }
+                                    if (value.length > 12) {
+                                        nomor_han = value.substring(0, 12);
+                                    }
+                                })">
+                                    <input class="form-control @error('nomor_han') is-invalid @enderror"
+                                        style="padding:0.44rem" type="text" placeholder="00-00-00-00A"
+                                        x-model="nomor_han" maxlength="12"
+                                        x-on:keydown.tab="$event.preventDefault(); $refs.nomor_barcode.focus();" />
+                                </div>
+                                @error('nomor_han')
+                                    <span class="invalid-feedback">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-4 mt-1">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <label class="control-label col-5 pe-2">Nomor Gentan</label>
+                                <input type="text"
+                                    class="form-control bg-light @error('gentan_no') is-invalid @enderror"
+                                    readonly="readonly" wire:model="gentan_no" x-ref="gentan_no" />
+                                @error('gentan_no')
+                                    <span class="invalid-feedback">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                    {{-- Dimensi Infure --}}
                     <div class="col-12 col-lg-4 mt-1">
                         <div class="form-group">
                             <div class="input-group">
@@ -378,9 +448,6 @@
                                 <span class="input-group-text">
                                     %
                                 </span>
-                                {{-- @error('rasio')
-                                    <span class="invalid-feedback">{{ $message }}</span>
-                                @enderror --}}
                             </div>
                         </div>
                     </div>
@@ -388,15 +455,10 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Jam Produksi</label>
-                                {{-- <input class="form-control" wire:model="work_hour" type="time" placeholder="hh:mm"
-                                x-ref="work_hour"> --}}
                                 <input class="form-control @error('work_hour') is-invalid @enderror"
                                     wire:model.change="work_hour" type="time" placeholder="HH:mm"
                                     max="{{ now()->format('H:i:s') }}" x-ref="work_hour"
                                     title="Format waktu harus HH:mm">
-                                {{-- <span class="input-group-text py-0">
-                                    <i class="ri-time-line fs-5"></i>
-                                </span> --}}
 
                                 @error('work_hour')
                                     <span class="invalid-feedback">{{ $message }}</span>
@@ -412,76 +474,6 @@
                                     class="form-control readonly bg-light @error('work_shift') is-invalid @enderror"
                                     readonly="readonly" wire:model="work_shift" />
                                 @error('work_shift')
-                                    <span class="invalid-feedback">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-lg-4 mt-1">
-                        <div class="form-group">
-                            <div class="input-group">
-                                <label class="control-label col-4">Nomor Han</label>
-                                {{-- <input type="text" class="form-control" placeholder="00-00-00-00A" wire:model="nomor_han"
-                                x-on:keydown.tab="$event.preventDefault(); $refs.nomor_barcode.focus();"
-                                x-ref="nomor_han" /> --}}
-                                <div x-data="{ nomor_han: @entangle('nomor_han'), status: true }" x-init="$watch('nomor_han', value => {
-                                    if (value.length === 2 && status) {
-                                        nomor_han = value + '-';
-                                    }
-                                    if (value.length === 5 && status) {
-                                        nomor_han = value + '-';
-                                    }
-                                    if (value.length === 8 && status) {
-                                        nomor_han = value + '-';
-                                    }
-                                    if (value.length < 10) {
-                                        status = true;
-                                    }
-                                    if (value.length === 3 || value.length === 6 || value.length === 9) {
-                                        status = false;
-                                    }
-                                    if (value.length === 12) {
-                                        // Capitalize the character at index 12
-                                        nomor_han = value.substring(0, 11) + value.charAt(11).toUpperCase();
-                                    }
-                                    if (value.length > 12) {
-                                        nomor_han = value.substring(0, 12);
-                                    }
-                                })">
-                                    <input class="form-control @error('nomor_han') is-invalid @enderror"
-                                        style="padding:0.44rem" type="text" placeholder="00-00-00-00A"
-                                        x-model="nomor_han" maxlength="12"
-                                        x-on:keydown.tab="$event.preventDefault(); $refs.nomor_barcode.focus();" />
-                                </div>
-                                @error('nomor_han')
-                                    <span class="invalid-feedback">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-lg-4 mt-1">
-                        <div class="form-group">
-                            <div class="input-group">
-                                <label class="control-label col-5 pe-2">Nomor Barcode</label>
-                                <input type="text"
-                                    class="form-control @error('nomor_barcode') is-invalid @enderror"
-                                    wire:model.change="nomor_barcode"
-                                    x-on:keydown.tab="$event.preventDefault(); $refs.gentan_no.focus();"
-                                    x-ref="nomor_barcode" required />
-                                @error('nomor_barcode')
-                                    <span class="invalid-feedback">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-lg-4 mt-1">
-                        <div class="form-group">
-                            <div class="input-group">
-                                <label class="control-label col-5 pe-2">Nomor Gentan</label>
-                                <input type="text"
-                                    class="form-control bg-light @error('gentan_no') is-invalid @enderror"
-                                    readonly="readonly" wire:model="gentan_no" x-ref="gentan_no" />
-                                @error('gentan_no')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
                             </div>
