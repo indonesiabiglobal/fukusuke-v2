@@ -101,7 +101,7 @@
             <div class="col-12 col-lg-10 mb-1">
                 <div wire:ignore>
                     <select class="form-control" wire:model.defer="idProduct" data-choices data-choices-sorting-false
-                        data-choices-removeItem data-choices-search-field-label>
+                        data-choices-removeItem data-choices-search-field-label data-choices-exact-match>
                         <option value="">- All -</option>
                         @foreach ($products as $item)
                             <option data-custom-properties='{"code": "{{ $item->code }}"}' value="{{ $item->id }}"
@@ -349,7 +349,7 @@
         // Fungsi untuk menginisialisasi ulang DataTable
         function initDataTable() {
             const savedOrder = $wire.get('sortingTable');
-            
+
             let defaultOrder = [
                 [1, "asc"]
             ];

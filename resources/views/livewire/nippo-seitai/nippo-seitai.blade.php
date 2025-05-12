@@ -71,8 +71,9 @@
             </div>
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
-                    <select class="form-control" wire:model.defer="idProduct" data-choices  data-choices-sorting-false
-                        data-choices-removeItem data-choices-search-field-label>
+                    <select class="form-control" wire:model.defer="idProduct" data-choices data-choices-sorting-true
+                        data-choices-removeItem data-choices-sorter data-choices-search-field-label
+                        data-choices-exact-match>
                         <option value="">- All -</option>
                         @foreach ($products as $item)
                             <option data-custom-properties='{"code": "{{ $item->code }}"}' value="{{ $item->id }}"
@@ -88,7 +89,7 @@
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
                     <select class="form-control" wire:model.defer="machineId" data-choices data-choices-sorting-true
-                        data-choices-removeItem data-choices-search-field-label data-choices-sorter data-choices-search-field-label>
+                        data-choices-removeItem data-choices-sorter data-choices-search-field-label>
                         <option value="">- All -</option>
                         @foreach ($machine as $item)
                             <option data-custom-properties='{"code": "{{ $item->machineno }}"}'
@@ -127,7 +128,8 @@
     <div class="col-lg-12 mt-2">
         <div class="row">
             <div class="col-12 col-lg-10">
-                <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1" wire:loading.attr="disabled">
+                <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1"
+                    wire:loading.attr="disabled">
                     <span wire:loading.remove wire:target="search">
                         <i class="ri-search-line"></i> Filter
                     </span>
@@ -148,7 +150,8 @@
                 </button>
             </div>
             <div class="col-12 col-lg-2">
-                <button class="btn btn-info w-lg p-1" wire:click="export" type="button" wire:loading.attr="disabled">
+                <button class="btn btn-info w-lg p-1" wire:click="export" type="button"
+                    wire:loading.attr="disabled">
                     <span wire:loading.remove wire:target="export">
                         <i class="ri-printer-line"> </i> Print
                     </span>

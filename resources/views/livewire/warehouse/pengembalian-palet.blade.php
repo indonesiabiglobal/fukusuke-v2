@@ -6,7 +6,8 @@
             </div>
             <div class="col-12 col-lg-9">
                 <div class="input-group col-md-9 col-xs-8">
-                    <input wire:model.defer="nomor_palet" class="form-control" type="text" placeholder="A0000-000000" />
+                    <input wire:model.defer="nomor_palet" class="form-control" type="text"
+                        placeholder="A0000-000000" />
                 </div>
             </div>
         </div>
@@ -18,10 +19,13 @@
             </div>
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
-                    <select class="form-control"  wire:model.defer="idProduct" id="product" name="product" data-choices data-choices-sorting-false  data-choices-removeItem data-choices-search-field-label>
+                    <select class="form-control" wire:model.defer="idProduct" id="product" name="product" data-choices
+                        data-choices-sorting-false data-choices-exact-match data-choices-removeItem
+                        data-choices-search-field-label>
                         <option value="">- All -</option>
                         @foreach ($products as $item)
-                            <option data-custom-properties='{"code": "{{ $item->code }}"}' value="{{ $item->id }}">{{ $item->name }}</option>
+                            <option data-custom-properties='{"code": "{{ $item->code }}"}'
+                                value="{{ $item->id }}">{{ $item->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -31,7 +35,8 @@
 
     <div class="col-lg-12">
         <div class="toolbar">
-            <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1" wire:loading.attr="disabled">
+            <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1"
+                wire:loading.attr="disabled">
                 <span wire:loading.remove wire:target="search">
                     <i class="ri-search-line"></i> Filter
                 </span>
@@ -78,7 +83,7 @@
                         </li>
                     </ul>
                 </div>
-                <table class="table table-centered table-nowrap mb-0 rounded"  id="paletTable">
+                <table class="table table-centered table-nowrap mb-0 rounded" id="paletTable">
                     <thead class="table-light">
                         <tr>
                             <th class="border-0 rounded-start">Action</th>
@@ -126,7 +131,7 @@
         function initDataTable() {
 
             const savedOrder = $wire.get('sortingTable');
-            
+
             let defaultOrder = [
                 [1, "asc"]
             ];

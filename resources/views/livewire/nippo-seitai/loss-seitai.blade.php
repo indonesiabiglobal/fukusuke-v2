@@ -73,7 +73,7 @@
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
                     <select class="form-control" wire:model.defer="idProduct" data-choices data-choices-sorting-false
-                        data-choices-removeItem data-choices-search-field-label>
+                        data-choices-removeItem data-choices-search-field-label data-choices-exact-match>
                         <option value="">- All -</option>
                         @foreach ($products as $item)
                             <option data-custom-properties='{"code": "{{ $item->code }}"}' value="{{ $item->id }}"

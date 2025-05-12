@@ -137,7 +137,8 @@
                             <button type="button" class="btn btn-link text-gray-600 ms-auto"
                                 data-bs-dismiss="modal">Close</button>
 
-                            <button type="button" class="btn btn-success" wire:loading.attr="disabled" wire:click="addMutasi">
+                            <button type="button" class="btn btn-success" wire:loading.attr="disabled"
+                                wire:click="addMutasi">
                                 <span wire:loading.remove wire:target="addMutasi">
                                     Save
                                 </span>
@@ -182,7 +183,8 @@
                         <input type="text" placeholder="000000-000" x-model="searchNew" maxlength="12"
                             class="form-control" />
                     </div>
-                    <button wire:click="searchTujuan" type="button" class="btn btn-light" wire:loading.attr="disabled">
+                    <button wire:click="searchTujuan" type="button" class="btn btn-light"
+                        wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="searchTujuan">
                             <i class="ri-search-line"></i>
                         </span>
@@ -247,7 +249,8 @@
                 <div class="col-12 col-lg-10">
                     <div class="mb-1" wire:ignore>
                         <select class="form-control" wire:model.defer="idProduct" id="product" name="product"
-                            data-choices data-choices-sorting-false  data-choices-removeItem data-choices-search-field-label>
+                            data-choices-exact-match data-choices data-choices-sorting-false data-choices-removeItem
+                            data-choices-search-field-label>
                             <option value="">- All -</option>
                             @foreach ($products as $item)
                                 <option value="{{ $item->id }}">{{ $item->name }}</option>
@@ -263,7 +266,8 @@
                     <button id="btnFilter" type="button" class="btn btn-warning" wire:click="cancel">
                         <i class="ri-close-line"></i> Close
                     </button>
-                    <button id="btnFilter" type="button" class="btn btn-danger" wire:click="undo" wire:loading.attr="disabled">
+                    <button id="btnFilter" type="button" class="btn btn-danger" wire:click="undo"
+                        wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="undo">
                             <i class="ri-repeat-line"></i> Undo
                         </span>
@@ -278,7 +282,8 @@
                             </span>
                         </div>
                     </button>
-                    <button id="btnFilter" type="button" class="btn btn-success" wire:click="saveMutasi" :disabled="{{ $isButtonDisabled ? 'true' : 'false' }}" wire:loading.attr="disabled">
+                    <button id="btnFilter" type="button" class="btn btn-success" wire:click="saveMutasi"
+                        :disabled="{{ $isButtonDisabled ? 'true' : 'false' }}" wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="saveMutasi">
                             <i class="fa fa-floppy-disk"></i> Proses Mutasi
                         </span>

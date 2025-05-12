@@ -79,7 +79,7 @@
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
                     <select class="form-control" wire:model.defer="idProduct" data-choices data-choices-sorting-false
-                        data-choices-removeItem data-choices-search-field-label>
+                        data-choices-removeItem data-choices-search-field-label data-choices-exact-match>
                         <option value="">- All -</option>
                         @foreach ($products as $item)
                             <option data-custom-properties='{"code": "{{ $item->code }}"}' value="{{ $item->id }}"
@@ -124,7 +124,8 @@
     <div class="col-lg-12 mt-2">
         <div class="row">
             <div class="col-12 col-lg-5">
-                <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1" wire:loading.attr="disabled">
+                <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1"
+                    wire:loading.attr="disabled">
                     <span wire:loading.remove wire:target="search">
                         <i class="ri-search-line"></i> Filter
                     </span>
@@ -163,7 +164,8 @@
                     </div>
                 </button>
 
-                <button class="btn btn-primary w-lg p-1" wire:click="download" type="button" wire:loading.attr="disabled">
+                <button class="btn btn-primary w-lg p-1" wire:click="download" type="button"
+                    wire:loading.attr="disabled">
                     <span wire:loading.remove wire:target="download">
                         <i class="ri-download-cloud-2-line"> </i> Download Template
                     </span>
@@ -178,7 +180,8 @@
                         </span>
                     </div>
                 </button>
-                <button class="btn btn-info w-lg p-1" wire:click="print" type="button" wire:loading.attr="disabled">
+                <button class="btn btn-info w-lg p-1" wire:click="print" type="button"
+                    wire:loading.attr="disabled">
                     <span wire:loading.remove wire:target="print">
                         <i class="ri-printer-line"> </i> Export
                     </span>
@@ -194,7 +197,8 @@
                     </div>
                 </button>
                 {{-- cetak lpk --}}
-                <button class="btn btn-info w-lg p-1" wire:click="printLPK" type="button" wire:loading.attr="disabled">
+                <button class="btn btn-info w-lg p-1" wire:click="printLPK" type="button"
+                    wire:loading.attr="disabled">
                     <span wire:loading.remove wire:target="printLPK">
                         <i class="ri-printer-line"> </i> Cetak LPK
                     </span>
@@ -437,7 +441,7 @@
         // Fungsi untuk menginisialisasi ulang DataTable
         function initDataTable() {
             const savedOrder = $wire.get('sortingTable');
-            
+
             let defaultOrder = [
                 [1, "asc"]
             ];

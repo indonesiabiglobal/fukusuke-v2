@@ -157,7 +157,7 @@ File: Main Js File
 			if (isChoicesVal["data-choices-search-true"]) {
 				choiceData.searchEnabled = true;
 			}
-			if (isChoicesVal["data-choices-removeItem data-choices-search-field-label"]) {
+			if (isChoicesVal["data-choices-removeItem"]) {
 				choiceData.removeItemButton = true;
 			}
 			if (isChoicesVal["data-choices-sorting-false"]) {
@@ -200,8 +200,8 @@ File: Main Js File
                 choiceData.fuseOptions= {
                     includeScore: true,
                     includeMatches: true,
-                    threshold: 0.0,
-                    distance: 10,
+                    threshold: 0.1,
+                    distance: 100,
                     shouldSort: true
                   };
             }

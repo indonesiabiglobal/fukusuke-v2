@@ -16,12 +16,14 @@
                         <div class="col-9">
                             <div class="form-group">
                                 <div class="input-group">
-                                    <input wire:model.defer="tglMasuk" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
+                                    <input wire:model.defer="tglMasuk" type="text" class="form-control"
+                                        style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
                                     <span class="input-group-text py-0">
                                         <i class="ri-calendar-event-fill fs-4"></i>
                                     </span>
 
-                                    <input wire:model.defer="tglKeluar" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
+                                    <input wire:model.defer="tglKeluar" type="text" class="form-control"
+                                        style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
                                     <span class="input-group-text py-0">
                                         <i class="ri-calendar-event-fill fs-4"></i>
                                     </span>
@@ -49,10 +51,13 @@
             </div>
             <div class="col-12 col-lg-10">
                 <div class="mb-1" wire:ignore>
-                    <select class="form-control"  wire:model.defer="idProduct" id="product" name="product" data-choices data-choices-sorting-false  data-choices-removeItem data-choices-search-field-label>
+                    <select class="form-control" wire:model.defer="idProduct" id="product" name="product" data-choices
+                        data-choices-sorting-false data-choices-exact-match data-choices-removeItem
+                        data-choices-search-field-label>
                         <option value="">- All -</option>
                         @foreach ($products as $item)
-                            <option data-custom-properties='{"code": "{{ $item->code }}"}' value="{{ $item->id }}">{{ $item->name }}</option>
+                            <option data-custom-properties='{"code": "{{ $item->code }}"}'
+                                value="{{ $item->id }}">{{ $item->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -62,7 +67,8 @@
 
     <div class="col-lg-12 mt-2">
         <div class="toolbar">
-            <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1" wire:loading.attr="disabled">
+            <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1"
+                wire:loading.attr="disabled">
                 <span wire:loading.remove wire:target="search">
                     <i class="ri-search-line"></i> Filter
                 </span>
@@ -129,7 +135,7 @@
                                 <td>{{ $item->name }}</td>
                             </tr>
                         @empty
-                        {{-- <tr>
+                            {{-- <tr>
                             <td colspan="4" class="text-center">No results found</td>
                         </tr> --}}
                         @endforelse
@@ -158,7 +164,7 @@
         function initDataTable() {
 
             const savedOrder = $wire.get('sortingTable');
-            
+
             let defaultOrder = [
                 [1, "asc"]
             ];
