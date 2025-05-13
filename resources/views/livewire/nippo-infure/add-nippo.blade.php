@@ -203,7 +203,7 @@
                                 <input type="text" placeholder=" ... "
                                     class="form-control @error('employeeno') is-invalid @enderror"
                                     wire:model.change="employeeno"
-                                    x-on:keydown.tab="$event.preventDefault(); $refs.panjang_produksi.focus();"
+                                    x-on:keydown.tab="$event.preventDefault(); $refs.nomor_barcode.focus();"
                                     x-ref="employeeno" />
                                 @error('employeeno')
                                     <span class="invalid-feedback">{{ $message }}</span>
@@ -232,7 +232,6 @@
                                 <input type="text"
                                     class="form-control @error('nomor_barcode') is-invalid @enderror"
                                     wire:model.change="nomor_barcode"
-                                    x-on:keydown.tab="$event.preventDefault(); $refs.gentan_no.focus();"
                                     x-ref="nomor_barcode" required />
                                 @error('nomor_barcode')
                                     <span class="invalid-feedback">{{ $message }}</span>
@@ -272,7 +271,8 @@
                                     <input class="form-control @error('nomor_han') is-invalid @enderror"
                                         style="padding:0.44rem" type="text" placeholder="00-00-00-00A"
                                         x-model="nomor_han" maxlength="12"
-                                        x-on:keydown.tab="$event.preventDefault(); $refs.nomor_barcode.focus();" />
+                                        x-on:keydown.tab="$event.preventDefault(); $refs.panjang_produksi.focus();"
+                                        x-ref="nomor_han" />
                                 </div>
                                 @error('nomor_han')
                                     <span class="invalid-feedback">{{ $message }}</span>
@@ -298,7 +298,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5">Dimensi Infure</label>
-                                <input type="text" placeholder="-"
+                                <input type="text" placeholder="-" x-ref="dimensiinfure"
                                     class="form-control readonly bg-light @error('dimensiinfure') is-invalid @enderror"
                                     readonly="readonly" wire:model="dimensiinfure" />
                                 <span class="input-group-text">
