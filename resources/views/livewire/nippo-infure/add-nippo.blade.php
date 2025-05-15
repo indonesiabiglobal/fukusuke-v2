@@ -1,7 +1,7 @@
 <div class="row">
     <form wire:submit.prevent="save">
         <div class="row mt-2">
-            <div class="col-4 col-lg-12">
+            <div class="col-12">
                 <div class="row">
                     <div class="col-12 col-lg-6">
                         <div class="form-group">
@@ -49,32 +49,6 @@
                                         Nomor LPK
                                     </a>
                                 </label>
-                                {{-- <input type="text" class="form-control @error('lpk_no') is-invalid @enderror" wire:model.live.debounce.300ms="lpk_no" /> --}}
-                                {{-- <div x-data="{ lpk_no: @entangle('lpk_no').change, status: true }">
-                                    <input
-                                        wire:model.change="lpk_no"
-                                        class="form-control"
-                                        style="padding:0.44rem"
-                                        type="text"
-                                        placeholder="000000-000"
-                                        x-on:keydown.tab="$event.preventDefault(); $refs.machineInput.focus();"
-                                        x-init="$watch('lpk_no', value => {
-                                            if (value.length === 6 && !value.includes('-') && status) {
-                                                lpk_no = value + '-';
-                                            }
-                                            if (value.length < 6) {
-                                                status = true;
-                                            }
-                                            if (value.length === 7) {
-                                                status = false;
-                                            }
-                                            if (value.length > 10) {
-                                                lpk_no = value.substring(0, 11);
-                                            }
-                                        })"
-                                        maxlength="10"
-                                    />
-                                </div> --}}
                                 <div x-data="{ lpk_no: @entangle('lpk_no').live, status: true }" x-init="$watch('lpk_no', value => {
                                     if (value.length === 6 && !value.includes('-') && status) {
                                         lpk_no = value + '-';
@@ -104,10 +78,6 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label pe-2">Tanggal LPK</label>
-                                {{-- <input class="form-control readonly datepicker-input bg-light" readonly="readonly" type="date" wire:model.defer="lpk_date" placeholder="yyyy/mm/dd"/>
-                                <span class="input-group-text py-0">
-                                    <i class="ri-calendar-event-fill fs-4"></i>
-                                </span> --}}
                                 <input
                                     class="form-control readonly datepicker-input bg-light @error('lpk_date') is-invalid @enderror"
                                     readonly="readonly" type="text" style="padding:0.44rem"
@@ -232,6 +202,7 @@
                                 <input type="text"
                                     class="form-control @error('nomor_barcode') is-invalid @enderror"
                                     wire:model.change="nomor_barcode"
+                                    x-on:keydown.tab="$event.preventDefault(); $refs.panjang_produksi.focus();"
                                     x-ref="nomor_barcode" required />
                                 @error('nomor_barcode')
                                     <span class="invalid-feedback">{{ $message }}</span>
@@ -239,60 +210,7 @@
                             </div>
                         </div>
                     </div>
-                    {{-- Nomor Han --}}
-                    <div class="col-12 col-lg-4 mt-1">
-                        <div class="form-group">
-                            <div class="input-group">
-                                <label class="control-label col-4">Nomor Han</label>
-                                <div x-data="{ nomor_han: @entangle('nomor_han'), status: true }" x-init="$watch('nomor_han', value => {
-                                    if (value.length === 2 && status) {
-                                        nomor_han = value + '-';
-                                    }
-                                    if (value.length === 5 && status) {
-                                        nomor_han = value + '-';
-                                    }
-                                    if (value.length === 8 && status) {
-                                        nomor_han = value + '-';
-                                    }
-                                    if (value.length < 10) {
-                                        status = true;
-                                    }
-                                    if (value.length === 3 || value.length === 6 || value.length === 9) {
-                                        status = false;
-                                    }
-                                    if (value.length === 12) {
-                                        // Capitalize the character at index 12
-                                        nomor_han = value.substring(0, 11) + value.charAt(11).toUpperCase();
-                                    }
-                                    if (value.length > 12) {
-                                        nomor_han = value.substring(0, 12);
-                                    }
-                                })">
-                                    <input class="form-control @error('nomor_han') is-invalid @enderror"
-                                        style="padding:0.44rem" type="text" placeholder="00-00-00-00A"
-                                        x-model="nomor_han" maxlength="12"
-                                        x-on:keydown.tab="$event.preventDefault(); $refs.panjang_produksi.focus();"
-                                        x-ref="nomor_han" />
-                                </div>
-                                @error('nomor_han')
-                                    <span class="invalid-feedback">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-lg-4 mt-1">
-                        <div class="form-group">
-                            <div class="input-group">
-                                <label class="control-label col-5 pe-2">Nomor Gentan</label>
-                                <input type="text"
-                                    class="form-control bg-light @error('gentan_no') is-invalid @enderror"
-                                    readonly="readonly" wire:model="gentan_no" x-ref="gentan_no" />
-                                @error('gentan_no')
-                                    <span class="invalid-feedback">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
+                    <div class="w-100"></div>
                     {{-- Dimensi Infure --}}
                     <div class="col-12 col-lg-4 mt-1">
                         <div class="form-group">
@@ -474,6 +392,60 @@
                                     class="form-control readonly bg-light @error('work_shift') is-invalid @enderror"
                                     readonly="readonly" wire:model="work_shift" />
                                 @error('work_shift')
+                                    <span class="invalid-feedback">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Nomor Han --}}
+                    <div class="col-12 col-lg-4 mt-1">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <label class="control-label col-4">Nomor Han</label>
+                                <div x-data="{ nomor_han: @entangle('nomor_han'), status: true }" x-init="$watch('nomor_han', value => {
+                                    if (value.length === 2 && status) {
+                                        nomor_han = value + '-';
+                                    }
+                                    if (value.length === 5 && status) {
+                                        nomor_han = value + '-';
+                                    }
+                                    if (value.length === 8 && status) {
+                                        nomor_han = value + '-';
+                                    }
+                                    if (value.length < 10) {
+                                        status = true;
+                                    }
+                                    if (value.length === 3 || value.length === 6 || value.length === 9) {
+                                        status = false;
+                                    }
+                                    if (value.length === 12) {
+                                        // Capitalize the character at index 12
+                                        nomor_han = value.substring(0, 11) + value.charAt(11).toUpperCase();
+                                    }
+                                    if (value.length > 12) {
+                                        nomor_han = value.substring(0, 12);
+                                    }
+                                })">
+                                    <input class="form-control @error('nomor_han') is-invalid @enderror"
+                                        style="padding:0.44rem" type="text" placeholder="00-00-00-00A"
+                                        x-model="nomor_han" maxlength="12"
+                                        x-ref="nomor_han" />
+                                </div>
+                                @error('nomor_han')
+                                    <span class="invalid-feedback">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-4 mt-1">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <label class="control-label col-5 pe-2">Nomor Gentan</label>
+                                <input type="text"
+                                    class="form-control bg-light @error('gentan_no') is-invalid @enderror"
+                                    readonly="readonly" wire:model="gentan_no" x-ref="gentan_no" />
+                                @error('gentan_no')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
                             </div>

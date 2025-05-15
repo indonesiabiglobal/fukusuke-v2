@@ -177,6 +177,7 @@
                                 <input type="text"
                                     class="form-control @if ($statusEditLoss) readonly bg-light @endif"
                                     @if ($statusEditLoss) readonly="readonly" @endif
+                                    x-on:keydown.tab="$event.preventDefault(); $refs.panjang_produksi.focus();"
                                     wire:model.live.debounce.300ms="nomor_barcode" x-ref="nomor_barcode" required />
                                 @error('nomor_barcode')
                                     <span class="invalid-feedback">{{ $message }}</span>
@@ -184,56 +185,7 @@
                             </div>
                         </div>
                     </div>
-                    {{-- Nomor Han --}}
-                    <div class="col-12 col-lg-4 mt-1">
-                        <div class="form-group">
-                            <div class="input-group">
-                                <label class="control-label col-4">Nomor Han</label>
-                                {{-- <input type="text" class="form-control" placeholder="00-00-00-00A" wire:model="nomor_han" x-on:keydown.tab="$event.preventDefault(); $refs.nomor_barcode.focus();"
-                                x-ref="nomor_han" /> --}}
-                                <div x-data="{ nomor_han: @entangle('nomor_han'), status: true }" x-init="$watch('nomor_han', value => {
-                                    if (value.length === 2 && status) {
-                                        nomor_han = value + '-';
-                                    }
-                                    if (value.length === 5 && status) {
-                                        nomor_han = value + '-';
-                                    }
-                                    if (value.length === 8 && status) {
-                                        nomor_han = value + '-';
-                                    }
-                                    if (value.length < 10) {
-                                        status = true;
-                                    }
-                                    if (value.length === 3 || value.length === 6 || value.length === 9) {
-                                        status = false;
-                                    }
-                                    if (value.length > 12) {
-                                        nomor_han = value.substring(0, 12);
-                                    }
-                                })">
-                                    <input
-                                        class="form-control @if ($statusEditLoss) readonly bg-light @endif
-                                        "
-                                        @if ($statusEditLoss) readonly="readonly" @endif
-                                        style="padding:0.44rem" type="text" placeholder="00-00-00-00A"
-                                        x-model="nomor_han" maxlength="12" x-ref="nomor_han" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-lg-4 mt-1">
-                        <div class="form-group">
-                            <div class="input-group">
-                                <label class="control-label col-5 pe-2">Nomor Gentan</label>
-                                <input type="text"
-                                    class="form-control @if ($statusEditLoss) readonly bg-light @endif
-                                "
-                                    @if ($statusEditLoss) readonly="readonly" @endif
-                                    wire:model="gentan_no" x-ref="gentan_no"
-                                    x-on:keydown.tab="$event.preventDefault(); $refs.panjang_produksi.focus();" />
-                            </div>
-                        </div>
-                    </div>
+                    <div class="w-100"></div>
                     <div class="col-12 col-lg-4 mt-1">
                         <div class="form-group">
                             <div class="input-group">
@@ -386,6 +338,57 @@
                                 <label class="control-label col-4">Shift Kerja</label>
                                 <input type="text" class="form-control readonly bg-light" readonly="readonly"
                                     wire:model="work_shift" />
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Nomor Han --}}
+                    <div class="col-12 col-lg-4 mt-1">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <label class="control-label col-4">Nomor Han</label>
+                                {{-- <input type="text" class="form-control" placeholder="00-00-00-00A" wire:model="nomor_han" x-on:keydown.tab="$event.preventDefault(); $refs.nomor_barcode.focus();"
+                                x-ref="nomor_han" /> --}}
+                                <div x-data="{ nomor_han: @entangle('nomor_han'), status: true }" x-init="$watch('nomor_han', value => {
+                                    if (value.length === 2 && status) {
+                                        nomor_han = value + '-';
+                                    }
+                                    if (value.length === 5 && status) {
+                                        nomor_han = value + '-';
+                                    }
+                                    if (value.length === 8 && status) {
+                                        nomor_han = value + '-';
+                                    }
+                                    if (value.length < 10) {
+                                        status = true;
+                                    }
+                                    if (value.length === 3 || value.length === 6 || value.length === 9) {
+                                        status = false;
+                                    }
+                                    if (value.length > 12) {
+                                        nomor_han = value.substring(0, 12);
+                                    }
+                                })">
+                                    <input
+                                        class="form-control @if ($statusEditLoss) readonly bg-light @endif
+                                        "
+                                        @if ($statusEditLoss) readonly="readonly" @endif
+                                        style="padding:0.44rem" type="text" placeholder="00-00-00-00A"
+                                        x-model="nomor_han" maxlength="12" x-ref="nomor_han" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-4 mt-1">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <label class="control-label col-5 pe-2">Nomor Gentan</label>
+                                <input type="text"
+                                    class="form-control @if ($statusEditLoss) readonly bg-light @endif
+                                "
+                                    @if ($statusEditLoss) readonly="readonly" @endif
+                                    wire:model="gentan_no" x-ref="gentan_no"
+                                    x-on:keydown.tab="$event.preventDefault(); $refs.panjang_produksi.focus();" />
                             </div>
                         </div>
                     </div>
