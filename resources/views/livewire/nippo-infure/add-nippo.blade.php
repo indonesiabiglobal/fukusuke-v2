@@ -1629,7 +1629,7 @@
                                 </span>
                             </div>
                         </button>
-                        <button type="button" class="btn btn-link text-gray-600 ms-auto" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-link text-gray-600" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
