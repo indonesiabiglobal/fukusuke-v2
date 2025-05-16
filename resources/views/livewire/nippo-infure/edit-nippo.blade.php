@@ -365,6 +365,10 @@
                                     if (value.length === 3 || value.length === 6 || value.length === 9) {
                                         status = false;
                                     }
+                                    if (value.length === 12) {
+                                        // Capitalize the character at index 12
+                                        nomor_han = value.substring(0, 11) + value.charAt(11).toUpperCase();
+                                    }
                                     if (value.length > 12) {
                                         nomor_han = value.substring(0, 12);
                                     }
