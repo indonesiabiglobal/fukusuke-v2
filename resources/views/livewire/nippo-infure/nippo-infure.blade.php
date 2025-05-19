@@ -36,30 +36,6 @@
             <div class="col-12 col-lg-3">
                 <label class="form-label text-muted fw-bold">Nomor LPK</label>
             </div>
-            {{-- <div class="col-12 col-lg-9 mb-1">
-                <div class="input-group">
-                    <input wire:model.live="lpk_no" class="form-control" style="padding:0.44rem" type="text"
-                        placeholder="000000-000"
-                        x-data="{ lpk_no: '', status: true }"
-                        x-init="$watch('lpk_no', value => {
-                            if (value.length === 6 && !value.includes('-') && status) {
-                                lpk_no = value + '-';
-                            }
-                            if (value.length < 6) {
-                                status = true;
-                            }
-                            if (value.length === 7) {
-                                status = false;
-                            }
-                            if (value.length > 10) {
-                                lpk_no = value.substring(0, 11);
-                            }
-                        })"
-                        x-model="lpk_no"
-                        maxlength="10"
-                    />
-                </div>
-            </div> --}}
             <div class="col-12 col-lg-9 mb-1" x-data="{
                 lpk_no_local: '',
                 status: true,
@@ -168,7 +144,7 @@
                     </div>
                 </button>
 
-                <button type="button" class="btn btn-success w-lg p-1" onclick="window.location.href='/add-nippo'">
+                <button type="button" class="btn btn-success w-lg p-1" onclick="window.location.href='/add-nippo?lpk_no={{ $lpk_no }}'">
                     <i class="ri-add-line"> </i> Add
                 </button>
             </div>

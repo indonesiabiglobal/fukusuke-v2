@@ -108,7 +108,7 @@ class AddOrderController extends Component
     public $jenissealseitaiid;
 
     protected $rules = [
-        'po_no' => 'required|unique:tdorder,po_no',
+        'po_no' => 'required',
         'order_qty' => 'required|integer',
         'order_date' => 'required',
         'stufingdate' => 'required',
@@ -121,7 +121,7 @@ class AddOrderController extends Component
 
     protected $messages = [
         'po_no.required' => 'PO Number tidak boleh kosong',
-        'po_no.unique' => 'PO Number sudah terdaftar',
+        // 'po_no.unique' => 'PO Number sudah terdaftar',
         'order_qty.required' => 'Jumlah order tidak boleh kosong',
         'order_qty.integer' => 'Jumlah order harus berupa angka',
         'order_date.required' => 'Tanggal order tidak boleh kosong',
