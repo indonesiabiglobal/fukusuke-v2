@@ -81,7 +81,8 @@ class NippoInfureController extends Component
         // Periksa jika URL saat ini bukan 'nippo-infure/edit-infure' atau 'nippo-infure/add-infure'
         $previousUrl = url()->previous();
         $previousUrl = last(explode('/', $previousUrl));
-        if (!(Str::contains($previousUrl, 'edit-nippo') || $previousUrl === 'add-nippo' || $previousUrl === 'nippo-infure')) {
+        // dd($previousUrl, (Str::contains($previousUrl, 'edit-nippo') || Str::contains($previousUrl, 'add-nippo') || Str::contains($previousUrl,'nippo-infure')));
+        if (!(Str::contains($previousUrl, 'edit-nippo') || Str::contains($previousUrl, 'add-nippo') || Str::contains($previousUrl,'nippo-infure'))) {
             $this->reset('tglMasuk', 'tglKeluar', 'transaksi', 'machineId', 'status', 'lpk_no', 'searchTerm', 'idProduct', 'sortingTable');
         }
     }

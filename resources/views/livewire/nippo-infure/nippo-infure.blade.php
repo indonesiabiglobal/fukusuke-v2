@@ -37,7 +37,7 @@
                 <label class="form-label text-muted fw-bold">Nomor LPK</label>
             </div>
             <div class="col-12 col-lg-9 mb-1" x-data="{
-                lpk_no_local: '',
+                lpk_no_local: '{{ $lpk_no }}',
                 status: true,
                 timeout: null,
                 updateLivewire(value) {

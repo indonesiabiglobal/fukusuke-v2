@@ -84,7 +84,7 @@ class NippoSeitaiController extends Component
         // Periksa jika URL saat ini bukan 'nippo-seitai/edit-seitai' atau 'nippo-seitai/add-seitai'
         $previousUrl = url()->previous();
         $previousUrl = last(explode('/', $previousUrl));
-        if (!(Str::contains($previousUrl, 'edit-seitai') || $previousUrl === 'add-seitai' || $previousUrl === 'nippo-seitai')) {
+        if (!(Str::contains($previousUrl, 'edit-seitai') || Str::contains($previousUrl,'add-seitai') || Str::contains($previousUrl,'nippo-seitai'))) {
             $this->reset('tglMasuk', 'tglKeluar', 'gentan_no', 'machineId', 'searchTerm', 'lpk_no', 'idProduct', 'status', 'transaksi', 'sortingTable');
         }
     }
