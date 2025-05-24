@@ -140,7 +140,7 @@ class LpkEntryController extends Component
                 mp.code as product_code,
                 mm.machineno AS machine_no,
                 mbu.NAME AS buyer_name,
-                tolp.created_on AS tglproses,
+                tolp.created_on,
                 tolp.seq_no,
                 tolp.updated_by,
                 tolp.updated_on AS updatedt,

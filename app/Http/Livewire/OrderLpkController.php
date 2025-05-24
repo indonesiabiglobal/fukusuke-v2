@@ -142,7 +142,9 @@ class OrderLpkController extends Component
                 'tod.processdate',
                 'tod.processseq',
                 'tod.updated_by',
-                'tod.updated_on'
+                'tod.updated_on',
+                'tod.created_by',
+                'tod.created_on'
             )
             ->leftjoin('msproduct AS mp', 'mp.id', '=', 'tod.product_id')
             ->leftjoin('msbuyer AS mbu', 'mbu.id', '=', 'tod.buyer_id')
@@ -158,11 +160,11 @@ class OrderLpkController extends Component
             }
         } else {
             if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
-                $data = $data->where('tod.processdate', '>=', $this->tglMasuk);
+                $data = $data->where('tod.created_on', '>=', $this->tglMasuk);
             }
 
             if (isset($this->tglKeluar) && $this->tglKeluar != "" && $this->tglKeluar != "undefined") {
-                $data = $data->where('tod.processdate', '<=', $this->tglKeluar);
+                $data = $data->where('tod.created_on', '<=', $this->tglKeluar);
             }
         }
 

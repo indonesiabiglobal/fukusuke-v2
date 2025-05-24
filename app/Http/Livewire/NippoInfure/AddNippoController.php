@@ -338,9 +338,9 @@ class AddNippoController extends Component
             $product->berat_produksi = $this->berat_produksi;
             $product->berat_standard = $this->berat_standard;
             $product->infure_cost = $this->berat_produksi * $products->harga_sat_infure;
-            $product->created_on = $this->created_on  . ' ' . now()->format('H:i:s');
+            $product->created_on = $this->created_on;
             $product->created_by = Auth::user()->username;
-            $product->updated_on = $this->created_on  . ' ' . now()->format('H:i:s');
+            $product->updated_on = $this->created_on;
             $product->updated_by = Auth::user()->username;
             $product->save();
 
@@ -353,9 +353,9 @@ class AddNippoController extends Component
                 $details->frekuensi = $item['frekuensi'];
                 $details->product_assembly_id = $product->id;
 
-                $details->created_on = $this->created_on  . ' ' . now()->format('H:i:s');
+                $details->created_on = $this->created_on;
                 $details->created_by = Auth::user()->username;
-                $details->updated_on = $this->created_on  . ' ' . now()->format('H:i:s');
+                $details->updated_on = $this->created_on;
                 $details->updated_by = Auth::user()->username;
 
                 $totalBerat += $item['berat_loss'];
