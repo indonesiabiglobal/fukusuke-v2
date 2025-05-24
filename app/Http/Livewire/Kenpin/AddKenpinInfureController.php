@@ -323,6 +323,10 @@ class AddKenpinInfureController extends Component
             $product->berat_loss = $this->beratLossTotal;
             $product->remark = $this->remark;
             $product->status_kenpin = $this->status_kenpin;
+            $product->created_on = Carbon::now();
+            $product->created_by = auth()->user()->username;
+            $product->updated_on = Carbon::now();
+            $product->updated_by = auth()->user()->username;
             $product->save();
 
             $totalBerat = 0;
@@ -333,6 +337,10 @@ class AddKenpinInfureController extends Component
                 $details->berat_loss = $item['berat_loss'];
                 // $details->berat = $item['berat'];
                 $details->frekuensi = $item['frekuensi'];
+                $details->created_on = Carbon::now();
+                $details->created_by = auth()->user()->username;
+                $details->updated_on = Carbon::now();
+                $details->updated_by = auth()->user()->username;
 
                 $details->save();
             }

@@ -308,7 +308,7 @@
                             </a>
                         </td>
                         <td>{{ $item->lpk_no }}</td>
-                        <td>{{ \Carbon\Carbon::parse($item->lpk_date)->format('d M Y') }}</td>
+                        <td data-order="{{ $item->lpk_date }}">{{ \Carbon\Carbon::parse($item->lpk_date)->format('d M Y') }}</td>
                         <td>{{ number_format($item->qty_lpk, 0, ',', ',') }}</td>
                         <td>{{ number_format($item->qty_produksi, 0, ',', ',') }}</td>
                         <td>{{ number_format($item->selisih) }}</td>
@@ -317,14 +317,14 @@
                         <td>{{ $item->product_name }}</td>
                         <td>{{ $item->code }}</td>
                         <td>{{ $item->machineno }}</td>
-                        <td>{{ \Carbon\Carbon::parse($item->production_date)->format('d M Y') }}</td>
-                        <td>{{ \Carbon\Carbon::parse($item->created_on)->format('d M Y') }}</td>
+                        <td data-order="{{ $item->production_date }}">{{ \Carbon\Carbon::parse($item->production_date)->format('d M Y') }}</td>
+                        <td data-order="{{ $item->created_on }}">{{ \Carbon\Carbon::parse($item->created_on)->format('d M Y') }}</td>
                         <td>{{ $item->work_shift }}</td>
                         <td>{{ $item->nomor_palet }}</td>
                         <td>{{ $item->nomor_lot }}</td>
                         <td>{{ $item->seq_no }}</td>
                         <td>{{ $item->updated_by }}</td>
-                        <td>{{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y H:i') }}</td>
+                        <td data-order="{{ $item->updated_on }}">{{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y') }}</td>
                     </tr>
                 @empty
                     {{-- <tr>

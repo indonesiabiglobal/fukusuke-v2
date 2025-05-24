@@ -144,7 +144,8 @@
                     </div>
                 </button>
 
-                <button type="button" class="btn btn-success w-lg p-1" onclick="window.location.href='/add-nippo?lpk_no={{ $lpk_no }}'">
+                <button type="button" class="btn btn-success w-lg p-1"
+                    onclick="window.location.href='/add-nippo?lpk_no={{ $lpk_no }}'">
                     <i class="ri-add-line"> </i> Add
                 </button>
             </div>
@@ -334,7 +335,8 @@
                             </a>
                         </td>
                         <td> {{ $item->lpk_no }} </td>
-                        <td> {{ \Carbon\Carbon::parse($item->lpk_date)->format('d M Y') }} </td>
+                        <td data-order="{{ $item->lpk_date }}">
+                            {{ \Carbon\Carbon::parse($item->lpk_date)->format('d M Y') }}</td>
                         <td> {{ number_format($item->panjang_lpk, 0, ',', ',') }} </td>
                         <td> {{ number_format($item->panjang_produksi, 0, ',', ',') }} </td>
                         <td>
@@ -347,14 +349,14 @@
                         <td> {{ $item->product_name }} </td>
                         <td> {{ $item->product_code }} </td>
                         <td> {{ $item->machineno }} </td>
-                        <td> {{ \Carbon\Carbon::parse($item->production_date)->format('d M Y') }} </td>
-                        <td> {{ \Carbon\Carbon::parse($item->created_on)->format('d M Y') }} </td>
+                        <td data-order="{{ $item->production_date }}">{{ \Carbon\Carbon::parse($item->production_date)->format('d M Y') }}</td>
+                        <td data-order="{{ $item->created_on }}">{{ \Carbon\Carbon::parse($item->created_on)->format('d M Y') }}</td>
                         <td> {{ $item->work_hour }} </td>
                         <td> {{ $item->work_shift }} </td>
                         <td> {{ $item->seq_no }} </td>
                         <td> {{ $item->infure_berat_loss }} </td>
                         <td> {{ $item->updated_by }} </td>
-                        <td> {{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y H:i') }} </td>
+                        <td data-order="{{ $item->updated_on }}">{{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y') }}</td>
                     </tr>
                 @empty
                     {{-- <tr>

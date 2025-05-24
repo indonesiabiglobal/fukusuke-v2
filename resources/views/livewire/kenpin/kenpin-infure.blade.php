@@ -307,10 +307,10 @@
                                 <i class="ri-edit-box-line text-white"></i>
                             </a>
                         </td>
-                        <td>{{ \Carbon\Carbon::parse($item->kenpin_date)->format('d M Y') }}</td>
+                        <td data-order="{{ $item->kenpin_date }}">{{ \Carbon\Carbon::parse($item->kenpin_date)->format('d M Y') }}</td>
                         <td>{{ $item->kenpin_no }}</td>
                         <td>{{ $item->lpk_no }}</td>
-                        <td>{{ \Carbon\Carbon::parse($item->lpk_date)->format('d M Y') }}</td>
+                        <td data-order="{{ $item->lpk_date }}">{{ \Carbon\Carbon::parse($item->lpk_date)->format('d M Y') }}</td>
                         <td>{{ number_format($item->qty_lpk) }}</td>
                         <td>{{ number_format($item->panjang_lpk) }}</td>
                         <td>{{ $item->namaproduk }}</td>
@@ -319,7 +319,7 @@
                         <td>{{ number_format($item->berat_loss) }}</td>
                         <td>{{ $item->status_kenpin }}</td>
                         <td>{{ $item->updated_by }}</td>
-                        <td>{{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y') }}</td>
+                        <td data-order="{{ $item->updated_on }}">{{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y') }}</td>
                     </tr>
                 @empty
                     {{-- <tr>

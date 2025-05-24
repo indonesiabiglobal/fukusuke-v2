@@ -14,6 +14,7 @@ use App\Models\TdProductAssembly;
 use App\Models\TdProductAssemblyLoss;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -317,7 +318,6 @@ class AddNippoController extends Component
             $product = new TdProductAssembly();
             $product->production_no = $today->format('dmy') . '-' . $seqno;
             $product->production_date = $this->production_date . ' ' . $this->work_hour;
-            $product->created_on = $this->created_on;
             $product->machine_id = $machine->id;
             $product->employee_id = $employe->id;
             $product->work_shift = $this->work_shift;
@@ -338,6 +338,10 @@ class AddNippoController extends Component
             $product->berat_produksi = $this->berat_produksi;
             $product->berat_standard = $this->berat_standard;
             $product->infure_cost = $this->berat_produksi * $products->harga_sat_infure;
+            $product->created_on = $this->created_on  . ' ' . now()->format('H:i:s');
+            $product->created_by = Auth::user()->username;
+            $product->updated_on = $this->created_on  . ' ' . now()->format('H:i:s');
+            $product->updated_by = Auth::user()->username;
             $product->save();
 
             $totalBerat = 0;
@@ -348,6 +352,11 @@ class AddNippoController extends Component
                 $details->berat = $item['berat'];
                 $details->frekuensi = $item['frekuensi'];
                 $details->product_assembly_id = $product->id;
+
+                $details->created_on = $this->created_on  . ' ' . now()->format('H:i:s');
+                $details->created_by = Auth::user()->username;
+                $details->updated_on = $this->created_on  . ' ' . now()->format('H:i:s');
+                $details->updated_by = Auth::user()->username;
 
                 $totalBerat += $item['berat_loss'];
                 $details->save();

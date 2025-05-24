@@ -187,6 +187,10 @@ class AddKenpinSeitaiController extends Component
             $data->qty_loss = $qtyLoss;
             $data->remark = $this->remark;
             $data->status_kenpin = $this->status;
+            $data->created_on = Carbon::now();
+            $data->created_by = auth()->user()->username;
+            $data->updated_on = Carbon::now();
+            $data->updated_by = auth()->user()->username;
 
             $data->save();
 
@@ -197,6 +201,10 @@ class AddKenpinSeitaiController extends Component
                 $kenpinGoodsDetail->kenpin_goods_id = $data->id;
                 $kenpinGoodsDetail->qty_loss = $data->qty_loss ?? 0;
                 $kenpinGoodsDetail->trial468 = 'T';
+                $kenpinGoodsDetail->created_on = Carbon::now();
+                $kenpinGoodsDetail->created_by = auth()->user()->username;
+                $kenpinGoodsDetail->updated_on = Carbon::now();
+                $kenpinGoodsDetail->updated_by = auth()->user()->username;
                 $kenpinGoodsDetail->save();
             }
 

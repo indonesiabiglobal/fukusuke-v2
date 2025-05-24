@@ -40,7 +40,7 @@ class JadwalMachineController extends Component
     {
         // $this->machines = DB::table('msmachine')
         //     ->get(['id', 'machinename', 'machineno', 'department_id', 'product_group_id', 'capacity_kg', 'capacity_lembar', 'status', 'updated_by', 'updated_on']);
-        
+
         if (empty($this->sortingTable)) {
             $this->sortingTable = [[2, 'asc']];
         }
@@ -93,6 +93,10 @@ class JadwalMachineController extends Component
                     'percent' => $this->percent,
                     'jadwal' => $startDate->format('j M Y'),
                     'idmachine' => $machine->id,
+                    'created_by' => auth()->user()->username,
+                    'updated_by' => auth()->user()->username,
+                    'created_on' => now(),
+                    'updated_on' => now(),
                 ]);
                 DB::commit();
                 $startDate->addDay();
@@ -145,6 +149,8 @@ class JadwalMachineController extends Component
                 // 'jadwal' => $startDate->format('j M Y'),
                 'jadwal' => $this->jadwal_mesin,
                 'idmachine' => $this->idUpdate,
+                'updated_by' => auth()->user()->username,
+                'updated_on' => now(),
             ]);
             DB::commit();
             // $startDate->addDay();

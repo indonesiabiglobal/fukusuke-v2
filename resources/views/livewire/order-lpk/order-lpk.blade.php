@@ -301,13 +301,13 @@
                         <td>{{ $item->product_code }}</td>
                         <td>{{ $item->buyer_name }}</td>
                         <td>{{ number_format($item->order_qty) }}</td>
-                        <td>{{ \Carbon\Carbon::parse($item->order_date)->format('d M Y') }}</td>
-                        <td>{{ \Carbon\Carbon::parse($item->stufingdate)->format('d M Y') }}</td>
-                        <td>{{ \Carbon\Carbon::parse($item->etddate)->format('d M Y') }}</td>
-                        <td>{{ \Carbon\Carbon::parse($item->etadate)->format('d M Y') }}</td>
-                        <td>{{ \Carbon\Carbon::parse($item->processdate)->format('d M Y') }}</td>
+                        <td data-order="{{ $item->order_date }}">{{ \Carbon\Carbon::parse($item->order_date)->format('d M Y') }}</td>
+                        <td data-order="{{ $item->stufingdate }}">{{ \Carbon\Carbon::parse($item->stufingdate)->format('d M Y') }}</td>
+                        <td data-order="{{ $item->etddate }}">{{ \Carbon\Carbon::parse($item->etddate)->format('d M Y') }}</td>
+                        <td data-order="{{ $item->etadate }}">{{ \Carbon\Carbon::parse($item->etadate)->format('d M Y') }}</td>
+                        <td data-order="{{ $item->created_on }}">{{ \Carbon\Carbon::parse($item->created_on)->format('d M Y') }}</td>
                         <td>{{ $item->updated_by }}</td>
-                        <td>{{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y') }}</td>
+                        <td data-order="{{ $item->updated_on }}">{{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y') }}</td>
                     </tr>
                 @empty
                     {{-- <tr>
@@ -320,9 +320,7 @@
                 @endforelse
             </tbody>
         </table>
-        {{-- {{ $data->links(data: ['scrollTo' => false]) }} --}}
     </div>
-    {{-- <livewire:tdorder/> --}}
 </div>
 
 @script

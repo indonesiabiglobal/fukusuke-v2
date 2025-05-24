@@ -402,10 +402,10 @@
                         <td>{{ $item->machine_no }}</td>
                         <td>{{ $item->buyer_name }}</td>
                         {{-- <td>{{ $item->warnalpk }}</td> --}}
-                        <td>{{ \Carbon\Carbon::parse($item->tglproses)->format('d M Y') }}</td>
+                        <td data-order="{{ $item->created_on }}">{{ \Carbon\Carbon::parse($item->created_on)->format('d M Y') }}</td>
                         <td>{{ $item->seq_no }}</td>
                         <td>{{ $item->updated_by }}</td>
-                        <td>{{ \Carbon\Carbon::parse($item->updatedt)->format('d M Y') }}</td>
+                        <td data-order="{{ $item->updatedt }}">{{ \Carbon\Carbon::parse($item->updatedt)->format('d M Y') }}</td>
                     </tr>
                 @empty
                     {{-- <tr>

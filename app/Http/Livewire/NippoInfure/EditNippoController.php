@@ -396,6 +396,8 @@ class EditNippoController extends Component
             $product->berat_produksi = $this->berat_produksi;
             $product->berat_standard = $this->berat_standard;
             $product->infure_cost = $this->berat_produksi * $products->harga_sat_infure;
+            $product->updated_on = Carbon::now();
+            $product->updated_by = auth()->user()->empname;
 
             $totalAssembly = DB::select("
                 SELECT
@@ -457,6 +459,8 @@ class EditNippoController extends Component
         $datas->berat_loss = $this->berat_loss;
         $datas->berat = $this->berat;
         $datas->frekuensi = $this->frekuensi;
+
+        $datas->created_on = Carbon::now();
 
         $datas->save();
 

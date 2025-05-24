@@ -366,6 +366,10 @@ class AddSeitaiController extends Component
                 $datas->berat = $gentan['berat'];
                 $datas->frekuensi = $gentan['frekuensi'];
                 $datas->lpk_id = $lpkid->id;
+                $datas->created_on = $this->created_on  . ' ' . now()->format('H:i:s');
+                $datas->created_by = auth()->user()->username;
+                $datas->updated_on = $this->created_on  . ' ' . now()->format('H:i:s');
+                $datas->updated_by = auth()->user()->username;
                 $datas->save();
             }
 

@@ -278,6 +278,11 @@ class EditKenpinController extends Component
         $datas->frekuensi = $this->frekuensi;
         $datas->kenpin_assembly_id = $this->orderid;
 
+        $datas->created_on = Carbon::now();
+        $datas->created_by = auth()->user()->username;
+        $datas->updated_on = Carbon::now();
+        $datas->updated_by = auth()->user()->username;
+
         $datas->save();
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);
 
@@ -304,7 +309,7 @@ class EditKenpinController extends Component
         try {
             $mspetugas = MsEmployee::where('employeeno', $this->employeeno)->first();
 
-            $product = new TdKenpinAssembly();
+            $product = TdKenpinAssembly::find($this->orderid);
             $product->kenpin_no = $this->kenpin_no;
             $product->kenpin_date = $this->kenpin_date;
             $product->employee_id = $mspetugas->id;
@@ -312,6 +317,8 @@ class EditKenpinController extends Component
             // $product->berat_loss = $this->berat_loss;
             $product->remark = $this->remark;
             $product->status_kenpin = $this->status_kenpin;
+            $product->updated_on = Carbon::now();
+            $product->updated_by = auth()->user()->username;
             $product->save();
 
             TdKenpinAssemblyDetail::where('product_assembly_id', $this->lpk_id)->update([

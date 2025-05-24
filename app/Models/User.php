@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -25,7 +26,25 @@ class User extends Authenticatable
         'password',
         'remember_token'
     ];
-    public $timestamps = false;
+    // public $timestamps = false;
+
+    // custom created and updated
+    const CREATED_AT = 'createdt';
+    const UPDATED_AT = 'updatedt';
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            $model->createby = Auth::user()->empname;
+            $model->updateby = Auth::user()->empname;
+        });
+
+        static::updating(function ($model) {
+            $model->updateby = Auth::user()->empname;
+        });
+    }
 
     /**
      * The attributes that should be hidden for serialization.

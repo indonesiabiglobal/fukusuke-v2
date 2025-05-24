@@ -400,6 +400,11 @@ class EditSeitaiController extends Component
         // $datas->frekuensi = $this->frekuensi;
         $datas->lpk_id = $lpkid->id;
 
+        $datas->created_on = Carbon::now();
+        $datas->created_by = auth()->user()->username;
+        $datas->updated_on = Carbon::now();
+        $datas->updated_by = auth()->user()->username;
+
         $datas->save();
 
         $this->dispatch('closeModalGentan');
@@ -426,6 +431,11 @@ class EditSeitaiController extends Component
         $datas->berat_loss = $this->berat_loss;
         $datas->frekuensi = $this->frekuensi_fr;
         $datas->lpk_id = $lpkid->id;
+
+        $datas->created_on = Carbon::now();
+        $datas->created_by = auth()->user()->username;
+        $datas->updated_on = Carbon::now();
+        $datas->updated_by = auth()->user()->username;
 
         // menambahkan ke tdproduct_goods
         $tdproductgoods = TdProductGoods::where('id', $this->tdpgId)->update([
@@ -489,6 +499,9 @@ class EditSeitaiController extends Component
             $data->infure_berat_loss = $this->infure_berat_loss;
             $data->work_shift = $this->work_shift;
             $data->work_hour = $this->work_hour;
+
+            $data->updated_on = Carbon::now();
+            $data->updated_by = auth()->user()->username;
 
             $data->save();
 

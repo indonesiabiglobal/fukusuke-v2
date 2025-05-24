@@ -238,6 +238,8 @@ class EditKenpinSeitaiController extends Component
             $data->status_kenpin = $this->status;
             $qtyLoss = $this->details->sum('qty_loss');
             $data->qty_loss = $qtyLoss;
+            $data->updated_on = Carbon::now();
+            $data->updated_by = auth()->user()->username;
 
             $data->save();
 
@@ -251,6 +253,10 @@ class EditKenpinSeitaiController extends Component
                 $kenpinGoodsDetail->kenpin_goods_id = $data->id;
                 $kenpinGoodsDetail->qty_loss = $detail->qty_loss ?? 0;
                 $kenpinGoodsDetail->trial468 = 'T';
+                $kenpinGoodsDetail->created_on = Carbon::now();
+                $kenpinGoodsDetail->created_by = auth()->user()->username;
+                $kenpinGoodsDetail->updated_on = Carbon::now();
+                $kenpinGoodsDetail->updated_by = auth()->user()->username;
                 $kenpinGoodsDetail->save();
             }
 
@@ -437,7 +443,7 @@ class EditKenpinSeitaiController extends Component
 
         /**
          * Value Order
-        */
+         */
         // value no order
         $spreadsheet->getActiveSheet()->mergeCells($startColumn . $rowItem . ':' . $endColumnNoOrder . $rowItem);
         $spreadsheet->getActiveSheet()->setCellValue($startColumn . $rowItem, $this->code);
