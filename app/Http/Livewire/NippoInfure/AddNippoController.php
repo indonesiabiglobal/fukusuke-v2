@@ -344,7 +344,6 @@ class AddNippoController extends Component
             $product->updated_on = $createdOn;
             $product->updated_by = Auth::user()->username;
             $product->save();
-            dd($product);
 
             $totalBerat = 0;
             foreach ($this->details as $item) {
