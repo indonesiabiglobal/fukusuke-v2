@@ -314,6 +314,7 @@ class AddNippoController extends Component
                 $seqno = $lastSeq->seq_no + 1;
             }
             $today = Carbon::now();
+            $createdOn = Carbon::createFromFormat('d/m/Y H:i:s', $this->created_on);
 
             $product = new TdProductAssembly();
             $product->production_no = $today->format('dmy') . '-' . $seqno;
@@ -338,11 +339,12 @@ class AddNippoController extends Component
             $product->berat_produksi = $this->berat_produksi;
             $product->berat_standard = $this->berat_standard;
             $product->infure_cost = $this->berat_produksi * $products->harga_sat_infure;
-            $product->created_on = $this->created_on;
+            $product->created_on = $createdOn;
             $product->created_by = Auth::user()->username;
-            $product->updated_on = $this->created_on;
+            $product->updated_on = $createdOn;
             $product->updated_by = Auth::user()->username;
             $product->save();
+            dd($product);
 
             $totalBerat = 0;
             foreach ($this->details as $item) {
@@ -353,9 +355,9 @@ class AddNippoController extends Component
                 $details->frekuensi = $item['frekuensi'];
                 $details->product_assembly_id = $product->id;
 
-                $details->created_on = $this->created_on;
+                $details->created_on = $createdOn;
                 $details->created_by = Auth::user()->username;
-                $details->updated_on = $this->created_on;
+                $details->updated_on = $createdOn;
                 $details->updated_by = Auth::user()->username;
 
                 $totalBerat += $item['berat_loss'];
