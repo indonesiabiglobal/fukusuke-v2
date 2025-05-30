@@ -234,6 +234,7 @@ Route::group(['middleware' => 'auth'], function () {
     })->name('report-nippo-infure');
 
     Route::get('/report-gentan', function (Request $request) {
+        $produk_asemblyid = $request->query('produk_asemblyid');
         $lpk_no = $request->query('lpk_no');
         $name = $request->query('name');
         $code = $request->query('code');
@@ -246,7 +247,7 @@ Route::group(['middleware' => 'auth'], function () {
         $nomor_han = $request->query('nomor_han');
         $nik = $request->query('nik');
         $empname = $request->query('empname');
-        return view('livewire.nippo-infure.report-gentan', compact('lpk_no', 'name', 'code', 'product_type_code', 'production_date', 'work_hour', 'work_shift', 'machineno', 'berat_produksi', 'nomor_han', 'nik', 'empname'));
+        return view('livewire.nippo-infure.report-gentan', compact('produk_asemblyid','lpk_no', 'name', 'code', 'product_type_code', 'production_date', 'work_hour', 'work_shift', 'machineno', 'berat_produksi', 'nomor_han', 'nik', 'empname'));
     })->name('report-gentan');
 
     Route::get('/report-nippo-infure', function (Request $request) {
@@ -270,6 +271,7 @@ Route::group(['middleware' => 'auth'], function () {
     })->name('report-loss-seitai');
 
     Route::get('/report-gentan', function (Request $request) {
+        $produk_asemblyid = $request->query('produk_asemblyid');
         $lpk_no = $request->query('lpk_no');
         $name = $request->query('name');
         $code = $request->query('code');
@@ -282,7 +284,7 @@ Route::group(['middleware' => 'auth'], function () {
         $nomor_han = $request->query('nomor_han');
         $nik = $request->query('nik');
         $empname = $request->query('empname');
-        return view('livewire.nippo-infure.report-gentan', compact('lpk_no', 'name', 'code', 'product_type_code', 'production_date', 'work_hour', 'work_shift', 'machineno', 'berat_produksi', 'nomor_han', 'nik', 'empname'));
+        return view('livewire.nippo-infure.report-gentan', compact('produk_asemblyid','lpk_no', 'name', 'code', 'product_type_code', 'production_date', 'work_hour', 'work_shift', 'machineno', 'berat_produksi', 'nomor_han', 'nik', 'empname'));
     })->name('report-gentan');
 
     Route::get('/test', function () {

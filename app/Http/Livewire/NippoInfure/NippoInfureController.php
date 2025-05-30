@@ -41,6 +41,8 @@ class NippoInfureController extends Component
     public $idProduct;
     #[Session]
     public $sortingTable;
+    #[Session]
+    public $entriesPerPage = 10;
 
     use WithFileUploads;
     public $file;
@@ -68,11 +70,20 @@ class NippoInfureController extends Component
         if (empty($this->sortingTable)) {
             $this->sortingTable = [[1, 'asc']];
         }
+        if (empty($this->entriesPerPage)) {
+            $this->entriesPerPage = 10;
+        }
     }
 
     public function updateSortingTable($value)
     {
         $this->sortingTable = $value;
+        $this->skipRender();
+    }
+
+    public function updateEntriesPerPage($value)
+    {
+        $this->entriesPerPage = $value;
         $this->skipRender();
     }
 
@@ -83,7 +94,7 @@ class NippoInfureController extends Component
         $previousUrl = last(explode('/', $previousUrl));
         // dd($previousUrl, (Str::contains($previousUrl, 'edit-nippo') || Str::contains($previousUrl, 'add-nippo') || Str::contains($previousUrl,'nippo-infure')));
         if (!(Str::contains($previousUrl, 'edit-nippo') || Str::contains($previousUrl, 'add-nippo') || Str::contains($previousUrl,'nippo-infure'))) {
-            $this->reset('tglMasuk', 'tglKeluar', 'transaksi', 'machineId', 'status', 'lpk_no', 'searchTerm', 'idProduct', 'sortingTable');
+            $this->reset('tglMasuk', 'tglKeluar', 'transaksi', 'machineId', 'status', 'lpk_no', 'searchTerm', 'idProduct', 'sortingTable', 'entriesPerPage');
         }
     }
 

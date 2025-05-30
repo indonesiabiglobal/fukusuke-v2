@@ -1849,8 +1849,8 @@
             $('#modal-add').modal('hide');
         });
 
-        $wire.on('redirectToPrint', (lpk_no) => {
-            var printUrl = '{{ route('report-gentan') }}?lpk_no=' + lpk_no
+        $wire.on('redirectToPrint', (produk_asemblyid) => {
+            var printUrl = '{{ route('report-gentan') }}?produk_asemblyid=' + produk_asemblyid
             window.open(printUrl, '_blank');
         });
 

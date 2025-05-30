@@ -77,7 +77,7 @@
             INNER JOIN msmachine as msm on msm.id = tdpa.machine_id
             INNER JOIN msemployee as mse on mse.id = tdpa.employee_id
         WHERE
-            tdpa.id = $lpk_no
+            tdpa.id = $produk_asemblyid
         "),
     )->first();
 @endphp

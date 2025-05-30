@@ -19,12 +19,12 @@
                         lpk_no = value.substring(0, 10);
                     }
                 })">
-                <input 
-                    class="form-control" 
-                    style="padding:0.44rem" 
+                <input
+                    class="form-control"
+                    style="padding:0.44rem"
                     type="text"
                     placeholder="000000-000"
-                    x-model="lpk_no" 
+                    x-model="lpk_no"
                     maxlength="10"
                 />
 				</div>
@@ -102,8 +102,8 @@
 </div>
 @script
 	<script>
-		$wire.on('redirectToPrint', (lpk_no) => {
-			var printUrl = '{{ route('report-gentan') }}?lpk_no=' + lpk_no
+		$wire.on('redirectToPrint', (produk_asemblyid) => {
+			var printUrl = '{{ route('report-gentan') }}?produk_asemblyid=' + produk_asemblyid
 			window.open(printUrl, '_blank');
 		});
 	</script>

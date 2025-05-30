@@ -1,172 +1,177 @@
-<div class="row">
-    <div class="col-12 col-lg-7">
-        <div class="row">
-            <div class="col-12 col-lg-3">
-                <label class="form-label text-muted fw-bold">Filter Tanggal</label>
-            </div>
-            <div class="col-12 col-lg-9 mb-1">
-                <div class="form-group">
-                    <div class="input-group">
-                        <div class="col-3">
-                            <select class="form-select" style="padding:0.44rem" wire:model.defer="transaksi">
-                                <option value="1">Produksi</option>
-                                <option value="2">Proses</option>
-                            </select>
-                        </div>
-                        <div class="col-9">
-                            <div class="form-group">
-                                <div class="input-group">
-                                    <input wire:model.defer="tglMasuk" type="text" class="form-control"
-                                        style="padding:0.44rem" data-provider="flatpickr" data-date-format="d M Y">
-                                    <span class="input-group-text py-0">
-                                        <i class="ri-calendar-event-fill fs-4"></i>
-                                    </span>
+<div>
+    <div class="row filter-section">
+        <div class="col-12 col-lg-7">
+            <div class="row">
+                <div class="col-12 col-lg-3">
+                    <label class="form-label text-muted fw-bold">Filter Tanggal</label>
+                </div>
+                <div class="col-12 col-lg-9 mb-1">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="col-3">
+                                <select class="form-select" style="padding:0.44rem" wire:model.defer="transaksi">
+                                    <option value="1">Produksi</option>
+                                    <option value="2">Proses</option>
+                                </select>
+                            </div>
+                            <div class="col-9">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <input wire:model.defer="tglMasuk" type="text" class="form-control"
+                                            style="padding:0.44rem" data-provider="flatpickr" data-date-format="d M Y">
+                                        <span class="input-group-text py-0">
+                                            <i class="ri-calendar-event-fill fs-4"></i>
+                                        </span>
 
-                                    <input wire:model.defer="tglKeluar" type="text" class="form-control"
-                                        style="padding:0.44rem" data-provider="flatpickr" data-date-format="d M Y">
-                                    <span class="input-group-text py-0">
-                                        <i class="ri-calendar-event-fill fs-4"></i>
-                                    </span>
+                                        <input wire:model.defer="tglKeluar" type="text" class="form-control"
+                                            style="padding:0.44rem" data-provider="flatpickr" data-date-format="d M Y">
+                                        <span class="input-group-text py-0">
+                                            <i class="ri-calendar-event-fill fs-4"></i>
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-12 col-lg-3">
-                <label class="form-label text-muted fw-bold">Nomor LPK</label>
-            </div>
-            <div class="col-12 col-lg-9 mb-1" x-data="{
-                lpk_no_local: '{{ $lpk_no }}',
-                status: true,
-                timeout: null,
-                updateLivewire(value) {
-                    if (value.length === 10) {
-                        clearTimeout(this.timeout);
-                        this.timeout = setTimeout(() => {
-                            $wire.set('lpk_no', value);
-                        }, 500); // delay kirim ke Livewire setelah 500ms
+                <div class="col-12 col-lg-3">
+                    <label class="form-label text-muted fw-bold">Nomor LPK</label>
+                </div>
+                <div class="col-12 col-lg-9 mb-1" x-data="{
+                    lpk_no_local: '{{ $lpk_no }}',
+                    status: true,
+                    timeout: null,
+                    updateLivewire(value) {
+                        if (value.length === 10) {
+                            clearTimeout(this.timeout);
+                            this.timeout = setTimeout(() => {
+                                $wire.set('lpk_no', value);
+                            }, 500); // delay kirim ke Livewire setelah 500ms
+                        }
                     }
-                }
-            }" x-init="$watch('lpk_no_local', value => {
-                if (value.length === 6 && !value.includes('-') && status) {
-                    lpk_no_local = value + '-';
-                }
-                if (value.length < 6) status = true;
-                if (value.length === 7) status = false;
-                if (value.length > 10) lpk_no_local = value.substring(0, 10);
+                }" x-init="$watch('lpk_no_local', value => {
+                    if (value.length === 6 && !value.includes('-') && status) {
+                        lpk_no_local = value + '-';
+                    }
+                    if (value.length < 6) status = true;
+                    if (value.length === 7) status = false;
+                    if (value.length > 10) lpk_no_local = value.substring(0, 10);
 
-                updateLivewire(value);
-            })">
+                    updateLivewire(value);
+                })">
 
-                <input class="form-control" style="padding:0.44rem" type="text" placeholder="I-000000-000"
-                    x-model="lpk_no_local" maxlength="10" />
-            </div>
-            <div class="col-12 col-lg-3">
-                <label class="form-label text-muted fw-bold">Search</label>
-            </div>
-            <div class="col-12 col-lg-9">
-                <div class="input-group">
-                    <input wire:model.defer="searchTerm" class="form-control"style="padding:0.44rem" type="text"
-                        placeholder="search nomor produksi, no han, dll" />
+                    <input class="form-control" style="padding:0.44rem" type="text" placeholder="I-000000-000"
+                        x-model="lpk_no_local" maxlength="10" />
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-12 col-lg-5">
-        <div class="row">
-            <div class="col-12 col-lg-2">
-                <label for="product" class="form-label text-muted fw-bold">Product</label>
-            </div>
-            <div class="col-12 col-lg-10">
-                <div class="mb-1" wire:ignore>
-                    <select class="form-control" wire:model.defer="idProduct" data-choices data-choices-sorting-false
-                        data-choices-removeItem data-choices-search-field-label data-choices-exact-match>
-                        <option value="">- All -</option>
-                        @foreach ($products as $item)
-                            <option data-custom-properties='{"code": "{{ $item->code }}"}' value="{{ $item->id }}"
-                                @if ($item->id == ($idProduct['value'] ?? null)) selected @endif>{{ $item->name }},
-                                {{ $item->code }}</option>
-                        @endforeach
-                    </select>
+                <div class="col-12 col-lg-3">
+                    <label class="form-label text-muted fw-bold">Search</label>
                 </div>
-            </div>
-            <div class="col-12 col-lg-2">
-                <label class="form-label text-muted fw-bold">Mesin</label>
-            </div>
-            <div class="col-12 col-lg-10">
-                <div class="mb-1" wire:ignore>
-                    <select class="form-control" wire:model.defer="machineId" data-choices data-choices-sorting-false
-                        data-choices-removeItem data-choices-search-field-label>
-                        <option value="">- All -</option>
-                        @foreach ($machine as $item)
-                            <option value="{{ $item->id }}" @if ($item->id == ($machineId['value'] ?? null)) selected @endif>
-                                {{ $item->machineno }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-            <div class="col-12 col-lg-2">
-                <label for="status" class="form-label text-muted fw-bold">Status</label>
-            </div>
-            <div class="col-12 col-lg-10">
-                <div class="mb-1" wire:ignore>
-                    <select class="form-control" wire:model.defer="status" id="status" name="status" data-choices
-                        data-choices-sorting-false data-choices-removeItem data-choices-search-field-label>
-                        <option value="">- all -</option>
-                        <option value="0">Open</option>
-                        <option value="1" @if (($status['value'] ?? null) == 1) selected @endif>Seitai</option>
-                        <option value="2" @if (($status['value'] ?? null) == 2) selected @endif>Kenpin</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-lg-10 mt-2">
-        <div class="row">
-            <div class="col-12 col-lg-6">
-                <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1"
-                    wire:loading.attr="disabled">
-                    <span wire:loading.remove wire:target="search">
-                        <i class="ri-search-line"></i> Filter
-                    </span>
-                    <div wire:loading wire:target="search">
-                        <span class="d-flex align-items-center">
-                            <span class="spinner-border flex-shrink-0" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </span>
-                            <span class="flex-grow-1 ms-1">
-                                Loading...
-                            </span>
-                        </span>
+                <div class="col-12 col-lg-9">
+                    <div class="input-group">
+                        <input wire:model.defer="searchTerm" class="form-control"style="padding:0.44rem" type="text"
+                            placeholder="search nomor produksi, no han, dll" />
                     </div>
-                </button>
-
-                <button type="button" class="btn btn-success w-lg p-1"
-                    onclick="window.location.href='/add-nippo?lpk_no={{ $lpk_no }}'">
-                    <i class="ri-add-line"> </i> Add
-                </button>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-lg-2 mt-2 text-end">
-        <button class="btn btn-info w-lg p-1" wire:click="export" type="button" wire:loading.attr="disabled">
-            <span wire:loading.remove wire:target="export">
-                <i class="ri-printer-line"> </i> Print
-            </span>
-            <div wire:loading wire:target="export">
-                <span class="d-flex align-items-center">
-                    <span class="spinner-border flex-shrink-0" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </span>
-                    <span class="flex-grow-1 ms-1">
-                        Loading...
-                    </span>
-                </span>
+
+        <div class="col-12 col-lg-5">
+            <div class="row">
+                <div class="col-12 col-lg-2">
+                    <label for="product" class="form-label text-muted fw-bold">Product</label>
+                </div>
+                <div class="col-12 col-lg-10">
+                    <div class="mb-1" wire:ignore>
+                        <select class="form-control" wire:model.defer="idProduct" data-choices
+                            data-choices-sorting-false data-choices-removeItem data-choices-search-field-label
+                            data-choices-exact-match>
+                            <option value="">- All -</option>
+                            @foreach ($products as $item)
+                                <option data-custom-properties='{"code": "{{ $item->code }}"}'
+                                    value="{{ $item->id }}" @if ($item->id == ($idProduct['value'] ?? null)) selected @endif>
+                                    {{ $item->name }},
+                                    {{ $item->code }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-2">
+                    <label class="form-label text-muted fw-bold">Mesin</label>
+                </div>
+                <div class="col-12 col-lg-10">
+                    <div class="mb-1" wire:ignore>
+                        <select class="form-control" wire:model.defer="machineId" data-choices
+                            data-choices-sorting-false data-choices-removeItem data-choices-search-field-label>
+                            <option value="">- All -</option>
+                            @foreach ($machine as $item)
+                                <option value="{{ $item->id }}" @if ($item->id == ($machineId['value'] ?? null)) selected @endif>
+                                    {{ $item->machineno }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-2">
+                    <label for="status" class="form-label text-muted fw-bold">Status</label>
+                </div>
+                <div class="col-12 col-lg-10">
+                    <div class="mb-1" wire:ignore>
+                        <select class="form-control" wire:model.defer="status" id="status" name="status"
+                            data-choices data-choices-sorting-false data-choices-removeItem
+                            data-choices-search-field-label>
+                            <option value="">- all -</option>
+                            <option value="0">Open</option>
+                            <option value="1" @if (($status['value'] ?? null) == 1) selected @endif>Seitai</option>
+                            <option value="2" @if (($status['value'] ?? null) == 2) selected @endif>Kenpin</option>
+                        </select>
+                    </div>
+                </div>
             </div>
-        </button>
+        </div>
+
+        <div class="col-lg-10 mt-2">
+            <div class="row">
+                <div class="col-12 col-lg-6">
+                    <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1"
+                        wire:loading.attr="disabled">
+                        <span wire:loading.remove wire:target="search">
+                            <i class="ri-search-line"></i> Filter
+                        </span>
+                        <div wire:loading wire:target="search">
+                            <span class="d-flex align-items-center">
+                                <span class="spinner-border flex-shrink-0" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </span>
+                                <span class="flex-grow-1 ms-1">
+                                    Loading...
+                                </span>
+                            </span>
+                        </div>
+                    </button>
+
+                    <button type="button" class="btn btn-success w-lg p-1"
+                        onclick="window.location.href='/add-nippo?lpk_no={{ $lpk_no }}'">
+                        <i class="ri-add-line"> </i> Add
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 mt-2 text-end">
+            <button class="btn btn-info w-lg p-1" wire:click="export" type="button" wire:loading.attr="disabled">
+                <span wire:loading.remove wire:target="export">
+                    <i class="ri-printer-line"> </i> Print
+                </span>
+                <div wire:loading wire:target="export">
+                    <span class="d-flex align-items-center">
+                        <span class="spinner-border flex-shrink-0" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </span>
+                        <span class="flex-grow-1 ms-1">
+                            Loading...
+                        </span>
+                    </span>
+                </div>
+            </button>
+        </div>
     </div>
 
     <div class="table-responsive table-card  mt-2  mb-2">
@@ -349,14 +354,17 @@
                         <td> {{ $item->product_name }} </td>
                         <td> {{ $item->product_code }} </td>
                         <td> {{ $item->machineno }} </td>
-                        <td data-order="{{ $item->production_date }}">{{ \Carbon\Carbon::parse($item->production_date)->format('d M Y') }}</td>
-                        <td data-order="{{ $item->created_on }}">{{ \Carbon\Carbon::parse($item->created_on)->format('d M Y') }}</td>
+                        <td data-order="{{ $item->production_date }}">
+                            {{ \Carbon\Carbon::parse($item->production_date)->format('d M Y') }}</td>
+                        <td data-order="{{ $item->created_on }}">
+                            {{ \Carbon\Carbon::parse($item->created_on)->format('d M Y') }}</td>
                         <td> {{ $item->work_hour }} </td>
                         <td> {{ $item->work_shift }} </td>
                         <td> {{ $item->seq_no }} </td>
                         <td> {{ $item->infure_berat_loss }} </td>
                         <td> {{ $item->updated_by }} </td>
-                        <td data-order="{{ $item->updated_on }}">{{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y') }}</td>
+                        <td data-order="{{ $item->updated_on }}">
+                            {{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y') }}</td>
                     </tr>
                 @empty
                     {{-- <tr>
@@ -373,7 +381,6 @@
         </table>
         {{-- {{ $data->links(data: ['scrollTo' => false]) }} --}}
     </div>
-
 </div>
 @script
     <script>
@@ -381,6 +388,19 @@
             var printUrl = '{{ route('report-nippo-infure') }}?tanggal=' + datas;
             window.open(printUrl, '_blank');
         });
+
+        function calculateTableHeight() {
+            const totalHeight = window.innerHeight;
+
+            const filterSectionTop = document.querySelector('.filter-section')?.getBoundingClientRect().top || 0;
+            const offsetTop = document.querySelector('#tableInfure')?.getBoundingClientRect().top || 0;
+
+            const paddingTop = document.querySelector('.navbar-header')?.getBoundingClientRect().top || 0;
+            const availableHeight = totalHeight - offsetTop - filterSectionTop - paddingTop;
+
+            return availableHeight;
+        }
+
 
         // datatable
         // inisialisasi DataTable
@@ -391,12 +411,18 @@
         // Fungsi untuk menginisialisasi ulang DataTable
         function initDataTable() {
             const savedOrder = $wire.get('sortingTable');
+            const savedEntriesPerPage = $wire.get('entriesPerPage');
 
             let defaultOrder = [
                 [1, "asc"]
             ];
             if (savedOrder) {
                 defaultOrder = savedOrder;
+            }
+
+            let entriesPerPage = 10;
+            if (savedEntriesPerPage) {
+                entriesPerPage = savedEntriesPerPage;
             }
             // Hapus DataTable jika sudah ada
             if ($.fn.dataTable.isDataTable('#tableInfure')) {
@@ -408,11 +434,13 @@
             setTimeout(() => {
                 // Inisialisasi ulang DataTable
                 let table = $('#tableInfure').DataTable({
-                    "pageLength": 10,
+                    "pageLength": entriesPerPage,
                     "searching": true,
                     "responsive": true,
                     "scrollX": true,
                     "order": defaultOrder,
+                    "scrollY": calculateTableHeight() + 'px',
+                    "scrollCollapse": true,
                     "language": {
                         "emptyTable": `
                             <div class="text-center">
@@ -431,6 +459,12 @@
                         order = defaultOrder;
                     }
                     $wire.call('updateSortingTable', order);
+                });
+
+                // Listen to page length change
+                table.on('length.dt', function() {
+                    let entriesPerPage = table.page.len();
+                    $wire.call('updateEntriesPerPage', entriesPerPage);
                 });
 
                 // default column visibility

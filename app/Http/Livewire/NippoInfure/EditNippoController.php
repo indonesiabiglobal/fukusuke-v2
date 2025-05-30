@@ -515,7 +515,7 @@ class EditNippoController extends Component
 
     public function print()
     {
-        $this->dispatch('redirectToPrint', $this->lpk_no);
+        $this->dispatch('redirectToPrint', $this->orderId);
     }
 
     public function render()
@@ -532,6 +532,7 @@ class EditNippoController extends Component
             )
             ->join('mslossinfure as msi', 'msi.id', '=', 'tal.loss_infure_id')
             ->where('tal.product_assembly_id', $this->orderId)
+            ->orderBy('tal.id', 'ASC')
             ->get();
 
         if (isset($this->loss_infure_code) && $this->loss_infure_code != '') {
