@@ -481,7 +481,7 @@
                         </td>
                         <td>{{ \Carbon\Carbon::parse($item->working_date)->format('d M Y') }}</td>
                         <td>{{ $item->work_shift }}</td>
-                        <td>{{ $item->machine_id }}</td>
+                        <td>{{ $item->machineno }}</td>
                         <td> {{ $item->employeeno }}</td>
                         <td> {{ $item->empname }}</td>
                         <td>{{ $item->work_hour }}</td>
@@ -547,7 +547,7 @@
         // Fungsi untuk menginisialisasi ulang DataTable
         function initDataTable() {
             const savedOrder = $wire.get('sortingTable');
-            
+
             let defaultOrder = [
                 [1, "asc"]
             ];

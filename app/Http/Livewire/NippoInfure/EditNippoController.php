@@ -380,7 +380,6 @@ class EditNippoController extends Component
 
             $product = TdProductAssembly::findOrFail($this->orderId);
             $product->production_date = $this->production_date . ' ' . $this->work_hour;
-            // $product->created_on = $this->created_on;
             $product->machine_id = $machine->id;
             $product->employee_id = $employe->id;
             $product->work_shift = $this->work_shift;
