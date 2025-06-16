@@ -84,7 +84,7 @@ class Employee extends Component
             DB::table('msemployee')->insert([
                 'employeeno' => $this->employeeno,
                 'empname' => $this->empname,
-                'department_id' => $this->department_id,
+                'department_id' => is_array($this->department_id) ? $this->department_id['value'] : $this->department_id,
                 'status' => $statusActive,
                 'created_by' => auth()->user()->username,
                 'created_on' => now(),
