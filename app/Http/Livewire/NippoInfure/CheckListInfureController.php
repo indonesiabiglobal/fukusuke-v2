@@ -189,12 +189,6 @@ class CheckListInfureController extends Component
         phpspreadsheet::styleFont($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart, true, 9, 'Calibri');
         phpspreadsheet::textAlignCenter($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
 
-        // filter date
-        if ($this->transaksi == '1') {
-            $filterDate = "tdpa.production_date BETWEEN '$tglAwal' AND '$tglAkhir'";
-        } else if ($this->transaksi == '2') {
-            $filterDate = "tdpa.created_on BETWEEN '$tglAwal' AND '$tglAkhir'";
-        }
 
         // filter print nippo
         $filterSearchTerm = '';
@@ -209,6 +203,15 @@ class CheckListInfureController extends Component
             $filterStatus = $this->status == 0 ? " AND (tdpa.status_production = 0 AND tdpa.status_kenpin = 0)" :
                 ($this->status == 1 ? " AND (tdpa.status_production = 1)" : " AND (tdpa.status_kenpin = 1)");
             $filterSearchTerm = $this->searchTerm ? " AND (tdpa.production_no ILIKE '%$this->searchTerm%' OR msp.code ILIKE '%$this->searchTerm%' OR msp.name ILIKE '%$this->searchTerm%' OR tdpa.machine_id ILIKE '%$this->searchTerm%' OR tdpa.nomor_han ILIKE '%$this->searchTerm%')" : '';
+
+            $this->transaksi = $filter['transaksi'];
+        }
+
+        // filter date
+        if ($this->transaksi == '1') {
+            $filterDate = "tdpa.production_date BETWEEN '$tglAwal' AND '$tglAkhir'";
+        } else if ($this->transaksi == '2') {
+            $filterDate = "tdpa.created_on BETWEEN '$tglAwal' AND '$tglAkhir'";
         }
 
         // Filter Query

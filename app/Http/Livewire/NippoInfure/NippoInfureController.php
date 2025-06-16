@@ -121,6 +121,7 @@ class NippoInfureController extends Component
             'idProduct' => $this->idProduct['value'] ?? null,
             'status' => $this->status['value'] ?? null,
             'searchTerm' => $this->searchTerm ?? null,
+            'transaksi' => $this->transaksi ?? 1,
         ];
 
         $checklistInfure = new CheckListInfureController();
