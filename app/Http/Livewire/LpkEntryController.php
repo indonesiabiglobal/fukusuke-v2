@@ -116,9 +116,9 @@ class LpkEntryController extends Component
 
     public function printLPK()
     {
-        foreach ($this->checkListLPK as $lpk_id) {
-            $this->dispatch('redirectToPrint', $lpk_id);
-        }
+        // foreach ($this->checkListLPK as $lpk_id) {
+        // }
+        $this->dispatch('redirectToPrint', $this->checkListLPK);
     }
 
     public function render()

@@ -426,8 +426,8 @@
     <script>
         // memilih seluruh data pada table
 
-        $wire.on('redirectToPrint', (lpk_id) => {
-            var printUrl = '{{ route('report-lpk') }}?lpk_id=' + lpk_id
+        $wire.on('redirectToPrint', (lpk_ids) => {
+            var printUrl = '{{ route('report-lpk') }}?lpk_ids=' + lpk_ids
             window.open(printUrl, '_blank');
         });
 

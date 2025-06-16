@@ -219,8 +219,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/barang-reject', BarangRejectController::class)->name('barang-reject');
 
     Route::get('/report-lpk', function (Request $request) {
-        $lpk_id = $request->query('lpk_id');
-        return view('livewire.order-lpk.report-lpk', compact('lpk_id'));
+        // $lpk_ids = $request->query('lpk_ids');
+        $lpk_ids = explode(',', request('lpk_ids'));
+        $placeholders = implode(',', array_fill(0, count($lpk_ids), '?'));
+        return view('livewire.order-lpk.report-lpk', compact('lpk_ids', 'placeholders'));
     })->name('report-lpk');
 
     Route::get('/report-masuk-gudang', function (Request $request) {
