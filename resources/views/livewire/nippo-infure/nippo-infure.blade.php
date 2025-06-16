@@ -42,12 +42,15 @@
                     status: true,
                     timeout: null,
                     updateLivewire(value) {
-                        if (value.length === 10) {
-                            clearTimeout(this.timeout);
-                            this.timeout = setTimeout(() => {
+                        clearTimeout(this.timeout);
+
+                        this.timeout = setTimeout(() => {
+                            if (value === '' || value == null) {
+                                $wire.set('lpk_no', null);
+                            } else {
                                 $wire.set('lpk_no', value);
-                            }, 500); // delay kirim ke Livewire setelah 500ms
-                        }
+                            }
+                        }, 500);
                     }
                 }" x-init="$watch('lpk_no_local', value => {
                     if (value.length === 6 && !value.includes('-') && status) {
