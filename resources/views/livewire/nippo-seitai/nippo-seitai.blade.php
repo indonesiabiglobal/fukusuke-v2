@@ -346,7 +346,7 @@
                         <td>{{ $item->nomor_lot }}</td>
                         <td>{{ $item->seq_no }}</td>
                         <td>{{ $item->updated_by }}</td>
-                        <td data-order="{{ $item->updated_on }}">{{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y') }}</td>
+                        <td data-order="{{ $item->updated_on }}">{{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y h:i') }}</td>
                     </tr>
                 @empty
                     {{-- <tr>
