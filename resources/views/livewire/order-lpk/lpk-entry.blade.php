@@ -345,7 +345,7 @@
                 <tr>
                     <th scope="col" style="width: 10px;">
                         <div class="form-check">
-                            <input class="form-check-input fs-15" type="checkbox" id="checkAll" value="optionAll">
+                            <input class="form-check-input checkbox-big  fs-15" type="checkbox" id="checkAll" value="optionAll">
                         </div>
                     </th>
                     <th></th>
@@ -376,7 +376,7 @@
                     <tr>
                         <th scope="row">
                             <div class="form-check">
-                                <input class="form-check-input fs-15 checkListLPK" type="checkbox"
+                                <input class="form-check-input fs-15 checkbox-big checkListLPK" type="checkbox"
                                     wire:model="checkListLPK" value="{{ $item->id }}">
                             </div>
                         </th>
@@ -402,10 +402,12 @@
                         <td>{{ $item->machine_no }}</td>
                         <td>{{ $item->buyer_name }}</td>
                         {{-- <td>{{ $item->warnalpk }}</td> --}}
-                        <td data-order="{{ $item->created_on }}">{{ \Carbon\Carbon::parse($item->created_on)->format('d M Y') }}</td>
+                        <td data-order="{{ $item->created_on }}">
+                            {{ \Carbon\Carbon::parse($item->created_on)->format('d M Y') }}</td>
                         <td>{{ $item->seq_no }}</td>
                         <td>{{ $item->updated_by }}</td>
-                        <td data-order="{{ $item->updatedt }}">{{ \Carbon\Carbon::parse($item->updatedt)->format('d M Y') }}</td>
+                        <td data-order="{{ $item->updatedt }}">
+                            {{ \Carbon\Carbon::parse($item->updatedt)->format('d M Y') }}</td>
                     </tr>
                 @empty
                     {{-- <tr>
@@ -420,6 +422,21 @@
         </table>
         {{-- {{ $data->links(data: ['scrollTo' => false]) }} --}}
     </div>
+
+    <style>
+        .checkbox-big {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #333;
+            cursor: pointer;
+        }
+
+        .checkbox-big:checked {
+            background-color: #0d6efd;
+            /* biru bootstrap */
+            border-color: #0d6efd;
+        }
+    </style>
 </div>
 
 @script
