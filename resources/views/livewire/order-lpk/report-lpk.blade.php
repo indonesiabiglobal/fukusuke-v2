@@ -14,7 +14,7 @@
 
             /* Menyembunyikan header, footer, dan URL */
             @page {
-                margin: 4px;
+                margin: 0;
                 size: A4;
             }
 
