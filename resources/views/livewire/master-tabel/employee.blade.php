@@ -49,12 +49,12 @@
                                         </div>
                                         {{-- Departemen Karyawan --}}
                                         <div class="col-xxl-12">
-                                            <div class="row" wire:ignore>
+                                            <div class="row">
                                                 <label for="Departemen Karyawan" class="form-label">Departemen
                                                     Karyawan</label>
                                                 <select data-choices data-choices-sorting="true"
                                                     class="form-select @error('department_id') is-invalid @enderror"
-                                                    wire:model="department_id" placeholder="">
+                                                    wire:model.defer="department_id" placeholder="">
                                                     <option value="" selected>
                                                         Silahkan Pilih
                                                     </option>
@@ -400,7 +400,7 @@
         // Fungsi untuk menginisialisasi ulang DataTable
         function initDataTable(id) {
             const savedOrder = $wire.get('sortingTable');
-            
+
             let defaultOrder = [
                 [1, "asc"]
             ];

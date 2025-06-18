@@ -59,7 +59,6 @@ class Employee extends Component
     {
         $this->employeeno = '';
         $this->empname = '';
-        $this->department_id = '';
     }
 
     public function showModalCreate()
