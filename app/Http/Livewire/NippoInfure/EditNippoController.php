@@ -16,6 +16,7 @@ use App\Models\TdProductAssemblyLoss;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class EditNippoController extends Component
 {
@@ -351,20 +352,73 @@ class EditNippoController extends Component
         }
     }
 
+
+    public function rules()
+    {
+        return [
+            'production_date' => 'required',
+            'created_on' => 'required',
+            'lpk_no' => 'required',
+            'machineno' => 'required',
+            'employeeno' => 'required',
+            'panjang_produksi' => 'required|max:25000',
+            'berat_produksi' => 'required|max:900',
+            'work_hour' => 'required',
+            'nomor_barcode' => 'required',
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'production_date.required' => 'Tanggal Produksi harus diisi',
+            'created_on.required' => 'Tanggal Proses harus diisi',
+            'lpk_no.required' => 'Nomor LPK harus diisi',
+            'machineno.required' => 'Nomor Mesin harus diisi',
+            'employeeno.required' => 'Nomor Karyawan harus diisi',
+            'panjang_produksi.required' => 'Panjang Produksi harus diisi',
+            'panjang_produksi.max' => 'Panjang Produksi maksimal 25000',
+            'berat_produksi.required' => 'Berat Produksi harus diisi',
+            'berat_produksi.max' => 'Berat Produksi maksimal 900',
+            'work_hour.required' => 'Jam Kerja harus diisi',
+            'nomor_barcode.required' => 'Nomor Barcode harus diisi',
+        ];
+    }
+
     public function save()
     {
         $this->panjang_produksi = (int)str_replace(',', '', $this->panjang_produksi);
         $this->berat_produksi = (float)str_replace(',', '', $this->berat_produksi);
 
+        $validator = Validator::make($this->all(), $this->rules(), $this->messages());
+
+        if ($validator->fails()) {
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Validation failed: ' . implode(', ', $validator->errors()->all())]);
+            return;
+        }
+
+        $lpkid = TdOrderLpk::where('lpk_no', $this->lpk_no)->first();
+        $machine = MsMachine::where('machineno', $this->machineno)->first();
+        $employe = MsEmployee::where('employeeno', $this->employeeno)->first();
+        $products = MsProduct::where('code', $this->code)->first();
+        $totalBerat = TdProductAssemblyLoss::where('product_assembly_id', $this->orderId)
+            ->sum('berat_loss');
+
+        // validasi nomor gentan
+        if ($this->gentan_no != 0) {
+            $gentanExists = TdProductAssembly::where('lpk_id', $lpkid->id)
+            ->where('id', '!=', $this->orderId)
+                ->where('gentan_no', $this->gentan_no)
+                ->exists();
+
+            if ($gentanExists) {
+                $this->dispatch('notification', ['type' => 'error', 'message' => 'Nomor Gentan ' . $this->gentan_no . ' sudah ada']);
+                return;
+            }
+        }
+
         DB::beginTransaction();
         try {
-            $lpkid = TdOrderLpk::where('lpk_no', $this->lpk_no)->first();
-            $machine = MsMachine::where('machineno', $this->machineno)->first();
-            $employe = MsEmployee::where('employeeno', $this->employeeno)->first();
-            $products = MsProduct::where('code', $this->code)->first();
-            $totalBerat = TdProductAssemblyLoss::where('product_assembly_id', $this->orderId)
-                ->sum('berat_loss');
-
             $maxGentan = TdProductAssembly::where('lpk_id', $lpkid->id)
                 ->orderBy('gentan_no', 'DESC')
                 ->first();
