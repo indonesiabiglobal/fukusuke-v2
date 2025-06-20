@@ -345,7 +345,8 @@
                 <tr>
                     <th scope="col" style="width: 10px;">
                         <div class="form-check">
-                            <input class="form-check-input checkbox-big  fs-15" type="checkbox" id="checkAll" value="optionAll">
+                            <input class="form-check-input checkbox-big  fs-15" type="checkbox" id="checkAll"
+                                value="optionAll">
                         </div>
                     </th>
                     <th></th>
@@ -364,11 +365,33 @@
                     <th>Kode Produk</th>
                     <th>Mesin</th>
                     <th>Buyer</th>
-                    {{-- <th>Warna LPK</th> --}}
                     <th>Tanggal Proses</th>
                     <th>seq</th>
                     <th>Update By</th>
                     <th>Updated</th>
+                </tr>
+                <tr class="filter-row">
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody class="list form-check-all">
@@ -481,6 +504,7 @@
                     "responsive": true,
                     "scrollX": true,
                     "order": defaultOrder,
+                    "orderCellsTop": true,
                     "columnDefs": [{
                         "orderable": false,
                         "targets": 0
@@ -494,6 +518,41 @@
                             </div>
                         `
                     },
+                    initComplete: function() {
+                        this.api()
+                            .columns()
+                            .every(function() {
+                                let column = this;
+
+                                if (column.index() !== 3) return;
+
+                                // Create select element
+                                let select = document.createElement('select');
+                                select.style.width = '100%';
+                                select.add(new Option('-- Semua --', ''));
+
+                                // Masukkan select ke baris filter (baris ke-2 di thead)
+                                $('.filter-row th').eq(column.index()).empty().append(select);
+
+                                // Apply listener for user change in value
+                                select.addEventListener('change', function() {
+                                    column
+                                        .search(select.value, {
+                                            exact: true
+                                        })
+                                        .draw();
+                                });
+
+                                // Add list of options
+                                column
+                                    .data()
+                                    .unique()
+                                    .sort()
+                                    .each(function(d, j) {
+                                        select.add(new Option(d));
+                                    });
+                            });
+                    }
                 });
 
                 // Listen to sort event
