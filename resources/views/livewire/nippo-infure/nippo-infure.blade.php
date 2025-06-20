@@ -366,7 +366,7 @@
                         <td> {{ $item->infure_berat_loss }} </td>
                         <td> {{ $item->updated_by }} </td>
                         <td data-order="{{ $item->updated_on }}">
-                            {{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y h:i') }}</td>
+                            {{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y H:i') }}</td>
                     </tr>
                 @empty
                     {{-- <tr>
