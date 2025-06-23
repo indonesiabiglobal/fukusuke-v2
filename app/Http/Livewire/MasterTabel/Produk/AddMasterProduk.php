@@ -143,6 +143,8 @@ class AddMasterProduk extends Component
         'gazette_dimension_c' => 'required',
         'gazette_dimension_d' => 'required',
         'seal_classification' => 'required',
+        'from_seal_design' => 'required',
+        'lower_sealing_length' => 'required',
         'palet_jumlah_baris' => 'required',
         'palet_isi_baris' => 'required',
         'lakbanseitaiid' => 'required',
@@ -189,6 +191,8 @@ class AddMasterProduk extends Component
         'gazette_dimension_c.required' => 'GZ Dimensi C tidak boleh kosong.',
         'gazette_dimension_d.required' => 'GZ Dimensi D tidak boleh kosong.',
         'seal_classification.required' => 'Klasifikasi Seal tidak boleh kosong.',
+        'from_seal_design.required' => 'Jarak Seal dari Pola tidak boleh kosong.',
+        'lower_sealing_length.required' => 'Jarak Seal Bawah tidak boleh kosong.',
         'palet_jumlah_baris.required' => 'Jumlah Baris Palet tidak boleh kosong.',
         'palet_isi_baris.required' => 'Isi Baris Palet tidak boleh kosong.',
         'lakbanseitaiid.required' => 'Lakban Seitai tidak boleh kosong.',
@@ -398,10 +402,10 @@ class AddMasterProduk extends Component
                 }
             }
 
-            $product->from_seal_design = isset($this->from_seal_design) ? $this->from_seal_design : null;
-            $product->lower_sealing_length = isset($this->lower_sealing_length) ? $this->lower_sealing_length : null;
-            $product->palet_jumlah_baris = isset($this->palet_jumlah_baris) ? $this->palet_jumlah_baris : null;
-            $product->palet_isi_baris = isset($this->palet_isi_baris)   ? $this->palet_isi_baris : null;
+            $product->from_seal_design = isset($this->from_seal_design) ? $this->from_seal_design : 0;
+            $product->lower_sealing_length = isset($this->lower_sealing_length) ? $this->lower_sealing_length : 0;
+            $product->palet_jumlah_baris = isset($this->palet_jumlah_baris) ? $this->palet_jumlah_baris : 0;
+            $product->palet_isi_baris = isset($this->palet_isi_baris)   ? $this->palet_isi_baris : 0;
             $product->pack_gaiso_id = isset($this->pack_gaiso_id) ? $this->pack_gaiso_id['value'] : null;;
             $product->pack_box_id = isset($this->pack_box_id) ? $this->pack_box_id['value'] : null;
             $product->pack_inner_id = isset($this->pack_inner_id) ? $this->pack_inner_id['value'] : null;;

@@ -689,28 +689,28 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-6">Jarak Seal dari Pola</label>
                             <input required type="number" class="form-control" wire:model="from_seal_design"
-                                placeholder="..." min="0" />
+                                placeholder="..." min="0" value="0" />
                         </div>
                     </div>
                     <div class="form-group mt-1">
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-6">Jarak Seal Bawah</label>
                             <input required type="number" class="form-control" wire:model="lower_sealing_length"
-                                placeholder="..." min="0" />
+                                placeholder="..." min="0" value="0" />
                         </div>
                     </div>
                     <div class="form-group mt-1">
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-6">Jumlah Baris Palet</label>
                             <input required type="number" class="form-control" wire:model="palet_jumlah_baris"
-                                placeholder="..." min="0" />
+                                placeholder="..." min="0" value="0" />
                         </div>
                     </div>
                     <div class="form-group mt-1">
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-6">Isi Baris Palet</label>
                             <input required type="number" class="form-control" wire:model="palet_isi_baris"
-                                placeholder="..." min="0" />
+                                placeholder="..." min="0" value="0" />
                         </div>
                     </div>
                     <div class="form-group mt-1">
