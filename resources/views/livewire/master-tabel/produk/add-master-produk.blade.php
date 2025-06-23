@@ -810,13 +810,8 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterPackagingGaiso as $item)
-                                        {{-- <option value="{{ $item->id }}"
-                                            data-custom-properties='{"code": "{{ $item->code }}"}'>
-                                            {{ $item->code }}, {{ $item->box_class == 1 ? 'Standar' : 'Khusus' }},
-                                            {{ $item->name }}
-                                        </option> --}}
                                         <option value="{{ $item->id }}">
-                                            {{ $item->code }}, {{ $item->box_class == 1 ? 'Standar' : 'Khusus' }}, {{ $item->name }}
+                                            {{ $item->code }}, {{ $item->box_class == 1 ? 'Khusus' : 'Standar' }}, {{ $item->name }}
                                         </option>
                                     @endforeach`
                                 </select>
@@ -837,13 +832,8 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterPackagingBox as $item)
-                                        {{-- <option value="{{ $item->id }}"
-                                            data-custom-properties='{"code": "{{ $item->code }}"}'>
-                                            {{ $item->code }}, {{ $item->box_class == 1 ? 'Standar' : 'Khusus' }},
-                                            {{ $item->name }}
-                                        </option> --}}
                                         <option value="{{ $item->id }}">
-                                            {{ $item->code }}, {{ $item->box_class == 1 ? 'Standar' : 'Khusus' }}, {{ $item->name }}
+                                            {{ $item->code }}, {{ $item->box_class == 1 ? 'Khusus' : 'Standar' }}, {{ $item->name }}
                                         </option>
                                     @endforeach`
                                 </select>
@@ -864,13 +854,8 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterPackagingInner as $item)
-                                        {{-- <option value="{{ $item->id }}"
-                                            data-custom-properties='{"code": "{{ $item->code }}"}'>
-                                            {{ $item->code }}, {{ $item->box_class == 1 ? 'Standar' : 'Khusus' }},
-                                            {{ $item->name }}
-                                        </option> --}}
                                         <option value="{{ $item->id }}">
-                                            {{ $item->code }}, {{ $item->box_class == 1 ? 'Standar' : 'Khusus' }}, {{ $item->name }}
+                                            {{ $item->code }}, {{ $item->box_class == 1 ? 'Khusus' : 'Standar' }}, {{ $item->name }}
                                         </option>
                                     @endforeach`
                                 </select>
@@ -892,12 +877,8 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterPackagingLayer as $item)
-                                        {{-- <option value="{{ $item->id }}">
-                                            {{ $item->code }}, {{ $item->box_class == 1 ? 'Standar' : 'Khusus' }},
-                                            {{ $item->name }}
-                                        </option> --}}
                                         <option value="{{ $item->id }}">
-                                            {{ $item->code }}, {{ $item->box_class == 1 ? 'Standar' : 'Khusus' }}, {{ $item->name }}
+                                            {{ $item->code }}, {{ $item->box_class == 1 ? 'Khusus' : 'Standar' }}, {{ $item->name }}
                                         </option>
                                     @endforeach`
                                 </select>

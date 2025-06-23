@@ -865,7 +865,7 @@
                                     @foreach ($masterPackagingGaiso as $item)
                                         <option value="{{ $item->code }}"
                                             {{ $pack_gaiso_id['value'] != null ? ($item->id == $pack_gaiso_id['value'] ? 'selected' : '') : '' }}>
-                                            {{ $item->code }}, {{ $item->box_class == 1 ? 'Standar' : 'Khusus' }},
+                                            {{ $item->code }}, {{ $item->box_class == 1 ? 'Khusus' : 'Standar' }},
                                             {{ $item->name }}
                                         </option>
                                     @endforeach`
@@ -889,7 +889,7 @@
                                     @foreach ($masterPackagingBox as $item)
                                         <option value="{{ $item->code }}"
                                             {{ $pack_box_id['value'] != null ? ($item->id == $pack_box_id['value'] ? 'selected' : '') : '' }}>
-                                            {{ $item->code }}, {{ $item->box_class == 1 ? 'Standar' : 'Khusus' }},
+                                            {{ $item->code }}, {{ $item->box_class == 1 ? 'Khusus' : 'Standar' }},
                                             {{ $item->name }}
                                         </option>
                                     @endforeach`
@@ -913,7 +913,7 @@
                                     @foreach ($masterPackagingInner as $item)
                                         <option value="{{ $item->code }}"
                                             {{ $pack_inner_id['value'] != null ? ($item->id == $pack_inner_id['value'] ? 'selected' : '') : '' }}>
-                                            {{ $item->code }}, {{ $item->box_class == 1 ? 'Standar' : 'Khusus' }},
+                                            {{ $item->code }}, {{ $item->box_class == 1 ? 'Khusus' : 'Standar' }},
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -937,7 +937,7 @@
                                     @foreach ($masterPackagingLayer as $item)
                                         <option value="{{ $item->code }}"
                                             {{ $pack_layer_id['value'] != null ? ($item->id == $pack_layer_id['value'] ? 'selected' : '') : '' }}>
-                                            {{ $item->code }}, {{ $item->box_class == 1 ? 'Standar' : 'Khusus' }},
+                                            {{ $item->code }}, {{ $item->box_class == 1 ? 'Khusus' : 'Standar' }},
                                             {{ $item->name }}
                                         </option>
                                     @endforeach`
