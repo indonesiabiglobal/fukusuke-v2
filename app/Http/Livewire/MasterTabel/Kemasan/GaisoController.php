@@ -59,6 +59,7 @@ class GaisoController extends Component
         $this->panjang = '';
         $this->lebar = '';
         $this->tinggi = '';
+        $this->box_class['value'] = 1;
     }
 
     public function showModalCreate()
@@ -71,7 +72,12 @@ class GaisoController extends Component
 
     public function store()
     {
-        $this->validate();
+        try {
+            $this->validate();
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Validation failed: ' . $e->getMessage()]);
+            return;
+        }
 
         DB::beginTransaction();
         try {
@@ -82,7 +88,7 @@ class GaisoController extends Component
                 'box_class' => $this->box_class['value'],
                 'panjang' => (int)str_replace(',', '', $this->panjang),
                 'lebar' => (int)str_replace(',', '', $this->lebar),
-                'tinggi' => (int)str_replace(',', '', $this->tinggi),
+                'tinggi' => (int)str_replace(',', '', $this->tinggi ?? 0),
                 'status' => $statusActive,
                 'created_by' => Auth::user()->username,
                 'created_on' => Carbon::now(),
