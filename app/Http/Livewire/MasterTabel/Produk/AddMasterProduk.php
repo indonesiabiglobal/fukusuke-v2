@@ -417,7 +417,7 @@ class AddMasterProduk extends Component
             $product->case_box_count = isset($this->case_box_count) ? $this->case_box_count : null;
             $product->case_box_count_unit = isset($this->case_box_count_unit) ? $this->case_box_count_unit['value'] : null;
             $product->case_box_stampel = isset($this->case_box_stampel) ? $this->case_box_stampel : null;
-            $product->case_inner_count = isset($this->case_inner_count) ? $this->case_inner_count : null;
+            $product->case_inner_count = isset($this->case_inner_count) ? $this->case_inner_count : 0;
             $product->case_inner_count_unit = isset($this->case_inner_count_unit) ? $this->case_inner_count_unit['value'] : null;
             $product->case_inner_stampel = isset($this->case_inner_stampel) ? $this->case_inner_stampel : null;
 
