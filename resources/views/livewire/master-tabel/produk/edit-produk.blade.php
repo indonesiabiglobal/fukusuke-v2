@@ -771,84 +771,6 @@
                             @enderror
                         </div>
                     </div>
-                    {{-- <div class="form-group mt-1">
-                        <div class="input-group">
-                            <label class="control-label col-12 col-lg-6">Stempel Seitai</label>
-                            <div class="col-12 col-lg-6" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
-                                    class="form-select @error('stampelseitaiid') is-invalid @enderror"
-                                    wire:model="stampelseitaiid" placeholder="">
-                                    <option value="" selected>
-                                        Silahkan Pilih
-                                    </option>
-                                    @foreach ($masterStampleSeitai as $item)
-                                        <option value="{{ $item->id }}" {{ $stampelseitaiid['value'] != null ? ($item->id == $stampelseitaiid['value'] ? 'selected' : '') : '' }}>
-                                            {{ $item->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('stampelseitaiid')
-                                    <span class="invalid-feedback">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <input required type="text"
-                                class="form-control @error('stampelseitaiid') is-invalid @enderror"
-                                wire:model="stampelseitaiid" placeholder="..." />
-                            @error('stampelseitaiid')
-                                <span class="invalid-feedback">{{ $message }}</span>
-                            @enderror
-                        </div>
-                    </div> --}}
-                    {{-- <div class="form-group mt-1">
-                        <div class="input-group">
-                            <label class="control-label col-12 col-lg-6">Hagata Seitai</label>
-                            <div class="col-12 col-lg-6" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
-                                    class="form-select @error('hagataseitaiid') is-invalid @enderror"
-                                    wire:model="hagataseitaiid" placeholder="">
-                                    <option value="" selected>
-                                        Silahkan Pilih
-                                    </option>
-                                    @foreach ($masterHagataSeitai as $item)
-                                        <option value="{{ $item->id }}"  {{ $hagataseitaiid['value'] != null ? ($item->id == $hagataseitaiid['value'] ? 'selected' : '') : '' }}>
-                                            {{ $item->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('hagataseitaiid')
-                                    <span class="invalid-feedback">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <input required type="text"
-                                class="form-control @error('hagataseitaiid') is-invalid @enderror"
-                                wire:model="hagataseitaiid" placeholder="..." />
-                            @error('hagataseitaiid')
-                                <span class="invalid-feedback">{{ $message }}</span>
-                            @enderror
-                        </div>
-                    </div> --}}
-                    {{-- <div class="form-group mt-1">
-                        <div class="input-group">
-                            <label class="control-label col-12 col-lg-6">Jenis Seal Seitai</label>
-                            <div class="col-12 col-lg-6" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
-                                    class="form-select @error('jenissealseitaiid') is-invalid @enderror"
-                                    wire:model="jenissealseitaiid" placeholder="">
-                                    <option value="" selected>
-                                        Silahkan Pilih
-                                    </option>
-                                    @foreach ($masterJenisSealSeitai as $item)
-                                        <option value="{{ $item->id }}"  {{ $jenissealseitaiid['value'] != null ? ($item->id == $jenissealseitaiid['value'] ? 'selected' : '') : '' }}>
-                                            {{ $item->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('jenissealseitaiid')
-                                    <span class="invalid-feedback">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-                    </div> --}}
                 </div>
                 <div class="col-12 col-lg-3">
                     {{-- Kode Gaiso --}}
@@ -856,14 +778,14 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-3">Kode Gaiso</label>
                             <div class="col-12 col-lg-9" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
+                                <select data-choices data-choices-sorting="true" data-choices-search-field
                                     class="form-select @error('pack_gaiso_id') is-invalid @enderror"
                                     wire:model="pack_gaiso_id" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterPackagingGaiso as $item)
-                                        <option value="{{ $item->code }}"
+                                        <option value="{{ $item->code }}" data-custom-properties='{"code": "{{ $item->name }}"}'
                                             {{ $pack_gaiso_id['value'] != null ? ($item->id == $pack_gaiso_id['value'] ? 'selected' : '') : '' }}>
                                             {{ $item->code }}, {{ $item->box_class == 1 ? 'Khusus' : 'Standar' }},
                                             {{ $item->name }}
@@ -880,14 +802,14 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-3">Kode Box</label>
                             <div class="col-12 col-lg-9" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
+                                <select data-choices data-choices-sorting="true" data-choices-search-field
                                     class="form-select @error('pack_box_id') is-invalid @enderror"
                                     wire:model="pack_box_id" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterPackagingBox as $item)
-                                        <option value="{{ $item->code }}"
+                                        <option value="{{ $item->code }}" data-custom-properties='{"code": "{{ $item->name }}"}'
                                             {{ $pack_box_id['value'] != null ? ($item->id == $pack_box_id['value'] ? 'selected' : '') : '' }}>
                                             {{ $item->code }}, {{ $item->box_class == 1 ? 'Khusus' : 'Standar' }},
                                             {{ $item->name }}
@@ -904,14 +826,14 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-3">Kode Inner</label>
                             <div class="col-12 col-lg-9" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
+                                <select data-choices data-choices-sorting="true" data-choices-search-field
                                     class="form-select @error('pack_inner_id') is-invalid @enderror"
                                     wire:model="pack_inner_id" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterPackagingInner as $item)
-                                        <option value="{{ $item->code }}"
+                                        <option value="{{ $item->code }}" data-custom-properties='{"code": "{{ $item->name }}"}'
                                             {{ $pack_inner_id['value'] != null ? ($item->id == $pack_inner_id['value'] ? 'selected' : '') : '' }}>
                                             {{ $item->code }}, {{ $item->box_class == 1 ? 'Khusus' : 'Standar' }},
                                             {{ $item->name }}
@@ -928,14 +850,14 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-3">Kode Layer</label>
                             <div class="col-12 col-lg-9" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
+                                <select data-choices data-choices-sorting="true" data-choices-search-field
                                     class="form-select @error('pack_layer_id') is-invalid @enderror"
                                     wire:model="pack_layer_id" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterPackagingLayer as $item)
-                                        <option value="{{ $item->code }}"
+                                        <option value="{{ $item->code }}" data-custom-properties='{"code": "{{ $item->name }}"}'
                                             {{ $pack_layer_id['value'] != null ? ($item->id == $pack_layer_id['value'] ? 'selected' : '') : '' }}>
                                             {{ $item->code }}, {{ $item->box_class == 1 ? 'Khusus' : 'Standar' }},
                                             {{ $item->name }}
