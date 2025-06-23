@@ -185,7 +185,13 @@ File: Main Js File
 				choiceData.addItems = false;
 			}
 			if (isChoicesVal["data-choices-search-field"]) {
-				choiceData.searchFields = ['value']
+				choiceData.searchFields = ['value', 'label', 'customProperties.code']
+			}
+			if (isChoicesVal["data-choices-search-field-label"]) {
+				choiceData.searchFields = ['label']
+			}
+			if (isChoicesVal["data-choices-search-field-code"]) {
+				choiceData.searchFields = ['customProperties.code']
 			}
 			if (isChoicesVal["data-choices-search-field-label"]) {
 				choiceData.searchFields = ['label']
