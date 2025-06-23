@@ -336,6 +336,7 @@ class MasterProduk extends Component
             ->select(
                 'msp.id',
                 'msp.code as product_code',
+                'msp.code_alias',
                 'msp.name as product_name',
                 'msp.product_type_code',
                 'mspt.name as product_type_name',

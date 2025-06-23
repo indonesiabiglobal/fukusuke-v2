@@ -152,60 +152,66 @@
                     <li>
                         <label style="cursor: pointer;">
                             <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="3"
-                                checked> Kode Tipe
+                                checked> Kode Produk
                         </label>
                     </li>
                     <li>
                         <label style="cursor: pointer;">
                             <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="4"
-                                checked> Jenis Tipe
+                                checked> Kode Tipe
                         </label>
                     </li>
                     <li>
                         <label style="cursor: pointer;">
                             <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="5"
-                                checked> Dimensi (T*L*P)
+                                checked> Jenis Tipe
                         </label>
                     </li>
                     <li>
                         <label style="cursor: pointer;">
                             <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="6"
-                                checked> Berat Satuan
+                                checked> Dimensi (T*L*P)
                         </label>
                     </li>
                     <li>
                         <label style="cursor: pointer;">
                             <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="7"
-                                checked> Katanuki
+                                checked> Berat Satuan
                         </label>
                     </li>
                     <li>
                         <label style="cursor: pointer;">
                             <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="8"
-                                checked> Warna Font
+                                checked> Katanuki
                         </label>
                     </li>
                     <li>
                         <label style="cursor: pointer;">
                             <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="9"
-                                checked> Warna Back
+                                checked> Warna Font
                         </label>
                     </li>
                     <li>
                         <label style="cursor: pointer;">
                             <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="10"
+                                checked> Warna Back
+                        </label>
+                    </li>
+                    <li>
+                        <label style="cursor: pointer;">
+                            <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="1"
                                 checked> Status
                         </label>
                     </li>
                     <li>
                         <label style="cursor: pointer;">
-                            <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="11"
+                            <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="12"
                                 checked> Updated By
                         </label>
                     </li>
                     <li>
                         <label style="cursor: pointer;">
-                            <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="12"
+                            <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="13"
                                 checked> Updated
                         </label>
                     </li>
@@ -218,6 +224,7 @@
                     <th style="width: 100px">Action</th>
                     <th>Nama Produk</th>
                     <th>Nomor Order</th>
+                    <th>Kode Produk</th>
                     <th>Kode Tipe</th>
                     <th>Jenis Tipe</th>
                     <th>Dimensi (T*L*P)</th>
@@ -246,6 +253,7 @@
                         </td>
                         <td>{{ $item->product_name }}</td>
                         <td>{{ $item->product_code }}</td>
+                        <td>{{ $item->code_alias }}</td>
                         <td>{{ $item->product_type_code }}</td>
                         <td>{{ $item->product_type_name }}</td>
                         <td>{{ $item->dimensi }}</td>
@@ -301,7 +309,7 @@
         function initDataTable(id) {
 
             const savedOrder = $wire.get('sortingTable');
-            
+
             let defaultOrder = [
                 [1, "asc"]
             ];
