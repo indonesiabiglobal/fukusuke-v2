@@ -7,8 +7,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Tanggal Produksi</label>
-                                {{-- <input class="form-control datepicker-input"  style="padding:0.44rem" type="datetime-local" wire:model.defer="production_date" /> --}}
-                                <input class="form-control @error('production_date') is-invalid @enderror" type="text"
+                                <input required class="form-control @error('production_date') is-invalid @enderror" type="text"
                                     style="padding:0.44rem" data-provider="flatpickr" data-date-format="d/m/Y"
                                     data-maxDate="{{ now()->format('d/m/Y') }}" wire:model.change="production_date"
                                     placeholder="yyyy/mm/dd" />
@@ -41,7 +40,6 @@
                     <div class="col-12 col-lg-4 mt-1">
                         <div class="form-group">
                             <div class="input-group">
-                                {{-- <label class="control-label col-5 pe-2">Nomor LPK</label> --}}
                                 <label class="control-label col-5 pe-2 fw-bold text-muted"
                                     style="text-decoration: underline;">
                                     <a href="#" data-bs-toggle="modal" wire:click="showModalLPK"
@@ -550,17 +548,6 @@
                                     </div>
                                 </div>
                             </div>
-                            {{-- <div class="col-lg-12 mb-1">
-                                    <div class="form-group">
-                                        <div class="input-group">
-                                            <label class="col-12 col-lg-2 fw-bold text-muted">Berat </label>
-                                            <input class="form-control" type="text" wire:model.defer="berat" placeholder="0" />
-                                            @error('berat')
-                                                <span class="invalid-feedback">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div> --}}
                             <div class="col-lg-12 mb-1">
                                 <div class="form-group">
                                     <div class="input-group">
@@ -607,7 +594,6 @@
                                 <th class="border-0">Kode</th>
                                 <th class="border-0">Nama Loss</th>
                                 <th class="border-0">Berat (kg)</th>
-                                {{-- <th class="border-0">Berat</th> --}}
                                 <th class="border-0 rounded-end">Frekuensi</th>
                             </tr>
                         </thead>
@@ -650,9 +636,8 @@
                                         </button>
                                     </td>
                                     <td>{{ $item['loss_infure_code'] }}</td>
-                                    <td>{{ $item['name_infure'] ?? '' }}</td> {{-- Adjust if you have a 'name_infure' field --}}
+                                    <td>{{ $item['name_infure'] ?? '' }}</td>
                                     <td>{{ $item['berat_loss'] }}</td>
-                                    {{-- <td>{{ $item['berat'] }}</td> --}}
                                     <td>{{ $item['frekuensi'] }}</td>
                                 </tr>
                                 @php

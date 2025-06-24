@@ -7,7 +7,6 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-12 col-md-3 col-lg-3 pe-2">Tanggal Produksi</label>
-                                {{-- <input class="form-control datepicker-input" type="datetime-local" wire:model.defer="production_date" /> --}}
                                 <input class="form-control" type="text" style="padding:0.44rem"
                                     data-provider="flatpickr" data-date-format="d/m/Y" data-maxDate="{{ now()->format('d/m/Y') }}"
                                     wire:model.change="production_date" placeholder="yyyy/mm/dd" />
@@ -18,7 +17,6 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-12 col-md-3 col-lg-3 pe-2">Tanggal Proses</label>
-                                {{-- <input class="form-control datepicker-input" type="datetime-local" wire:model.defer="created_on" placeholder="yyyy/mm/dd"/> --}}
                                 <input class="form-control bg-light" type="text" style="padding:0.44rem" readonly="readonly" disabled
                                     data-provider="flatpickr" data-date-format="d/m/y" wire:model.defer="created_on"
                                     placeholder="yyyy/mm/dd" />
@@ -28,7 +26,6 @@
                     <div class="col-12 col-lg-4 mt-1">
                         <div class="form-group">
                             <div class="input-group">
-                                {{-- <label class="control-label col-12 col-md-3 col-lg-5 pe-2">Nomor LPK</label> --}}
                                 <label class="control-label col-12 col-md-3 col-lg-5 pe-2 fw-bold text-muted"
                                     style="text-decoration: underline;">
                                     <a href="#" data-bs-toggle="modal" wire:click="showModalLPK"
@@ -36,7 +33,6 @@
                                         Nomor LPK
                                     </a>
                                 </label>
-                                {{-- <input type="text" class="form-control @error('lpk_no') is-invalid @enderror col-12 col-md-9 col-lg-7"  wire:model.live="lpk_no" /> --}}
                                 <div x-data="{ lpk_no: @entangle('lpk_no').live, status: true }" x-init="$watch('lpk_no', value => {
                                     if (value.length === 6 && !value.includes('-') && status) {
                                         lpk_no = value + '-';
@@ -65,7 +61,6 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-12 col-md-3 col-lg-4 pe-2">Tanggal LPK</label>
-                                {{-- <input class="form-control readonly datepicker-input col-12 col-md-9 col-lg-8 bg-light" readonly="readonly" type="date" wire:model.defer="lpk_date" placeholder="yyyy/mm/dd"/> --}}
                                 <input class="form-control readonly datepicker-input bg-light" readonly="readonly"
                                     type="text" style="padding:0.44rem" wire:model.defer="lpk_date"
                                     placeholder="yyyy/mm/dd" />
@@ -214,7 +209,6 @@
                                         x-model="nomor_palet" maxlength="12"
                                         x-on:keydown.tab="$event.preventDefault(); $refs.nomor_lot.focus();" />
                                 </div>
-                                {{-- <input type="text" placeholder="A0000-000000" class="form-control text-uppercase @error('nomor_palet') is-invalid @enderror" wire:model.change="nomor_palet" x-on:keydown.tab="$event.preventDefault(); $refs.nomor_lot.focus();" x-ref="nomor_palet" /> --}}
                                 @error('nomor_palet')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -272,8 +266,6 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-12 col-md-3 col-lg-7 pe-2">Jam Produksi</label>
-                                {{-- <input class="form-control col-12 col-md-9 col-lg-5" wire:model.change="work_hour"
-                                    type="time" placeholder="hh:mm" x-ref="work_hour"> --}}
                                 <input
                                     class="form-control col-12 col-md-9 col-lg-5 @error('work_hour') is-invalid @enderror"
                                     wire:model.change="work_hour" type="time" placeholder="HH:mm" x-ref="work_hour">
@@ -379,7 +371,6 @@
                                             <th class="border-0">Shift</th>
                                             <th class="border-0">Petugas</th>
                                             <th class="border-0">Tg. Produksi</th>
-                                            {{-- <th class="border-0">Frekuensi</th> --}}
                                             <th class="border-0 rounded-end">Berat Produksi (kg)</th>
                                         </tr>
                                     </thead>
@@ -413,9 +404,6 @@
                                                 <td>
                                                     {{ $item['production_date'] }}
                                                 </td>
-                                                {{-- <td>
-                                                    {{ $item['frekuensi'] }}
-                                                </td> --}}
                                                 <td>
                                                     {{ $item['berat'] }}
                                                 </td>
@@ -557,7 +545,6 @@
                                 <div class="form-group">
                                     <label>Line Gentan </label>
                                     <div class="input-group col-md-9 col-xs-8">
-                                        {{-- <input class="form-control" type="text" wire:model.defer="gentan_line" placeholder="Enter A atau B" /> --}}
                                         <select class="form-select" wire:model.defer="gentan_line"
                                             x-ref="gentan_line">
                                             <option value="">Pilih Line</option>
@@ -1618,20 +1605,3 @@
         });
     </script>
 @endscript
-{{-- <script>
-    document.addEventListener('livewire:load', function () {
-        Livewire.on('showModalGentan', () => {
-            $('#modal-gentan').modal('show');
-        });
-        Livewire.on('closeModalGentan', () => {
-            $('#modal-gentan').modal('hide');
-        });
-
-        Livewire.on('showModalLoss', () => {
-            $('#modal-loss').modal('show');
-        });
-        Livewire.on('closeModalLoss', () => {
-            $('#modal-loss').modal('hide');
-        });
-    });
-</script> --}}
