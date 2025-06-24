@@ -316,7 +316,7 @@ class AddSeitaiController extends Component
                 $seqno = $lastSeq->seq_no + 1;
             }
             $today = Carbon::now();
-            // dd($today->format('dmy').'-'.$seqno);
+            $createdOn = Carbon::createFromFormat('d/m/Y H:i:s', $this->created_on . ' ' . now()->format('H:i:s'));
 
             $data = new TdProductGoods();
             $data->production_no = $today->format('dmy') . '-' . $seqno;
@@ -335,9 +335,9 @@ class AddSeitaiController extends Component
             $data->seq_no = $seqno;
             $data->nomor_palet = $this->nomor_palet;
             $data->nomor_lot = $this->nomor_lot;
-            $data->created_on = $this->created_on  . ' ' . now()->format('H:i:s');
+            $data->created_on = $createdOn;
             $data->created_by = auth()->user()->username;
-            $data->updated_on = $this->created_on  . ' ' . now()->format('H:i:s');
+            $data->updated_on = $createdOn;
             $data->updated_by = auth()->user()->username;
 
             // jumlah berat loss
