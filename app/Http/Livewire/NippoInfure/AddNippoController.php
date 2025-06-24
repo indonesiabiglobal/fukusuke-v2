@@ -265,6 +265,17 @@ class AddNippoController extends Component
                 ->orderBy('seq_no', 'desc')
                 ->first();
             $lpkid = TdOrderLpk::where('lpk_no', $this->lpk_no)->first();
+
+            // check duplicate LPK and gentan_no
+            $existingAssembly = TdProductAssembly::where('lpk_id', $lpkid->id)
+                ->where('gentan_no', $this->gentan_no)
+                ->first();
+
+            if ($existingAssembly) {
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'LPK No: ' . $this->lpk_no . ' dengan Gentan No: ' . $this->gentan_no . ' sudah ada.']);
+                return;
+            }
+
             $machine = MsMachine::where('machineno', $this->machineno)->first();
             $employe = MsEmployee::where('employeeno', $this->employeeno)->first();
             $products = MsProduct::select('msproduct.id', 'mpt.harga_sat_infure', 'msproduct.codebarcode')
@@ -556,10 +567,9 @@ class AddNippoController extends Component
 
                 if ($maxGentan == null) {
                     $this->gentan_no = 1;
-                } else {
+                } else if (!$this->gentan_no) {
                     $this->gentan_no = $maxGentan->gentan_no + 1;
                 }
-
             }
         }
 
