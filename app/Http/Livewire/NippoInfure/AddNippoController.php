@@ -119,7 +119,6 @@ class AddNippoController extends Component
                 $this->product->stampelseitaiid = DB::table('msstampleseitai')->where('id', $this->product->stampelseitaiid)->first(['name'])->name ?? '';
                 $this->product->hagataseitaiid = DB::table('mshagataseitai')->where('id', $this->product->hagataseitaiid)->first(['name'])->name ?? '';
                 $this->product->jenissealseitaiid = DB::table('msjenissealseitai')->where('id', $this->product->jenissealseitaiid)->first(['name'])->name ?? '';
-                // dd($this->product);
 
                 // show modal
                 $this->dispatch('showModalNoOrder');
@@ -473,9 +472,6 @@ class AddNippoController extends Component
 
     public function deleteInfure($orderId)
     {
-        // $data = TdProductAssemblyLoss::findOrFail($orderId);
-        // $data->delete();
-        // dd($orderId);
         $index = array_search($orderId, array_column($this->details, 'id'));
 
         if ($index !== false) {
@@ -494,7 +490,7 @@ class AddNippoController extends Component
     {
         $this->lpk_date = Carbon::now()->format('d/m/Y');
         $this->panjang_lpk = '';
-        $this->created_on = Carbon::now()->format('d/m/Y');
+        $this->created_on = Carbon::now()->format('d/m/Y H:i:s');
         $this->code = '';
         $this->name = '';
         $this->dimensiinfure = '';
@@ -595,15 +591,13 @@ class AddNippoController extends Component
             }
         }
 
-        if (isset($this->production_date) && $this->production_date != '') {
-            $this->production_date = Carbon::createFromFormat('d/m/Y', $this->production_date)->format('Y-m-d');
-        } else {
-            $this->production_date = Carbon::now()->format('Y-m-d');
+        if (!(isset($this->production_date) && $this->production_date != '')) {
+            $this->production_date = Carbon::now()->format('d/m/Y');
         }
 
         if (isset($this->work_hour) && $this->work_hour != '') {
             if (
-                Carbon::parse($this->production_date)->isSameDay(Carbon::now())
+                Carbon::createFromFormat('d/m/Y', $this->production_date)->isSameDay(Carbon::now())
                 && Carbon::parse($this->work_hour)->format('H:i') > Carbon::now()->format('H:i')
             ) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Jam Kerja Tidak Boleh Melebihi Jam Sekarang']);

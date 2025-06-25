@@ -696,15 +696,13 @@ class AddSeitaiController extends Component
             }
         }
 
-        if (isset($this->production_date) && $this->production_date != '') {
-            $this->production_date = Carbon::createFromFormat('d/m/Y', $this->production_date)->format('Y-m-d');
-        } else {
-            $this->production_date = Carbon::now()->format('Y-m-d');
+        if (!(isset($this->production_date) && $this->production_date != '')) {
+            $this->production_date = Carbon::now()->format('d/m/Y');
         }
 
         if (isset($this->work_hour) && $this->work_hour != '') {
             if (
-                Carbon::parse($this->production_date)->isSameDay(Carbon::now())
+                Carbon::createFromFormat('d/m/Y', $this->production_date)->isSameDay(Carbon::now())
                 && Carbon::parse($this->work_hour)->format('H:i') > Carbon::now()->format('H:i')
             ) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Jam Kerja Tidak Boleh Melebihi Jam Sekarang']);
