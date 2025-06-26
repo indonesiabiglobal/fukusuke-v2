@@ -287,7 +287,7 @@ class AddSeitaiController extends Component
     {
         $this->qty_produksi = (int)str_replace(',', '', $this->qty_produksi);
         $this->qty_lpk = (int)str_replace(',', '', $this->qty_lpk);
-        $this->infure_berat_loss = (int)str_replace(',', '', $this->infure_berat_loss);
+        // $this->infure_berat_loss = str_replace(',', '', $this->infure_berat_loss);
         $validatedData = $this->validate([
             'lpk_no' => 'required',
             'nomor_palet' => 'required',

@@ -333,7 +333,7 @@
                         <td>{{ number_format($item->qty_produksi, 0, ',', ',') }}</td>
                         <td>{{ number_format($item->selisih) }}</td>
                         <td>{{ number_format($item->seitai_berat_loss, 2, ',', ',') }}</td>
-                        <td>{{ number_format($item->infure_berat_loss, 2) }}</td>
+                        <td>{{ number_format($item->infure_berat_loss, 2, ',', ',') }}</td>
                         <td>{{ $item->product_name }}</td>
                         <td>{{ $item->code }}</td>
                         <td>{{ $item->machineno }}</td>
