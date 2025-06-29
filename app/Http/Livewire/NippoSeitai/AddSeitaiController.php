@@ -86,6 +86,7 @@ class AddSeitaiController extends Component
         $this->production_date = Carbon::now()->format('d/m/Y');
         $this->created_on = Carbon::now()->format('d/m/Y');
         $this->work_hour = Carbon::now()->format('H:i');
+        $this->infure_berat_loss = 0;
         $workingShift = DB::select("
             SELECT *
             FROM msworkingshift
