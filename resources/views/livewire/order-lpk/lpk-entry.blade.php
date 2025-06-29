@@ -89,6 +89,21 @@
                 </div>
             </div>
             <div class="col-12 col-lg-2">
+                <label for="lpkColor" class="form-label text-muted fw-bold">LPK Color</label>
+            </div>
+            <div class="col-12 col-lg-10">
+                <div class="mb-1" wire:ignore>
+                    <select class="form-control" wire:model.defer="idLPKColor" data-choices data-choices-sorting-false
+                        data-choices-removeItem data-choices-search-field-label data-choices-exact-match>
+                        <option value="">- All -</option>
+                        @foreach ($lpkColors as $item)
+                            <option data-custom-properties='{"code": "{{ $item->code }}"}' value="{{ $item->id }}"
+                                @if ($item->id == ($idLPKColor['value'] ?? null)) selected @endif>{{ $item->name }}
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <div class="col-12 col-lg-2">
                 <label for="buyer" class="form-label text-muted fw-bold">Buyer</label>
             </div>
             <div class="col-12 col-lg-10">
@@ -370,7 +385,7 @@
                     <th>Update By</th>
                     <th>Updated</th>
                 </tr>
-                <tr class="filter-row">
+                {{-- <tr class="filter-row">
                     <th></th>
                     <th></th>
                     <th></th>
@@ -392,7 +407,7 @@
                     <th></th>
                     <th></th>
                     <th></th>
-                </tr>
+                </tr> --}}
             </thead>
             <tbody class="list form-check-all">
                 @forelse ($data as $item)
@@ -518,41 +533,42 @@
                             </div>
                         `
                     },
-                    initComplete: function() {
-                        this.api()
-                            .columns()
-                            .every(function() {
-                                let column = this;
+                    // Filter pada kolom datatable
+                    // initComplete: function() {
+                    //     this.api()
+                    //         .columns()
+                    //         .every(function() {
+                    //             let column = this;
 
-                                if (column.index() !== 3) return;
+                    //             if (column.index() !== 3) return;
 
-                                // Create select element
-                                let select = document.createElement('select');
-                                select.style.width = '100%';
-                                select.add(new Option('-- Semua --', ''));
+                    //             // Create select element
+                    //             let select = document.createElement('select');
+                    //             select.style.width = '100%';
+                    //             select.add(new Option('-- Semua --', ''));
 
-                                // Masukkan select ke baris filter (baris ke-2 di thead)
-                                $('.filter-row th').eq(column.index()).empty().append(select);
+                    //             // Masukkan select ke baris filter (baris ke-2 di thead)
+                    //             $('.filter-row th').eq(column.index()).empty().append(select);
 
-                                // Apply listener for user change in value
-                                select.addEventListener('change', function() {
-                                    column
-                                        .search(select.value, {
-                                            exact: true
-                                        })
-                                        .draw();
-                                });
+                    //             // Apply listener for user change in value
+                    //             select.addEventListener('change', function() {
+                    //                 column
+                    //                     .search(select.value, {
+                    //                         exact: true
+                    //                     })
+                    //                     .draw();
+                    //             });
 
-                                // Add list of options
-                                column
-                                    .data()
-                                    .unique()
-                                    .sort()
-                                    .each(function(d, j) {
-                                        select.add(new Option(d));
-                                    });
-                            });
-                    }
+                    //             // Add list of options
+                    //             column
+                    //                 .data()
+                    //                 .unique()
+                    //                 .sort()
+                    //                 .each(function(d, j) {
+                    //                     select.add(new Option(d));
+                    //                 });
+                    //         });
+                    // }
                 });
 
                 // Listen to sort event

@@ -22,6 +22,7 @@ class LpkEntryController extends Component
     use WithPagination;
     protected $paginationTheme = 'bootstrap';
     public $products;
+    public $lpkColors;
     public $buyer;
     #[Session('tglMasuk')]
     public $tglMasuk;
@@ -39,6 +40,8 @@ class LpkEntryController extends Component
     public $lpk_no;
     #[Session]
     public $idProduct;
+    #[Session]
+    public $idLPKColor;
     public $checkListLPK = [];
     public $paginate = 10;
     #[Session]
@@ -50,6 +53,7 @@ class LpkEntryController extends Component
     public function mount()
     {
         $this->products = MsProduct::get();
+        $this->lpkColors = DB::table('mswarnalpk')->select('id', 'name', 'code')->get();
         $this->buyer = MsBuyer::get();
 
         // mengambil data dari session terlebih dahulu jika ada
@@ -116,8 +120,6 @@ class LpkEntryController extends Component
 
     public function printLPK()
     {
-        // foreach ($this->checkListLPK as $lpk_id) {
-        // }
         $this->dispatch('redirectToPrint', $this->checkListLPK);
     }
 
@@ -183,7 +185,6 @@ class LpkEntryController extends Component
         if (isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined") {
             $data = $data->where(function ($query) {
                 $query->where('mp.name', 'ilike', "%{$this->searchTerm}%")
-                    // ->orWhere('tolp.lpk_no', 'ilike', "%{$this->searchTerm}%")
                     ->orWhere('tod.po_no', 'ilike', "%{$this->searchTerm}%");
             });
         }
@@ -199,6 +200,10 @@ class LpkEntryController extends Component
             $data = $data->where('mp.id', $this->idProduct['value']);
         }
 
+        if (isset($this->idLPKColor) && $this->idLPKColor['value'] != "" && $this->idLPKColor != "undefined") {
+            $data = $data->where('mp.warnalpkid', $this->idLPKColor['value']);
+        }
+
         if (isset($this->status) && $this->status['value'] != "" && $this->status != "undefined") {
             if ($this->status['value'] == 0) {
                 $data = $data->where('tolp.reprint_no', $this->status['value']);
@@ -212,13 +217,6 @@ class LpkEntryController extends Component
                 $data = $data->where('tolp.status_lpk', 1);
             }
         }
-
-        // $data = $data->when($this->paginate != 'all', function ($query) {
-        //     return $query->paginate($this->paginate);
-        // }, function ($query) {
-        //     $count = $query->count();
-        //     return $query->paginate($count);
-        // });
 
         $data = $data->get();
 
