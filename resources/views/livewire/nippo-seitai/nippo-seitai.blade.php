@@ -36,23 +36,22 @@
             <div class="col-12 col-lg-3">
                 <label class="form-label text-muted fw-bold">Nomor LPK</label>
             </div>
-            <div class="col-12 col-lg-9 mb-1" x-data="{ lpk_no: @entangle('lpk_no').live, status: true }" x-init="$watch('lpk_no', value => {
-                if (value.length === 6 && !value.includes('-') && status) {
-                    lpk_no = value + '-';
-                }
-                if (value.length < 6) {
-                    status = true;
-                }
-                if (value.length === 7) {
-                    status = false;
-                }
-                if (value.length > 10) {
-                    lpk_no = value.substring(0, 10);
-                }
-            })">
-                <input class="form-control" style="padding:0.44rem" type="text" placeholder="S-000000-000"
-                    x-model="lpk_no" maxlength="10" />
-            </div>
+            <div class="col-12 col-lg-9 mb-1" x-data="{
+                    lpk_no_local: @entangle('lpk_no'),
+                    status: true,
+                    formatValue(value) {
+                        if (value.length === 6 && !value.includes('-') && this.status) {
+                            value += '-';
+                        }
+                        if (value.length < 6) this.status = true;
+                        if (value.length === 7) this.status = false;
+                        if (value.length > 10) value = value.substring(0, 10);
+                        return value;
+                    }
+                }" x-defer>
+                    <input class="form-control" style="padding:0.44rem" type="text" placeholder="000000-000"
+                        x-model="lpk_no_local" x-on:input="lpk_no_local = formatValue(lpk_no_local)" maxlength="10" />
+                </div>
             <div class="col-12 col-lg-3">
                 <label class="form-label text-muted fw-bold">Search</label>
             </div>

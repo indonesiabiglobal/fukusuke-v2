@@ -38,33 +38,20 @@
                     <label class="form-label text-muted fw-bold">Nomor LPK</label>
                 </div>
                 <div class="col-12 col-lg-9 mb-1" x-data="{
-                    lpk_no_local: '{{ $lpk_no }}',
+                    lpk_no_local: @entangle('lpk_no'),
                     status: true,
-                    timeout: null,
-                    updateLivewire(value) {
-                        clearTimeout(this.timeout);
-
-                        this.timeout = setTimeout(() => {
-                            if (value === '' || value == null) {
-                                $wire.set('lpk_no', null);
-                            } else {
-                                $wire.set('lpk_no', value);
-                            }
-                        }, 500);
+                    formatValue(value) {
+                        if (value.length === 6 && !value.includes('-') && this.status) {
+                            value += '-';
+                        }
+                        if (value.length < 6) this.status = true;
+                        if (value.length === 7) this.status = false;
+                        if (value.length > 10) value = value.substring(0, 10);
+                        return value;
                     }
-                }" x-init="$watch('lpk_no_local', value => {
-                    if (value.length === 6 && !value.includes('-') && status) {
-                        lpk_no_local = value + '-';
-                    }
-                    if (value.length < 6) status = true;
-                    if (value.length === 7) status = false;
-                    if (value.length > 10) lpk_no_local = value.substring(0, 10);
-
-                    updateLivewire(value);
-                })">
-
-                    <input class="form-control" style="padding:0.44rem" type="text" placeholder="I-000000-000"
-                        x-model="lpk_no_local" maxlength="10" />
+                }" x-defer>
+                    <input class="form-control" style="padding:0.44rem" type="text" placeholder="000000-000"
+                        x-model="lpk_no_local" x-on:input="lpk_no_local = formatValue(lpk_no_local)" maxlength="10" />
                 </div>
                 <div class="col-12 col-lg-3">
                     <label class="form-label text-muted fw-bold">Search</label>
@@ -89,7 +76,8 @@
                             data-choices-sorting-false data-choices-removeItem data-choices-search-field>
                             <option value="">- All -</option>
                             @foreach ($products as $item)
-                                <option data-custom-properties='{"code": "{{ $item->code }} - {{ $item->code_alias }}"}'
+                                <option
+                                    data-custom-properties='{"code": "{{ $item->code }} - {{ $item->code_alias }}"}'
                                     value="{{ $item->id }}" @if ($item->id == ($idProduct['value'] ?? null)) selected @endif>
                                     {{ $item->name }},
                                     {{ $item->code }}</option>
