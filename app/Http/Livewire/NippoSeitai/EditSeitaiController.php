@@ -392,20 +392,21 @@ class EditSeitaiController extends Component
 
     public function saveGentan()
     {
+        $lpkid = TdOrderLpk::where('lpk_no', $this->lpk_no)->first();
+        $assembly = TdProductAssembly::where('gentan_no', $this->gentan_no)
+            ->where('lpk_id', $lpkid->id)
+            ->first();
+
         // gentan tidak boleh sama dengan yang sudah ada
         $existingGentan = TdProductGoodsAssembly::where('product_goods_id', $this->tdpgId)
             ->where('gentan_line', $this->gentan_line)
+            ->where('product_assembly_id', $assembly->id)
             ->first();
 
         if ($existingGentan) {
             $this->dispatch('notification', ['type' => 'warning', 'message' => 'Gentan sudah ada']);
             return;
         }
-
-        $lpkid = TdOrderLpk::where('lpk_no', $this->lpk_no)->first();
-        $assembly = TdProductAssembly::where('gentan_no', $this->gentan_no)
-            ->where('lpk_id', $lpkid->id)
-            ->first();
 
         $datas = new TdProductGoodsAssembly();
         $datas->product_goods_id = $this->tdpgId;
