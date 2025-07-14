@@ -39,6 +39,22 @@ jobs:
             echo "${{ secrets.REMOTE_PASSWORD }}" | sudo -S php artisan view:cache
             echo "${{ secrets.REMOTE_PASSWORD }}" | sudo -S php artisan optimize
 
+      - name: Deploy to production server 3
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.REMOTE_HOST_3 }}
+          username: ${{ secrets.REMOTE_USER_3 }}
+          password: ${{ secrets.REMOTE_PASSWORD_3 }}
+          key: ${{ secrets.SSH_PRIVATE_KEY_3 }}
+          port: ${{ secrets.REMOTE_PORT_3 }}
+          script: |
+            cd /opt/fukusuke-v2
+            echo "${{ secrets.REMOTE_PASSWORD_3 }}" | sudo -S git pull origin main
+            echo "${{ secrets.REMOTE_PASSWORD_3 }}" | sudo -S php artisan config:cache
+            echo "${{ secrets.REMOTE_PASSWORD_3 }}" | sudo -S php artisan route:cache
+            echo "${{ secrets.REMOTE_PASSWORD_3 }}" | sudo -S php artisan view:cache
+            echo "${{ secrets.REMOTE_PASSWORD_3 }}" | sudo -S php artisan optimize
+
       # - name: Deploy to production server 2
       #   uses: appleboy/ssh-action@v1.2.0
       #   with:
