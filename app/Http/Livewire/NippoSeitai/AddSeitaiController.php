@@ -297,6 +297,12 @@ class AddSeitaiController extends Component
             'work_hour' => 'required|regex:/^[0-9]{2}:[0-9]{2}$/',
         ]);
 
+        // mengecek detailsGentan yang tidak boleh kosong
+        if (count($this->detailsGentan) == 0) {
+            $this->dispatch('notification', ['type' => 'warning', 'message' => 'Data Gentan tidak boleh kosong']);
+            return;
+        }
+
         try {
             DB::beginTransaction();
             $lastSeq = TdProductGoods::whereDate('created_on', Carbon::today())
@@ -436,6 +442,14 @@ class AddSeitaiController extends Component
 
     public function saveGentan()
     {
+        // cek jika no gentan sudah ada di detailsGentan
+        if (in_array($this->gentan_no, $this->detailsGentan)) {
+            return $this->dispatch('notification', [
+                'type' => 'error',
+                'message' => 'Data Gagal di Simpan, No Gentan Sudah Ada'
+            ]);
+        }
+
         $lpkid = TdOrderLpk::where('lpk_no', $this->lpk_no)->first();
         $assembly = TdProductAssembly::where('lpk_id', $lpkid->id)
             ->where('gentan_no', $this->gentan_no)
@@ -447,15 +461,6 @@ class AddSeitaiController extends Component
                 return $this->dispatch('notification', ['type' => 'error', 'message' => 'Data Gagal di Simpan']);
             }
         }
-
-        // $datas = new TdProductGoodsAssembly();
-        // $datas->product_goods_id = $this->product_goods_id;
-        // $datas->product_assembly_id = $assembly->id;
-        // $datas->gentan_line = $this->gentan_line;
-        // $datas->berat = $this->berat;
-        // $datas->frekuensi = $this->frekuensi;
-        // $datas->lpk_id = $lpkid->id;
-        // $datas->save();
         $data = [
             'id' => $this->nextIdGentan(),
             'gentan_no' => $this->gentan_no,

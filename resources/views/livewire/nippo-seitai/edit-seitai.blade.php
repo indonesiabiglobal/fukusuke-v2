@@ -475,8 +475,9 @@
                                     <div class="form-group">
                                         <label>Nomor Gentan </label>
                                         <div class="input-group col-md-9 col-xs-8">
-                                            <input id="inputKodeGentan" class="form-control" type="text" wire:model.live.debounce.300ms="gentan_no"
-                                            x-on:keydown.tab="$event.preventDefault(); $refs.gentan_line.focus();" placeholder="..." />
+                                            <input id="inputKodeGentan" class="form-control" type="number"
+                                            wire:model.change="gentan_no" placeholder="..."
+                                            x-on:keydown.tab="$event.preventDefault(); $refs.gentan_line.focus();" />
                                             @error('gentan_no')
                                                 <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror

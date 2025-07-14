@@ -366,6 +366,11 @@ class EditSeitaiController extends Component
 
     public function deleteGentan($orderId)
     {
+        // mengecek apakah data gentan tersisa 1
+        if (count($this->detailsGentan) <= 1) {
+            $this->dispatch('notification', ['type' => 'warning', 'message' => 'Minimal 1 data gentan harus tersisa']);
+            return;
+        }
         $data = TdProductGoodsAssembly::findOrFail($orderId);
         $data->delete();
 
@@ -387,6 +392,16 @@ class EditSeitaiController extends Component
 
     public function saveGentan()
     {
+        // gentan tidak boleh sama dengan yang sudah ada
+        $existingGentan = TdProductGoodsAssembly::where('product_goods_id', $this->tdpgId)
+            ->where('gentan_line', $this->gentan_line)
+            ->first();
+
+        if ($existingGentan) {
+            $this->dispatch('notification', ['type' => 'warning', 'message' => 'Gentan sudah ada']);
+            return;
+        }
+
         $lpkid = TdOrderLpk::where('lpk_no', $this->lpk_no)->first();
         $assembly = TdProductAssembly::where('gentan_no', $this->gentan_no)
             ->where('lpk_id', $lpkid->id)
@@ -396,8 +411,6 @@ class EditSeitaiController extends Component
         $datas->product_goods_id = $this->tdpgId;
         $datas->product_assembly_id = $assembly->id;
         $datas->gentan_line = $this->gentan_line;
-        // $datas->berat = $this->berat;
-        // $datas->frekuensi = $this->frekuensi;
         $datas->lpk_id = $lpkid->id;
 
         $datas->created_on = Carbon::now();

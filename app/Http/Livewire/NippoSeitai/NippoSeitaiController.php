@@ -44,6 +44,8 @@ class NippoSeitaiController extends Component
     public $status;
     #[Session]
     public $sortingTable;
+    #[Session]
+    public $entriesPerPage = 10;
 
     use WithPagination, WithoutUrlPagination;
 
@@ -71,11 +73,20 @@ class NippoSeitaiController extends Component
         if (empty($this->sortingTable)) {
             $this->sortingTable = [[1, 'asc']];
         }
+        if (empty($this->entriesPerPage)) {
+            $this->entriesPerPage = 10;
+        }
     }
 
     public function updateSortingTable($value)
     {
         $this->sortingTable = $value;
+        $this->skipRender();
+    }
+
+    public function updateEntriesPerPage($value)
+    {
+        $this->entriesPerPage = $value;
         $this->skipRender();
     }
 
@@ -85,7 +96,7 @@ class NippoSeitaiController extends Component
         $previousUrl = url()->previous();
         $previousUrl = last(explode('/', $previousUrl));
         if (!(Str::contains($previousUrl, 'edit-seitai') || Str::contains($previousUrl,'add-seitai') || Str::contains($previousUrl,'nippo-seitai'))) {
-            $this->reset('tglMasuk', 'tglKeluar', 'gentan_no', 'machineId', 'searchTerm', 'lpk_no', 'idProduct', 'status', 'transaksi', 'sortingTable');
+            $this->reset('tglMasuk', 'tglKeluar', 'gentan_no', 'machineId', 'searchTerm', 'lpk_no', 'idProduct', 'status', 'transaksi', 'sortingTable', 'entriesPerPage');
         }
     }
 

@@ -372,11 +372,17 @@
         // Fungsi untuk menginisialisasi ulang DataTable
         function initDataTable() {
             const savedOrder = $wire.get('sortingTable');
+            const savedEntriesPerPage = $wire.get('entriesPerPage');
             let defaultOrder = [
                 [1, "asc"]
             ];
             if (savedOrder) {
                 defaultOrder = savedOrder;
+            }
+
+            let entriesPerPage = 10;
+            if (savedEntriesPerPage) {
+                entriesPerPage = savedEntriesPerPage;
             }
             // Hapus DataTable jika sudah ada
             if ($.fn.dataTable.isDataTable('#seitaiTable')) {
@@ -389,7 +395,7 @@
             setTimeout(() => {
                 // Inisialisasi ulang DataTable
                 let table = $('#seitaiTable').DataTable({
-                    "pageLength": 10,
+                    "pageLength": entriesPerPage,
                     "searching": true,
                     "responsive": true,
                     "order": defaultOrder,
@@ -413,6 +419,12 @@
                         order = defaultOrder;
                     }
                     $wire.call('updateSortingTable', order);
+                });
+
+                // Listen to page length change
+                table.on('length.dt', function() {
+                    let entriesPerPage = table.page.len();
+                    $wire.call('updateEntriesPerPage', entriesPerPage);
                 });
 
                 // default column visibility
