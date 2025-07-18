@@ -33,7 +33,8 @@
                                         Nomor LPK
                                     </a>
                                 </label>
-                                <div x-data="{ lpk_no: @entangle('lpk_no').live, status: true }" x-init="$watch('lpk_no', value => {
+                                <div x-data="{ lpk_no: @entangle('lpk_no').live.defer, status: true }" x-init="$watch('lpk_no', value => {
+                                    // Format dengan dash otomatis
                                     if (value.length === 6 && !value.includes('-') && status) {
                                         lpk_no = value + '-';
                                     }
@@ -46,9 +47,15 @@
                                     if (value.length > 10) {
                                         lpk_no = value.substring(0, 10);
                                     }
+
+                                    // Panggil function ketika 10 karakter
+                                    if (value.length === 10) {
+                                        $wire.processLpkNo(value);
+                                    }
                                 })">
-                                    <input class="form-control  @error('lpk_no') is-invalid @enderror" style="padding:0.44rem" type="text"
-                                        placeholder="000000-000" x-model="lpk_no" maxlength="10"
+                                    <input class="form-control @error('lpk_no') is-invalid @enderror"
+                                        style="padding:0.44rem" type="text" placeholder="000000-000" x-model="lpk_no"
+                                        maxlength="10"
                                         x-on:keydown.tab="$event.preventDefault(); $refs.machineInput.focus();" />
                                 </div>
                                 @error('lpk_no')
