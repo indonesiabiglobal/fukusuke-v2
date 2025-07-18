@@ -23,21 +23,21 @@ jobs:
       #     REMOTE_PORT: "9090"
       #     TARGET: "/opt/fukusuke-v2"
 
-      - name: Deploy to production server 1
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.REMOTE_HOST }}
-          username: ${{ secrets.REMOTE_USER_1 }}
-          password: ${{ secrets.REMOTE_PASSWORD }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.REMOTE_PORT_1 }}
-          script: |
-            cd /opt/fukusuke-v2
-            echo "${{ secrets.REMOTE_PASSWORD }}" | sudo -S git pull origin main
-            echo "${{ secrets.REMOTE_PASSWORD }}" | sudo -S php artisan config:cache
-            echo "${{ secrets.REMOTE_PASSWORD }}" | sudo -S php artisan route:cache
-            echo "${{ secrets.REMOTE_PASSWORD }}" | sudo -S php artisan view:cache
-            echo "${{ secrets.REMOTE_PASSWORD }}" | sudo -S php artisan optimize
+      # - name: Deploy to production server 1
+      #   uses: appleboy/ssh-action@v1.2.0
+      #   with:
+      #     host: ${{ secrets.REMOTE_HOST }}
+      #     username: ${{ secrets.REMOTE_USER_1 }}
+      #     password: ${{ secrets.REMOTE_PASSWORD }}
+      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
+      #     port: ${{ secrets.REMOTE_PORT_1 }}
+      #     script: |
+      #       cd /opt/fukusuke-v2
+      #       echo "${{ secrets.REMOTE_PASSWORD }}" | sudo -S git pull origin main
+      #       echo "${{ secrets.REMOTE_PASSWORD }}" | sudo -S php artisan config:cache
+      #       echo "${{ secrets.REMOTE_PASSWORD }}" | sudo -S php artisan route:cache
+      #       echo "${{ secrets.REMOTE_PASSWORD }}" | sudo -S php artisan view:cache
+      #       echo "${{ secrets.REMOTE_PASSWORD }}" | sudo -S php artisan optimize
 
       - name: Deploy to production server 3
         uses: appleboy/ssh-action@v1.2.0
