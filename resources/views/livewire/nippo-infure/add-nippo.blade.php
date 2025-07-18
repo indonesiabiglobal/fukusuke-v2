@@ -7,10 +7,10 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Tanggal Produksi</label>
-                                <input required class="form-control @error('production_date') is-invalid @enderror" type="text"
-                                    style="padding:0.44rem" data-provider="flatpickr" data-date-format="d/m/Y"
-                                    data-maxDate="{{ now()->format('d/m/Y') }}" wire:model.change="production_date"
-                                    placeholder="yyyy/mm/dd" />
+                                <input required class="form-control @error('production_date') is-invalid @enderror"
+                                    type="text" style="padding:0.44rem" data-provider="flatpickr"
+                                    data-date-format="d/m/Y" data-maxDate="{{ now()->format('d/m/Y') }}"
+                                    wire:model.change="production_date" placeholder="yyyy/mm/dd" />
                                 <span class="input-group-text py-0">
                                     <i class="ri-calendar-event-fill fs-4"></i>
                                 </span>
@@ -379,9 +379,7 @@
                                 <label class="control-label col-5 pe-2">Jam Produksi</label>
                                 <input class="form-control @error('work_hour') is-invalid @enderror"
                                     wire:model.change="work_hour" type="time" placeholder="HH:mm"
-                                    max="{{ now()->format('H:i:s') }}" x-ref="work_hour"
-                                    title="Format waktu harus HH:mm">
-
+                                    x-ref="work_hour" title="Format waktu harus HH:mm">
                                 @error('work_hour')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
@@ -433,8 +431,7 @@
                                 })">
                                     <input class="form-control @error('nomor_han') is-invalid @enderror"
                                         style="padding:0.44rem" type="text" placeholder="00-00-00-00A"
-                                        x-model="nomor_han" maxlength="12"
-                                        x-ref="nomor_han" />
+                                        x-model="nomor_han" maxlength="12" x-ref="nomor_han" />
                                 </div>
                                 @error('nomor_han')
                                     <span class="invalid-feedback">{{ $message }}</span>
@@ -521,8 +518,9 @@
                                 <div class="form-group">
                                     <div class="input-group">
                                         <label class="col-12 col-lg-2 fw-bold text-muted">Kode Loss </label>
-                                        <input id="inputKodeLoss" class="form-control @error('loss_infure_code') is-invalid @enderror" type="text"
-                                            wire:model.change="loss_infure_code" placeholder="..."
+                                        <input id="inputKodeLoss"
+                                            class="form-control @error('loss_infure_code') is-invalid @enderror"
+                                            type="text" wire:model.change="loss_infure_code" placeholder="..."
                                             x-on:keydown.tab="$event.preventDefault(); $refs.berat_loss.focus();" />
                                         @error('loss_infure_code')
                                             <span class="invalid-feedback">{{ $message }}</span>
@@ -546,8 +544,9 @@
                                 <div class="form-group">
                                     <div class="input-group">
                                         <label class="col-12 col-lg-2 fw-bold text-muted">Berat Loss </label>
-                                        <input class="form-control @error('berat_loss') is-invalid @enderror" type="text" wire:model.defer="berat_loss"
-                                            placeholder="0" x-ref="berat_loss" />
+                                        <input class="form-control @error('berat_loss') is-invalid @enderror"
+                                            type="text" wire:model.defer="berat_loss" placeholder="0"
+                                            x-ref="berat_loss" />
                                         @error('berat_loss')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror
@@ -558,8 +557,8 @@
                                 <div class="form-group">
                                     <div class="input-group">
                                         <label class="col-12 col-lg-2 fw-bold text-muted">Frekuensi </label>
-                                        <input class="form-control @error('frekuensi') is-invalid @enderror" type="text" wire:model.defer="frekuensi"
-                                            placeholder="0" />
+                                        <input class="form-control @error('frekuensi') is-invalid @enderror"
+                                            type="text" wire:model.defer="frekuensi" placeholder="0" />
                                         @error('frekuensi')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror
@@ -569,7 +568,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-success ms-auto" wire:click="saveInfure" wire:loading.attr="disabled">
+                        <button type="button" class="btn btn-success ms-auto" wire:click="saveInfure"
+                            wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="saveInfure">
                                 <i class="ri-save-3-line"></i> Save
                             </span>
@@ -610,11 +610,14 @@
                             @forelse ($details as $item)
                                 <tr>
                                     <td>
-                                        <button type="button" class="btn btn-warning" wire:click="editLossInfure({{$item['id']}})" wire:loading.attr="disabled">
-                                            <span wire:loading.remove wire:target="editLossInfure({{$item['id']}})">
+                                        <button type="button" class="btn btn-warning"
+                                            wire:click="editLossInfure({{ $item['id'] }})"
+                                            wire:loading.attr="disabled">
+                                            <span wire:loading.remove
+                                                wire:target="editLossInfure({{ $item['id'] }})">
                                                 <i class="fa fa-edit"></i> Edit
                                             </span>
-                                            <div wire:loading wire:target="editLossInfure({{$item['id']}})">
+                                            <div wire:loading wire:target="editLossInfure({{ $item['id'] }})">
                                                 <span class="d-flex align-items-center">
                                                     <span class="spinner-border flex-shrink-0" role="status">
                                                         <span class="visually-hidden">Loading...</span>
@@ -625,7 +628,9 @@
                                                 </span>
                                             </div>
                                         </button>
-                                        <button type="button" class="btn btn-danger" wire:click="deleteInfure({{ $item['id'] }})" wire:loading.attr="disabled">
+                                        <button type="button" class="btn btn-danger"
+                                            wire:click="deleteInfure({{ $item['id'] }})"
+                                            wire:loading.attr="disabled">
                                             <span wire:loading.remove wire:target="deleteInfure({{ $item['id'] }})">
                                                 <i class="fa fa-trash"></i> Delete
                                             </span>
@@ -1297,8 +1302,8 @@
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-3 fw-bold text-muted">Nomor
                                                 Order</label>
-                                            <input type="text" class="form-control readonly" readonly="readonly"
-                                                value="{{ $orderLPK->no_order ?? '' }}" />
+                                            <input type="text" class="form-control readonly"
+                                                readonly="readonly" value="{{ $orderLPK->no_order ?? '' }}" />
                                         </div>
                                     </div>
                                     <div class="form-group mt-1">
@@ -1548,12 +1553,14 @@
         </div><!-- /.modal -->
 
         <!-- modal edit loss infure-->
-        <div class="modal fade" id="modal-edit" tabindex="-1" role="dialog" aria-labelledby="modal-edit" aria-hidden="true" wire:ignore.self>
+        <div class="modal fade" id="modal-edit" tabindex="-1" role="dialog" aria-labelledby="modal-edit"
+            aria-hidden="true" wire:ignore.self>
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h2 class="h6 modal-title">Edit Loss Infure</h2>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <div class="row">
@@ -1561,8 +1568,9 @@
                                 <div class="form-group">
                                     <div class="input-group">
                                         <label class="col-12 col-lg-2 fw-bold text-muted">Kode Loss </label>
-                                        <input id="inputKodeLoss" class="form-control" type="text" wire:model.change="loss_infure_code" placeholder="..."
-                                        x-on:keydown.tab="$event.preventDefault(); $refs.edit_berat_loss.focus();"/>
+                                        <input id="inputKodeLoss" class="form-control" type="text"
+                                            wire:model.change="loss_infure_code" placeholder="..."
+                                            x-on:keydown.tab="$event.preventDefault(); $refs.edit_berat_loss.focus();" />
                                         @error('loss_infure_code')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror
@@ -1573,7 +1581,8 @@
                                 <div class="form-group">
                                     <div class="input-group">
                                         <label class="col-12 col-lg-2 fw-bold text-muted">Nama Loss </label>
-                                        <input class="form-control readonly bg-light" readonly="readonly" type="text" wire:model.defer="name_infure" placeholder="..." />
+                                        <input class="form-control readonly bg-light" readonly="readonly"
+                                            type="text" wire:model.defer="name_infure" placeholder="..." />
                                         @error('name')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror
@@ -1584,7 +1593,8 @@
                                 <div class="form-group">
                                     <div class="input-group">
                                         <label class="col-12 col-lg-2 fw-bold text-muted">Berat Loss </label>
-                                        <input class="form-control" type="text" wire:model.defer="berat_loss" placeholder="0" x-ref="edit_berat_loss"/>
+                                        <input class="form-control" type="text" wire:model.defer="berat_loss"
+                                            placeholder="0" x-ref="edit_berat_loss" />
                                         @error('berat_loss')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror
@@ -1595,7 +1605,8 @@
                                 <div class="form-group">
                                     <div class="input-group">
                                         <label class="col-12 col-lg-2 fw-bold text-muted">Frekuensi </label>
-                                        <input class="form-control" type="text" wire:model.defer="frekuensi" placeholder="0" />
+                                        <input class="form-control" type="text" wire:model.defer="frekuensi"
+                                            placeholder="0" />
                                         @error('frekuensi')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror
@@ -1605,7 +1616,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-success ms-auto" wire:click="updateLossInfure" wire:loading.attr="disabled">
+                        <button type="button" class="btn btn-success ms-auto" wire:click="updateLossInfure"
+                            wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="updateLossInfure">
                                 <i class="ri-save-3-line"></i> Update
                             </span>
@@ -1620,7 +1632,8 @@
                                 </span>
                             </div>
                         </button>
-                        <button type="button" class="btn btn-link text-gray-600" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-link text-gray-600"
+                            data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
@@ -1648,31 +1661,7 @@
 </script>
 @script
     <script>
-        // format number
-        // window.formatNumber = function(value) {
-        //     console.log(value);
-
-        //     // Hapus koma jika ada
-        //     value = value.replace(/,/g, '');
-
-        //     // Hapus karakter yang bukan angka
-        //     value = value.replace(/[^0-9]/g, '');
-
-        //     // Hapus nol di depan angka
-        //     value = value.replace(/^0+/, '');
-
-        //     // Jika value adalah angka yang valid, format dengan pemisah ribuan
-        //     if (!isNaN(value) && value !== '') {
-        //         return Number(value).toLocaleString('en-US');
-        //     }
-
-        //     // Kembalikan value tanpa modifikasi jika tidak valid
-        //     return value;
-        // };
-
         window.formatNumber = function(value) {
-            console.log(value);
-
             // Hapus koma jika ada untuk pemrosesan angka (kecuali koma desimal)
             value = value.replace(/,/g, '');
 
@@ -1699,14 +1688,10 @@
             return parts.length > 1 ? parts[0] + '.' + parts[1] : parts[0];
         };
         $wire.on('showModal', () => {
-
             $('#modal-add').modal('show');
-
         });
         $wire.on('closeModal', () => {
-
             $('#modal-add').modal('hide');
-
         });
         $wire.on('showModalNoOrder', () => {
             $('#modal-noorder-produk').modal('show');

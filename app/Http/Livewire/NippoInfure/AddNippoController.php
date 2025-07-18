@@ -53,6 +53,7 @@ class AddNippoController extends Component
     public $berat_standard;
     public $total_assembly_line;
     public $selisih;
+    public $selisihAwal;
     public $rasio;
     public $ketebalan;
     public $diameterlipat;
@@ -79,6 +80,8 @@ class AddNippoController extends Component
         $this->production_date = Carbon::now()->format('d/m/Y');
         $this->created_on = Carbon::now()->format('d/m/Y H:i:s');
         $this->work_hour = Carbon::now()->format('H:i');
+
+        $this->workShift();
     }
 
     public function showModalNoOrder()
@@ -558,7 +561,6 @@ class AddNippoController extends Component
         } catch (\Exception $e) {
             $this->addError('lpk_no', 'Terjadi kesalahan: ' . $e->getMessage());
         }
-        $this->skipRender();
     }
 
     private function updateLpkData()
@@ -577,6 +579,7 @@ class AddNippoController extends Component
         $this->total_assembly_line = $this->tdorderlpk->total_assembly_line;
         $selisih = $this->tdorderlpk->total_assembly_line - $this->tdorderlpk->panjang_lpk;
         $this->selisih = round($selisih, 2);
+        $this->selisihAwal = $this->selisih;
 
         $maxGentan = TdProductAssembly::where('lpk_id', $this->tdorderlpk->id)
             ->orderBy('gentan_no', 'DESC')
@@ -589,16 +592,54 @@ class AddNippoController extends Component
         }
     }
 
-    public function render()
+    public function updatedWorkHour($work_hour)
     {
-        if (isset($this->panjang_produksi) && $this->panjang_produksi != '') {
-            $total_assembly_line = (int)$this->total_assembly_line + (int)str_replace(',', '', $this->panjang_produksi);
-            $this->total_assembly_line = $total_assembly_line;
+        $this->work_hour = $work_hour;
 
-            $this->berat_standard = ($this->ketebalan * $this->diameterlipat * (int)str_replace(',', '', $this->panjang_produksi) * 2 * $this->berat_jenis) / 1000;
-
-            $this->selisih = (int)$this->selisih + (int)str_replace(',', '', $this->panjang_produksi);
+        if (isset($this->work_hour) && $this->work_hour != '') {
+            if (
+                Carbon::createFromFormat('d/m/Y', $this->production_date)->isSameDay(Carbon::now())
+                && Carbon::parse($this->work_hour)->format('H:i') > Carbon::now()->format('H:i')
+            ) {
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Jam Kerja Tidak Boleh Melebihi Jam Sekarang']);
+                $this->work_hour = Carbon::now()->format('H:i');
+            }
+            $this->workShift();
         }
+    }
+
+    public function workShift()
+    {
+        if (isset($this->work_hour) && $this->work_hour != '') {
+            $workHourFormatted = Carbon::parse($this->work_hour)->format('H:i:s');
+
+            $workingShift = DB::select("
+                SELECT *
+                FROM msworkingshift
+                WHERE (
+                    -- Shift does not cross midnight
+                    work_hour_from <= work_hour_till
+                    AND '$workHourFormatted' BETWEEN work_hour_from AND work_hour_till
+                ) OR (
+                    -- Shift crosses midnight
+                    work_hour_from > work_hour_till
+                    AND (
+                        '$workHourFormatted' BETWEEN work_hour_from AND '23:59:59'
+                        OR
+                        '$workHourFormatted' BETWEEN '00:00:00' AND work_hour_till
+                    )
+                )
+                ORDER BY work_hour_till ASC
+                LIMIT 1;
+            ")[0];
+
+            $this->work_shift = $workingShift->id;
+        }
+    }
+
+    public function updatedMachineno($machineno)
+    {
+        $this->machineno = $machineno;
 
         if (isset($this->machineno) && $this->machineno != '') {
             $machine = MsMachine::where('machineno', 'ilike', '%' . $this->machineno . '%')->whereIn('department_id', [10, 12, 15, 2, 4, 10])->first();
@@ -612,45 +653,13 @@ class AddNippoController extends Component
                 $this->machinename = $machine->machinename;
             }
         }
+    }
 
-        if (!(isset($this->production_date) && $this->production_date != '')) {
-            $this->production_date = Carbon::now()->format('d/m/Y');
-        }
+    public function updatedEmployeeno($employeeno)
+    {
+        $this->employeeno = $employeeno;
 
-        if (isset($this->work_hour) && $this->work_hour != '') {
-            if (
-                Carbon::createFromFormat('d/m/Y', $this->production_date)->isSameDay(Carbon::now())
-                && Carbon::parse($this->work_hour)->format('H:i') > Carbon::now()->format('H:i')
-            ) {
-                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Jam Kerja Tidak Boleh Melebihi Jam Sekarang']);
-                $this->work_hour = Carbon::now()->format('H:i');
-            }
-            $workHourFormatted = Carbon::parse($this->work_hour)->format('H:i:s');
-
-            $workingShift = DB::select("
-            SELECT *
-            FROM msworkingshift
-            WHERE (
-                -- Shift does not cross midnight
-                work_hour_from <= work_hour_till
-                AND '$workHourFormatted' BETWEEN work_hour_from AND work_hour_till
-            ) OR (
-                -- Shift crosses midnight
-                work_hour_from > work_hour_till
-                AND (
-                    '$workHourFormatted' BETWEEN work_hour_from AND '23:59:59'
-                    OR
-                    '$workHourFormatted' BETWEEN '00:00:00' AND work_hour_till
-                )
-            )
-            ORDER BY work_hour_till ASC
-            LIMIT 1;
-        ")[0];
-
-            $this->work_shift = $workingShift->id;
-        }
-
-        if (isset($this->employeeno) && $this->employeeno != '' && strlen($this->employeeno) >= 3) {
+        if (isset($this->employeeno) && $this->employeeno != '') {
             $msemployee = MsEmployee::where('employeeno', 'ilike', '%' . $this->employeeno . '%')->first();
 
             if ($msemployee == null) {
@@ -662,6 +671,32 @@ class AddNippoController extends Component
                 $this->empname = $msemployee->empname;
             }
         }
+    }
+
+    public function updatedPanjangProduksi($panjang_produksi)
+    {
+        $this->panjang_produksi = $panjang_produksi;
+
+        if (isset($this->panjang_produksi) && $this->panjang_produksi != '') {
+            if (!is_numeric(str_replace(',', '', $this->panjang_produksi))) {
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Panjang Produksi harus berupa angka']);
+                $this->panjang_produksi = '';
+            }
+        }
+
+        if (isset($this->panjang_produksi) && $this->panjang_produksi != '') {
+            $total_assembly_line = (int)$this->total_assembly_line + (int)str_replace(',', '', $this->panjang_produksi);
+            $this->total_assembly_line = $total_assembly_line;
+
+            $this->berat_standard = ($this->ketebalan * $this->diameterlipat * (int)str_replace(',', '', $this->panjang_produksi) * 2 * $this->berat_jenis) / 1000;
+
+            $this->selisih = (int)$this->selisihAwal + (int)str_replace(',', '', $this->panjang_produksi);
+        }
+    }
+
+    public function updatedLossInfureCode($loss_infure_code)
+    {
+        $this->loss_infure_code = $loss_infure_code;
 
         if (isset($this->loss_infure_code) && $this->loss_infure_code != '') {
             $lossinfure = MsLossInfure::where('code', $this->loss_infure_code)->first();
@@ -674,6 +709,11 @@ class AddNippoController extends Component
                 $this->name_infure = $lossinfure->name;
             }
         }
+    }
+
+    public function updatedNomorBarcode($nomor_barcode)
+    {
+        $this->nomor_barcode = $nomor_barcode;
 
         if (isset($this->nomor_barcode) && $this->nomor_barcode != '' && $this->tdorderlpk != null) {
             if ($this->tdorderlpk->codebarcode != $this->nomor_barcode) {
@@ -681,6 +721,11 @@ class AddNippoController extends Component
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Barcode ' . $this->nomor_barcode . ' Tidak Sesuai']);
             }
         }
+    }
+
+    public function updatedBeratProduksi($berat_produksi)
+    {
+        $this->berat_produksi = $berat_produksi;
 
         if (isset($this->berat_produksi) && isset($this->berat_standard)) {
             if ($this->berat_standard == 0) {
@@ -688,6 +733,13 @@ class AddNippoController extends Component
             } else {
                 $this->rasio = round(((float)str_replace(',', '', $this->berat_produksi) / $this->berat_standard) * 100, 2);
             }
+        }
+    }
+
+    public function render()
+    {
+        if (!(isset($this->production_date) && $this->production_date != '')) {
+            $this->production_date = Carbon::now()->format('d/m/Y');
         }
 
         return view('livewire.nippo-infure.add-nippo')->extends('layouts.master');
