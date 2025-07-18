@@ -68,6 +68,7 @@ class AddNippoController extends Component
 
     // data LPK
     public $orderLPK;
+    public $tdorderlpk = null;
 
     public function mount(Request $request)
     {
@@ -502,73 +503,94 @@ class AddNippoController extends Component
         $this->selisih = '';
     }
 
-    public function render()
+    public function processLpkNo($lpkNo = null)
     {
-        $tdorderlpk = null;
-        if (strlen($this->lpk_no) >= 10) {
-            $prefix = substr($this->lpk_no, 0, 6);
-            $suffix = substr($this->lpk_no, -3);
+        $lpkNo = $lpkNo ?? $this->lpk_no;
 
-            $tdorderlpk = DB::table('tdorderlpk as tolp')
-                ->select(
-                    'tolp.lpk_no',
-                    'tolp.id',
-                    'tolp.lpk_date',
-                    'tolp.panjang_lpk',
-                    'tolp.created_on',
-                    'mp.code',
-                    'mp.name',
-                    'mp.ketebalan',
-                    'mp.diameterlipat',
-                    'mp.codebarcode',
-                    'tolp.qty_gulung',
-                    'tolp.qty_gentan',
-                    'tda.gentan_no',
-                    'tolp.total_assembly_line',
-                    'mt.berat_jenis',
-                    // DB::raw("( mp.ketebalan * mp.diameterlipat * tolp.qty_gulung * 2 * mt.berat_jenis ) / 1000 AS berat_standard "),
-                )
-                ->join('msproduct as mp', 'mp.id', '=', 'tolp.product_id')
-                ->leftJoin('tdproduct_assembly as tda', 'tda.lpk_id', '=', 'tolp.id')
-                ->leftJoin('msproduct_type as mt', 'mt.id', '=', 'mp.product_type_id')
-                // ->where('tolp.lpk_no', $this->lpk_no)
-                ->whereRaw("LEFT(lpk_no, 6) ILIKE ?", ["{$prefix}"])
-                ->whereRaw("RIGHT(lpk_no, 3) ILIKE ?", ["{$suffix}"])
-                ->first();
+        $this->lpk_no = $lpkNo;
 
-            if ($tdorderlpk == null) {
-                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor LPK ' . $this->lpk_no . ' Tidak Terdaftar']);
-                $this->resetLpkNo();
-            } else {
-                $this->lpk_date = Carbon::parse($tdorderlpk->lpk_date)->format('d/m/Y');
-                $this->panjang_lpk = number_format($tdorderlpk->panjang_lpk, 0, ',', ',');
-                // $this->created_on = Carbon::parse($tdorderlpk->created_on)->format('d/m/Y');
-                $this->code = $tdorderlpk->code;
-                $this->name = $tdorderlpk->name;
-                $this->ketebalan = $tdorderlpk->ketebalan;
-                $this->diameterlipat = $tdorderlpk->diameterlipat;
-                $this->berat_jenis = $tdorderlpk->berat_jenis;
-                $this->dimensiinfure = $tdorderlpk->ketebalan . 'x' . $tdorderlpk->diameterlipat;
-                $this->qty_gulung = formatAngka::ribuan($tdorderlpk->qty_gulung);
-                $this->lpk_no = $tdorderlpk->lpk_no;
-                $this->qty_gentan = $tdorderlpk->qty_gentan;
-                // $this->berat_standard = round($tdorderlpk->berat_standard, 2);
-                $this->total_assembly_line = $tdorderlpk->total_assembly_line;
-                $selisih = $tdorderlpk->total_assembly_line - $tdorderlpk->panjang_lpk;
-                $this->selisih = round($selisih, 2);
-
-                $maxGentan = TdProductAssembly::where('lpk_id', $tdorderlpk->id)
-                    ->orderBy('gentan_no', 'DESC')
-                    ->first();
-
-                if ($maxGentan == null) {
-                    $this->gentan_no = 1;
-                } else if (!$this->gentan_no) {
-                    $this->gentan_no = $maxGentan->gentan_no + 1;
-                }
-            }
+        if (!preg_match('/^\d{6}-\d{3}$/', $this->lpk_no)) {
+            $this->addError('lpk_no', 'Format LPK No harus 000000-000');
+            return;
         }
 
+        // Clear error jika ada
+        $this->resetErrorBag('lpk_no');
+
+        try {
+            if (strlen($this->lpk_no) >= 10) {
+                $prefix = substr($this->lpk_no, 0, 6);
+                $suffix = substr($this->lpk_no, -3);
+
+                $this->tdorderlpk = DB::table('tdorderlpk as tolp')
+                    ->select(
+                        'tolp.lpk_no',
+                        'tolp.id',
+                        'tolp.lpk_date',
+                        'tolp.panjang_lpk',
+                        'tolp.created_on',
+                        'mp.code',
+                        'mp.name',
+                        'mp.ketebalan',
+                        'mp.diameterlipat',
+                        'mp.codebarcode',
+                        'tolp.qty_gulung',
+                        'tolp.qty_gentan',
+                        'tda.gentan_no',
+                        'tolp.total_assembly_line',
+                        'mt.berat_jenis',
+                    )
+                    ->join('msproduct as mp', 'mp.id', '=', 'tolp.product_id')
+                    ->leftJoin('tdproduct_assembly as tda', 'tda.lpk_id', '=', 'tolp.id')
+                    ->leftJoin('msproduct_type as mt', 'mt.id', '=', 'mp.product_type_id')
+                    ->whereRaw("LEFT(lpk_no, 6) ILIKE ?", ["{$prefix}"])
+                    ->whereRaw("RIGHT(lpk_no, 3) ILIKE ?", ["{$suffix}"])
+                    ->first();
+
+                if ($this->tdorderlpk == null) {
+                    $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor LPK ' . $this->lpk_no . ' Tidak Terdaftar']);
+                    $this->resetLpkNo();
+                    return;
+                } else {
+                    $this->updateLpkData();
+                }
+            }
+        } catch (\Exception $e) {
+            $this->addError('lpk_no', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+        $this->skipRender();
+    }
+
+    private function updateLpkData()
+    {
+        $this->lpk_date = Carbon::parse($this->tdorderlpk->lpk_date)->format('d/m/Y');
+        $this->panjang_lpk = number_format($this->tdorderlpk->panjang_lpk, 0, ',', ',');
+        $this->code = $this->tdorderlpk->code;
+        $this->name = $this->tdorderlpk->name;
+        $this->ketebalan = $this->tdorderlpk->ketebalan;
+        $this->diameterlipat = $this->tdorderlpk->diameterlipat;
+        $this->berat_jenis = $this->tdorderlpk->berat_jenis;
+        $this->dimensiinfure = $this->tdorderlpk->ketebalan . 'x' . $this->tdorderlpk->diameterlipat;
+        $this->qty_gulung = formatAngka::ribuan($this->tdorderlpk->qty_gulung);
+        $this->lpk_no = $this->tdorderlpk->lpk_no;
+        $this->qty_gentan = $this->tdorderlpk->qty_gentan;
+        $this->total_assembly_line = $this->tdorderlpk->total_assembly_line;
+        $selisih = $this->tdorderlpk->total_assembly_line - $this->tdorderlpk->panjang_lpk;
+        $this->selisih = round($selisih, 2);
+
+        $maxGentan = TdProductAssembly::where('lpk_id', $this->tdorderlpk->id)
+            ->orderBy('gentan_no', 'DESC')
+            ->first();
+
+        if ($maxGentan == null) {
+            $this->gentan_no = 1;
+        } else if (!$this->gentan_no) {
+            $this->gentan_no = $maxGentan->gentan_no + 1;
+        }
+    }
+
+    public function render()
+    {
         if (isset($this->panjang_produksi) && $this->panjang_produksi != '') {
             $total_assembly_line = (int)$this->total_assembly_line + (int)str_replace(',', '', $this->panjang_produksi);
             $this->total_assembly_line = $total_assembly_line;
@@ -653,8 +675,8 @@ class AddNippoController extends Component
             }
         }
 
-        if (isset($this->nomor_barcode) && $this->nomor_barcode != '' && $tdorderlpk != null) {
-            if ($tdorderlpk->codebarcode != $this->nomor_barcode) {
+        if (isset($this->nomor_barcode) && $this->nomor_barcode != '' && $this->tdorderlpk != null) {
+            if ($this->tdorderlpk->codebarcode != $this->nomor_barcode) {
                 $this->nomor_barcode = '';
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Barcode ' . $this->nomor_barcode . ' Tidak Sesuai']);
             }
