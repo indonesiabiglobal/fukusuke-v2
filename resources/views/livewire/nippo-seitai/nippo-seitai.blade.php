@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row filter-section">
     <div class="col-12 col-lg-7">
         <div class="row">
             <div class="col-12 col-lg-3">
@@ -369,6 +369,18 @@
             initDataTable();
         });
 
+        function calculateTableHeight() {
+            const totalHeight = window.innerHeight;
+
+            const filterSectionTop = document.querySelector('.filter-section')?.getBoundingClientRect().top || 0;
+            const offsetTop = document.querySelector('#seitaiTable')?.getBoundingClientRect().top || 0;
+
+            const paddingTop = document.querySelector('.navbar-header')?.getBoundingClientRect().top || 0;
+            const availableHeight = totalHeight - offsetTop - filterSectionTop - paddingTop;
+
+            return availableHeight;
+        }
+
         // Fungsi untuk menginisialisasi ulang DataTable
         function initDataTable() {
             const savedOrder = $wire.get('sortingTable');
@@ -401,6 +413,8 @@
                     "order": defaultOrder,
                     "multiColumnSort": true,
                     "scrollX": true,
+                    "scrollY": calculateTableHeight() + 'px',
+                    "scrollCollapse": true,
                     "language": {
                         "emptyTable": `
                             <div class="text-center">
