@@ -548,9 +548,7 @@ class CheckListInfureController extends Component
 
 
         // mengatur lebar kolom
-        // $spreadsheet->getActiveSheet()->getColumnDimension('C')->setAutoSize(true);
         $spreadsheet->getActiveSheet()->getColumnDimension('F')->setAutoSize(true);
-
         $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(3.00);
         $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(8.50);
         $activeWorksheet->getStyle('B' . $rowItemStart . ':' . 'B' . $rowFooterStart)->getAlignment()->setWrapText(true);
