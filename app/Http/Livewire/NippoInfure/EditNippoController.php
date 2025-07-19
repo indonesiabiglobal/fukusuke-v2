@@ -137,7 +137,6 @@ class EditNippoController extends Component
                 'msp.diameterlipat',
                 'msp.codebarcode',
                 'mt.berat_jenis',
-                // DB::raw("CASE WHEN tdpg.id IS NOT NULL THEN 1 ELSE 0 END as tdpg")
             )
             ->where('tda.id', $request->query('orderId'))
             ->first();
@@ -147,8 +146,6 @@ class EditNippoController extends Component
         // History
         $this->tglAwal = $request->query('tglAwal');
         $this->tglKeluar = $request->query('tglKeluar');
-        // $this->lpk_no = $request->query('lpk_no');
-        // $this->tglKeluar = $request->query('tglKeluar');
 
         $this->orderId = $request->query('orderId');
         $this->production_no = $data->production_no;

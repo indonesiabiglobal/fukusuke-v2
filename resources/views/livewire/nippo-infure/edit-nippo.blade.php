@@ -403,9 +403,6 @@
         <hr />
         <div class="row">
             <div class="col-lg-7">
-                {{-- <button wire:click="addLossInfure" type="button" class="btn btn-success">
-                    <i class="fa fa-plus"></i> Add Loss Infure
-                </button> --}}
                 @if ($statusSeitai)
                     <h3 class="text-danger">Data sudah di Seitai!</h3>
                 @else

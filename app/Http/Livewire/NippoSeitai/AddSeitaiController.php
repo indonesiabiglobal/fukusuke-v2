@@ -83,6 +83,7 @@ class AddSeitaiController extends Component
     {
         if (!empty($request->query('lpk_no'))) {
             $this->lpk_no = $request->query('lpk_no');
+            $this->processLpkNo();
         }
         $this->production_date = Carbon::now()->format('d/m/Y');
         $this->created_on = Carbon::now()->format('d/m/Y');
