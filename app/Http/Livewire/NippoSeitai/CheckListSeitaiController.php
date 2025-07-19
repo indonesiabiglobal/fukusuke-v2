@@ -633,7 +633,7 @@ class CheckListSeitaiController extends Component
         $spreadsheet->getActiveSheet()->getColumnDimension('L')->setWidth(8.2);
 
         $writer = new Xlsx($spreadsheet);
-        $filename = 'NippoSeitai-' . $this->jenisReport . '.xlsx';
+        $filename = 'asset/report/nippo/seitai/' . $this->jenisReport . '/NippoSeitai-' . $this->jenisReport . '.xlsx';
         $writer->save($filename);
         $response = [
             'status' => 'success',

@@ -545,9 +545,7 @@ class CheckListInfureController extends Component
         $columnItemEnd++;
 
 
-        // footer keterangan tanggal, jam, dan nama petugas
         $rowFooterStart = $rowItem + 2;
-        // $activeWorksheet->setCellValue('A' . $rowFooterStart, 'Dicetak pada: ' . Carbon::now()->translatedFormat('d-M-Y H:i:s') . ', oleh: ' . auth()->user()->empname);
         phpspreadsheet::styleFont($spreadsheet, 'A' . $rowFooterStart . ':A' . ($rowFooterStart + 1), false, 9, 'Calibri');
 
 
@@ -577,7 +575,7 @@ class CheckListInfureController extends Component
         $spreadsheet->getActiveSheet()->getColumnDimension('R')->setWidth(5.10);
 
         $writer = new Xlsx($spreadsheet);
-        $filename = 'NippoInfure-' . $jenisReport . '.xlsx';
+        $filename = 'asset/report/nippo/infure/' . $jenisReport . '/NippoInfure-' . $jenisReport . '.xlsx';
         $writer->save($filename);
         $response = [
             'status' => 'success',
