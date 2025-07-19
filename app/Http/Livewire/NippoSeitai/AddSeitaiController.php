@@ -362,6 +362,12 @@ class AddSeitaiController extends Component
                 $datas->updated_on = $createdOn;
                 $datas->updated_by = auth()->user()->username;
                 $datas->save();
+
+                // update status production pada TdProductAssembly
+                TdProductAssembly::where('id', $gentan['product_assembly_id'])
+                    ->update([
+                        'status_production' => 1,
+                    ]);
             }
 
 
@@ -705,6 +711,7 @@ class AddSeitaiController extends Component
                 ->where('lpk_id', $lpkid->id)
                 ->where('gentan_no', $this->gentan_no)
                 ->first();
+                dd($tdProduct);
 
             if ($tdProduct == null) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Gentan ' . $this->gentan_no . ' Tidak Terdaftar']);

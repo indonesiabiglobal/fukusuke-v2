@@ -374,6 +374,11 @@ class EditSeitaiController extends Component
         $data = TdProductGoodsAssembly::findOrFail($orderId);
         $data->delete();
 
+        // update status production menjadi 0 pada TdProductAssembly
+        TdProductAssembly::where('id', $data->product_assembly_id)->update([
+            'status_production' => 0,
+        ]);
+
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Hapus']);
     }
 
@@ -388,6 +393,17 @@ class EditSeitaiController extends Component
         ]);
 
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Hapus']);
+    }
+
+    public function resetGentan()
+    {
+        $this->gentan_no = '';
+        $this->gentan_line = '';
+        $this->machine_no = '';
+        $this->empname = '';
+        $this->petugas = '';
+        $this->berat_produksi = '';
+        $this->gentan_line = '';
     }
 
     public function saveGentan()
@@ -420,6 +436,12 @@ class EditSeitaiController extends Component
         $datas->updated_by = auth()->user()->username;
 
         $datas->save();
+
+        // update status production pada TdProductAssembly
+        $assembly->status_production = '1';
+        $assembly->save();
+
+        $this->resetGentan();
 
         $this->dispatch('closeModalGentan');
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);

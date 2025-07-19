@@ -78,8 +78,6 @@ class EditNippoController extends Component
     public $tglAwal;
     public $tglKeluar;
 
-    protected $productGoodsAssembly;
-
     public function mount(Request $request)
     {
         $data = DB::table('tdproduct_assembly AS tda')
@@ -200,11 +198,6 @@ class EditNippoController extends Component
             ->join('mslossinfure as msi', 'msi.id', '=', 'tal.loss_infure_id')
             ->where('tal.product_assembly_id', $this->orderId)
             ->get();
-
-        $this->productGoodsAssembly = DB::table('tdproduct_goods_assembly AS tdpg')
-            ->where('tdpg.product_assembly_id', $data->id)
-            ->get();
-
     }
 
     public function showModalNoOrder()
@@ -426,6 +419,14 @@ class EditNippoController extends Component
                 $this->dispatch('notification', ['type' => 'success', 'message' => 'Nomor Barcode ' . $this->nomor_barcode . ' Harus diisi']);
             }
 
+            // mengecek status produksi
+            $productGoodsAssembly = DB::table('tdproduct_goods_assembly AS tdpg')
+                ->select(
+                    'tdpg.id',
+                )
+                ->where('tdpg.product_assembly_id', $this->orderId)
+                ->get();
+
             $product = TdProductAssembly::findOrFail($this->orderId);
             $product->production_date = $this->production_date . ' ' . $this->work_hour;
             $product->machine_id = $machine->id;
@@ -445,6 +446,8 @@ class EditNippoController extends Component
             $product->infure_cost = $this->berat_produksi * $products->harga_sat_infure;
             $product->updated_on = Carbon::now();
             $product->updated_by = auth()->user()->username;
+
+            $product->status_production = $productGoodsAssembly->isEmpty() ? '0' : '1';
 
             $totalAssembly = DB::select("
                 SELECT
