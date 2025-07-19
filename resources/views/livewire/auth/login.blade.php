@@ -6,7 +6,7 @@
     {{-- <div class="top-tagbar bg-light text-dark" style="padding: 30px;">
         <div class="w-100">
             <div class="row justify-content-between mt-3">
-                <div class="col-8">                        
+                <div class="col-8">
                     <h4>
                         <img width="70px" src="{{ URL::asset('build/images/production.png') }}" alt="Header Avatar">
                         Production Control
@@ -57,7 +57,7 @@
                 <div class="card mb-0 py-2 border border-3">
                     <div class="card-body p-4 p-sm-5 m-lg-2">
                         <h5 class="fs-22">Sign In</h5>
-                        
+
                         @if (session()->has('error'))
                             <div class="alert alert-borderless alert-danger alert-dismissible mb-2 mx-2">
                                 {{ session('error') }}
@@ -122,7 +122,22 @@
                                 </div>
 
                                 <div class="mt-5">
-                                    <button class="btn btn-primary w-100" type="submit">Sign In</button>
+                                    {{-- <button class="btn btn-primary w-100" type="submit">Sign In</button> --}}
+                                    <button type="submit" class="btn btn-primary w-100" wire:loading.attr="disabled">
+                                        <span wire:loading.remove wire:target="submit">
+                                            Sign In
+                                        </span>
+                                        <div wire:loading wire:target="submit">
+                                            <span class="d-flex align-items-center">
+                                                <span class="spinner-border flex-shrink-0" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </span>
+                                                <span class="flex-grow-1 ms-1">
+                                                    Loading...
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </button>
                                 </div>
                             </form>
                         </div>

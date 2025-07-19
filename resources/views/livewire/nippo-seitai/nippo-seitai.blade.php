@@ -347,17 +347,9 @@
                         <td data-order="{{ $item->updated_on }}">{{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y h:i') }}</td>
                     </tr>
                 @empty
-                    {{-- <tr>
-                            <td colspan="12" class="text-center">
-                                <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
-                                <h5 class="mt-2">Sorry! No Result Found</h5>
-                                <p class="text-muted mb-0">We've searched more than 150+ Orders We did not find any orders for you search.</p>
-                            </td>
-                        </tr> --}}
                 @endforelse
             </tbody>
         </table>
-        {{-- {{ $data->links(data: ['scrollTo' => false]) }} --}}
     </div>
 </div>
 
@@ -376,7 +368,7 @@
             const offsetTop = document.querySelector('#seitaiTable')?.getBoundingClientRect().top || 0;
 
             const paddingTop = document.querySelector('.navbar-header')?.getBoundingClientRect().top || 0;
-            const availableHeight = totalHeight - offsetTop - filterSectionTop - paddingTop;
+            const availableHeight = totalHeight - offsetTop - filterSectionTop - paddingTop + 100;
 
             return availableHeight;
         }
