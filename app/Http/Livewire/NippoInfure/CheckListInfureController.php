@@ -212,8 +212,7 @@ class CheckListInfureController extends Component
             $this->status = $filter['status'];
             $this->searchTerm = $filter['searchTerm'];
 
-            $filterStatus = $this->status == 0 ? " AND (tdpa.status_production = 0 AND tdpa.status_kenpin = 0)" :
-                ($this->status == 1 ? " AND (tdpa.status_production = 1)" : " AND (tdpa.status_kenpin = 1)");
+            $filterStatus = $this->status == 0 ? " AND (tdpa.status_production = 0 AND tdpa.status_kenpin = 0)" : ($this->status == 1 ? " AND (tdpa.status_production = 1)" : " AND (tdpa.status_kenpin = 1)");
             $filterSearchTerm = $this->searchTerm ? " AND (tdpa.production_no ILIKE '%$this->searchTerm%' OR msp.code ILIKE '%$this->searchTerm%' OR msp.name ILIKE '%$this->searchTerm%' OR tdpa.machine_id ILIKE '%$this->searchTerm%' OR tdpa.nomor_han ILIKE '%$this->searchTerm%')" : '';
 
             $this->transaksi = $filter['transaksi'];
@@ -389,12 +388,17 @@ class CheckListInfureController extends Component
             ];
         }
 
-        // After processing, we have a $dataMap (HashMap) ready for use.
-
-        // Now, let's write the data into Excel
         $rowItemStart = 4;
         $columnItemStart = 'A';
         $rowItem = $rowItemStart;
+
+        $columnNIK = 'F';
+        $columnNoMesin = 'H';
+        $columnNomorOrder = 'J';
+        $columnNoGentan = 'L';
+        $columnNoHan = 'M';
+        $columnBeratStandard = 'O';
+        $columnBeratProduksi = 'P';
         foreach ($dataMap as $key => $dataItem) {
             $columnItemEnd = $columnItemStart;
 
@@ -420,8 +424,6 @@ class CheckListInfureController extends Component
 
             // nik
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['nik']);
-
-            phpspreadsheet::textAlignCenter($spreadsheet, $columnItemStart . $rowItem . ':' . $columnItemEnd . $rowItem);
             $columnItemEnd++;
 
             // nama petugas
@@ -429,7 +431,6 @@ class CheckListInfureController extends Component
             $columnItemEnd++;
 
             // nomor_mesin
-            $columnNoMesin = $columnItemEnd;
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['nomor_mesin']);
             $columnItemEnd++;
 
@@ -439,7 +440,6 @@ class CheckListInfureController extends Component
 
             // nomer order
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['produkcode']);
-            phpSpreadsheet::textAlignCenter($spreadsheet, $columnNoMesin . $rowItem . ':' . $columnItemEnd . $rowItem);
             $columnItemEnd++;
 
             // nama produk
@@ -447,13 +447,11 @@ class CheckListInfureController extends Component
             $columnItemEnd++;
 
             // nomor gentan
-            $columnNoGentan = $columnItemEnd;
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['gentan_no']);
             $columnItemEnd++;
 
             // nomor han
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['nomor_han']);
-            phpspreadsheet::textAlignCenter($spreadsheet, $columnNoGentan . $rowItem . ':' . $columnItemEnd . $rowItem);
             $columnItemEnd++;
 
             // panjang produksi
@@ -462,13 +460,11 @@ class CheckListInfureController extends Component
 
             // berat standard
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['berat_standard']);
-            phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItemEnd . $rowItem . ':' . $columnItemEnd . $rowItem, 1);
             $columnItemEnd++;
 
             // berat produksi
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['berat_produksi']);
-            phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItemEnd . $rowItem . ':' . $columnItemEnd . $rowItem, 1);
-            phpspreadsheet::addBorderDottedHorizontal($spreadsheet, $columnItemStart . $rowItem . ':' . $columnItemEnd . $rowItem);
+            phpspreadsheet::addBorderDottedHorizontal($spreadsheet, $columnItemStart . $rowItem . ':R' . $rowItem);
             $columnItemEnd++;
 
             // Write loss data from HashMap
@@ -478,7 +474,6 @@ class CheckListInfureController extends Component
 
                 if ($losscode === '' && $lossItem['lossname'] == null  && $lossItem['berat_loss'] == null) {
                     $columnLoss++;
-                    phpspreadsheet::addBorderDottedHorizontal($spreadsheet, $columnLossStart . $rowItem . ':' . $columnLoss . $rowItem);
                     break;
                 }
 
@@ -487,16 +482,19 @@ class CheckListInfureController extends Component
                 $activeWorksheet->setCellValue($columnLoss . $rowItem, $lossItem['berat_loss']);
                 phpspreadsheet::addBorderDottedHorizontal($spreadsheet, $columnLossStart . $rowItem . ':' . $columnLoss . $rowItem);
                 $columnLoss++;
-                phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItem . ':' . $columnLoss . $rowItem, false, 8, 'Calibri');
                 $rowItem++;
                 $columnItemEnd = $columnLoss;
             }
 
             $columnItemEnd++;
-            phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItem . ':' . $columnItemEnd . $rowItem, false, 8, 'Calibri');
-
             $rowItem++;
         }
+
+        phpspreadsheet::textAlignCenter($spreadsheet, $columnItemStart . $rowItemStart . ':' . $columnNIK . $rowItem);
+        phpSpreadsheet::textAlignCenter($spreadsheet, $columnNoMesin . $rowItemStart . ':' . $columnNomorOrder . $rowItem);
+        phpspreadsheet::textAlignCenter($spreadsheet, $columnNoGentan . $rowItemStart . ':' . $columnNoHan . $rowItem);
+        phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItemStart . ':' . $columnItemEnd . $rowItem, false, 8, 'Calibri');
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnBeratStandard . $rowItemStart . ':' . $columnBeratProduksi . $rowItem, 1);
 
         $rowItem++;
 
