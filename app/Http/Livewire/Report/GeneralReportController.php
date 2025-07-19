@@ -600,6 +600,36 @@ class GeneralReportController extends Component
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
         $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+        // Mengatur ukuran kertas menjadi A4
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        // Mengatur agar semua kolom muat dalam satu halaman
+        $activeWorksheet->getPageSetup()->setFitToWidth(1);
+        $activeWorksheet->getPageSetup()->setFitToHeight(0); // Biarkan tinggi menyesuaikan otomatis
+        // Set header berulang untuk print
+        $activeWorksheet->getPageSetup()->setRowsToRepeatAtTop([1, 3]);
+
+        // Jika ingin memastikan rasio tetap terjaga
+        $activeWorksheet->getPageSetup()->setFitToPage(true);
+
+        // Mengatur margin halaman menjadi 0.75 cm di semua sisi
+        $activeWorksheet->getPageMargins()->setTop(1.1 / 2.54);
+        $activeWorksheet->getPageMargins()->setBottom(1.0 / 2.54);
+        $activeWorksheet->getPageMargins()->setLeft(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setRight(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setHeader(0.4 / 2.54);
+        $activeWorksheet->getPageMargins()->setFooter(0.5 / 2.54);
+        // Mengatur tinggi sel agar otomatis menyesuaikan dengan konten
+        $activeWorksheet->getDefaultRowDimension()->setRowHeight(-1);
+
+        // Header yang hanya muncul saat print
+        $activeWorksheet->getHeaderFooter()->setOddHeader('&L&"Calibri,Bold"&14Fukusuke - Production Control');
+        // Footer
+        $currentDate = date('d M Y - H:i');
+        $footerLeft = '&L&"Calibri"&10Printed: ' . $currentDate . ', by: ' . auth()->user()->username;
+        $footerRight = '&R&"Calibri"&10Page: &P of: &N';
+        $activeWorksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
+        // hide column A
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setVisible(false);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER MESIN INFURE');
@@ -785,7 +815,8 @@ class GeneralReportController extends Component
                 phpSpreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
                 // loss %
-                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->berat_produksi > 0 ? $dataItem->infure_berat_loss / ($dataItem->berat_produksi + $dataItem->infure_berat_loss) : 0);
+                $lossPercentage = $dataItem->berat_produksi > 0 ? $dataItem->infure_berat_loss / ($dataItem->berat_produksi + $dataItem->infure_berat_loss) : 0;
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $lossPercentage);
                 phpspreadsheet::numberPercentageOrZero($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
                 // panjang produksi
@@ -981,7 +1012,8 @@ class GeneralReportController extends Component
         phpSpreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnItem . $rowGrandTotal);
         $columnItem++;
         // loss %
-        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_produksi'] > 0 ? $grandTotal['infure_berat_loss'] / ($grandTotal['berat_produksi'] / $grandTotal['infure_berat_loss']) : 0);
+        $lossPercentageGrandTotal = $grandTotal['berat_produksi'] > 0 ? $grandTotal['infure_berat_loss'] / ($grandTotal['berat_produksi'] + $grandTotal['infure_berat_loss']) : 0;
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $lossPercentageGrandTotal);
         phpspreadsheet::numberPercentageOrZero($spreadsheet, $columnItem . $rowGrandTotal);
         $columnItem++;
         // panjang produksi
@@ -1037,12 +1069,42 @@ class GeneralReportController extends Component
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
         $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+        // Mengatur ukuran kertas menjadi A4
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        // Mengatur agar semua kolom muat dalam satu halaman
+        $activeWorksheet->getPageSetup()->setFitToWidth(1);
+        $activeWorksheet->getPageSetup()->setFitToHeight(0); // Biarkan tinggi menyesuaikan otomatis
+        // Set header berulang untuk print
+        $activeWorksheet->getPageSetup()->setRowsToRepeatAtTop([1, 3]);
+
+        // Jika ingin memastikan rasio tetap terjaga
+        $activeWorksheet->getPageSetup()->setFitToPage(true);
+
+        // Mengatur margin halaman menjadi 0.75 cm di semua sisi
+        $activeWorksheet->getPageMargins()->setTop(1.1 / 2.54);
+        $activeWorksheet->getPageMargins()->setBottom(1.0 / 2.54);
+        $activeWorksheet->getPageMargins()->setLeft(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setRight(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setHeader(0.4 / 2.54);
+        $activeWorksheet->getPageMargins()->setFooter(0.5 / 2.54);
+        // Mengatur tinggi sel agar otomatis menyesuaikan dengan konten
+        $activeWorksheet->getDefaultRowDimension()->setRowHeight(-1);
+
+        // Header yang hanya muncul saat print
+        $activeWorksheet->getHeaderFooter()->setOddHeader('&L&"Calibri,Bold"&14Fukusuke - Production Control');
+        // Footer
+        $currentDate = date('d M Y - H:i');
+        $footerLeft = '&L&"Calibri"&10Printed: ' . $currentDate . ', by: ' . auth()->user()->username;
+        $footerRight = '&R&"Calibri"&10Page: &P of: &N';
+        $activeWorksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER MESIN SEITAI');
         $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
+        // hide column A
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setVisible(false);
 
         // Header
         $columnMesin = 'B';
@@ -1457,12 +1519,42 @@ class GeneralReportController extends Component
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
         $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+        // Mengatur ukuran kertas menjadi A4
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        // Mengatur agar semua kolom muat dalam satu halaman
+        $activeWorksheet->getPageSetup()->setFitToWidth(1);
+        $activeWorksheet->getPageSetup()->setFitToHeight(0); // Biarkan tinggi menyesuaikan otomatis
+        // Set header berulang untuk print
+        $activeWorksheet->getPageSetup()->setRowsToRepeatAtTop([1, 3]);
+
+        // Jika ingin memastikan rasio tetap terjaga
+        $activeWorksheet->getPageSetup()->setFitToPage(true);
+
+        // Mengatur margin halaman menjadi 0.75 cm di semua sisi
+        $activeWorksheet->getPageMargins()->setTop(1.1 / 2.54);
+        $activeWorksheet->getPageMargins()->setBottom(1.0 / 2.54);
+        $activeWorksheet->getPageMargins()->setLeft(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setRight(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setHeader(0.4 / 2.54);
+        $activeWorksheet->getPageMargins()->setFooter(0.5 / 2.54);
+        // Mengatur tinggi sel agar otomatis menyesuaikan dengan konten
+        $activeWorksheet->getDefaultRowDimension()->setRowHeight(-1);
+
+        // Header yang hanya muncul saat print
+        $activeWorksheet->getHeaderFooter()->setOddHeader('&L&"Calibri,Bold"&14Fukusuke - Production Control');
+        // Footer
+        $currentDate = date('d M Y - H:i');
+        $footerLeft = '&L&"Calibri"&10Printed: ' . $currentDate . ', by: ' . auth()->user()->username;
+        $footerRight = '&R&"Calibri"&10Page: &P of: &N';
+        $activeWorksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER TIPE PER MESIN INFURE');
         $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
+        // hide column A
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setVisible(false);
 
         // Header
         $columnTipeProduk = 'A';
@@ -1860,6 +1952,34 @@ class GeneralReportController extends Component
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
         $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+        // Mengatur ukuran kertas menjadi A4
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        // Mengatur agar semua kolom muat dalam satu halaman
+        $activeWorksheet->getPageSetup()->setFitToWidth(1);
+        $activeWorksheet->getPageSetup()->setFitToHeight(0); // Biarkan tinggi menyesuaikan otomatis
+        // Set header berulang untuk print
+        $activeWorksheet->getPageSetup()->setRowsToRepeatAtTop([1, 3]);
+
+        // Jika ingin memastikan rasio tetap terjaga
+        $activeWorksheet->getPageSetup()->setFitToPage(true);
+
+        // Mengatur margin halaman menjadi 0.75 cm di semua sisi
+        $activeWorksheet->getPageMargins()->setTop(1.1 / 2.54);
+        $activeWorksheet->getPageMargins()->setBottom(1.0 / 2.54);
+        $activeWorksheet->getPageMargins()->setLeft(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setRight(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setHeader(0.4 / 2.54);
+        $activeWorksheet->getPageMargins()->setFooter(0.5 / 2.54);
+        // Mengatur tinggi sel agar otomatis menyesuaikan dengan konten
+        $activeWorksheet->getDefaultRowDimension()->setRowHeight(-1);
+
+        // Header yang hanya muncul saat print
+        $activeWorksheet->getHeaderFooter()->setOddHeader('&L&"Calibri,Bold"&14Fukusuke - Production Control');
+        // Footer
+        $currentDate = date('d M Y - H:i');
+        $footerLeft = '&L&"Calibri"&10Printed: ' . $currentDate . ', by: ' . auth()->user()->username;
+        $footerRight = '&R&"Calibri"&10Page: &P of: &N';
+        $activeWorksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
 
         // Judul
         $activeWorksheet->setCellValue('A1', 'DAFTAR PRODUKSI PER TIPE PER MESIN SEITAI');
@@ -2235,12 +2355,42 @@ class GeneralReportController extends Component
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
         $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+        // Mengatur ukuran kertas menjadi A4
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        // Mengatur agar semua kolom muat dalam satu halaman
+        $activeWorksheet->getPageSetup()->setFitToWidth(1);
+        $activeWorksheet->getPageSetup()->setFitToHeight(0); // Biarkan tinggi menyesuaikan otomatis
+        // Set header berulang untuk print
+        $activeWorksheet->getPageSetup()->setRowsToRepeatAtTop([1, 3]);
+
+        // Jika ingin memastikan rasio tetap terjaga
+        $activeWorksheet->getPageSetup()->setFitToPage(true);
+
+        // Mengatur margin halaman menjadi 0.75 cm di semua sisi
+        $activeWorksheet->getPageMargins()->setTop(1.1 / 2.54);
+        $activeWorksheet->getPageMargins()->setBottom(1.0 / 2.54);
+        $activeWorksheet->getPageMargins()->setLeft(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setRight(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setHeader(0.4 / 2.54);
+        $activeWorksheet->getPageMargins()->setFooter(0.5 / 2.54);
+        // Mengatur tinggi sel agar otomatis menyesuaikan dengan konten
+        $activeWorksheet->getDefaultRowDimension()->setRowHeight(-1);
+
+        // Header yang hanya muncul saat print
+        $activeWorksheet->getHeaderFooter()->setOddHeader('&L&"Calibri,Bold"&14Fukusuke - Production Control');
+        // Footer
+        $currentDate = date('d M Y - H:i');
+        $footerLeft = '&L&"Calibri"&10Printed: ' . $currentDate . ', by: ' . auth()->user()->username;
+        $footerRight = '&R&"Calibri"&10Page: &P of: &N';
+        $activeWorksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER JENIS INFURE');
         $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
+        // hide column A
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setVisible(false);
 
         // Header
         $columnJenisProduk = 'B';
@@ -2479,12 +2629,42 @@ class GeneralReportController extends Component
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
         $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+        // Mengatur ukuran kertas menjadi A4
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        // Mengatur agar semua kolom muat dalam satu halaman
+        $activeWorksheet->getPageSetup()->setFitToWidth(1);
+        $activeWorksheet->getPageSetup()->setFitToHeight(0); // Biarkan tinggi menyesuaikan otomatis
+        // Set header berulang untuk print
+        $activeWorksheet->getPageSetup()->setRowsToRepeatAtTop([1, 3]);
+
+        // Jika ingin memastikan rasio tetap terjaga
+        $activeWorksheet->getPageSetup()->setFitToPage(true);
+
+        // Mengatur margin halaman menjadi 0.75 cm di semua sisi
+        $activeWorksheet->getPageMargins()->setTop(1.1 / 2.54);
+        $activeWorksheet->getPageMargins()->setBottom(1.0 / 2.54);
+        $activeWorksheet->getPageMargins()->setLeft(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setRight(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setHeader(0.4 / 2.54);
+        $activeWorksheet->getPageMargins()->setFooter(0.5 / 2.54);
+        // Mengatur tinggi sel agar otomatis menyesuaikan dengan konten
+        $activeWorksheet->getDefaultRowDimension()->setRowHeight(-1);
+
+        // Header yang hanya muncul saat print
+        $activeWorksheet->getHeaderFooter()->setOddHeader('&L&"Calibri,Bold"&14Fukusuke - Production Control');
+        // Footer
+        $currentDate = date('d M Y - H:i');
+        $footerLeft = '&L&"Calibri"&10Printed: ' . $currentDate . ', by: ' . auth()->user()->username;
+        $footerRight = '&R&"Calibri"&10Page: &P of: &N';
+        $activeWorksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER JENIS SEITAI');
         $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
+        // hide column A
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setVisible(false);
 
         // Header
         $columnJenisProduk = 'B';
@@ -2714,12 +2894,42 @@ class GeneralReportController extends Component
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
         $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+        // Mengatur ukuran kertas menjadi A4
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        // Mengatur agar semua kolom muat dalam satu halaman
+        $activeWorksheet->getPageSetup()->setFitToWidth(1);
+        $activeWorksheet->getPageSetup()->setFitToHeight(0); // Biarkan tinggi menyesuaikan otomatis
+        // Set header berulang untuk print
+        $activeWorksheet->getPageSetup()->setRowsToRepeatAtTop([1, 3]);
+
+        // Jika ingin memastikan rasio tetap terjaga
+        $activeWorksheet->getPageSetup()->setFitToPage(true);
+
+        // Mengatur margin halaman menjadi 0.75 cm di semua sisi
+        $activeWorksheet->getPageMargins()->setTop(1.1 / 2.54);
+        $activeWorksheet->getPageMargins()->setBottom(1.0 / 2.54);
+        $activeWorksheet->getPageMargins()->setLeft(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setRight(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setHeader(0.4 / 2.54);
+        $activeWorksheet->getPageMargins()->setFooter(0.5 / 2.54);
+        // Mengatur tinggi sel agar otomatis menyesuaikan dengan konten
+        $activeWorksheet->getDefaultRowDimension()->setRowHeight(-1);
+
+        // Header yang hanya muncul saat print
+        $activeWorksheet->getHeaderFooter()->setOddHeader('&L&"Calibri,Bold"&14Fukusuke - Production Control');
+        // Footer
+        $currentDate = date('d M Y - H:i');
+        $footerLeft = '&L&"Calibri"&10Printed: ' . $currentDate . ', by: ' . auth()->user()->username;
+        $footerRight = '&R&"Calibri"&10Page: &P of: &N';
+        $activeWorksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER TIPE INFURE');
         $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
+        // hide column A
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setVisible(false);
 
         // Header
         $columnJenisProduk = 'B';
@@ -2960,12 +3170,42 @@ class GeneralReportController extends Component
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
         $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+        // Mengatur ukuran kertas menjadi A4
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        // Mengatur agar semua kolom muat dalam satu halaman
+        $activeWorksheet->getPageSetup()->setFitToWidth(1);
+        $activeWorksheet->getPageSetup()->setFitToHeight(0); // Biarkan tinggi menyesuaikan otomatis
+        // Set header berulang untuk print
+        $activeWorksheet->getPageSetup()->setRowsToRepeatAtTop([1, 3]);
+
+        // Jika ingin memastikan rasio tetap terjaga
+        $activeWorksheet->getPageSetup()->setFitToPage(true);
+
+        // Mengatur margin halaman menjadi 0.75 cm di semua sisi
+        $activeWorksheet->getPageMargins()->setTop(1.1 / 2.54);
+        $activeWorksheet->getPageMargins()->setBottom(1.0 / 2.54);
+        $activeWorksheet->getPageMargins()->setLeft(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setRight(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setHeader(0.4 / 2.54);
+        $activeWorksheet->getPageMargins()->setFooter(0.5 / 2.54);
+        // Mengatur tinggi sel agar otomatis menyesuaikan dengan konten
+        $activeWorksheet->getDefaultRowDimension()->setRowHeight(-1);
+
+        // Header yang hanya muncul saat print
+        $activeWorksheet->getHeaderFooter()->setOddHeader('&L&"Calibri,Bold"&14Fukusuke - Production Control');
+        // Footer
+        $currentDate = date('d M Y - H:i');
+        $footerLeft = '&L&"Calibri"&10Printed: ' . $currentDate . ', by: ' . auth()->user()->username;
+        $footerRight = '&R&"Calibri"&10Page: &P of: &N';
+        $activeWorksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER TIPE SEITAI');
         $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
+        // hide column A
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setVisible(false);
 
         // Header
         $columnJenisProduk = 'B';
@@ -3197,12 +3437,45 @@ class GeneralReportController extends Component
         $activeWorksheet->setShowGridlines(false);
         $spreadsheet->getActiveSheet()->freezePane('A4');
         $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+        // Mengatur ukuran kertas menjadi A4
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        // Mengatur agar semua kolom muat dalam satu halaman
+        $activeWorksheet->getPageSetup()->setFitToWidth(1);
+        $activeWorksheet->getPageSetup()->setFitToHeight(0); // Biarkan tinggi menyesuaikan otomatis
+        // Set header berulang untuk print
+        $activeWorksheet->getPageSetup()->setRowsToRepeatAtTop([1, 3]);
+
+        // Jika ingin memastikan rasio tetap terjaga
+        $activeWorksheet->getPageSetup()->setFitToPage(true);
+
+        // Mengatur margin halaman
+        $activeWorksheet->getPageMargins()->setTop(1.1 / 2.54);
+        $activeWorksheet->getPageMargins()->setBottom(1.0 / 2.54);
+        $activeWorksheet->getPageMargins()->setLeft(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setRight(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setHeader(0.4 / 2.54);
+        $activeWorksheet->getPageMargins()->setFooter(0.5 / 2.54);
+        // Mengatur tinggi sel agar otomatis menyesuaikan dengan konten
+        $activeWorksheet->getDefaultRowDimension()->setRowHeight(-1);
+
+        // Header yang hanya muncul saat print
+        $activeWorksheet->getHeaderFooter()->setOddHeader('&L&"Calibri,Bold"&14Fukusuke - Production Control');
+        // Footer
+        $currentDate = date('d M Y - H:i');
+        $footerLeft = '&L&"Calibri"&10Printed: ' . $currentDate . ', by: ' . auth()->user()->username;
+        $footerRight = '&R&"Calibri"&10Page: &P of: &N';
+        $activeWorksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
+
+        // hide column A
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setVisible(false);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER PRODUK INFURE');
         $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
+        // hide column A
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setVisible(false);
 
         // Header
         $columnJenisProduk = 'B';
@@ -3298,19 +3571,9 @@ class GeneralReportController extends Component
             // Menulis data mesin
             $spreadsheet->getActiveSheet()->setCellValue($columnProductCode . $rowItem, $product['product_code']);
             $spreadsheet->getActiveSheet()->setCellValue($columnProductName . $rowItem, $product['product_name']);
-            // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
 
             // memasukkan data
             $dataItem = $dataFilter[$productCode];
-            // $dataItem = $dataFilter[$productCode] ?? (object)[
-            //     'berat_standard' => 0,
-            //     'berat_produksi' => 0,
-            //     'infure_cost' => 0,
-            //     'infure_berat_loss' => 0,
-            //     'panjang_produksi' => 0,
-            //     'panjang_printing_inline' => 0,
-            //     'infure_cost_printing' => 0
-            // ];
             $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->berat_standard);
             phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
             $columnItem++;
@@ -3383,7 +3646,6 @@ class GeneralReportController extends Component
         ]);
 
         $columnItem = $startColumnItemData;
-        $columnItemEnd = chr(ord($columnItem) + count($header) - 1);
         $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_standard']);
         phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
         $columnItem++;
@@ -3418,13 +3680,26 @@ class GeneralReportController extends Component
 
         $activeWorksheet->getStyle($columnJenisProduk . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart)->getAlignment()->setWrapText(true);
 
+        $columnWidthMap = [
+            'D' => 15,  // Berat Standar
+            'E' => 16,  // Berat Produksi
+            'F' => 12,  // Weight Rate
+            'G' => 14,  // Infure Cost
+            'H' => 10,  // Loss Kg
+            'I' => 9,   // Loss %
+            'J' => 18,  // Panjang Infure
+            'K' => 22,  // Inline Printing
+            'L' => 16,  // Inline Cost
+            'M' => 14,  // Process Cost
+        ];
 
-        // size auto
+        // Set kolom C
         $spreadsheet->getActiveSheet()->getColumnDimension('C')->setAutoSize(true);
-        $endColumnItem++;
-        while ($startColumnItemData !== $endColumnItem) {
-            $spreadsheet->getActiveSheet()->getColumnDimension($startColumnItemData)->setAutoSize(true);
-            $startColumnItemData++;
+
+        // Set kolom data
+        foreach (range($startColumnItemData, $columnHeaderEnd) as $columnID) {
+            $width = isset($columnWidthMap[$columnID]) ? $columnWidthMap[$columnID] : 12;
+            $spreadsheet->getActiveSheet()->getColumnDimension($columnID)->setWidth($width);
         }
 
         $writer = new Xlsx($spreadsheet);
@@ -3444,12 +3719,42 @@ class GeneralReportController extends Component
         $activeWorksheet->setShowGridlines(false);
         $spreadsheet->getActiveSheet()->freezePane('A4');
         $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+        // Mengatur ukuran kertas menjadi A4
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        // Mengatur agar semua kolom muat dalam satu halaman
+        $activeWorksheet->getPageSetup()->setFitToWidth(1);
+        $activeWorksheet->getPageSetup()->setFitToHeight(0); // Biarkan tinggi menyesuaikan otomatis
+        // Set header berulang untuk print
+        $activeWorksheet->getPageSetup()->setRowsToRepeatAtTop([1, 3]);
+
+        // Jika ingin memastikan rasio tetap terjaga
+        $activeWorksheet->getPageSetup()->setFitToPage(true);
+
+        // Mengatur margin halaman menjadi 0.75 cm di semua sisi
+        $activeWorksheet->getPageMargins()->setTop(1.1 / 2.54);
+        $activeWorksheet->getPageMargins()->setBottom(1.0 / 2.54);
+        $activeWorksheet->getPageMargins()->setLeft(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setRight(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setHeader(0.4 / 2.54);
+        $activeWorksheet->getPageMargins()->setFooter(0.5 / 2.54);
+        // Mengatur tinggi sel agar otomatis menyesuaikan dengan konten
+        $activeWorksheet->getDefaultRowDimension()->setRowHeight(-1);
+
+        // Header yang hanya muncul saat print
+        $activeWorksheet->getHeaderFooter()->setOddHeader('&L&"Calibri,Bold"&14Fukusuke - Production Control');
+        // Footer
+        $currentDate = date('d M Y - H:i');
+        $footerLeft = '&L&"Calibri"&10Printed: ' . $currentDate . ', by: ' . auth()->user()->username;
+        $footerRight = '&R&"Calibri"&10Page: &P of: &N';
+        $activeWorksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER PRODUK SEITAI');
         $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
+        // hide column A
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setVisible(false);
 
         // Header
         $columnJenisProduk = 'B';
@@ -3673,6 +3978,34 @@ class GeneralReportController extends Component
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
         $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+        // Mengatur ukuran kertas menjadi A4
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        // Mengatur agar semua kolom muat dalam satu halaman
+        $activeWorksheet->getPageSetup()->setFitToWidth(1);
+        $activeWorksheet->getPageSetup()->setFitToHeight(0); // Biarkan tinggi menyesuaikan otomatis
+        // Set header berulang untuk print
+        $activeWorksheet->getPageSetup()->setRowsToRepeatAtTop([1, 3]);
+
+        // Jika ingin memastikan rasio tetap terjaga
+        $activeWorksheet->getPageSetup()->setFitToPage(true);
+
+        // Mengatur margin halaman menjadi 0.75 cm di semua sisi
+        $activeWorksheet->getPageMargins()->setTop(1.1 / 2.54);
+        $activeWorksheet->getPageMargins()->setBottom(1.0 / 2.54);
+        $activeWorksheet->getPageMargins()->setLeft(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setRight(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setHeader(0.4 / 2.54);
+        $activeWorksheet->getPageMargins()->setFooter(0.5 / 2.54);
+        // Mengatur tinggi sel agar otomatis menyesuaikan dengan konten
+        $activeWorksheet->getDefaultRowDimension()->setRowHeight(-1);
+
+        // Header yang hanya muncul saat print
+        $activeWorksheet->getHeaderFooter()->setOddHeader('&L&"Calibri,Bold"&14Fukusuke - Production Control');
+        // Footer
+        $currentDate = date('d M Y - H:i');
+        $footerLeft = '&L&"Calibri"&10Printed: ' . $currentDate . ', by: ' . auth()->user()->username;
+        $footerRight = '&R&"Calibri"&10Page: &P of: &N';
+        $activeWorksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
         $spreadsheet->getActiveSheet()->freezePane('A4');
 
         // Judul
@@ -3680,6 +4013,8 @@ class GeneralReportController extends Component
         $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
+        // hide column A
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setVisible(false);
 
         // Header
         $columnMesin = 'B';
@@ -3961,12 +4296,42 @@ class GeneralReportController extends Component
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
         $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+        // Mengatur ukuran kertas menjadi A4
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        // Mengatur agar semua kolom muat dalam satu halaman
+        $activeWorksheet->getPageSetup()->setFitToWidth(1);
+        $activeWorksheet->getPageSetup()->setFitToHeight(0); // Biarkan tinggi menyesuaikan otomatis
+        // Set header berulang untuk print
+        $activeWorksheet->getPageSetup()->setRowsToRepeatAtTop([1, 3]);
+
+        // Jika ingin memastikan rasio tetap terjaga
+        $activeWorksheet->getPageSetup()->setFitToPage(true);
+
+        // Mengatur margin halaman menjadi 0.75 cm di semua sisi
+        $activeWorksheet->getPageMargins()->setTop(1.1 / 2.54);
+        $activeWorksheet->getPageMargins()->setBottom(1.0 / 2.54);
+        $activeWorksheet->getPageMargins()->setLeft(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setRight(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setHeader(0.4 / 2.54);
+        $activeWorksheet->getPageMargins()->setFooter(0.5 / 2.54);
+        // Mengatur tinggi sel agar otomatis menyesuaikan dengan konten
+        $activeWorksheet->getDefaultRowDimension()->setRowHeight(-1);
+
+        // Header yang hanya muncul saat print
+        $activeWorksheet->getHeaderFooter()->setOddHeader('&L&"Calibri,Bold"&14Fukusuke - Production Control');
+        // Footer
+        $currentDate = date('d M Y - H:i');
+        $footerLeft = '&L&"Calibri"&10Printed: ' . $currentDate . ', by: ' . auth()->user()->username;
+        $footerRight = '&R&"Calibri"&10Page: &P of: &N';
+        $activeWorksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER DEPARTEMEN PER JENIS SEITAI');
         $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
+        // hide column A
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setVisible(false);
 
         // Header
         $columnMesin = 'B';
@@ -4240,12 +4605,42 @@ class GeneralReportController extends Component
         $activeWorksheet->setShowGridlines(false);
         $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
         $spreadsheet->getActiveSheet()->freezePane('A4');
+        // Mengatur ukuran kertas menjadi A4
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        // Mengatur agar semua kolom muat dalam satu halaman
+        $activeWorksheet->getPageSetup()->setFitToWidth(1);
+        $activeWorksheet->getPageSetup()->setFitToHeight(0); // Biarkan tinggi menyesuaikan otomatis
+        // Set header berulang untuk print
+        $activeWorksheet->getPageSetup()->setRowsToRepeatAtTop([1, 3]);
+
+        // Jika ingin memastikan rasio tetap terjaga
+        $activeWorksheet->getPageSetup()->setFitToPage(true);
+
+        // Mengatur margin halaman menjadi 0.75 cm di semua sisi
+        $activeWorksheet->getPageMargins()->setTop(1.1 / 2.54);
+        $activeWorksheet->getPageMargins()->setBottom(1.0 / 2.54);
+        $activeWorksheet->getPageMargins()->setLeft(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setRight(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setHeader(0.4 / 2.54);
+        $activeWorksheet->getPageMargins()->setFooter(0.5 / 2.54);
+        // Mengatur tinggi sel agar otomatis menyesuaikan dengan konten
+        $activeWorksheet->getDefaultRowDimension()->setRowHeight(-1);
+
+        // Header yang hanya muncul saat print
+        $activeWorksheet->getHeaderFooter()->setOddHeader('&L&"Calibri,Bold"&14Fukusuke - Production Control');
+        // Footer
+        $currentDate = date('d M Y - H:i');
+        $footerLeft = '&L&"Calibri"&10Printed: ' . $currentDate . ', by: ' . auth()->user()->username;
+        $footerRight = '&R&"Calibri"&10Page: &P of: &N';
+        $activeWorksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER DEPARTEMEN PER TIPE INFURE');
         $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
+        // hide column A
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setVisible(false);
 
         // Header
         $columnMesin = 'B';
@@ -4528,12 +4923,42 @@ class GeneralReportController extends Component
         $activeWorksheet->setShowGridlines(false);
         $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
         $spreadsheet->getActiveSheet()->freezePane('A4');
+        // Mengatur ukuran kertas menjadi A4
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        // Mengatur agar semua kolom muat dalam satu halaman
+        $activeWorksheet->getPageSetup()->setFitToWidth(1);
+        $activeWorksheet->getPageSetup()->setFitToHeight(0); // Biarkan tinggi menyesuaikan otomatis
+        // Set header berulang untuk print
+        $activeWorksheet->getPageSetup()->setRowsToRepeatAtTop([1, 3]);
+
+        // Jika ingin memastikan rasio tetap terjaga
+        $activeWorksheet->getPageSetup()->setFitToPage(true);
+
+        // Mengatur margin halaman menjadi 0.75 cm di semua sisi
+        $activeWorksheet->getPageMargins()->setTop(1.1 / 2.54);
+        $activeWorksheet->getPageMargins()->setBottom(1.0 / 2.54);
+        $activeWorksheet->getPageMargins()->setLeft(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setRight(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setHeader(0.4 / 2.54);
+        $activeWorksheet->getPageMargins()->setFooter(0.5 / 2.54);
+        // Mengatur tinggi sel agar otomatis menyesuaikan dengan konten
+        $activeWorksheet->getDefaultRowDimension()->setRowHeight(-1);
+
+        // Header yang hanya muncul saat print
+        $activeWorksheet->getHeaderFooter()->setOddHeader('&L&"Calibri,Bold"&14Fukusuke - Production Control');
+        // Footer
+        $currentDate = date('d M Y - H:i');
+        $footerLeft = '&L&"Calibri"&10Printed: ' . $currentDate . ', by: ' . auth()->user()->username;
+        $footerRight = '&R&"Calibri"&10Page: &P of: &N';
+        $activeWorksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER DEPARTEMEN PER TIPE SEITAI');
         $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
+        // hide column A
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setVisible(false);
 
         // Header
         $columnMesin = 'B';
@@ -4808,12 +5233,42 @@ class GeneralReportController extends Component
         $activeWorksheet->setShowGridlines(false);
         $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
         $spreadsheet->getActiveSheet()->freezePane('A4');
+        // Mengatur ukuran kertas menjadi A4
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        // Mengatur agar semua kolom muat dalam satu halaman
+        $activeWorksheet->getPageSetup()->setFitToWidth(1);
+        $activeWorksheet->getPageSetup()->setFitToHeight(0); // Biarkan tinggi menyesuaikan otomatis
+        // Set header berulang untuk print
+        $activeWorksheet->getPageSetup()->setRowsToRepeatAtTop([1, 3]);
+
+        // Jika ingin memastikan rasio tetap terjaga
+        $activeWorksheet->getPageSetup()->setFitToPage(true);
+
+        // Mengatur margin halaman menjadi 0.75 cm di semua sisi
+        $activeWorksheet->getPageMargins()->setTop(1.1 / 2.54);
+        $activeWorksheet->getPageMargins()->setBottom(1.0 / 2.54);
+        $activeWorksheet->getPageMargins()->setLeft(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setRight(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setHeader(0.4 / 2.54);
+        $activeWorksheet->getPageMargins()->setFooter(0.5 / 2.54);
+        // Mengatur tinggi sel agar otomatis menyesuaikan dengan konten
+        $activeWorksheet->getDefaultRowDimension()->setRowHeight(-1);
+
+        // Header yang hanya muncul saat print
+        $activeWorksheet->getHeaderFooter()->setOddHeader('&L&"Calibri,Bold"&14Fukusuke - Production Control');
+        // Footer
+        $currentDate = date('d M Y - H:i');
+        $footerLeft = '&L&"Calibri"&10Printed: ' . $currentDate . ', by: ' . auth()->user()->username;
+        $footerRight = '&R&"Calibri"&10Page: &P of: &N';
+        $activeWorksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER DEPARTEMEN PER PETUGAS INFURE');
         $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
+        // hide column A
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setVisible(false);
 
         // Header
         $columnMesin = 'B';
@@ -5096,12 +5551,42 @@ class GeneralReportController extends Component
         $activeWorksheet->setShowGridlines(false);
         $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
         $spreadsheet->getActiveSheet()->freezePane('A4');
+        // Mengatur ukuran kertas menjadi A4
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        // Mengatur agar semua kolom muat dalam satu halaman
+        $activeWorksheet->getPageSetup()->setFitToWidth(1);
+        $activeWorksheet->getPageSetup()->setFitToHeight(0); // Biarkan tinggi menyesuaikan otomatis
+        // Set header berulang untuk print
+        $activeWorksheet->getPageSetup()->setRowsToRepeatAtTop([1, 3]);
+
+        // Jika ingin memastikan rasio tetap terjaga
+        $activeWorksheet->getPageSetup()->setFitToPage(true);
+
+        // Mengatur margin halaman menjadi 0.75 cm di semua sisi
+        $activeWorksheet->getPageMargins()->setTop(1.1 / 2.54);
+        $activeWorksheet->getPageMargins()->setBottom(1.0 / 2.54);
+        $activeWorksheet->getPageMargins()->setLeft(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setRight(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setHeader(0.4 / 2.54);
+        $activeWorksheet->getPageMargins()->setFooter(0.5 / 2.54);
+        // Mengatur tinggi sel agar otomatis menyesuaikan dengan konten
+        $activeWorksheet->getDefaultRowDimension()->setRowHeight(-1);
+
+        // Header yang hanya muncul saat print
+        $activeWorksheet->getHeaderFooter()->setOddHeader('&L&"Calibri,Bold"&14Fukusuke - Production Control');
+        // Footer
+        $currentDate = date('d M Y - H:i');
+        $footerLeft = '&L&"Calibri"&10Printed: ' . $currentDate . ', by: ' . auth()->user()->username;
+        $footerRight = '&R&"Calibri"&10Page: &P of: &N';
+        $activeWorksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER DEPARTEMEN PER PETUGAS SEITAI');
         $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
+        // hide column A
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setVisible(false);
 
         // Header
         $columnMesin = 'B';
@@ -5375,12 +5860,42 @@ class GeneralReportController extends Component
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
         $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+        // Mengatur ukuran kertas menjadi A4
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        // Mengatur agar semua kolom muat dalam satu halaman
+        $activeWorksheet->getPageSetup()->setFitToWidth(1);
+        $activeWorksheet->getPageSetup()->setFitToHeight(0); // Biarkan tinggi menyesuaikan otomatis
+        // Set header berulang untuk print
+        $activeWorksheet->getPageSetup()->setRowsToRepeatAtTop([1, 3]);
+
+        // Jika ingin memastikan rasio tetap terjaga
+        $activeWorksheet->getPageSetup()->setFitToPage(true);
+
+        // Mengatur margin halaman menjadi 0.75 cm di semua sisi
+        $activeWorksheet->getPageMargins()->setTop(1.1 / 2.54);
+        $activeWorksheet->getPageMargins()->setBottom(1.0 / 2.54);
+        $activeWorksheet->getPageMargins()->setLeft(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setRight(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setHeader(0.4 / 2.54);
+        $activeWorksheet->getPageMargins()->setFooter(0.5 / 2.54);
+        // Mengatur tinggi sel agar otomatis menyesuaikan dengan konten
+        $activeWorksheet->getDefaultRowDimension()->setRowHeight(-1);
+
+        // Header yang hanya muncul saat print
+        $activeWorksheet->getHeaderFooter()->setOddHeader('&L&"Calibri,Bold"&14Fukusuke - Production Control');
+        // Footer
+        $currentDate = date('d M Y - H:i');
+        $footerLeft = '&L&"Calibri"&10Printed: ' . $currentDate . ', by: ' . auth()->user()->username;
+        $footerRight = '&R&"Calibri"&10Page: &P of: &N';
+        $activeWorksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR LOSS PER DEPARTEMEN INFURE');
         $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
+        // hide column A
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setVisible(false);
 
         // Header
         $columnMesin = 'B';
@@ -5658,12 +6173,42 @@ class GeneralReportController extends Component
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
         $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+        // Mengatur ukuran kertas menjadi A4
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        // Mengatur agar semua kolom muat dalam satu halaman
+        $activeWorksheet->getPageSetup()->setFitToWidth(1);
+        $activeWorksheet->getPageSetup()->setFitToHeight(0); // Biarkan tinggi menyesuaikan otomatis
+        // Set header berulang untuk print
+        $activeWorksheet->getPageSetup()->setRowsToRepeatAtTop([1, 3]);
+
+        // Jika ingin memastikan rasio tetap terjaga
+        $activeWorksheet->getPageSetup()->setFitToPage(true);
+
+        // Mengatur margin halaman menjadi 0.75 cm di semua sisi
+        $activeWorksheet->getPageMargins()->setTop(1.1 / 2.54);
+        $activeWorksheet->getPageMargins()->setBottom(1.0 / 2.54);
+        $activeWorksheet->getPageMargins()->setLeft(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setRight(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setHeader(0.4 / 2.54);
+        $activeWorksheet->getPageMargins()->setFooter(0.5 / 2.54);
+        // Mengatur tinggi sel agar otomatis menyesuaikan dengan konten
+        $activeWorksheet->getDefaultRowDimension()->setRowHeight(-1);
+
+        // Header yang hanya muncul saat print
+        $activeWorksheet->getHeaderFooter()->setOddHeader('&L&"Calibri,Bold"&14Fukusuke - Production Control');
+        // Footer
+        $currentDate = date('d M Y - H:i');
+        $footerLeft = '&L&"Calibri"&10Printed: ' . $currentDate . ', by: ' . auth()->user()->username;
+        $footerRight = '&R&"Calibri"&10Page: &P of: &N';
+        $activeWorksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR LOSS PER DEPARTEMEN SEITAI');
         $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
+        // hide column A
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setVisible(false);
 
         // Header
         $columnMesin = 'B';
@@ -5940,12 +6485,42 @@ class GeneralReportController extends Component
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
         $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+        // Mengatur ukuran kertas menjadi A4
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        // Mengatur agar semua kolom muat dalam satu halaman
+        $activeWorksheet->getPageSetup()->setFitToWidth(1);
+        $activeWorksheet->getPageSetup()->setFitToHeight(0); // Biarkan tinggi menyesuaikan otomatis
+        // Set header berulang untuk print
+        $activeWorksheet->getPageSetup()->setRowsToRepeatAtTop([1, 3]);
+
+        // Jika ingin memastikan rasio tetap terjaga
+        $activeWorksheet->getPageSetup()->setFitToPage(true);
+
+        // Mengatur margin halaman menjadi 0.75 cm di semua sisi
+        $activeWorksheet->getPageMargins()->setTop(1.1 / 2.54);
+        $activeWorksheet->getPageMargins()->setBottom(1.0 / 2.54);
+        $activeWorksheet->getPageMargins()->setLeft(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setRight(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setHeader(0.4 / 2.54);
+        $activeWorksheet->getPageMargins()->setFooter(0.5 / 2.54);
+        // Mengatur tinggi sel agar otomatis menyesuaikan dengan konten
+        $activeWorksheet->getDefaultRowDimension()->setRowHeight(-1);
+
+        // Header yang hanya muncul saat print
+        $activeWorksheet->getHeaderFooter()->setOddHeader('&L&"Calibri,Bold"&14Fukusuke - Production Control');
+        // Footer
+        $currentDate = date('d M Y - H:i');
+        $footerLeft = '&L&"Calibri"&10Printed: ' . $currentDate . ', by: ' . auth()->user()->username;
+        $footerRight = '&R&"Calibri"&10Page: &P of: &N';
+        $activeWorksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR LOSS PER DEPARTEMEN PER JENIS INFURE');
         $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
+        // hide column A
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setVisible(false);
 
         // Header
         $columnFirstHeader = 'B';
@@ -6233,12 +6808,42 @@ class GeneralReportController extends Component
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
         $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+        // Mengatur ukuran kertas menjadi A4
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        // Mengatur agar semua kolom muat dalam satu halaman
+        $activeWorksheet->getPageSetup()->setFitToWidth(1);
+        $activeWorksheet->getPageSetup()->setFitToHeight(0); // Biarkan tinggi menyesuaikan otomatis
+        // Set header berulang untuk print
+        $activeWorksheet->getPageSetup()->setRowsToRepeatAtTop([1, 3]);
+
+        // Jika ingin memastikan rasio tetap terjaga
+        $activeWorksheet->getPageSetup()->setFitToPage(true);
+
+        // Mengatur margin halaman menjadi 0.75 cm di semua sisi
+        $activeWorksheet->getPageMargins()->setTop(1.1 / 2.54);
+        $activeWorksheet->getPageMargins()->setBottom(1.0 / 2.54);
+        $activeWorksheet->getPageMargins()->setLeft(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setRight(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setHeader(0.4 / 2.54);
+        $activeWorksheet->getPageMargins()->setFooter(0.5 / 2.54);
+        // Mengatur tinggi sel agar otomatis menyesuaikan dengan konten
+        $activeWorksheet->getDefaultRowDimension()->setRowHeight(-1);
+
+        // Header yang hanya muncul saat print
+        $activeWorksheet->getHeaderFooter()->setOddHeader('&L&"Calibri,Bold"&14Fukusuke - Production Control');
+        // Footer
+        $currentDate = date('d M Y - H:i');
+        $footerLeft = '&L&"Calibri"&10Printed: ' . $currentDate . ', by: ' . auth()->user()->username;
+        $footerRight = '&R&"Calibri"&10Page: &P of: &N';
+        $activeWorksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR LOSS PER DEPARTEMEN PER JENIS SEITAI');
         $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
+        // hide column A
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setVisible(false);
 
         // Header
         $columnFirstHeader = 'B';
@@ -6527,12 +7132,42 @@ class GeneralReportController extends Component
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
         $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+        // Mengatur ukuran kertas menjadi A4
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        // Mengatur agar semua kolom muat dalam satu halaman
+        $activeWorksheet->getPageSetup()->setFitToWidth(1);
+        $activeWorksheet->getPageSetup()->setFitToHeight(0); // Biarkan tinggi menyesuaikan otomatis
+        // Set header berulang untuk print
+        $activeWorksheet->getPageSetup()->setRowsToRepeatAtTop([1, 3]);
+
+        // Jika ingin memastikan rasio tetap terjaga
+        $activeWorksheet->getPageSetup()->setFitToPage(true);
+
+        // Mengatur margin halaman menjadi 0.75 cm di semua sisi
+        $activeWorksheet->getPageMargins()->setTop(1.1 / 2.54);
+        $activeWorksheet->getPageMargins()->setBottom(1.0 / 2.54);
+        $activeWorksheet->getPageMargins()->setLeft(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setRight(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setHeader(0.4 / 2.54);
+        $activeWorksheet->getPageMargins()->setFooter(0.5 / 2.54);
+        // Mengatur tinggi sel agar otomatis menyesuaikan dengan konten
+        $activeWorksheet->getDefaultRowDimension()->setRowHeight(-1);
+
+        // Header yang hanya muncul saat print
+        $activeWorksheet->getHeaderFooter()->setOddHeader('&L&"Calibri,Bold"&14Fukusuke - Production Control');
+        // Footer
+        $currentDate = date('d M Y - H:i');
+        $footerLeft = '&L&"Calibri"&10Printed: ' . $currentDate . ', by: ' . auth()->user()->username;
+        $footerRight = '&R&"Calibri"&10Page: &P of: &N';
+        $activeWorksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR LOSS PER PETUGAS INFURE');
         $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
+        // hide column A
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setVisible(false);
 
         // Header
         $columnMesin = 'B';
@@ -6998,12 +7633,42 @@ class GeneralReportController extends Component
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
         $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+        // Mengatur ukuran kertas menjadi A4
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        // Mengatur agar semua kolom muat dalam satu halaman
+        $activeWorksheet->getPageSetup()->setFitToWidth(1);
+        $activeWorksheet->getPageSetup()->setFitToHeight(0); // Biarkan tinggi menyesuaikan otomatis
+        // Set header berulang untuk print
+        $activeWorksheet->getPageSetup()->setRowsToRepeatAtTop([1, 3]);
+
+        // Jika ingin memastikan rasio tetap terjaga
+        $activeWorksheet->getPageSetup()->setFitToPage(true);
+
+        // Mengatur margin halaman menjadi 0.75 cm di semua sisi
+        $activeWorksheet->getPageMargins()->setTop(1.1 / 2.54);
+        $activeWorksheet->getPageMargins()->setBottom(1.0 / 2.54);
+        $activeWorksheet->getPageMargins()->setLeft(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setRight(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setHeader(0.4 / 2.54);
+        $activeWorksheet->getPageMargins()->setFooter(0.5 / 2.54);
+        // Mengatur tinggi sel agar otomatis menyesuaikan dengan konten
+        $activeWorksheet->getDefaultRowDimension()->setRowHeight(-1);
+
+        // Header yang hanya muncul saat print
+        $activeWorksheet->getHeaderFooter()->setOddHeader('&L&"Calibri,Bold"&14Fukusuke - Production Control');
+        // Footer
+        $currentDate = date('d M Y - H:i');
+        $footerLeft = '&L&"Calibri"&10Printed: ' . $currentDate . ', by: ' . auth()->user()->username;
+        $footerRight = '&R&"Calibri"&10Page: &P of: &N';
+        $activeWorksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR LOSS PER PETUGAS SEITAI');
         $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
+        // hide column A
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setVisible(false);
 
         // Header
         $columnMesin = 'B';
@@ -7359,12 +8024,42 @@ class GeneralReportController extends Component
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
         $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+        // Mengatur ukuran kertas menjadi A4
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        // Mengatur agar semua kolom muat dalam satu halaman
+        $activeWorksheet->getPageSetup()->setFitToWidth(1);
+        $activeWorksheet->getPageSetup()->setFitToHeight(0); // Biarkan tinggi menyesuaikan otomatis
+        // Set header berulang untuk print
+        $activeWorksheet->getPageSetup()->setRowsToRepeatAtTop([1, 3]);
+
+        // Jika ingin memastikan rasio tetap terjaga
+        $activeWorksheet->getPageSetup()->setFitToPage(true);
+
+        // Mengatur margin halaman menjadi 0.75 cm di semua sisi
+        $activeWorksheet->getPageMargins()->setTop(1.1 / 2.54);
+        $activeWorksheet->getPageMargins()->setBottom(1.0 / 2.54);
+        $activeWorksheet->getPageMargins()->setLeft(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setRight(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setHeader(0.4 / 2.54);
+        $activeWorksheet->getPageMargins()->setFooter(0.5 / 2.54);
+        // Mengatur tinggi sel agar otomatis menyesuaikan dengan konten
+        $activeWorksheet->getDefaultRowDimension()->setRowHeight(-1);
+
+        // Header yang hanya muncul saat print
+        $activeWorksheet->getHeaderFooter()->setOddHeader('&L&"Calibri,Bold"&14Fukusuke - Production Control');
+        // Footer
+        $currentDate = date('d M Y - H:i');
+        $footerLeft = '&L&"Calibri"&10Printed: ' . $currentDate . ', by: ' . auth()->user()->username;
+        $footerRight = '&R&"Calibri"&10Page: &P of: &N';
+        $activeWorksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR LOSS PER MESIN INFURE');
         $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
+        // hide column A
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setVisible(false);
 
         // Header
         $columnMesin = 'B';
@@ -7628,12 +8323,42 @@ class GeneralReportController extends Component
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
         $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+        // Mengatur ukuran kertas menjadi A4
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        // Mengatur agar semua kolom muat dalam satu halaman
+        $activeWorksheet->getPageSetup()->setFitToWidth(1);
+        $activeWorksheet->getPageSetup()->setFitToHeight(0); // Biarkan tinggi menyesuaikan otomatis
+        // Set header berulang untuk print
+        $activeWorksheet->getPageSetup()->setRowsToRepeatAtTop([1, 3]);
+
+        // Jika ingin memastikan rasio tetap terjaga
+        $activeWorksheet->getPageSetup()->setFitToPage(true);
+
+        // Mengatur margin halaman menjadi 0.75 cm di semua sisi
+        $activeWorksheet->getPageMargins()->setTop(1.1 / 2.54);
+        $activeWorksheet->getPageMargins()->setBottom(1.0 / 2.54);
+        $activeWorksheet->getPageMargins()->setLeft(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setRight(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setHeader(0.4 / 2.54);
+        $activeWorksheet->getPageMargins()->setFooter(0.5 / 2.54);
+        // Mengatur tinggi sel agar otomatis menyesuaikan dengan konten
+        $activeWorksheet->getDefaultRowDimension()->setRowHeight(-1);
+
+        // Header yang hanya muncul saat print
+        $activeWorksheet->getHeaderFooter()->setOddHeader('&L&"Calibri,Bold"&14Fukusuke - Production Control');
+        // Footer
+        $currentDate = date('d M Y - H:i');
+        $footerLeft = '&L&"Calibri"&10Printed: ' . $currentDate . ', by: ' . auth()->user()->username;
+        $footerRight = '&R&"Calibri"&10Page: &P of: &N';
+        $activeWorksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR LOSS PER MESIN SEITAI');
         $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
+        // hide column A
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setVisible(false);
 
         // Header
         $columnMesin = 'B';
@@ -7897,12 +8622,42 @@ class GeneralReportController extends Component
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
         $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+        // Mengatur ukuran kertas menjadi A4
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        // Mengatur agar semua kolom muat dalam satu halaman
+        $activeWorksheet->getPageSetup()->setFitToWidth(1);
+        $activeWorksheet->getPageSetup()->setFitToHeight(0); // Biarkan tinggi menyesuaikan otomatis
+        // Set header berulang untuk print
+        $activeWorksheet->getPageSetup()->setRowsToRepeatAtTop([1, 3]);
+
+        // Jika ingin memastikan rasio tetap terjaga
+        $activeWorksheet->getPageSetup()->setFitToPage(true);
+
+        // Mengatur margin halaman menjadi 0.75 cm di semua sisi
+        $activeWorksheet->getPageMargins()->setTop(1.1 / 2.54);
+        $activeWorksheet->getPageMargins()->setBottom(1.0 / 2.54);
+        $activeWorksheet->getPageMargins()->setLeft(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setRight(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setHeader(0.4 / 2.54);
+        $activeWorksheet->getPageMargins()->setFooter(0.5 / 2.54);
+        // Mengatur tinggi sel agar otomatis menyesuaikan dengan konten
+        $activeWorksheet->getDefaultRowDimension()->setRowHeight(-1);
+
+        // Header yang hanya muncul saat print
+        $activeWorksheet->getHeaderFooter()->setOddHeader('&L&"Calibri,Bold"&14Fukusuke - Production Control');
+        // Footer
+        $currentDate = date('d M Y - H:i');
+        $footerLeft = '&L&"Calibri"&10Printed: ' . $currentDate . ', by: ' . auth()->user()->username;
+        $footerRight = '&R&"Calibri"&10Page: &P of: &N';
+        $activeWorksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'KAPASITAS PRODUKSI INFURE');
         $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
+        // hide column A
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setVisible(false);
 
         // Header
         $columnMesin = 'B';
@@ -8182,12 +8937,42 @@ class GeneralReportController extends Component
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
         $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+        // Mengatur ukuran kertas menjadi A4
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        // Mengatur agar semua kolom muat dalam satu halaman
+        $activeWorksheet->getPageSetup()->setFitToWidth(1);
+        $activeWorksheet->getPageSetup()->setFitToHeight(0); // Biarkan tinggi menyesuaikan otomatis
+        // Set header berulang untuk print
+        $activeWorksheet->getPageSetup()->setRowsToRepeatAtTop([1, 3]);
+
+        // Jika ingin memastikan rasio tetap terjaga
+        $activeWorksheet->getPageSetup()->setFitToPage(true);
+
+        // Mengatur margin halaman menjadi 0.75 cm di semua sisi
+        $activeWorksheet->getPageMargins()->setTop(1.1 / 2.54);
+        $activeWorksheet->getPageMargins()->setBottom(1.0 / 2.54);
+        $activeWorksheet->getPageMargins()->setLeft(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setRight(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setHeader(0.4 / 2.54);
+        $activeWorksheet->getPageMargins()->setFooter(0.5 / 2.54);
+        // Mengatur tinggi sel agar otomatis menyesuaikan dengan konten
+        $activeWorksheet->getDefaultRowDimension()->setRowHeight(-1);
+
+        // Header yang hanya muncul saat print
+        $activeWorksheet->getHeaderFooter()->setOddHeader('&L&"Calibri,Bold"&14Fukusuke - Production Control');
+        // Footer
+        $currentDate = date('d M Y - H:i');
+        $footerLeft = '&L&"Calibri"&10Printed: ' . $currentDate . ', by: ' . auth()->user()->username;
+        $footerRight = '&R&"Calibri"&10Page: &P of: &N';
+        $activeWorksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'KAPASITAS PRODUKSI SEITAI');
         $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
+        // hide column A
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setVisible(false);
 
         // Header
         $columnMesin = 'B';
@@ -8483,6 +9268,34 @@ class GeneralReportController extends Component
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
         $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+        // Mengatur ukuran kertas menjadi A4
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        // Mengatur agar semua kolom muat dalam satu halaman
+        $activeWorksheet->getPageSetup()->setFitToWidth(1);
+        $activeWorksheet->getPageSetup()->setFitToHeight(0); // Biarkan tinggi menyesuaikan otomatis
+        // Set header berulang untuk print
+        $activeWorksheet->getPageSetup()->setRowsToRepeatAtTop([1, 4]);
+
+        // Jika ingin memastikan rasio tetap terjaga
+        $activeWorksheet->getPageSetup()->setFitToPage(true);
+
+        // Mengatur margin halaman menjadi 0.75 cm di semua sisi
+        $activeWorksheet->getPageMargins()->setTop(1.1 / 2.54);
+        $activeWorksheet->getPageMargins()->setBottom(1.0 / 2.54);
+        $activeWorksheet->getPageMargins()->setLeft(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setRight(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setHeader(0.4 / 2.54);
+        $activeWorksheet->getPageMargins()->setFooter(0.5 / 2.54);
+        // Mengatur tinggi sel agar otomatis menyesuaikan dengan konten
+        $activeWorksheet->getDefaultRowDimension()->setRowHeight(-1);
+
+        // Header yang hanya muncul saat print
+        $activeWorksheet->getHeaderFooter()->setOddHeader('&L&"Calibri,Bold"&14Fukusuke - Production Control');
+        // Footer
+        $currentDate = date('d M Y - H:i');
+        $footerLeft = '&L&"Calibri"&10Printed: ' . $currentDate . ', by: ' . auth()->user()->username;
+        $footerRight = '&R&"Calibri"&10Page: &P of: &N';
+        $activeWorksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
         $spreadsheet->getActiveSheet()->freezePane('A5');
 
         // Judul
@@ -8490,6 +9303,8 @@ class GeneralReportController extends Component
         $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
+        // hide column A
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setVisible(false);
 
         /**
          * Header
@@ -8864,12 +9679,42 @@ class GeneralReportController extends Component
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
         $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+        // Mengatur ukuran kertas menjadi A4
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        // Mengatur agar semua kolom muat dalam satu halaman
+        $activeWorksheet->getPageSetup()->setFitToWidth(1);
+        $activeWorksheet->getPageSetup()->setFitToHeight(0); // Biarkan tinggi menyesuaikan otomatis
+        // Set header berulang untuk print
+        $activeWorksheet->getPageSetup()->setRowsToRepeatAtTop([1, 3]);
+
+        // Jika ingin memastikan rasio tetap terjaga
+        $activeWorksheet->getPageSetup()->setFitToPage(true);
+
+        // Mengatur margin halaman menjadi 0.75 cm di semua sisi
+        $activeWorksheet->getPageMargins()->setTop(1.1 / 2.54);
+        $activeWorksheet->getPageMargins()->setBottom(1.0 / 2.54);
+        $activeWorksheet->getPageMargins()->setLeft(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setRight(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setHeader(0.4 / 2.54);
+        $activeWorksheet->getPageMargins()->setFooter(0.5 / 2.54);
+        // Mengatur tinggi sel agar otomatis menyesuaikan dengan konten
+        $activeWorksheet->getDefaultRowDimension()->setRowHeight(-1);
+
+        // Header yang hanya muncul saat print
+        $activeWorksheet->getHeaderFooter()->setOddHeader('&L&"Calibri,Bold"&14Fukusuke - Production Control');
+        // Footer
+        $currentDate = date('d M Y - H:i');
+        $footerLeft = '&L&"Calibri"&10Printed: ' . $currentDate . ', by: ' . auth()->user()->username;
+        $footerRight = '&R&"Calibri"&10Page: &P of: &N';
+        $activeWorksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER MESIN PER PRODUK INFURE');
         $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
+        // hide column A
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setVisible(false);
 
         // Header
         $columnTipeProduk = 'A';
@@ -9219,6 +10064,34 @@ class GeneralReportController extends Component
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
         $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+        // Mengatur ukuran kertas menjadi A4
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        // Mengatur agar semua kolom muat dalam satu halaman
+        $activeWorksheet->getPageSetup()->setFitToWidth(1);
+        $activeWorksheet->getPageSetup()->setFitToHeight(0); // Biarkan tinggi menyesuaikan otomatis
+        // Set header berulang untuk print
+        $activeWorksheet->getPageSetup()->setRowsToRepeatAtTop([1, 3]);
+
+        // Jika ingin memastikan rasio tetap terjaga
+        $activeWorksheet->getPageSetup()->setFitToPage(true);
+
+        // Mengatur margin halaman menjadi 0.75 cm di semua sisi
+        $activeWorksheet->getPageMargins()->setTop(1.1 / 2.54);
+        $activeWorksheet->getPageMargins()->setBottom(1.0 / 2.54);
+        $activeWorksheet->getPageMargins()->setLeft(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setRight(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setHeader(0.4 / 2.54);
+        $activeWorksheet->getPageMargins()->setFooter(0.5 / 2.54);
+        // Mengatur tinggi sel agar otomatis menyesuaikan dengan konten
+        $activeWorksheet->getDefaultRowDimension()->setRowHeight(-1);
+
+        // Header yang hanya muncul saat print
+        $activeWorksheet->getHeaderFooter()->setOddHeader('&L&"Calibri,Bold"&14Fukusuke - Production Control');
+        // Footer
+        $currentDate = date('d M Y - H:i');
+        $footerLeft = '&L&"Calibri"&10Printed: ' . $currentDate . ', by: ' . auth()->user()->username;
+        $footerRight = '&R&"Calibri"&10Page: &P of: &N';
+        $activeWorksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
 
         // Judul
         $activeWorksheet->setCellValue('A1', 'DAFTAR PRODUKSI PER MESIN PER PRODUK SEITAI');

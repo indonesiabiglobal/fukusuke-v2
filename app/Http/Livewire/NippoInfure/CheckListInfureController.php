@@ -171,16 +171,28 @@ class CheckListInfureController extends Component
         // Mengatur agar semua kolom muat dalam satu halaman
         $activeWorksheet->getPageSetup()->setFitToWidth(1);
         $activeWorksheet->getPageSetup()->setFitToHeight(0); // Biarkan tinggi menyesuaikan otomatis
+        // Set header berulang untuk print
+        $activeWorksheet->getPageSetup()->setRowsToRepeatAtTop([1, 3]);
 
         // Jika ingin memastikan rasio tetap terjaga
         $activeWorksheet->getPageSetup()->setFitToPage(true);
         // Mengatur margin halaman menjadi 0.75 cm di semua sisi
-        $activeWorksheet->getPageMargins()->setTop(0.75 / 2.54);
-        $activeWorksheet->getPageMargins()->setBottom(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setTop(1.1 / 2.54);
+        $activeWorksheet->getPageMargins()->setBottom(1.0 / 2.54);
         $activeWorksheet->getPageMargins()->setLeft(0.75 / 2.54);
         $activeWorksheet->getPageMargins()->setRight(0.75 / 2.54);
-        $activeWorksheet->getPageMargins()->setHeader(0.75 / 2.54);
-        $activeWorksheet->getPageMargins()->setFooter(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setHeader(0.4 / 2.54);
+        $activeWorksheet->getPageMargins()->setFooter(0.5 / 2.54);
+        // Mengatur tinggi sel agar otomatis menyesuaikan dengan konten
+        $activeWorksheet->getDefaultRowDimension()->setRowHeight(-1);
+
+        // Header yang hanya muncul saat print
+        $activeWorksheet->getHeaderFooter()->setOddHeader('&L&"Calibri,Bold"&14Fukusuke - Production Control');
+        // Footer
+        $currentDate = date('d M Y - H:i');
+        $footerLeft = '&L&"Calibri"&10Printed: ' . $currentDate . ', by: ' . auth()->user()->username;
+        $footerRight = '&R&"Calibri"&10Page: &P of: &N';
+        $activeWorksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
 
         $columnHeaderEnd = chr(ord($columnHeaderEnd) - 1);
 
@@ -535,7 +547,7 @@ class CheckListInfureController extends Component
 
         // footer keterangan tanggal, jam, dan nama petugas
         $rowFooterStart = $rowItem + 2;
-        $activeWorksheet->setCellValue('A' . $rowFooterStart, 'Dicetak pada: ' . Carbon::now()->translatedFormat('d-M-Y H:i:s') . ', oleh: ' . auth()->user()->empname);
+        // $activeWorksheet->setCellValue('A' . $rowFooterStart, 'Dicetak pada: ' . Carbon::now()->translatedFormat('d-M-Y H:i:s') . ', oleh: ' . auth()->user()->empname);
         phpspreadsheet::styleFont($spreadsheet, 'A' . $rowFooterStart . ':A' . ($rowFooterStart + 1), false, 9, 'Calibri');
 
 

@@ -44,6 +44,7 @@ class DetailReportInfureController
         $this->spreadsheet = new Spreadsheet();
         $this->worksheet = $this->spreadsheet->getActiveSheet();
         $this->worksheet->setShowGridlines(false);
+        $activeWorksheet = $this->spreadsheet->getActiveSheet();
 
         // Optimalkan penggunaan memori
         $this->spreadsheet->getProperties()
@@ -52,6 +53,34 @@ class DetailReportInfureController
 
         // Nonaktifkan perhitungan otomatis
         $this->spreadsheet->getCalculationEngine()->disableCalculationCache();
+        // Mengatur ukuran kertas menjadi A4
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        // Mengatur agar semua kolom muat dalam satu halaman
+        $activeWorksheet->getPageSetup()->setFitToWidth(1);
+        $activeWorksheet->getPageSetup()->setFitToHeight(0);
+        // Set header berulang untuk print
+        $activeWorksheet->getPageSetup()->setRowsToRepeatAtTop([1, 3]);
+
+        // Jika ingin memastikan rasio tetap terjaga
+        $activeWorksheet->getPageSetup()->setFitToPage(true);
+
+        // Mengatur margin halaman menjadi 0.75 cm di semua sisi
+        $activeWorksheet->getPageMargins()->setTop(1.1 / 2.54);
+        $activeWorksheet->getPageMargins()->setBottom(1.0 / 2.54);
+        $activeWorksheet->getPageMargins()->setLeft(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setRight(0.75 / 2.54);
+        $activeWorksheet->getPageMargins()->setHeader(0.4 / 2.54);
+        $activeWorksheet->getPageMargins()->setFooter(0.5 / 2.54);
+        // Mengatur tinggi sel agar otomatis menyesuaikan dengan konten
+        $activeWorksheet->getDefaultRowDimension()->setRowHeight(-1);
+
+        // Header yang hanya muncul saat print
+        $activeWorksheet->getHeaderFooter()->setOddHeader('&L&"Calibri,Bold"&14Fukusuke - Production Control');
+        // Footer
+        $currentDate = date('d M Y - H:i');
+        $footerLeft = '&L&"Calibri"&10Printed: ' . $currentDate . ', by: ' . auth()->user()->username;
+        $footerRight = '&R&"Calibri"&10Page: &P of: &N';
+        $activeWorksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
     }
 
     private function getOptimizedData($tglAwal, $tglAkhir, $filters)
