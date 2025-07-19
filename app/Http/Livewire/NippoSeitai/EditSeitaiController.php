@@ -493,6 +493,7 @@ class EditSeitaiController extends Component
             $order = TdProductGoods::where('id', $this->orderId)->first();
             $order->delete();
 
+            // update status production pada TdProductAssembly
             TdProductAssembly::where('lpk_id', $order['lpk_id'])->orderBy('seq_no', 'ASC')
                 ->update([
                     'status_production' => 0,

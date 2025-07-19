@@ -343,11 +343,6 @@ class AddSeitaiController extends Component
                 'total_assembly_qty' => $lastQty + $this->qty_produksi,
             ]);
 
-            TdProductAssembly::where('lpk_id', $lpkid->id)->orderBy('seq_no', 'ASC')
-                ->update([
-                    'status_production' => 1,
-                ]);
-
             // menginput data gentan
             foreach ($this->detailsGentan as $gentan) {
                 $datas = new TdProductGoodsAssembly();
