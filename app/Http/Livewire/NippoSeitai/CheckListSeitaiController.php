@@ -90,6 +90,12 @@ class CheckListSeitaiController extends Component
 
     public function checklist($isNippo = false, $filter = null)
     {
+        // Tambahkan di controller untuk debug
+        dd([
+            'current_limit' => ini_get('memory_limit'),
+            'env_value' => env('PHP_MEMORY_LIMIT'),
+            'peak_usage' => memory_get_peak_usage(true) / 1024 / 1024 . ' MB'
+        ]);
         if ($isNippo) {
             $this->tglAwal = $filter['tglAwal'];
             $this->tglAkhir = $filter['tglAkhir'];
