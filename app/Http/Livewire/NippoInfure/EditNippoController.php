@@ -78,6 +78,8 @@ class EditNippoController extends Component
     public $tglAwal;
     public $tglKeluar;
 
+    protected $productGoodsAssembly;
+
     public function mount(Request $request)
     {
         $data = DB::table('tdproduct_assembly AS tda')
@@ -183,6 +185,7 @@ class EditNippoController extends Component
         $this->qty_gentan = number_format($data->qty_gentan, 0, ',', ',');
         $this->berat_produksi = $data->berat_produksi;
         $this->berat_jenis = $data->berat_jenis;
+        $this->statusSeitai = $data->status_production == '1' ? true : false;
 
         $this->details = DB::table('tdproduct_assembly_loss as tal')
             ->select(
@@ -198,15 +201,10 @@ class EditNippoController extends Component
             ->where('tal.product_assembly_id', $this->orderId)
             ->get();
 
-        $productGoodsAssembly = DB::table('tdproduct_goods_assembly AS tdpg')
+        $this->productGoodsAssembly = DB::table('tdproduct_goods_assembly AS tdpg')
             ->where('tdpg.product_assembly_id', $data->id)
             ->get();
 
-        if ($productGoodsAssembly->count() > 0) {
-            $this->statusSeitai = 1;
-        } else {
-            $this->statusSeitai = 0;
-        }
     }
 
     public function showModalNoOrder()
@@ -348,7 +346,6 @@ class EditNippoController extends Component
             $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor LPK tidak boleh kosong']);
         }
     }
-
 
     public function rules()
     {

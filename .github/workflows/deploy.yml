@@ -50,6 +50,10 @@ jobs:
           script: |
             cd /opt/fukusuke-v2
             echo "${{ secrets.REMOTE_PASSWORD_3 }}" | sudo -S git pull origin main
+            echo "${{ secrets.REMOTE_PASSWORD_3 }}" | sudo -S chown -R www-data:www-data /opt/fukusuke-v2
+            echo "${{ secrets.REMOTE_PASSWORD_3 }}" | sudo -S chmod -R 755 /opt/fukusuke-v2
+            echo "${{ secrets.REMOTE_PASSWORD_3 }}" | sudo -S chmod -R 775 /opt/fukusuke-v2/storage
+            echo "${{ secrets.REMOTE_PASSWORD_3 }}" | sudo -S chmod -R 775 /opt/fukusuke-v2/bootstrap/cache
             echo "${{ secrets.REMOTE_PASSWORD_3 }}" | sudo -S php artisan config:cache
             echo "${{ secrets.REMOTE_PASSWORD_3 }}" | sudo -S php artisan route:cache
             echo "${{ secrets.REMOTE_PASSWORD_3 }}" | sudo -S php artisan view:cache
