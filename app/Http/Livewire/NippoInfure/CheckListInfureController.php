@@ -575,7 +575,7 @@ class CheckListInfureController extends Component
         $spreadsheet->getActiveSheet()->getColumnDimension('R')->setWidth(5.10);
 
         $writer = new Xlsx($spreadsheet);
-        $filename = 'asset/report/nippo/infure/checklist/NippoInfure-' . $jenisReport . '.xlsx';
+        $filename = 'asset/report/NippoInfure-' . $jenisReport . '.xlsx';
         $writer->save($filename);
         $response = [
             'status' => 'success',
