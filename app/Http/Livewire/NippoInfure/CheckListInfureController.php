@@ -105,7 +105,7 @@ class CheckListInfureController extends Component
 
         $response = $this->checklistInfure($tglAwal, $tglAkhir, $this->jenisReport);
         if ($response['status'] == 'success') {
-            return response()->download($response['filename']);
+            return response()->download($response['filename'])->deleteFileAfterSend(true);
         } else if ($response['status'] == 'error') {
             $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
             return;
@@ -575,7 +575,7 @@ class CheckListInfureController extends Component
         $spreadsheet->getActiveSheet()->getColumnDimension('R')->setWidth(5.10);
 
         $writer = new Xlsx($spreadsheet);
-        $filename = 'asset/report/nippo/infure/' . $jenisReport . '/NippoInfure-' . $jenisReport . '.xlsx';
+        $filename = 'asset/report/nippo/infure/checklist/NippoInfure-' . $jenisReport . '.xlsx';
         $writer->save($filename);
         $response = [
             'status' => 'success',

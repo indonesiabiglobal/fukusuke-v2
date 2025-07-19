@@ -72,7 +72,7 @@ class CheckListSeitaiController extends Component
         if ($this->jenisReport == 'CheckList') {
             $response = $this->checklist();
             if ($response['status'] == 'success') {
-                return response()->download($response['filename']);
+                return response()->download($response['filename'])->deleteFileAfterSend(true);
             } else if ($response['status'] == 'error') {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                 return;
@@ -80,7 +80,7 @@ class CheckListSeitaiController extends Component
         } else if ($this->jenisReport == 'LossSeitai') {
             $response = $this->loss();
             if ($response['status'] == 'success') {
-                return response()->download($response['filename']);
+                return response()->download($response['filename'])->deleteFileAfterSend(true);
             } else if ($response['status'] == 'error') {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                 return;
@@ -633,7 +633,7 @@ class CheckListSeitaiController extends Component
         $spreadsheet->getActiveSheet()->getColumnDimension('L')->setWidth(8.2);
 
         $writer = new Xlsx($spreadsheet);
-        $filename = 'asset/report/nippo/seitai/' . $this->jenisReport . '/NippoSeitai-' . $this->jenisReport . '.xlsx';
+        $filename = 'asset/report/nippo/seitai/checklist/NippoSeitai-' . $this->jenisReport . '.xlsx';
         $writer->save($filename);
         $response = [
             'status' => 'success',
