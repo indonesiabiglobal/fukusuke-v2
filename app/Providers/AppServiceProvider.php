@@ -22,6 +22,6 @@ class AppServiceProvider extends ServiceProvider
     {
         //
         Schema::defaultStringLength(191);
-        ini_set('memory_limit', env('PHP_MEMORY_LIMIT', '1G'));
+        ini_set('memory_limit', env('PHP_MEMORY_LIMIT', '4G'));
     }
 }
