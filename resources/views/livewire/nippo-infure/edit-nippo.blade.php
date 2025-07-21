@@ -510,7 +510,8 @@
                                     <div class="input-group">
                                         <label class="col-12 col-lg-2 fw-bold text-muted">Kode Loss </label>
                                         <input id="inputKodeLoss" class="form-control" type="text"
-                                            wire:model.change="loss_infure_code" placeholder="..." />
+                                            wire:model.change="loss_infure_code" placeholder="..."
+                                            x-on:keydown.tab="$event.preventDefault(); $refs.berat_loss.focus();" />
                                         @error('loss_infure_code')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror
