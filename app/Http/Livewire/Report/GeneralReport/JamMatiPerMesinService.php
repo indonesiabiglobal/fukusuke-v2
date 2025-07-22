@@ -85,7 +85,8 @@ class JamMatiPerMesinService
             ->selectRaw("FLOOR(EXTRACT(EPOCH FROM COALESCE(SUM(jkm.off_hour), INTERVAL '0')) / 60) AS total_off_minutes")
             ->join('tdjamkerjamesin as jkm', 'jkm.machine_id', '=', 'msmachine.id')
             ->join('ms_jam_mati_mesin as jmm', 'jmm.id', '=', 'jkm.jam_mati_mesin_id')
-            ->whereBetween('jkm.working_date', [$tglMasuk, $tglKeluar])
+            ->join('msworkingshift as ws', 'ws.id', '=', 'jkm.work_shift')
+            ->whereRaw("(jkm.working_date + ws.work_hour_from) BETWEEN ? AND ?", [$tglMasuk, $tglKeluar])
             ->whereNotNull('jkm.jam_mati_mesin_id')
             ->where('msmachine.status', 1);
 
@@ -254,7 +255,8 @@ class JamMatiPerMesinService
             )
             ->selectRaw("FLOOR(EXTRACT(EPOCH FROM COALESCE(SUM(jkm.off_hour), INTERVAL '0')) / 60) AS total_off_minutes")
             ->join('tdjamkerjamesin as jkm', 'jkm.jam_mati_mesin_id', '=', 'ms_jam_mati_mesin.id')
-            ->whereBetween('jkm.working_date', [$tglMasuk, $tglKeluar])
+            ->join('msworkingshift as ws', 'ws.id', '=', 'jkm.work_shift')
+            ->whereRaw("(jkm.working_date + ws.work_hour_from) BETWEEN ? AND ?", [$tglMasuk, $tglKeluar])
             ->whereNotNull('jkm.jam_mati_mesin_id')
             ->where('ms_jam_mati_mesin.status', 1);
 
