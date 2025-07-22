@@ -102,6 +102,10 @@
                     <optgroup label="Kapasitas">
                         <option value="Kapasitas Produksi">15. Kapasitas Produksi</option>
                     </optgroup>
+                    <optgroup label="Jam Mati Mesin">
+                        <option value="Jam Mati Per Mesin">16. Jam Mati Per Mesin</option>
+                        <option value="Jam Mati Per Jenis">17. Jam Mati Per Jenis</option>
+                    </optgroup>
                 </select>
             </div>
         </div>

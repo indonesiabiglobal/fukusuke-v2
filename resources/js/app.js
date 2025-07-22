@@ -228,6 +228,11 @@ File: Main Js File
 					(dateData.enableTime = true),
 					(dateData.dateFormat = isFlatpickerVal["data-date-format"].value.toString() + " H:i");
 				}
+				if (isFlatpickerVal["data-time-hrs"]) {
+					(dateData.enableTime = true),
+					(dateData.dateFormat = isFlatpickerVal["data-date-format"].value.toString() + " H:i");
+					(dateData.time_24hr = true);
+				}
 				if (isFlatpickerVal["data-altFormat"]) {
 					(dateData.altInput = true),
 					(dateData.altFormat = isFlatpickerVal["data-altFormat"].value.toString());

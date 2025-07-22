@@ -10,6 +10,7 @@ use App\Helpers\phpspreadsheet;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Exports\GeneralReportExport;
+use App\Http\Livewire\Report\GeneralReport\JamMatiPerMesinService;
 use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -288,7 +289,6 @@ class GeneralReportController extends Component
                         $this->jenisreport,
                     ), 'Seitai_Kapasitas Produksi.xlsx');
                 }
-
                 break;
             default:
                 // dd('ini percobaan');
@@ -591,6 +591,28 @@ class GeneralReportController extends Component
                         return;
                     }
                 }
+                break;
+
+            case 'Jam Mati Per Mesin':
+                $response = $this->jamMatiPerMesin($tglMasuk, $tglKeluar);
+                if ($response['status'] == 'success') {
+                    return response()->download($response['filename'])->deleteFileAfterSend(true);
+                } else if ($response['status'] == 'error') {
+                    $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                    return;
+                }
+                break;
+
+            case 'Jam Mati Per Jenis':
+                $response = $this->jamMatiPerJenis($tglMasuk, $tglKeluar);
+                if ($response['status'] == 'success') {
+                    return response()->download($response['filename'])->deleteFileAfterSend(true);
+                } else if ($response['status'] == 'error') {
+                    $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                    return;
+                }
+                break;
+
         }
     }
 
@@ -10404,6 +10426,16 @@ class GeneralReportController extends Component
             'filename' => $filename
         ];
         return $response;
+    }
+
+    public function jamMatiPerMesin($tglMasuk, $tglKeluar)
+    {
+        return JamMatiPerMesinService::jamMatiPerMesin($this->nipon, $this->jenisreport, $tglMasuk, $tglKeluar);
+    }
+
+    public function jamMatiPerJenis($tglMasuk, $tglKeluar)
+    {
+        return JamMatiPerMesinService::jamMatiPerJenis($this->nipon, $this->jenisreport, $tglMasuk, $tglKeluar);
     }
 
     public function render()

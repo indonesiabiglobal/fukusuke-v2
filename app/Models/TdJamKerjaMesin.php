@@ -30,4 +30,10 @@ class TdJamKerjaMesin extends Model
             $model->updated_by = Auth::user()->username;
         });
     }
+
+    // relations
+    public function jamMatiMesin()
+    {
+        return $this->belongsTo(MsJamMatiMesin::class, 'jam_mati_mesin_id', 'id');
+    }
 }

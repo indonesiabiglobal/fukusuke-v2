@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\jamKerja;
 
 use App\Models\MsEmployee;
+use App\Models\MsJamMatiMesin;
 use App\Models\MsMachine;
 use App\Models\MsWorkingShift;
 use App\Models\TdJamKerjaMesin;
@@ -28,6 +29,9 @@ class InfureJamKerjaController extends Component
     public $machine;
     public $msemployee;
     public $employeeno;
+    public $jamMatiMesinId;
+    public $jamMatiMesinCode;
+    public $jamMatiMesinName;
     public $transaksi;
     public $working_date;
     public $empname;
@@ -79,7 +83,7 @@ class InfureJamKerjaController extends Component
 
     public function showModalCreate()
     {
-        // $this->resetInput();
+        $this->resetInput();
         $this->working_date = Carbon::now()->format('d-m-Y');
         $this->dispatch('showModalCreate');
         // Mencegah render ulang
@@ -92,6 +96,7 @@ class InfureJamKerjaController extends Component
         if ($item) {
             $machine = MsMachine::where('id', $item->machine_id)->first();
             $msemployee = MsEmployee::where('id', $item->employee_id)->first();
+            $jamMatiMesin = MsJamMatiMesin::where('id', $item->jam_mati_mesin_id)->first();
 
             $this->orderid = $item->id;
             $this->working_date = $item->working_date;
@@ -100,6 +105,9 @@ class InfureJamKerjaController extends Component
             $this->machinename = $machine->machinename;
             $this->employeeno = $msemployee->employeeno;
             $this->empname = $msemployee->empname;
+            $this->jamMatiMesinId = $jamMatiMesin->id;
+            $this->jamMatiMesinCode = trim($jamMatiMesin->code, 'I');
+            $this->jamMatiMesinName = $jamMatiMesin->name;
             $this->work_hour = Carbon::parse($item->work_hour)->format('H:i');
             $this->off_hour = Carbon::parse($item->off_hour)->format('H:i');
 
@@ -124,6 +132,9 @@ class InfureJamKerjaController extends Component
         $this->empname = '';
         $this->work_hour = '';
         $this->off_hour = '';
+        $this->jamMatiMesinId = '';
+        $this->jamMatiMesinCode = '';
+        $this->jamMatiMesinName = '';
     }
 
     public function validateWorkHour()
@@ -159,16 +170,25 @@ class InfureJamKerjaController extends Component
 
     public function save()
     {
-        $validatedData = $this->validate([
-            'working_date' => 'required',
-            'work_shift' => 'required',
-            'machineno' => 'required',
-            'employeeno' => 'required',
-            'work_hour' => 'required',
-            'off_hour' => 'required'
-        ]);
-
         try {
+            $validatedData = $this->validate([
+                'working_date' => 'required',
+                'work_shift' => 'required',
+                'machineno' => 'required',
+                'employeeno' => 'required',
+                'work_hour' => 'required',
+                'off_hour' => 'required',
+                'jamMatiMesinCode' => 'required',
+            ], [
+                'working_date.required' => 'Tanggal Produksi harus diisi',
+                'work_shift.required' => 'Shift Kerja harus diisi',
+                'machineno.required' => 'Nomor Mesin harus diisi',
+                'employeeno.required' => 'Nomor Karyawan harus diisi',
+                'work_hour.required' => 'Jam Kerja harus diisi',
+                'off_hour.required' => 'Jam Off Kerja harus diisi',
+                'jamMatiMesinCode.required' => 'Jam Mati Mesin harus diisi',
+            ]);
+
             // menghitung waktu on hour
             $workHour = Carbon::parse($this->work_hour);
             $offHour = Carbon::parse($this->off_hour);
@@ -190,6 +210,7 @@ class InfureJamKerjaController extends Component
                     'work_hour' => $this->work_hour,
                     'off_hour' => $this->off_hour,
                     'on_hour' => $onHour,
+                    'jam_mati_mesin_id' => $this->jamMatiMesinId,
                     'created_on' => Carbon::now(),
                     'created_by' => auth()->user()->username,
                     'updated_on' => Carbon::now(),
@@ -211,6 +232,7 @@ class InfureJamKerjaController extends Component
                 $orderlpk->work_hour = $this->work_hour;
                 $orderlpk->off_hour =  $this->off_hour;
                 $orderlpk->on_hour = $onHour;
+                $orderlpk->jam_mati_mesin_id = $this->jamMatiMesinId;
                 $orderlpk->created_on = Carbon::now();
                 $orderlpk->created_by = auth()->user()->username;
                 $orderlpk->updated_on = Carbon::now();
@@ -223,9 +245,28 @@ class InfureJamKerjaController extends Component
             }
 
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
-            // return redirect()->route('infure-jam-kerja');
         } catch (\Exception $e) {
             $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $this->dispatch('notification', ['type' => 'warning', 'message' => $e->validator->errors()]);
+        }
+    }
+
+    public function updatedJamMatiMesinCode($jamMatiMesinCode)
+    {
+        $this->jamMatiMesinCode = $jamMatiMesinCode;
+
+        if (isset($this->jamMatiMesinCode) && $this->jamMatiMesinCode != '' && strlen($this->jamMatiMesinCode) >= 3) {
+            $jamMatiMesin = MsJamMatiMesin::where('code', "I" . $this->jamMatiMesinCode)->first();
+            if ($jamMatiMesin == null) {
+                $this->jamMatiMesinId = '';
+                $this->jamMatiMesinName = '';
+                $this->jamMatiMesinCode = '';
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Jam Mati Mesin ' . $jamMatiMesinCode . ' Tidak Terdaftar']);
+            } else {
+                $this->jamMatiMesinId = $jamMatiMesin->id;
+                $this->jamMatiMesinName = $jamMatiMesin->name;
+            }
         }
     }
 
@@ -272,11 +313,14 @@ class InfureJamKerjaController extends Component
                 'msm.machineno',
                 'msm.machinename',
                 'mse.empname',
-                'mse.employeeno'
+                'mse.employeeno',
+                'msjmm.name as jam_mati_mesin_name',
+                'msjmm.code as jam_mati_mesin_code'
             )
             ->join('msmachine AS msm', 'msm.id', '=', 'tdjkm.machine_id')
             ->join('msemployee AS mse', 'mse.id', '=', 'tdjkm.employee_id')
             ->join('msdepartment AS msd', 'msd.id', '=', 'tdjkm.department_id')
+            ->join('ms_jam_mati_mesin AS msjmm', 'msjmm.id', '=', 'tdjkm.jam_mati_mesin_id')
             ->where('msd.division_code','10');
 
         if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
@@ -299,7 +343,6 @@ class InfureJamKerjaController extends Component
                     ->orWhere('msm.machinename', 'ilike', '%' . $this->searchTerm . '%');
             });
         }
-
         $data = $data->get();
 
         return view('livewire.jam-kerja.infure', [

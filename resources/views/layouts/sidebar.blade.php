@@ -330,6 +330,20 @@
                                     </ul>
                                 </div>
                             </li>
+                            {{-- Jam mati mesin --}}
+                            <li class="nav-item">
+                                <a href="#jam-mati-mesin" class="nav-link" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="jam-mati-mesin" data-key="t-profile"><i class="bx bx-alarm-off"></i> Jam Mati Mesin </a>
+                                <div class="collapse menu-dropdown" id="jam-mati-mesin">
+                                    <ul class="nav nav-sm flex-column">
+                                        <li class="nav-item">
+                                            <a href="jam-mati-mesin-infure" class="nav-link" data-key="t-simple-page"> Infure </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="jam-mati-mesin-seitai" class="nav-link" data-key="t-simple-page"> Seitai </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
                         </ul>
                     </div>
                 </li>

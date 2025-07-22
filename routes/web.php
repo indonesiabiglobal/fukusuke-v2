@@ -77,6 +77,8 @@ use App\Http\Livewire\MasterTabel\Loss\MenuLossKlasifikisasiController;
 use App\Http\Livewire\MasterTabel\Inventory\PemasukanBarangController;
 use App\Http\Livewire\MasterTabel\Inventory\PengeluaranBarangController;
 use App\Http\Livewire\MasterTabel\Inventory\PosisiWipController;
+use App\Http\Livewire\MasterTabel\JamMatiMesin\JamMatiMesinInfureController;
+use App\Http\Livewire\MasterTabel\JamMatiMesin\JamMatiMesinSeitaiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -204,6 +206,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/kemasan-gasio', GaisoController::class)->name('kemasan-gasio');
     Route::get('/kemasan-inner', InnerController::class)->name('kemasan-inner');
     Route::get('/kemasan-layer', LayerController::class)->name('kemasan-layer');
+
+    Route::get('/jam-mati-mesin-infure', JamMatiMesinInfureController::class)->name('master-jam-mati-mesin-infure');
+    Route::get('/jam-mati-mesin-seitai', JamMatiMesinSeitaiController::class)->name('master-jam-mati-mesin-seitai');
 
     // Administration
     Route::get('/security-management', SecurityManagementController::class)->name('security-management');

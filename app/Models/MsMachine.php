@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\departmentHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -28,5 +29,21 @@ class MsMachine extends Model
         static::updating(function ($model) {
             $model->updated_by = Auth::user()->username;
         });
+    }
+
+    public function scopeInfureDepartment($query)
+    {
+        return $query->whereIn('msmachine.department_id', departmentHelper::infureDepartment());
+    }
+
+    public function scopeSeitaiDepartment($query)
+    {
+        return $query->whereIn('msmachine.department_id', departmentHelper::seitaiDepartment());
+    }
+
+    // Relations
+    public function jamKerjaMesin()
+    {
+        return $this->hasMany(TdJamKerjaMesin::class, 'machine_id', 'id');
     }
 }

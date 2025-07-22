@@ -76,7 +76,8 @@
 
     <div class="col-lg-12">
         <div class="toolbar">
-            <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1" wire:loading.attr="disabled">
+            <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1"
+                wire:loading.attr="disabled">
                 <span wire:loading.remove wire:target="search">
                     <i class="ri-search-line"></i> Filter
                 </span>
@@ -124,7 +125,7 @@
                                         <label>Shift </label>
                                         <div class="input-group col-md-9 col-xs-8">
                                             <input class="form-control" type="text" wire:model.defer="work_shift"
-                                                placeholder="..." />
+                                                placeholder="..." maxlength="1" />
                                             @error('work_shift')
                                                 <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror
@@ -183,16 +184,34 @@
                                         @enderror
                                     </div>
                                 </div>
+                                {{-- Kode Jam Mati Mesin --}}
+                                <div class="col-lg-12 mb-1">
+                                    <div class="form-group">
+                                        <label>Kode Jam Mati Mesin</label>
+                                        <div class="input-group col-md-9 col-xs-8">
+                                            <input class="form-control" wire:model.change="jamMatiMesinCode"
+                                                x-ref="jamMatiMesinCodeInput" type="text" placeholder="..."
+                                                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                                maxlength="3"
+                                                x-on:keydown.tab="$event.preventDefault(); $refs.save.focus();" />
+                                            @error('jamMatiMesinCode')
+                                                <span class="invalid-feedback">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 mb-1">
+                                    <label for="">Keterangan Jam Mati</label>
+                                    <div class="form-group" style="margin-left:1px; white-space:nowrap">
+                                        <input class="form-control readonly bg-light" readonly="readonly"
+                                            type="text" wire:model="jamMatiMesinName" placeholder="..." />
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="modal-footer">
-                            {{-- <button type="button" class="btn btn-secondary">Accept</button> --}}
-                            <button type="button" class="btn btn-link text-gray-600 ms-auto"
-                                data-bs-dismiss="modal">Close</button>
-                            {{-- <button type="submit" class="btn btn-success" wire:click="save">
-                                Save
-                            </button> --}}
-                            <button type="submit" class="btn btn-success" wire:click="save" wire:loading.attr="disabled">
+                            <button type="submit" class="btn btn-success ms-auto" wire:click="save"
+                                wire:loading.attr="disabled" x-ref="save">
                                 <span wire:loading.remove wire:target="save">
                                     <i class="ri-save-3-line"></i> Save
                                 </span>
@@ -207,6 +226,8 @@
                                     </span>
                                 </div>
                             </button>
+                            <button type="button" class="btn btn-link text-gray-600"
+                                data-bs-dismiss="modal">Close</button>
                         </div>
                     </div>
                 </div>
@@ -244,7 +265,7 @@
                                         <label>Shift </label>
                                         <div class="input-group col-md-9 col-xs-8">
                                             <input class="form-control" type="text" wire:model.defer="work_shift"
-                                                placeholder="..." />
+                                                placeholder="..." maxlength="1" />
                                             @error('work_shift')
                                                 <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror
@@ -304,16 +325,34 @@
                                         @enderror
                                     </div>
                                 </div>
+                                {{-- Kode Jam Mati Mesin --}}
+                                <div class="col-lg-12 mb-1">
+                                    <div class="form-group">
+                                        <label>Kode Jam Mati Mesin</label>
+                                        <div class="input-group col-md-9 col-xs-8">
+                                            <input class="form-control" wire:model.change="jamMatiMesinCode"
+                                                x-ref="jamMatiMesinCodeEditInput" type="text" placeholder="..."
+                                                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                                maxlength="3"
+                                                x-on:keydown.tab="$event.preventDefault(); $refs.saveEdit.focus();" />
+                                            @error('jamMatiMesinCode')
+                                                <span class="invalid-feedback">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 mb-1">
+                                    <label for="">Keterangan Jam Mati</label>
+                                    <div class="form-group" style="margin-left:1px; white-space:nowrap">
+                                        <input class="form-control readonly bg-light" readonly="readonly"
+                                            type="text" wire:model="jamMatiMesinName" placeholder="..." />
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="modal-footer">
-                            {{-- <button type="button" class="btn btn-secondary">Accept</button> --}}
-                            <button type="button" class="btn btn-link text-gray-600 ms-auto"
-                                data-bs-dismiss="modal">Close</button>
-                            {{-- <button type="button" class="btn btn-success" wire:click="save">
-                                Save
-                            </button> --}}
-                            <button type="submit" class="btn btn-success" wire:click="save" wire:loading.attr="disabled">
+                            <button type="submit" class="btn btn-success ms-auto" wire:click="save"
+                                wire:loading.attr="disabled" x-ref="saveEdit">
                                 <span wire:loading.remove wire:target="save">
                                     <i class="ri-save-3-line"></i> Save
                                 </span>
@@ -328,6 +367,8 @@
                                     </span>
                                 </div>
                             </button>
+                            <button type="button" class="btn btn-link text-gray-600"
+                                data-bs-dismiss="modal">Close</button>
                         </div>
                     </div>
                 </div>
@@ -434,19 +475,19 @@
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="8"
-                            checked> Jam Jalan
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
                         <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="9"
-                            checked> Update By
+                            checked> Jam Mati Mesin
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
                         <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="10"
+                            checked> Update By
+                    </label>
+                </li>
+                <li>
+                    <label style="cursor: pointer;">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="11"
                             checked> Updated
                     </label>
                 </li>
@@ -464,6 +505,7 @@
                     <th>Jam Kerja</th>
                     <th>Jam Mati</th>
                     <th>Jam Jalan</th>
+                    <th>Jam Mati Mesin</th>
                     <th>Update By</th>
                     <th>Updated</th>
                 </tr>
@@ -489,6 +531,24 @@
                         <td>{{ $item->work_hour }}</td>
                         <td>{{ $item->off_hour }}</td>
                         <td>{{ $item->on_hour }}</td>
+                        <td class="py-3">
+                            <div class="d-flex flex-column gap-1">
+                                {{-- Machine Name with Icon --}}
+                                <div class="d-flex align-items-center">
+                                    <i class="ri-settings-3-line text-primary me-2 fs-16"></i>
+                                    <span class="fw-semibold text-dark">
+                                        {{ $item->jam_mati_mesin_name }}
+                                    </span>
+                                </div>
+
+                                {{-- Code with subtle styling --}}
+                                <div class="d-flex align-items-center ms-4">
+                                    <small class="text-muted font-monospace bg-light px-2 py-1 rounded">
+                                        {{ $item->jam_mati_mesin_code }}
+                                    </small>
+                                </div>
+                            </div>
+                        </td>
                         <td>{{ $item->updated_by }}</td>
                         <td>{{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y H:i:s') }}</td>
                     </tr>
@@ -545,7 +605,7 @@
         // Fungsi untuk menginisialisasi ulang DataTable
         function initDataTable() {
             const savedOrder = $wire.get('sortingTable');
-            
+
             let defaultOrder = [
                 [1, "asc"]
             ];
