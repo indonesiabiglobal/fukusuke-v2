@@ -16,11 +16,11 @@ class MsJamMatiMesin extends Model
 
     public function scopeInfureDivision($query)
     {
-        return $query->whereIn('ms_jam_mati_mesin.department_id', departmentHelper::infureDivisiom());
+        return $query->whereIn('ms_jam_mati_mesin.department_id', departmentHelper::infureDivision());
     }
 
     public function scopeSeitaiDivision($query)
     {
-        return $query->whereIn('ms_jam_mati_mesin.department_id', departmentHelper::seitaiDivisiom());
+        return $query->whereIn('ms_jam_mati_mesin.department_id', departmentHelper::seitaiDivision());
     }
 }

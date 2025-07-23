@@ -6,12 +6,12 @@ use App\Models\MsDepartment;
 
 class departmentHelper
 {
-    public static function infureDivisiom()
+    public static function infureDivision()
     {
         return MsDepartment::where('name', 'INFURE')->first('id');
     }
 
-    public static function seitaiDivisiom()
+    public static function seitaiDivision()
     {
         return MsDepartment::where('name', 'SEITAI')->first('id');
     }

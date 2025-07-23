@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\jamKerja;
 
+use App\Helpers\departmentHelper;
 use App\Models\MsEmployee;
 use App\Models\MsMachine;
 use App\Models\MsJamMatiMesin;
@@ -17,12 +18,12 @@ use Livewire\Attributes\Session;
 class SeitaiJamKerjaController extends Component
 {
     protected $paginationTheme = 'bootstrap';
-    protected $listeners = ['edit','delete'];
+    protected $listeners = ['edit', 'delete'];
     #[Session]
     public $tglMasuk;
     #[Session]
     public $tglKeluar;
-    // public $jamkerja = [];
+    public $data = [];
     public $machinename;
     public $machineno;
     public $machine;
@@ -31,17 +32,19 @@ class SeitaiJamKerjaController extends Component
     public $jamMatiMesinId;
     public $jamMatiMesinCode;
     public $jamMatiMesinName;
+    public $off_hour;
+    public $dataJamMatiMesin = [];
     public $transaksi;
     public $working_date;
     public $empname;
     public $work_shift;
     #[Session]
-    public $machine_id;
-    #[Session]
     public $work_shift_filter;
+    #[Session]
+    public $machine_id;
     public $employee_id;
     public $work_hour;
-    public $off_hour;
+    public $totalOffHour = "00:00";
     public $on_hour;
     public $orderid;
     public $workShift;
@@ -50,19 +53,23 @@ class SeitaiJamKerjaController extends Component
     public $idDelete;
     #[Session]
     public $sortingTable;
+    public $isUpdatingSorting = false;
+    public $jamMatiDataUpdated = false;
 
     use WithPagination, WithoutUrlPagination;
 
     public function mount()
     {
+        $this->getData();
         if (empty($this->tglMasuk)) {
             $this->tglMasuk = Carbon::now()->format('d-m-Y');
         }
         if (empty($this->tglKeluar)) {
             $this->tglKeluar = Carbon::now()->format('d-m-Y');
         }
-        $this->machine  = MsMachine::whereNotIn('department_id', [10, 12, 15, 2, 4, 10])->orderBy('machineno', 'ASC')->get();
+        $this->machine  = MsMachine::whereIn('department_id', [10, 12, 15, 2, 4, 10])->get();
         $this->workShift  = MsWorkingShift::where('status', 1)->get();
+        $this->working_date = Carbon::now()->format('d-m-Y');
         if (empty($this->sortingTable)) {
             $this->sortingTable = [[1, 'asc']];
         }
@@ -70,50 +77,65 @@ class SeitaiJamKerjaController extends Component
 
     public function updateSortingTable($value)
     {
+        $this->isUpdatingSorting = true;
         $this->sortingTable = $value;
-        $this->skipRender();
+
+        // Tidak skip render jika ada update data jam mati
+        if (!$this->jamMatiDataUpdated) {
+            $this->skipRender();
+        }
+
+        $this->isUpdatingSorting = false;
     }
 
     public function search()
     {
-        $this->resetPage();
-        $this->render();
+        $this->getData();
     }
 
     public function showModalCreate()
     {
-        $this->resetInput();
+        if ($this->orderid) {
+            $this->dataJamMatiMesin = [];
+            $this->orderid = null;
+            $this->resetInput();
+        }
         $this->working_date = Carbon::now()->format('d-m-Y');
         $this->dispatch('showModalCreate');
-        // Mencegah render ulang
-        $this->skipRender();
     }
 
     public function edit($id)
     {
         $item = TdJamKerjaMesin::find($id);
-        if ($item) {
-            $machine = MsMachine::where('id', $item->machine_id)->first();
-            $msemployee = MsEmployee::where('id', $item->employee_id)->first();
-            $jamMatiMesin = MsJamMatiMesin::where('id', $item->jam_mati_mesin_id)->first();
+        $machine = MsMachine::where('id', $item->machine_id)->first();
+        $msemployee = MsEmployee::where('id', $item->employee_id)->first();
+        $jamMatiMesin = TdJamKerjaJamMatiMesin::with('jamMatiMesin')
+            ->where('jam_kerja_mesin_id', $id)
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'id' => $item->jamMatiMesin->id,
+                    'code' => trim($item->jamMatiMesin->code, 'I'),
+                    'name' => $item->jamMatiMesin->name,
+                    'off_hour' => Carbon::parse($item->off_hour)->format('H:i'),
+                    'off_hour_minutes' => formatTime::timeToMinutes($item->off_hour),
+                ];
+            });
 
-            $this->orderid = $item->id;
-            $this->working_date = $item->working_date;
-            $this->work_shift = $item->work_shift;
-            $this->machineno = $machine->machineno;
-            $this->machinename = $machine->machinename;
-            $this->employeeno = $msemployee->employeeno;
-            $this->empname = $msemployee->empname;
-            $this->jamMatiMesinId = $jamMatiMesin->id;
-            $this->jamMatiMesinCode = trim($jamMatiMesin->code, 'S');
-            $this->jamMatiMesinName = $jamMatiMesin->name;
-            $this->work_hour = Carbon::parse($item->work_hour)->format('H:i');
-            $this->off_hour = Carbon::parse($item->off_hour)->format('H:i');
+        $this->orderid = $item->id;
+        $this->working_date = $item->working_date;
+        $this->work_shift = $item->work_shift;
+        $this->machineno = $machine->machineno;
+        $this->machinename = $machine->machinename;
+        $this->employeeno = $msemployee->employeeno;
+        $this->empname = $msemployee->empname;
+        $this->work_hour = Carbon::parse($item->work_hour)->format('H:i');
+        $this->totalOffHour = formatTime::minutesToTime($jamMatiMesin->sum('off_hour_minutes'));
 
-            $this->dispatch('showModalUpdate');
-        } else {
-            return redirect()->to('jam-kerja/seitai');
-        }
+        $this->dataJamMatiMesin = $jamMatiMesin->toArray();
+
+        $this->dispatch('showModalUpdate');
     }
 
     public function closeModal()
@@ -130,28 +152,141 @@ class SeitaiJamKerjaController extends Component
         $this->employeeno = '';
         $this->empname = '';
         $this->work_hour = '';
-        $this->off_hour = '';
+        $this->totalOffHour = '00:00';
+    }
+
+    public function resetInputJamMatiMesin()
+    {
         $this->jamMatiMesinId = '';
         $this->jamMatiMesinCode = '';
         $this->jamMatiMesinName = '';
+        $this->off_hour = '';
+    }
+
+    public function showModalJamMatiMesin()
+    {
+        $this->resetInputJamMatiMesin();
+        $this->dispatch('showModalJamMatiMesin');
+        // Mencegah render ulang
+        $this->skipRender();
+    }
+
+    public function addJamMatiMesin()
+    {
+        try {
+            $validatedData = $this->validate([
+                'jamMatiMesinId' => 'required',
+                'jamMatiMesinCode' => 'required',
+                'jamMatiMesinName' => 'required',
+                'off_hour' => 'required',
+            ], [
+                'jamMatiMesinId.required' => 'Jam Mati Mesin harus diisi',
+                'jamMatiMesinCode.required' => 'Jam Mati Mesin harus diisi',
+                'jamMatiMesinName.required' => 'Nama Jam Mati Mesin harus diisi',
+                'off_hour.required' => 'Lama Mesin Mati harus diisi',
+            ]);
+
+            // validasi apakah jam mati mesin sudah ada
+            foreach ($this->dataJamMatiMesin as $item) {
+                if ($item['id'] == $this->jamMatiMesinId) {
+                    return $this->dispatch('notification', ['type' => 'warning', 'message' => 'Jam Mati Mesin sudah ada']);
+                }
+            }
+
+            $offHourMinutes = formatTime::timeToMinutes($this->off_hour);
+            $totalOffHourMinutes = formatTime::timeToMinutes($this->totalOffHour);
+
+            // Validasi terhadap batas maksimum (8 jam = 480 menit)
+            if ($totalOffHourMinutes + $offHourMinutes > 480) {
+                return $this->dispatch('notification', ['type' => 'warning', 'message' => 'Total Lama Mesin Mati melebihi 8 jam']);
+            }
+
+            $newTotalMinutes = $totalOffHourMinutes + $offHourMinutes;
+            $this->totalOffHour = formatTime::minutesToTime($newTotalMinutes);
+
+            $data = [
+                'id' => $this->jamMatiMesinId,
+                'code' => $this->jamMatiMesinCode,
+                'name' => $this->jamMatiMesinName,
+                'off_hour' => $this->off_hour,
+            ];
+            $this->dataJamMatiMesin[] = $data;
+            $this->jamMatiDataUpdated = true;
+
+            // jika dilakukan pada update
+            if ($this->orderid) {
+                $dataJamMatiMesin =  [
+                    'jam_kerja_mesin_id' => $this->orderid,
+                    'jam_mati_mesin_id' => $data['id'],
+                    'off_hour' => $data['off_hour'],
+                ];
+                TdJamKerjaJamMatiMesin::upsert($dataJamMatiMesin, ['jam_kerja_mesin_id', 'jam_mati_mesin_id'], ['off_hour']);
+                TdJamKerjaMesin::where('id', $this->orderid)->update(['off_hour' => $this->totalOffHour]);
+
+                $this->getData();
+            }
+
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
+            $this->dispatch('closeModalJamMatiMesin');
+            $this->resetInputJamMatiMesin();
+        } catch (\Exception $e) {
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $this->dispatch('notification', ['type' => 'warning', 'message' => $e->validator->errors()]);
+        }
+    }
+
+    public function deleteJamMatiMesin($orderId)
+    {
+        $index = array_search($orderId, array_column($this->dataJamMatiMesin, 'id'));
+
+        if ($index !== false) {
+            // mengurangi dari total lama mesin mati
+            $this->totalOffHour = formatTime::minutesToTime(formatTime::timeToMinutes($this->totalOffHour) - formatTime::timeToMinutes($this->dataJamMatiMesin[$index]['off_hour']));
+            array_splice($this->dataJamMatiMesin, $index, 1);
+        }
+
+        $exist = TdJamKerjaJamMatiMesin::where('jam_mati_mesin_id', $orderId)->where('jam_kerja_mesin_id', $this->orderid)->first();
+        if ($exist) {
+            TdJamKerjaJamMatiMesin::where('jam_mati_mesin_id', $orderId)->where('jam_kerja_mesin_id', $this->orderid)->delete();
+
+            // update total lama mesin mati
+            TdJamKerjaMesin::where('id', $this->orderid)->update(['off_hour' => $this->totalOffHour]);
+            $this->getData();
+        }
+
+        $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Hapus']);
     }
 
     public function validateWorkHour()
     {
-        if ($this->work_hour > '08:00') {
+        if (isset($this->work_hour) && $this->work_hour > '08:00') {
             $this->work_hour = '08:00';
             $this->dispatch('notification', ['type' => 'warning', 'message' => 'Jam Kerja Tidak Boleh Lebih Dari 8 Jam']);
         }
+    }
 
-        if (isset($this->off_hour) && $this->off_hour > '08:00') {
-            $this->off_hour = '08:00';
-            $this->dispatch('notification', ['type' => 'warning', 'message' => 'Jam Off Kerja Tidak Boleh Lebih Dari 8 jam']);
+    public function delete($id)
+    {
+        $this->idDelete = $id;
+        $this->dispatch('showModalDelete');
+        $this->skipRender();
+    }
+
+    public function destroy()
+    {
+        try {
+            TdJamKerjaMesin::where('id', $this->idDelete)->delete();
+            $this->getData();
+            $this->dispatch('closeModalDelete');
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Order deleted successfully.']);
+        } catch (\Exception $e) {
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to delete the order: ' . $e->getMessage()]);
         }
     }
 
     public function save()
     {
-
         try {
             $validatedData = $this->validate([
                 'working_date' => 'required',
@@ -159,26 +294,21 @@ class SeitaiJamKerjaController extends Component
                 'machineno' => 'required',
                 'employeeno' => 'required',
                 'work_hour' => 'required',
-                'off_hour' => 'required',
-                'jamMatiMesinCode' => 'required',
             ], [
                 'working_date.required' => 'Tanggal Produksi harus diisi',
                 'work_shift.required' => 'Shift Kerja harus diisi',
                 'machineno.required' => 'Nomor Mesin harus diisi',
                 'employeeno.required' => 'Nomor Karyawan harus diisi',
                 'work_hour.required' => 'Jam Kerja harus diisi',
-                'off_hour.required' => 'Jam Off Kerja harus diisi',
-                'jamMatiMesinCode.required' => 'Jam Mati Mesin harus diisi',
             ]);
 
             // menghitung waktu on hour
             $workHour = Carbon::parse($this->work_hour);
-            $offHour = Carbon::parse($this->off_hour);
-            // Menghitung perbedaan dalam menit
-            // Menghitung perbedaan waktu
+            $offHour = Carbon::parse($this->totalOffHour);
             $interval = $workHour->diff($offHour);
             $onHour = $interval->format('%H:%I');
 
+            DB::beginTransaction();
             if (isset($this->orderid)) {
                 $machine = MsMachine::where('machineno', $this->machineno)->first();
                 $msemployee = MsEmployee::where('employeeno', $this->employeeno)->first();
@@ -187,12 +317,11 @@ class SeitaiJamKerjaController extends Component
                     'working_date' => $this->working_date,
                     'work_shift' => $this->work_shift,
                     'machine_id' => $machine->id,
-                    'department_id' => $machine->department_id,
+                    'department_id' => departmentHelper::seitaiDivision()->id,
                     'employee_id' => $msemployee->id,
                     'work_hour' => $this->work_hour,
-                    'off_hour' => $this->off_hour,
+                    'off_hour' => $this->totalOffHour,
                     'on_hour' => $onHour,
-                    'jam_mati_mesin_id' => $this->jamMatiMesinId,
                     'created_on' => Carbon::now(),
                     'created_by' => auth()->user()->username,
                     'updated_on' => Carbon::now(),
@@ -205,29 +334,44 @@ class SeitaiJamKerjaController extends Component
                 $machine = MsMachine::where('machineno', $this->machineno)->first();
                 $msemployee = MsEmployee::where('employeeno', $this->employeeno)->first();
 
-                $orderlpk = new TdJamKerjaMesin();
-                $orderlpk->working_date = $this->working_date;
-                $orderlpk->work_shift = $this->work_shift;
-                $orderlpk->machine_id = $machine->id;
-                $orderlpk->department_id = $machine->department_id;
-                $orderlpk->employee_id = $msemployee->id;
-                $orderlpk->work_hour = $this->work_hour;
-                $orderlpk->off_hour =  $this->off_hour;
-                $orderlpk->on_hour = $onHour;
-                $orderlpk->jam_mati_mesin_id = $this->jamMatiMesinId;
-                $orderlpk->created_on = Carbon::now();
-                $orderlpk->created_by = auth()->user()->username;
-                $orderlpk->updated_on = Carbon::now();
-                $orderlpk->updated_by = auth()->user()->username;
+                $jamKerjaMesin = new TdJamKerjaMesin();
+                $jamKerjaMesin->working_date = $this->working_date;
+                $jamKerjaMesin->work_shift = $this->work_shift;
+                $jamKerjaMesin->machine_id = $machine->id;
+                $jamKerjaMesin->employee_id = $msemployee->id;
+                $jamKerjaMesin->department_id = departmentHelper::seitaiDivision()->id;
+                $jamKerjaMesin->work_hour = $this->work_hour;
+                $jamKerjaMesin->off_hour =  $this->totalOffHour;
+                $jamKerjaMesin->on_hour = $onHour;
+                $jamKerjaMesin->created_on = Carbon::now();
+                $jamKerjaMesin->created_by = auth()->user()->username;
+                $jamKerjaMesin->updated_on = Carbon::now();
+                $jamKerjaMesin->updated_by = auth()->user()->username;
 
-                $orderlpk->save();
-                $this->resetInput();
+                $jamKerjaMesin->save();
+
+                $dataJamMatiMesin = array_map(function ($item) use ($jamKerjaMesin) {
+                    return [
+                        'jam_kerja_mesin_id' => $jamKerjaMesin->id,
+                        'jam_mati_mesin_id' => $item['id'],
+                        'off_hour' => $item['off_hour'],
+                    ];
+                }, $this->dataJamMatiMesin);
+                TdJamKerjaJamMatiMesin::upsert($dataJamMatiMesin, ['jam_kerja_mesin_id', 'jam_mati_mesin_id'], ['off_hour']);
+                $this->resetInputJamMatiMesin();
+                $this->dataJamMatiMesin = [];
+
                 $this->reset(['employeeno', 'empname', 'machineno', 'machinename', 'working_date', 'work_shift']);
+                $this->resetInput();
                 $this->dispatch('closeModalCreate');
             }
-            $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
+            $this->getData();
 
+
+            DB::commit();
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
         } catch (\Exception $e) {
+            DB::rollBack();
             $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             $this->dispatch('notification', ['type' => 'warning', 'message' => $e->validator->errors()]);
@@ -239,7 +383,7 @@ class SeitaiJamKerjaController extends Component
         $this->jamMatiMesinCode = $jamMatiMesinCode;
 
         if (isset($this->jamMatiMesinCode) && $this->jamMatiMesinCode != '' && strlen($this->jamMatiMesinCode) >= 3) {
-            $jamMatiMesin = MsJamMatiMesin::where('code', "S" . $this->jamMatiMesinCode)->first();
+            $jamMatiMesin = MsJamMatiMesin::where('code', "I" . $this->jamMatiMesinCode)->first();
             if ($jamMatiMesin == null) {
                 $this->jamMatiMesinId = '';
                 $this->jamMatiMesinName = '';
@@ -252,29 +396,12 @@ class SeitaiJamKerjaController extends Component
         }
     }
 
-    public function delete($id)
+    public function updatedMachineno($machineno)
     {
-        $this->idDelete = $id;
-        $this->dispatch('showModalDelete');
-        $this->skipRender();
-    }
+        $this->machineno = $machineno;
 
-    public function destroy ()
-    {
-        try {
-            TdJamKerjaMesin::where('id', $this->idDelete)->delete();
-            $this->dispatch('closeModalDelete');
-            $this->dispatch('notification', ['type' => 'success', 'message' => 'Order deleted successfully.']);
-        } catch (\Exception $e) {
-            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to delete the order: ' . $e->getMessage()]);
-        }
-    }
-
-    public function render()
-    {
         if (isset($this->machineno) && $this->machineno != '') {
-            $machine = MsMachine::where('machineno', 'ilike', '%' . $this->machineno)->whereNotIn('department_id', [10, 12, 15, 2, 4, 10])->first();
-
+            $machine = MsMachine::where('machineno', 'ilike', '%' . $this->machineno)->whereIn('department_id', [10, 12, 15, 2, 4])->first();
             if ($machine == null) {
                 $this->machinename = '';
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Machine ' . $this->machineno . ' Tidak Terdaftar']);
@@ -283,46 +410,45 @@ class SeitaiJamKerjaController extends Component
                 $this->machinename = $machine->machinename;
             }
         }
+    }
+
+    public function updatedEmployeeno($employeeno)
+    {
+        $this->employeeno = $employeeno;
 
         if (isset($this->employeeno) && $this->employeeno != '' && strlen($this->employeeno) >= 3) {
             $msemployee = MsEmployee::where('employeeno', 'ilike', '%' . $this->employeeno)->active()->first();
 
             if ($msemployee == null) {
                 $this->empname = '';
-                $this->dispatch('notification', ['type' => 'error', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
             } else {
                 $this->employeeno = $msemployee->employeeno;
                 $this->empname = $msemployee->empname;
             }
         }
+    }
 
+    public function getData()
+    {
         $data = DB::table('tdjamkerjamesin AS tdjkm')
             ->select(
-                'tdjkm.id as orderid',
+                'tdjkm.id',
                 'tdjkm.working_date',
                 'tdjkm.work_shift',
-                'tdjkm.machine_id',
-                'tdjkm.department_id',
-                'tdjkm.employee_id',
                 'tdjkm.work_hour',
                 'tdjkm.off_hour',
                 'tdjkm.on_hour',
-                'tdjkm.created_by',
-                'tdjkm.created_on',
                 'tdjkm.updated_by',
                 'tdjkm.updated_on',
                 'msm.machineno',
-                'msm.machinename',
                 'mse.empname',
                 'mse.employeeno',
-                'msjmm.name as jam_mati_mesin_name',
-                'msjmm.code as jam_mati_mesin_code'
             )
             ->join('msmachine AS msm', 'msm.id', '=', 'tdjkm.machine_id')
             ->join('msemployee AS mse', 'mse.id', '=', 'tdjkm.employee_id')
             ->join('msdepartment AS msd', 'msd.id', '=', 'tdjkm.department_id')
-            ->join('ms_jam_mati_mesin AS msjmm', 'msjmm.id', '=', 'tdjkm.jam_mati_mesin_id')
-            ->where('msd.division_code','20');
+            ->whereIn('msd.division_code', [2, 10]);
 
         if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
             $data = $data->where('tdjkm.working_date', '>=', $this->tglMasuk);
@@ -344,17 +470,23 @@ class SeitaiJamKerjaController extends Component
                     ->orWhere('msm.machinename', 'ilike', '%' . $this->searchTerm . '%');
             });
         }
+        $this->data = $data->orderBy('tdjkm.updated_on', 'DESC')->get();
+    }
 
-        $data = $data->get();
-
-        return view(
-            'livewire.jam-kerja.seitai',
-            ['data' => $data]
-        )->extends('layouts.master');
+    public function render()
+    {
+        return view('livewire.jam-kerja.seitai', [
+            'data' => $this->data
+        ])->extends('layouts.master');
     }
 
     public function rendered()
     {
-        $this->dispatch('initDataTable');
+        if (!$this->isUpdatingSorting) {
+            $this->dispatch('initDataTable');
+        }
+
+        // Reset flag setelah render
+        $this->jamMatiDataUpdated = false;
     }
 }

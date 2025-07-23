@@ -320,7 +320,7 @@ class InfureJamKerjaController extends Component
                     'working_date' => $this->working_date,
                     'work_shift' => $this->work_shift,
                     'machine_id' => $machine->id,
-                    'department_id' => departmentHelper::infureDivisiom()->id,
+                    'department_id' => departmentHelper::infureDivision()->id,
                     'employee_id' => $msemployee->id,
                     'work_hour' => $this->work_hour,
                     'off_hour' => $this->totalOffHour,
@@ -342,6 +342,7 @@ class InfureJamKerjaController extends Component
                 $jamKerjaMesin->work_shift = $this->work_shift;
                 $jamKerjaMesin->machine_id = $machine->id;
                 $jamKerjaMesin->employee_id = $msemployee->id;
+                $jamKerjaMesin->department_id = departmentHelper::infureDivision()->id;
                 $jamKerjaMesin->work_hour = $this->work_hour;
                 $jamKerjaMesin->off_hour =  $this->totalOffHour;
                 $jamKerjaMesin->on_hour = $onHour;
@@ -371,7 +372,7 @@ class InfureJamKerjaController extends Component
 
 
             DB::commit();
-            $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Work hour saved successfully.']);
         } catch (\Exception $e) {
             DB::rollBack();
             $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
