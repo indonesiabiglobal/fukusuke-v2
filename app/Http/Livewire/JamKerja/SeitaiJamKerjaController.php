@@ -412,7 +412,7 @@ class SeitaiJamKerjaController extends Component
         $this->machineno = $machineno;
 
         if (isset($this->machineno) && $this->machineno != '') {
-            $machine = MsMachine::where('machineno', 'ilike', '%' . $this->machineno)->whereIn('department_id', [10, 12, 15, 2, 4])->first();
+            $machine = MsMachine::where('machineno', 'ilike', '%' . $this->machineno)->whereIn('department_id', departmentHelper::seitaiDepartment())->first();
             if ($machine == null) {
                 $this->machinename = '';
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Machine ' . $this->machineno . ' Tidak Terdaftar']);

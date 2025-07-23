@@ -10,7 +10,7 @@ use App\Helpers\phpspreadsheet;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Exports\GeneralReportExport;
-use App\Http\Livewire\Report\GeneralReport\JamMatiPerMesinService;
+use App\Http\Livewire\Report\GeneralReport\JamMatiReportService;
 use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -10426,12 +10426,12 @@ class GeneralReportController extends Component
 
     public function jamMatiPerMesin($tglMasuk, $tglKeluar)
     {
-        return JamMatiPerMesinService::jamMatiPerMesin($this->nipon, $this->jenisreport, $tglMasuk, $tglKeluar);
+        return JamMatiReportService::jamMatiPerMesin($this->nipon, $this->jenisreport, $tglMasuk, $tglKeluar);
     }
 
     public function jamMatiPerJenis($tglMasuk, $tglKeluar)
     {
-        return JamMatiPerMesinService::jamMatiPerJenis($this->nipon, $this->jenisreport, $tglMasuk, $tglKeluar);
+        return JamMatiReportService::jamMatiPerJenis($this->nipon, $this->jenisreport, $tglMasuk, $tglKeluar);
     }
 
     public function render()

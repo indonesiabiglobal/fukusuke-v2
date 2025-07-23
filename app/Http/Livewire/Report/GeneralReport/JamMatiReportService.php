@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-class JamMatiPerMesinService
+class JamMatiReportService
 {
     public static function jamMatiPerMesin($nipon, $jenisReport, $tglMasuk, $tglKeluar)
     {
@@ -82,12 +82,12 @@ class JamMatiPerMesinService
                 'jmm.code as code_jam_mati',
                 'jmm.name as name_jam_mati'
             )
-            ->selectRaw("FLOOR(EXTRACT(EPOCH FROM COALESCE(SUM(jkm.off_hour), INTERVAL '0')) / 60) AS total_off_minutes")
+            ->selectRaw("FLOOR(EXTRACT(EPOCH FROM COALESCE(SUM(jkjmm.off_hour), INTERVAL '0')) / 60) AS total_off_minutes")
             ->join('tdjamkerjamesin as jkm', 'jkm.machine_id', '=', 'msmachine.id')
-            ->join('ms_jam_mati_mesin as jmm', 'jmm.id', '=', 'jkm.jam_mati_mesin_id')
+            ->join('tdjamkerja_jammatimesin as jkjmm', 'jkjmm.jam_kerja_mesin_id', '=', 'jkm.id')
+            ->join('ms_jam_mati_mesin as jmm', 'jmm.id', '=', 'jkjmm.jam_mati_mesin_id')
             ->join('msworkingshift as ws', 'ws.id', '=', 'jkm.work_shift')
             ->whereRaw("(jkm.working_date + ws.work_hour_from) BETWEEN ? AND ?", [$tglMasuk, $tglKeluar])
-            ->whereNotNull('jkm.jam_mati_mesin_id')
             ->where('msmachine.status', 1);
 
         // filter department
@@ -146,9 +146,9 @@ class JamMatiPerMesinService
                 $rowItem++;
             }
             $rowItemStyling = $rowItem - 1;
-            phpspreadsheet::addBorderDottedHorizontal($spreadsheet, $columnKodeJamMati . $startRowMachine . ':' . $columnTotalJamMati . $rowItemStyling);
-            phpspreadsheet::styleFont($spreadsheet, $columnKodeJamMati . $startRowMachine . ':' . $columnTotalJamMati . $rowItemStyling, false, 9, 'Calibri');
-            phpspreadsheet::textAlignCenter($spreadsheet, $columnKodeJamMati . $startRowMachine . ':' . $columnNamaJamMati . $rowItemStyling);
+            phpspreadsheet::addBorderDottedHorizontal($spreadsheet, $columnKodeJamMati . $startRowMachine . ':' . $columnTotalJamMati . $rowItem);
+            phpspreadsheet::styleFont($spreadsheet, $columnKodeJamMati . $startRowMachine . ':' . $columnTotalJamMati . $rowItem, false, 9, 'Calibri');
+            phpspreadsheet::textAlignCenter($spreadsheet, $columnKodeJamMati . $startRowMachine . ':' . $columnNamaJamMati . $rowItem);
 
             // total jam mati
             $spreadsheet->getActiveSheet()->mergeCells($columnKodeJamMati . $rowItem . ':' . $columnNamaJamMati . $rowItem);
@@ -253,11 +253,11 @@ class JamMatiPerMesinService
                 'ms_jam_mati_mesin.code',
                 'ms_jam_mati_mesin.name',
             )
-            ->selectRaw("FLOOR(EXTRACT(EPOCH FROM COALESCE(SUM(jkm.off_hour), INTERVAL '0')) / 60) AS total_off_minutes")
-            ->join('tdjamkerjamesin as jkm', 'jkm.jam_mati_mesin_id', '=', 'ms_jam_mati_mesin.id')
+            ->selectRaw("FLOOR(EXTRACT(EPOCH FROM COALESCE(SUM(jkjmm.off_hour), INTERVAL '0')) / 60) AS total_off_minutes")
+            ->join('tdjamkerja_jammatimesin as jkjmm', 'jkjmm.jam_mati_mesin_id', '=', 'ms_jam_mati_mesin.id')
+            ->join('tdjamkerjamesin as jkm', 'jkjmm.jam_kerja_mesin_id', '=', 'jkm.id')
             ->join('msworkingshift as ws', 'ws.id', '=', 'jkm.work_shift')
             ->whereRaw("(jkm.working_date + ws.work_hour_from) BETWEEN ? AND ?", [$tglMasuk, $tglKeluar])
-            ->whereNotNull('jkm.jam_mati_mesin_id')
             ->where('ms_jam_mati_mesin.status', 1);
 
         // filter department
