@@ -105,10 +105,12 @@ class InfureJamKerjaController extends Component
         }
         $this->working_date = Carbon::now()->format('d-m-Y');
         $this->dispatch('showModalCreate');
+        $this->jamMatiDataUpdated = true;
     }
 
     public function edit($id)
     {
+        $this->jamMatiDataUpdated = true;
         $item = TdJamKerjaMesin::find($id);
         $machine = MsMachine::where('id', $item->machine_id)->first();
         $msemployee = MsEmployee::where('id', $item->employee_id)->first();
@@ -143,7 +145,7 @@ class InfureJamKerjaController extends Component
 
     public function closeModal()
     {
-        $this->resetInput();
+        $this->jamMatiDataUpdated = false;
     }
 
     public function resetInput()
@@ -214,7 +216,6 @@ class InfureJamKerjaController extends Component
                 'off_hour' => $this->off_hour,
             ];
             $this->dataJamMatiMesin[] = $data;
-            $this->jamMatiDataUpdated = true;
 
             // jika dilakukan pada update
             if ($this->orderid) {
@@ -369,6 +370,7 @@ class InfureJamKerjaController extends Component
                 $this->dispatch('closeModalCreate');
             }
             $this->getData();
+            $this->jamMatiDataUpdated = false;
 
 
             DB::commit();
@@ -485,11 +487,8 @@ class InfureJamKerjaController extends Component
 
     public function rendered()
     {
-        if (!$this->isUpdatingSorting) {
+        if (!$this->isUpdatingSorting && !$this->jamMatiDataUpdated) {
             $this->dispatch('initDataTable');
         }
-
-        // Reset flag setelah render
-        $this->jamMatiDataUpdated = false;
     }
 }
