@@ -23,7 +23,7 @@ class AppServiceProvider extends ServiceProvider
         //
         Schema::defaultStringLength(191);
         ini_set('memory_limit', env('PHP_MEMORY_LIMIT', '4G'));
-        set_time_limit(600);
-        ini_set('max_execution_time', 600);
+        set_time_limit(0);
+        ini_set('max_execution_time', 0);
     }
 }
