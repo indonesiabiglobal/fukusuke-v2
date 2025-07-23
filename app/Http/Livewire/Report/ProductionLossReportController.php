@@ -314,7 +314,6 @@ class ProductionLossReportController extends Component
             $columnMachineName = 'C';
             $startRowItem = 5;
             $rowItem = $startRowItem;
-            // dd($dataFilter[$tglAwalHeader->format('m Y')]['00S92']);
 
             // daftar departemen
             foreach ($listDepartment as $department) {

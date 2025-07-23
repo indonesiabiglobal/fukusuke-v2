@@ -47,7 +47,7 @@ class LossSeitaiController extends Component
         $this->products = MsProduct::get();
         // $this->buyer = MsBuyer::get();
         $this->machine = MsMachine::where('machineno',  'LIKE', '00S%')->orderBy('machineno')->get();
-        
+
         if (empty($this->transaksi)) {
             $this->transaksi = 1;
         }
@@ -124,7 +124,6 @@ class LossSeitaiController extends Component
             $filterNomorPalet .= " AND (tdpg.nomor_palet ILIKE '%$this->searchTerm%')";
             $filterMachine .= " AND (tdpg.machine_id ILIKE '%$this->searchTerm%')";
         }
-        // dd($filterNoLPK);
 
         $data = DB::select("
             WITH goodasy AS (
@@ -511,7 +510,6 @@ class LossSeitaiController extends Component
         $spreadsheet->getActiveSheet()->mergeCells($columnGrandTotalEnd . $rowGrandTotal . ':' . $columnBerat . $rowGrandTotal);
         $columnBerat++;
         $totalBeratLoss = array_sum(array_column($data, 'berat_loss'));
-        // dd($totalLoss);
         $activeWorksheet->setCellValue($columnBerat . $rowGrandTotal, $totalBeratLoss);
         phpspreadsheet::addFullBorder($spreadsheet, 'A' . $rowGrandTotal . ':' . $columnBerat . $rowGrandTotal);
         // phpSpreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnQty . $rowGrandTotal);

@@ -119,10 +119,7 @@ class LabelGentanController extends Component
                 $this->berat_produksi = $firstItem->berat_produksi;
                 $this->berat_standard = $firstItem->berat_standard;
                 $this->statusPrint = true;
-
-                // $this->lpk_date = Carbon::parse($data->lpk_date)->format('Y-m-d');
             }
-            // dd($this->produk_asembly_id);
         }
 
         return view('livewire.nippo-infure.label-gentan')->extends('layouts.master');

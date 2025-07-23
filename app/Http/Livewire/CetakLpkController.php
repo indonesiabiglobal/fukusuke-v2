@@ -71,7 +71,6 @@ class CetakLpkController extends Component
                 $this->reprint_no = $data->reprint_no;
             }
         }
-        // dd($this->results);
         return view('livewire.order-lpk.cetak-lpk', [
             'results' => $this->results,
         ])->extends('layouts.master');

@@ -190,7 +190,6 @@ class GeneralReportController extends Component
 
                 break;
             case 'Daftar Produksi Per Palet':
-                // dd($this->nipon);
                 if ($this->nipon == 2) {
                     return Excel::download(new GeneralReportExport(
                         $this->tglMasuk,
@@ -291,7 +290,6 @@ class GeneralReportController extends Component
                 }
                 break;
             default:
-                // dd('ini percobaan');
                 session()->flash('notification', ['type' => 'warning', 'message' => 'Pilih Jenis Report.']);
         }
     }
@@ -2241,7 +2239,6 @@ class GeneralReportController extends Component
                 function ($carry, $productType) use ($dataFilter, $department) {
                     $dataItems = $dataFilter[$department['department_id']][$productType] ?? [];
 
-                    // dd($dataItems);
                     foreach ($dataItems as $item) {
                         $carry['qty_produksi'] += $item->qty_produksi;
                         $carry['berat_produksi'] += $item->berat_produksi;
@@ -2262,7 +2259,6 @@ class GeneralReportController extends Component
                     'infure_berat_loss' => 0
                 ]
             );
-            // dd($totalByDepartment);
 
             // jumlah produksi
             $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, $totalByDepartment['qty_produksi']);

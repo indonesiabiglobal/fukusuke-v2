@@ -31,10 +31,8 @@
                 left join msemployee as me on me.id=tdpg.employee_id
             WHERE tdpg.nomor_palet = (LTRIM(RTRIM('$no_palet')))
         "));
-        //  dd($data[0]->namaproduk);
         $parts = explode('-', $data[0]->nomor_palet);
         $date = Carbon::parse( $data[0]->production_date);
-        // dd( );
 @endphp
 <body style="background-color: #CCCCCC;margin: 0" onload="window.print()">
     <div align="center">

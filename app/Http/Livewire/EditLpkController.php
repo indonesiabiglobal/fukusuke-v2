@@ -290,7 +290,6 @@ class EditLpkController extends Component
                 $this->product->stampelseitaiid = DB::table('msstampleseitai')->where('id', $this->product->stampelseitaiid)->first(['name'])->name ?? '';
                 $this->product->hagataseitaiid = DB::table('mshagataseitai')->where('id', $this->product->hagataseitaiid)->first(['name'])->name ?? '';
                 $this->product->jenissealseitaiid = DB::table('msjenissealseitai')->where('id', $this->product->jenissealseitaiid)->first(['name'])->name ?? '';
-                // dd($this->product);
 
                 // show modal
                 $this->dispatch('showModalNoOrder');
@@ -372,7 +371,6 @@ class EditLpkController extends Component
 
             $this->panjang_lpk = (int) str_replace(',', '', $this->qty_gentan) * (int) str_replace(',', '', $this->qty_gulung);
             $this->selisihkurang = (int)str_replace(',', '', $this->panjang_lpk) - (int)str_replace(',', '', $this->panjang_total);
-            // dd((int) str_replace(',', '', $this->qty_gulung));
         } else if (isset($this->qty_lpk) && $this->qty_lpk != '') {
             $this->panjang_total = (int) str_replace(',', '', $this->qty_lpk) * ((int) str_replace(',', '', $this->productlength) / 1000);
 

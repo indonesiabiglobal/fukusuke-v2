@@ -198,11 +198,7 @@ class EditSeitaiController extends Component
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Order ' . $this->code . ' Tidak Terdaftar']);
             } else {
                 // nomor order produk
-                // $this->productNomorOrder = DB::table('msproduct')->where('code', $this->product_id)->first();
                 $this->masterKatanuki = DB::table('mskatanuki')->where('id', $this->product->katanuki_id)->first(['name', 'filename']);
-
-                // $this->code = $this->product->code;
-                // $this->name = $this->product->name;
                 $this->product->product_type_id = DB::table('msproduct_type')->where('id', $this->product->product_type_id)->first(['name'])->name ?? '';
                 $this->product->product_unit = DB::table('msunit')->where('code', $this->product->product_unit)->first(['name'])->name ?? '';
                 $this->product->material_classification = DB::table('msmaterial')->where('id', $this->product->material_classification)->first(['name'])->name ?? '';
@@ -229,7 +225,6 @@ class EditSeitaiController extends Component
                 $this->product->stampelseitaiid = DB::table('msstampleseitai')->where('id', $this->product->stampelseitaiid)->first(['name'])->name ?? '';
                 $this->product->hagataseitaiid = DB::table('mshagataseitai')->where('id', $this->product->hagataseitaiid)->first(['name'])->name ?? '';
                 $this->product->jenissealseitaiid = DB::table('msjenissealseitai')->where('id', $this->product->jenissealseitaiid)->first(['name'])->name ?? '';
-                // dd($this->product);
 
                 // show modal
                 $this->dispatch('showModalNoOrder');
@@ -684,7 +679,6 @@ class EditSeitaiController extends Component
             $this->work_shift = $workingShift->id;
         }
 
-        // dd($this->employeenoinfure);
         if (isset($this->employeenoinfure) && $this->employeenoinfure != '' && strlen($this->employeenoinfure) >= 3) {
             $msemployeeinfure = MsEmployee::where('employeeno', 'ilike', '%' . $this->employeenoinfure . '%')->first();
 

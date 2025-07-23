@@ -166,8 +166,6 @@ class DashboardInfureController extends Controller
                 y.machine_no
 
         ', [$diffDay * $minuteOfDay,$startDate, $endDate, $divisionCodeInfure]);
-        // ', array_merge([$startDate, $endDate, $division_code], $machineNo));
-        // dd($kadouJikanInfureMesin);
         return $kadouJikanInfureMesin;
     }
 

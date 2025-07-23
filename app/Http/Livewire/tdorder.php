@@ -25,7 +25,7 @@ final class tdorder extends PowerGridComponent
     public bool $filtersOutside = false;
     public $tglMasuk;
     public $tglKeluar;
- 
+
     public string $sortField = 'tdorder.id';
 
     public function setUp(): array
@@ -47,7 +47,6 @@ final class tdorder extends PowerGridComponent
     {
         $query=TdOrders::query();
 
-        // dd($this->tglMasuk);
         if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
             $query->where('order_date', '>=', $this->tglMasuk);
         }

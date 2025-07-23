@@ -126,7 +126,6 @@ class OrderLpkController extends Component
 
     public function render()
     {
-        // dd($this->idBuyer);
         $data = DB::table('tdorder AS tod')
             ->select(
                 'tod.id',

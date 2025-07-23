@@ -341,7 +341,6 @@ class CheckListInfureController extends Component
                     ",
             );
         }
-        // dd($data);
 
         if (count($data) == 0) {
             $response = [

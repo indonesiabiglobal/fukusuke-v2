@@ -267,7 +267,6 @@ class EditProduk extends Component
         $this->manufacturing_summary = $this->product->manufacturing_summary;
         $this->case_gaiso_count = $this->product->case_gaiso_count;
         $this->case_gaiso_count_unit['value'] = $this->product->case_gaiso_count_unit;
-        // dd($this->case_gaiso_count_unit);
         $this->case_box_count = $this->product->case_box_count;
         $this->case_box_count_unit['value'] = $this->product->case_box_count_unit;
         $this->case_inner_count = $this->product->case_inner_count;

@@ -101,11 +101,7 @@ class AddSeitaiController extends Component
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Order ' . $this->code . ' Tidak Terdaftar']);
             } else {
                 // nomor order produk
-                // $this->productNomorOrder = DB::table('msproduct')->where('code', $this->product_id)->first();
                 $this->masterKatanuki = DB::table('mskatanuki')->where('id', $this->product->katanuki_id)->first(['name', 'filename']);
-
-                // $this->code = $this->product->code;
-                // $this->name = $this->product->name;
                 $this->product->product_type_id = DB::table('msproduct_type')->where('id', $this->product->product_type_id)->first(['name'])->name ?? '';
                 $this->product->product_unit = DB::table('msunit')->where('code', $this->product->product_unit)->first(['name'])->name ?? '';
                 $this->product->material_classification = DB::table('msmaterial')->where('id', $this->product->material_classification)->first(['name'])->name ?? '';
@@ -132,7 +128,6 @@ class AddSeitaiController extends Component
                 $this->product->stampelseitaiid = DB::table('msstampleseitai')->where('id', $this->product->stampelseitaiid)->first(['name'])->name ?? '';
                 $this->product->hagataseitaiid = DB::table('mshagataseitai')->where('id', $this->product->hagataseitaiid)->first(['name'])->name ?? '';
                 $this->product->jenissealseitaiid = DB::table('msjenissealseitai')->where('id', $this->product->jenissealseitaiid)->first(['name'])->name ?? '';
-                // dd($this->product);
 
                 // show modal
                 $this->dispatch('showModalNoOrder');
@@ -465,8 +460,6 @@ class AddSeitaiController extends Component
         $this->detailsGentan[] = $data;
         $this->resetGentan();
 
-        // dd($this->detailsGentan);
-
         $this->dispatch('closeModalGentan');
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);
     }
@@ -511,7 +504,6 @@ class AddSeitaiController extends Component
             'frekuensi' => $this->frekuensi_fr,
             'lpk_id' => $lpkid->id,
         ];
-        // dd($this->detailsLoss);
 
         // menambahkan ke tdproduct_goods
         $this->jumlahBeratLoss += $this->berat_loss;
@@ -706,7 +698,6 @@ class AddSeitaiController extends Component
                 ->where('lpk_id', $lpkid->id)
                 ->where('gentan_no', $this->gentan_no)
                 ->first();
-                dd($tdProduct);
 
             if ($tdProduct == null) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Gentan ' . $this->gentan_no . ' Tidak Terdaftar']);

@@ -44,7 +44,6 @@ class LabelMasukGudangController extends Component
         // WHERE
         //     tod.id = '12766'
         // "))->first();
-        // dd($this->nomor_palet);
         $nomor_palet = $this->nomor_palet;
         $this->dispatch('redirectToPrint', $nomor_palet);
     }
