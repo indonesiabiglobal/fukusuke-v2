@@ -48,6 +48,7 @@ class InfureJamKerjaController extends Component
     public $employee_id;
     public $work_hour;
     public $totalOffHour = "00:00";
+    public $totalOnHour = "00:00";
     public $on_hour;
     public $orderid;
     public $workShift;
@@ -136,6 +137,7 @@ class InfureJamKerjaController extends Component
         $this->employeeno = $msemployee->employeeno;
         $this->empname = $msemployee->empname;
         $this->work_hour = Carbon::parse($item->work_hour)->format('H:i');
+        $this->totalOnHour = Carbon::parse($item->on_hour)->format('H:i');
         $this->totalOffHour = formatTime::minutesToTime($jamMatiMesin->sum('off_hour_minutes'));
 
         $this->dataJamMatiMesin = $jamMatiMesin->toArray();
@@ -158,6 +160,7 @@ class InfureJamKerjaController extends Component
         $this->empname = '';
         $this->work_hour = '';
         $this->totalOffHour = '00:00';
+        $this->totalOnHour = '00:00';
     }
 
     public function resetInputJamMatiMesin()
@@ -198,6 +201,7 @@ class InfureJamKerjaController extends Component
                 }
             }
 
+            $workHourMinutes = formatTime::timeToMinutes($this->work_hour);
             $offHourMinutes = formatTime::timeToMinutes($this->off_hour);
             $totalOffHourMinutes = formatTime::timeToMinutes($this->totalOffHour);
 
@@ -206,8 +210,9 @@ class InfureJamKerjaController extends Component
                 return $this->dispatch('notification', ['type' => 'warning', 'message' => 'Total Lama Mesin Mati melebihi 8 jam']);
             }
 
-            $newTotalMinutes = $totalOffHourMinutes + $offHourMinutes;
-            $this->totalOffHour = formatTime::minutesToTime($newTotalMinutes);
+            $newTotalOffMinutes = $totalOffHourMinutes + $offHourMinutes;
+            $this->totalOffHour = formatTime::minutesToTime($newTotalOffMinutes);
+            $this->totalOnHour = formatTime::minutesToTime($workHourMinutes - $newTotalOffMinutes);
 
             $data = [
                 'id' => $this->jamMatiMesinId,
@@ -225,7 +230,7 @@ class InfureJamKerjaController extends Component
                     'off_hour' => $data['off_hour'],
                 ];
                 TdJamKerjaJamMatiMesin::upsert($dataJamMatiMesin, ['jam_kerja_mesin_id', 'jam_mati_mesin_id'], ['off_hour']);
-                TdJamKerjaMesin::where('id', $this->orderid)->update(['off_hour' => $this->totalOffHour]);
+                TdJamKerjaMesin::where('id', $this->orderid)->update(['off_hour' => $this->totalOffHour, 'on_hour' => $this->totalOnHour]);
 
                 $this->getData();
             }
@@ -247,6 +252,8 @@ class InfureJamKerjaController extends Component
         if ($index !== false) {
             // mengurangi dari total lama mesin mati
             $this->totalOffHour = formatTime::minutesToTime(formatTime::timeToMinutes($this->totalOffHour) - formatTime::timeToMinutes($this->dataJamMatiMesin[$index]['off_hour']));
+            $workHourMinutes = formatTime::timeToMinutes($this->work_hour);
+            $this->totalOnHour = formatTime::minutesToTime($workHourMinutes - formatTime::timeToMinutes($this->totalOffHour));
             array_splice($this->dataJamMatiMesin, $index, 1);
         }
 
@@ -255,7 +262,7 @@ class InfureJamKerjaController extends Component
             TdJamKerjaJamMatiMesin::where('jam_mati_mesin_id', $orderId)->where('jam_kerja_mesin_id', $this->orderid)->delete();
 
             // update total lama mesin mati
-            TdJamKerjaMesin::where('id', $this->orderid)->update(['off_hour' => $this->totalOffHour]);
+            TdJamKerjaMesin::where('id', $this->orderid)->update(['off_hour' => $this->totalOffHour, 'on_hour' => $this->totalOnHour]);
             $this->getData();
         }
 
