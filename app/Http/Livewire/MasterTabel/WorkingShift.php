@@ -28,11 +28,7 @@ class WorkingShift extends Component
 
     #[Session]
     public $sortingTable;
-    // public function mount()
-    // {
-    //     $this->workingShifts = MsWorkingShift::get(['id', 'work_shift', 'work_hour_from', 'work_hour_till', 'status', 'updated_by', 'updated_on']);
-    // }
-    
+
     public function mount()
     {
         if (empty($this->sortingTable)) {

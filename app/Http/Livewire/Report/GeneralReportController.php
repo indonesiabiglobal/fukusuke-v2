@@ -706,7 +706,7 @@ class GeneralReportController extends Component
                 FROM
                     tdJamKerjaMesin AS jam_
                 INNER JOIN
-                    msworkingshift AS ws ON jam_.work_shift = ws.work_shift
+                    msworkingshift AS ws ON jam_.work_shift = ws.id
                 WHERE
                     (working_date || ' ' || work_hour_from)::TIMESTAMP
                     BETWEEN '$tglMasuk' AND '$tglKeluar'
@@ -1194,7 +1194,7 @@ class GeneralReportController extends Component
                         SUM(EXTRACT(EPOCH FROM off_hour) / 60) AS off_hour,
                         SUM(EXTRACT(EPOCH FROM on_hour) / 60) AS on_hour
                     FROM tdJamKerjaMesin AS jam_
-                    INNER JOIN msworkingshift AS ws ON jam_.work_shift = ws.work_shift
+                    INNER JOIN msworkingshift AS ws ON jam_.work_shift = ws.id
                     WHERE
                         ( working_date :: TEXT || ' ' || work_hour_from :: TEXT ) :: TIMESTAMP BETWEEN '$tglMasuk' AND '$tglKeluar'
                     GROUP BY jam_.machine_id
