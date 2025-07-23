@@ -74,7 +74,7 @@ class DashboardController extends Controller
             'pertipeseitai' => $this->getPerTipeSeitai($startDate, $endDate),
             'hasilproduksiinfure' => $this->getHasilProduksiInfure($startDate, $endDate),
             'hasilproduksiseitai' => $this->getHasilProduksiSeitai($startDate, $endDate),
-            
+
 
             'kadouJikanInfureMesin' => $this->getKadouJikanInfure($startDate, $endDate, $divisionCodeInfure),
             'topLossInfure' => $this->getTopLossInfure($startDate, $endDate, $divisionCodeInfure),
@@ -118,7 +118,8 @@ class DashboardController extends Controller
             ->where('work_hour_from', '<=', $today->format('H:i:s'))
             ->where('work_hour_till', '>=', $today->format('H:i:s'))
             ->where('status', 1)
-            ->first();
+            ->first()
+            ->work_shift;
         $listMachineInfure = DB::select('
         SELECT x.* from (
             SELECT
@@ -153,9 +154,7 @@ class DashboardController extends Controller
         GROUP BY x.machine_no,x.machine_name,
         x.division_code,x.department_id,x.department_name,x.is_working_shift ORDER BY x.machine_no
         ', [$shiftSekarang, $today->format('Y-m-d'), $shiftSekarang,$divisionCodeInfure]);
-        // [$shiftSekarang, $divisionCodeInfure, $today->format('Y-m-d')]);
 
-        // ', array_merge([$startDate, $endDate, $division_code], $machineNo));
         $listDepartment = array_reduce($listMachineInfure, function ($carry, $item) {
             $carry[$item->department_id] = [
                 'department_id' => $item->department_id,
@@ -249,7 +248,8 @@ class DashboardController extends Controller
             ->where('work_hour_from', '<=', $today->format('H:i:s'))
             ->where('work_hour_till', '>=', $today->format('H:i:s'))
             ->where('status', 1)
-            ->first();
+            ->first()
+            ->work_shift;
         $listMachineSeitai = DB::select('
         SELECT x.* from (
             SELECT
@@ -444,10 +444,10 @@ class DashboardController extends Controller
         FROM
             tdProduct_Assembly AS asy
             INNER JOIN msProduct AS prd ON asy.product_id = prd.
-            ID INNER JOIN msProduct_type AS prTip ON prd.product_type_id = prTip.ID 
+            ID INNER JOIN msProduct_type AS prTip ON prd.product_type_id = prTip.ID
         WHERE
-            asy.production_date BETWEEN ? 
-            AND ? 
+            asy.production_date BETWEEN ?
+            AND ?
         GROUP BY
             prTip.ID
         ", [
@@ -460,22 +460,22 @@ class DashboardController extends Controller
     public function getPerTipeSeitai($startDate, $endDate)
     {
         $perTipeSeitai = DB::select("
-        SELECT 
+        SELECT
             MAX(prT.code) AS product_type_code,
             MAX(prT.name) AS product_type_name,
             round(SUM(good.qty_produksi * prd.unit_weight * 0.001)) AS berat_produksi,
             round(SUM(good.seitai_berat_loss) - COALESCE(SUM(ponsu.berat_loss), 0)) AS seitai_berat_loss
-        FROM tdProduct_Goods AS good 
+        FROM tdProduct_Goods AS good
         LEFT JOIN (
-            SELECT 
-                los_.product_goods_id, 
+            SELECT
+                los_.product_goods_id,
                 SUM(los_.berat_loss) AS berat_loss
             FROM tdProduct_Goods_Loss AS los_
             WHERE los_.loss_seitai_id = 1 -- ponsu
             GROUP BY los_.product_goods_id
         ) ponsu ON good.id = ponsu.product_goods_id
-        INNER JOIN msProduct AS prd ON good.product_id = prd.id 
-        INNER JOIN msProduct_type AS prT ON prd.product_type_id = prT.id 
+        INNER JOIN msProduct AS prd ON good.product_id = prd.id
+        INNER JOIN msProduct_type AS prT ON prd.product_type_id = prT.id
         WHERE good.production_date BETWEEN ? AND ?
         GROUP BY prT.id;
         ", [
@@ -489,7 +489,7 @@ class DashboardController extends Controller
     {
         $hasilProduksiInfure = DB::select("
         SELECT x.bulan, round(x.berat_produksi) as berat_produksi from(
-        SELECT 
+        SELECT
             to_char(asy.production_date,'FMMonth YYYY') as bulan,
             SUM(asy.berat_standard) AS berat_standard,
             SUM(asy.berat_produksi) AS berat_produksi,
@@ -499,8 +499,8 @@ class DashboardController extends Controller
             SUM(asy.panjang_printing_inline) AS panjang_printing_inline,
             SUM(asy.infure_cost_printing) AS infure_cost_printing
         FROM tdProduct_Assembly AS asy
-        INNER JOIN msProduct AS prd ON asy.product_id = prd.id 
-        WHERE (asy.production_date BETWEEN '2024-08-04 00:00:00' AND '2024-08-04 23:59:00') or 
+        INNER JOIN msProduct AS prd ON asy.product_id = prd.id
+        WHERE (asy.production_date BETWEEN '2024-08-04 00:00:00' AND '2024-08-04 23:59:00') or
         (asy.production_date BETWEEN '2023-08-04 00:00:00' AND '2023-08-04 23:59:00')
         GROUP BY to_char(asy.production_date,'FMMonth YYYY')
         ) as x ORDER BY x.bulan;
@@ -511,20 +511,20 @@ class DashboardController extends Controller
     public function getHasilProduksiSeitai($startDate, $endDate)
     {
         $hasilProduksiSeitai = DB::select("
-        SELECT 
+        SELECT
             to_char(good.production_date,'FMMonth YYYY') as bulan,
             round(SUM(good.qty_produksi * prd.unit_weight * 0.001)) AS berat_produksi
-        FROM tdProduct_Goods AS good 
+        FROM tdProduct_Goods AS good
         LEFT JOIN (
-            SELECT 
-                los_.product_goods_id, 
+            SELECT
+                los_.product_goods_id,
                 SUM(los_.berat_loss) AS berat_loss
             FROM tdProduct_Goods_Loss AS los_
             WHERE los_.loss_seitai_id = 1 -- ponsu
             GROUP BY los_.product_goods_id
         ) ponsu ON good.id = ponsu.product_goods_id
-        INNER JOIN msProduct AS prd ON good.product_id = prd.id 
-        WHERE (good.production_date BETWEEN '2023-08-04 00:00:00' AND '2023-08-04 23:59:00') 
+        INNER JOIN msProduct AS prd ON good.product_id = prd.id
+        WHERE (good.production_date BETWEEN '2023-08-04 00:00:00' AND '2023-08-04 23:59:00')
         or (good.production_date BETWEEN '2024-08-04 00:00:00' AND '2024-08-04 23:59:00')
         GROUP BY to_char(good.production_date,'FMMonth YYYY')
         ");
