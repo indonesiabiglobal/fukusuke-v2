@@ -99,14 +99,12 @@ class InfureJamKerjaController extends Component
     public function showModalCreate()
     {
         if ($this->orderid) {
-            $this->resetInput();
-            $this->orderid = null;
             $this->dataJamMatiMesin = [];
+            $this->orderid = null;
+            $this->resetInput();
         }
         $this->working_date = Carbon::now()->format('d-m-Y');
         $this->dispatch('showModalCreate');
-        // Mencegah render ulang
-        $this->skipRender();
     }
 
     public function edit($id)
@@ -157,7 +155,7 @@ class InfureJamKerjaController extends Component
         $this->employeeno = '';
         $this->empname = '';
         $this->work_hour = '';
-        $this->off_hour = '';
+        $this->totalOffHour = '00:00';
     }
 
     public function resetInputJamMatiMesin()
