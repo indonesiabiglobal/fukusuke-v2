@@ -3,10 +3,12 @@
 namespace App\Http\Livewire\jamKerja;
 
 use App\Helpers\departmentHelper;
+use App\Helpers\formatTime;
 use App\Models\MsEmployee;
 use App\Models\MsMachine;
 use App\Models\MsJamMatiMesin;
 use App\Models\MsWorkingShift;
+use App\Models\TdJamKerjaJamMatiMesin;
 use App\Models\TdJamKerjaMesin;
 use Carbon\Carbon;
 use Livewire\Component;
@@ -102,10 +104,12 @@ class SeitaiJamKerjaController extends Component
         }
         $this->working_date = Carbon::now()->format('d-m-Y');
         $this->dispatch('showModalCreate');
+        $this->jamMatiDataUpdated = true;
     }
 
     public function edit($id)
     {
+        $this->jamMatiDataUpdated = true;
         $item = TdJamKerjaMesin::find($id);
         $machine = MsMachine::where('id', $item->machine_id)->first();
         $msemployee = MsEmployee::where('id', $item->employee_id)->first();
@@ -140,7 +144,7 @@ class SeitaiJamKerjaController extends Component
 
     public function closeModal()
     {
-        $this->resetInput();
+        $this->jamMatiDataUpdated = false;
     }
 
     public function resetInput()
@@ -211,7 +215,6 @@ class SeitaiJamKerjaController extends Component
                 'off_hour' => $this->off_hour,
             ];
             $this->dataJamMatiMesin[] = $data;
-            $this->jamMatiDataUpdated = true;
 
             // jika dilakukan pada update
             if ($this->orderid) {
@@ -366,10 +369,11 @@ class SeitaiJamKerjaController extends Component
                 $this->dispatch('closeModalCreate');
             }
             $this->getData();
+            $this->jamMatiDataUpdated = false;
 
 
             DB::commit();
-            $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Work hour saved successfully.']);
         } catch (\Exception $e) {
             DB::rollBack();
             $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
@@ -383,7 +387,7 @@ class SeitaiJamKerjaController extends Component
         $this->jamMatiMesinCode = $jamMatiMesinCode;
 
         if (isset($this->jamMatiMesinCode) && $this->jamMatiMesinCode != '' && strlen($this->jamMatiMesinCode) >= 3) {
-            $jamMatiMesin = MsJamMatiMesin::where('code', "I" . $this->jamMatiMesinCode)->first();
+            $jamMatiMesin = MsJamMatiMesin::where('code', "S" . $this->jamMatiMesinCode)->first();
             if ($jamMatiMesin == null) {
                 $this->jamMatiMesinId = '';
                 $this->jamMatiMesinName = '';
@@ -447,8 +451,7 @@ class SeitaiJamKerjaController extends Component
             )
             ->join('msmachine AS msm', 'msm.id', '=', 'tdjkm.machine_id')
             ->join('msemployee AS mse', 'mse.id', '=', 'tdjkm.employee_id')
-            ->join('msdepartment AS msd', 'msd.id', '=', 'tdjkm.department_id')
-            ->whereIn('msd.division_code', [2, 10]);
+            ->whereIn('tdjkm.department_id', departmentHelper::seitaiDivision());
 
         if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
             $data = $data->where('tdjkm.working_date', '>=', $this->tglMasuk);
@@ -482,11 +485,8 @@ class SeitaiJamKerjaController extends Component
 
     public function rendered()
     {
-        if (!$this->isUpdatingSorting) {
+        if (!$this->isUpdatingSorting && !$this->jamMatiDataUpdated) {
             $this->dispatch('initDataTable');
         }
-
-        // Reset flag setelah render
-        $this->jamMatiDataUpdated = false;
     }
 }

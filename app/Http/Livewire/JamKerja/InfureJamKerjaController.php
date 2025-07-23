@@ -452,8 +452,7 @@ class InfureJamKerjaController extends Component
             )
             ->join('msmachine AS msm', 'msm.id', '=', 'tdjkm.machine_id')
             ->join('msemployee AS mse', 'mse.id', '=', 'tdjkm.employee_id')
-            ->join('msdepartment AS msd', 'msd.id', '=', 'tdjkm.department_id')
-            ->whereIn('msd.division_code', [2, 10]);
+            ->whereIn('tdjkm.department_id', departmentHelper::infureDivision());
 
         if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
             $data = $data->where('tdjkm.working_date', '>=', $this->tglMasuk);

@@ -97,14 +97,14 @@
                     <i class="ri-add-line"> </i> Add
                 </button>
 
-                <div class="modal fade" id="modal-add" tabindex="-1" role="dialog" aria-labelledby="modal-add"
+                <div class="modal fade" id="modal-add" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="modal-add"
                     aria-hidden="true" wire:ignore.self>
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h2 class="h6 modal-title">Add Jam Kerja Infure</h2>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
+                                    aria-label="Close" wire:click="closeModal"></button>
                             </div>
                             <div class="modal-body">
                                 <div class="row">
@@ -250,37 +250,6 @@
                                     </div>
                                 </div>
                             </div>
-                            {{-- <div
-                                class="modal-footer d-flex justify-content-between align-items-center flex-wrap gap-2">
-                                <!-- Left side button -->
-                                <button type="button" class="btn btn-outline-success"
-                                    wire:click="showModalJamMatiMesin" x-ref="showModalJamMatiMesin">
-                                    <i class="ri-add-line me-1"></i> Add Jam Mati
-                                </button>
-
-                                <!-- Right side actions -->
-                                <div class="d-flex gap-2 align-items-center">
-                                    <!-- Save Button -->
-                                    <button type="button" class="btn btn-success d-flex align-items-center"
-                                        wire:click="save" wire:loading.attr="disabled" x-ref="save">
-                                        <span wire:loading.remove wire:target="save">
-                                            <i class="ri-save-3-line me-1"></i> Save
-                                        </span>
-                                        <span wire:loading wire:target="save" class="d-flex align-items-center">
-                                            <span class="spinner-border spinner-border-sm me-1" role="status"
-                                                aria-hidden="true"></span>
-                                            Saving...
-                                        </span>
-                                    </button>
-
-
-                                    <!-- Close Button -->
-                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                                        Close
-                                    </button>
-                                </div>
-                            </div> --}}
-
                             <div
                                 class="modal-footer d-flex justify-content-between align-items-center flex-wrap gap-2">
                                 <!-- Left side button -->
@@ -305,7 +274,7 @@
                                         </div>
                                     </button>
                                     <!-- Close Button -->
-                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" wire:click="closeModal">
                                         Close
                                     </button>
                                 </div>
@@ -313,14 +282,14 @@
                         </div>
                     </div>
                 </div>
-                <div class="modal fade" id="modal-edit" tabindex="-1" role="dialog" aria-labelledby="modal-edit"
+                <div class="modal fade" id="modal-edit" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="modal-edit"
                     aria-hidden="true" wire:ignore.self>
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h2 class="h6 modal-title">Edit Jam Kerja Infure</h2>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
+                                    aria-label="Close" wire:click="closeModal"></button>
                             </div>
                             <div class="modal-body">
                                 <div class="row">
@@ -484,7 +453,7 @@
                                         </div>
                                     </button>
                                     <!-- Close Button -->
-                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" wire:click="closeModal">
                                         Close
                                     </button>
                                 </div>
