@@ -64,7 +64,6 @@ class InfureJamKerjaController extends Component
 
     public function mount()
     {
-        $this->getData();
         if (empty($this->tglMasuk)) {
             $this->tglMasuk = Carbon::now()->format('d-m-Y');
         }
@@ -77,6 +76,7 @@ class InfureJamKerjaController extends Component
         if (empty($this->sortingTable)) {
             $this->sortingTable = [[1, 'asc']];
         }
+        $this->getData();
     }
 
     public function updateSortingTable($value)
