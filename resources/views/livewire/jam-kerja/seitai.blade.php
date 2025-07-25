@@ -102,7 +102,7 @@
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h2 class="h6 modal-title">Add Jam Kerja Infure</h2>
+                                <h2 class="h6 modal-title">Add Jam Kerja Seitai</h2>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close" wire:click="closeModal"></button>
                             </div>
@@ -287,7 +287,7 @@
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h2 class="h6 modal-title">Edit Jam Kerja Infure</h2>
+                                <h2 class="h6 modal-title">Edit Jam Kerja Seitai</h2>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close" wire:click="closeModal"></button>
                             </div>
@@ -661,7 +661,7 @@
                 </li>
             </ul>
         </div>
-        <table class="table align-middle" id="infureTable">
+        <table class="table align-middle" id="seitaiTable">
             <thead class="table-light">
                 <tr>
                     <th>Action</th>
@@ -809,16 +809,16 @@
                 defaultOrder = savedOrder;
             }
             // Hapus DataTable jika sudah ada
-            if ($.fn.dataTable.isDataTable('#infureTable')) {
-                let table = $('#infureTable').DataTable();
+            if ($.fn.dataTable.isDataTable('#seitaiTable')) {
+                let table = $('#seitaiTable').DataTable();
                 table.clear(); // Bersihkan data tabel
                 table.destroy(); // Hancurkan DataTable
-                // Hindari penggunaan $('#infureTable').empty(); di sini
+                // Hindari penggunaan $('#seitaiTable').empty(); di sini
             }
 
             setTimeout(() => {
                 // Inisialisasi ulang DataTable
-                let table = $('#infureTable').DataTable({
+                let table = $('#seitaiTable').DataTable({
                     "pageLength": 10,
                     "searching": true,
                     "responsive": true,
