@@ -936,7 +936,7 @@
         };
 
         $wire.on('redirectToPrint', (lpk_id) => {
-            var printUrl = '{{ route('report-lpk') }}?lpk_id=' + lpk_id
+            var printUrl = '{{ route('report-lpk') }}?lpk_ids=' + lpk_id
             window.open(printUrl, '_blank');
         });
 
