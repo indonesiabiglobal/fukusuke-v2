@@ -917,6 +917,10 @@ File: Main Js File
 	function initActiveMenu() {
 		var currentPath = location.pathname == "/" ? "index.html" : location.pathname.substring(1);
 		currentPath = currentPath.substring(currentPath.lastIndexOf("/") + 1);
+        if (currentPath == "dashboard-infure") {
+            toggleHamburgerMenu();
+        }
+
 		if (currentPath) {
 			// navbar-nav
 			var a = document.getElementById("navbar-nav").querySelector('[href="' + currentPath + '"]');

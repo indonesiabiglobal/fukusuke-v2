@@ -14,242 +14,374 @@
     <script src="https://code.highcharts.com/modules/accessibility.js"></script>
     <!--datatable css-->
     <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
-    {{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/jquery.dataTables.min.css"
-        integrity="sha512-1k7mWiTNoyx2XtmI96o+hdjP8nn0f3Z2N4oF/9ZZRgijyV4omsKOXEnqL1gKQNPy2MTSP9rIEWGcH/CInulptA=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" /> --}}
-
-    {{-- <link rel="stylesheet" href="{{ asset('asset/css/notika-custom-icon.css') }}"> --}}
-
 
     <style>
         .page-content {
             background-color: #f4f6f9 !Important;
+            padding: calc(100px + .1rem) 0.2rem 0px .2rem !Important;
+        }
+
+        thead th {
+            text-align: center !important;
+            font-size: 10px;
+            padding: 3px !important;
+        }
+
+        tbody td {
+            text-align: center !important;
+            font-size: 10px;
+            padding: 3px !important;
+        }
+
+        .card-mesin-masalah {
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .card-mesin-masalah:hover {
+            transform: translateY(-2px);
+        }
+
+        .badge {
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .problem-list small {
+            line-height: 1.4;
+        }
+
+        .bg-orange {
+            background-color: orange !important;
+            color: white;
         }
     </style>
 @endsection
 @section('content')
-    <div class="row">
-        <div class="col">
-            <div class="h-100">
-                <div class="row">
-                    <div class="col-xl-12">
-                        <div class="card">
-                            <div class="card-header border-0 align-items-center">
-                                <form action="{{ route('dashboard-infure') }}" method="get" class=" d-flex">
-                                    <div class="input-group">
-                                        <input type="text" name="filterDate" id="filterDate" class="form-control"
-                                            data-provider="flatpickr" data-date-format="d-m-Y" data-range-date="true"
-                                            data-default-date="{{ $filterDate }}">
-                                        <span class="input-group-text py-0">
-                                            <i class="ri-calendar-event-fill fs-4"></i>
-                                        </span>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary btn-load w-lg p-1">
-                                        <span>
-                                            <i class="ri-search-line"></i> Filter
-                                        </span>
-                                    </button>
-                                </form>
-                            </div>
-                        </div><!-- end card -->
-                    </div><!-- end col -->
-                </div>
-            </div>
-        </div>
-    </div>
-    {{-- kadou jikan infure --}}
-    <div class="row">
-        <div class="col">
-            <div class="h-100">
-                <div class="row">
-                    {{-- kadou jikan infure --}}
-                    <div class="col-12 col-xl-4">
-                        <div class="card">
-                            <div class="card-header border-0 align-items-center d-flex">
-                                <div class="card-header border-0 align-items-center d-flex">
-                                    <h4 class="card-title mb-0">
-                                        <a href="#" id="kadouJikanTitle">
-                                            INFURE Machine Running Rate (Kadou Jikan)
-                                        </a>
-                                    </h4>
-                                </div>
-                            </div>
-                            <div class="card-body p-0 pb-2">
-                                <div class="w-100">
-                                    <div id="kadouJikanInfure"></div>
-                                </div>
-                            </div><!-- end card body -->
-                        </div><!-- end card -->
-                    </div><!-- end col -->
-
-                    <div class="col-12 col-xl-8">
-                        <div class="card">
-                            <div class="card-header">
-                                <h4 class="card-title mb-0">INFURE Hasil Produksi Tertinggi dan Terendah</h4>
-                            </div><!-- end card header -->
-                            <div class="card-body">
-                                <div id="hasilProduksiInfure" data-colors='["--tb-primary", "--tb-success"]'
-                                    class="apex-charts" dir="ltr"></div>
-                            </div><!-- end card-body -->
-                        </div><!-- end card -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    </div>
-
-    {{-- Loss --}}
-    <div class="row">
-        <div class="col-12 col-xl-7">
+    <div class="row h-100">
+        <div class="col-12 col-xl-6 p-1">
             <div class="card">
-                <div class="card-header align-items-center d-flex">
-                    <h4 class="card-title mb-0">INFURE Loss</h4>
+                <div class="card-header border-0 align-items-center">
+                    <form action="{{ route('dashboard-infure') }}" method="get" class=" d-flex">
+                        <div class="input-group">
+                            <input type="text" name="filterDate" id="filterDate" class="form-control"
+                                data-provider="flatpickr" data-date-format="d-m-Y" data-range-date="true"
+                                data-default-date="{{ $filterDate }}">
+                            <span class="input-group-text py-0">
+                                <i class="ri-calendar-event-fill fs-4"></i>
+                            </span>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-load w-lg p-1">
+                            <span>
+                                <i class="ri-search-line"></i> Filter
+                            </span>
+                        </button>
+                    </form>
                 </div>
-                <div class="card-body">
-                    <table id="scroll-vertical"
-                        class="table table-bordered dt-responsive nowrap align-middle mdl-data-table" style="width:100%">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Name</th>
-                                <th>Berat</th>
-                                <th>Presentase</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($lossInfure['lossInfure'] as $data)
-                                <tr>
-                                    <td>{{ $loop->iteration }} </td>
-                                    <td>{{ $data->loss_name }} </td>
-                                    <td>{{ round($data->berat_loss, 2) }} Kg</td>
-                                    <td>
-                                        @php
-                                            $loss = round(
-                                                ($data->berat_loss / $lossInfure['totalLossInfure']) * 100,
-                                                2,
-                                            );
-                                        @endphp
-                                        {{ $loss }}%
-                                        <div class="progress">
-                                            <div class="progress-bar bg-danger" role="progressbar"
-                                                style="width: {{ $loss }}%;" aria-valuenow="{{ $loss }}"
-                                                aria-valuemin="0" aria-valuemax="100"></div>
+                <div class="card-body p-1">
+                    <div class="row">
+                        <div class="col-12 col-xl-8 pe-0">
+                            <div id="produksiLossPerMesin"></div>
+                        </div>
+                        <div class="col-12 col-xl-4 ps-0">
+                            <div id="lossPerMesin"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-xl-8 pe-0">
+                            <div id="kadouJikanFrekuensiTrouble"></div>
+                        </div>
+                        <div class="col-12 col-xl-4 ps-0">
+                            <div id="lossPerKasus"></div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <!-- Section 1: Mesin Masalah Kiri -->
+                        <div class="col-12 col-xl-6">
+                            <div class="card card-mesin-masalah shadow-sm border-0 h-100">
+                                <div class="card-body p-3">
+                                    <div class="row align-items-center">
+                                        <!-- Problem Categories -->
+                                        <div class="col-8">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <div class="bg-danger rounded-circle me-2" style="width: 8px; height: 8px;">
+                                                </div>
+                                                <h5 class="mb-0 text-danger fw-bold fs-6">MESIN MASALAH</h5>
+                                            </div>
+                                            <div class="problem-list">
+                                                <small class="d-block text-muted mb-1">• Produksi Rendah</small>
+                                                <small class="d-block text-muted mb-1">• Kadou Jikan Rendah</small>
+                                                <small class="d-block text-muted">• Loss Tinggi (%)</small>
+                                            </div>
                                         </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        <div class="col-12 col-xl-5">
-            <div class="row">
-                <div class="col-12 col-md-6 col-xl-12 mb-1">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between flex-sm-row flex-column">
-                                <div class="d-flex flex-sm-column flex-row align-items-start justify-content-between col-7 align-self-center">
-                                    <div class="card-title">
-                                        <h5 class="text-nowrap mb-2">Loss Tertinggi</h5>
-                                        <span class="badge bg-warning rounded-pill">{{ $filterDate }}</span>
-                                    </div>
-                                    <div class="mt-sm-auto">
-                                        <h4 class="mb-0">{{ $higherLossName }}</h4>
-                                        <p class="mb-0 fw-bold text-muted">{{ $higherLoss }} Kg
-                                            <small class="text-danger text-nowrap fw-semibold"><i
-                                                    class="bx bx-chevrons-down"></i>
-                                                {{ $higherLossPercentage }}%
-                                                dari loss
-                                            </small></p>
+
+                                        <!-- Problem Values -->
+                                        <div class="col-4">
+                                            <div class="table-responsive">
+                                                <table class="table table-sm table-borderless mb-0">
+                                                    <tr>
+                                                        <td class="text-center">
+                                                            <span class="badge bg-danger fs-4">33</span>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center">
+                                                            <span class="badge bg-orange fs-4">33</span>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center">
+                                                            <span class="badge bg-warning fs-4">33</span>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                {{-- <div id="profileReportChart"></div> --}}
-                                <div id="growthChart" class="col-5"></div>
+                            </div>
+                        </div>
+
+                        <!-- Section 2: Mesin Masalah Kanan -->
+                        <div class="col-12 col-xl-6">
+                            <div class="card card-mesin-masalah shadow-sm border-0 h-100">
+                                <div class="card-body p-3">
+                                    <div class="row align-items-center">
+                                        <!-- Problem Categories -->
+                                        <div class="col-8">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <div class="bg-primary rounded-circle me-2"
+                                                    style="width: 8px; height: 8px;"></div>
+                                                <h5 class="mb-0 text-primary fw-bold fs-6">MESIN MASALAH</h5>
+                                            </div>
+                                            <div class="problem-list">
+                                                <small class="d-block text-muted mb-1">• Masalah Henniku</small>
+                                                <small class="d-block text-muted">• Tertinggi (Kg)</small>
+                                            </div>
+                                        </div>
+
+                                        <!-- Problem Values -->
+                                        <div class="col-4">
+                                            <div class="table-responsive">
+                                                <table class="table table-sm table-borderless mb-0">
+                                                    <tr>
+                                                        <td class="text-center">
+                                                            <span class="badge bg-danger fs-4">33</span>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center">
+                                                            <span class="badge bg-warning fs-4">33</span>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                {{-- TOP Trouble Infure --}}
-                <div class="col-12 col-md-6 col-xl-12">
-                    <div class="card card-height-100">
-                        <div class="card-header align-items-center d-flex">
-                            <h4 class="card-title mb-0 flex-grow-1">INFURE Top 3 Loss </h4>
-                            <div class="flex-shrink-0">
-                            </div>
-                        </div><!-- end card header -->
-                        <div class="card-body pt-0">
-                            <ul class="list-group list-group-flush border-dashed" id="topLossInfure">
-                            </ul>
-                        </div><!-- end card body -->
-                    </div><!-- end card -->
-                </div>
-            </div>
-        </div><!-- end col -->
-    </div>
-
-    <div class="row">
-        {{-- infure counter trouble --}}
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h4 class="card-title mb-0">INFURE Counter Trouble </h4>
-                </div><!-- end card header -->
-
-                <div class="card-body">
-                    <div id="counterTroubleInfure"></div>
-                </div><!-- end card-body -->
             </div><!-- end card -->
-        </div>
-    </div>
-    {{-- end Loss --}}
-
-    <!-- end row-->
-    {{-- Modal Infure Kadou jikan  --}}
-    <div class="modal  fade bs-example-modal-center" id="modalListMesinInfure" tabindex="-1" role="dialog"
-        aria-labelledby="mySmallModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-body text-center p-1">
-                    <div class="card card-height-100">
-                        <div class="card-header align-items-center d-flex">
-                            <h4 class="card-title mb-0 flex-grow-1">INFURE Machine Running Rate (Kadou Jikan)</h4>
+        </div><!-- end col -->
+        <div class="col-12 col-xl-6 p-1">
+            <div class="card">
+                <div class="card-header border-0 align-items-center">
+                    <form action="{{ route('dashboard-infure') }}" method="get" class=" d-flex">
+                        <div class="input-group">
+                            <input type="text" name="filterDate" id="filterDate" class="form-control"
+                                data-provider="flatpickr" data-date-format="d-m-Y" data-range-date="true"
+                                data-default-date="{{ $filterDate }}">
+                            <span class="input-group-text py-0">
+                                <i class="ri-calendar-event-fill fs-4"></i>
+                            </span>
                         </div>
-                        <div class="card-body">
-                            <div style="max-height: 400px; overflow-y: auto; max-width: 100%; overflow-x: auto;">
-                                <table class="table">
-                                    @foreach ($listMachineInfure['listDepartment'] as $department)
+                        <button type="submit" class="btn btn-primary btn-load w-lg p-1">
+                            <span>
+                                <i class="ri-search-line"></i> Filter
+                            </span>
+                        </button>
+                    </form>
+                </div>
+                <div class="card-body p-0">
+                    <div class="row g-0">
+                        <div class="col-12 col-xl-6 p-1" style="height: 200px">
+                            <h4 class="card-title mb-2 flex-grow-1 fw-bold text-center">
+                                Total Produksi Pabrik C (Kg)
+                            </h4>
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Periode</th>
+                                        <th>Target</th>
+                                        <th>Aktual</th>
+                                        <th>Selisih</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($lossInfure['lossInfure'] as $data)
+                                        @if ($loop->iteration == 4)
+                                            @break
+                                        @endif
                                         <tr>
-                                            <td>{{ $department['department_name'] }}</td>
-                                            @foreach ($kadouJikanInfureMesin as $machine)
-                                                @if ($machine->department_id == $department['department_id'])
-                                                    <td style="padding: 1px;">
-                                                        <div class="{{ $machine->persenmesinkerja > 50 ? 'bg-success' : ($machine->persenmesinkerja > 0 ? 'bg-warning' : 'bg-danger') }}"
-                                                            style="padding: 10px; width: 100%; height: 100%;"
-                                                            data-bs-toggle="tooltip" data-bs-placement="top"
-                                                            data-bs-title="{{ $machine->machineno . ': ' . $machine->persenmesinkerja }}%">
-                                                            {{ $machine->machine_no }}
-                                                        </div>
-                                                    </td>
-                                                @endif
-                                            @endforeach
+                                            <td class="text-center fw-semibold">{{ $loop->iteration }} </td>
+                                            <td class="text-center fw-bold">{{ round($data->berat_loss, 2) }} </td>
+                                            <td class="text-center fw-bold">{{ round($data->berat_loss, 2) }}</td>
+                                            <td class="text-center fw-bold">
+                                                {{ round($data->berat_loss, 2) }}
+                                            </td>
                                         </tr>
                                     @endforeach
-                                </table>
-                            </div>
-                        </div><!-- end card body -->
+                                    <tr>
+                                        <td class="text-center fw-bold">Total</td>
+                                        <td class="text-center fw-bold">{{ round($lossInfure['totalLossInfure'], 2) }}
+                                        </td>
+                                        <td class="text-center fw-bold">210</td>
+                                        <td class="text-center fw-bold">200</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-12 col-xl-6 p-1" style="height: 200px">
+                            <h4 class="card-title mb-2 flex-grow-1 fw-bold text-center text-danger">
+                                Peringatan Katagae
+                            </h4>
+                            <table class="table table-bordered dt-responsive nowrap align-middle mdl-data-table"
+                                style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th rowspan="2">Mesin</th>
+                                        <th rowspan="2">LPK</th>
+                                        <th rowspan="2">Nama Produk</th>
+                                        <th rowspan="2">Sisa Meter</th>
+                                        <th colspan="2">Waktu</th>
+                                    </tr>
+                                    <tr>
+                                        <th>Jam</th>
+                                        <th>Menit</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($lossInfure['lossInfure'] as $data)
+                                        @if ($loop->iteration == 4)
+                                            @break
+                                        @endif
+                                        <tr>
+                                            <td class="text-center">{{ $loop->iteration }} </td>
+                                            <td class="text-center">{{ $data->loss_name }} </td>
+                                            <td class="text-center">{{ $data->loss_name }} </td>
+                                            <td class="text-center">{{ round($data->berat_loss, 2) }}</td>
+                                            <td class="text-center">{{ round($data->berat_loss, 2) }}</td>
+                                            <td class="text-center">{{ round($data->berat_loss, 2) }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    <div class="mt-4">
-                        <div class="hstack gap-2 justify-content-center">
-                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                            {{-- <a href="javascript:void(0);" class="btn btn-danger">Try Again</a> --}}
+                    <div class="row g-0">
+                        <div class="col-12 col-xl-6 pe-0">
+                            <div id="produksiPerBulan"></div>
+                        </div>
+                        <div class="col-12 col-xl-6 ps-0">
+                            <div id="lossPerBulan">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row g-3">
+                        <!-- Section 1: Mesin Masalah Kiri -->
+                        <div class="col-12 col-xl-6">
+                            <div class="card card-mesin-masalah shadow-sm border-0 h-100">
+                                <div class="card-body p-3">
+                                    <div class="row align-items-center">
+                                        <!-- Problem Categories -->
+                                        <div class="col-8">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <div class="bg-danger rounded-circle me-2"
+                                                    style="width: 8px; height: 8px;">
+                                                </div>
+                                                <h5 class="mb-0 text-danger fw-bold fs-6">MESIN MASALAH</h5>
+                                            </div>
+                                            <div class="problem-list">
+                                                <small class="d-block text-muted mb-1">• Produksi Rendah</small>
+                                                <small class="d-block text-muted mb-1">• Kadou Jikan Rendah</small>
+                                                <small class="d-block text-muted">• Loss Tinggi (%)</small>
+                                            </div>
+                                        </div>
+
+                                        <!-- Problem Values -->
+                                        <div class="col-4">
+                                            <div class="table-responsive">
+                                                <table class="table table-sm table-borderless mb-0">
+                                                    <tr>
+                                                        <td class="text-center">
+                                                            <span class="badge bg-danger fs-4">33</span>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center">
+                                                            <span class="badge bg-orange fs-4">33</span>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center">
+                                                            <span class="badge bg-warning fs-4">33</span>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section 2: Mesin Masalah Kanan -->
+                        <div class="col-12 col-xl-6">
+                            <div class="card card-mesin-masalah shadow-sm border-0 h-100">
+                                <div class="card-body p-3">
+                                    <div class="row align-items-center">
+                                        <!-- Problem Categories -->
+                                        <div class="col-8">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <div class="bg-primary rounded-circle me-2"
+                                                    style="width: 8px; height: 8px;"></div>
+                                                <h5 class="mb-0 text-primary fw-bold fs-6">MESIN MASALAH</h5>
+                                            </div>
+                                            <div class="problem-list">
+                                                <small class="d-block text-muted mb-1">• Masalah Henniku</small>
+                                                <small class="d-block text-muted">• Tertinggi (Kg)</small>
+                                            </div>
+                                        </div>
+
+                                        <!-- Problem Values -->
+                                        <div class="col-4">
+                                            <div class="table-responsive">
+                                                <table class="table table-sm table-borderless mb-0">
+                                                    <tr>
+                                                        <td class="text-center">
+                                                            <span class="badge bg-danger fs-4">33</span>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center">
+                                                            <span class="badge bg-warning fs-4">33</span>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
+            </div>
+        </div><!-- end card -->
+    </div><!-- end col -->
+    </div>
 @endsection
 
 @section('script')
@@ -279,426 +411,567 @@
 
     <script>
         $(document).ready(function() {
-            // $('#filterDate').flatpickr({
-            //     mode: "range",
-            //     dateFormat: "d-m-Y",
-            //     defaultDate: ['today to today'],
-            // });
-
-            // $('#data-table-basic').DataTable();
-
-            let table = $('#scroll-vertical').DataTable({
-                "scrollY": "250px",
-                "scrollCollapse": true,
-                "paging": false
-            });
-
             /*
             Infure
             */
+
+            // PRODUKSI DAN LOSS PER MESIN
+            let counterTroubleInfure = @json($counterTroubleInfure);
             let kadouJikanDepartment = @json($kadouJikanDepartment);
             kadouJikanDepartment = Object.values(kadouJikanDepartment);
             let kadouJikanInfureMesin = @json($kadouJikanInfureMesin);
             kadouJikanInfureMesin = Object.values(kadouJikanInfureMesin);
 
-
-            // Kadou Jikan Infure
-            Highcharts.chart('kadouJikanInfure', {
+            Highcharts.setOptions({
                 chart: {
-                    type: 'column',
-                    height: 300,
-                },
-                title: {
-                    align: 'left',
-                    text: ``,
                     style: {
-                        fontWeight: 500,
-                    },
-                },
-                accessibility: {
-                    announceNewData: {
-                        enabled: true
+                        fontSize: '12px',
+                        // fontWeight: '600'
                     }
-                },
-                xAxis: {
-                    type: 'category',
-                    title: {
-                        text: 'Department'
-                    }
-                },
-                yAxis: {
-                    title: {
-                        text: 'Machine Running Rate'
-                    }
-                },
-                legend: {
-                    enabled: false
-                },
-                plotOptions: {
-                    series: {
-                        borderWidth: 0,
-                        dataLabels: {
-                            enabled: true,
-                            format: '{point.y:.1f}%'
-                        },
-                        borderRadius: 8
-                    }
-                },
-
-                tooltip: {
-                    headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
-                    pointFormat: '<span style="color:{point.color};">{point.name}</span>: ' +
-                        '<b>{point.y:.2f}%</b> of total<br/>'
-                },
-                series: [{
-                    name: 'Division Infure',
-                    colorByPoint: false,
-                    data: kadouJikanDepartment.map(item => {
-                        return {
-                            name: item.departmentName,
-                            y: parseFloat(item.persenMesinDepartment),
-                            drilldown: item.departmentId
-                        }
-                    })
-                }],
-                drilldown: {
-                    breadcrumbs: {
-                        position: {
-                            align: 'right'
-                        }
-                    },
-                    series: kadouJikanDepartment.map(item => {
-                        return {
-                            name: item.departmentName,
-                            id: item.departmentId,
-                            data: kadouJikanInfureMesin.filter(mesin => mesin.department_id == item
-                                .departmentId).map(mesin => {
-                                return [mesin.machine_no, parseFloat(mesin
-                                    .persenmesinkerja)]
-                            })
-                        }
-                    })
                 }
             });
 
-            document.getElementById('kadouJikanTitle').addEventListener('click', function() {
-                var myModal = new bootstrap.Modal(document.getElementById('modalListMesinInfure'));
-                myModal.show();
-            });
 
-            // Hasil Produksi Infure
-            let hasilProduksiInfure = @json($hasilProduksiInfure);
-            let linechartDatalabelColors = getChartColorsArray("hasilProduksiInfure");
-            if (linechartDatalabelColors) {
-                let options = {
-                    chart: {
-                        height: 280,
-                        type: 'line',
-                        zoom: {
-                            enabled: false
-                        },
-                        toolbar: {
-                            show: false
-                        }
+            Highcharts.chart('produksiLossPerMesin', {
+                chart: {
+                    zooming: {
+                        type: 'xy'
                     },
-                    colors: linechartDatalabelColors,
-                    dataLabels: {
-                        enabled: false,
+                    height: 200
+                },
+                exporting: {
+                    enabled: false,
+                },
+                title: {
+                    text: 'PRODUKSI DAN LOSS PER MESIN',
+                    style: {
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        fontFamily: 'Public Sans'
                     },
-                    stroke: {
-                        width: [3, 3],
-                        curve: 'straight'
-                    },
-                    series: [{
-                            name: "Tertinggi",
-                            data: hasilProduksiInfure.map(item => parseFloat(item.max))
-                        },
-                        {
-                            name: "Terendah",
-                            data: hasilProduksiInfure.map(item => parseFloat(item.min))
-                        }
+                },
+                xAxis: [{
+                    categories: [
+                        '31', '32', '33', '34', '35', '36',
+                        '37', '38', '39', '40', '41', '42'
                     ],
+                    crosshair: true
+                }],
+                yAxis: [{
+                    labels: {
+                        format: '{value}%',
+                        style: {}
+                    },
                     title: {
-                        text: 'Hasil Produksi',
-                        align: 'left',
-                        style: {
-                            fontWeight: 500,
+                        text: '(%)',
+                        align: 'high',
+                        offset: 0,
+                        rotation: 0,
+                        y: -20,
+                        style: {}
+                    },
+                    opposite: true
+                }, {
+                    gridLineWidth: 0,
+                    title: {
+                        text: '(Kg)',
+                        align: 'high',
+                        offset: 0,
+                        rotation: 0,
+                        y: -20,
+                        style: {}
+                    },
+                    labels: {
+                        format: '{value}',
+                        style: {}
+                    }
+                }],
+                tooltip: {
+                    shared: true
+                },
+                legend: {
+                    layout: 'horizontal',
+                    align: 'left',
+                    x: 80,
+                    verticalAlign: 'top',
+                    y: 55,
+                    floating: true,
+                    backgroundColor: Highcharts.defaultOptions.legend.backgroundColor || // theme
+                        'rgba(255,255,255,0.25)',
+                    itemStyle: {
+                        fontSize: '10px',
+                    }
+                },
+                series: [{
+                    name: 'Produksi (Kg)',
+                    type: 'column',
+                    yAxis: 1,
+                    data: [
+                        49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1,
+                        95.6, 54.4
+                    ],
+                    tooltip: {
+                        valueSuffix: ' Kg'
+                    },
+                }, {
+                    name: 'Loss (%)',
+                    type: 'spline',
+                    data: [
+                        7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6
+                    ],
+                    tooltip: {
+                        valueSuffix: ' %'
+                    }
+                }],
+                responsive: {
+                    rules: [{
+                        condition: {
+                            maxWidth: 500
                         },
-                    },
-                    grid: {
-                        row: {
-                            colors: ['transparent',
-                                'transparent'
-                            ], // takes an array which will be repeated on columns
-                            opacity: 0.2
-                        },
-                        borderColor: '#f1f1f1'
-                    },
-                    markers: {
-                        style: 'inverted',
-                        size: 6
-                    },
-                    xaxis: {
-                        categories: hasilProduksiInfure.map(item => item.machine_no),
-                        title: {
-                            text: 'Nomer Mesin'
-                        }
-                    },
-                    yaxis: {
-                        title: {
-                            text: 'Hasil Produksi'
-                        },
-                        // min: 5,
-                        // max: 40
-                    },
-                    legend: {
-                        position: 'top',
-                        horizontalAlign: 'right',
-                        floating: true,
-                        offsetY: -25,
-                        offsetX: -5
-                    },
-                    responsive: [{
-                        breakpoint: 600,
-                        options: {
-                            chart: {
-                                toolbar: {
-                                    show: false
-                                }
-                            },
+                        chartOptions: {
                             legend: {
-                                show: false
+                                floating: false,
+                                layout: 'horizontal',
+                                align: 'center',
+                                verticalAlign: 'bottom',
+                                x: 0,
+                                y: 0
                             },
+                            yAxis: [{
+                                labels: {
+                                    align: 'right',
+                                },
+                                showLastLabel: true
+                            }, {
+                                labels: {
+                                    align: 'left',
+                                },
+                                showLastLabel: true
+                            }, {
+                                visible: false
+                            }]
                         }
                     }]
                 }
-
-                let chart = new ApexCharts(
-                    document.querySelector("#hasilProduksiInfure"),
-                    options
-                );
-                chart.render();
-            }
-            // end Hasil Produksi Infure
-
-            // top loss infure
-            let topLossInfure = @json($topLossInfure);
-            let html = '';
-            topLossInfure.map((item, index) => {
-                html += `<li class="list-group-item ps-0">
-                            <div class="row align-items-center g-3">
-                                <div class="col-auto">
-                                    <div class="avatar-sm p-1 py-2 h-auto bg-light rounded-3">
-                                        <div class="text-center">
-                                            <h5 class="mb-0">${index + 1}</h5>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <h5 class="text-muted mt-0 mb-1 fs-13">
-                                        <span class="badge text bg-primary">LOSS</span> ${item.loss_name}
-                                    </h5>
-                                    <a href="#" class="text-reset fs-14 mb-0">
-                                        <span class="badge text bg-danger">Berat</span> ${parseFloat(item.berat_loss).toFixed(3)} Kg
-                                    </a>
-                                </div>
-                            </div>
-                        </li>`;
             });
-            $('#topLossInfure').html(html);
-
-
-            // Growth Chart - Radial Bar Chart
-            // --------------------------------------------------------------------
-            const growthChartEl = document.querySelector('#growthChart'),
-                growthChartOptions = {
-                    series: [{{ $higherLossPercentage }}],
-                    labels: ['Loss'],
-                    chart: {
-                        height: 210,
-                        type: 'radialBar'
+            // Kadou Jikan Infure
+            Highcharts.chart('lossPerMesin', {
+                chart: {
+                    type: 'column',
+                    height: 200
+                },
+                exporting: {
+                    enabled: false,
+                },
+                title: {
+                    text: 'LOSS/MESIN',
+                    style: {
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        fontFamily: 'Public Sans'
                     },
-                    plotOptions: {
-                        radialBar: {
-                            size: 150,
-                            offsetY: 10,
-                            startAngle: -150,
-                            endAngle: 150,
-                            hollow: {
-                                size: '55%'
-                            },
-                            track: {
-                                // background: "--tb-danger",
-                                strokeWidth: '100%'
-                            },
-                            dataLabels: {
-                                name: {
-                                    offsetY: 15,
-                                    color: "#000",
-                                    fontSize: '15px',
-                                    fontWeight: '600',
-                                    fontFamily: 'Public Sans'
-                                },
-                                value: {
-                                    offsetY: -25,
-                                    color: "#000",
-                                    fontSize: '22px',
-                                    fontWeight: '500',
-                                    fontFamily: 'Public Sans'
-                                }
-                            }
-                        }
+                },
+                xAxis: {
+                    categories: ['31', '32', '33', '34', '35', '36'],
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: '(Kg)',
+                        align: 'high',
+                        offset: 0,
+                        rotation: 0,
+                        y: -20,
+                        style: {}
                     },
-                    colors: ["#FF0000"],
-                    fill: {
-                        type: 'gradient',
-                        gradient: {
-                            shade: 'dark',
-                            shadeIntensity: 0.5,
-                            gradientToColors: ["#FF0000"],
-                            inverseColors: true,
-                            opacityFrom: 1,
-                            opacityTo: 0.6,
-                            stops: [5, 20, 50, 100]
-                        }
-                    },
-                    stroke: {
-                        dashArray: 5
-                    },
-                    grid: {
-                        padding: {
-                            top: -35,
-                            bottom: -10
-                        }
-                    },
-                    states: {
-                        hover: {
-                            filter: {
-                                type: 'none'
-                            }
+                    labels: {
+                        format: '{value}',
+                        style: {}
+                    }
+                },
+                tooltip: {
+                    valueSuffix: ' (Kg)'
+                },
+                plotOptions: {
+                    column: {
+                        pointPadding: 0.2,
+                        borderWidth: 0
+                    }
+                },
+                series: [{
+                    name: 'Loss',
+                    showInLegend: false,
+                    data: [64.20, 44.70, 35.50, 27.90, 24.60, 19.10]
+                }],
+                responsive: {
+                    rules: [{
+                        condition: {
+                            maxWidth: 500
                         },
-                        active: {
-                            filter: {
-                                type: 'none'
-                            }
+                        chartOptions: {
+                            legend: {
+                                floating: false,
+                                layout: 'horizontal',
+                                align: 'center',
+                                verticalAlign: 'bottom',
+                                x: 0,
+                                y: 0
+                            },
+                            yAxis: [{
+                                labels: {
+                                    align: 'left',
+                                },
+                                showLastLabel: true
+                            }]
                         }
-                    }
-                };
-            if (typeof growthChartEl !== undefined && growthChartEl !== null) {
-                const growthChart = new ApexCharts(growthChartEl, growthChartOptions);
-                growthChart.render();
-            }
-            //  end top loss infure
-
-        });
-
-        // Counter Table Infure
-        let counterTroubleInfure = @json($counterTroubleInfure);
-        Highcharts.chart('counterTroubleInfure', {
-            chart: {
-                zooming: {
-                    type: 'xy'
+                    }]
                 }
-            },
-            title: {
-                text: '',
-                align: 'left'
-            },
-            xAxis: [{
-                categories: counterTroubleInfure.map(item => item.loss_name),
-                crosshair: true
-            }],
-            yAxis: [{ // Primary yAxis
-                labels: {
-                    format: '{value}',
-                    style: {
-                        color: Highcharts.getOptions().colors[1]
-                    }
+            });
+
+            Highcharts.chart('kadouJikanFrekuensiTrouble', {
+                chart: {
+                    zooming: {
+                        type: 'xy'
+                    },
+                    height: 200
+                },
+                exporting: {
+                    enabled: false,
                 },
                 title: {
-                    text: 'Counter Loss',
+                    text: 'KADOU JIKAN & FREKUENSI TROUBLE',
                     style: {
-                        color: Highcharts.getOptions().colors[1]
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        fontFamily: 'Public Sans'
+                    },
+                },
+                xAxis: [{
+                    categories: [
+                        '31', '32', '33', '34', '35', '36',
+                        '37', '38', '39', '40', '41', '42'
+                    ],
+                    crosshair: true
+                }],
+                yAxis: [{
+                    labels: {
+                        format: '{value}%',
+                        style: {}
+                    },
+                    title: {
+                        text: '(%)',
+                        align: 'high',
+                        offset: 0,
+                        rotation: 0,
+                        y: -20,
+                        style: {}
+                    },
+                    opposite: true
+
+                }, {
+                    gridLineWidth: 0,
+                    title: {
+                        text: '(Kg)',
+                        align: 'high',
+                        offset: 0,
+                        rotation: 0,
+                        y: -20,
+                        style: {}
+                    },
+                    labels: {
+                        format: '{value}',
+                        style: {}
                     }
+                }],
+                tooltip: {
+                    shared: true
+                },
+                legend: {
+                    layout: 'horizontal',
+                    align: 'left',
+                    x: 80,
+                    verticalAlign: 'top',
+                    y: 55,
+                    floating: true,
+                    backgroundColor: Highcharts.defaultOptions.legend.backgroundColor || // theme
+                        'rgba(255,255,255,0.25)',
+                    itemStyle: {
+                        fontSize: '10px',
+                    }
+                },
+                series: [{
+                    name: 'Produksi (Kg)',
+                    type: 'column',
+                    yAxis: 1,
+                    data: [
+                        49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1,
+                        95.6, 54.4
+                    ],
+                    tooltip: {
+                        valueSuffix: ' Kg'
+                    },
+                }, {
+                    name: 'Loss (%)',
+                    type: 'spline',
+                    data: [
+                        7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6
+                    ],
+                    tooltip: {
+                        valueSuffix: ' %'
+                    }
+                }],
+                responsive: {
+                    rules: [{
+                        condition: {
+                            maxWidth: 500
+                        },
+                        chartOptions: {
+                            legend: {
+                                floating: false,
+                                layout: 'horizontal',
+                                align: 'center',
+                                verticalAlign: 'bottom',
+                                x: 0,
+                                y: 0
+                            },
+                            yAxis: [{
+                                labels: {
+                                    align: 'right',
+                                },
+                                showLastLabel: true
+                            }, {
+                                labels: {
+                                    align: 'left',
+                                },
+                                showLastLabel: true
+                            }]
+                        }
+                    }]
                 }
-            }, { // Secondary yAxis
+            });
+
+            // loss Per kasus
+            Highcharts.chart('lossPerKasus', {
+                chart: {
+                    type: 'column',
+                    height: 200
+                },
+                exporting: {
+                    enabled: false,
+                },
                 title: {
-                    text: 'Counter Loss',
+                    text: 'LOSS/KASUS',
                     style: {
-                        color: Highcharts.getOptions().colors[0]
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        fontFamily: 'Public Sans'
+                    },
+                },
+                xAxis: {
+                    categories: ["Printing ke Printing", "Potong Gentan", "Amigae", "Heniku",
+                        "Tachiage Lain-Lain"
+                    ],
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: '(Kg)',
+                        align: 'high',
+                        offset: 0,
+                        rotation: 0,
+                        y: -20,
+                        style: {}
+                    },
+                    labels: {
+                        format: '{value}',
+                        style: {}
                     }
                 },
-                labels: {
-                    format: '{value}',
-                    style: {
-                        color: Highcharts.getOptions().colors[0]
+                tooltip: {
+                    valueSuffix: ' (Kg)'
+                },
+                plotOptions: {
+                    column: {
+                        pointPadding: 0.2,
+                        borderWidth: 0
                     }
                 },
-                opposite: true
-            }],
-            tooltip: {
-                shared: true
-            },
-            legend: {
-                align: 'left',
-                verticalAlign: 'top',
-                backgroundColor: Highcharts.defaultOptions.legend.backgroundColor || // theme
-                    'rgba(255,255,255,0.25)'
-            },
-            series: [{
-                name: 'Loss',
-                type: 'column',
-                yAxis: 1,
-                data: counterTroubleInfure.map(item => parseFloat(item.counterloss)),
+                series: [{
+                    name: 'Loss',
+                    showInLegend: false,
+                    data: [64.20, 44.70, 35.50, 27.90, 24.60]
+                }],
+                responsive: {
+                    rules: [{
+                        condition: {
+                            maxWidth: 500
+                        },
+                        chartOptions: {
+                            legend: {
+                                floating: false,
+                                layout: 'horizontal',
+                                align: 'center',
+                                x: 0,
+                                y: 0
+                            },
+                            yAxis: [{
+                                labels: {
+                                    align: 'left',
+                                },
+                                showLastLabel: true
+                            }]
+                        }
+                    }]
+                }
+            });
 
-            }, {
-                name: 'Loss',
-                type: 'spline',
-                data: counterTroubleInfure.map(item => parseFloat(item.counterloss)),
-            }]
+
+            //  Produksi Per Bulan
+            Highcharts.chart('produksiPerBulan', {
+                chart: {
+                    type: 'column',
+                    height: 200
+                },
+                exporting: {
+                    enabled: false,
+                },
+                title: {
+                    text: 'PRODUKSI PER BULAN',
+                    align: 'center'
+                },
+                xAxis: {
+                    categories: [31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44]
+                },
+                yAxis: {
+                    allowDecimals: false,
+                    min: 0,
+                    title: {
+                        text: '(Kg)',
+                        align: 'high',
+                        offset: 0,
+                        rotation: 0,
+                        y: -20
+                    },
+                },
+
+                tooltip: {
+                    format: '<b>{key}</b><br/>{series.name}: {y}<br/>' +
+                        'Total: {point.stackTotal}'
+                },
+
+                plotOptions: {
+                    column: {
+                        stacking: 'normal'
+                    }
+                },
+                series: [{
+                    name: 'A',
+                    data: [148, 133, 124],
+                    stack: 'produksi'
+                }, {
+                    name: 'B',
+                    data: [102, 98, 65],
+                    stack: 'produksi'
+                }, {
+                    name: 'C',
+                    data: [113, 122, 95],
+                    stack: 'produksi'
+                }],
+                responsive: {
+                    rules: [{
+                        condition: {
+                            maxWidth: 500
+                        },
+                        chartOptions: {
+                            legend: {
+                                floating: false,
+                                layout: 'horizontal',
+                                align: 'center',
+                                verticalAlign: 'bottom',
+                                x: 0,
+                                y: 0
+                            },
+                            yAxis: [{
+                                labels: {
+                                    align: 'left',
+                                },
+                                showLastLabel: true
+                            }]
+                        }
+                    }]
+                }
+            });
+
+            let lossPerbulan = [0.63, 0.63, 0.57, 0.53, 0.80, 0.83, 0.63, 0.60, 1.10, 1.43, 1.40, 1.30, 0.93, 0.77];
+            Highcharts.chart('lossPerBulan', {
+                chart: {
+                    height: 200,
+                },
+                exporting: {
+                    enabled: false,
+                },
+                title: {
+                    text: 'LOSS PER BULAN',
+                    align: 'center',
+                },
+                yAxis: {
+                    title: {
+                        text: '(%)',
+                        align: 'high',
+                        offset: 0,
+                        rotation: 0,
+                        y: -20,
+                    },
+                },
+                xAxis: {
+                    categories: [31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44],
+                    title: {
+                        text: 'Loss',
+                    },
+                },
+                legend: {
+                    layout: 'vertical',
+                    align: 'right',
+                    verticalAlign: 'middle',
+                },
+                plotOptions: {
+                    series: {
+                        label: {
+                            connectorAllowed: false
+                        },
+                    }
+                },
+                series: [{
+                    name: 'Loss A',
+                    data: lossPerbulan.map(item => Math.round(item * 100) / 100)
+                }, {
+                    name: 'Loss B',
+                    data: lossPerbulan.map(item => Math.round(item * 1.5 * 100) / 100)
+                }, {
+                    name: 'Loss C',
+                    data: lossPerbulan.map(item => Math.round(item * 2 * 100) / 100)
+                }],
+                responsive: {
+                    rules: [{
+                        condition: {
+                            maxWidth: 500
+                        },
+                        chartOptions: {
+                            legend: {
+                                layout: 'horizontal',
+                                align: 'center',
+                                verticalAlign: 'bottom'
+                            },
+                            yAxis: [{
+                                labels: {
+                                    align: 'left',
+                                },
+                                showLastLabel: true
+                            }]
+                        },
+                    }]
+                },
+            });
         });
-        // Highcharts.chart('counterTroubleInfure', {
-        //     chart: {
-        //         type: 'column',
-        //         height: 330,
-        //     },
-        //     title: {
-        //         text: '',
-        //         align: 'left'
-        //     },
-        //     // subtitle: {
-        //     //     text: 'Source: <a target="_blank" ' +
-        //     //         'href="https://www.indexmundi.com/agriculture/?commodity=corn">indexmundi</a>',
-        //     //     align: 'left'
-        //     // },
-        //     xAxis: {
-        //         categories: counterTroubleInfure.map(item => item.loss_name),
-        //         crosshair: true,
-        //         // accessibility: {
-        //         //     description: 'Countries'
-        //         // }
-        //     },
-        //     yAxis: {
-        //         min: 0,
-        //         title: {
-        //             text: 'Counter Loss'
-        //         }
-        //     },
-        //     tooltip: {
-        //         valueSuffix: ''
-        //     },
-        //     plotOptions: {
-        //         column: {
-        //             pointPadding: 0.2,
-        //             borderWidth: 0
-        //         }
-        //     },
-        //     series: [{
-        //         name: 'Loss',
-        //         data: counterTroubleInfure.map(item => parseFloat(item.counterloss))
-        //     }, ]
-        // });
-
-        // end Counter Table Infure
     </script>
 @endsection

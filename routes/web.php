@@ -22,6 +22,7 @@ use App\Http\Livewire\MasterTabel\WorkingShift;
 use App\Http\Livewire\Kenpin\EditKenpinController;
 use App\Http\Livewire\MasterTabel\BuyerController;
 use App\Http\Controllers\DashboardInfureController;
+use App\Http\Controllers\DashboardInfureControllerOld;
 use App\Http\Controllers\DashboardSeitaiController;
 use App\Http\Livewire\Kenpin\KenpinInfureController;
 use App\Http\Livewire\Kenpin\KenpinSeitaiController;
@@ -321,6 +322,14 @@ Route::group(['middleware' => 'auth'], function () {
     });
 
     // Infure
+    Route::controller(DashboardInfureControllerOld::class)->group(function () {
+        Route::get('/dashboard-infure-old', 'index')->name('dashboard-infure-old');
+        Route::get('/dashboard-infure-old/kadou-jikan', 'getkadouJikanInfure')->name('dashboard-infure-kadou-jikan-infure');
+        Route::get('/dashboard-infure-old/hasil-produksi', 'getHasilProduksiInfure')->name('dashboard-infure-hasil-produksi-infure');
+        Route::get('/dashboard-infure-old/loss/infuregetLossInfure')->name('dashboard-infure-loss-infure');
+        Route::get('/dashboard-infure-old/top-loss', 'getTopLossInfure')->name('dashboard-infure-top-loss-infure');
+        Route::get('/dashboard-infure-old/counter-trouble', 'getCounterTroubleInfure')->name('dashboard-infure-counter-trouble-infure');
+    });
     Route::controller(DashboardInfureController::class)->group(function () {
         Route::get('/dashboard-infure', 'index')->name('dashboard-infure');
         Route::get('/dashboard-infure/kadou-jikan', 'getkadouJikanInfure')->name('dashboard-infure-kadou-jikan-infure');
