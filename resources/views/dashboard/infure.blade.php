@@ -54,6 +54,10 @@
             background-color: orange !important;
             color: white;
         }
+
+        .footer {
+            visibility: hidden;
+        }
     </style>
 @endsection
 @section('content')
