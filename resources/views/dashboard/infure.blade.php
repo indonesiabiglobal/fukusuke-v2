@@ -145,7 +145,7 @@
                                 <div class="card-body p-3">
                                     <div class="row align-items-center">
                                         <!-- Problem Categories -->
-                                        <div class="col-8">
+                                        <div class="col-6 p-0">
                                             <div class="d-flex align-items-center mb-2">
                                                 <div class="bg-danger rounded-circle me-2" style="width: 8px; height: 8px;">
                                                 </div>
@@ -159,22 +159,18 @@
                                         </div>
 
                                         <!-- Problem Values -->
-                                        <div class="col-4">
+                                        <div class="col-6 p-0">
                                             <div class="table-responsive">
                                                 <table class="table table-sm table-borderless mb-0">
                                                     <tr>
                                                         <td class="text-center">
-                                                            <span class="badge bg-masalah-1 fs-4">33</span>
+                                                            <span class="badge bg-masalah-1 fs-5">33</span>
                                                         </td>
-                                                    </tr>
-                                                    <tr>
                                                         <td class="text-center">
-                                                            <span class="badge bg-masalah-2 fs-4">33</span>
+                                                            <span class="badge bg-masalah-2 fs-5">33</span>
                                                         </td>
-                                                    </tr>
-                                                    <tr>
                                                         <td class="text-center">
-                                                            <span class="badge bg-masalah-3 fs-4">33</span>
+                                                            <span class="badge bg-masalah-3 fs-5">33</span>
                                                         </td>
                                                     </tr>
                                                 </table>
@@ -191,7 +187,7 @@
                                 <div class="card-body p-3">
                                     <div class="row align-items-center">
                                         <!-- Problem Categories -->
-                                        <div class="col-8">
+                                        <div class="col-6 p-0">
                                             <div class="d-flex align-items-center mb-2">
                                                 <div class="bg-primary rounded-circle me-2"
                                                     style="width: 8px; height: 8px;"></div>
@@ -204,22 +200,18 @@
                                         </div>
 
                                         <!-- Problem Values -->
-                                        <div class="col-4">
+                                        <div class="col-6 p-0">
                                             <div class="table-responsive">
                                                 <table class="table table-sm table-borderless mb-0">
                                                     <tr>
                                                         <td class="text-center">
-                                                            <span class="badge bg-masalah-1 fs-4">33</span>
+                                                            <span class="badge bg-masalah-1 fs-5">33</span>
                                                         </td>
-                                                    </tr>
-                                                    <tr>
                                                         <td class="text-center">
-                                                            <span class="badge bg-masalah-2 fs-4">33</span>
+                                                            <span class="badge bg-masalah-2 fs-5">33</span>
                                                         </td>
-                                                    </tr>
-                                                    <tr>
                                                         <td class="text-center">
-                                                            <span class="badge bg-masalah-3 fs-4">33</span>
+                                                            <span class="badge bg-masalah-3 fs-5">33</span>
                                                         </td>
                                                     </tr>
                                                 </table>
@@ -345,7 +337,7 @@
                                 <div class="card-body p-3">
                                     <div class="row align-items-center">
                                         <!-- Problem Categories -->
-                                        <div class="col-8">
+                                        <div class="col-6">
                                             <div class="d-flex align-items-center mb-2">
                                                 <div class="bg-danger rounded-circle me-2"
                                                     style="width: 8px; height: 8px;">
@@ -360,22 +352,18 @@
                                         </div>
 
                                         <!-- Problem Values -->
-                                        <div class="col-4">
+                                        <div class="col-6 p-0">
                                             <div class="table-responsive">
                                                 <table class="table table-sm table-borderless mb-0">
                                                     <tr>
                                                         <td class="text-center">
-                                                            <span class="badge bg-masalah-1 fs-4">33</span>
+                                                            <span class="badge bg-masalah-1 fs-5">33</span>
                                                         </td>
-                                                    </tr>
-                                                    <tr>
                                                         <td class="text-center">
-                                                            <span class="badge bg-masalah-2 fs-4">33</span>
+                                                            <span class="badge bg-masalah-2 fs-5">33</span>
                                                         </td>
-                                                    </tr>
-                                                    <tr>
                                                         <td class="text-center">
-                                                            <span class="badge bg-masalah-3 fs-4">33</span>
+                                                            <span class="badge bg-masalah-3 fs-5">33</span>
                                                         </td>
                                                     </tr>
                                                 </table>
@@ -392,7 +380,7 @@
                                 <div class="card-body p-3">
                                     <div class="row align-items-center">
                                         <!-- Problem Categories -->
-                                        <div class="col-8">
+                                        <div class="col-6 p-0">
                                             <div class="d-flex align-items-center mb-2">
                                                 <div class="bg-primary rounded-circle me-2"
                                                     style="width: 8px; height: 8px;"></div>
@@ -405,22 +393,18 @@
                                         </div>
 
                                         <!-- Problem Values -->
-                                        <div class="col-4">
+                                        <div class="col-6 p-0">
                                             <div class="table-responsive">
                                                 <table class="table table-sm table-borderless mb-0">
                                                     <tr>
                                                         <td class="text-center">
-                                                            <span class="badge bg-masalah-1 fs-4">33</span>
+                                                            <span class="badge bg-masalah-1 fs-5">33</span>
                                                         </td>
-                                                    </tr>
-                                                    <tr>
                                                         <td class="text-center">
-                                                            <span class="badge bg-masalah-2 fs-4">33</span>
+                                                            <span class="badge bg-masalah-2 fs-5">33</span>
                                                         </td>
-                                                    </tr>
-                                                    <tr>
                                                         <td class="text-center">
-                                                            <span class="badge bg-masalah-3 fs-4">33</span>
+                                                            <span class="badge bg-masalah-3 fs-5">33</span>
                                                         </td>
                                                     </tr>
                                                 </table>
