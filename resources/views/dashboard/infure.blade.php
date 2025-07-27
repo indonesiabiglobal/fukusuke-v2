@@ -23,14 +23,23 @@
 
         thead th {
             text-align: center !important;
-            font-size: 10px;
-            padding: 3px !important;
+            align-content: center !important;
+            font-size: 14px;
+            padding: 0px !important;
         }
 
         tbody td {
             text-align: center !important;
-            font-size: 10px;
-            padding: 3px !important;
+            padding: 0px !important;
+            padding: 1px !important;
+        }
+
+        #table-peringatan-katagae tbody td {
+            font-size: 11px;
+        }
+
+        #table-produksi tbody td {
+            padding: 4px !important;
         }
 
         .card-mesin-masalah {
@@ -58,27 +67,57 @@
         .footer {
             visibility: hidden;
         }
+
+        .bg-masalah-1 {
+            background-color: #d35400 !important;
+        }
+
+        .bg-masalah-2 {
+            background-color: #ff9900 !important;
+        }
+
+        .bg-masalah-3 {
+            background-color: #ffbd53 !important;
+        }
+
+        @media (min-width: 768px) {
+            [data-layout=vertical][data-sidebar-size=sm] {
+                min-height: 0px !important;
+            }
+        }
     </style>
 @endsection
 @section('content')
-    <div class="row h-100">
+    <div class="row max-vh-100">
         <div class="col-12 col-xl-6 p-1">
             <div class="card">
-                <div class="card-header border-0 align-items-center">
-                    <form action="{{ route('dashboard-infure') }}" method="get" class=" d-flex">
+                <div class="card-header p-2 border-0 align-items-center">
+                    <form action="{{ route('dashboard-infure-daily') }}" method="get" class="row g-2 align-items-center"
+                        id="form-dashboard-daily">
                         <div class="input-group">
-                            <input type="text" name="filterDate" id="filterDate" class="form-control"
-                                data-provider="flatpickr" data-date-format="d-m-Y" data-range-date="true"
-                                data-default-date="{{ $filterDate }}">
-                            <span class="input-group-text py-0">
-                                <i class="ri-calendar-event-fill fs-4"></i>
-                            </span>
+                            <div class="col-md-3">
+                                <select class="form-select p-2" name="factory" id="factory">
+                                    @foreach ($listFactory as $factory)
+                                        <option value="{{ $factory->id }}">{{ $factory->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-9 d-flex">
+                                <div class="input-group">
+                                    <input type="text" name="filterDateDaily" id="filterDateDaily"
+                                        class="form-control p-2" data-provider="flatpickr" data-date-format="d-m-Y"
+                                        data-default-date="{{ $filterDateDaily }}">
+                                    <span class="input-group-text p-1">
+                                        <i class="ri-calendar-event-fill fs-5"></i>
+                                    </span>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-load w-lg p-1">
+                                    <span>
+                                        <i class="ri-search-line"></i> Filter
+                                    </span>
+                                </button>
+                            </div>
                         </div>
-                        <button type="submit" class="btn btn-primary btn-load w-lg p-1">
-                            <span>
-                                <i class="ri-search-line"></i> Filter
-                            </span>
-                        </button>
                     </form>
                 </div>
                 <div class="card-body p-1">
@@ -125,17 +164,17 @@
                                                 <table class="table table-sm table-borderless mb-0">
                                                     <tr>
                                                         <td class="text-center">
-                                                            <span class="badge bg-danger fs-4">33</span>
+                                                            <span class="badge bg-masalah-1 fs-4">33</span>
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center">
-                                                            <span class="badge bg-orange fs-4">33</span>
+                                                            <span class="badge bg-masalah-2 fs-4">33</span>
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center">
-                                                            <span class="badge bg-warning fs-4">33</span>
+                                                            <span class="badge bg-masalah-3 fs-4">33</span>
                                                         </td>
                                                     </tr>
                                                 </table>
@@ -170,12 +209,17 @@
                                                 <table class="table table-sm table-borderless mb-0">
                                                     <tr>
                                                         <td class="text-center">
-                                                            <span class="badge bg-danger fs-4">33</span>
+                                                            <span class="badge bg-masalah-1 fs-4">33</span>
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center">
-                                                            <span class="badge bg-warning fs-4">33</span>
+                                                            <span class="badge bg-masalah-2 fs-4">33</span>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center">
+                                                            <span class="badge bg-masalah-3 fs-4">33</span>
                                                         </td>
                                                     </tr>
                                                 </table>
@@ -191,13 +235,14 @@
         </div><!-- end col -->
         <div class="col-12 col-xl-6 p-1">
             <div class="card">
-                <div class="card-header border-0 align-items-center">
-                    <form action="{{ route('dashboard-infure') }}" method="get" class=" d-flex">
+                <div class="card-header p-2 border-0 align-items-center">
+                    <form action="{{ route('dashboard-infure-monthly') }}" method="get" class="d-flex"
+                        id="form-dashboard-monthly">
                         <div class="input-group">
-                            <input type="text" name="filterDate" id="filterDate" class="form-control"
-                                data-provider="flatpickr" data-date-format="d-m-Y" data-range-date="true"
-                                data-default-date="{{ $filterDate }}">
-                            <span class="input-group-text py-0">
+                            <input type="text" name="filterDateMonthly" id="filterDateMonthly"
+                                class="form-control p-2" data-provider="flatpickr" data-date-format="d-m-Y"
+                                data-range-date="true" data-default-date="{{ $filterDateMonthly }}">
+                            <span class="input-group-text p-1">
                                 <i class="ri-calendar-event-fill fs-4"></i>
                             </span>
                         </div>
@@ -214,7 +259,7 @@
                             <h4 class="card-title mb-2 flex-grow-1 fw-bold text-center">
                                 Total Produksi Pabrik C (Kg)
                             </h4>
-                            <table class="table table-bordered">
+                            <table class="table table-bordered" id="table-produksi">
                                 <thead>
                                     <tr>
                                         <th>Periode</th>
@@ -229,20 +274,20 @@
                                             @break
                                         @endif
                                         <tr>
-                                            <td class="text-center fw-semibold">{{ $loop->iteration }} </td>
-                                            <td class="text-center fw-bold">{{ round($data->berat_loss, 2) }} </td>
-                                            <td class="text-center fw-bold">{{ round($data->berat_loss, 2) }}</td>
-                                            <td class="text-center fw-bold">
+                                            <td class="fw-semibold">{{ $loop->iteration }} </td>
+                                            <td class="fw-bold fs-5">{{ round($data->berat_loss, 2) }} </td>
+                                            <td class="fw-bold fs-5">{{ round($data->berat_loss, 2) }}</td>
+                                            <td class="fw-bold fs-5 text-danger">
                                                 {{ round($data->berat_loss, 2) }}
                                             </td>
                                         </tr>
                                     @endforeach
                                     <tr>
-                                        <td class="text-center fw-bold">Total</td>
-                                        <td class="text-center fw-bold">{{ round($lossInfure['totalLossInfure'], 2) }}
+                                        <td class="fw-bold fs-5">Total</td>
+                                        <td class="fw-bold fs-5">{{ round($lossInfure['totalLossInfure'], 2) }}
                                         </td>
-                                        <td class="text-center fw-bold">210</td>
-                                        <td class="text-center fw-bold">200</td>
+                                        <td class="fw-bold fs-5">210</td>
+                                        <td class="fw-bold fs-5 text-danger">200</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -252,7 +297,7 @@
                                 Peringatan Katagae
                             </h4>
                             <table class="table table-bordered dt-responsive nowrap align-middle mdl-data-table"
-                                style="width:100%">
+                                style="width:100%" id="table-peringatan-katagae">
                                 <thead>
                                     <tr>
                                         <th rowspan="2">Mesin</th>
@@ -268,16 +313,16 @@
                                 </thead>
                                 <tbody>
                                     @foreach ($lossInfure['lossInfure'] as $data)
-                                        @if ($loop->iteration == 4)
+                                        @if ($loop->iteration == 6)
                                             @break
                                         @endif
                                         <tr>
-                                            <td class="text-center">{{ $loop->iteration }} </td>
-                                            <td class="text-center">{{ $data->loss_name }} </td>
-                                            <td class="text-center">{{ $data->loss_name }} </td>
-                                            <td class="text-center">{{ round($data->berat_loss, 2) }}</td>
-                                            <td class="text-center">{{ round($data->berat_loss, 2) }}</td>
-                                            <td class="text-center">{{ round($data->berat_loss, 2) }}</td>
+                                            <td class="">{{ $loop->iteration }} </td>
+                                            <td class="">{{ $data->loss_name }} </td>
+                                            <td class="">{{ $data->loss_name }} </td>
+                                            <td class="">{{ round($data->berat_loss, 2) }}</td>
+                                            <td class="">{{ $loop->iteration * 2 }}</td>
+                                            <td class="">{{ $loop->iteration * 3 }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -320,17 +365,17 @@
                                                 <table class="table table-sm table-borderless mb-0">
                                                     <tr>
                                                         <td class="text-center">
-                                                            <span class="badge bg-danger fs-4">33</span>
+                                                            <span class="badge bg-masalah-1 fs-4">33</span>
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center">
-                                                            <span class="badge bg-orange fs-4">33</span>
+                                                            <span class="badge bg-masalah-2 fs-4">33</span>
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center">
-                                                            <span class="badge bg-warning fs-4">33</span>
+                                                            <span class="badge bg-masalah-3 fs-4">33</span>
                                                         </td>
                                                     </tr>
                                                 </table>
@@ -365,12 +410,17 @@
                                                 <table class="table table-sm table-borderless mb-0">
                                                     <tr>
                                                         <td class="text-center">
-                                                            <span class="badge bg-danger fs-4">33</span>
+                                                            <span class="badge bg-masalah-1 fs-4">33</span>
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="text-center">
-                                                            <span class="badge bg-warning fs-4">33</span>
+                                                            <span class="badge bg-masalah-2 fs-4">33</span>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center">
+                                                            <span class="badge bg-masalah-3 fs-4">33</span>
                                                         </td>
                                                     </tr>
                                                 </table>
@@ -415,6 +465,57 @@
 
     <script>
         $(document).ready(function() {
+            // jQuery untuk handle kedua form tanpa reload
+            $(document).ready(function() {
+                // Handler untuk form daily
+                $('#form-dashboard-daily').on('submit', function(e) {
+                    e.preventDefault();
+
+                    const form = $(this);
+                    const data = form.serialize();
+
+                    $.ajax({
+                        url: form.attr('action'),
+                        method: form.attr('method'),
+                        data: data,
+                        success: function(res) {
+                            console.log('Daily dashboard updated');
+                            // $('#daily-container').html(res); // render ulang jika perlu
+                        },
+                        error: function(err) {
+                            console.error('Daily form error', err);
+                        }
+                    });
+                });
+
+                // Handler untuk form monthly
+                $('#form-dashboard-monthly').on('submit', function(e) {
+                    e.preventDefault();
+
+                    const form = $(this);
+                    const dateValue = $('#filterDateMonthly').val();
+                    const factoryValue = $('#factory').val(); // ambil dari form daily
+
+                    const data = {
+                        filterDateMonthly: dateValue,
+                        factory: factoryValue
+                    };
+
+                    $.ajax({
+                        url: form.attr('action'),
+                        method: form.attr('method'),
+                        data: data,
+                        success: function(res) {
+                            console.log('Monthly dashboard updated');
+                            // $('#monthly-container').html(res); // render ulang jika perlu
+                        },
+                        error: function(err) {
+                            console.error('Monthly form error', err);
+                        }
+                    });
+                });
+            });
+
             /*
             Infure
             */
@@ -432,9 +533,18 @@
                         fontSize: '12px',
                         // fontWeight: '600'
                     }
+                },
+                plotOptions: {
+                    column: {
+                        pointPadding: 0.05, // default: 0.1
+                        groupPadding: 0.05, // default: 0.2
+                        borderWidth: 0
+                    }
+                },
+                yAxis: {
+                    tickAmount: 5,
                 }
             });
-
 
             Highcharts.chart('produksiLossPerMesin', {
                 chart: {
@@ -517,9 +627,11 @@
                     tooltip: {
                         valueSuffix: ' Kg'
                     },
+                    color: '#29A3FF',
                 }, {
                     name: 'Loss (%)',
                     type: 'spline',
+                    color: '#ff9900',
                     data: [
                         7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6
                     ],
@@ -558,7 +670,8 @@
                     }]
                 }
             });
-            // Kadou Jikan Infure
+
+            // Loss per Mesin
             Highcharts.chart('lossPerMesin', {
                 chart: {
                     type: 'column',
@@ -596,16 +709,11 @@
                 tooltip: {
                     valueSuffix: ' (Kg)'
                 },
-                plotOptions: {
-                    column: {
-                        pointPadding: 0.2,
-                        borderWidth: 0
-                    }
-                },
                 series: [{
                     name: 'Loss',
                     showInLegend: false,
-                    data: [64.20, 44.70, 35.50, 27.90, 24.60, 19.10]
+                    data: [64.20, 44.70, 35.50, 27.90, 24.60, 19.10],
+                    color: '#ff9900',
                 }],
                 responsive: {
                     rules: [{
@@ -714,12 +822,14 @@
                     tooltip: {
                         valueSuffix: ' Kg'
                     },
+                    color: '#29A3FF',
                 }, {
                     name: 'Loss (%)',
                     type: 'spline',
                     data: [
                         7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6
                     ],
+                    color: '#ff9900',
                     tooltip: {
                         valueSuffix: ' %'
                     }
@@ -794,15 +904,10 @@
                 tooltip: {
                     valueSuffix: ' (Kg)'
                 },
-                plotOptions: {
-                    column: {
-                        pointPadding: 0.2,
-                        borderWidth: 0
-                    }
-                },
                 series: [{
                     name: 'Loss',
                     showInLegend: false,
+                    color: '#ff9900',
                     data: [64.20, 44.70, 35.50, 27.90, 24.60]
                 }],
                 responsive: {
@@ -831,6 +936,10 @@
 
 
             //  Produksi Per Bulan
+            let produksiPerBulan = [
+                49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1,
+                95.6, 54.4
+            ];
             Highcharts.chart('produksiPerBulan', {
                 chart: {
                     type: 'column',
@@ -857,29 +966,30 @@
                         y: -20
                     },
                 },
-
                 tooltip: {
                     format: '<b>{key}</b><br/>{series.name}: {y}<br/>' +
                         'Total: {point.stackTotal}'
                 },
-
                 plotOptions: {
                     column: {
                         stacking: 'normal'
                     }
                 },
                 series: [{
-                    name: 'A',
-                    data: [148, 133, 124],
-                    stack: 'produksi'
+                    name: 'C',
+                    data: produksiPerBulan.map((item, index) => item * 1.5),
+                    stack: 'produksi',
+                    color: '#93D1FF'
                 }, {
                     name: 'B',
-                    data: [102, 98, 65],
-                    stack: 'produksi'
+                    data: produksiPerBulan.map((item, index) => item * 2),
+                    stack: 'produksi',
+                    color: '#29A3FF'
                 }, {
-                    name: 'C',
-                    data: [113, 122, 95],
-                    stack: 'produksi'
+                    name: 'A',
+                    data: produksiPerBulan.map((item, index) => item * 3),
+                    stack: 'produksi',
+                    color: '#0070C0'
                 }],
                 responsive: {
                     rules: [{
@@ -947,12 +1057,15 @@
                 },
                 series: [{
                     name: 'Loss A',
+                    color: '#d35400',
                     data: lossPerbulan.map(item => Math.round(item * 100) / 100)
                 }, {
                     name: 'Loss B',
+                    color: '#ff9900',
                     data: lossPerbulan.map(item => Math.round(item * 1.5 * 100) / 100)
                 }, {
                     name: 'Loss C',
+                    color: '#f5cba7',
                     data: lossPerbulan.map(item => Math.round(item * 2 * 100) / 100)
                 }],
                 responsive: {

@@ -18,7 +18,7 @@ class Login extends Component
     public function mount()
     {
         if (auth()->user()) {
-            return redirect()->intended('/');
+            return redirect()->intended('/dashboard-infure');
         }
     }
 
@@ -33,7 +33,7 @@ class Login extends Component
         );
 
         if (Auth::attempt($user)) {
-            return redirect()->intended('/');
+            return redirect()->intended('/dashboard-infure');
         } else {
             $this->addError('email', trans('auth.failed'));
             return redirect()->back();

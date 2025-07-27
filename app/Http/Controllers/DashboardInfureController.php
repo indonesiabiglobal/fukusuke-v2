@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\departmentHelper;
 use App\Models\MsDepartment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -72,7 +73,11 @@ class DashboardInfureController extends Controller
         }, []);
 
         $data = [
-            'filterDate' => $requestFilterDate,
+            'listFactory' => departmentHelper::infureMachineDepartment()->filter(function ($item) {
+                return $item->code != '1010';
+            }),
+            'filterDateDaily' => Carbon::now()->format('d-m-Y'),
+            'filterDateMonthly' => $requestFilterDate,
 
             // Infure
             'listMachineInfure' => $listMachineInfure,

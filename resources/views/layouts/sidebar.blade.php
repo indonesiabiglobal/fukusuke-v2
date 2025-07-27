@@ -34,9 +34,9 @@
             </div>
             <ul class="navbar-nav" id="navbar-nav">
                 {{-- <li class="menu-title"><span data-key="t-menu">@lang('translation.menu')</span></li> --}}
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <a href="/" class="nav-link menu-link"> <i class="ri-pie-chart-2-line"></i> <span data-key="t-dashboard">@lang('translation.dashboards')</span> </a>
-                </li>
+                </li> --}}
 
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#dashboard" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="dashboard">
