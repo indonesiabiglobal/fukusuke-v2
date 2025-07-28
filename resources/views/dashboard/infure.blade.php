@@ -80,6 +80,16 @@
             background-color: #ffbd53 !important;
         }
 
+        .bg-orange-100 {
+            background-color: #FFE699 !important;
+
+        }
+
+        .bg-green-100 {
+            background-color: #E2EFDA !important;
+
+        }
+
         @media (min-width: 768px) {
             [data-layout=vertical][data-sidebar-size=sm] {
                 min-height: 0px !important;
@@ -90,7 +100,7 @@
 @section('content')
     <div class="row max-vh-100">
         <div class="col-12 col-xl-6 p-1">
-            <div class="card">
+            <div class="card bg-orange-100">
                 <div class="card-header p-2 border-0 align-items-center">
                     <form action="{{ route('dashboard-infure-daily') }}" method="get" class="row g-2 align-items-center"
                         id="form-dashboard-daily">
@@ -121,27 +131,27 @@
                     </form>
                 </div>
                 <div class="card-body p-1">
-                    <div class="row">
+                    <div class="row p-1">
                         <div class="col-12 col-xl-8 pe-0">
-                            <div id="produksiLossPerMesin"></div>
+                            <div id="produksiLossPerMesin" class="rounded-3"></div>
                         </div>
-                        <div class="col-12 col-xl-4 ps-0">
-                            <div id="lossPerMesin"></div>
+                        <div class="col-12 col-xl-4 ps-1">
+                            <div id="lossPerMesin" class="rounded-3"></div>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row p-1">
                         <div class="col-12 col-xl-8 pe-0">
-                            <div id="kadouJikanFrekuensiTrouble"></div>
+                            <div id="kadouJikanFrekuensiTrouble" class="rounded-3"></div>
                         </div>
-                        <div class="col-12 col-xl-4 ps-0">
-                            <div id="lossPerKasus"></div>
+                        <div class="col-12 col-xl-4 ps-1">
+                            <div id="lossPerKasus" class="rounded-3"></div>
                         </div>
                     </div>
 
                     <div class="row g-3">
                         <!-- Section 1: Mesin Masalah Kiri -->
                         <div class="col-12 col-xl-6">
-                            <div class="card card-mesin-masalah shadow-sm border-0 h-100">
+                            <div class="card card-mesin-masalah shadow-sm border-1 h-100 bg-orange-100">
                                 <div class="card-body p-3">
                                     <div class="row align-items-center">
                                         <!-- Problem Categories -->
@@ -183,7 +193,7 @@
 
                         <!-- Section 2: Mesin Masalah Kanan -->
                         <div class="col-12 col-xl-6">
-                            <div class="card card-mesin-masalah shadow-sm border-0 h-100">
+                            <div class="card card-mesin-masalah shadow-sm border-1 h-100 bg-orange-100">
                                 <div class="card-body p-3">
                                     <div class="row align-items-center">
                                         <!-- Problem Categories -->
@@ -226,7 +236,7 @@
             </div><!-- end card -->
         </div><!-- end col -->
         <div class="col-12 col-xl-6 p-1">
-            <div class="card">
+            <div class="card mb-0">
                 <div class="card-header p-2 border-0 align-items-center">
                     <form action="{{ route('dashboard-infure-monthly') }}" method="get" class="d-flex"
                         id="form-dashboard-monthly">
@@ -251,7 +261,7 @@
                             <h4 class="card-title mb-2 flex-grow-1 fw-bold text-center">
                                 Total Produksi Pabrik C (Kg)
                             </h4>
-                            <table class="table table-bordered" id="table-produksi">
+                            <table class="table table-bordered rounded-3" id="table-produksi">
                                 <thead>
                                     <tr>
                                         <th>Periode</th>
@@ -266,7 +276,7 @@
                                             @break
                                         @endif
                                         <tr>
-                                            <td class="fw-semibold">{{ $loop->iteration }} </td>
+                                            <td class="fw-semibold fs-6">Periode {{ $period[$loop->iteration - 1] }}</td>
                                             <td class="fw-bold fs-5">{{ round($data->berat_loss, 2) }} </td>
                                             <td class="fw-bold fs-5">{{ round($data->berat_loss, 2) }}</td>
                                             <td class="fw-bold fs-5 text-danger">
@@ -288,7 +298,7 @@
                             <h4 class="card-title mb-2 flex-grow-1 fw-bold text-center text-danger">
                                 Peringatan Katagae
                             </h4>
-                            <table class="table table-bordered dt-responsive nowrap align-middle mdl-data-table"
+                            <table class="table table-bordered dt-responsive nowrap align-middle mdl-data-table rounded-3"
                                 style="width:100%" id="table-peringatan-katagae">
                                 <thead>
                                     <tr>
@@ -321,19 +331,23 @@
                             </table>
                         </div>
                     </div>
-                    <div class="row g-0">
+                </div>
+            </div>
+            <div class="card bg-green-100">
+                <div class="card-body p-1">
+                    <div class="row g-0 mb-2">
                         <div class="col-12 col-xl-6 pe-0">
-                            <div id="produksiPerBulan"></div>
+                            <div id="produksiPerBulan" class="rounded-3"></div>
                         </div>
-                        <div class="col-12 col-xl-6 ps-0">
-                            <div id="lossPerBulan">
+                        <div class="col-12 col-xl-6 ps-1">
+                            <div id="lossPerBulan" class="rounded-3">
                             </div>
                         </div>
                     </div>
                     <div class="row g-3">
                         <!-- Section 1: Mesin Masalah Kiri -->
                         <div class="col-12 col-xl-6">
-                            <div class="card card-mesin-masalah shadow-sm border-0 h-100">
+                            <div class="card card-mesin-masalah shadow-sm border-1 h-100  bg-green-100">
                                 <div class="card-body p-3">
                                     <div class="row align-items-center">
                                         <!-- Problem Categories -->
@@ -376,7 +390,7 @@
 
                         <!-- Section 2: Mesin Masalah Kanan -->
                         <div class="col-12 col-xl-6">
-                            <div class="card card-mesin-masalah shadow-sm border-0 h-100">
+                            <div class="card card-mesin-masalah shadow-sm border-1 h-100  bg-green-100">
                                 <div class="card-body p-3">
                                     <div class="row align-items-center">
                                         <!-- Problem Categories -->
@@ -659,7 +673,8 @@
             Highcharts.chart('lossPerMesin', {
                 chart: {
                     type: 'column',
-                    height: 200
+                    height: 200,
+                    backgroundColor: '#FBE5D6'
                 },
                 exporting: {
                     enabled: false,
@@ -852,7 +867,8 @@
             Highcharts.chart('lossPerKasus', {
                 chart: {
                     type: 'column',
-                    height: 200
+                    height: 200,
+                    backgroundColor: '#FBE5D6'
                 },
                 exporting: {
                     enabled: false,
@@ -1004,6 +1020,7 @@
             Highcharts.chart('lossPerBulan', {
                 chart: {
                     height: 200,
+                    backgroundColor: '#FBE5D6'
                 },
                 exporting: {
                     enabled: false,
@@ -1049,7 +1066,7 @@
                     data: lossPerbulan.map(item => Math.round(item * 1.5 * 100) / 100)
                 }, {
                     name: 'Loss C',
-                    color: '#f5cba7',
+                    color: '#ffbd53',
                     data: lossPerbulan.map(item => Math.round(item * 2 * 100) / 100)
                 }],
                 responsive: {
