@@ -98,7 +98,7 @@ class DashboardInfureController extends Controller
 
     public function getProduksiLossInfure(Request $request)
     {
-        [$startDate, $endDate] = workingShiftHelper::dailtShift(Carbon::parse($request->filterDateDaily)->subDay()->format('d-m-Y'), $request->filterDateDaily);
+        [$startDate, $endDate] = workingShiftHelper::dailtShift($request->filterDateDaily, Carbon::parse($request->filterDateDaily)->addDay()->format('d-m-Y'));
 
         $produksiLossDaily = collect(DB::select('
             SELECT
@@ -127,7 +127,7 @@ class DashboardInfureController extends Controller
 
     public function getTopLossByMachineInfure(Request $request)
     {
-        [$startDate, $endDate] = workingShiftHelper::dailtShift(Carbon::parse($request->filterDateDaily)->subDay()->format('d-m-Y'), $request->filterDateDaily);
+        [$startDate, $endDate] = workingShiftHelper::dailtShift($request->filterDateDaily, Carbon::parse($request->filterDateDaily)->addDay()->format('d-m-Y'));
 
         $topLossInfure = DB::select('
             SELECT
@@ -152,7 +152,7 @@ class DashboardInfureController extends Controller
 
     public function getTopLossByKasusInfure(Request $request)
     {
-        [$startDate, $endDate] = workingShiftHelper::dailtShift(Carbon::parse($request->filterDateDaily)->subDay()->format('d-m-Y'), $request->filterDateDaily);
+        [$startDate, $endDate] = workingShiftHelper::dailtShift($request->filterDateDaily, Carbon::parse($request->filterDateDaily)->addDay()->format('d-m-Y'));
 
         $topLossKasus = DB::select('
             SELECT
