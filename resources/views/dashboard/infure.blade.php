@@ -204,8 +204,8 @@
                                                 <h5 class="mb-0 text-primary fw-bold fs-6">MESIN MASALAH</h5>
                                             </div>
                                             <div class="problem-list">
-                                                <small class="d-block text-muted mb-1">• Masalah Henniku</small>
-                                                <small class="d-block text-muted">• Tertinggi (Kg)</small>
+                                                <small class="d-block text-muted mb-1">• Masalah Henniku Tertinggi
+                                                    (Kg)</small>
                                             </div>
                                         </div>
 
@@ -401,8 +401,8 @@
                                                 <h5 class="mb-0 text-primary fw-bold fs-6">MESIN MASALAH</h5>
                                             </div>
                                             <div class="problem-list">
-                                                <small class="d-block text-muted mb-1">• Masalah Henniku</small>
-                                                <small class="d-block text-muted">• Tertinggi (Kg)</small>
+                                                <small class="d-block text-muted mb-1">• Masalah Henniku Tertinggi
+                                                    (Kg)</small>
                                             </div>
                                         </div>
 
@@ -691,6 +691,8 @@
                     categories: ['31', '32', '33', '34', '35', '36'],
                 },
                 yAxis: {
+                    gridLineWidth: 1,
+                    gridLineColor: '#000000',
                     min: 0,
                     title: {
                         text: '(Kg)',
@@ -887,6 +889,8 @@
                     ],
                 },
                 yAxis: {
+                    gridLineWidth: 1,
+                    gridLineColor: '#000000',
                     min: 0,
                     title: {
                         text: '(Kg)',
@@ -1030,6 +1034,8 @@
                     align: 'center',
                 },
                 yAxis: {
+                    gridLineWidth: 1,
+                    gridLineColor: '#000000',
                     title: {
                         text: '(%)',
                         align: 'high',
