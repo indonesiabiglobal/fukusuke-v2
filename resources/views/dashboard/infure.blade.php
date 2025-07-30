@@ -93,6 +93,7 @@
         @media (min-width: 768px) {
             [data-layout=vertical][data-sidebar-size=sm] {
                 min-height: 0px !important;
+                color: #aaaaaa
             }
         }
     </style>
@@ -102,7 +103,7 @@
         <div class="col-12 col-xl-6 p-1">
             <div class="card bg-orange-100">
                 <div class="card-header p-2 border-0 align-items-center">
-                    <form action="{{ route('dashboard-infure-daily') }}" method="get" class="row g-2 align-items-center"
+                    <form method="get" class="row g-2 align-items-center"
                         id="form-dashboard-daily">
                         <div class="input-group">
                             <div class="col-md-3">
@@ -473,7 +474,7 @@
                     const data = form.serialize();
 
                     $.ajax({
-                        url: form.attr('action'),
+                        url: '{{ route('dashboard-infure-produksi-loss-per-mesin') }}',
                         method: form.attr('method'),
                         data: data,
                         success: function(res) {
@@ -692,7 +693,7 @@
                 },
                 yAxis: {
                     gridLineWidth: 1,
-                    gridLineColor: '#000000',
+                    gridLineColor: '#aaaaaa',
                     min: 0,
                     title: {
                         text: '(Kg)',
@@ -890,7 +891,7 @@
                 },
                 yAxis: {
                     gridLineWidth: 1,
-                    gridLineColor: '#000000',
+                    gridLineColor: '#aaaaaa',
                     min: 0,
                     title: {
                         text: '(Kg)',
@@ -1035,7 +1036,7 @@
                 },
                 yAxis: {
                     gridLineWidth: 1,
-                    gridLineColor: '#000000',
+                    gridLineColor: '#aaaaaa',
                     title: {
                         text: '(%)',
                         align: 'high',
