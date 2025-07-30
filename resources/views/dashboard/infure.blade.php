@@ -103,8 +103,7 @@
         <div class="col-12 col-xl-6 p-1">
             <div class="card bg-orange-100">
                 <div class="card-header p-2 border-0 align-items-center">
-                    <form method="get" class="row g-2 align-items-center"
-                        id="form-dashboard-daily">
+                    <form method="get" class="row g-2 align-items-center" id="form-dashboard-daily">
                         <div class="input-group">
                             <div class="col-md-3">
                                 <select class="form-select p-2" name="factory" id="factory">
@@ -122,7 +121,8 @@
                                         <i class="ri-calendar-event-fill fs-5"></i>
                                     </span>
                                 </div>
-                                <button type="submit" class="btn btn-primary btn-load w-lg p-1">
+                                <button onclick="loadInitialDailyData()" type="submit"
+                                    class="btn btn-primary btn-load w-lg p-1" id="form-dashboard-daily-button">
                                     <span>
                                         <i class="ri-search-line"></i> Filter
                                     </span>
@@ -278,19 +278,19 @@
                                         @endif
                                         <tr>
                                             <td class="fw-semibold fs-6">Periode {{ $period[$loop->iteration - 1] }}</td>
-                                            <td class="fw-bold fs-5">{{ round($data->berat_loss, 2) }} </td>
-                                            <td class="fw-bold fs-5">{{ round($data->berat_loss, 2) }}</td>
-                                            <td class="fw-bold fs-5 text-danger">
+                                            <td class="fw-bold fs-6">{{ round($data->berat_loss, 2) }} </td>
+                                            <td class="fw-bold fs-6">{{ round($data->berat_loss, 2) }}</td>
+                                            <td class="fw-bold fs-6 text-danger">
                                                 {{ round($data->berat_loss, 2) }}
                                             </td>
                                         </tr>
                                     @endforeach
                                     <tr>
-                                        <td class="fw-bold fs-5">Total</td>
-                                        <td class="fw-bold fs-5">{{ round($lossInfure['totalLossInfure'], 2) }}
+                                        <td class="fw-bold fs-6">Total</td>
+                                        <td class="fw-bold fs-6">{{ round($lossInfure['totalLossInfure'], 2) }}
                                         </td>
-                                        <td class="fw-bold fs-5">210</td>
-                                        <td class="fw-bold fs-5 text-danger">200</td>
+                                        <td class="fw-bold fs-6">210</td>
+                                        <td class="fw-bold fs-6 text-danger">200</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -463,88 +463,28 @@
 
 
     <script>
-        $(document).ready(function() {
-            // jQuery untuk handle kedua form tanpa reload
-            $(document).ready(function() {
-                // Handler untuk form daily
-                $('#form-dashboard-daily').on('submit', function(e) {
-                    e.preventDefault();
-
-                    const form = $(this);
-                    const data = form.serialize();
-
-                    $.ajax({
-                        url: '{{ route('dashboard-infure-produksi-loss-per-mesin') }}',
-                        method: form.attr('method'),
-                        data: data,
-                        success: function(res) {
-                            console.log('Daily dashboard updated');
-                            // $('#daily-container').html(res); // render ulang jika perlu
-                        },
-                        error: function(err) {
-                            console.error('Daily form error', err);
-                        }
-                    });
-                });
-
-                // Handler untuk form monthly
-                $('#form-dashboard-monthly').on('submit', function(e) {
-                    e.preventDefault();
-
-                    const form = $(this);
-                    const dateValue = $('#filterDateMonthly').val();
-                    const factoryValue = $('#factory').val(); // ambil dari form daily
-
-                    const data = {
-                        filterDateMonthly: dateValue,
-                        factory: factoryValue
-                    };
-
-                    $.ajax({
-                        url: form.attr('action'),
-                        method: form.attr('method'),
-                        data: data,
-                        success: function(res) {
-                            console.log('Monthly dashboard updated');
-                            // $('#monthly-container').html(res); // render ulang jika perlu
-                        },
-                        error: function(err) {
-                            console.error('Monthly form error', err);
-                        }
-                    });
-                });
+        function fetchData(url, data, method = 'POST') {
+            return $.ajax({
+                url,
+                method,
+                data
             });
+        }
 
-            /*
-            Infure
-            */
+        function setButtonLoading(isLoading) {
+            const button = $('#form-dashboard-daily-button');
+            if (isLoading) {
+                button.prop('disabled', true).html(
+                    '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...'
+                );
+            } else {
+                button.prop('disabled', false).html('Filter');
+            }
+        }
 
-            // PRODUKSI DAN LOSS PER MESIN
-            let counterTroubleInfure = @json($counterTroubleInfure);
-            let kadouJikanDepartment = @json($kadouJikanDepartment);
-            kadouJikanDepartment = Object.values(kadouJikanDepartment);
-            let kadouJikanInfureMesin = @json($kadouJikanInfureMesin);
-            kadouJikanInfureMesin = Object.values(kadouJikanInfureMesin);
+        let productionLossMachineDaily = [];
 
-            Highcharts.setOptions({
-                chart: {
-                    style: {
-                        fontSize: '12px',
-                        // fontWeight: '600'
-                    }
-                },
-                plotOptions: {
-                    column: {
-                        pointPadding: 0.05, // default: 0.1
-                        groupPadding: 0.05, // default: 0.2
-                        borderWidth: 0
-                    }
-                },
-                yAxis: {
-                    tickAmount: 5,
-                }
-            });
-
+        function createProductionLossChart() {
             Highcharts.chart('produksiLossPerMesin', {
                 chart: {
                     zooming: {
@@ -564,10 +504,7 @@
                     },
                 },
                 xAxis: [{
-                    categories: [
-                        '31', '32', '33', '34', '35', '36',
-                        '37', '38', '39', '40', '41', '42'
-                    ],
+                    categories: productionLossMachineDaily.map(item => item.machineno),
                     crosshair: true
                 }],
                 yAxis: [{
@@ -609,7 +546,7 @@
                     verticalAlign: 'top',
                     y: 55,
                     floating: true,
-                    backgroundColor: Highcharts.defaultOptions.legend.backgroundColor || // theme
+                    backgroundColor: Highcharts.defaultOptions.legend.backgroundColor ||
                         'rgba(255,255,255,0.25)',
                     itemStyle: {
                         fontSize: '10px',
@@ -619,10 +556,8 @@
                     name: 'Produksi (Kg)',
                     type: 'column',
                     yAxis: 1,
-                    data: [
-                        49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1,
-                        95.6, 54.4
-                    ],
+                    data: productionLossMachineDaily.map(item => parseFloat(item
+                        .berat_produksi) || 0),
                     tooltip: {
                         valueSuffix: ' Kg'
                     },
@@ -631,9 +566,8 @@
                     name: 'Loss (%)',
                     type: 'spline',
                     color: '#ff9900',
-                    data: [
-                        7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6
-                    ],
+                    // Asumsi loss adalah persentase dari total produksi
+                    data: productionLossMachineDaily.map(item => item.berat_loss_percentage || 0),
                     tooltip: {
                         valueSuffix: ' %'
                     }
@@ -669,7 +603,11 @@
                     }]
                 }
             });
+        }
 
+        let LossPerMachineDaily = [];
+
+        function createLossPerMesinChart() {
             // Loss per Mesin
             Highcharts.chart('lossPerMesin', {
                 chart: {
@@ -689,7 +627,7 @@
                     },
                 },
                 xAxis: {
-                    categories: ['31', '32', '33', '34', '35', '36'],
+                    categories: LossPerMachineDaily.map(item => item.machineno),
                 },
                 yAxis: {
                     gridLineWidth: 1,
@@ -714,7 +652,7 @@
                 series: [{
                     name: 'Loss',
                     showInLegend: false,
-                    data: [64.20, 44.70, 35.50, 27.90, 24.60, 19.10],
+                    data: LossPerMachineDaily.map(item => parseFloat(item.berat_loss) || 0),
                     color: '#ff9900',
                 }],
                 responsive: {
@@ -741,6 +679,251 @@
                     }]
                 }
             });
+        }
+
+        let LossPerKasusDaily = [];
+
+        function createLossPerKasusChart() {
+            Highcharts.chart('lossPerKasus', {
+                chart: {
+                    type: 'column',
+                    height: 200,
+                    backgroundColor: '#FBE5D6'
+                },
+                exporting: {
+                    enabled: false,
+                },
+                title: {
+                    text: 'LOSS/KASUS',
+                    style: {
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        fontFamily: 'Public Sans'
+                    },
+                },
+                xAxis: {
+                    categories: LossPerKasusDaily.map(item => item.loss_name),
+                },
+                yAxis: {
+                    gridLineWidth: 1,
+                    gridLineColor: '#aaaaaa',
+                    min: 0,
+                    title: {
+                        text: '(Kg)',
+                        align: 'high',
+                        offset: 0,
+                        rotation: 0,
+                        y: -20,
+                        style: {}
+                    },
+                    labels: {
+                        format: '{value}',
+                        style: {}
+                    }
+                },
+                tooltip: {
+                    valueSuffix: ' (Kg)'
+                },
+                series: [{
+                    name: 'Loss',
+                    showInLegend: false,
+                    color: '#ff9900',
+                    data: LossPerKasusDaily.map(item => parseFloat(item.berat_loss) || 0),
+                }],
+                responsive: {
+                    rules: [{
+                        condition: {
+                            maxWidth: 500
+                        },
+                        chartOptions: {
+                            legend: {
+                                floating: false,
+                                layout: 'horizontal',
+                                align: 'center',
+                                x: 0,
+                                y: 0
+                            },
+                            yAxis: [{
+                                labels: {
+                                    align: 'left',
+                                },
+                                showLastLabel: true
+                            }]
+                        }
+                    }]
+                }
+            });
+        }
+
+        function loadInitialDailyData() {
+            const form = $('#form-dashboard-daily');
+
+            if (form.length === 0) {
+                console.warn('Form #form-dashboard-daily tidak ditemukan');
+                return;
+            }
+
+            const data = form.serialize();
+            const method = form.attr('method') || 'POST';
+
+            // Set loading state
+            setButtonLoading(true);
+
+            let completedRequests = 0;
+            const totalRequests = 3;
+
+            const checkAllComplete = () => {
+                completedRequests++;
+                if (completedRequests === totalRequests) {
+                    setButtonLoading(false);
+                }
+            };
+
+            // Placeholder loading
+            $('#produksiLossPerMesin, #lossPerMesin, #lossPerKasus').html('<div class="text-center p-4">Loading initial data...</div>');
+
+            // produksi loss per mesin
+            fetchData('{{ route('dashboard-infure-produksi-loss-per-mesin') }}', data, method)
+                .then(res => {
+                    productionLossMachineDaily = res || [];
+                    if (productionLossMachineDaily.length > 0) {
+                        createProductionLossChart();
+                    } else {
+                        $('#produksiLossPerMesin').html(
+                            '<div class="text-center p-4">Tidak ada data untuk ditampilkan</div>');
+                    }
+                })
+                .catch(() => {
+                    $('#produksiLossPerMesin').html(
+                        '<div class="text-center p-4 text-danger">Error loading data</div>');
+                })
+                .always(checkAllComplete);
+
+            // top loss per mesin
+            fetchData('{{ route('dashboard-infure-top-loss-per-mesin') }}', data, method)
+                .then(res => {
+                    LossPerMachineDaily = res || [];
+                    if (LossPerMachineDaily.length > 0) {
+                        createLossPerMesinChart();
+                    } else {
+                        $('#lossPerMesin').html('<div class="text-center p-4">Tidak ada data untuk ditampilkan</div>');
+                    }
+                })
+                .catch(() => {
+                    $('#lossPerMesin').html('<div class="text-center p-4 text-danger">Error loading data</div>');
+                })
+                .always(checkAllComplete);
+
+            // top loss per kasus
+            fetchData('{{ route('dashboard-infure-top-loss-per-kasus') }}', data, method)
+                .then(res => {
+                    LossPerKasusDaily = res || [];
+                    if (LossPerKasusDaily.length > 0) {
+                        createLossPerKasusChart();
+                    } else {
+                        $('#lossPerKasus').html('<div class="text-center p-4">Tidak ada data untuk ditampilkan</div>');
+                    }
+                })
+                .catch(() => {
+                    $('#lossPerKasus').html('<div class="text-center p-4 text-danger">Error loading data</div>');
+                })
+                .always(checkAllComplete);
+        }
+
+        $(document).ready(function() {
+            function loadInitialMonthlyData() {
+                const form = $('#form-dashboard-monthly');
+
+                // Pastikan form ada
+                if (form.length === 0) {
+                    console.warn('Form #form-dashboard-monthly tidak ditemukan');
+                    return;
+                }
+
+                const dateValue = $('#filterDateMonthly').val();
+                const factoryValue = $('#factory').val();
+
+                const data = {
+                    filterDateMonthly: dateValue,
+                    factory: factoryValue
+                };
+
+                $.ajax({
+                    url: form.attr('action'),
+                    method: form.attr('method') || 'POST',
+                    data: data,
+                    success: function(res) {
+                        console.log('Initial monthly dashboard loaded');
+                        // Handle response sesuai kebutuhan
+                    },
+                    error: function(err) {
+                        console.error('Initial monthly data load error', err);
+                    }
+                });
+            }
+
+            setTimeout(function() {
+                loadInitialDailyData();
+                loadInitialMonthlyData();
+            }, 500);
+
+            // Handler untuk form monthly
+            $('#form-dashboard-monthly').on('submit', function(e) {
+                e.preventDefault();
+
+                const form = $(this);
+                const dateValue = $('#filterDateMonthly').val();
+                const factoryValue = $('#factory').val(); // ambil dari form daily
+
+                const data = {
+                    filterDateMonthly: dateValue,
+                    factory: factoryValue
+                };
+
+                $.ajax({
+                    url: form.attr('action'),
+                    method: form.attr('method'),
+                    data: data,
+                    success: function(res) {
+                        console.log('Monthly dashboard updated');
+                        // $('#monthly-container').html(res); // render ulang jika perlu
+                    },
+                    error: function(err) {
+                        console.error('Monthly form error', err);
+                    }
+                });
+            });
+
+            /*
+            Infure
+            */
+
+            // PRODUKSI DAN LOSS PER MESIN
+            let counterTroubleInfure = @json($counterTroubleInfure);
+            let kadouJikanDepartment = @json($kadouJikanDepartment);
+            kadouJikanDepartment = Object.values(kadouJikanDepartment);
+            let kadouJikanInfureMesin = @json($kadouJikanInfureMesin);
+            kadouJikanInfureMesin = Object.values(kadouJikanInfureMesin);
+
+            Highcharts.setOptions({
+                chart: {
+                    style: {
+                        fontSize: '12px',
+                        // fontWeight: '600'
+                    }
+                },
+                plotOptions: {
+                    column: {
+                        pointPadding: 0.05, // default: 0.1
+                        groupPadding: 0.05, // default: 0.2
+                        borderWidth: 0
+                    }
+                },
+                yAxis: {
+                    tickAmount: 5,
+                }
+            });
+
 
             Highcharts.chart('kadouJikanFrekuensiTrouble', {
                 chart: {
@@ -867,77 +1050,6 @@
             });
 
             // loss Per kasus
-            Highcharts.chart('lossPerKasus', {
-                chart: {
-                    type: 'column',
-                    height: 200,
-                    backgroundColor: '#FBE5D6'
-                },
-                exporting: {
-                    enabled: false,
-                },
-                title: {
-                    text: 'LOSS/KASUS',
-                    style: {
-                        fontSize: '12px',
-                        fontWeight: '600',
-                        fontFamily: 'Public Sans'
-                    },
-                },
-                xAxis: {
-                    categories: ["Printing ke Printing", "Potong Gentan", "Amigae", "Heniku",
-                        "Tachiage Lain-Lain"
-                    ],
-                },
-                yAxis: {
-                    gridLineWidth: 1,
-                    gridLineColor: '#aaaaaa',
-                    min: 0,
-                    title: {
-                        text: '(Kg)',
-                        align: 'high',
-                        offset: 0,
-                        rotation: 0,
-                        y: -20,
-                        style: {}
-                    },
-                    labels: {
-                        format: '{value}',
-                        style: {}
-                    }
-                },
-                tooltip: {
-                    valueSuffix: ' (Kg)'
-                },
-                series: [{
-                    name: 'Loss',
-                    showInLegend: false,
-                    color: '#ff9900',
-                    data: [64.20, 44.70, 35.50, 27.90, 24.60]
-                }],
-                responsive: {
-                    rules: [{
-                        condition: {
-                            maxWidth: 500
-                        },
-                        chartOptions: {
-                            legend: {
-                                floating: false,
-                                layout: 'horizontal',
-                                align: 'center',
-                                x: 0,
-                                y: 0
-                            },
-                            yAxis: [{
-                                labels: {
-                                    align: 'left',
-                                },
-                                showLastLabel: true
-                            }]
-                        }
-                    }]
-                }
-            });
 
 
             //  Produksi Per Bulan

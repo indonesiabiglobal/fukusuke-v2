@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\departmentHelper;
+use App\Helpers\workingShiftHelper;
 use App\Models\MsDepartment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -95,6 +96,85 @@ class DashboardInfureController extends Controller
         return view('dashboard.infure', $data);
     }
 
+    public function getProduksiLossInfure(Request $request)
+    {
+        [$startDate, $endDate] = workingShiftHelper::dailtShift(Carbon::parse($request->filterDateDaily)->subDay()->format('d-m-Y'), $request->filterDateDaily);
+
+        $produksiLossDaily = collect(DB::select('
+            SELECT
+                mac.id AS machine_id,
+                RIGHT(mac.machineno, 2) AS machineno,
+                ROUND(SUM(tpa.berat_produksi)::numeric, 1) as berat_produksi,
+                ROUND(SUM(tpaloss.berat_loss)::numeric, 1) as berat_loss
+            FROM msmachine mac
+            INNER JOIN tdproduct_assembly tpa ON mac.id = tpa.machine_id
+            INNER JOIN tdproduct_assembly_loss tpaloss ON tpa.id = tpaloss.product_assembly_id
+            WHERE mac.department_id = ?
+                AND tpa.production_date BETWEEN ? AND ?
+            GROUP BY mac.id, mac.machineno
+            ORDER BY mac.id ASC
+        ', [$request->factory, $startDate, $endDate]))->map(function ($item) {
+            $item->berat_produksi = $item->berat_produksi;
+            $item->berat_loss = $item->berat_loss;
+            $item->berat_loss_percentage = $item->berat_produksi > 0
+                ? round(($item->berat_loss / $item->berat_produksi) * 100, 2)
+                : 0;
+            return $item;
+        });
+
+        return $produksiLossDaily;
+    }
+
+    public function getTopLossByMachineInfure(Request $request)
+    {
+        [$startDate, $endDate] = workingShiftHelper::dailtShift(Carbon::parse($request->filterDateDaily)->subDay()->format('d-m-Y'), $request->filterDateDaily);
+
+        $topLossInfure = DB::select('
+            SELECT
+                mac.id AS machine_id,
+                RIGHT(mac.machineno, 2) AS machineno,
+                ROUND(SUM(tpaloss.berat_loss)::numeric, 1) as berat_loss
+            FROM msmachine mac
+            INNER JOIN tdproduct_assembly tpa ON mac.id = tpa.machine_id
+            INNER JOIN tdproduct_assembly_loss as tpaloss on tpa.id = tpaloss.product_assembly_id
+            WHERE mac.department_id = ?
+            AND tpa.production_date between ? AND ?
+            GROUP BY mac.id, mac.machineno
+            ORDER BY berat_loss DESC limit 5
+        ', [
+            $request->factory,
+            $startDate,
+            $endDate,
+        ]);
+
+        return $topLossInfure;
+    }
+
+    public function getTopLossByKasusInfure(Request $request)
+    {
+        [$startDate, $endDate] = workingShiftHelper::dailtShift(Carbon::parse($request->filterDateDaily)->subDay()->format('d-m-Y'), $request->filterDateDaily);
+
+        $topLossKasus = DB::select('
+            SELECT
+                mslos.name as loss_name,
+                ROUND(SUM(tpaloss.berat_loss)::numeric, 1) as berat_loss
+            FROM mslossinfure mslos
+            INNER JOIN tdproduct_assembly_loss as tpaloss on mslos.id = tpaloss.loss_infure_id
+            INNER JOIN tdproduct_assembly tpa ON tpaloss.product_assembly_id = tpa.id
+            INNER JOIN msmachine mac ON tpa.machine_id = mac.id
+            WHERE mac.department_id = ?
+            AND tpa.production_date between ? AND ?
+            GROUP BY loss_name
+            ORDER BY berat_loss DESC limit 5
+        ', [
+            $request->factory,
+            $startDate,
+            $endDate,
+        ]);
+
+        return $topLossKasus;
+    }
+
     /*
     Infure
     */
@@ -171,7 +251,7 @@ class DashboardInfureController extends Controller
             ORDER BY
                 y.machine_no
 
-        ', [$diffDay * $minuteOfDay,$startDate, $endDate, $divisionCodeInfure]);
+        ', [$diffDay * $minuteOfDay, $startDate, $endDate, $divisionCodeInfure]);
         return $kadouJikanInfureMesin;
     }
 

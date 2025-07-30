@@ -333,6 +333,9 @@ Route::group(['middleware' => 'auth'], function () {
     });
     Route::controller(DashboardInfureController::class)->group(function () {
         Route::get('/dashboard-infure', 'index')->name('dashboard-infure');
+        Route::get('/dashboard-infure/produksi-loss-per-mesin', 'getProduksiLossInfure')->name('dashboard-infure-produksi-loss-per-mesin');
+        Route::get('/dashboard-infure/top-loss-per-mesin', 'getTopLossByMachineInfure')->name('dashboard-infure-top-loss-per-mesin');
+        Route::get('/dashboard-infure/top-loss-per-kasus', 'getTopLossByKasusInfure')->name('dashboard-infure-top-loss-per-kasus');
         // Route::get('/dashboard-infure/kadou-jikan', 'getkadouJikanInfure')->name('dashboard-infure-kadou-jikan-infure');
         Route::get('/dashboard-infure/kadou-jikan', 'getkadouJikanInfure')->name('dashboard-infure-daily');
         // Route::get('/dashboard-infure/hasil-produksi', 'getHasilProduksiInfure')->name('dashboard-infure-hasil-produksi-infure');
