@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\departmentHelper;
+use App\Helpers\LossInfureHelper;
 use App\Helpers\workingShiftHelper;
 use App\Models\MsDepartment;
 use Carbon\Carbon;
@@ -34,8 +35,10 @@ class DashboardInfureController extends Controller
         } else {
             [$startDate, $endDate] = workingShiftHelper::dailtShift($request->filterDateDaily, Carbon::parse($request->filterDateDaily)->addDay()->format('d-m-Y'));
         }
+        $lossClassIds = LossInfureHelper::lossClassIdDashboard();
+        $placeholders = implode(',', array_fill(0, count($lossClassIds), '?'));
 
-        $produksiLossDaily = collect(DB::select('
+        $sql = "
             SELECT
                 mac.id AS machine_id,
                 RIGHT(mac.machineno, 2) AS machineno,
@@ -47,12 +50,21 @@ class DashboardInfureController extends Controller
                 AND tpa.production_date BETWEEN ? AND ?
             LEFT JOIN tdproduct_assembly_loss tpaloss
                 ON tpa.id = tpaloss.product_assembly_id
+                AND EXISTS (
+                    SELECT 1
+                    FROM mslossinfure msl
+                    WHERE msl.id = tpaloss.loss_infure_id
+                    AND msl.loss_class_id IN ($placeholders)
+                )
             WHERE mac.department_id = ?
             GROUP BY mac.id, mac.machineno
             ORDER BY mac.id ASC
-        ', [$startDate, $endDate, $request->factory]))->map(function ($item) {
-            $item->berat_produksi = $item->berat_produksi;
-            $item->berat_loss = $item->berat_loss;
+        ";
+
+        // Gabungkan semua parameter
+        $params = array_merge([$startDate, $endDate], $lossClassIds, [$request->factory]);
+
+        $produksiLossDaily = collect(DB::select($sql, $params))->map(function ($item) {
             $item->berat_loss_percentage = $item->berat_produksi > 0
                 ? round(($item->berat_loss / ($item->berat_produksi + $item->berat_loss)) * 100, 2)
                 : 0;
@@ -65,6 +77,7 @@ class DashboardInfureController extends Controller
     public function getTopLossByMachineInfure(Request $request)
     {
         [$startDate, $endDate] = workingShiftHelper::dailtShift($request->filterDateDaily, Carbon::parse($request->filterDateDaily)->addDay()->format('d-m-Y'));
+        $lossClassIds = LossInfureHelper::lossClassIdDashboard();
 
         $topLossInfure = DB::select('
             SELECT
@@ -72,16 +85,24 @@ class DashboardInfureController extends Controller
                 RIGHT(mac.machineno, 2) AS machineno,
                 ROUND(COALESCE(SUM(tpaloss.berat_loss), 0)::numeric, 1) as berat_loss
             FROM msmachine mac
-            LEFT JOIN tdproduct_assembly tpa ON mac.id = tpa.machine_id
-            LEFT JOIN tdproduct_assembly_loss as tpaloss on tpa.id = tpaloss.product_assembly_id
+            LEFT JOIN tdproduct_assembly tpa
+                ON mac.id = tpa.machine_id
+                AND tpa.production_date between ? AND ?
+            LEFT JOIN tdproduct_assembly_loss as tpaloss
+                ON tpa.id = tpaloss.product_assembly_id
+                AND EXISTS (
+                    SELECT 1
+                    FROM mslossinfure msl
+                    WHERE msl.id = tpaloss.loss_infure_id
+                    AND msl.loss_class_id IN (' . implode(',', $lossClassIds ) . ')
+                )
             WHERE mac.department_id = ?
-            AND tpa.production_date between ? AND ?
             GROUP BY mac.id, mac.machineno
             ORDER BY berat_loss DESC limit 5
         ', [
-            $request->factory,
             $startDate,
             $endDate,
+            $request->factory,
         ]);
 
         return $topLossInfure;
@@ -90,6 +111,7 @@ class DashboardInfureController extends Controller
     public function getTopLossByKasusInfure(Request $request)
     {
         [$startDate, $endDate] = workingShiftHelper::dailtShift($request->filterDateDaily, Carbon::parse($request->filterDateDaily)->addDay()->format('d-m-Y'));
+        $lossClassIds = LossInfureHelper::lossClassIdDashboard();
 
         $topLossKasus = DB::select('
             SELECT
@@ -97,16 +119,18 @@ class DashboardInfureController extends Controller
                 ROUND(SUM(tpaloss.berat_loss)::numeric, 1) as berat_loss
             FROM mslossinfure mslos
             INNER JOIN tdproduct_assembly_loss as tpaloss on mslos.id = tpaloss.loss_infure_id
-            INNER JOIN tdproduct_assembly tpa ON tpaloss.product_assembly_id = tpa.id
+            INNER JOIN tdproduct_assembly tpa
+            ON tpaloss.product_assembly_id = tpa.id
+                AND tpa.production_date between ? AND ?
             INNER JOIN msmachine mac ON tpa.machine_id = mac.id
             WHERE mac.department_id = ?
-            AND tpa.production_date between ? AND ?
+                AND mslos.loss_class_id IN (' . implode(',', $lossClassIds ) . ')
             GROUP BY loss_name
             ORDER BY berat_loss DESC limit 5
         ', [
-            $request->factory,
             $startDate,
             $endDate,
+            $request->factory,
         ]);
 
         return $topLossKasus;
@@ -136,6 +160,7 @@ class DashboardInfureController extends Controller
                 INNER JOIN msmachine mac ON tpa.machine_id = mac.id
                 WHERE mac.department_id = ?
                     AND tpa.production_date BETWEEN ? AND ?
+                    AND mslos.loss_class_id IN (' . implode(',', LossInfureHelper::lossClassIdDashboard()) . ')
                 GROUP BY tpaloss.loss_infure_id, mslos.name
                 ORDER BY total_loss DESC
                 LIMIT 1
@@ -555,6 +580,7 @@ class DashboardInfureController extends Controller
                 INNER JOIN msmachine mac ON tpa.machine_id = mac.id
                 WHERE mac.department_id = ?
                     AND tpa.production_date BETWEEN ? AND ?
+                    AND mslos.loss_class_id IN (' . implode(',', LossInfureHelper::lossClassIdDashboard()) . ')
                 GROUP BY tpaloss.loss_infure_id, mslos.name
                 ORDER BY total_loss DESC
                 LIMIT 1

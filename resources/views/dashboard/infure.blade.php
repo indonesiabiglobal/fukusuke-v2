@@ -240,9 +240,6 @@
                         <div class="input-group">
                             <input type="month" name="filterDateMonthly" id="filterDateMonthly" class="form-control p-2"
                                 value="{{ $filterDateMonthly }}">
-                            <span class="input-group-text p-1">
-                                <i class="ri-calendar-event-fill fs-4"></i>
-                            </span>
                         </div>
                         <button onclick="loadInitialMonthlyData()" type="submit"
                             class="btn btn-primary btn-load w-lg p-1" id="form-dashboard-monthly-button">
