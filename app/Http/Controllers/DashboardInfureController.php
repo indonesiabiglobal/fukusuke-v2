@@ -176,6 +176,42 @@ class DashboardInfureController extends Controller
     /*
     Monthly Dashboard
     */
+    // get produksi per bulan
+    public function getTotalProductionMonthly(Request $request)
+    {
+        $filterDate = Carbon::parse($request->filterDateMonthly);
+        $startMonth = Carbon::parse($filterDate)->startOfMonth()->format('d-m-Y 00:00:00');
+        $firstPeriod = Carbon::parse($startMonth)->addDays(9)->format('d-m-Y 23:59:59');
+        $secondPeriod = Carbon::parse($firstPeriod)->addDays(10)->format('d-m-Y 23:59:59');
+        $endMonth = Carbon::parse($filterDate)->endOfMonth()->format('d-m-Y 23:59:59');
+
+        $totalProductionMonthly = collect(DB::select('
+            SELECT
+                ROUND(COALESCE(SUM(tpa.berat_produksi), 0)::numeric, 1) as target_produksi,
+                ROUND(COALESCE(SUM(tpa.berat_produksi), 0)::numeric, 1) as total_produksi,
+                CASE
+                    WHEN tpa.production_date BETWEEN :startMonth AND :firstPeriod THEN 1
+                    WHEN tpa.production_date BETWEEN :firstPeriodPlus AND :secondPeriod THEN 2
+                    WHEN tpa.production_date BETWEEN :secondPeriodPlus AND :endMonth THEN 3
+                END AS period_ke
+            FROM tdproduct_assembly tpa
+            LEFT JOIN msmachine mac ON tpa.machine_id = mac.id
+            WHERE mac.department_id = :factory
+            AND tpa.production_date BETWEEN :startMonth AND :endMonth
+            GROUP BY period_ke
+            ORDER BY period_ke ASC
+        ', [
+            'factory'         => $request->factory,
+            'startMonth'      => $startMonth,
+            'firstPeriod'     => $firstPeriod,
+            'firstPeriodPlus' => Carbon::parse($firstPeriod)->addDay()->format('Y-m-d 00:00:00'),
+            'secondPeriod'    => $secondPeriod,
+            'secondPeriodPlus' => Carbon::parse($secondPeriod)->addDay()->format('Y-m-d 00:00:00'),
+            'endMonth'        => $endMonth,
+        ]));
+
+        return $totalProductionMonthly;
+    }
     // get loss per bulan
     public function getLossMonthly(Request $request)
     {

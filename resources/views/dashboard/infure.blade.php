@@ -261,7 +261,7 @@
                             <h4 class="card-title mb-2 flex-grow-1 fw-bold text-center">
                                 Total Produksi Pabrik C (Kg)
                             </h4>
-                            <table class="table table-bordered rounded-3" id="table-produksi">
+                            <table class="table table-bordered rounded-3" id="totalProduksiPerBulan">
                                 <thead>
                                     <tr>
                                         <th>Periode</th>
@@ -271,26 +271,6 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($lossInfure['lossInfure'] as $data)
-                                        @if ($loop->iteration == 4)
-                                            @break
-                                        @endif
-                                        <tr>
-                                            <td class="fw-semibold fs-6">Periode {{ $period[$loop->iteration - 1] }}</td>
-                                            <td class="fw-bold fs-6">{{ round($data->berat_loss, 2) }} </td>
-                                            <td class="fw-bold fs-6">{{ round($data->berat_loss, 2) }}</td>
-                                            <td class="fw-bold fs-6 text-danger">
-                                                {{ round($data->berat_loss, 2) }}
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                    <tr>
-                                        <td class="fw-bold fs-6">Total</td>
-                                        <td class="fw-bold fs-6">{{ round($lossInfure['totalLossInfure'], 2) }}
-                                        </td>
-                                        <td class="fw-bold fs-6">210</td>
-                                        <td class="fw-bold fs-6 text-danger">200</td>
-                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -830,6 +810,73 @@
                 .always(checkAllComplete);
         }
 
+        /*
+         * Monthly
+         */
+        let totalProduksiPerBulan = [];
+
+        function loadTotalProduksiPerBulanTable() {
+            const tbody = $('#totalProduksiPerBulan tbody');
+            tbody.empty(); // Bersihkan isi sebelumnya
+
+            if (!Array.isArray(totalProduksiPerBulan) || totalProduksiPerBulan.length === 0) {
+                tbody.append(`
+                    <tr>
+                        <td colspan="4" class="text-center p-4">Tidak ada data untuk ditampilkan</td>
+                    </tr>
+                `);
+                return;
+            }
+
+            const formatNumber = num => {
+                return parseFloat(num || 0).toLocaleString('id-ID', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            };
+
+            const period = ['A', 'B', 'C'];
+            let totalTarget = 0;
+            let totalAktual = 0;
+            let totalSelisih = 0;
+
+            totalProduksiPerBulan.forEach((data, idx) => {
+                if (idx >= 3) return; // Hanya 3 periode
+
+                const target = parseFloat(data.target_produksi || 0);
+                const aktual = parseFloat(data.total_produksi || 0);
+                const selisih = aktual - target;
+
+                totalTarget += target;
+                totalAktual += aktual;
+                totalSelisih += selisih;
+
+                tbody.append(`
+                    <tr>
+                        <td class="fw-semibold fs-6">Periode ${period[idx]}</td>
+                        <td class="fw-semibold fs-6">${formatNumber(target)}</td>
+                        <td class="fw-semibold fs-6">${formatNumber(aktual)}</td>
+                        <td class="fw-semibold fs-6 ${selisih < 0 ? 'text-danger' : 'text-success'}">
+                            ${formatNumber(selisih)}
+                        </td>
+                    </tr>
+                `);
+            });
+
+            // Tambahkan baris total
+            tbody.append(`
+                <tr>
+                    <td class="fw-bold fs-6">Total</td>
+                    <td class="fw-bold fs-6">${formatNumber(totalTarget)}</td>
+                    <td class="fw-bold fs-6">${formatNumber(totalAktual)}</td>
+                    <td class="fw-bold fs-6 ${totalSelisih < 0 ? 'text-danger' : 'text-success'}">
+                        ${formatNumber(totalSelisih)}
+                    </td>
+                </tr>
+            `);
+        }
+
+
         let lossPerBulan = [];
 
         function loadLossPerBulanChart() {
@@ -1033,8 +1080,28 @@
             };
 
             // Placeholder loading
-            $('#lossPerBulan').html(
+            $('#totalProduksiPerBulan', '#lossPerBulan', '#produksiPerBulan').html(
                 '<div class="text-center p-4">Loading initial data...</div>');
+
+
+            // produksi per bulan
+            fetchData('{{ route('dashboard-infure-total-produksi-per-bulan') }}', data, method)
+                .then(res => {
+                    totalProduksiPerBulan = res || [];
+                    if (totalProduksiPerBulan.length != 0) {
+                        loadTotalProduksiPerBulanTable();
+                    } else {
+                        $('#totalProduksiPerBulan tbody').html(
+                            '<tr><td colspan="4" class="text-center p-4">Tidak ada data untuk ditampilkan</td></tr>'
+                        );
+                    }
+                })
+                .catch(() => {
+                    $('#totalProduksiPerBulan tbody').html(
+                        '<tr><td colspan="4" class="text-center p-4 text-danger">Error loading data</td></tr>'
+                    );
+                })
+                .always(checkAllComplete);
 
             // loss per bulan
             fetchData('{{ route('dashboard-infure-loss-per-bulan') }}', data, method)
@@ -1052,7 +1119,6 @@
                         '<div class="text-center p-4 text-danger">Error loading data</div>');
                 })
                 .always(checkAllComplete);
-
 
             // produksi per bulan
             fetchData('{{ route('dashboard-infure-produksi-per-bulan') }}', data, method)
