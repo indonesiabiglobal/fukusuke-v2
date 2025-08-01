@@ -337,15 +337,16 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/dashboard-infure/top-loss-per-mesin', 'getTopLossByMachineInfure')->name('dashboard-infure-top-loss-per-mesin');
         Route::get('/dashboard-infure/top-loss-per-kasus', 'getTopLossByKasusInfure')->name('dashboard-infure-top-loss-per-kasus');
         Route::get('/dashboard-infure/kadou-jikan-frekuensi-trouble', 'getKadouJikanFrekuensiTrouble')->name('dashboard-infure-kadou-jikan-frekuensi-trouble');
+        Route::get('/dashboard-infure/top-mesin-masalah-loss-daily', 'getTopMesinMasalahLossDaily')->name('dashboard-infure-top-mesin-masalah-loss-daily');
+        Route::get('/dashboard-infure/ranking-problem-machine-daily', 'getRankingProblemMachineDaily')->name('dashboard-infure-ranking-problem-machine-daily');
+
+        // monthly
         Route::get('/dashboard-infure/total-produksi-per-bulan', 'getTotalProductionMonthly')->name('dashboard-infure-total-produksi-per-bulan');
+        Route::get('/dashboard-infure/peringatan-katagae', 'getPeringatanKatagae')->name('dashboard-infure-peringatan-katagae');
         Route::get('/dashboard-infure/loss-per-bulan', 'getLossMonthly')->name('dashboard-infure-loss-per-bulan');
         Route::get('/dashboard-infure/produksi-per-bulan', 'getProductionMonthly')->name('dashboard-infure-produksi-per-bulan');
-        Route::get('/dashboard-infure/kadou-jikan', 'getkadouJikanInfure')->name('dashboard-infure-daily');
-        // Route::get('/dashboard-infure/hasil-produksi', 'getHasilProduksiInfure')->name('dashboard-infure-hasil-produksi-infure');
-        Route::get('/dashboard-infure/hasil-produksi', 'getHasilProduksiInfure')->name('dashboard-infure-monthly');
-        Route::get('/dashboard-infure/loss/infuregetLossInfure')->name('dashboard-infure-loss-infure');
-        Route::get('/dashboard-infure/top-loss', 'getTopLossInfure')->name('dashboard-infure-top-loss-infure');
-        Route::get('/dashboard-infure/counter-trouble', 'getCounterTroubleInfure')->name('dashboard-infure-counter-trouble-infure');
+        Route::get('/dashboard-infure/top-mesin-masalah-loss-monthly', 'getTopMesinMasalahLossMonthly')->name('dashboard-infure-top-mesin-masalah-loss-monthly');
+        Route::get('/dashboard-infure/ranking-problem-machine-monthly', 'getRankingProblemMachineMonthly')->name('dashboard-infure-ranking-problem-machine-monthly');
     });
 
     // Seitai

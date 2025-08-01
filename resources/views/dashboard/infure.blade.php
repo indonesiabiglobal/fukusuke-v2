@@ -38,9 +38,20 @@
             font-size: 11px;
         }
 
-        #table-produksi tbody td {
+        #totalProduksiPerBulan tbody td {
             padding: 4px !important;
         }
+
+        #totalProduksiPerBulan {
+            height: 90%;
+            table-layout: fixed;
+        }
+
+        #totalProduksiPerBulan tbody tr {
+            height: calc(100% / 5);
+            /* contoh: 5 baris */
+        }
+
 
         .card-mesin-masalah {
             transition: transform 0.2s ease-in-out;
@@ -152,7 +163,7 @@
                     <div class="row g-3">
                         <!-- Section 1: Mesin Masalah Kiri -->
                         <div class="col-12 col-xl-6">
-                            <div class="card card-mesin-masalah shadow-sm border-1 h-100 bg-orange-100">
+                            <div class="card card-mesin-masalah shadow-sm border-1 h-100 bg-orange-100 mb-0">
                                 <div class="card-body p-3">
                                     <div class="row align-items-center">
                                         <!-- Problem Categories -->
@@ -172,18 +183,10 @@
                                         <!-- Problem Values -->
                                         <div class="col-6 p-0">
                                             <div class="table-responsive">
-                                                <table class="table table-sm table-borderless mb-0">
-                                                    <tr>
-                                                        <td class="text-center">
-                                                            <span class="badge bg-masalah-1 fs-5">33</span>
-                                                        </td>
-                                                        <td class="text-center">
-                                                            <span class="badge bg-masalah-2 fs-5">33</span>
-                                                        </td>
-                                                        <td class="text-center">
-                                                            <span class="badge bg-masalah-3 fs-5">33</span>
-                                                        </td>
-                                                    </tr>
+                                                <table class="table table-sm table-borderless mb-0"
+                                                    id="rankingProblemMachineDailyTable">
+                                                    <tbody>
+                                                    </tbody>
                                                 </table>
                                             </div>
                                         </div>
@@ -194,7 +197,7 @@
 
                         <!-- Section 2: Mesin Masalah Kanan -->
                         <div class="col-12 col-xl-6">
-                            <div class="card card-mesin-masalah shadow-sm border-1 h-100 bg-orange-100">
+                            <div class="card card-mesin-masalah shadow-sm border-1 h-100 bg-orange-100 mb-0">
                                 <div class="card-body p-3">
                                     <div class="row align-items-center">
                                         <!-- Problem Categories -->
@@ -205,26 +208,20 @@
                                                 <h5 class="mb-0 text-primary fw-bold fs-6">MESIN MASALAH</h5>
                                             </div>
                                             <div class="problem-list">
-                                                <small class="d-block text-muted mb-1">• Masalah Henniku Tertinggi
-                                                    (Kg)</small>
+                                                <small class="d-block text-muted mb-1">• Masalah
+                                                    <span id="mesinMasalahLossDaily">
+                                                    </span>
+                                                    Tertinggi (Kg)</small>
                                             </div>
                                         </div>
 
                                         <!-- Problem Values -->
                                         <div class="col-6 p-0">
                                             <div class="table-responsive">
-                                                <table class="table table-sm table-borderless mb-0">
-                                                    <tr>
-                                                        <td class="text-center">
-                                                            <span class="badge bg-masalah-1 fs-5">33</span>
-                                                        </td>
-                                                        <td class="text-center">
-                                                            <span class="badge bg-masalah-2 fs-5">33</span>
-                                                        </td>
-                                                        <td class="text-center">
-                                                            <span class="badge bg-masalah-3 fs-5">33</span>
-                                                        </td>
-                                                    </tr>
+                                                <table class="table table-sm table-borderless mb-0"
+                                                    id="mesinMasalahLossDailyTable">
+                                                    <tbody>
+                                                    </tbody>
                                                 </table>
                                             </div>
                                         </div>
@@ -241,8 +238,8 @@
                 <div class="card-header p-2 border-0 align-items-center">
                     <form method="GET" class="d-flex" id="form-dashboard-monthly">
                         <div class="input-group">
-                            <input type="month" name="filterDateMonthly" id="filterDateMonthly"
-                                class="form-control p-2" value="{{ $filterDateMonthly }}">
+                            <input type="month" name="filterDateMonthly" id="filterDateMonthly" class="form-control p-2"
+                                value="{{ $filterDateMonthly }}">
                             <span class="input-group-text p-1">
                                 <i class="ri-calendar-event-fill fs-4"></i>
                             </span>
@@ -257,11 +254,11 @@
                 </div>
                 <div class="card-body p-0">
                     <div class="row g-0">
-                        <div class="col-12 col-xl-6 p-1" style="height: 200px">
+                        <div class="col-12 col-xl-6 p-1" style="max-height: 280px;">
                             <h4 class="card-title mb-2 flex-grow-1 fw-bold text-center">
                                 Total Produksi Pabrik C (Kg)
                             </h4>
-                            <table class="table table-bordered rounded-3" id="totalProduksiPerBulan">
+                            <table class="table table-bordered rounded-3 align-middle" id="totalProduksiPerBulan">
                                 <thead>
                                     <tr>
                                         <th>Periode</th>
@@ -274,7 +271,7 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="col-12 col-xl-6 p-1" style="height: 200px">
+                        <div class="col-12 col-xl-6 p-1" style="max-height: 280px">
                             <h4 class="card-title mb-2 flex-grow-1 fw-bold text-center text-danger">
                                 Peringatan Katagae
                             </h4>
@@ -294,19 +291,6 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($lossInfure['lossInfure'] as $data)
-                                        @if ($loop->iteration == 6)
-                                            @break
-                                        @endif
-                                        <tr>
-                                            <td class="">{{ $loop->iteration }} </td>
-                                            <td class="">{{ $data->loss_name }} </td>
-                                            <td class="">{{ $data->loss_name }} </td>
-                                            <td class="">{{ round($data->berat_loss, 2) }}</td>
-                                            <td class="">{{ $loop->iteration * 2 }}</td>
-                                            <td class="">{{ $loop->iteration * 3 }}</td>
-                                        </tr>
-                                    @endforeach
                                 </tbody>
                             </table>
                         </div>
@@ -327,7 +311,7 @@
                     <div class="row g-3">
                         <!-- Section 1: Mesin Masalah Kiri -->
                         <div class="col-12 col-xl-6">
-                            <div class="card card-mesin-masalah shadow-sm border-1 h-100  bg-green-100">
+                            <div class="card card-mesin-masalah shadow-sm border-1 h-100  bg-green-100 mb-0">
                                 <div class="card-body p-3">
                                     <div class="row align-items-center">
                                         <!-- Problem Categories -->
@@ -348,18 +332,10 @@
                                         <!-- Problem Values -->
                                         <div class="col-6 p-0">
                                             <div class="table-responsive">
-                                                <table class="table table-sm table-borderless mb-0">
-                                                    <tr>
-                                                        <td class="text-center">
-                                                            <span class="badge bg-masalah-1 fs-5">33</span>
-                                                        </td>
-                                                        <td class="text-center">
-                                                            <span class="badge bg-masalah-2 fs-5">33</span>
-                                                        </td>
-                                                        <td class="text-center">
-                                                            <span class="badge bg-masalah-3 fs-5">33</span>
-                                                        </td>
-                                                    </tr>
+                                                <table class="table table-sm table-borderless mb-0"
+                                                    id="rankingProblemMachineMonthlyTable">
+                                                    <tbody>
+                                                    </tbody>
                                                 </table>
                                             </div>
                                         </div>
@@ -370,7 +346,7 @@
 
                         <!-- Section 2: Mesin Masalah Kanan -->
                         <div class="col-12 col-xl-6">
-                            <div class="card card-mesin-masalah shadow-sm border-1 h-100  bg-green-100">
+                            <div class="card card-mesin-masalah shadow-sm border-1 h-100  bg-green-100 mb-0">
                                 <div class="card-body p-3">
                                     <div class="row align-items-center">
                                         <!-- Problem Categories -->
@@ -381,26 +357,20 @@
                                                 <h5 class="mb-0 text-primary fw-bold fs-6">MESIN MASALAH</h5>
                                             </div>
                                             <div class="problem-list">
-                                                <small class="d-block text-muted mb-1">• Masalah Henniku Tertinggi
-                                                    (Kg)</small>
+                                                <small class="d-block text-muted mb-1">• Masalah
+                                                    <span id="mesinMasalahLossMonthly">
+                                                    </span>
+                                                    Tertinggi (Kg)</small>
                                             </div>
                                         </div>
 
                                         <!-- Problem Values -->
                                         <div class="col-6 p-0">
                                             <div class="table-responsive">
-                                                <table class="table table-sm table-borderless mb-0">
-                                                    <tr>
-                                                        <td class="text-center">
-                                                            <span class="badge bg-masalah-1 fs-5">33</span>
-                                                        </td>
-                                                        <td class="text-center">
-                                                            <span class="badge bg-masalah-2 fs-5">33</span>
-                                                        </td>
-                                                        <td class="text-center">
-                                                            <span class="badge bg-masalah-3 fs-5">33</span>
-                                                        </td>
-                                                    </tr>
+                                                <table class="table table-sm table-borderless mb-0"
+                                                    id="mesinMasalahLossMonthlyTable">
+                                                    <tbody>
+                                                    </tbody>
                                                 </table>
                                             </div>
                                         </div>
@@ -852,6 +822,82 @@
             });
         }
 
+        let mesinMasalahLossDaily = [];
+
+        function loadMesinMasalahLossDailyTable() {
+            // loss name
+            const lossName = $('#mesinMasalahLossDaily');
+            lossName.html('');
+
+            const tbody = $('#mesinMasalahLossDailyTable tbody');
+            tbody.empty();
+
+            if (!Array.isArray(mesinMasalahLossDaily) || mesinMasalahLossDaily.length === 0) {
+                tbody.append(`
+                    <tr>
+                        <td colspan="4" class="text-center p-4">Tidak ada data untuk ditampilkan</td>
+                    </tr>
+                `);
+                return;
+            }
+
+            lossName.html(mesinMasalahLossDaily[0].loss_name);
+
+            let row = '<tr>';
+
+            mesinMasalahLossDaily.forEach((item, idx) => {
+                // Batasi hanya 3 kolom pertama
+                if (idx >= 3) return;
+
+                row += `
+                    <td class="text-center">
+                        <span class="badge bg-masalah-${idx + 1} fs-5">
+                            ${item.machineno}
+                        </span>
+                    </td>
+                `;
+            });
+
+            row += '</tr>';
+
+            tbody.append(row);
+        }
+
+        let rankingProblemMachineDaily = [];
+
+        function loadRankingProblemMachineDailyTable() {
+            const tbody = $('#rankingProblemMachineDailyTable tbody');
+            tbody.empty();
+
+            if (!Array.isArray(rankingProblemMachineDaily) || rankingProblemMachineDaily.length === 0) {
+                tbody.append(`
+                    <tr>
+                        <td colspan="4" class="text-center p-4">Tidak ada data untuk ditampilkan</td>
+                    </tr>
+                `);
+                return;
+            }
+
+            let row = '<tr>';
+
+            rankingProblemMachineDaily.forEach((item, idx) => {
+                // Batasi hanya 3 kolom pertama
+                if (idx >= 3) return;
+
+                row += `
+                    <td class="text-center">
+                        <span class="badge bg-masalah-${idx + 1} fs-5">
+                            ${item.machineno}
+                        </span>
+                    </td>
+                `;
+            });
+
+            row += '</tr>';
+
+            tbody.append(row);
+        }
+
         function loadInitialDailyData() {
             const form = $('#form-dashboard-daily');
 
@@ -867,7 +913,7 @@
             setButtonLoading(true);
 
             let completedRequests = 0;
-            const totalRequests = 4;
+            const totalRequests = 6;
 
             const checkAllComplete = () => {
                 completedRequests++;
@@ -877,8 +923,12 @@
             };
 
             // Placeholder loading
-            $('#produksiLossPerMesin, #lossPerMesin, #lossPerKasus').html(
+            $('#produksiLossPerMesin, #lossPerMesin, #lossPerKasus, #kadouJikanFrekuensiTrouble').html(
                 '<div class="text-center p-4">Loading initial data...</div>');
+
+            // placeholder loading table
+            $('#mesinMasalahLossDailyTable tbody, #rankingProblemMachineDailyTable tbody').html(
+                '<tr><td colspan="3" class="text-center p-4">Loading initial data...</td></tr>');
 
             // produksi loss per mesin
             fetchData('{{ route('dashboard-infure-produksi-loss-per-mesin') }}', data, method)
@@ -927,18 +977,54 @@
                 })
                 .always(checkAllComplete);
 
-            // top loss per kasus
+            // kadouJikanFrekuensiTrouble
             fetchData('{{ route('dashboard-infure-kadou-jikan-frekuensi-trouble') }}', data, method)
                 .then(res => {
                     kadouJikanFrekuensiTrouble = res || [];
                     if (kadouJikanFrekuensiTrouble.length > 0) {
                         createKadouJikanFrekuensiTroubleChart();
                     } else {
-                        $('#kadouJikanFrekuensiTrouble').html('<div class="text-center p-4">Tidak ada data untuk ditampilkan</div>');
+                        $('#kadouJikanFrekuensiTrouble').html(
+                            '<div class="text-center p-4">Tidak ada data untuk ditampilkan</div>');
                     }
                 })
                 .catch(() => {
-                    $('#lossPerKasus').html('<div class="text-center p-4 text-danger">Error loading data</div>');
+                    $('#kadouJikanFrekuensiTrouble').html(
+                        '<div class="text-center p-4 text-danger">Error loading data</div>');
+                })
+                .always(checkAllComplete);
+            // top mesin masalah loss
+            fetchData('{{ route('dashboard-infure-top-mesin-masalah-loss-daily') }}', data, method)
+                .then(res => {
+                    mesinMasalahLossDaily = res || [];
+                    if (mesinMasalahLossDaily.length > 0) {
+                        loadMesinMasalahLossDailyTable();
+                    } else {
+                        $('#mesinMasalahLossDailyTable tbody').html(
+                            '<tr><td colspan="3" class="text-center p-4">Tidak ada data untuk ditampilkan</td></tr>'
+                        );
+                    }
+                })
+                .catch(() => {
+                    $('#mesinMasalahLossDailyTable tbody').html(
+                        '<tr><td colspan="3" class="text-center p-4">Error loading data</td></tr>');
+                })
+                .always(checkAllComplete);
+            // top mesin masalah loss
+            fetchData('{{ route('dashboard-infure-ranking-problem-machine-daily') }}', data, method)
+                .then(res => {
+                    rankingProblemMachineDaily = res || [];
+                    if (rankingProblemMachineDaily.length > 0) {
+                        loadRankingProblemMachineDailyTable();
+                    } else {
+                        $('#rankingProblemMachineDailyTable tbody').html(
+                            '<tr><td colspan="3" class="text-center p-4">Tidak ada data untuk ditampilkan</td></tr>'
+                        );
+                    }
+                })
+                .catch(() => {
+                    $('#rankingProblemMachineDailyTable tbody').html(
+                        '<tr><td colspan="3" class="text-center p-4">Error loading data</td></tr>');
                 })
                 .always(checkAllComplete);
         }
@@ -946,11 +1032,18 @@
         /*
          * Monthly
          */
+
+        const formatNumber = num => {
+            return parseFloat(num || 0).toLocaleString('id-ID', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        };
         let totalProduksiPerBulan = [];
 
         function loadTotalProduksiPerBulanTable() {
             const tbody = $('#totalProduksiPerBulan tbody');
-            tbody.empty(); // Bersihkan isi sebelumnya
+            tbody.empty();
 
             if (!Array.isArray(totalProduksiPerBulan) || totalProduksiPerBulan.length === 0) {
                 tbody.append(`
@@ -960,13 +1053,6 @@
                 `);
                 return;
             }
-
-            const formatNumber = num => {
-                return parseFloat(num || 0).toLocaleString('id-ID', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                });
-            };
 
             const period = ['A', 'B', 'C'];
             let totalTarget = 0;
@@ -1009,6 +1095,38 @@
             `);
         }
 
+        let peringatanKatagae = [];
+
+        function loadPeringatanKatagaeTable() {
+            const tbody = $('#table-peringatan-katagae tbody');
+            tbody.empty();
+
+            if (!Array.isArray(peringatanKatagae) || peringatanKatagae.length === 0) {
+                tbody.append(`
+                    <tr>
+                        <td colspan="4" class="text-center p-4">Tidak ada data untuk ditampilkan</td>
+                    </tr>
+                `);
+                return;
+            }
+
+            peringatanKatagae.forEach((data, idx) => {
+                if (idx >= 5) return; // Hanya 3 periode
+
+                const sisa_meter = parseFloat(data.sisa_meter || 0);
+
+                tbody.append(`
+                    <tr>
+                        <td>${data.machineno}</td>
+                        <td>${data.lpk_no}</td>
+                        <td>${data.product_name}</td>
+                        <td>${formatNumber(sisa_meter)}</td>
+                        <td>${data.jam}</td>
+                        <td>${data.menit}</td>
+                    </tr>
+                `);
+            });
+        }
 
         let lossPerBulan = [];
 
@@ -1055,15 +1173,15 @@
                     }
                 },
                 series: [{
-                    name: 'Loss Periode A',
+                    name: 'Periode A',
                     color: '#d35400',
                     data: lossPerBulan[1].map(item => parseFloat(item.berat_loss) || 0)
                 }, {
-                    name: 'Loss Periode B',
+                    name: 'Periode B',
                     color: '#ff9900',
                     data: lossPerBulan[2].map(item => parseFloat(item.berat_loss) || 0)
                 }, {
-                    name: 'Loss Periode C',
+                    name: 'Periode C',
                     color: '#ffbd53',
                     data: lossPerBulan[3].map(item => parseFloat(item.berat_loss) || 0)
                 }],
@@ -1107,7 +1225,7 @@
                     align: 'center'
                 },
                 xAxis: {
-                    categories: produksiPerBulan[1].map(item => item.bulan),
+                    categories: produksiPerBulan[1].map(item => item.machineno),
                 },
                 yAxis: {
                     allowDecimals: false,
@@ -1185,6 +1303,78 @@
             }
         }
 
+        let mesinMasalahLossMonthly = [];
+
+        function loadMesinMasalahLossMonthlyTable() {
+            // loss name
+            const lossName = $('#mesinMasalahLossMonthly');
+            lossName.html('');
+
+            const tbody = $('#mesinMasalahLossMonthlyTable tbody');
+            tbody.empty();
+
+            if (!Array.isArray(mesinMasalahLossMonthly) || mesinMasalahLossMonthly.length === 0) {
+                tbody.append(`
+                    <tr>
+                        <td colspan="4" class="text-center p-4">Tidak ada data untuk ditampilkan</td>
+                    </tr>
+                `);
+                return;
+            }
+
+            lossName.html(mesinMasalahLossMonthly[0].loss_name);
+
+            tbody.append(`
+                    <tr>
+                        <td class="text-center">
+                            <span class="badge bg-masalah-1 fs-5">${mesinMasalahLossMonthly[0].machineno}</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-masalah-2 fs-5">${mesinMasalahLossMonthly[1].machineno}</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-masalah-3 fs-5">${mesinMasalahLossMonthly[2].machineno}</span>
+                        </td>
+                    </tr>
+                `);
+        }
+
+
+        let rankingProblemMachineMonthly = [];
+
+        function loadRankingProblemMachineMonthlyTable() {
+            const tbody = $('#rankingProblemMachineMonthlyTable tbody');
+            tbody.empty();
+
+            if (!Array.isArray(rankingProblemMachineMonthly) || rankingProblemMachineMonthly.length === 0) {
+                tbody.append(`
+                    <tr>
+                        <td colspan="4" class="text-center p-4">Tidak ada data untuk ditampilkan</td>
+                    </tr>
+                `);
+                return;
+            }
+
+            let row = '<tr>';
+
+            rankingProblemMachineMonthly.forEach((item, idx) => {
+                // Batasi hanya 3 kolom pertama
+                if (idx >= 3) return;
+
+                row += `
+                    <td class="text-center">
+                        <span class="badge bg-masalah-${idx + 1} fs-5">
+                            ${item.machineno}
+                        </span>
+                    </td>
+                `;
+            });
+
+            row += '</tr>';
+
+            tbody.append(row);
+        }
+
         function loadInitialMonthlyData() {
             const form = $('#form-dashboard-monthly');
 
@@ -1203,7 +1393,7 @@
             setButtonMonthlyLoading(true);
 
             let completedRequests = 0;
-            const totalRequests = 1;
+            const totalRequests = 6;
 
             const checkAllComplete = () => {
                 completedRequests++;
@@ -1213,11 +1403,16 @@
             };
 
             // Placeholder loading
-            $('#totalProduksiPerBulan', '#lossPerBulan', '#produksiPerBulan').html(
+            $('#lossPerBulan, #produksiPerBulan').html(
                 '<div class="text-center p-4">Loading initial data...</div>');
 
+            // placeholder loading table
+            $('#totalProduksiPerBulan tbody, #rankingProblemMachineMonthlyTable tbody, #mesinMasalahLossMonthlyTable tbody').html(
+                '<tr><td colspan="3" class="text-center p-4">Loading initial data...</td></tr>');
+            $('#table-peringatan-katagae tbody').html(
+                '<tr><td colspan="6" class="text-center p-4">Loading initial data...</td></tr>');
 
-            // produksi per bulan
+            // total produksi per bulan
             fetchData('{{ route('dashboard-infure-total-produksi-per-bulan') }}', data, method)
                 .then(res => {
                     totalProduksiPerBulan = res || [];
@@ -1232,6 +1427,25 @@
                 .catch(() => {
                     $('#totalProduksiPerBulan tbody').html(
                         '<tr><td colspan="4" class="text-center p-4 text-danger">Error loading data</td></tr>'
+                    );
+                })
+                .always(checkAllComplete);
+
+            // produksi per bulan
+            fetchData('{{ route('dashboard-infure-peringatan-katagae') }}', data, method)
+                .then(res => {
+                    peringatanKatagae = res || [];
+                    if (peringatanKatagae.length != 0) {
+                        loadPeringatanKatagaeTable();
+                    } else {
+                        $('#table-peringatan-katagae tbody').html(
+                            '<tr><td colspan="6" class="text-center p-4">Tidak ada data untuk ditampilkan</td></tr>'
+                        );
+                    }
+                })
+                .catch(() => {
+                    $('#table-peringatan-katagae tbody').html(
+                        '<tr><td colspan="6" class="text-center p-4 text-danger">Error loading data</td></tr>'
                     );
                 })
                 .always(checkAllComplete);
@@ -1269,6 +1483,42 @@
                         '<div class="text-center p-4 text-danger">Error loading data</div>');
                 })
                 .always(checkAllComplete);
+
+            // ranking mesin masalah
+            fetchData('{{ route('dashboard-infure-ranking-problem-machine-monthly') }}', data, method)
+                .then(res => {
+                    rankingProblemMachineMonthly = res || [];
+                    if (rankingProblemMachineMonthly.length > 0) {
+                        loadRankingProblemMachineMonthlyTable();
+                    } else {
+                        $('#rankingProblemMachineMonthlyTable tbody').html(
+                            '<tr><td colspan="3" class="text-center p-4">Tidak ada data untuk ditampilkan</td></tr>'
+                        );
+                    }
+                })
+                .catch(() => {
+                    $('#rankingProblemMachineMonthlyTable tbody').html(
+                        '<tr><td colspan="3" class="text-center p-4">Error loading data</td></tr>');
+                })
+                .always(checkAllComplete);
+
+            // top mesin masalah loss
+            fetchData('{{ route('dashboard-infure-top-mesin-masalah-loss-monthly') }}', data, method)
+                .then(res => {
+                    mesinMasalahLossMonthly = res || [];
+                    if (mesinMasalahLossMonthly.length > 0) {
+                        loadMesinMasalahLossMonthlyTable();
+                    } else {
+                        $('#mesinMasalahLossMonthlyTable tbody').html(
+                            '<tr><td colspan="3" class="text-center p-4">Tidak ada data untuk ditampilkan</td></tr>'
+                        );
+                    }
+                })
+                .catch(() => {
+                    $('#mesinMasalahLossMonthlyTable tbody').html(
+                        '<tr><td colspan="3" class="text-center p-4">Error loading data</td></tr>');
+                })
+                .always(checkAllComplete);
         }
 
         $(document).ready(function() {
@@ -1277,18 +1527,6 @@
                 loadInitialDailyData();
                 loadInitialMonthlyData();
             }, 500);
-
-            /*
-            Infure
-            */
-
-            // PRODUKSI DAN LOSS PER MESIN
-            let counterTroubleInfure = @json($counterTroubleInfure);
-            let kadouJikanDepartment = @json($kadouJikanDepartment);
-            kadouJikanDepartment = Object.values(kadouJikanDepartment);
-            let kadouJikanInfureMesin = @json($kadouJikanInfureMesin);
-            kadouJikanInfureMesin = Object.values(kadouJikanInfureMesin);
-
             Highcharts.setOptions({
                 chart: {
                     style: {
@@ -1307,9 +1545,6 @@
                     tickAmount: 5,
                 }
             });
-
-
-
         });
     </script>
 @endsection
