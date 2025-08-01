@@ -461,6 +461,124 @@
             }
         }
 
+        let kadouJikanFrekuensiTrouble = [];
+
+        function createKadouJikanFrekuensiTroubleChart() {
+            Highcharts.chart('kadouJikanFrekuensiTrouble', {
+                chart: {
+                    zooming: {
+                        type: 'xy'
+                    },
+                    height: 200
+                },
+                exporting: {
+                    enabled: false,
+                },
+                title: {
+                    text: 'KADOU JIKAN & FREKUENSI TROUBLE',
+                    style: {
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        fontFamily: 'Public Sans'
+                    },
+                },
+                xAxis: [{
+                    categories: kadouJikanFrekuensiTrouble.map(item => item.machine_no),
+                    crosshair: true
+                }],
+                yAxis: [{
+                    labels: {
+                        format: '{value}',
+                        style: {}
+                    },
+                    title: {
+                        text: '(Kasus)',
+                        align: 'high',
+                        offset: 0,
+                        rotation: 0,
+                        y: -20,
+                        style: {}
+                    },
+                    opposite: true
+
+                }, {
+                    gridLineWidth: 0,
+                    title: {
+                        text: '(%)',
+                        align: 'high',
+                        offset: 0,
+                        rotation: 0,
+                        y: -20,
+                        style: {}
+                    },
+                    labels: {
+                        format: '{value}%',
+                        style: {}
+                    },
+                    max: 100
+                }],
+                tooltip: {
+                    shared: true
+                },
+                legend: {
+                    layout: 'horizontal',
+                    align: 'left',
+                    x: 80,
+                    verticalAlign: 'top',
+                    y: 55,
+                    floating: true,
+                    backgroundColor: Highcharts.defaultOptions.legend.backgroundColor || // theme
+                        'rgba(255,255,255,0.25)',
+                    itemStyle: {
+                        fontSize: '10px',
+                    }
+                },
+                series: [{
+                    name: 'Kadou Jikan (%)',
+                    type: 'column',
+                    yAxis: 1,
+                    data: kadouJikanFrekuensiTrouble.map(item => parseFloat(item.kadou_jikan) || 0),
+                    tooltip: {
+                        valueSuffix: ' %'
+                    },
+                    color: '#29A3FF',
+                }, {
+                    name: 'Frekuensi Trouble',
+                    type: 'spline',
+                    data: kadouJikanFrekuensiTrouble.map(item => item.frekuensi_trouble || 0),
+                    color: '#ff9900',
+                }],
+                responsive: {
+                    rules: [{
+                        condition: {
+                            maxWidth: 500
+                        },
+                        chartOptions: {
+                            legend: {
+                                floating: false,
+                                layout: 'horizontal',
+                                align: 'center',
+                                verticalAlign: 'bottom',
+                                x: 0,
+                                y: 0
+                            },
+                            yAxis: [{
+                                labels: {
+                                    align: 'right',
+                                },
+                                showLastLabel: true
+                            }, {
+                                labels: {
+                                    align: 'left',
+                                },
+                                showLastLabel: true
+                            }]
+                        }
+                    }]
+                }
+            });
+        }
+
         let productionLossMachineDaily = [];
 
         function createProductionLossChart() {
@@ -749,7 +867,7 @@
             setButtonLoading(true);
 
             let completedRequests = 0;
-            const totalRequests = 3;
+            const totalRequests = 4;
 
             const checkAllComplete = () => {
                 completedRequests++;
@@ -802,6 +920,21 @@
                         createLossPerKasusChart();
                     } else {
                         $('#lossPerKasus').html('<div class="text-center p-4">Tidak ada data untuk ditampilkan</div>');
+                    }
+                })
+                .catch(() => {
+                    $('#lossPerKasus').html('<div class="text-center p-4 text-danger">Error loading data</div>');
+                })
+                .always(checkAllComplete);
+
+            // top loss per kasus
+            fetchData('{{ route('dashboard-infure-kadou-jikan-frekuensi-trouble') }}', data, method)
+                .then(res => {
+                    kadouJikanFrekuensiTrouble = res || [];
+                    if (kadouJikanFrekuensiTrouble.length > 0) {
+                        createKadouJikanFrekuensiTroubleChart();
+                    } else {
+                        $('#kadouJikanFrekuensiTrouble').html('<div class="text-center p-4">Tidak ada data untuk ditampilkan</div>');
                     }
                 })
                 .catch(() => {
@@ -1176,129 +1309,6 @@
             });
 
 
-            Highcharts.chart('kadouJikanFrekuensiTrouble', {
-                chart: {
-                    zooming: {
-                        type: 'xy'
-                    },
-                    height: 200
-                },
-                exporting: {
-                    enabled: false,
-                },
-                title: {
-                    text: 'KADOU JIKAN & FREKUENSI TROUBLE',
-                    style: {
-                        fontSize: '12px',
-                        fontWeight: '600',
-                        fontFamily: 'Public Sans'
-                    },
-                },
-                xAxis: [{
-                    categories: [
-                        '31', '32', '33', '34', '35', '36',
-                        '37', '38', '39', '40', '41', '42'
-                    ],
-                    crosshair: true
-                }],
-                yAxis: [{
-                    labels: {
-                        format: '{value}%',
-                        style: {}
-                    },
-                    title: {
-                        text: '(%)',
-                        align: 'high',
-                        offset: 0,
-                        rotation: 0,
-                        y: -20,
-                        style: {}
-                    },
-                    opposite: true
-
-                }, {
-                    gridLineWidth: 0,
-                    title: {
-                        text: '(Kg)',
-                        align: 'high',
-                        offset: 0,
-                        rotation: 0,
-                        y: -20,
-                        style: {}
-                    },
-                    labels: {
-                        format: '{value}',
-                        style: {}
-                    }
-                }],
-                tooltip: {
-                    shared: true
-                },
-                legend: {
-                    layout: 'horizontal',
-                    align: 'left',
-                    x: 80,
-                    verticalAlign: 'top',
-                    y: 55,
-                    floating: true,
-                    backgroundColor: Highcharts.defaultOptions.legend.backgroundColor || // theme
-                        'rgba(255,255,255,0.25)',
-                    itemStyle: {
-                        fontSize: '10px',
-                    }
-                },
-                series: [{
-                    name: 'Produksi (Kg)',
-                    type: 'column',
-                    yAxis: 1,
-                    data: [
-                        49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1,
-                        95.6, 54.4
-                    ],
-                    tooltip: {
-                        valueSuffix: ' Kg'
-                    },
-                    color: '#29A3FF',
-                }, {
-                    name: 'Loss (%)',
-                    type: 'spline',
-                    data: [
-                        7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6
-                    ],
-                    color: '#ff9900',
-                    tooltip: {
-                        valueSuffix: ' %'
-                    }
-                }],
-                responsive: {
-                    rules: [{
-                        condition: {
-                            maxWidth: 500
-                        },
-                        chartOptions: {
-                            legend: {
-                                floating: false,
-                                layout: 'horizontal',
-                                align: 'center',
-                                verticalAlign: 'bottom',
-                                x: 0,
-                                y: 0
-                            },
-                            yAxis: [{
-                                labels: {
-                                    align: 'right',
-                                },
-                                showLastLabel: true
-                            }, {
-                                labels: {
-                                    align: 'left',
-                                },
-                                showLastLabel: true
-                            }]
-                        }
-                    }]
-                }
-            });
 
         });
     </script>

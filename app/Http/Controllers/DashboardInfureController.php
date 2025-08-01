@@ -115,7 +115,7 @@ class DashboardInfureController extends Controller
             $item->berat_produksi = $item->berat_produksi;
             $item->berat_loss = $item->berat_loss;
             $item->berat_loss_percentage = $item->berat_produksi > 0
-                ? round(($item->berat_loss / $item->berat_produksi) * 100, 2)
+                ? round(($item->berat_loss / ($item->berat_produksi + $item->berat_loss)) * 100, 2)
                 : 0;
             return $item;
         });
@@ -171,6 +171,46 @@ class DashboardInfureController extends Controller
         ]);
 
         return $topLossKasus;
+    }
+
+    public function getKadouJikanFrekuensiTrouble(Request $request)
+    {
+        [$startDate, $endDate] = workingShiftHelper::dailtShift($request->filterDateDaily, Carbon::parse($request->filterDateDaily)->addDay()->format('d-m-Y'));
+
+        $query = "
+            SELECT
+                RIGHT(mac.machineno, 2) AS machine_no,
+                COALESCE(jam.work_hour_mm, 0) AS work_hour_mm,
+                COALESCE(jam.work_hour_on_mm, 0) AS work_hour_on_mm,
+                CASE
+                    WHEN COALESCE(jam.work_hour_mm, 0) = 0 THEN 0
+                    ELSE ROUND(COALESCE(jam.work_hour_on_mm, 0) / COALESCE(jam.work_hour_mm, 0) * 100, 2)
+                END as kadou_jikan,
+                COALESCE(jam.frekuensi_trouble, 0) AS frekuensi_trouble
+            FROM msmachine mac
+            LEFT JOIN (
+                SELECT
+                    machine_id,
+                    SUM(EXTRACT(hour FROM work_hour) * 60 + EXTRACT(minute FROM work_hour)) AS work_hour_mm,
+                    SUM(EXTRACT(hour FROM on_hour) * 60 + EXTRACT(minute FROM on_hour)) AS work_hour_on_mm,
+                    COUNT(tjkjmm.id) AS frekuensi_trouble
+                FROM tdjamkerjamesin
+                LEFT JOIN tdjamkerja_jammatimesin tjkjmm ON tjkjmm.jam_kerja_mesin_id = tdjamkerjamesin.id
+                WHERE working_date BETWEEN ? AND ?
+                GROUP BY machine_id
+            ) jam ON mac.id = jam.machine_id
+            WHERE mac.status = 1
+                AND mac.department_id = ?
+            ORDER BY RIGHT(mac.machineno, 2)
+        ";
+
+        $kadouJikanInfureMesin = DB::select($query, [
+            $startDate,
+            $endDate,
+            $request->factory
+        ]);
+
+        return $kadouJikanInfureMesin;
     }
 
     /*
