@@ -239,17 +239,16 @@
         <div class="col-12 col-xl-6 p-1">
             <div class="card mb-0">
                 <div class="card-header p-2 border-0 align-items-center">
-                    <form action="{{ route('dashboard-infure-monthly') }}" method="get" class="d-flex"
-                        id="form-dashboard-monthly">
+                    <form method="GET" class="d-flex" id="form-dashboard-monthly">
                         <div class="input-group">
-                            <input type="text" name="filterDateMonthly" id="filterDateMonthly"
-                                class="form-control p-2" data-provider="flatpickr" data-date-format="d-m-Y"
-                                data-range-date="true" data-default-date="{{ $filterDateMonthly }}">
+                            <input type="month" name="filterDateMonthly" id="filterDateMonthly"
+                                class="form-control p-2" value="{{ $filterDateMonthly }}">
                             <span class="input-group-text p-1">
                                 <i class="ri-calendar-event-fill fs-4"></i>
                             </span>
                         </div>
-                        <button type="submit" class="btn btn-primary btn-load w-lg p-1">
+                        <button onclick="loadInitialMonthlyData()" type="submit"
+                            class="btn btn-primary btn-load w-lg p-1" id="form-dashboard-monthly-button">
                             <span>
                                 <i class="ri-search-line"></i> Filter
                             </span>
@@ -780,7 +779,8 @@
             };
 
             // Placeholder loading
-            $('#produksiLossPerMesin, #lossPerMesin, #lossPerKasus').html('<div class="text-center p-4">Loading initial data...</div>');
+            $('#produksiLossPerMesin, #lossPerMesin, #lossPerKasus').html(
+                '<div class="text-center p-4">Loading initial data...</div>');
 
             // produksi loss per mesin
             fetchData('{{ route('dashboard-infure-produksi-loss-per-mesin') }}', data, method)
@@ -830,69 +830,254 @@
                 .always(checkAllComplete);
         }
 
-        $(document).ready(function() {
-            function loadInitialMonthlyData() {
-                const form = $('#form-dashboard-monthly');
+        let lossPerBulan = [];
 
-                // Pastikan form ada
-                if (form.length === 0) {
-                    console.warn('Form #form-dashboard-monthly tidak ditemukan');
-                    return;
-                }
-
-                const dateValue = $('#filterDateMonthly').val();
-                const factoryValue = $('#factory').val();
-
-                const data = {
-                    filterDateMonthly: dateValue,
-                    factory: factoryValue
-                };
-
-                $.ajax({
-                    url: form.attr('action'),
-                    method: form.attr('method') || 'POST',
-                    data: data,
-                    success: function(res) {
-                        console.log('Initial monthly dashboard loaded');
-                        // Handle response sesuai kebutuhan
+        function loadLossPerBulanChart() {
+            Highcharts.chart('lossPerBulan', {
+                chart: {
+                    height: 200,
+                    backgroundColor: '#FBE5D6'
+                },
+                exporting: {
+                    enabled: false,
+                },
+                title: {
+                    text: 'LOSS PER BULAN',
+                    align: 'center',
+                },
+                yAxis: {
+                    gridLineWidth: 1,
+                    gridLineColor: '#aaaaaa',
+                    title: {
+                        text: '(%)',
+                        align: 'high',
+                        offset: 0,
+                        rotation: 0,
+                        y: -20,
                     },
-                    error: function(err) {
-                        console.error('Initial monthly data load error', err);
+                },
+                xAxis: {
+                    categories: lossPerBulan[1].map(item => item.machineno),
+                    title: {
+                        text: 'Loss',
+                    },
+                },
+                legend: {
+                    layout: 'vertical',
+                    align: 'right',
+                    verticalAlign: 'middle',
+                },
+                plotOptions: {
+                    series: {
+                        label: {
+                            connectorAllowed: false
+                        },
                     }
-                });
+                },
+                series: [{
+                    name: 'Loss Periode A',
+                    color: '#d35400',
+                    data: lossPerBulan[1].map(item => parseFloat(item.berat_loss) || 0)
+                }, {
+                    name: 'Loss Periode B',
+                    color: '#ff9900',
+                    data: lossPerBulan[2].map(item => parseFloat(item.berat_loss) || 0)
+                }, {
+                    name: 'Loss Periode C',
+                    color: '#ffbd53',
+                    data: lossPerBulan[3].map(item => parseFloat(item.berat_loss) || 0)
+                }],
+                responsive: {
+                    rules: [{
+                        condition: {
+                            maxWidth: 500
+                        },
+                        chartOptions: {
+                            legend: {
+                                layout: 'horizontal',
+                                align: 'center',
+                                verticalAlign: 'bottom'
+                            },
+                            yAxis: [{
+                                labels: {
+                                    align: 'left',
+                                },
+                                showLastLabel: true
+                            }]
+                        },
+                    }]
+                },
+            });
+        }
+
+        //  Produksi Per Bulan
+        let produksiPerBulan = [];
+
+        function loadProduksiPerBulanChart() {
+            Highcharts.chart('produksiPerBulan', {
+                chart: {
+                    type: 'column',
+                    height: 200
+                },
+                exporting: {
+                    enabled: false,
+                },
+                title: {
+                    text: 'PRODUKSI PER BULAN',
+                    align: 'center'
+                },
+                xAxis: {
+                    categories: produksiPerBulan[1].map(item => item.bulan),
+                },
+                yAxis: {
+                    allowDecimals: false,
+                    min: 0,
+                    title: {
+                        text: '(Kg)',
+                        align: 'high',
+                        offset: 0,
+                        rotation: 0,
+                        y: -20
+                    },
+                },
+                tooltip: {
+                    format: '<b>{key}</b><br/>{series.name}: {y}<br/>' +
+                        'Total: {point.stackTotal}'
+                },
+                plotOptions: {
+                    column: {
+                        stacking: 'normal'
+                    }
+                },
+                series: [{
+                    name: 'Periode C',
+                    data: produksiPerBulan[3].map((item) => parseFloat(item.berat_produksi) || 0),
+                    stack: 'produksi',
+                    color: '#93D1FF'
+                }, {
+                    name: 'Periode B',
+                    data: produksiPerBulan[2].map((item) => parseFloat(item.berat_produksi) || 0),
+                    stack: 'produksi',
+                    color: '#29A3FF'
+                }, {
+                    name: 'Periode A',
+                    data: produksiPerBulan[1].map((item) => parseFloat(item.berat_produksi) || 0),
+                    stack: 'produksi',
+                    color: '#0070C0'
+                }],
+                legend: {
+                    reversed: true
+                },
+                responsive: {
+                    rules: [{
+                        condition: {
+                            maxWidth: 500
+                        },
+                        chartOptions: {
+                            legend: {
+                                floating: false,
+                                layout: 'horizontal',
+                                align: 'center',
+                                verticalAlign: 'bottom',
+                                x: 0,
+                                y: 0
+                            },
+                            yAxis: [{
+                                labels: {
+                                    align: 'left',
+                                },
+                                showLastLabel: true
+                            }]
+                        }
+                    }]
+                }
+            });
+        }
+
+        function setButtonMonthlyLoading(isLoading) {
+            const button = $('#form-dashboard-monthly-button');
+            if (isLoading) {
+                button.prop('disabled', true).html(
+                    '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...'
+                );
+            } else {
+                button.prop('disabled', false).html('Filter');
             }
+        }
+
+        function loadInitialMonthlyData() {
+            const form = $('#form-dashboard-monthly');
+
+            if (form.length === 0) {
+                console.warn('Form #form-dashboard-monthly tidak ditemukan');
+                return;
+            }
+
+            const data = {
+                filterDateMonthly: form.find('input[name="filterDateMonthly"]').val(),
+                factory: $('#factory').val(),
+            };
+            const method = form.attr('method') || 'GET';
+
+            // Set loading state
+            setButtonMonthlyLoading(true);
+
+            let completedRequests = 0;
+            const totalRequests = 1;
+
+            const checkAllComplete = () => {
+                completedRequests++;
+                if (completedRequests === totalRequests) {
+                    setButtonMonthlyLoading(false);
+                }
+            };
+
+            // Placeholder loading
+            $('#lossPerBulan').html(
+                '<div class="text-center p-4">Loading initial data...</div>');
+
+            // loss per bulan
+            fetchData('{{ route('dashboard-infure-loss-per-bulan') }}', data, method)
+                .then(res => {
+                    lossPerBulan = res || [];
+                    if (lossPerBulan.length != 0) {
+                        loadLossPerBulanChart();
+                    } else {
+                        $('#lossPerBulan').html(
+                            '<div class="text-center p-4">Tidak ada data untuk ditampilkan</div>');
+                    }
+                })
+                .catch(() => {
+                    $('#lossPerBulan').html(
+                        '<div class="text-center p-4 text-danger">Error loading data</div>');
+                })
+                .always(checkAllComplete);
+
+
+            // produksi per bulan
+            fetchData('{{ route('dashboard-infure-produksi-per-bulan') }}', data, method)
+                .then(res => {
+                    produksiPerBulan = res || [];
+                    if (produksiPerBulan.length != 0) {
+                        loadProduksiPerBulanChart();
+                    } else {
+                        $('#produksiPerBulan').html(
+                            '<div class="text-center p-4">Tidak ada data untuk ditampilkan</div>');
+                    }
+                })
+                .catch(() => {
+                    $('#produksiPerBulan').html(
+                        '<div class="text-center p-4 text-danger">Error loading data</div>');
+                })
+                .always(checkAllComplete);
+        }
+
+        $(document).ready(function() {
 
             setTimeout(function() {
                 loadInitialDailyData();
                 loadInitialMonthlyData();
             }, 500);
-
-            // Handler untuk form monthly
-            $('#form-dashboard-monthly').on('submit', function(e) {
-                e.preventDefault();
-
-                const form = $(this);
-                const dateValue = $('#filterDateMonthly').val();
-                const factoryValue = $('#factory').val(); // ambil dari form daily
-
-                const data = {
-                    filterDateMonthly: dateValue,
-                    factory: factoryValue
-                };
-
-                $.ajax({
-                    url: form.attr('action'),
-                    method: form.attr('method'),
-                    data: data,
-                    success: function(res) {
-                        console.log('Monthly dashboard updated');
-                        // $('#monthly-container').html(res); // render ulang jika perlu
-                    },
-                    error: function(err) {
-                        console.error('Monthly form error', err);
-                    }
-                });
-            });
 
             /*
             Infure
@@ -1049,166 +1234,6 @@
                 }
             });
 
-            // loss Per kasus
-
-
-            //  Produksi Per Bulan
-            let produksiPerBulan = [
-                49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1,
-                95.6, 54.4
-            ];
-            Highcharts.chart('produksiPerBulan', {
-                chart: {
-                    type: 'column',
-                    height: 200
-                },
-                exporting: {
-                    enabled: false,
-                },
-                title: {
-                    text: 'PRODUKSI PER BULAN',
-                    align: 'center'
-                },
-                xAxis: {
-                    categories: [31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44]
-                },
-                yAxis: {
-                    allowDecimals: false,
-                    min: 0,
-                    title: {
-                        text: '(Kg)',
-                        align: 'high',
-                        offset: 0,
-                        rotation: 0,
-                        y: -20
-                    },
-                },
-                tooltip: {
-                    format: '<b>{key}</b><br/>{series.name}: {y}<br/>' +
-                        'Total: {point.stackTotal}'
-                },
-                plotOptions: {
-                    column: {
-                        stacking: 'normal'
-                    }
-                },
-                series: [{
-                    name: 'C',
-                    data: produksiPerBulan.map((item, index) => item * 1.5),
-                    stack: 'produksi',
-                    color: '#93D1FF'
-                }, {
-                    name: 'B',
-                    data: produksiPerBulan.map((item, index) => item * 2),
-                    stack: 'produksi',
-                    color: '#29A3FF'
-                }, {
-                    name: 'A',
-                    data: produksiPerBulan.map((item, index) => item * 3),
-                    stack: 'produksi',
-                    color: '#0070C0'
-                }],
-                responsive: {
-                    rules: [{
-                        condition: {
-                            maxWidth: 500
-                        },
-                        chartOptions: {
-                            legend: {
-                                floating: false,
-                                layout: 'horizontal',
-                                align: 'center',
-                                verticalAlign: 'bottom',
-                                x: 0,
-                                y: 0
-                            },
-                            yAxis: [{
-                                labels: {
-                                    align: 'left',
-                                },
-                                showLastLabel: true
-                            }]
-                        }
-                    }]
-                }
-            });
-
-            let lossPerbulan = [0.63, 0.63, 0.57, 0.53, 0.80, 0.83, 0.63, 0.60, 1.10, 1.43, 1.40, 1.30, 0.93, 0.77];
-            Highcharts.chart('lossPerBulan', {
-                chart: {
-                    height: 200,
-                    backgroundColor: '#FBE5D6'
-                },
-                exporting: {
-                    enabled: false,
-                },
-                title: {
-                    text: 'LOSS PER BULAN',
-                    align: 'center',
-                },
-                yAxis: {
-                    gridLineWidth: 1,
-                    gridLineColor: '#aaaaaa',
-                    title: {
-                        text: '(%)',
-                        align: 'high',
-                        offset: 0,
-                        rotation: 0,
-                        y: -20,
-                    },
-                },
-                xAxis: {
-                    categories: [31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44],
-                    title: {
-                        text: 'Loss',
-                    },
-                },
-                legend: {
-                    layout: 'vertical',
-                    align: 'right',
-                    verticalAlign: 'middle',
-                },
-                plotOptions: {
-                    series: {
-                        label: {
-                            connectorAllowed: false
-                        },
-                    }
-                },
-                series: [{
-                    name: 'Loss A',
-                    color: '#d35400',
-                    data: lossPerbulan.map(item => Math.round(item * 100) / 100)
-                }, {
-                    name: 'Loss B',
-                    color: '#ff9900',
-                    data: lossPerbulan.map(item => Math.round(item * 1.5 * 100) / 100)
-                }, {
-                    name: 'Loss C',
-                    color: '#ffbd53',
-                    data: lossPerbulan.map(item => Math.round(item * 2 * 100) / 100)
-                }],
-                responsive: {
-                    rules: [{
-                        condition: {
-                            maxWidth: 500
-                        },
-                        chartOptions: {
-                            legend: {
-                                layout: 'horizontal',
-                                align: 'center',
-                                verticalAlign: 'bottom'
-                            },
-                            yAxis: [{
-                                labels: {
-                                    align: 'left',
-                                },
-                                showLastLabel: true
-                            }]
-                        },
-                    }]
-                },
-            });
         });
     </script>
 @endsection

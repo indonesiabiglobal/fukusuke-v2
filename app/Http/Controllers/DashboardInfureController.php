@@ -16,7 +16,6 @@ class DashboardInfureController extends Controller
     public function index(Request $request)
     {
         if (isset($request->filterDate)) {
-            $requestFilterDate = $request->filterDate;
             $filterDate = explode(' to ', $request->filterDate);
             $startDate = Carbon::parse($filterDate[0])->format('d-m-Y 00:00:00');
             if (count($filterDate) == 1) {
@@ -27,7 +26,6 @@ class DashboardInfureController extends Controller
         } else {
             $startDate = Carbon::now()->startOfMonth()->format('d-m-Y 00:00:00');
             $endDate = Carbon::now()->format('d-m-Y 23:59:59');
-            $requestFilterDate = $startDate . ' to ' . $endDate;
         }
         $divisionCodeInfure = MsDepartment::where('name', 'INFURE')->first()->division_code;
 
@@ -79,13 +77,13 @@ class DashboardInfureController extends Controller
                 return $item->code != '1010';
             }),
             'filterDateDaily' => Carbon::now()->format('d-m-Y'),
-            'filterDateMonthly' => $requestFilterDate,
+            'filterDateMonthly' => Carbon::now()->format('Y-m'),
 
             // Infure
             'listMachineInfure' => $listMachineInfure,
             'kadouJikanInfureMesin' => $kadouJikan,
             'kadouJikanDepartment' => $kadouJikanDepartment,
-            'hasilProduksiInfure' => $this->getHasilProduksiInfure($startDate, $endDate),
+            // 'hasilProduksiInfure' => $this->getHasilProduksiInfure($startDate, $endDate),
             'counterTroubleInfure' => $this->getCounterTroubleInfure($startDate, $endDate),
             'lossInfure' => $lossInfure,
             'topLossInfure' => $topLossInfure,
@@ -104,11 +102,11 @@ class DashboardInfureController extends Controller
             SELECT
                 mac.id AS machine_id,
                 RIGHT(mac.machineno, 2) AS machineno,
-                ROUND(SUM(tpa.berat_produksi)::numeric, 1) as berat_produksi,
-                ROUND(SUM(tpaloss.berat_loss)::numeric, 1) as berat_loss
+                ROUND(COALESCE(SUM(tpa.berat_produksi), 0)::numeric, 1) as berat_produksi,
+                ROUND(COALESCE(SUM(tpaloss.berat_loss), 0)::numeric, 1) as berat_loss
             FROM msmachine mac
-            INNER JOIN tdproduct_assembly tpa ON mac.id = tpa.machine_id
-            INNER JOIN tdproduct_assembly_loss tpaloss ON tpa.id = tpaloss.product_assembly_id
+            LEFT JOIN tdproduct_assembly tpa ON mac.id = tpa.machine_id
+            LEFT JOIN tdproduct_assembly_loss tpaloss ON tpa.id = tpaloss.product_assembly_id
             WHERE mac.department_id = ?
                 AND tpa.production_date BETWEEN ? AND ?
             GROUP BY mac.id, mac.machineno
@@ -133,10 +131,10 @@ class DashboardInfureController extends Controller
             SELECT
                 mac.id AS machine_id,
                 RIGHT(mac.machineno, 2) AS machineno,
-                ROUND(SUM(tpaloss.berat_loss)::numeric, 1) as berat_loss
+                ROUND(COALESCE(SUM(tpaloss.berat_loss), 0)::numeric, 1) as berat_loss
             FROM msmachine mac
-            INNER JOIN tdproduct_assembly tpa ON mac.id = tpa.machine_id
-            INNER JOIN tdproduct_assembly_loss as tpaloss on tpa.id = tpaloss.product_assembly_id
+            LEFT JOIN tdproduct_assembly tpa ON mac.id = tpa.machine_id
+            LEFT JOIN tdproduct_assembly_loss as tpaloss on tpa.id = tpaloss.product_assembly_id
             WHERE mac.department_id = ?
             AND tpa.production_date between ? AND ?
             GROUP BY mac.id, mac.machineno
@@ -173,6 +171,104 @@ class DashboardInfureController extends Controller
         ]);
 
         return $topLossKasus;
+    }
+
+    /*
+    Monthly Dashboard
+    */
+    // get loss per bulan
+    public function getLossMonthly(Request $request)
+    {
+        $filterDate = Carbon::parse($request->filterDateMonthly);
+        $startMonth = Carbon::parse($filterDate)->startOfMonth()->format('d-m-Y 00:00:00');
+        $firstPeriod = Carbon::parse($startMonth)->addDays(9)->format('d-m-Y 23:59:59');
+        $secondPeriod = Carbon::parse($firstPeriod)->addDays(10)->format('d-m-Y 23:59:59');
+        $endMonth = Carbon::parse($filterDate)->endOfMonth()->format('d-m-Y 23:59:59');
+
+        $produksiLossMonthly = collect(DB::select('
+            SELECT
+                mac.id AS machine_id,
+                RIGHT(mac.machineno, 2) AS machineno,
+                CASE
+                    WHEN tpa.production_date BETWEEN :startMonth AND :firstPeriod THEN 1
+                    WHEN tpa.production_date BETWEEN :firstPeriodPlus AND :secondPeriod THEN 2
+                    WHEN tpa.production_date BETWEEN :secondPeriodPlus AND :endMonth THEN 3
+                END AS period_ke,
+                ROUND(SUM(tpaloss.berat_loss)::numeric, 1) AS berat_loss
+            FROM msmachine mac
+            LEFT JOIN tdproduct_assembly tpa ON mac.id = tpa.machine_id
+            LEFT JOIN tdproduct_assembly_loss tpaloss ON tpa.id = tpaloss.product_assembly_id
+            WHERE mac.department_id = :factory
+            AND tpa.production_date BETWEEN :startMonth AND :endMonth
+            GROUP BY mac.id, mac.machineno, period_ke
+            ORDER BY mac.id ASC, period_ke ASC
+        ', [
+            'factory'         => $request->factory,
+            'startMonth'      => $startMonth,
+            'firstPeriod'     => $firstPeriod,
+            'firstPeriodPlus' => Carbon::parse($firstPeriod)->addDay()->format('Y-m-d 00:00:00'),
+            'secondPeriod'    => $secondPeriod,
+            'secondPeriodPlus' => Carbon::parse($secondPeriod)->addDay()->format('Y-m-d 00:00:00'),
+            'endMonth'        => $endMonth,
+        ]))->groupBy('period_ke')->map(function ($items, $period) {
+            return $items->map(function ($item) use ($period) {
+                return [
+                    'machine_id' => $item->machine_id,
+                    'machineno' => $item->machineno,
+                    'berat_loss' => $item->berat_loss,
+                    'period_ke' => $period
+                ];
+            });
+        })->toArray();
+
+        return $produksiLossMonthly;
+    }
+
+    // get produksi per bulan
+    public function getProductionMonthly(Request $request)
+    {
+        $filterDate = Carbon::parse($request->filterDateMonthly);
+        $startMonth = Carbon::parse($filterDate)->startOfMonth()->format('d-m-Y 00:00:00');
+        $firstPeriod = Carbon::parse($startMonth)->addDays(9)->format('d-m-Y 23:59:59');
+        $secondPeriod = Carbon::parse($firstPeriod)->addDays(10)->format('d-m-Y 23:59:59');
+        $endMonth = Carbon::parse($filterDate)->endOfMonth()->format('d-m-Y 23:59:59');
+
+        $produksiLossMonthly = collect(DB::select('
+            SELECT
+                mac.id AS machine_id,
+                RIGHT(mac.machineno, 2) AS machineno,
+                CASE
+                    WHEN tpa.production_date BETWEEN :startMonth AND :firstPeriod THEN 1
+                    WHEN tpa.production_date BETWEEN :firstPeriodPlus AND :secondPeriod THEN 2
+                    WHEN tpa.production_date BETWEEN :secondPeriodPlus AND :endMonth THEN 3
+                END AS period_ke,
+                ROUND(SUM(tpa.berat_produksi)::numeric, 1) AS berat_produksi
+            FROM msmachine mac
+            LEFT JOIN tdproduct_assembly tpa ON mac.id = tpa.machine_id
+            WHERE mac.department_id = :factory
+            AND tpa.production_date BETWEEN :startMonth AND :endMonth
+            GROUP BY mac.id, mac.machineno, period_ke
+            ORDER BY mac.id ASC, period_ke ASC
+        ', [
+            'factory'         => $request->factory,
+            'startMonth'      => $startMonth,
+            'firstPeriod'     => $firstPeriod,
+            'firstPeriodPlus' => Carbon::parse($firstPeriod)->addDay()->format('Y-m-d 00:00:00'),
+            'secondPeriod'    => $secondPeriod,
+            'secondPeriodPlus' => Carbon::parse($secondPeriod)->addDay()->format('Y-m-d 00:00:00'),
+            'endMonth'        => $endMonth,
+        ]))->groupBy('period_ke')->map(function ($items, $period) {
+            return $items->map(function ($item) use ($period) {
+                return [
+                    'machine_id' => $item->machine_id,
+                    'machineno' => $item->machineno,
+                    'berat_produksi' => $item->berat_produksi,
+                    'period_ke' => $period
+                ];
+            });
+        })->toArray();
+
+        return $produksiLossMonthly;
     }
 
     /*
