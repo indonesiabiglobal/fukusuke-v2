@@ -365,7 +365,6 @@ class AddNippoController extends Component
                 $details = new TdProductAssemblyLoss();
                 $details->loss_infure_id = $item['loss_infure_id'];
                 $details->berat_loss = $item['berat_loss'];
-                $details->berat = $item['berat'];
                 $details->frekuensi = $item['frekuensi'];
                 $details->product_assembly_id = $product->id;
 
@@ -419,8 +418,6 @@ class AddNippoController extends Component
             'lpk_no' => 'required',
             'machineno' => 'required',
             'employeeno' => 'required',
-            // 'panjang_produksi' => 'required',
-            // 'qty_gentan' => 'required'
         ]);
 
         if ($validatedData) {
@@ -428,7 +425,6 @@ class AddNippoController extends Component
             $this->loss_infure_code = '';
             $this->name_infure = '';
             $this->berat_loss = '';
-            // $this->berat = 0;
             $this->frekuensi = '';
 
             $this->dispatch('showModal');
@@ -452,7 +448,6 @@ class AddNippoController extends Component
                 'loss_infure_id' => $this->loss_infure_id,
                 'loss_infure_code' => $this->loss_infure_code,
                 'berat_loss' => floatval($this->berat_loss),
-                'berat' => $this->berat,
                 'frekuensi' => $this->frekuensi,
                 'name_infure' => $this->name_infure,
             ];

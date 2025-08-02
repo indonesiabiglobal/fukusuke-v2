@@ -589,7 +589,6 @@
                                 <th class="border-0">Kode</th>
                                 <th class="border-0">Nama Loss</th>
                                 <th class="border-0">Berat (kg)</th>
-                                {{-- <th class="border-0">Berat</th> --}}
                                 <th class="border-0 rounded-end">Frekuensi</th>
                             </tr>
                         </thead>
@@ -647,9 +646,6 @@
                                     <td>
                                         {{ $item->berat_loss }}
                                     </td>
-                                    {{-- <td>
-                                        {{ $item->berat }}
-                                    </td> --}}
                                     <td>
                                         {{ $item->frekuensi }}
                                     </td>

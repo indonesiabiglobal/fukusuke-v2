@@ -191,7 +191,6 @@ class EditNippoController extends Component
                 'msi.code as loss_infure_code',
                 'tal.berat_loss',
                 'tal.id',
-                'tal.berat',
                 'tal.frekuensi',
                 'msi.name as name_infure'
             )
@@ -485,8 +484,6 @@ class EditNippoController extends Component
             'lpk_no' => 'required',
             'machineno' => 'required',
             'employeeno' => 'required',
-            // 'panjang_produksi' => 'required',
-            // 'qty_gentan' => 'required'
         ]);
 
         if ($validatedData) {
@@ -494,7 +491,6 @@ class EditNippoController extends Component
             $this->loss_infure_code = '';
             $this->name_infure = '';
             $this->berat_loss = 0;
-            $this->berat = 0;
             $this->frekuensi = 0;
             $this->dispatch('showModal');
         }
@@ -506,7 +502,6 @@ class EditNippoController extends Component
         $datas->product_assembly_id = $this->orderId;
         $datas->loss_infure_id = $this->loss_infure_id;
         $datas->berat_loss = $this->berat_loss;
-        $datas->berat = $this->berat;
         $datas->frekuensi = $this->frekuensi;
 
         $datas->created_on = Carbon::now();
@@ -575,7 +570,6 @@ class EditNippoController extends Component
                 'msi.code as loss_infure_code',
                 'tal.berat_loss',
                 'tal.id',
-                'tal.berat',
                 'tal.frekuensi',
                 'msi.name as name_infure'
             )
@@ -715,7 +709,6 @@ class EditNippoController extends Component
                 'loss_infure_id' => $this->loss_infure_id,
                 'berat_loss' => $this->berat_loss,
                 'frekuensi' => $this->frekuensi,
-                // 'updated_at' => now(),
             ]);
 
         $this->resetInputFields();
