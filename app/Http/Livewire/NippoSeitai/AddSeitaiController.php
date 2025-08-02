@@ -345,7 +345,6 @@ class AddSeitaiController extends Component
                 $datas->product_assembly_id = $gentan['product_assembly_id'];
                 $datas->gentan_line = $gentan['gentan_line'];
                 $datas->berat = $gentan['berat'];
-                // $datas->frekuensi = $gentan['frekuensi'];
                 $datas->lpk_id = $lpkid->id;
                 $datas->created_on = $createdOn;
                 $datas->created_by = auth()->user()->username;
@@ -367,7 +366,6 @@ class AddSeitaiController extends Component
                 $datas->product_goods_id = $data->id;
                 $datas->loss_seitai_id = $loss['loss_seitai_id'];
                 $datas->berat_loss = $loss['berat_loss'];
-                $datas->berat = $loss['berat'];
                 $datas->frekuensi = $loss['frekuensi'];
                 $datas->lpk_id = $lpkid->id;
                 $datas->save();
@@ -469,7 +467,6 @@ class AddSeitaiController extends Component
         $this->loss_seitai_id = '';
         $this->namaloss = '';
         $this->berat_loss = '';
-        $this->berat_fr = null;
         $this->frekuensi_fr = '';
     }
 
@@ -491,7 +488,6 @@ class AddSeitaiController extends Component
             'product_goods_id' => $this->product_goods_id,
             'loss_seitai_id' => $loss->id,
             'berat_loss' => $this->berat_loss,
-            'berat' => $this->berat_fr,
             'frekuensi' => $this->frekuensi_fr,
             'lpk_id' => $lpkid->id,
         ];
