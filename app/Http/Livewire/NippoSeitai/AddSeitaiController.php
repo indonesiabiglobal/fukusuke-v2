@@ -345,7 +345,7 @@ class AddSeitaiController extends Component
                 $datas->product_assembly_id = $gentan['product_assembly_id'];
                 $datas->gentan_line = $gentan['gentan_line'];
                 $datas->berat = $gentan['berat'];
-                $datas->frekuensi = $gentan['frekuensi'];
+                // $datas->frekuensi = $gentan['frekuensi'];
                 $datas->lpk_id = $lpkid->id;
                 $datas->created_on = $createdOn;
                 $datas->created_by = auth()->user()->username;
@@ -452,7 +452,7 @@ class AddSeitaiController extends Component
             'product_goods_id' => $this->product_goods_id,
             'product_assembly_id' => $assembly->id,
             'berat' => $this->berat_produksi,
-            'frekuensi' => $this->frekuensi,
+            // 'frekuensi' => $this->frekuensi,
             'lpk_id' => $lpkid->id,
         ];
         $this->jumlahBeratProduksi += $this->berat_produksi;
@@ -483,15 +483,6 @@ class AddSeitaiController extends Component
         $lpkid = TdOrderLpk::where('lpk_no', $this->lpk_no)->first();
         $loss = MsLossSeitai::where('code', $this->loss_seitai_id)
             ->first();
-
-        // $datas = new TdProductGoodsLoss();
-        // $datas->product_goods_id = $this->product_goods_id;
-        // $datas->loss_seitai_id = $loss->id;
-        // $datas->berat_loss = $this->berat_loss;
-        // $datas->berat = $this->berat_fr;
-        // $datas->frekuensi = $this->frekuensi_fr;
-        // $datas->lpk_id = $lpkid->id;
-        // $datas->save();
 
         $this->detailsLoss[] = [
             'id' => $this->nextIdLoss(),
