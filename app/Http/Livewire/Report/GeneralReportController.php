@@ -551,6 +551,16 @@ class GeneralReportController extends Component
                 }
                 break;
 
+            case 'Daftar Kasus Loss Per Mesin dan Jenis':
+                $response = $this->daftarKasusLossPerMesinJenis($tglMasuk, $tglKeluar);
+                if ($response['status'] == 'success') {
+                    return response()->download($response['filename'])->deleteFileAfterSend(true);
+                } else if ($response['status'] == 'error') {
+                    $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                    return;
+                }
+                break;
+
             case 'Kapasitas Produksi':
                 if ($this->nipon == 'Infure') {
                     $response = $this->kapasitasProduksiInfure($tglMasuk, $tglKeluar);
@@ -10449,6 +10459,11 @@ class GeneralReportController extends Component
     public function daftarLossPerMesinJenis($tglMasuk, $tglKeluar)
     {
         return LossKasusReportService::daftarLossPerMesinJenis($this->nipon, $this->jenisreport, $tglMasuk, $tglKeluar);
+    }
+
+    public function daftarKasusLossPerMesinJenis($tglMasuk, $tglKeluar)
+    {
+        return LossKasusReportService::daftarKasusLossPerMesinJenis($this->nipon, $this->jenisreport, $tglMasuk, $tglKeluar);
     }
 
     public function render()
