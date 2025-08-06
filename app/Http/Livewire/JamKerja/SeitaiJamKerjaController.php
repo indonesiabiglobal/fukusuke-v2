@@ -69,7 +69,7 @@ class SeitaiJamKerjaController extends Component
         if (empty($this->tglKeluar)) {
             $this->tglKeluar = Carbon::now()->format('d-m-Y');
         }
-        $this->machine  = MsMachine::whereIn('department_id', departmentHelper::seitaiDepartment())->get();
+        $this->machine  = MsMachine::whereIn('department_id', departmentHelper::seitaiPabrikDepartment()->pluck('id'))->get();
         $this->workShift  = MsWorkingShift::where('status', 1)->get();
         $this->working_date = Carbon::now()->format('d-m-Y');
         if (empty($this->sortingTable)) {

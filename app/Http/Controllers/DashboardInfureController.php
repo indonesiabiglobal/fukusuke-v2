@@ -18,9 +18,7 @@ class DashboardInfureController extends Controller
     {
         $data = [
             'period' => ['A', 'B', 'C'],
-            'listFactory' => departmentHelper::infureMachineDepartment()->filter(function ($item) {
-                return $item->code != '1010';
-            }),
+            'listFactory' => departmentHelper::infurePabrikDepartment(),
             'filterDateDaily' => Carbon::now()->format('d-m-Y'),
             'filterDateMonthly' => Carbon::now()->format('Y-m'),
         ];

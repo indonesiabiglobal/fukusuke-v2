@@ -16,10 +16,10 @@ class departmentHelper
         return MsDepartment::where('name', 'ilike', '%INFURE%')->get('id');
     }
 
-    public static function infureMachineDepartment()
+    public static function infurePabrikDepartment()
     {
         return MsDepartment::select('id', 'name', 'code')
-            ->where('division_code', '10')->get();
+            ->where('name', 'ilike', '%INFURE PAB%')->get();
     }
 
     public static function seitaiDivision()
@@ -30,5 +30,11 @@ class departmentHelper
     public static function seitaiDepartment()
     {
         return MsDepartment::where('name', 'ilike', '%SEITAI%')->get('id');
+    }
+
+    public static function seitaiPabrikDepartment()
+    {
+        return MsDepartment::select('id', 'name', 'code')
+            ->where('name', 'ilike', '%SEITAI PAB%')->get();
     }
 }
