@@ -69,7 +69,7 @@ class SeitaiJamKerjaController extends Component
         if (empty($this->tglKeluar)) {
             $this->tglKeluar = Carbon::now()->format('d-m-Y');
         }
-        $this->machine  = MsMachine::whereIn('department_id', [10, 12, 15, 2, 4, 10])->get();
+        $this->machine  = MsMachine::whereIn('department_id', departmentHelper::seitaiDepartment())->get();
         $this->workShift  = MsWorkingShift::where('status', 1)->get();
         $this->working_date = Carbon::now()->format('d-m-Y');
         if (empty($this->sortingTable)) {
@@ -478,6 +478,26 @@ class SeitaiJamKerjaController extends Component
             });
         }
         $this->data = $data->orderBy('tdjkm.updated_on', 'DESC')->get();
+    }
+
+    public function export()
+    {
+        $tglMasuk = Carbon::parse($this->tglMasuk . " 00:00:00");
+        $tglKeluar = Carbon::parse($this->tglKeluar . " 23:59:59");
+        $filter = [
+            'machine_id' => $this->machine_id['value'] ?? null,
+            'work_shift' => $this->work_shift_filter['value'] ?? null,
+            'searchTerm' => $this->searchTerm ?? null,
+        ];
+
+        $checklist = new CheckListJamKerjaController();
+        $response = $checklist->checklistJamKerja($tglMasuk, $tglKeluar, $filter, 'SEITAI');
+        if ($response['status'] == 'success') {
+            return response()->download($response['filename']);
+        } else if ($response['status'] == 'error') {
+            $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+            return;
+        }
     }
 
     public function render()

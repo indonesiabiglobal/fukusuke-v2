@@ -4,6 +4,7 @@ namespace App\Http\Livewire\jamKerja;
 
 use App\Helpers\departmentHelper;
 use App\Helpers\formatTime;
+use App\Http\Livewire\JamKerja\CheckListJamKerjaController;
 use App\Models\MsEmployee;
 use App\Models\MsJamMatiMesin;
 use App\Models\MsMachine;
@@ -479,6 +480,26 @@ class InfureJamKerjaController extends Component
             });
         }
         $this->data = $data->orderBy('tdjkm.updated_on', 'DESC')->get();
+    }
+
+    public function export()
+    {
+        $tglMasuk = Carbon::parse($this->tglMasuk . " 00:00:00");
+        $tglKeluar = Carbon::parse($this->tglKeluar . " 23:59:59");
+        $filter = [
+            'machine_id' => $this->machine_id['value'] ?? null,
+            'work_shift' => $this->work_shift_filter['value'] ?? null,
+            'searchTerm' => $this->searchTerm ?? null,
+        ];
+
+        $checklist = new CheckListJamKerjaController();
+        $response = $checklist->checklistJamKerja($tglMasuk, $tglKeluar, $filter, 'INFURE');
+        if ($response['status'] == 'success') {
+            return response()->download($response['filename']);
+        } else if ($response['status'] == 'error') {
+            $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+            return;
+        }
     }
 
     public function render()

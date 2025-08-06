@@ -73,7 +73,7 @@
             </div>
         </div>
     </div>
-    <div class="col-lg-12 mt-2">
+    <div class="col-lg-10 mt-2">
         <div class="row">
             <div class="col-12 col-lg-6">
                 <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1"
@@ -97,14 +97,14 @@
                     <i class="ri-add-line"> </i> Add
                 </button>
 
-                <div class="modal fade" id="modal-add" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="modal-add"
-                    aria-hidden="true" wire:ignore.self>
+                <div class="modal fade" id="modal-add" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+                    role="dialog" aria-labelledby="modal-add" aria-hidden="true" wire:ignore.self>
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h2 class="h6 modal-title">Add Jam Kerja Infure</h2>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close" wire:click="closeModal"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                                    wire:click="closeModal"></button>
                             </div>
                             <div class="modal-body">
                                 <div class="row">
@@ -274,7 +274,8 @@
                                         </div>
                                     </button>
                                     <!-- Close Button -->
-                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" wire:click="closeModal">
+                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"
+                                        wire:click="closeModal">
                                         Close
                                     </button>
                                 </div>
@@ -282,14 +283,14 @@
                         </div>
                     </div>
                 </div>
-                <div class="modal fade" id="modal-edit" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="modal-edit"
-                    aria-hidden="true" wire:ignore.self>
+                <div class="modal fade" id="modal-edit" data-bs-backdrop="static" data-bs-keyboard="false"
+                    tabindex="-1" role="dialog" aria-labelledby="modal-edit" aria-hidden="true" wire:ignore.self>
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h2 class="h6 modal-title">Edit Jam Kerja Infure</h2>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close" wire:click="closeModal"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                                    wire:click="closeModal"></button>
                             </div>
                             <div class="modal-body">
                                 <div class="row">
@@ -453,7 +454,8 @@
                                         </div>
                                     </button>
                                     <!-- Close Button -->
-                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" wire:click="closeModal">
+                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"
+                                        wire:click="closeModal">
                                         Close
                                     </button>
                                 </div>
@@ -583,6 +585,23 @@
                 {{-- end modal delete --}}
             </div>
         </div>
+    </div>
+    <div class="col-lg-2 mt-2 text-end">
+        <button class="btn btn-info w-lg p-1" wire:click="export" type="button" wire:loading.attr="disabled">
+            <span wire:loading.remove wire:target="export">
+                <i class="ri-printer-line"> </i> Print
+            </span>
+            <div wire:loading wire:target="export">
+                <span class="d-flex align-items-center">
+                    <span class="spinner-border flex-shrink-0" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </span>
+                    <span class="flex-grow-1 ms-1">
+                        Loading...
+                    </span>
+                </span>
+            </div>
+        </button>
     </div>
 
     <div class="table-responsive table-card  mt-2  mb-2">

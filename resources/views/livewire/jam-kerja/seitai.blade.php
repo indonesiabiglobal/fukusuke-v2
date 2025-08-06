@@ -73,7 +73,7 @@
             </div>
         </div>
     </div>
-    <div class="col-lg-12 mt-2">
+    <div class="col-lg-10 mt-2">
         <div class="row">
             <div class="col-12 col-lg-6">
                 <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1"
@@ -583,6 +583,23 @@
                 {{-- end modal delete --}}
             </div>
         </div>
+    </div>
+    <div class="col-lg-2 mt-2 text-end">
+        <button class="btn btn-info w-lg p-1" wire:click="export" type="button" wire:loading.attr="disabled">
+            <span wire:loading.remove wire:target="export">
+                <i class="ri-printer-line"> </i> Print
+            </span>
+            <div wire:loading wire:target="export">
+                <span class="d-flex align-items-center">
+                    <span class="spinner-border flex-shrink-0" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </span>
+                    <span class="flex-grow-1 ms-1">
+                        Loading...
+                    </span>
+                </span>
+            </div>
+        </button>
     </div>
 
     <div class="table-responsive table-card  mt-2  mb-2">
