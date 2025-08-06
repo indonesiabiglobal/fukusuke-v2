@@ -15,7 +15,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class LossKasusReportService
 {
-    public static function daftarKasusPerMesinJenis($nipon, $jenisReport, $tglMasuk, $tglKeluar)
+    public static function daftarLossPerMesinJenis($nipon, $jenisReport, $tglMasuk, $tglKeluar)
     {
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();

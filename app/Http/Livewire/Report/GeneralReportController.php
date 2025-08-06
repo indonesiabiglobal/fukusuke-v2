@@ -541,8 +541,8 @@ class GeneralReportController extends Component
                 }
                 break;
 
-            case 'Daftar Kasus Loss Per Mesin dan Jenis':
-                $response = $this->daftarKasusPerMesinJenis($tglMasuk, $tglKeluar);
+            case 'Daftar Loss Per Mesin dan Jenis':
+                $response = $this->daftarLossPerMesinJenis($tglMasuk, $tglKeluar);
                 if ($response['status'] == 'success') {
                     return response()->download($response['filename'])->deleteFileAfterSend(true);
                 } else if ($response['status'] == 'error') {
@@ -10446,9 +10446,9 @@ class GeneralReportController extends Component
         return JamMatiReportService::jamMatiPerJenis($this->nipon, $this->jenisreport, $tglMasuk, $tglKeluar);
     }
 
-    public function daftarKasusPerMesinJenis($tglMasuk, $tglKeluar)
+    public function daftarLossPerMesinJenis($tglMasuk, $tglKeluar)
     {
-        return LossKasusReportService::daftarKasusPerMesinJenis($this->nipon, $this->jenisreport, $tglMasuk, $tglKeluar);
+        return LossKasusReportService::daftarLossPerMesinJenis($this->nipon, $this->jenisreport, $tglMasuk, $tglKeluar);
     }
 
     public function render()
