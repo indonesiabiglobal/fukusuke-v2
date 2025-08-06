@@ -105,16 +105,8 @@
 </div>
 @script
     <script>
-        // document.addEventListener('livewire:load', function () {
-        // 	Livewire.on('redirectToPrint', function (lpk_id) {
-        // 		// var dt=data;
-        // 		var printUrl = '{{ route('report-lpk') }}?lpk_id=' +  lpk_id
-        // 		window.open(printUrl, '_blank');
-        // 	});
-        // });
-
         $wire.on('redirectToPrint', (lpk_id) => {
-            var printUrl = '{{ route('report-lpk') }}?lpk_id=' + lpk_id
+            var printUrl = '{{ route('report-lpk') }}?lpk_ids=' + lpk_id
             window.open(printUrl, '_blank');
         });
     </script>
