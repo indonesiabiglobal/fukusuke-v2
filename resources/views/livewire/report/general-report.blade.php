@@ -98,13 +98,15 @@
                         </option>
                         <option value="Daftar Loss Per Petugas">13. Daftar Loss Per Petugas</option>
                         <option value="Daftar Loss Per Mesin">14. Daftar Loss Per Mesin</option>
+                        <option value="Daftar Kasus Loss Per Mesin dan Jenis">15. Daftar Kasus Per Mesin dan Jenis</option>
+                        {{-- <option value="Daftar Loss Loss Per Mesin dan Jenis">16. Daftar Loss Per Mesin dan Jenis</option> --}}
                     </optgroup>
                     <optgroup label="Kapasitas">
-                        <option value="Kapasitas Produksi">15. Kapasitas Produksi</option>
+                        <option value="Kapasitas Produksi">17. Kapasitas Produksi</option>
                     </optgroup>
                     <optgroup label="Jam Mati Mesin">
-                        <option value="Jam Mati Per Mesin">16. Jam Mati Per Mesin</option>
-                        <option value="Jam Mati Per Jenis">17. Jam Mati Per Jenis</option>
+                        <option value="Jam Mati Per Mesin">18. Jam Mati Per Mesin</option>
+                        <option value="Jam Mati Per Jenis">19. Jam Mati Per Jenis</option>
                     </optgroup>
                 </select>
             </div>

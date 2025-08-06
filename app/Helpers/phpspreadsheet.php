@@ -48,11 +48,55 @@ class phpspreadsheet
         ]);
     }
 
+    public static function addInlineBorderDotted($spreadsheet, $range, $color = 'FF000000')
+    {
+        $spreadsheet->getActiveSheet()->getStyle($range)->applyFromArray([
+            'borders' => [
+                'top' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    'color' => ['argb' => $color],
+                ],
+                'bottom' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    'color' => ['argb' => $color],
+                ],
+                'left' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    'color' => ['argb' => $color],
+                ],
+                'right' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    'color' => ['argb' => $color],
+                ],
+                'vertical' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_DOTTED,
+                    'color' => ['argb' => $color],
+                ],
+                'horizontal' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_DOTTED,
+                    'color' => ['argb' => $color],
+                ],
+            ],
+        ]);
+    }
+
     public static function addOutlineBorder($spreadsheet, $range, $borderStyle = \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN, $color = 'FF000000')
     {
         $spreadsheet->getActiveSheet()->getStyle($range)->applyFromArray([
             'borders' => [
                 'outline' => [
+                    'borderStyle' => $borderStyle,
+                    'color' => ['argb' => $color],
+                ],
+            ],
+        ]);
+    }
+
+    public static function addVerticalBorder($spreadsheet, $range, $borderStyle = \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN, $color = 'FF000000')
+    {
+        $spreadsheet->getActiveSheet()->getStyle($range)->applyFromArray([
+            'borders' => [
+                'vertical' => [
                     'borderStyle' => $borderStyle,
                     'color' => ['argb' => $color],
                 ],
@@ -175,6 +219,13 @@ class phpspreadsheet
     {
         $spreadsheet->getActiveSheet()->getStyle($range)->getAlignment()
             ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT)
+            ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+    }
+
+    public static function textRotateUp($spreadsheet, $range)
+    {
+        $spreadsheet->getActiveSheet()->getStyle($range)->getAlignment()
+            ->setTextRotation(90)
             ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
     }
 }

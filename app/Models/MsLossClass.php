@@ -35,4 +35,15 @@ class MsLossClass extends Model
     //     'title',
     //     'content',
     // ];
+
+    // relations
+    public function lossInfure()
+    {
+        return $this->hasMany(MsLossInfure::class, 'loss_class_id', 'id');
+    }
+
+    public function lossSeitai()
+    {
+        return $this->hasMany(MsLossSeitai::class, 'loss_class_id', 'id');
+    }
 }

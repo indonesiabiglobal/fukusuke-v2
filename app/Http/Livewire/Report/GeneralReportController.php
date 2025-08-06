@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Exports\GeneralReportExport;
 use App\Http\Livewire\Report\GeneralReport\JamMatiReportService;
+use App\Http\Livewire\Report\GeneralReport\LossKasusReportService;
 use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -539,6 +540,17 @@ class GeneralReportController extends Component
                     }
                 }
                 break;
+
+            case 'Daftar Kasus Loss Per Mesin dan Jenis':
+                $response = $this->daftarKasusPerMesinJenis($tglMasuk, $tglKeluar);
+                if ($response['status'] == 'success') {
+                    return response()->download($response['filename'])->deleteFileAfterSend(true);
+                } else if ($response['status'] == 'error') {
+                    $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                    return;
+                }
+                break;
+
             case 'Kapasitas Produksi':
                 if ($this->nipon == 'Infure') {
                     $response = $this->kapasitasProduksiInfure($tglMasuk, $tglKeluar);
@@ -10432,6 +10444,11 @@ class GeneralReportController extends Component
     public function jamMatiPerJenis($tglMasuk, $tglKeluar)
     {
         return JamMatiReportService::jamMatiPerJenis($this->nipon, $this->jenisreport, $tglMasuk, $tglKeluar);
+    }
+
+    public function daftarKasusPerMesinJenis($tglMasuk, $tglKeluar)
+    {
+        return LossKasusReportService::daftarKasusPerMesinJenis($this->nipon, $this->jenisreport, $tglMasuk, $tglKeluar);
     }
 
     public function render()
