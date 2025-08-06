@@ -392,7 +392,7 @@ class EditNippoController extends Component
         // validasi nomor gentan
         if ($this->gentan_no != 0) {
             $gentanExists = TdProductAssembly::where('lpk_id', $lpkid->id)
-            ->where('id', '!=', $this->orderId)
+                ->where('id', '!=', $this->orderId)
                 ->where('gentan_no', $this->gentan_no)
                 ->exists();
 
@@ -490,14 +490,43 @@ class EditNippoController extends Component
             $this->loss_infure_id = '';
             $this->loss_infure_code = '';
             $this->name_infure = '';
-            $this->berat_loss = 0;
-            $this->frekuensi = 0;
+            $this->berat_loss = '';
+            $this->frekuensi = '';
             $this->dispatch('showModal');
         }
     }
 
+    public function validateLossInfure()
+    {
+        try {
+            $this->validate([
+                'loss_infure_code' => 'required',
+                'berat_loss' => 'required|numeric|min:0|max:1000',
+                'frekuensi' => 'required|integer|min:0|max:100',
+            ], [
+                'loss_infure_code.required' => 'Kode Loss Infure harus diisi',
+                'berat_loss.required' => 'Berat Loss harus diisi',
+                'berat_loss.numeric' => 'Berat Loss harus berupa angka',
+                'berat_loss.min' => 'Berat Loss tidak boleh kurang dari 0',
+                'berat_loss.max' => 'Berat Loss tidak boleh lebih dari 1000',
+                'frekuensi.required' => 'Frekuensi harus diisi',
+                'frekuensi.integer' => 'Frekuensi harus berupa angka bulat',
+                'frekuensi.min' => 'Frekuensi tidak boleh kurang dari 0',
+                'frekuensi.max' => 'Frekuensi tidak boleh lebih dari 100',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Validasi gagal: ' . implode(', ', $e->validator->errors()->all())]);
+            return;
+        }
+        return true;
+    }
+
     public function saveInfure()
     {
+        if (!$this->validateLossInfure()) {
+            return;
+        }
+
         $datas = new TdProductAssemblyLoss();
         $datas->product_assembly_id = $this->orderId;
         $datas->loss_infure_id = $this->loss_infure_id;
@@ -583,6 +612,9 @@ class EditNippoController extends Component
 
             if ($lossinfure == null) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Loss Infure ' . $this->loss_infure_code . ' Tidak Terdaftar']);
+                $this->loss_infure_code = '';
+                $this->name_infure = '';
+                $this->loss_infure_id = '';
             } else {
                 $this->name_infure = $lossinfure->name;
                 $this->loss_infure_id = $lossinfure->id;
@@ -697,11 +729,9 @@ class EditNippoController extends Component
 
     public function updateLossInfure()
     {
-        $this->validate([
-            'loss_infure_id' => 'required',
-            'berat_loss' => 'required|numeric',
-            'frekuensi' => 'required|numeric',
-        ]);
+        if (!$this->validateLossInfure()) {
+            return;
+        }
 
         DB::table('tdproduct_assembly_loss')
             ->where('id', $this->editing_id)

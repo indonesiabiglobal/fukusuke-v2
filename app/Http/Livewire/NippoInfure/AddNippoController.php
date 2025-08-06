@@ -431,15 +431,38 @@ class AddNippoController extends Component
         }
     }
 
+    public function validateLossInfure()
+    {
+        try {
+            $this->validate([
+                'loss_infure_code' => 'required',
+                'berat_loss' => 'required|numeric|min:0|max:1000',
+                'frekuensi' => 'required|integer|min:0|max:100',
+            ], [
+                'loss_infure_code.required' => 'Kode Loss Infure harus diisi',
+                'berat_loss.required' => 'Berat Loss harus diisi',
+                'berat_loss.numeric' => 'Berat Loss harus berupa angka',
+                'berat_loss.min' => 'Berat Loss tidak boleh kurang dari 0',
+                'berat_loss.max' => 'Berat Loss tidak boleh lebih dari 1000',
+                'frekuensi.required' => 'Frekuensi harus diisi',
+                'frekuensi.integer' => 'Frekuensi harus berupa angka bulat',
+                'frekuensi.min' => 'Frekuensi tidak boleh kurang dari 0',
+                'frekuensi.max' => 'Frekuensi tidak boleh lebih dari 100',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Validasi gagal: ' . implode(', ', $e->validator->errors()->all())]);
+            return;
+        }
+        return true;
+    }
+
     public function saveInfure()
     {
         // validated
-        $this->validate([
-            'loss_infure_code' => 'required',
-            'name_infure' => 'required',
-            'berat_loss' => 'required|numeric',
-            'frekuensi' => 'required|numeric',
-        ]);
+        if (!$this->validateLossInfure()) {
+            return;
+        }
+
         try {
             DB::beginTransaction();
 
@@ -765,11 +788,10 @@ class AddNippoController extends Component
 
     public function updateLossInfure()
     {
-        $this->validate([
-            'loss_infure_id' => 'required',
-            'berat_loss' => 'required|numeric',
-            'frekuensi' => 'required|numeric',
-        ]);
+        // validated
+        if (!$this->validateLossInfure()) {
+            return;
+        }
 
         $index = array_search($this->editing_id, array_column($this->details, 'id'));
         if ($index !== false) {

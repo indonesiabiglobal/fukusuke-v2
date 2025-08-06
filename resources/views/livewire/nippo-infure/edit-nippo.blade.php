@@ -546,7 +546,7 @@
                                 <div class="form-group">
                                     <div class="input-group">
                                         <label class="col-12 col-lg-2 fw-bold text-muted">Frekuensi </label>
-                                        <input class="form-control" type="text" wire:model.defer="frekuensi"
+                                        <input class="form-control" type="number" min="0" wire:model.defer="frekuensi"
                                             placeholder="0" />
                                         @error('frekuensi')
                                             <span class="invalid-feedback">{{ $message }}</span>
@@ -1646,7 +1646,7 @@
                                 <div class="form-group">
                                     <div class="input-group">
                                         <label class="col-12 col-lg-2 fw-bold text-muted">Frekuensi </label>
-                                        <input class="form-control" type="text" wire:model.defer="frekuensi"
+                                        <input class="form-control" type="number" min="0" wire:model.defer="frekuensi"
                                             placeholder="0" />
                                         @error('frekuensi')
                                             <span class="invalid-feedback">{{ $message }}</span>
