@@ -202,12 +202,15 @@
                     mpb.code AS seitai_kodebox,
                     mpb.name AS seitai_namabox,
                     mp.case_box_count AS seitai_isibox,
+                    mp.case_box_stampel,
                     mpg.code AS seitai_kodegaiso,
                     mpg.name AS seitai_namagaiso,
                     mp.case_gaiso_count AS seitai_isigaiso,
+                    mp.case_gaiso_stampel,
                     mpi.code AS seitai_kodeinner,
                     mpi.name AS seitai_namainner,
                     mp.case_inner_count AS seitai_isiinner,
+                    mp.case_inner_stampel,
                     mpl.code AS seitai_kodelayer,
                     mpl.name AS seitai_namalayer,
                     mls.code AS seitai_kodelakban,
@@ -891,10 +894,12 @@
                                         <table>
                                             <tr>
                                                 <td>
-                                                    <font style="font-weight: bold; font-size: 13.5px">
-                                                        {{ $data->seitai_stample }}
-                                                    </font>
-                                                    <br>
+                                                    <font style="font-weight: bold;" style="font-size: 14.5px">
+                                                        {{ $data->case_box_stampel }}</font><br>
+                                                    <font style="font-weight: bold;" style="font-size: 14.5px">
+                                                        {{ $data->case_gaiso_stampel }}</font><br>
+                                                    <font style="font-weight: bold;" style="font-size: 14.5px">
+                                                        {{ $data->case_inner_stampel }}</font><br>
                                                 </td>
                                             </tr>
                                         </table>
