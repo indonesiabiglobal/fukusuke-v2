@@ -154,7 +154,7 @@ class CheckListJamKerjaController extends Component
         }
 
         $data = $query
-            ->orderBy('working_date', 'desc')
+            ->orderBy('working_date', 'asc')
             ->orderBy('machine_id', 'asc')
             ->orderBy('work_shift', 'asc')
             ->get();
