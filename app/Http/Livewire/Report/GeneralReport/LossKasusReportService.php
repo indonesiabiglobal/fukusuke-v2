@@ -20,9 +20,11 @@ class LossKasusReportService
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
+
+        $activeWorksheet->freezePane('C6');
         $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
         // Mengatur ukuran kertas menjadi A4
-        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A3);
         // Mengatur agar semua kolom muat dalam satu halaman
         $activeWorksheet->getPageSetup()->setFitToWidth(1);
         $activeWorksheet->getPageSetup()->setFitToHeight(0);
@@ -353,6 +355,8 @@ class LossKasusReportService
         }
         phpspreadsheet::addFullBorder($spreadsheet, $codeMachineCol . $rowGrandTotal . ':' . $itemLossColLetter . $rowGrandTotal);
 
+        $spreadsheet->getActiveSheet()->getColumnDimension('B')->setAutoSize(true);
+
         $writer = new Xlsx($spreadsheet);
         $filename = 'asset/report/' . $nipon . '-' . $jenisReport . '.xlsx';
         $writer->save($filename);
@@ -368,9 +372,11 @@ class LossKasusReportService
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
+
+        $activeWorksheet->freezePane('C6');
         $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
         // Mengatur ukuran kertas menjadi A4
-        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A3);
         // Mengatur agar semua kolom muat dalam satu halaman
         $activeWorksheet->getPageSetup()->setFitToWidth(1);
         $activeWorksheet->getPageSetup()->setFitToHeight(0);
@@ -700,6 +706,8 @@ class LossKasusReportService
             $spreadsheet->getActiveSheet()->setCellValue(Coordinate::stringFromColumnIndex($item) . $rowGrandTotal, '=SUM(' . implode(',', $columnRowTotalLoss) . ')');
         }
         phpspreadsheet::addFullBorder($spreadsheet, $codeMachineCol . $rowGrandTotal . ':' . $itemLossColLetter . $rowGrandTotal);
+
+        $spreadsheet->getActiveSheet()->getColumnDimension('B')->setAutoSize(true);
 
         $writer = new Xlsx($spreadsheet);
         $filename = 'asset/report/' . $nipon . '-' . $jenisReport . '.xlsx';
