@@ -88,7 +88,7 @@ class CheckListJamKerjaController extends Component
         // Mengatur ukuran kertas menjadi A4
         $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
         // Mengatur orientasi menjadi landscape
-        $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+        $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_PORTRAIT);
         $activeWorksheet->getStyle($columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart)->getAlignment()->setWrapText(true);
         // Mengatur agar semua kolom muat dalam satu halaman
         $activeWorksheet->getPageSetup()->setFitToWidth(1);
