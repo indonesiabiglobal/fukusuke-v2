@@ -37,4 +37,10 @@ class departmentHelper
         return MsDepartment::select('id', 'name', 'code')
             ->where('name', 'ilike', '%SEITAI PAB%')->get();
     }
+
+    public static function masalahKenpinSeitaiDepartment()
+    {
+        return MsDepartment::select('id', 'name', 'code')
+            ->whereIn('id', [2, 7])->get();
+    }
 }

@@ -8,7 +8,7 @@
                     <div class="col-12 col-md-6">
                         <h1 class="card-title mb-0 fs-20 fw-bold text-dark">
                             <i class="ri-settings-3-line me-2 text-primary"></i>
-                            Master Jam Mati Mesin Infure
+                            Master Masalah Kenpin Seitai
                         </h1>
                         <p class="text-muted mb-0 mt-1">Manage machine downtime records</p>
                     </div>
@@ -111,13 +111,6 @@
                                 </ul>
                             </div>
 
-                            {{-- Loading indicator when filtering --}}
-                            {{-- <div wire:loading wire:target="filterByStatus,clearFilter" class="d-inline-block ms-2">
-                                <div class="spinner-border spinner-border-sm text-primary" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
-                            </div> --}}
-
                             {{-- Column Toggle --}}
                             <div class="dropdown">
                                 <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
@@ -136,7 +129,7 @@
                                             <input class="form-check-input toggle-column" type="checkbox"
                                                 data-column="1" checked id="col1">
                                             <label class="form-check-label" for="col1">
-                                                Nama Mesin Mati
+                                                Nama Masalah Kenpin
                                             </label>
                                         </div>
                                     </li>
@@ -145,7 +138,7 @@
                                             <input class="form-check-input toggle-column" type="checkbox"
                                                 data-column="2" checked id="col2">
                                             <label class="form-check-label" for="col2">
-                                                Code
+                                                Kode
                                             </label>
                                         </div>
                                     </li>
@@ -154,7 +147,7 @@
                                             <input class="form-check-input toggle-column" type="checkbox"
                                                 data-column="3" checked id="col3">
                                             <label class="form-check-label" for="col3">
-                                                Klasifikasi
+                                                Departemen
                                             </label>
                                         </div>
                                     </li>
@@ -200,9 +193,9 @@
                     <thead class="table-light">
                         <tr>
                             <th>Action</th>
-                            <th>Nama Mesin Mati</th>
-                            <th>Code</th>
-                            <th>Klasifikasi</th>
+                            <th>Nama Masalah Kenpin</th>
+                            <th>Kode</th>
+                            <th>Departemen</th>
                             <th>Status</th>
                             <th>Update_By</th>
                             <th>Updated</th>
@@ -223,9 +216,9 @@
                                         <i class="ri-delete-bin-line text-white"></i>
                                     </button>
                                 </td>
-                                <td>{{ $item->name }}</td>
+                                <td>{{ $item->masalah }}</td>
                                 <td>{{ $item->code }}</td>
-                                <td>{{ $item->classification }}</td>
+                                <td>{{ $item->department }}</td>
                                 <td>
                                     {!! $item->status == 1
                                         ? '<span class="badge text-success bg-success-subtle">Active</span>'
@@ -261,7 +254,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="modal-addLabel">Add Master Jam Mati Mesin Infure</h5> <button
+                        <h5 class="modal-title" id="modal-addLabel">Add Master Masalah Kenpin Seitai</h5> <button
                             type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -269,7 +262,7 @@
                             <div class="row g-3">
                                 <div class="col-xxl-12">
                                     <div>
-                                        <label for="code" class="form-label">Kode Jam Mati Mesin</label>
+                                        <label for="code" class="form-label">Kode Masalah Kenpin</label>
                                         <input type="number" class="form-control @error('code') is-invalid @enderror"
                                             oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);"
                                             id="code" wire:model.defer="code" placeholder="Kode">
@@ -278,10 +271,10 @@
                                         @enderror
                                     </div>
                                 </div>
-                                {{-- Nama Jam Mati Mesin --}}
+                                {{-- Nama Masalah Kenpin --}}
                                 <div class="col-xxl-12">
                                     <div>
-                                        <label for="name" class="form-label">Nama Jam Mati Mesin</label>
+                                        <label for="name" class="form-label">Nama Masalah Kenpin</label>
                                         <input type="text" class="form-control @error('name') is-invalid @enderror"
                                             id="name" wire:model.defer="name" placeholder="Nama">
                                         @error('name')
@@ -289,17 +282,19 @@
                                         @enderror
                                     </div>
                                 </div>
-                                {{-- Klasifikasi --}}
+                                {{-- Department --}}
                                 <div class="col-xxl-12">
-                                    <div>
-                                        <label for="classification" class="form-label">Klasifikasi</label>
-                                        <input type="text"
-                                            class="form-control @error('classification') is-invalid @enderror"
-                                            id="classification" wire:model.defer="classification"
-                                            placeholder="Klasifikasi">
-                                        @error('classification')
-                                            <span class="invalid-feedback">{{ $message }}</span>
-                                        @enderror
+                                    <div class="mb-1" wire:ignore>
+                                        <label for="classification" class="form-label">Department</label>
+                                        <select class="form-control" wire:model.defer="department" data-choices
+                                            data-choices-sorting-false data-choices-removeItem
+                                            data-choices-search-field-label>
+                                            @foreach ($listDepartments as $item)
+                                                <option value="{{ $item->id }}"
+                                                    @if ($item->id == ($department['value'] ?? null)) selected @endif>
+                                                    {{ $item->name }}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </div>
                                 {{-- button --}}
@@ -340,7 +335,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="modal-editLabel">Edit Master Jam Mati Mesin Infure</h5>
+                        <h5 class="modal-title" id="modal-editLabel">Edit Master Masalah Kenpin Seitai</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                             aria-label="Close"></button>
                     </div>
@@ -349,7 +344,7 @@
                             <div class="row g-3">
                                 <div class="col-xxl-12">
                                     <div>
-                                        <label for="code" class="form-label">Kode Jam Mati Mesin</label>
+                                        <label for="code" class="form-label">Kode Masalah Kenpin</label>
                                         <input type="number" class="form-control @error('code') is-invalid @enderror"
                                             oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);"
                                             id="code" wire:model.defer="code" placeholder="Kode">
@@ -360,7 +355,7 @@
                                 </div>
                                 <div class="col-xxl-12">
                                     <div>
-                                        <label for="name" class="form-label">Nama Jam Mati Mesin</label>
+                                        <label for="name" class="form-label">Nama Masalah Kenpin</label>
                                         <input type="text" class="form-control @error('name') is-invalid @enderror"
                                             id="name" wire:model.defer="name" placeholder="Nama">
                                         @error('name')
@@ -368,15 +363,21 @@
                                         @enderror
                                     </div>
                                 </div>
-                                {{-- Klasifikasi --}}
+                                {{-- Department --}}
                                 <div class="col-xxl-12">
-                                    <div>
-                                        <label for="classification" class="form-label">Klasifikasi</label>
-                                        <input type="text"
-                                            class="form-control @error('classification') is-invalid @enderror"
-                                            id="classification" wire:model.defer="classification"
-                                            placeholder="Klasifikasi">
-                                        @error('classification')
+                                    <div class="mb-1">
+                                        <label for="classification" class="form-label">Department</label>
+                                        <select
+                                            class="form-select select2 @error('department') is-invalid @enderror"
+                                            wire:model="department" placeholder="" id="department">
+                                            @foreach ($listDepartments as $item)
+                                                <option value="{{ $item->id }}"
+                                                    {{ $item->id == $department ? 'selected' : '' }}>
+                                                    {{ $item->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('department')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror
                                     </div>

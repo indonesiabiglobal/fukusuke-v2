@@ -26,7 +26,7 @@
                         <button type="button" class="btn btn-success btn-label waves-effect waves-light"
                             wire:click="showModalCreate">
                             <i class="ri-add-circle-line label-icon align-middle fs-16 me-2"></i>
-                            Add New Record
+                            Tambah Data
                         </button>
                     </div>
 

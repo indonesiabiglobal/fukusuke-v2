@@ -8,13 +8,13 @@
                     <div class="col-12 col-md-6">
                         <h1 class="card-title mb-0 fs-20 fw-bold text-dark">
                             <i class="ri-settings-3-line me-2 text-primary"></i>
-                            Master Jam Mati Mesin Infure
+                            Master Masalah Kenpin Infure
                         </h1>
-                        <p class="text-muted mb-0 mt-1">Manage machine downtime records</p>
+                        <p class="text-muted mb-0 mt-1">Mengelola data masalah kenpin infure</p>
                     </div>
                     <div class="col-12 col-md-6 text-md-end mt-3 mt-md-0">
                         <span class="badge bg-light text-dark fs-12">
-                            Total Records: {{ $result->count() }}
+                            Total Data: {{ $result->count() }}
                         </span>
                     </div>
                 </div>
@@ -136,7 +136,7 @@
                                             <input class="form-check-input toggle-column" type="checkbox"
                                                 data-column="1" checked id="col1">
                                             <label class="form-check-label" for="col1">
-                                                Nama Mesin Mati
+                                                Jenis Klaim
                                             </label>
                                         </div>
                                     </li>
@@ -145,23 +145,14 @@
                                             <input class="form-check-input toggle-column" type="checkbox"
                                                 data-column="2" checked id="col2">
                                             <label class="form-check-label" for="col2">
-                                                Code
+                                                Kode
                                             </label>
                                         </div>
                                     </li>
                                     <li class="px-2 py-1">
                                         <div class="form-check">
                                             <input class="form-check-input toggle-column" type="checkbox"
-                                                data-column="3" checked id="col3">
-                                            <label class="form-check-label" for="col3">
-                                                Klasifikasi
-                                            </label>
-                                        </div>
-                                    </li>
-                                    <li class="px-2 py-1">
-                                        <div class="form-check">
-                                            <input class="form-check-input toggle-column" type="checkbox"
-                                                data-column="4" checked id="col4">
+                                                data-column="3" checked id="col4">
                                             <label class="form-check-label" for="col4">
                                                 Status
                                             </label>
@@ -170,7 +161,7 @@
                                     <li class="px-2 py-1">
                                         <div class="form-check">
                                             <input class="form-check-input toggle-column" type="checkbox"
-                                                data-column="5" checked id="col5">
+                                                data-column="4" checked id="col5">
                                             <label class="form-check-label" for="col5">
                                                 Updated By
                                             </label>
@@ -179,7 +170,7 @@
                                     <li class="px-2 py-1">
                                         <div class="form-check">
                                             <input class="form-check-input toggle-column" type="checkbox"
-                                                data-column="6" checked id="col6">
+                                                data-column="5" checked id="col6">
                                             <label class="form-check-label" for="col6">
                                                 Updated
                                             </label>
@@ -200,11 +191,10 @@
                     <thead class="table-light">
                         <tr>
                             <th>Action</th>
-                            <th>Nama Mesin Mati</th>
-                            <th>Code</th>
-                            <th>Klasifikasi</th>
+                            <th>Jenis Klaim</th>
+                            <th>Kode</th>
                             <th>Status</th>
-                            <th>Update_By</th>
+                            <th>Update By</th>
                             <th>Updated</th>
                         </tr>
                     </thead>
@@ -223,9 +213,8 @@
                                         <i class="ri-delete-bin-line text-white"></i>
                                     </button>
                                 </td>
-                                <td>{{ $item->name }}</td>
+                                <td>{{ $item->jenis_klaim }}</td>
                                 <td>{{ $item->code }}</td>
-                                <td>{{ $item->classification }}</td>
                                 <td>
                                     {!! $item->status == 1
                                         ? '<span class="badge text-success bg-success-subtle">Active</span>'
@@ -241,9 +230,6 @@
                                         colors="primary:#121331,secondary:#08a88a"
                                         style="width:40px;height:40px"></lord-icon>
                                     <h5 class="mt-2">Sorry! No Result Found</h5>
-                                    <p class="text-muted mb-0">We've searched more than 150+ Orders We did not find any
-                                        orders
-                                        for you search.</p>
                                 </td>
                             </tr>
                         @endforelse
@@ -261,7 +247,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="modal-addLabel">Add Master Jam Mati Mesin Infure</h5> <button
+                        <h5 class="modal-title" id="modal-addLabel">Add Master Masalah Kenpin Infure</h5> <button
                             type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -269,7 +255,7 @@
                             <div class="row g-3">
                                 <div class="col-xxl-12">
                                     <div>
-                                        <label for="code" class="form-label">Kode Jam Mati Mesin</label>
+                                        <label for="code" class="form-label">Kode Masalah Kenpin</label>
                                         <input type="number" class="form-control @error('code') is-invalid @enderror"
                                             oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);"
                                             id="code" wire:model.defer="code" placeholder="Kode">
@@ -278,26 +264,13 @@
                                         @enderror
                                     </div>
                                 </div>
-                                {{-- Nama Jam Mati Mesin --}}
+                                {{-- Nama Masalah Kenpin --}}
                                 <div class="col-xxl-12">
                                     <div>
-                                        <label for="name" class="form-label">Nama Jam Mati Mesin</label>
+                                        <label for="name" class="form-label">Nama Masalah Kenpin</label>
                                         <input type="text" class="form-control @error('name') is-invalid @enderror"
                                             id="name" wire:model.defer="name" placeholder="Nama">
                                         @error('name')
-                                            <span class="invalid-feedback">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-                                </div>
-                                {{-- Klasifikasi --}}
-                                <div class="col-xxl-12">
-                                    <div>
-                                        <label for="classification" class="form-label">Klasifikasi</label>
-                                        <input type="text"
-                                            class="form-control @error('classification') is-invalid @enderror"
-                                            id="classification" wire:model.defer="classification"
-                                            placeholder="Klasifikasi">
-                                        @error('classification')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror
                                     </div>
@@ -340,7 +313,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="modal-editLabel">Edit Master Jam Mati Mesin Infure</h5>
+                        <h5 class="modal-title" id="modal-editLabel">Edit Master Masalah Kenpin Infure</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                             aria-label="Close"></button>
                     </div>
@@ -349,7 +322,7 @@
                             <div class="row g-3">
                                 <div class="col-xxl-12">
                                     <div>
-                                        <label for="code" class="form-label">Kode Jam Mati Mesin</label>
+                                        <label for="code" class="form-label">Kode Masalah Kenpin</label>
                                         <input type="number" class="form-control @error('code') is-invalid @enderror"
                                             oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);"
                                             id="code" wire:model.defer="code" placeholder="Kode">
@@ -360,23 +333,10 @@
                                 </div>
                                 <div class="col-xxl-12">
                                     <div>
-                                        <label for="name" class="form-label">Nama Jam Mati Mesin</label>
+                                        <label for="name" class="form-label">Nama Masalah Kenpin</label>
                                         <input type="text" class="form-control @error('name') is-invalid @enderror"
                                             id="name" wire:model.defer="name" placeholder="Nama">
                                         @error('name')
-                                            <span class="invalid-feedback">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-                                </div>
-                                {{-- Klasifikasi --}}
-                                <div class="col-xxl-12">
-                                    <div>
-                                        <label for="classification" class="form-label">Klasifikasi</label>
-                                        <input type="text"
-                                            class="form-control @error('classification') is-invalid @enderror"
-                                            id="classification" wire:model.defer="classification"
-                                            placeholder="Klasifikasi">
-                                        @error('classification')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror
                                     </div>

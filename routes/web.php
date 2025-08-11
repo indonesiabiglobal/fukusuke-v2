@@ -80,6 +80,8 @@ use App\Http\Livewire\MasterTabel\Inventory\PengeluaranBarangController;
 use App\Http\Livewire\MasterTabel\Inventory\PosisiWipController;
 use App\Http\Livewire\MasterTabel\JamMatiMesin\JamMatiMesinInfureController;
 use App\Http\Livewire\MasterTabel\JamMatiMesin\JamMatiMesinSeitaiController;
+use App\Http\Livewire\MasterTabel\MasalahKenpin\MasalahKenpinInfureController;
+use App\Http\Livewire\MasterTabel\MasalahKenpin\MasalahKenpinSeitaiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -210,6 +212,10 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/jam-mati-mesin-infure', JamMatiMesinInfureController::class)->name('master-jam-mati-mesin-infure');
     Route::get('/jam-mati-mesin-seitai', JamMatiMesinSeitaiController::class)->name('master-jam-mati-mesin-seitai');
+
+    // Masalah Kenpin
+    Route::get('/masalah-kenpin-infure', MasalahKenpinInfureController::class)->name('masalah-kenpin-infure');
+    Route::get('/masalah-kenpin-seitai', MasalahKenpinSeitaiController::class)->name('masalah-kenpin-seitai');
 
     // Administration
     Route::get('/security-management', SecurityManagementController::class)->name('security-management');
