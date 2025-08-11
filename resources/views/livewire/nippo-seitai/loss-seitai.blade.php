@@ -1,4 +1,5 @@
-<div class="row">
+<div>
+    <div class="row filter-section">
     <div class="col-12 col-lg-7">
         <div class="row">
             <div class="col-12 col-lg-3">
@@ -155,6 +156,7 @@
             </div>
         </div>
     </div>
+</div>
 
     <div class="table-responsive table-card mt-2 mb-2">
         {{-- toggle column table --}}
@@ -339,6 +341,16 @@
         </table>
         {{-- {{ $data->links(data: ['scrollTo' => false]) }} --}}
     </div>
+    <style>
+        #lossSeitaiTable.table>:not(caption)>*>* {
+            font-size: 13px !important;
+            padding: 4px 2px 4px 4px;
+            color: var(--tb-table-color-state, var(--tb-table-color-type, var(--tb-table-color)));
+            background-color: var(--tb-table-bg);
+            border-bottom-width: var(--tb-border-width);
+            box-shadow: inset 0 0 0 9999px var(--tb-table-bg-state, var(--tb-table-bg-type, var(--tb-table-accent-bg)));
+        }
+    </style>
 </div>
 
 @script
@@ -348,6 +360,18 @@
         $wire.on('initDataTable', () => {
             initDataTable();
         });
+
+        function calculateTableHeight() {
+            const totalHeight = window.innerHeight;
+
+            const filterSectionTop = document.querySelector('.filter-section')?.getBoundingClientRect().top || 0;
+            const offsetTop = document.querySelector('#lossSeitaiTable')?.getBoundingClientRect().top || 0;
+
+            const paddingTop = document.querySelector('.navbar-header')?.getBoundingClientRect().top || 0;
+            const availableHeight = totalHeight - offsetTop - filterSectionTop - paddingTop + 100;
+
+            return availableHeight;
+        }
 
         // Fungsi untuk menginisialisasi ulang DataTable
         function initDataTable() {
@@ -363,7 +387,6 @@
                 let table = $('#lossSeitaiTable').DataTable();
                 table.clear(); // Bersihkan data tabel
                 table.destroy(); // Hancurkan DataTable
-                // Hindari penggunaan $('#lossSeitaiTable').empty(); di sini
             }
 
             setTimeout(() => {
@@ -373,7 +396,10 @@
                     "searching": true,
                     "responsive": true,
                     "order": defaultOrder,
+                    "multiColumnSort": true,
                     "scrollX": true,
+                    "scrollY": calculateTableHeight() + 'px',
+                    "scrollCollapse": true,
                     "language": {
                         "emptyTable": `
                             <div class="text-center">

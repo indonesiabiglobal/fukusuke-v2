@@ -1,233 +1,245 @@
-<div class="row">
-    <div class="col-12 col-lg-7">
-        <div class="row">
-            <div class="col-12 col-lg-3">
-                <label class="form-label text-muted fw-bold">Filter Tanggal</label>
-            </div>
-            <div class="col-12 col-lg-9 mb-1">
-                <div class="form-group" wire:ignore>
-                    <div class="input-group">
-                        <div class="col-3">
-                            <select class="form-select" style="padding:0.44rem" wire:model.defer="transaksi">
-                                <option value="1">Proses</option>
-                                <option value="2">LPK</option>
-                            </select>
-                        </div>
-                        <div class="col-9">
-                            <div class="form-group">
-                                <div class="input-group">
-                                    <input wire:model.defer="tglMasuk" type="text" class="form-control"
-                                        style="padding:0.44rem" data-provider="flatpickr" data-date-format="d M Y">
-                                    <span class="input-group-text py-0">
-                                        <i class="ri-calendar-event-fill fs-4"></i>
-                                    </span>
+<div>
+    <div class="row filter-section">
+        <div class="col-12 col-lg-7">
+            <div class="row">
+                <div class="col-12 col-lg-3">
+                    <label class="form-label text-muted fw-bold">Filter Tanggal</label>
+                </div>
+                <div class="col-12 col-lg-9 mb-1">
+                    <div class="form-group" wire:ignore>
+                        <div class="input-group">
+                            <div class="col-3">
+                                <select class="form-select" style="padding:0.44rem" wire:model.defer="transaksi">
+                                    <option value="1">Proses</option>
+                                    <option value="2">LPK</option>
+                                </select>
+                            </div>
+                            <div class="col-9">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <input wire:model.defer="tglMasuk" type="text" class="form-control"
+                                            style="padding:0.44rem" data-provider="flatpickr" data-date-format="d M Y">
+                                        <span class="input-group-text py-0">
+                                            <i class="ri-calendar-event-fill fs-4"></i>
+                                        </span>
 
-                                    <input wire:model.defer="tglKeluar" type="text" class="form-control"
-                                        style="padding:0.44rem" data-provider="flatpickr" data-date-format="d M Y">
-                                    <span class="input-group-text py-0">
-                                        <i class="ri-calendar-event-fill fs-4"></i>
-                                    </span>
+                                        <input wire:model.defer="tglKeluar" type="text" class="form-control"
+                                            style="padding:0.44rem" data-provider="flatpickr" data-date-format="d M Y">
+                                        <span class="input-group-text py-0">
+                                            <i class="ri-calendar-event-fill fs-4"></i>
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-12 col-lg-3">
-                <label class="form-label text-muted fw-bold">Nomor LPK</label>
-            </div>
-            <div class="col-12 col-lg-9 mb-1">
-                <div class="input-group">
-                    <input wire:model="lpk_no" class="form-control" style="padding:0.44rem" type="text"
-                        placeholder="000000-000" x-data="{ lpk_no: '', status: true }" x-init="$watch('lpk_no', value => {
-                            if (value.length === 6 && !value.includes('-') && status) {
-                                lpk_no = value + '-';
-                            }
-                            if (value.length < 6) {
-                                status = true;
-                            }
-                            if (value.length === 7) {
-                                status = false;
-                            }
-                            if (value.length > 10) {
-                                lpk_no = value.substring(0, 11);
-                            }
-                        })" x-model="lpk_no"
-                        maxlength="10" />
+                <div class="col-12 col-lg-3">
+                    <label class="form-label text-muted fw-bold">Nomor LPK</label>
                 </div>
-                {{-- <div class="input-group">
+                <div class="col-12 col-lg-9 mb-1">
+                    <div class="input-group">
+                        <input wire:model="lpk_no" class="form-control" style="padding:0.44rem" type="text"
+                            placeholder="000000-000" x-data="{ lpk_no: '', status: true }" x-init="$watch('lpk_no', value => {
+                                if (value.length === 6 && !value.includes('-') && status) {
+                                    lpk_no = value + '-';
+                                }
+                                if (value.length < 6) {
+                                    status = true;
+                                }
+                                if (value.length === 7) {
+                                    status = false;
+                                }
+                                if (value.length > 10) {
+                                    lpk_no = value.substring(0, 11);
+                                }
+                            })" x-model="lpk_no"
+                            maxlength="10" />
+                    </div>
+                    {{-- <div class="input-group">
                     <input wire:model.defer="lpk_no" class="form-control" style="padding:0.44rem" type="text"
                         placeholder="000000-000" />
                 </div> --}}
-            </div>
-            <div class="col-12 col-lg-3">
-                <label class="form-label text-muted fw-bold">Search</label>
-            </div>
-            <div class="col-12 col-lg-9">
-                <div class="input-group">
-                    <input wire:model.defer="searchTerm" class="form-control"style="padding:0.44rem" type="text"
-                        placeholder="search nomor PO atau nama produk" />
+                </div>
+                <div class="col-12 col-lg-3">
+                    <label class="form-label text-muted fw-bold">Search</label>
+                </div>
+                <div class="col-12 col-lg-9">
+                    <div class="input-group">
+                        <input wire:model.defer="searchTerm" class="form-control"style="padding:0.44rem" type="text"
+                            placeholder="search nomor PO atau nama produk" />
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="col-12 col-lg-5">
-        <div class="row">
-            <div class="col-12 col-lg-2">
-                <label for="product" class="form-label text-muted fw-bold">Product</label>
-            </div>
-            <div class="col-12 col-lg-10">
-                <div class="mb-1" wire:ignore>
-                    <select class="form-control" wire:model.defer="idProduct" data-choices data-choices-sorting-false
-                        data-choices-removeItem data-choices-search-field-label data-choices-exact-match>
-                        <option value="">- All -</option>
-                        @foreach ($products as $item)
-                            <option data-custom-properties='{"code": "{{ $item->code }}"}' value="{{ $item->id }}"
-                                @if ($item->id == ($idProduct['value'] ?? null)) selected @endif>{{ $item->name }}
-                        @endforeach
-                    </select>
+        <div class="col-12 col-lg-5">
+            <div class="row">
+                <div class="col-12 col-lg-2">
+                    <label for="product" class="form-label text-muted fw-bold">Product</label>
                 </div>
-            </div>
-            <div class="col-12 col-lg-2">
-                <label for="lpkColor" class="form-label text-muted fw-bold">LPK Color</label>
-            </div>
-            <div class="col-12 col-lg-10">
-                <div class="mb-1" wire:ignore>
-                    <select class="form-control" wire:model.defer="idLPKColor" data-choices data-choices-sorting-false
-                        data-choices-removeItem data-choices-search-field-label data-choices-exact-match>
-                        <option value="">- All -</option>
-                        @foreach ($lpkColors as $item)
-                            <option data-custom-properties='{"code": "{{ $item->code }}"}' value="{{ $item->id }}"
-                                @if ($item->id == ($idLPKColor['value'] ?? null)) selected @endif>{{ $item->name }}
-                        @endforeach
-                    </select>
+                <div class="col-12 col-lg-10">
+                    <div class="mb-1" wire:ignore>
+                        <select class="form-control" wire:model.defer="idProduct" data-choices
+                            data-choices-sorting-false data-choices-removeItem data-choices-search-field-label
+                            data-choices-exact-match>
+                            <option value="">- All -</option>
+                            @foreach ($products as $item)
+                                <option data-custom-properties='{"code": "{{ $item->code }}"}'
+                                    value="{{ $item->id }}" @if ($item->id == ($idProduct['value'] ?? null)) selected @endif>
+                                    {{ $item->name }}
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
-            </div>
-            <div class="col-12 col-lg-2">
-                <label for="buyer" class="form-label text-muted fw-bold">Buyer</label>
-            </div>
-            <div class="col-12 col-lg-10">
-                <div class="mb-1" wire:ignore>
-                    <select class="form-control" wire:model.defer="idBuyer" id="buyer" name="buyer" data-choices
-                        data-choices-sorting-false data-choices-removeItem data-choices-search-field-label>
-                        <option value="">- All -</option>
-                        @foreach ($buyer as $item)
-                            <option data-custom-properties='{"code": "{{ $item->code }}"}' value="{{ $item->id }}"
-                                @if ($item->id == ($idBuyer['value'] ?? null)) selected @endif>{{ $item->name }}
-                        @endforeach
-                    </select>
+                <div class="col-12 col-lg-2">
+                    <label for="lpkColor" class="form-label text-muted fw-bold">LPK Color</label>
                 </div>
-            </div>
-            <div class="col-12 col-lg-2">
-                <label for="status" class="form-label text-muted fw-bold">Status</label>
-            </div>
-            <div class="col-12 col-lg-10">
-                <div class="mb-1" wire:ignore>
-                    <select class="form-control" wire:model.defer="status" id="status" name="status" data-choices
-                        data-choices-sorting-false data-choices-removeItem data-choices-search-field-label>
-                        <option value="">- All -</option>
-                        <option value="0" @if (($status['value'] ?? '') == 0) selected @endif>Un-Print</option>
-                        <option value="1" @if (($status['value'] ?? '') == 1) selected @endif>Printed</option>
-                        <option value="2" @if (($status['value'] ?? '') == 2) selected @endif>Re-Print</option>
-                        <option value="3" @if (($status['value'] ?? '') == 3) selected @endif>Belum Produksi</option>
-                        <option value="4" @if (($status['value'] ?? '') == 4) selected @endif>Sudah Produksi</option>
-                    </select>
+                <div class="col-12 col-lg-10">
+                    <div class="mb-1" wire:ignore>
+                        <select class="form-control" wire:model.defer="idLPKColor" data-choices
+                            data-choices-sorting-false data-choices-removeItem data-choices-search-field-label
+                            data-choices-exact-match>
+                            <option value="">- All -</option>
+                            @foreach ($lpkColors as $item)
+                                <option data-custom-properties='{"code": "{{ $item->code }}"}'
+                                    value="{{ $item->id }}" @if ($item->id == ($idLPKColor['value'] ?? null)) selected @endif>
+                                    {{ $item->name }}
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-2">
+                    <label for="buyer" class="form-label text-muted fw-bold">Buyer</label>
+                </div>
+                <div class="col-12 col-lg-10">
+                    <div class="mb-1" wire:ignore>
+                        <select class="form-control" wire:model.defer="idBuyer" id="buyer" name="buyer"
+                            data-choices data-choices-sorting-false data-choices-removeItem
+                            data-choices-search-field-label>
+                            <option value="">- All -</option>
+                            @foreach ($buyer as $item)
+                                <option data-custom-properties='{"code": "{{ $item->code }}"}'
+                                    value="{{ $item->id }}" @if ($item->id == ($idBuyer['value'] ?? null)) selected @endif>
+                                    {{ $item->name }}
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-2">
+                    <label for="status" class="form-label text-muted fw-bold">Status</label>
+                </div>
+                <div class="col-12 col-lg-10">
+                    <div class="mb-1" wire:ignore>
+                        <select class="form-control" wire:model.defer="status" id="status" name="status"
+                            data-choices data-choices-sorting-false data-choices-removeItem
+                            data-choices-search-field-label>
+                            <option value="">- All -</option>
+                            <option value="0" @if (($status['value'] ?? '') == 0) selected @endif>Un-Print</option>
+                            <option value="1" @if (($status['value'] ?? '') == 1) selected @endif>Printed</option>
+                            <option value="2" @if (($status['value'] ?? '') == 2) selected @endif>Re-Print</option>
+                            <option value="3" @if (($status['value'] ?? '') == 3) selected @endif>Belum Produksi
+                            </option>
+                            <option value="4" @if (($status['value'] ?? '') == 4) selected @endif>Sudah Produksi
+                            </option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="col-lg-12 mt-2">
-        <div class="row">
-            <div class="col-12 col-lg-5">
-                <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1"
-                    wire:loading.attr="disabled">
-                    <span wire:loading.remove wire:target="search">
-                        <i class="ri-search-line"></i> Filter
-                    </span>
-                    <div wire:loading wire:target="search">
-                        <span class="d-flex align-items-center">
-                            <span class="spinner-border flex-shrink-0" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </span>
-                            <span class="flex-grow-1 ms-1">
-                                Loading...
-                            </span>
+        <div class="col-lg-12 mt-2">
+            <div class="row">
+                <div class="col-12 col-lg-5">
+                    <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1"
+                        wire:loading.attr="disabled">
+                        <span wire:loading.remove wire:target="search">
+                            <i class="ri-search-line"></i> Filter
                         </span>
-                    </div>
-                </button>
+                        <div wire:loading wire:target="search">
+                            <span class="d-flex align-items-center">
+                                <span class="spinner-border flex-shrink-0" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </span>
+                                <span class="flex-grow-1 ms-1">
+                                    Loading...
+                                </span>
+                            </span>
+                        </div>
+                    </button>
 
-                <button type="button" class="btn btn-success w-lg p-1" onclick="window.location.href='/add-lpk'">
-                    <i class="ri-add-line"> </i> Add
-                </button>
-            </div>
-            <div class="col-12 col-lg-7 d-none d-sm-block">
-                <input type="file" id="fileInput" wire:model="file" style="display: none;">
-                <button class="btn btn-success w-lg p-1" type="button"
-                    onclick="document.getElementById('fileInput').click()" wire:loading.attr="disabled">
-                    <span wire:loading.remove wire:target="file">
-                        <i class="ri-upload-2-fill"> </i> Upload Excel
-                    </span>
-                    <div wire:loading wire:target="file">
-                        <span class="d-flex align-items-center">
-                            <span class="spinner-border flex-shrink-0" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </span>
-                            <span class="flex-grow-1 ms-1">
-                                Loading...
-                            </span>
+                    <button type="button" class="btn btn-success w-lg p-1"
+                        onclick="window.location.href='/add-lpk'">
+                        <i class="ri-add-line"> </i> Add
+                    </button>
+                </div>
+                <div class="col-12 col-lg-7 d-none d-sm-block">
+                    <input type="file" id="fileInput" wire:model="file" style="display: none;">
+                    <button class="btn btn-success w-lg p-1" type="button"
+                        onclick="document.getElementById('fileInput').click()" wire:loading.attr="disabled">
+                        <span wire:loading.remove wire:target="file">
+                            <i class="ri-upload-2-fill"> </i> Upload Excel
                         </span>
-                    </div>
-                </button>
+                        <div wire:loading wire:target="file">
+                            <span class="d-flex align-items-center">
+                                <span class="spinner-border flex-shrink-0" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </span>
+                                <span class="flex-grow-1 ms-1">
+                                    Loading...
+                                </span>
+                            </span>
+                        </div>
+                    </button>
 
-                <button class="btn btn-primary w-lg p-1" wire:click="download" type="button"
-                    wire:loading.attr="disabled">
-                    <span wire:loading.remove wire:target="download">
-                        <i class="ri-download-cloud-2-line"> </i> Download Template
-                    </span>
-                    <div wire:loading wire:target="download">
-                        <span class="d-flex align-items-center">
-                            <span class="spinner-border flex-shrink-0" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </span>
-                            <span class="flex-grow-1 ms-1">
-                                Loading...
-                            </span>
+                    <button class="btn btn-primary w-lg p-1" wire:click="download" type="button"
+                        wire:loading.attr="disabled">
+                        <span wire:loading.remove wire:target="download">
+                            <i class="ri-download-cloud-2-line"> </i> Download Template
                         </span>
-                    </div>
-                </button>
-                <button class="btn btn-info w-lg p-1" wire:click="print" type="button"
-                    wire:loading.attr="disabled">
-                    <span wire:loading.remove wire:target="print">
-                        <i class="ri-printer-line"> </i> Export
-                    </span>
-                    <div wire:loading wire:target="print">
-                        <span class="d-flex align-items-center">
-                            <span class="spinner-border flex-shrink-0" role="status">
-                                <span class="visually-hidden">Loading...</span>
+                        <div wire:loading wire:target="download">
+                            <span class="d-flex align-items-center">
+                                <span class="spinner-border flex-shrink-0" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </span>
+                                <span class="flex-grow-1 ms-1">
+                                    Loading...
+                                </span>
                             </span>
-                            <span class="flex-grow-1 ms-1">
-                                Loading...
-                            </span>
+                        </div>
+                    </button>
+                    <button class="btn btn-info w-lg p-1" wire:click="print" type="button"
+                        wire:loading.attr="disabled">
+                        <span wire:loading.remove wire:target="print">
+                            <i class="ri-printer-line"> </i> Export
                         </span>
-                    </div>
-                </button>
-                {{-- cetak lpk --}}
-                <button class="btn btn-info w-lg p-1" wire:click="printLPK" type="button"
-                    wire:loading.attr="disabled">
-                    <span wire:loading.remove wire:target="printLPK">
-                        <i class="ri-printer-line"> </i> Cetak LPK
-                    </span>
-                    <div wire:loading wire:target="printLPK">
-                        <span class="d-flex align-items-center">
-                            <span class="spinner-border flex-shrink-0" role="status">
-                                <span class="visually-hidden">Loading...</span>
+                        <div wire:loading wire:target="print">
+                            <span class="d-flex align-items-center">
+                                <span class="spinner-border flex-shrink-0" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </span>
+                                <span class="flex-grow-1 ms-1">
+                                    Loading...
+                                </span>
                             </span>
-                            <span class="flex-grow-1 ms-1">
-                                Loading...
-                            </span>
+                        </div>
+                    </button>
+                    {{-- cetak lpk --}}
+                    <button class="btn btn-info w-lg p-1" wire:click="printLPK" type="button"
+                        wire:loading.attr="disabled">
+                        <span wire:loading.remove wire:target="printLPK">
+                            <i class="ri-printer-line"> </i> Cetak LPK
                         </span>
-                    </div>
-                </button>
+                        <div wire:loading wire:target="printLPK">
+                            <span class="d-flex align-items-center">
+                                <span class="spinner-border flex-shrink-0" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </span>
+                                <span class="flex-grow-1 ms-1">
+                                    Loading...
+                                </span>
+                            </span>
+                        </div>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -385,39 +397,16 @@
                     <th>Update By</th>
                     <th>Updated</th>
                 </tr>
-                {{-- <tr class="filter-row">
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                </tr> --}}
             </thead>
             <tbody class="list form-check-all">
                 @forelse ($data as $item)
                     <tr>
-                        <th scope="row">
-                            <div class="form-check">
+                        <td scope="row">
+                            <div class="form-check text-center">
                                 <input class="form-check-input fs-15 checkbox-big checkListLPK" type="checkbox"
                                     wire:model="checkListLPK" value="{{ $item->id }}">
                             </div>
-                        </th>
+                        </td>
                         <td>
                             <a href="/edit-lpk?orderId={{ $item->id }}"
                                 class="link-success fs-15 p-1 bg-primary rounded">
@@ -448,17 +437,9 @@
                             {{ \Carbon\Carbon::parse($item->updatedt)->format('d M Y') }}</td>
                     </tr>
                 @empty
-                    {{-- <tr>
-                        <td colspan="12" class="text-center">
-                            <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
-                                colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
-                            <h5 class="mt-2">Sorry! No Result Found</h5>
-                        </td>
-                    </tr> --}}
                 @endforelse
             </tbody>
         </table>
-        {{-- {{ $data->links(data: ['scrollTo' => false]) }} --}}
     </div>
 
     <style>
@@ -473,6 +454,15 @@
             background-color: #0d6efd;
             /* biru bootstrap */
             border-color: #0d6efd;
+        }
+
+        #LPKEntryTable.table>:not(caption)>*>* {
+            font-size: 13px !important;
+            padding: 4px 2px 4px 4px;
+            color: var(--tb-table-color-state, var(--tb-table-color-type, var(--tb-table-color)));
+            background-color: var(--tb-table-bg);
+            border-bottom-width: var(--tb-border-width);
+            box-shadow: inset 0 0 0 9999px var(--tb-table-bg-state, var(--tb-table-bg-type, var(--tb-table-accent-bg)));
         }
     </style>
 </div>
@@ -493,9 +483,18 @@
             initDataTable();
         });
 
+        function calculateTableHeight() {
+            const totalHeight = window.innerHeight;
+
+            const offsetTop = document.querySelector('#LPKEntryTable')?.getBoundingClientRect().top || 0;
+            const filterSectionTop = document.querySelector('.filter-section')?.getBoundingClientRect().top || 0;
+            return totalHeight - offsetTop - filterSectionTop;
+        }
+
         // Fungsi untuk menginisialisasi ulang DataTable
         function initDataTable() {
             const savedOrder = $wire.get('sortingTable');
+            const savedEntriesPerPage = $wire.get('entriesPerPage');
 
             let defaultOrder = [
                 [1, "asc"]
@@ -503,26 +502,32 @@
             if (savedOrder) {
                 defaultOrder = savedOrder;
             }
+
+            let entriesPerPage = 10;
+            if (savedEntriesPerPage) {
+                entriesPerPage = savedEntriesPerPage;
+            }
             // Hapus DataTable jika sudah ada
             if ($.fn.dataTable.isDataTable('#LPKEntryTable')) {
                 let table = $('#LPKEntryTable').DataTable();
                 table.clear(); // Bersihkan data tabel
                 table.destroy(); // Hancurkan DataTable
-                // Hindari penggunaan $('#LPKEntryTable').empty(); di sini
             }
 
             setTimeout(() => {
                 // Inisialisasi ulang DataTable
                 let table = $('#LPKEntryTable').DataTable({
-                    "pageLength": 10,
+                    "pageLength": entriesPerPage,
                     "searching": true,
                     "responsive": true,
                     "scrollX": true,
+                    "scrollY": calculateTableHeight() + 'px',
                     "order": defaultOrder,
                     "orderCellsTop": true,
+                    "scrollCollapse": true,
                     "columnDefs": [{
                         "orderable": false,
-                        "targets": 0
+                        "targets": [0,1]
                     }],
                     "language": {
                         "emptyTable": `
@@ -533,42 +538,6 @@
                             </div>
                         `
                     },
-                    // Filter pada kolom datatable
-                    // initComplete: function() {
-                    //     this.api()
-                    //         .columns()
-                    //         .every(function() {
-                    //             let column = this;
-
-                    //             if (column.index() !== 3) return;
-
-                    //             // Create select element
-                    //             let select = document.createElement('select');
-                    //             select.style.width = '100%';
-                    //             select.add(new Option('-- Semua --', ''));
-
-                    //             // Masukkan select ke baris filter (baris ke-2 di thead)
-                    //             $('.filter-row th').eq(column.index()).empty().append(select);
-
-                    //             // Apply listener for user change in value
-                    //             select.addEventListener('change', function() {
-                    //                 column
-                    //                     .search(select.value, {
-                    //                         exact: true
-                    //                     })
-                    //                     .draw();
-                    //             });
-
-                    //             // Add list of options
-                    //             column
-                    //                 .data()
-                    //                 .unique()
-                    //                 .sort()
-                    //                 .each(function(d, j) {
-                    //                     select.add(new Option(d));
-                    //                 });
-                    //         });
-                    // }
                 });
 
                 // Listen to sort event
@@ -578,6 +547,12 @@
                         order = defaultOrder;
                     }
                     $wire.call('updateSortingTable', order);
+                });
+
+                // Listen to page length change
+                table.on('length.dt', function() {
+                    let entriesPerPage = table.page.len();
+                    $wire.call('updateEntriesPerPage', entriesPerPage);
                 });
 
                 // default column visibility

@@ -1,4 +1,5 @@
-<div class="row">
+<div>
+    <div class="row filter-section">
     <div class="col-lg-12 mt-2">
         <div class="row">
 
@@ -325,7 +326,7 @@
             </div>
         </div>
     </div>
-
+</div>
     <div class="table-responsive table-card mt-3 mb-1">
         <table class="table align-middle" id="customerTable" style="width:100%">
             <thead class="table-light">
@@ -379,6 +380,17 @@
         </table>
         {{-- {{ $data->links() }} --}}
     </div>
+
+    <style>
+        #customerTable.table>:not(caption)>*>* {
+            font-size: 13px !important;
+            padding: 4px 2px 4px 4px;
+            color: var(--tb-table-color-state, var(--tb-table-color-type, var(--tb-table-color)));
+            background-color: var(--tb-table-bg);
+            border-bottom-width: var(--tb-border-width);
+            box-shadow: inset 0 0 0 9999px var(--tb-table-bg-state, var(--tb-table-bg-type, var(--tb-table-accent-bg)));
+        }
+    </style>
 </div>
 
 @script
@@ -418,10 +430,22 @@
             initDataTable('customerTable');
         });
 
+        function calculateTableHeight() {
+            const totalHeight = window.innerHeight;
+
+            const filterSectionTop = document.querySelector('.filter-section')?.getBoundingClientRect().top || 0;
+            const offsetTop = document.querySelector('#customerTable')?.getBoundingClientRect().top || 0;
+
+            const paddingTop = document.querySelector('.navbar-header')?.getBoundingClientRect().top || 0;
+            const availableHeight = totalHeight - offsetTop - filterSectionTop - paddingTop;
+
+            return availableHeight;
+        }
+
         // Fungsi untuk menginisialisasi ulang DataTable
         function initDataTable(id) {
             const savedOrder = $wire.get('sortingTable');
-            
+
             let defaultOrder = [
                 [1, "asc"]
             ];
@@ -433,7 +457,6 @@
                 let table = $('#' + id).DataTable();
                 table.clear(); // Bersihkan data tabel
                 table.destroy(); // Hancurkan DataTable
-                // Hindari penggunaan $('#' + id).empty(); di sini
             }
 
             setTimeout(() => {
@@ -444,6 +467,9 @@
                     "responsive": true,
                     "scrollX": true,
                     "order": defaultOrder,
+                    "scrollY": calculateTableHeight() + 'px',
+                    "scrollCollapse": true,
+                    "scrollX": true,
                     "language": {
                         "emptyTable": `
                             <div class="text-center">

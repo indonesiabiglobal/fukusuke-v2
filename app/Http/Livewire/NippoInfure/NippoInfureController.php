@@ -89,7 +89,6 @@ class NippoInfureController extends Component
 
     protected function shouldForgetSession()
     {
-        // Periksa jika URL saat ini bukan 'nippo-infure/edit-infure' atau 'nippo-infure/add-infure'
         $previousUrl = url()->previous();
         $previousUrl = last(explode('/', $previousUrl));
         if (!(Str::contains($previousUrl, 'edit-nippo') || Str::contains($previousUrl, 'add-nippo') || Str::contains($previousUrl,'nippo-infure'))) {

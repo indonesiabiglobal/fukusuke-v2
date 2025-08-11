@@ -1,42 +1,43 @@
-<div class="row filter-section">
-    <div class="col-12 col-lg-7">
-        <div class="row">
-            <div class="col-12 col-lg-3">
-                <label class="form-label text-muted fw-bold">Filter Tanggal</label>
-            </div>
-            <div class="col-12 col-lg-9 mb-1">
-                <div class="form-group">
-                    <div class="input-group">
-                        <div class="col-3">
-                            <select class="form-select" style="padding:0.44rem" wire:model.defer="transaksi">
-                                <option value="1">Proses</option>
-                                <option value="2">Produksi</option>
-                            </select>
-                        </div>
-                        <div class="col-9">
-                            <div class="form-group">
-                                <div class="input-group">
-                                    <input wire:model.defer="tglMasuk" type="text" class="form-control"
-                                        style="padding:0.44rem" data-provider="flatpickr" data-date-format="d M Y">
-                                    <span class="input-group-text py-0">
-                                        <i class="ri-calendar-event-fill fs-4"></i>
-                                    </span>
+<div>
+    <div class="row filter-section">
+        <div class="col-12 col-lg-7">
+            <div class="row">
+                <div class="col-12 col-lg-3">
+                    <label class="form-label text-muted fw-bold">Filter Tanggal</label>
+                </div>
+                <div class="col-12 col-lg-9 mb-1">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="col-3">
+                                <select class="form-select" style="padding:0.44rem" wire:model.defer="transaksi">
+                                    <option value="1">Proses</option>
+                                    <option value="2">Produksi</option>
+                                </select>
+                            </div>
+                            <div class="col-9">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <input wire:model.defer="tglMasuk" type="text" class="form-control"
+                                            style="padding:0.44rem" data-provider="flatpickr" data-date-format="d M Y">
+                                        <span class="input-group-text py-0">
+                                            <i class="ri-calendar-event-fill fs-4"></i>
+                                        </span>
 
-                                    <input wire:model.defer="tglKeluar" type="text" class="form-control"
-                                        style="padding:0.44rem" data-provider="flatpickr" data-date-format="d M Y">
-                                    <span class="input-group-text py-0">
-                                        <i class="ri-calendar-event-fill fs-4"></i>
-                                    </span>
+                                        <input wire:model.defer="tglKeluar" type="text" class="form-control"
+                                            style="padding:0.44rem" data-provider="flatpickr" data-date-format="d M Y">
+                                        <span class="input-group-text py-0">
+                                            <i class="ri-calendar-event-fill fs-4"></i>
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-12 col-lg-3">
-                <label class="form-label text-muted fw-bold">Nomor LPK</label>
-            </div>
-            <div class="col-12 col-lg-9 mb-1" x-data="{
+                <div class="col-12 col-lg-3">
+                    <label class="form-label text-muted fw-bold">Nomor LPK</label>
+                </div>
+                <div class="col-12 col-lg-9 mb-1" x-data="{
                     lpk_no_local: @entangle('lpk_no'),
                     status: true,
                     formatValue(value) {
@@ -52,118 +53,121 @@
                     <input class="form-control" style="padding:0.44rem" type="text" placeholder="000000-000"
                         x-model="lpk_no_local" x-on:input="lpk_no_local = formatValue(lpk_no_local)" maxlength="10" />
                 </div>
-            <div class="col-12 col-lg-3">
-                <label class="form-label text-muted fw-bold">Search</label>
-            </div>
-            <div class="col-12 col-lg-9">
-                <div class="input-group">
-                    <input wire:model.defer="searchTerm" class="form-control"style="padding:0.44rem" type="text"
-                        placeholder="Search no produksi, no palet, no lot, dll" />
+                <div class="col-12 col-lg-3">
+                    <label class="form-label text-muted fw-bold">Search</label>
                 </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-12 col-lg-5">
-        <div class="row">
-            <div class="col-12 col-lg-2">
-                <label for="product" class="form-label text-muted fw-bold">Product</label>
-            </div>
-            <div class="col-12 col-lg-10">
-                <div class="mb-1" wire:ignore>
-                    <select class="form-control" wire:model.defer="idProduct" data-choices data-choices-sorting-true
-                        data-choices-removeItem data-choices-sorter data-choices-search-field-label>
-                        <option value="">- All -</option>
-                        @foreach ($products as $item)
-                            <option data-custom-properties='{"code": "{{ $item->code }}"}' value="{{ $item->id }}"
-                                @if ($item->id == ($idProduct['value'] ?? null)) selected @endif>{{ $item->name }},
-                                {{ $item->code }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-            <div class="col-12 col-lg-2">
-                <label for="buyer" class="form-label text-muted fw-bold">Mesin</label>
-            </div>
-            <div class="col-12 col-lg-10">
-                <div class="mb-1" wire:ignore>
-                    <select class="form-control" wire:model.defer="machineId" data-choices data-choices-sorting-true
-                        data-choices-removeItem data-choices-sorter data-choices-search-field-label>
-                        <option value="">- All -</option>
-                        @foreach ($machine as $item)
-                            <option data-custom-properties='{"code": "{{ $item->machineno }}"}'
-                                value="{{ $item->id }}" @if ($item->id == ($machineId['value'] ?? null)) selected @endif>
-                                {{ $item->machineno }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-            <div class="col-12 col-lg-2">
-                <label for="status" class="form-label text-muted fw-bold">Status</label>
-            </div>
-            <div class="col-12 col-lg-10">
-                <div class="mb-1" wire:ignore>
-                    <select class="form-control" wire:model.defer="status" data-choices data-choices-sorting-false
-                        data-choices-removeItem data-choices-search-field-label>
-                        <option value="">- All -</option>
-                        <option value="0">Open</option>
-                        <option value="1" @if (($status['value'] ?? null) == 1) selected @endif>Seitai</option>
-                        <option value="2" @if (($status['value'] ?? null) == 2) selected @endif>Kenpin</option>
-                    </select>
-                </div>
-            </div>
-            <div class="col-12 col-lg-2">
-                <label class="form-label text-muted fw-bold">Nomor Gentan</label>
-            </div>
-            <div class="col-12 col-lg-10">
-                <div class="input-group">
-                    <input wire:model.defer="gentan_no" class="form-control"style="padding:0.44rem" type="text"
-                        placeholder="Nomor Gentan" />
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-12 mt-2">
-        <div class="row">
-            <div class="col-12 col-lg-10">
-                <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1"
-                    wire:loading.attr="disabled">
-                    <span wire:loading.remove wire:target="search">
-                        <i class="ri-search-line"></i> Filter
-                    </span>
-                    <div wire:loading wire:target="search">
-                        <span class="d-flex align-items-center">
-                            <span class="spinner-border flex-shrink-0" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </span>
-                            <span class="flex-grow-1 ms-1">
-                                Loading...
-                            </span>
-                        </span>
+                <div class="col-12 col-lg-9">
+                    <div class="input-group">
+                        <input wire:model.defer="searchTerm" class="form-control"style="padding:0.44rem" type="text"
+                            placeholder="Search no produksi, no palet, no lot, dll" />
                     </div>
-                </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-lg-5">
+            <div class="row">
+                <div class="col-12 col-lg-2">
+                    <label for="product" class="form-label text-muted fw-bold">Product</label>
+                </div>
+                <div class="col-12 col-lg-10">
+                    <div class="mb-1" wire:ignore>
+                        <select class="form-control" wire:model.defer="idProduct" data-choices data-choices-sorting-true
+                            data-choices-removeItem data-choices-sorter data-choices-search-field-label>
+                            <option value="">- All -</option>
+                            @foreach ($products as $item)
+                                <option data-custom-properties='{"code": "{{ $item->code }}"}'
+                                    value="{{ $item->id }}" @if ($item->id == ($idProduct['value'] ?? null)) selected @endif>
+                                    {{ $item->name }},
+                                    {{ $item->code }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-2">
+                    <label for="buyer" class="form-label text-muted fw-bold">Mesin</label>
+                </div>
+                <div class="col-12 col-lg-10">
+                    <div class="mb-1" wire:ignore>
+                        <select class="form-control" wire:model.defer="machineId" data-choices data-choices-sorting-true
+                            data-choices-removeItem data-choices-sorter data-choices-search-field-label>
+                            <option value="">- All -</option>
+                            @foreach ($machine as $item)
+                                <option data-custom-properties='{"code": "{{ $item->machineno }}"}'
+                                    value="{{ $item->id }}" @if ($item->id == ($machineId['value'] ?? null)) selected @endif>
+                                    {{ $item->machineno }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-2">
+                    <label for="status" class="form-label text-muted fw-bold">Status</label>
+                </div>
+                <div class="col-12 col-lg-10">
+                    <div class="mb-1" wire:ignore>
+                        <select class="form-control" wire:model.defer="status" data-choices data-choices-sorting-false
+                            data-choices-removeItem data-choices-search-field-label>
+                            <option value="">- All -</option>
+                            <option value="0">Open</option>
+                            <option value="1" @if (($status['value'] ?? null) == 1) selected @endif>Seitai</option>
+                            <option value="2" @if (($status['value'] ?? null) == 2) selected @endif>Kenpin</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-2">
+                    <label class="form-label text-muted fw-bold">Nomor Gentan</label>
+                </div>
+                <div class="col-12 col-lg-10">
+                    <div class="input-group">
+                        <input wire:model.defer="gentan_no" class="form-control"style="padding:0.44rem" type="text"
+                            placeholder="Nomor Gentan" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12 mt-2">
+            <div class="row">
+                <div class="col-12 col-lg-10">
+                    <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1"
+                        wire:loading.attr="disabled">
+                        <span wire:loading.remove wire:target="search">
+                            <i class="ri-search-line"></i> Filter
+                        </span>
+                        <div wire:loading wire:target="search">
+                            <span class="d-flex align-items-center">
+                                <span class="spinner-border flex-shrink-0" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </span>
+                                <span class="flex-grow-1 ms-1">
+                                    Loading...
+                                </span>
+                            </span>
+                        </div>
+                    </button>
 
-                <button type="button" class="btn btn-success w-lg p-1" onclick="window.location.href='/add-seitai?lpk_no={{ $lpk_no }}'">
-                    <i class="ri-add-line"> </i> Add
-                </button>
-            </div>
-            <div class="col-12 col-lg-2">
-                <button class="btn btn-info w-lg p-1" wire:click="export" type="button"
-                    wire:loading.attr="disabled">
-                    <span wire:loading.remove wire:target="export">
-                        <i class="ri-printer-line"> </i> Print
-                    </span>
-                    <div wire:loading wire:target="export">
-                        <span class="d-flex align-items-center">
-                            <span class="spinner-border flex-shrink-0" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </span>
-                            <span class="flex-grow-1 ms-1">
-                                Loading...
-                            </span>
+                    <button type="button" class="btn btn-success w-lg p-1"
+                        onclick="window.location.href='/add-seitai?lpk_no={{ $lpk_no }}'">
+                        <i class="ri-add-line"> </i> Add
+                    </button>
+                </div>
+                <div class="col-12 col-lg-2">
+                    <button class="btn btn-info w-lg p-1" wire:click="export" type="button"
+                        wire:loading.attr="disabled">
+                        <span wire:loading.remove wire:target="export">
+                            <i class="ri-printer-line"> </i> Print
                         </span>
-                    </div>
-                </button>
+                        <div wire:loading wire:target="export">
+                            <span class="d-flex align-items-center">
+                                <span class="spinner-border flex-shrink-0" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </span>
+                                <span class="flex-grow-1 ms-1">
+                                    Loading...
+                                </span>
+                            </span>
+                        </div>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -327,7 +331,8 @@
                             </a>
                         </td>
                         <td>{{ $item->lpk_no }}</td>
-                        <td data-order="{{ $item->lpk_date }}">{{ \Carbon\Carbon::parse($item->lpk_date)->format('d M Y') }}</td>
+                        <td data-order="{{ $item->lpk_date }}">
+                            {{ \Carbon\Carbon::parse($item->lpk_date)->format('d M Y') }}</td>
                         <td>{{ number_format($item->qty_lpk, 0, ',', ',') }}</td>
                         <td>{{ number_format($item->qty_produksi, 0, ',', ',') }}</td>
                         <td>{{ number_format($item->selisih) }}</td>
@@ -336,21 +341,34 @@
                         <td>{{ $item->product_name }}</td>
                         <td>{{ $item->code }}</td>
                         <td>{{ $item->machineno }}</td>
-                        <td data-order="{{ $item->production_date }}">{{ \Carbon\Carbon::parse($item->production_date)->format('d M Y') }}</td>
-                        <td data-order="{{ $item->created_on }}">{{ \Carbon\Carbon::parse($item->created_on)->format('d M Y') }}</td>
+                        <td data-order="{{ $item->production_date }}">
+                            {{ \Carbon\Carbon::parse($item->production_date)->format('d M Y') }}</td>
+                        <td data-order="{{ $item->created_on }}">
+                            {{ \Carbon\Carbon::parse($item->created_on)->format('d M Y') }}</td>
                         <td>{{ $item->work_hour }}</td>
                         <td>{{ $item->work_shift }}</td>
                         <td>{{ $item->nomor_palet }}</td>
                         <td>{{ $item->nomor_lot }}</td>
                         <td>{{ $item->seq_no }}</td>
                         <td>{{ $item->updated_by }}</td>
-                        <td data-order="{{ $item->updated_on }}">{{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y H:i') }}</td>
+                        <td data-order="{{ $item->updated_on }}">
+                            {{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y H:i') }}</td>
                     </tr>
                 @empty
                 @endforelse
             </tbody>
         </table>
     </div>
+    <style>
+        #seitaiTable.table>:not(caption)>*>* {
+            font-size: 13px !important;
+            padding: 4px 2px 4px 4px;
+            color: var(--tb-table-color-state, var(--tb-table-color-type, var(--tb-table-color)));
+            background-color: var(--tb-table-bg);
+            border-bottom-width: var(--tb-border-width);
+            box-shadow: inset 0 0 0 9999px var(--tb-table-bg-state, var(--tb-table-bg-type, var(--tb-table-accent-bg)));
+        }
+    </style>
 </div>
 
 @script

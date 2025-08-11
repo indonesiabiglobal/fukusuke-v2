@@ -16,6 +16,7 @@ use Livewire\WithPagination;
 use Maatwebsite\Excel\Facades\Excel;
 use Livewire\WithFileUploads;
 use Livewire\WithoutUrlPagination;
+use Illuminate\Support\Str;
 
 class LpkEntryController extends Component
 {
@@ -24,9 +25,9 @@ class LpkEntryController extends Component
     public $products;
     public $lpkColors;
     public $buyer;
-    #[Session('tglMasuk')]
+    #[Session]
     public $tglMasuk;
-    #[Session('tglKeluar')]
+    #[Session]
     public $tglKeluar;
     #[Session]
     public $searchTerm;
@@ -43,7 +44,8 @@ class LpkEntryController extends Component
     #[Session]
     public $idLPKColor;
     public $checkListLPK = [];
-    public $paginate = 10;
+    #[Session]
+    public $entriesPerPage = 10;
     #[Session]
     public $sortingTable;
 
@@ -52,15 +54,22 @@ class LpkEntryController extends Component
 
     public function mount()
     {
+        $this->shouldForgetSession();
         $this->products = MsProduct::get();
         $this->lpkColors = DB::table('mswarnalpk')->select('id', 'name', 'code')->get();
         $this->buyer = MsBuyer::get();
 
-        // mengambil data dari session terlebih dahulu jika ada
-        $this->tglMasuk = session('tglMasuk', Carbon::now()->startOfDay()->format('d M Y'));
-        $this->tglKeluar = session('tglKeluar', Carbon::now()->endOfDay()->format('d M Y'));
+        if (empty($this->tglMasuk)) {
+            $this->tglMasuk = Carbon::now()->startOfDay()->format('d M Y');
+        }
+        if (empty($this->tglKeluar)) {
+            $this->tglKeluar = Carbon::now()->endOfDay()->format('d M Y');
+        }
         if (empty($this->sortingTable)) {
             $this->sortingTable = [[2, 'asc']];
+        }
+        if (empty($this->entriesPerPage)) {
+            $this->entriesPerPage = 10;
         }
     }
 
@@ -68,6 +77,21 @@ class LpkEntryController extends Component
     {
         $this->sortingTable = $value;
         $this->skipRender();
+    }
+
+    public function updateEntriesPerPage($value)
+    {
+        $this->entriesPerPage = $value;
+        $this->skipRender();
+    }
+
+    protected function shouldForgetSession()
+    {
+        $previousUrl = url()->previous();
+        $previousUrl = last(explode('/', $previousUrl));
+        if (!(Str::contains($previousUrl, 'add-lpk') || Str::contains($previousUrl, 'edit-lpk') || Str::contains($previousUrl,'lpk-entry'))) {
+            $this->reset('tglMasuk', 'tglKeluar', 'searchTerm', 'idProduct', 'idBuyer', 'status', 'transaksi', 'lpk_no', 'sortingTable', 'entriesPerPage');
+        }
     }
 
     public function search()

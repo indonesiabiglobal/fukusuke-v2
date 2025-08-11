@@ -1,4 +1,5 @@
-<div class="row">
+<div>
+    <div class="row filter-section">
     <div class="col-lg-12 mt-2">
         <div class="row">
             <div class="col-12 col-lg-6">
@@ -327,7 +328,7 @@
                     </div>
                 </div>
             </div>
-            
+
             {{-- toggle column table --}}
             <div class="col-12 col-lg-6">
                 <div class="col text-end dropdown">
@@ -395,65 +396,76 @@
             </div>
         </div>
     </div>
-    <div class="table-responsive table-card mt-3 mb-1">
-        <table class="table align-middle table-nowrap" id="layerTable" style="width:100%">
-            <thead class="table-light">
+</div>
+<div class="table-responsive table-card mt-3 mb-1">
+    <table class="table align-middle table-nowrap" id="layerTable" style="width:100%">
+        <thead class="table-light">
+            <tr>
+                <th>Action</th>
+                <th>Klasifikasi</th>
+                <th>Nama Layer</th>
+                <th>Code</th>
+                <th>Panjang</th>
+                <th>Lebar</th>
+                <th>Tinggi</th>
+                <th>Status</th>
+                <th>Update_By</th>
+                <th>Updated</th>
+            </tr>
+        </thead>
+        <tbody class="list form-check-all">
+            @forelse ($result as $item)
                 <tr>
-                    <th>Action</th>
-                    <th>Klasifikasi</th>
-                    <th>Nama Layer</th>
-                    <th>Code</th>
-                    <th>Panjang</th>
-                    <th>Lebar</th>
-                    <th>Tinggi</th>
-                    <th>Status</th>
-                    <th>Update_By</th>
-                    <th>Updated</th>
+                    <td>
+                        <button type="button" class="btn fs-15 p-1 bg-primary rounded btn-edit"
+                            data-edit-id="{{ $item->id }}" wire:click="edit({{ $item->id }})">
+                            <i class="ri-edit-box-line text-white"></i>
+                        </button>
+                        <button {{ $item->status == 0 ? 'hidden' : '' }} type="button"
+                            class="btn fs-15 p-1 bg-danger rounded removeBuyerModal btn-delete"
+                            data-delete-id="{{ $item->id }}" wire:click="delete({{ $item->id }})">
+                            <i class="ri-delete-bin-line text-white"></i>
+                        </button>
+                    </td>
+                    <td>{{ $item->box_class == 1 ? 'Khusus' : 'Standar' }}</td>
+                    <td>{{ $item->name }}</td>
+                    <td>{{ $item->code }}</td>
+                    <td>{{ number_format($item->panjang) }}</td>
+                    <td>{{ number_format($item->lebar) }}</td>
+                    <td>{{ number_format($item->tinggi) }}</td>
+                    <td>
+                        {!! $item->status == 1
+                            ? '<span class="badge text-success bg-success-subtle">Active</span>'
+                            : '<span class="badge text-bg-danger">Non Active</span>' !!}
+                    </td>
+                    <td>{{ $item->updated_by }}</td>
+                    <td>{{ \Carbon\Carbon::parse($item->updated_on)->format('d-M-Y H:i:s') }}</td>
                 </tr>
-            </thead>
-            <tbody class="list form-check-all">
-                @forelse ($result as $item)
-                    <tr>
-                        <td>
-                            <button type="button" class="btn fs-15 p-1 bg-primary rounded btn-edit"
-                                data-edit-id="{{ $item->id }}" wire:click="edit({{ $item->id }})">
-                                <i class="ri-edit-box-line text-white"></i>
-                            </button>
-                            <button {{ $item->status == 0 ? 'hidden' : '' }} type="button"
-                                class="btn fs-15 p-1 bg-danger rounded removeBuyerModal btn-delete"
-                                data-delete-id="{{ $item->id }}" wire:click="delete({{ $item->id }})">
-                                <i class="ri-delete-bin-line text-white"></i>
-                            </button>
-                        </td>
-                        <td>{{ $item->box_class == 1 ? 'Khusus' : 'Standar' }}</td>
-                        <td>{{ $item->name }}</td>
-                        <td>{{ $item->code }}</td>
-                        <td>{{ number_format($item->panjang) }}</td>
-                        <td>{{ number_format($item->lebar) }}</td>
-                        <td>{{ number_format($item->tinggi) }}</td>
-                        <td>
-                            {!! $item->status == 1
-                                ? '<span class="badge text-success bg-success-subtle">Active</span>'
-                                : '<span class="badge text-bg-danger">Non Active</span>' !!}
-                        </td>
-                        <td>{{ $item->updated_by }}</td>
-                        <td>{{ \Carbon\Carbon::parse($item->updated_on)->format('d-M-Y H:i:s') }}</td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="10" class="text-center">
-                            <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
-                                colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
-                            <h5 class="mt-2">Sorry! No Result Found</h5>
-                            <p class="text-muted mb-0">We've searched more than 150+ Orders We did not find any orders
-                                for you search.</p>
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-        {{-- {{ $result->links() }} --}}
-    </div>
+            @empty
+                <tr>
+                    <td colspan="10" class="text-center">
+                        <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                            colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
+                        <h5 class="mt-2">Sorry! No Result Found</h5>
+                        <p class="text-muted mb-0">We've searched more than 150+ Orders We did not find any orders
+                            for you search.</p>
+                    </td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+    {{-- {{ $result->links() }} --}}
+</div>
+    <style>
+        #layerTable.table>:not(caption)>*>* {
+            font-size: 13px !important;
+            padding: 4px 2px 4px 4px;
+            color: var(--tb-table-color-state, var(--tb-table-color-type, var(--tb-table-color)));
+            background-color: var(--tb-table-bg);
+            border-bottom-width: var(--tb-border-width);
+            box-shadow: inset 0 0 0 9999px var(--tb-table-bg-state, var(--tb-table-bg-type, var(--tb-table-accent-bg)));
+        }
+    </style>
 </div>
 
 @script
@@ -492,11 +504,23 @@
             initDataTable('layerTable');
         });
 
+        function calculateTableHeight() {
+            const totalHeight = window.innerHeight;
+
+            const filterSectionTop = document.querySelector('.filter-section')?.getBoundingClientRect().top || 0;
+            const offsetTop = document.querySelector('#layerTable')?.getBoundingClientRect().top || 0;
+
+            const paddingTop = document.querySelector('.navbar-header')?.getBoundingClientRect().top || 0;
+            const availableHeight = totalHeight - offsetTop - filterSectionTop - paddingTop;
+
+            return availableHeight;
+        }
+
         // Fungsi untuk menginisialisasi ulang DataTable
         function initDataTable(id) {
 
             const savedOrder = $wire.get('sortingTable');
-            
+
             let defaultOrder = [
                 [1, "asc"]
             ];
@@ -519,6 +543,9 @@
                     "responsive": true,
                     "scrollX": true,
                     "order": defaultOrder,
+                    "scrollY": calculateTableHeight() + 'px',
+                    "scrollCollapse": true,
+                    "scrollX": true,
                     "language": {
                         "emptyTable": `
                     <div class="text-center">

@@ -1,48 +1,49 @@
-<div class="row">
-    <div class="col-12 col-lg-7">
-        <div class="row">
-            <div class="col-12 col-lg-3">
-                <label class="form-label text-muted fw-bold">Filter Tanggal</label>
-            </div>
-            <div class="col-12 col-lg-9 mb-1">
-                <div class="form-group">
-                    <div class="input-group">
-                        <div class="col-3">
-                            <select class="form-select" style="padding:0.44rem" wire:model.defer="transaksi">
-                                <option value="1">Produksi</option>
-                                <option value="2">Proses</option>
-                            </select>
-                        </div>
-                        <div class="col-9">
-                            <div class="form-group">
-                                <div class="input-group">
-                                    <input wire:model.defer="tglMasuk" type="text" class="form-control"
-                                        style="padding:0.44rem" data-provider="flatpickr" data-date-format="d M Y">
-                                    <span class="input-group-text py-0">
-                                        <i class="ri-calendar-event-fill fs-4"></i>
-                                    </span>
+<div>
+    <div class="row filter-section">
+        <div class="col-12 col-lg-7">
+            <div class="row">
+                <div class="col-12 col-lg-3">
+                    <label class="form-label text-muted fw-bold">Filter Tanggal</label>
+                </div>
+                <div class="col-12 col-lg-9 mb-1">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="col-3">
+                                <select class="form-select" style="padding:0.44rem" wire:model.defer="transaksi">
+                                    <option value="1">Produksi</option>
+                                    <option value="2">Proses</option>
+                                </select>
+                            </div>
+                            <div class="col-9">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <input wire:model.defer="tglMasuk" type="text" class="form-control"
+                                            style="padding:0.44rem" data-provider="flatpickr" data-date-format="d M Y">
+                                        <span class="input-group-text py-0">
+                                            <i class="ri-calendar-event-fill fs-4"></i>
+                                        </span>
 
-                                    <input wire:model.defer="tglKeluar" type="text" class="form-control"
-                                        style="padding:0.44rem" data-provider="flatpickr" data-date-format="d M Y">
-                                    <span class="input-group-text py-0">
-                                        <i class="ri-calendar-event-fill fs-4"></i>
-                                    </span>
+                                        <input wire:model.defer="tglKeluar" type="text" class="form-control"
+                                            style="padding:0.44rem" data-provider="flatpickr" data-date-format="d M Y">
+                                        <span class="input-group-text py-0">
+                                            <i class="ri-calendar-event-fill fs-4"></i>
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-12 col-lg-3">
-                <label class="form-label text-muted fw-bold">Nomor LPK</label>
-            </div>
-            {{-- <div class="col-12 col-lg-9 mb-1">
+                <div class="col-12 col-lg-3">
+                    <label class="form-label text-muted fw-bold">Nomor LPK</label>
+                </div>
+                {{-- <div class="col-12 col-lg-9 mb-1">
                 <div class="input-group">
                     <input wire:model.live.debounce.400ms="lpk_no" class="form-control"style="padding:0.44rem"
                         type="text" placeholder="000000-000" />
                 </div>
             </div> --}}
-             <div class="col-12 col-lg-9 mb-1" x-data="{ lpk_no: @entangle('lpk_no'), status: true }" x-init="$watch('lpk_no', value => {
+                <div class="col-12 col-lg-9 mb-1" x-data="{ lpk_no: @entangle('lpk_no'), status: true }" x-init="$watch('lpk_no', value => {
                     if (value.length === 6 && !value.includes('-') && status) {
                         lpk_no = value + '-';
                     }
@@ -56,112 +57,111 @@
                         lpk_no = value.substring(0, 10);
                     }
                 })">
-                <input
-                    class="form-control"
-                    style="padding:0.44rem"
-                    type="text"
-                    placeholder="000000-000"
-                    x-model="lpk_no"
-                    maxlength="10"
-                />
-            </div>
-            <div class="col-12 col-lg-3">
-                <label class="form-label text-muted fw-bold">Search</label>
-            </div>
-            <div class="col-12 col-lg-9">
-                <div class="input-group">
-                    <input wire:model.defer="searchTerm" class="form-control"style="padding:0.44rem" type="text"
-                        placeholder="search nomor produksi, no han, dll" />
+                    <input class="form-control" style="padding:0.44rem" type="text" placeholder="000000-000"
+                        x-model="lpk_no" maxlength="10" />
+                </div>
+                <div class="col-12 col-lg-3">
+                    <label class="form-label text-muted fw-bold">Search</label>
+                </div>
+                <div class="col-12 col-lg-9">
+                    <div class="input-group">
+                        <input wire:model.defer="searchTerm" class="form-control"style="padding:0.44rem" type="text"
+                            placeholder="search nomor produksi, no han, dll" />
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="col-12 col-lg-5">
-        <div class="row">
-            <div class="col-12 col-lg-2">
-                <label for="product" class="form-label text-muted fw-bold">Product</label>
-            </div>
-            <div class="col-12 col-lg-10">
-                <div class="mb-1" wire:ignore>
-                    <select class="form-control" wire:model.defer="idProduct" data-choices data-choices-sorting-false
-                        data-choices-removeItem data-choices-search-field-label data-choices-exact-match>
-                        <option value="">- All -</option>
-                        @foreach ($products as $item)
-                            {{-- <option value="{{ $item->id }}">{{ $item->name }}</option> --}}
-                            <option data-custom-properties='{"code": "{{ $item->code }}"}' value="{{ $item->id }}"
-                                @if ($item->id == ($idProduct['value'] ?? null)) selected @endif>{{ $item->name }}</option>
-                        @endforeach
-                    </select>
+        <div class="col-12 col-lg-5">
+            <div class="row">
+                <div class="col-12 col-lg-2">
+                    <label for="product" class="form-label text-muted fw-bold">Product</label>
                 </div>
-            </div>
-            <div class="col-12 col-lg-2">
-                <label class="form-label text-muted fw-bold">Mesin</label>
-            </div>
-            <div class="col-12 col-lg-10">
-                <div class="mb-1" wire:ignore>
-                    <select class="form-control" wire:model.defer="machineId" data-choices data-choices-sorting-false
-                        data-choices-removeItem data-choices-search-field-label>
-                        <option value="">- All -</option>
-                        @foreach ($machine as $item)
-                            <option value="{{ $item->id }}" @if ($item->id == ($machineId['value'] ?? null)) selected @endif>
-                                {{ $item->machineno }}</option>
-                        @endforeach
-                    </select>
+                <div class="col-12 col-lg-10">
+                    <div class="mb-1" wire:ignore>
+                        <select class="form-control" wire:model.defer="idProduct" data-choices
+                            data-choices-sorting-false data-choices-removeItem data-choices-search-field-label
+                            data-choices-exact-match>
+                            <option value="">- All -</option>
+                            @foreach ($products as $item)
+                                {{-- <option value="{{ $item->id }}">{{ $item->name }}</option> --}}
+                                <option data-custom-properties='{"code": "{{ $item->code }}"}'
+                                    value="{{ $item->id }}" @if ($item->id == ($idProduct['value'] ?? null)) selected @endif>
+                                    {{ $item->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
-            </div>
-            <div class="col-12 col-lg-2">
-                <label for="status" class="form-label text-muted fw-bold">Status</label>
-            </div>
-            <div class="col-12 col-lg-10">
-                <div class="mb-1" wire:ignore>
-                    <select class="form-control" wire:model.defer="status" data-choices data-choices-sorting-false
-                        data-choices-removeItem data-choices-search-field-label>
-                        <option value="">- all -</option>
-                        <option value="0">Open</option>
-                        <option value="1" @if (($status['value'] ?? null) == 1) selected @endif>Seitai</option>
-                        <option value="2" @if (($status['value'] ?? null) == 2) selected @endif>Kenpin</option>
-                    </select>
+                <div class="col-12 col-lg-2">
+                    <label class="form-label text-muted fw-bold">Mesin</label>
+                </div>
+                <div class="col-12 col-lg-10">
+                    <div class="mb-1" wire:ignore>
+                        <select class="form-control" wire:model.defer="machineId" data-choices
+                            data-choices-sorting-false data-choices-removeItem data-choices-search-field-label>
+                            <option value="">- All -</option>
+                            @foreach ($machine as $item)
+                                <option value="{{ $item->id }}" @if ($item->id == ($machineId['value'] ?? null)) selected @endif>
+                                    {{ $item->machineno }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-2">
+                    <label for="status" class="form-label text-muted fw-bold">Status</label>
+                </div>
+                <div class="col-12 col-lg-10">
+                    <div class="mb-1" wire:ignore>
+                        <select class="form-control" wire:model.defer="status" data-choices data-choices-sorting-false
+                            data-choices-removeItem data-choices-search-field-label>
+                            <option value="">- all -</option>
+                            <option value="0">Open</option>
+                            <option value="1" @if (($status['value'] ?? null) == 1) selected @endif>Seitai</option>
+                            <option value="2" @if (($status['value'] ?? null) == 2) selected @endif>Kenpin</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="col-lg-12 mt-2">
-        <div class="row">
-            <div class="col-12 col-lg-10">
-                <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1" wire:loading.attr="disabled">
-                    <span wire:loading.remove wire:target="search">
-                        <i class="ri-search-line"></i> Filter
-                    </span>
-                    <div wire:loading wire:target="search">
-                        <span class="d-flex align-items-center">
-                            <span class="spinner-border flex-shrink-0" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </span>
-                            <span class="flex-grow-1 ms-1">
-                                Loading...
-                            </span>
+        <div class="col-lg-12 mt-2">
+            <div class="row">
+                <div class="col-12 col-lg-10">
+                    <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1"
+                        wire:loading.attr="disabled">
+                        <span wire:loading.remove wire:target="search">
+                            <i class="ri-search-line"></i> Filter
                         </span>
-                    </div>
-                </button>
-            </div>
-            <div class="col-lg-2 text-end">
-                <button class="btn btn-info w-lg p-1" wire:click="export" type="button" wire:loading.attr="disabled">
-                    <span wire:loading.remove wire:target="export">
-                        <i class="ri-printer-line"> </i> Print
-                    </span>
-                    <div wire:loading wire:target="export">
-                        <span class="d-flex align-items-center">
-                            <span class="spinner-border flex-shrink-0" role="status">
-                                <span class="visually-hidden">Loading...</span>
+                        <div wire:loading wire:target="search">
+                            <span class="d-flex align-items-center">
+                                <span class="spinner-border flex-shrink-0" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </span>
+                                <span class="flex-grow-1 ms-1">
+                                    Loading...
+                                </span>
                             </span>
-                            <span class="flex-grow-1 ms-1">
-                                Loading...
-                            </span>
+                        </div>
+                    </button>
+                </div>
+                <div class="col-lg-2 text-end">
+                    <button class="btn btn-info w-lg p-1" wire:click="export" type="button"
+                        wire:loading.attr="disabled">
+                        <span wire:loading.remove wire:target="export">
+                            <i class="ri-printer-line"> </i> Print
                         </span>
-                    </div>
-                </button>
+                        <div wire:loading wire:target="export">
+                            <span class="d-flex align-items-center">
+                                <span class="spinner-border flex-shrink-0" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </span>
+                                <span class="flex-grow-1 ms-1">
+                                    Loading...
+                                </span>
+                            </span>
+                        </div>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -325,7 +325,8 @@
                             </a>
                         </td>
                         <td>{{ $item->lpk_no }}</td>
-                        <td data-order="{{ $item->lpk_date }}">{{ \Carbon\Carbon::parse($item->lpk_date)->format('d M Y') }}</td>
+                        <td data-order="{{ $item->lpk_date }}">
+                            {{ \Carbon\Carbon::parse($item->lpk_date)->format('d M Y') }}</td>
                         <td>{{ number_format($item->panjang_lpk, 0, ',', ',') }}</td>
                         <td>{{ number_format($item->panjang_produksi, 0, ',', ',') }}</td>
                         <td>{{ $item->qty_gentan }}</td>
@@ -336,13 +337,16 @@
                         <td>{{ $item->product_name }}</td>
                         <td>{{ $item->code }}</td>
                         <td>{{ $item->machineno }}</td>
-                        <td data-order="{{ $item->production_date }}">{{ \Carbon\Carbon::parse($item->production_date)->format('d M Y') }}</td>
-                        <td data-order="{{ $item->created_on }}">{{ \Carbon\Carbon::parse($item->created_on)->format('d M Y') }}</td>
+                        <td data-order="{{ $item->production_date }}">
+                            {{ \Carbon\Carbon::parse($item->production_date)->format('d M Y') }}</td>
+                        <td data-order="{{ $item->created_on }}">
+                            {{ \Carbon\Carbon::parse($item->created_on)->format('d M Y') }}</td>
                         <td>{{ $item->work_shift }} - {{ $item->work_hour }}</td>
                         <td>{{ $item->seq_no }}</td>
                         <td>{{ $item->infure_berat_loss }}</td>
                         <td>{{ $item->updated_by }}</td>
-                        <td data-order="{{ $item->updated_on }}">{{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y') }}</td>
+                        <td data-order="{{ $item->updated_on }}">
+                            {{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y') }}</td>
                     </tr>
                 @empty
                     {{-- <tr>
@@ -358,6 +362,16 @@
         {{-- {{ $data->links(data: ['scrollTo' => false]) }} --}}
     </div>
 
+    <style>
+        #lossInfureTable.table>:not(caption)>*>* {
+            font-size: 13px !important;
+            padding: 4px 2px 4px 4px;
+            color: var(--tb-table-color-state, var(--tb-table-color-type, var(--tb-table-color)));
+            background-color: var(--tb-table-bg);
+            border-bottom-width: var(--tb-border-width);
+            box-shadow: inset 0 0 0 9999px var(--tb-table-bg-state, var(--tb-table-bg-type, var(--tb-table-accent-bg)));
+        }
+    </style>
 </div>
 @script
     <script>
@@ -372,9 +386,22 @@
             initDataTable();
         });
 
+        function calculateTableHeight() {
+            const totalHeight = window.innerHeight;
+
+            const filterSectionTop = document.querySelector('.filter-section')?.getBoundingClientRect().top || 0;
+            const offsetTop = document.querySelector('#lossInfureTable')?.getBoundingClientRect().top || 0;
+
+            const paddingTop = document.querySelector('.navbar-header')?.getBoundingClientRect().top || 0;
+            const availableHeight = totalHeight - offsetTop - filterSectionTop - paddingTop;
+
+            return availableHeight;
+        }
+
         // Fungsi untuk menginisialisasi ulang DataTable
         function initDataTable() {
             const savedOrder = $wire.get('sortingTable');
+
             let defaultOrder = [
                 [1, "asc"]
             ];
@@ -387,7 +414,6 @@
                 let table = $('#lossInfureTable').DataTable();
                 table.clear(); // Bersihkan data tabel
                 table.destroy(); // Hancurkan DataTable
-                // Hindari penggunaan $('#lossInfureTable').empty(); di sini
             }
 
             setTimeout(() => {
@@ -396,7 +422,10 @@
                     "pageLength": 10,
                     "searching": true,
                     "responsive": true,
+                    "scrollX": true,
                     "order": defaultOrder,
+                    "scrollY": calculateTableHeight() + 'px',
+                    "scrollCollapse": true,
                     "language": {
                         "emptyTable": `
                             <div class="text-center">

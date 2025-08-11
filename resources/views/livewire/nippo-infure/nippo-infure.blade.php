@@ -357,20 +357,21 @@
                             {{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y H:i') }}</td>
                     </tr>
                 @empty
-                    {{-- <tr>
-                        <td colspan="12" class="text-center">
-                            <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
-                                colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
-                            <h5 class="mt-2">Sorry! No Result Found</h5>
-                            <p class="text-muted mb-0">We've searched more than 150+ Orders We did not find any orders
-                                for you search.</p>
-                        </td>
-                    </tr> --}}
                 @endforelse
             </tbody>
         </table>
-        {{-- {{ $data->links(data: ['scrollTo' => false]) }} --}}
     </div>
+
+    <style>
+        #tableInfure.table>:not(caption)>*>* {
+            font-size: 13px !important;
+            padding: 4px 2px 4px 4px;
+            color: var(--tb-table-color-state, var(--tb-table-color-type, var(--tb-table-color)));
+            background-color: var(--tb-table-bg);
+            border-bottom-width: var(--tb-border-width);
+            box-shadow: inset 0 0 0 9999px var(--tb-table-bg-state, var(--tb-table-bg-type, var(--tb-table-accent-bg)));
+        }
+    </style>
 </div>
 @script
     <script>

@@ -1,58 +1,59 @@
-<div class="row">
-    <div class="col-lg-12 mt-2">
-        <div class="row">
-            <div class="col-12 col-lg-6">
-                {{-- start modal delete product --}}
-                <div id="modal-delete" class="modal fade zoomIn" tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-                                    id="close-modal-delete"></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="mt-2 text-center">
-                                    <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop"
-                                        colors="primary:#f7b84b,secondary:#f06548"
-                                        style="width:100px;height:100px"></lord-icon>
-                                    <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
-                                        <h4>Are you sure ?</h4>
-                                        <p class="text-muted mx-4 mb-0">Are you sure you want to remove this product
-                                            ?
-                                        </p>
-                                    </div>
+<div>
+    <div class="row filter-section">
+        <div class="col-lg-12 mt-2">
+            <div class="row">
+                <div class="col-12 col-lg-6">
+                    {{-- start modal delete product --}}
+                    <div id="modal-delete" class="modal fade zoomIn" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                                        id="close-modal-delete"></button>
                                 </div>
-                                <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-                                    <button type="button" class="btn w-sm btn-light"
-                                        data-bs-dismiss="modal">Close</button>
-                                    <button wire:click="destroy" id="btnCreate" type="button"
-                                        class="btn w-sm btn-danger" id="remove-item" wire:loading.attr="disabled">
-                                        <span wire:loading.remove wire:target="destroy">
-                                            <i class="ri-save-3-line"></i> Yes, Delete It!
-                                        </span>
-                                        <div wire:loading wire:target="destroy">
-                                            <span class="d-flex align-items-center">
-                                                <span class="spinner-border flex-shrink-0" role="status">
-                                                    <span class="visually-hidden">Loading...</span>
-                                                </span>
-                                                <span class="flex-grow-1 ms-1">
-                                                    Loading...
-                                                </span>
-                                            </span>
+                                <div class="modal-body">
+                                    <div class="mt-2 text-center">
+                                        <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop"
+                                            colors="primary:#f7b84b,secondary:#f06548"
+                                            style="width:100px;height:100px"></lord-icon>
+                                        <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
+                                            <h4>Are you sure ?</h4>
+                                            <p class="text-muted mx-4 mb-0">Are you sure you want to remove this product
+                                                ?
+                                            </p>
                                         </div>
-                                    </button>
+                                    </div>
+                                    <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
+                                        <button type="button" class="btn w-sm btn-light"
+                                            data-bs-dismiss="modal">Close</button>
+                                        <button wire:click="destroy" id="btnCreate" type="button"
+                                            class="btn w-sm btn-danger" id="remove-item" wire:loading.attr="disabled">
+                                            <span wire:loading.remove wire:target="destroy">
+                                                <i class="ri-save-3-line"></i> Yes, Delete It!
+                                            </span>
+                                            <div wire:loading wire:target="destroy">
+                                                <span class="d-flex align-items-center">
+                                                    <span class="spinner-border flex-shrink-0" role="status">
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </span>
+                                                    <span class="flex-grow-1 ms-1">
+                                                        Loading...
+                                                    </span>
+                                                </span>
+                                            </div>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    {{-- end modal delete product --}}
                 </div>
-                {{-- end modal delete product --}}
-            </div>
-            <div class="row justify-content-between">
+                <div class="row justify-content-between">
 
-                {{-- <form wire:submit.prevent="search" class="row justify-content-between"> --}}
-                {{-- filter search --}}
-                {{-- <div class="col-12 col-lg-7">
+                    {{-- <form wire:submit.prevent="search" class="row justify-content-between"> --}}
+                    {{-- filter search --}}
+                    {{-- <div class="col-12 col-lg-7">
                     <div class="row">
                         <div class="col-12 col-lg-3">
                             <label class="form-label text-muted fw-bold">Search</label>
@@ -65,67 +66,72 @@
                         </div>
                     </div>
                 </div> --}}
-                {{-- filter tipe produk --}}
-                <div class="col-12 col-lg-6">
-                    <div class="row">
-                        <div class="col-12 col-lg-2">
-                            <label for="productType" class="form-label text-muted fw-bold">Tipe Produk</label>
-                        </div>
-                        <div class="col-12 col-lg-10">
-                            <div class="mb-1" wire:ignore>
-                                <select class="form-control" wire:model.defer="product_type_id" id="productType"
-                                    name="productType" data-choices data-choices-sorting-false  data-choices-removeItem data-choices-search-field-label>
-                                    <option value="">- All -</option>
-                                    @foreach (\App\Models\MsProductType::select('id', 'name', 'code')->get() as $item)
-                                        <option value="{{ $item->id }}"
-                                            data-custom-properties='{"code": "{{ $item->code }}"}'>{{ $item->name }}
-                                            , {{ $item->code }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                    {{-- filter tipe produk --}}
+                    <div class="col-12 col-lg-6">
+                        <div class="row">
+                            <div class="col-12 col-lg-2">
+                                <label for="productType" class="form-label text-muted fw-bold">Tipe Produk</label>
+                            </div>
+                            <div class="col-12 col-lg-10">
+                                <div class="mb-1" wire:ignore>
+                                    <select class="form-control" wire:model.defer="product_type_id" id="productType"
+                                        name="productType" data-choices data-choices-sorting-false
+                                        data-choices-removeItem data-choices-search-field-label>
+                                        <option value="">- All -</option>
+                                        @foreach (\App\Models\MsProductType::select('id', 'name', 'code')->get() as $item)
+                                            <option value="{{ $item->id }}"
+                                                data-custom-properties='{"code": "{{ $item->code }}"}'>
+                                                {{ $item->name }}
+                                                , {{ $item->code }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-12 col-lg-6 text-end">
-                    <button wire:click="search" type="submit" class="btn btn-primary btn-load w-lg p-1" wire:loading.attr="disabled">
-                        <span wire:loading.remove wire:target="search">
-                            <i class="ri-search-line"></i> Filter
-                        </span>
-                        <div wire:loading wire:target="search">
-                            <span class="d-flex align-items-center">
-                                <span class="spinner-border flex-shrink-0" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </span>
-                                <span class="flex-grow-1 ms-1">
-                                    Loading...
-                                </span>
+                    <div class="col-12 col-lg-6 text-end">
+                        <button wire:click="search" type="submit" class="btn btn-primary btn-load w-lg p-1"
+                            wire:loading.attr="disabled">
+                            <span wire:loading.remove wire:target="search">
+                                <i class="ri-search-line"></i> Filter
                             </span>
-                        </div>
-                    </button>
-                    {{-- Button Add product --}}
-                    <button type="button" class="btn btn-success w-lg p-1"
-                        onclick="window.location.href='{{ route('add-master-product') }}'">
-                        <i class="ri-add-line"> </i> Add
-                    </button>
-                    <button class="btn btn-warning w-lg p-1" wire:click="export" type="button" wire:loading.attr="disabled">
-                        <span wire:loading.remove wire:target="export">
-                            <i class="ri-download-cloud-2-line"> </i> Export
-                        </span>
-                        <div wire:loading wire:target="export">
-                            <span class="d-flex align-items-center">
-                                <span class="spinner-border flex-shrink-0" role="status">
-                                    <span class="visually-hidden">Loading...</span>
+                            <div wire:loading wire:target="search">
+                                <span class="d-flex align-items-center">
+                                    <span class="spinner-border flex-shrink-0" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </span>
+                                    <span class="flex-grow-1 ms-1">
+                                        Loading...
+                                    </span>
                                 </span>
-                                <span class="flex-grow-1 ms-1">
-                                    Loading...
-                                </span>
+                            </div>
+                        </button>
+                        {{-- Button Add product --}}
+                        <button type="button" class="btn btn-success w-lg p-1"
+                            onclick="window.location.href='{{ route('add-master-product') }}'">
+                            <i class="ri-add-line"> </i> Add
+                        </button>
+                        <button class="btn btn-warning w-lg p-1" wire:click="export" type="button"
+                            wire:loading.attr="disabled">
+                            <span wire:loading.remove wire:target="export">
+                                <i class="ri-download-cloud-2-line"> </i> Export
                             </span>
-                        </div>
-                    </button>
+                            <div wire:loading wire:target="export">
+                                <span class="d-flex align-items-center">
+                                    <span class="spinner-border flex-shrink-0" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </span>
+                                    <span class="flex-grow-1 ms-1">
+                                        Loading...
+                                    </span>
+                                </span>
+                            </div>
+                        </button>
+                    </div>
                 </div>
+                {{-- </form> --}}
             </div>
-            {{-- </form> --}}
         </div>
     </div>
     <div class="table-responsive table-card mt-3 mb-1">
@@ -285,7 +291,16 @@
         </table>
         {{-- {{ $data->links() }} --}}
     </div>
-    {{-- <livewire:tdorder/> --}}
+    <style>
+        #productTable.table>:not(caption)>*>* {
+            font-size: 13px !important;
+            padding: 4px 2px 4px 4px;
+            color: var(--tb-table-color-state, var(--tb-table-color-type, var(--tb-table-color)));
+            background-color: var(--tb-table-bg);
+            border-bottom-width: var(--tb-border-width);
+            box-shadow: inset 0 0 0 9999px var(--tb-table-bg-state, var(--tb-table-bg-type, var(--tb-table-accent-bg)));
+        }
+    </style>
 </div>
 
 @script
@@ -305,6 +320,18 @@
             initDataTable('productTable');
         });
 
+        function calculateTableHeight() {
+            const totalHeight = window.innerHeight;
+
+            const filterSectionTop = document.querySelector('.filter-section')?.getBoundingClientRect().top || 0;
+            const offsetTop = document.querySelector('#productTable')?.getBoundingClientRect().top || 0;
+
+            const paddingTop = document.querySelector('.navbar-header')?.getBoundingClientRect().top || 0;
+            const availableHeight = totalHeight - offsetTop - filterSectionTop - paddingTop;
+
+            return availableHeight;
+        }
+
         // Fungsi untuk menginisialisasi ulang DataTable
         function initDataTable(id) {
 
@@ -321,7 +348,6 @@
                 let table = $('#' + id).DataTable();
                 table.clear(); // Bersihkan data tabel
                 table.destroy(); // Hancurkan DataTable
-                // Hindari penggunaan $('#' + id).empty(); di sini
             }
 
             setTimeout(() => {
@@ -332,6 +358,9 @@
                     "responsive": true,
                     "scrollX": true,
                     "order": defaultOrder,
+                    "scrollY": calculateTableHeight() + 'px',
+                    "scrollCollapse": true,
+                    "scrollX": true,
                     "language": {
                         "emptyTable": `
                     <div class="text-center">

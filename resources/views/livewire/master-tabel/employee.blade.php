@@ -1,4 +1,5 @@
-<div class="row">
+<div>
+    <div class="row filter-section">
     <div class="col-lg-12 mt-2">
         <div class="row">
 
@@ -304,63 +305,73 @@
         </div>
     </div>
     {{-- Table employee --}}
-    <div class="table-responsive table-card mt-3 mb-1">
+</div>
+<div class="table-responsive table-card mt-3 mb-1">
 
-        <table class="table align-middle table-nowrap" id="employeeTable" style="width:100%">
-            <thead class="table-light">
+    <table class="table align-middle table-nowrap" id="employeeTable" style="width:100%">
+        <thead class="table-light">
+            <tr>
+                <th>Action</th>
+                <th>Nama</th>
+                <th>NIK</th>
+                <th>Departemen</th>
+                <th>Status</th>
+                <th>Updated By</th>
+                <th>Updated</th>
+                {{-- <th>No.</th> --}}
+            </tr>
+        </thead>
+        <tbody class="list form-check-all">
+            @forelse ($data as $item)
                 <tr>
-                    <th>Action</th>
-                    <th>Nama</th>
-                    <th>NIK</th>
-                    <th>Departemen</th>
-                    <th>Status</th>
-                    <th>Updated By</th>
-                    <th>Updated</th>
-                    {{-- <th>No.</th> --}}
+                    <td>
+                        <button type="button" class="btn fs-15 p-1 bg-primary rounded btn-edit"
+                            data-edit-id="{{ $item->id }}" wire:click="edit({{ $item->id }})">
+                            <i class="ri-edit-box-line text-white"></i>
+                        </button>
+                        <button {{ $item->status == 0 ? 'hidden' : '' }} type="button"
+                            class="btn fs-15 p-1 bg-danger rounded modal-delete btn-delete"
+                            data-delete-id="{{ $item->id }}" wire:click="delete({{ $item->id }})">
+                            <i class="ri-delete-bin-line  text-white"></i>
+                        </button>
+                    </td>
+                    <td>{{ $item->empname }}</td>
+                    <td>{{ $item->employeeno }}</td>
+                    <td>{{ $item->department_name }}</td>
+                    <td>
+                        {!! $item->status == 1
+                            ? '<span class="badge text-success bg-success-subtle">Active</span>'
+                            : '<span class="badge text-bg-danger">Inactive</span>' !!}
+                    </td>
+                    <td>{{ $item->updated_by }}</td>
+                    <td>{{ \Carbon\Carbon::parse($item->updated_on)->format('d-M-Y H:i:s') }}</td>
+                    {{-- <td>{{ $no++ }}</td> --}}
                 </tr>
-            </thead>
-            <tbody class="list form-check-all">
-                @forelse ($data as $item)
-                    <tr>
-                        <td>
-                            <button type="button" class="btn fs-15 p-1 bg-primary rounded btn-edit"
-                                data-edit-id="{{ $item->id }}" wire:click="edit({{ $item->id }})">
-                                <i class="ri-edit-box-line text-white"></i>
-                            </button>
-                            <button {{ $item->status == 0 ? 'hidden' : '' }} type="button"
-                                class="btn fs-15 p-1 bg-danger rounded modal-delete btn-delete"
-                                data-delete-id="{{ $item->id }}" wire:click="delete({{ $item->id }})">
-                                <i class="ri-delete-bin-line  text-white"></i>
-                            </button>
-                        </td>
-                        <td>{{ $item->empname }}</td>
-                        <td>{{ $item->employeeno }}</td>
-                        <td>{{ $item->department_name }}</td>
-                        <td>
-                            {!! $item->status == 1
-                                ? '<span class="badge text-success bg-success-subtle">Active</span>'
-                                : '<span class="badge text-bg-danger">Inactive</span>' !!}
-                        </td>
-                        <td>{{ $item->updated_by }}</td>
-                        <td>{{ \Carbon\Carbon::parse($item->updated_on)->format('d-M-Y H:i:s') }}</td>
-                        {{-- <td>{{ $no++ }}</td> --}}
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="10" class="text-center">
-                            <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
-                                colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
-                            <h5 class="mt-2">Sorry! No Result Found</h5>
-                            <p class="text-muted mb-0">We've searched more than 150+ Orders We did not find any orders
-                                for you search.</p>
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-        {{-- {{ $data->links() }} --}}
-    </div>
-    {{-- <livewire:tdorder/> --}}
+            @empty
+                <tr>
+                    <td colspan="10" class="text-center">
+                        <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                            colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
+                        <h5 class="mt-2">Sorry! No Result Found</h5>
+                        <p class="text-muted mb-0">We've searched more than 150+ Orders We did not find any orders
+                            for you search.</p>
+                    </td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+    {{-- {{ $data->links() }} --}}
+</div>
+    <style>
+        #employeeTable.table>:not(caption)>*>* {
+            font-size: 13px !important;
+            padding: 4px 2px 4px 4px;
+            color: var(--tb-table-color-state, var(--tb-table-color-type, var(--tb-table-color)));
+            background-color: var(--tb-table-bg);
+            border-bottom-width: var(--tb-border-width);
+            box-shadow: inset 0 0 0 9999px var(--tb-table-bg-state, var(--tb-table-bg-type, var(--tb-table-accent-bg)));
+        }
+    </style>
 </div>
 
 @script
@@ -397,6 +408,18 @@
             initDataTable('employeeTable');
         });
 
+        function calculateTableHeight() {
+            const totalHeight = window.innerHeight;
+
+            const filterSectionTop = document.querySelector('.filter-section')?.getBoundingClientRect().top || 0;
+            const offsetTop = document.querySelector('#employeeTable')?.getBoundingClientRect().top || 0;
+
+            const paddingTop = document.querySelector('.navbar-header')?.getBoundingClientRect().top || 0;
+            const availableHeight = totalHeight - offsetTop - filterSectionTop - paddingTop;
+
+            return availableHeight;
+        }
+
         // Fungsi untuk menginisialisasi ulang DataTable
         function initDataTable(id) {
             const savedOrder = $wire.get('sortingTable');
@@ -412,7 +435,6 @@
                 let table = $('#' + id).DataTable();
                 table.clear(); // Bersihkan data tabel
                 table.destroy(); // Hancurkan DataTable
-                // Hindari penggunaan $('#' + id).empty(); di sini
             }
 
             setTimeout(() => {
@@ -423,6 +445,9 @@
                     "responsive": true,
                     "scrollX": true,
                     "order": defaultOrder,
+                    "scrollY": calculateTableHeight() + 'px',
+                    "scrollCollapse": true,
+                    "scrollX": true,
                     "language": {
                         "emptyTable": `
                     <div class="text-center">

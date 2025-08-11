@@ -15,15 +15,16 @@ use Maatwebsite\Excel\Facades\Excel;
 use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
 use Livewire\Attributes\Session;
+use Illuminate\Support\Str;
 
 class OrderLpkController extends Component
 {
     protected $paginationTheme = 'bootstrap';
     public $products;
     public $buyer;
-    #[Session('tglMasuk')]
+    #[Session]
     public $tglMasuk;
-    #[Session('tglKeluar')]
+    #[Session]
     public $tglKeluar;
     #[Session]
     public $searchTerm;
@@ -37,6 +38,8 @@ class OrderLpkController extends Component
     public $status;
     #[Session]
     public $sortingTable;
+    #[Session]
+    public $entriesPerPage = 10;
 
     use WithFileUploads;
     public $file;
@@ -59,14 +62,21 @@ class OrderLpkController extends Component
 
     public function mount()
     {
+        $this->shouldForgetSession();
         $this->products = MsProduct::get();
         $this->buyer = MsBuyer::get();
 
-        // mengambil data dari session terlebih dahulu jika ada
-        $this->tglMasuk = session('tglMasuk', Carbon::now()->format('d M Y'));
-        $this->tglKeluar = session('tglKeluar', Carbon::now()->format('d M Y'));
+        if (empty($this->tglMasuk)) {
+            $this->tglMasuk = Carbon::now()->startOfDay()->format('d M Y');
+        }
+        if (empty($this->tglKeluar)) {
+            $this->tglKeluar = Carbon::now()->endOfDay()->format('d M Y');
+        }
         if (empty($this->sortingTable)) {
             $this->sortingTable = [[1, 'asc']];
+        }
+        if (empty($this->entriesPerPage)) {
+            $this->entriesPerPage = 10;
         }
     }
 
@@ -74,6 +84,21 @@ class OrderLpkController extends Component
     {
         $this->sortingTable = $value;
         $this->skipRender();
+    }
+
+    public function updateEntriesPerPage($value)
+    {
+        $this->entriesPerPage = $value;
+        $this->skipRender();
+    }
+
+    protected function shouldForgetSession()
+    {
+        $previousUrl = url()->previous();
+        $previousUrl = last(explode('/', $previousUrl));
+        if (!(Str::contains($previousUrl, 'add-order') || Str::contains($previousUrl, 'edit-order') || Str::contains($previousUrl,'order-lpk'))) {
+            $this->reset('tglMasuk', 'tglKeluar', 'searchTerm', 'idProduct', 'idBuyer', 'status', 'transaksi', 'sortingTable', 'entriesPerPage');
+        }
     }
 
     public function search()
@@ -187,13 +212,6 @@ class OrderLpkController extends Component
         if (isset($this->status) && $this->status['value'] != "" && $this->status != "undefined") {
             $data = $data->where('tod.status_order', $this->status['value']);
         }
-        // paginate
-        // $data = $data->when($this->paginate != 'all', function ($query) {
-        //     return $query->paginate($this->paginate);
-        // }, function ($query) {
-        //     $count = $query->count();
-        //     return $query->paginate($count);
-        // });
         $data = $data->get();
 
         return view('livewire.order-lpk.order-lpk', [

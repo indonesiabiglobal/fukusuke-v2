@@ -63,11 +63,11 @@ $twocolumn-menu-z-index: 1002;
 $twocolumn-menu-item-color-gradient: rgba($white, 0.6);
 
 //Top-tagbar
-$top-tagbar-height: 30px;
+$top-tagbar-height: 20px;
 $top-tagbar-bg: #31404a;
 
 // Topbar
-$header-height: 70px;
+$header-height: 50px;
 $header-bg: var(--#{$prefix}header-bg);
 $header-item-color: var(--#{$prefix}header-item-color);
 
@@ -90,7 +90,7 @@ $topnav-bg: var(--#{$prefix}topnav-bg);
 $topnav-item-color: var(--#{$prefix}topnav-item-color);
 $topnav-item-color-active: var(--#{$prefix}topnav-item-color-active);
 
-// Brand 
+// Brand
 $navbar-brand-box-width: 240px;
 
 // Boxed layout width
