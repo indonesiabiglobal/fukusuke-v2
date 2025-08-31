@@ -172,7 +172,7 @@ class EditNippoController extends Component
         $this->diameterlipat = $data->diameterlipat;
         $this->dimensiinfure = $data->ketebalan . 'x' . $data->diameterlipat;
         $this->qty_gulung = number_format($data->qty_gulung, 0, ',', ',');
-        $this->berat_standard = round($data->berat_standard, 2);
+        $this->berat_standard = $data->berat_standard;
         $selisih = $data->total_assembly_line - $data->panjang_lpk - $data->panjang_produksi;
         $this->selisih_old = $selisih;
         $this->selisih = $selisih;

@@ -289,7 +289,7 @@ class DetailReportSeitaiController
 
         $this->worksheet->setCellValue('A1', 'DETAIL PRODUKSI SEITAI');
         $this->worksheet->setCellValue('A2', 'Periode: ' . Carbon::parse($tglAwal)->translatedFormat('d-M-Y H:i') .
-            ' s/d ' . Carbon::parse($tglAkhir)->translatedFormat('d-M-Y H:i') .
+            '  ~  ' . Carbon::parse($tglAkhir)->translatedFormat('d-M-Y H:i') .
             ' - Mesin: ' . ($filters['machine_id'] == '' ? 'Semua Mesin' : $filters['machine_id']));
 
         // Set column headers dengan format yang dioptimasi

@@ -48,7 +48,7 @@ class JamMatiReportService
 
         // Judul
         $activeWorksheet->setCellValue('A1', 'DAFTAR JAM MATI PER MESIN ' . strtoupper($nipon));
-        $activeWorksheet->setCellValue('A2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        $activeWorksheet->setCellValue('A2', 'Periode : ' . $tglMasuk->format('d-M-Y H:i') . '  ~  ' . $tglKeluar->format('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'A1:A2', true, 11, 'Calibri');
 
@@ -223,7 +223,7 @@ class JamMatiReportService
 
         // Judul
         $activeWorksheet->setCellValue('A1', 'DAFTAR JAM MATI PER JENIS ' . strtoupper($nipon));
-        $activeWorksheet->setCellValue('A2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        $activeWorksheet->setCellValue('A2', 'Periode : ' . $tglMasuk->format('d-M-Y H:i') . '  ~  ' . $tglKeluar->format('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'A1:A2', true, 11, 'Calibri');
 

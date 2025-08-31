@@ -259,7 +259,7 @@ class ProductionLossReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'REPORT PRODUKSI DAN LOSS MESIN ' . ($this->nipon == 'infure' ? ' INFURE' : 'SEITAI'));
-        $activeWorksheet->setCellValue('B2', 'Periode : ' . $filterDateStart . ' s/d ' . $filterDateEnd);
+        $activeWorksheet->setCellValue('B2', 'Periode : ' . $filterDateStart->format('d-M-Y H:i') . '  ~  ' . $filterDateEnd->format('d-M-Y H:i'));
         // Style Judul
         $this->styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
 

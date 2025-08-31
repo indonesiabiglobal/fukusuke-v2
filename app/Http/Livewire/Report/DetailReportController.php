@@ -179,7 +179,7 @@ class DetailReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('A1', 'DETAIL PRODUKSI INFURE');
-        $activeWorksheet->setCellValue('A2', 'Periode: ' . $tglAwal->translatedFormat('d-M-Y H:i') . ' s/d ' . $tglAkhir->translatedFormat('d-M-Y H:i') . ' - Mesin: ' . ($this->machineId ? $this->machineId : 'Semua Mesin'));
+        $activeWorksheet->setCellValue('A2', 'Periode: ' . $tglAwal->translatedFormat('d-M-Y H:i') . '  ~  ' . $tglAkhir->translatedFormat('d-M-Y H:i') . ' - Mesin: ' . ($this->machineId ? $this->machineId : 'Semua Mesin'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'A1:A2', true, 11, 'Calibri');
 
@@ -507,7 +507,7 @@ class DetailReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('A1', 'DETAIL PRODUKSI SEITAI');
-        $activeWorksheet->setCellValue('A2', 'Periode: ' . $tglAwal->translatedFormat('d-M-Y H:i') . ' s/d ' . $tglAkhir->translatedFormat('d-M-Y H:i') . ' - Mesin: ' . ($this->machineId ? $this->machineId : 'Semua Mesin'));
+        $activeWorksheet->setCellValue('A2', 'Periode: ' . $tglAwal->translatedFormat('d-M-Y H:i') . '  ~  ' . $tglAkhir->translatedFormat('d-M-Y H:i') . ' - Mesin: ' . ($this->machineId ? $this->machineId : 'Semua Mesin'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'A1:A2', true, 11, 'Calibri');
 

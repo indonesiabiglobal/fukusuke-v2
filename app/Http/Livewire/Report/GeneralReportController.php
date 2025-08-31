@@ -632,7 +632,6 @@ class GeneralReportController extends Component
                     return;
                 }
                 break;
-
         }
     }
 
@@ -675,7 +674,7 @@ class GeneralReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER MESIN INFURE');
-        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk->format('d-M-Y H:i') . '  ~  ' . $tglKeluar->format('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
 
@@ -759,7 +758,9 @@ class GeneralReportController extends Component
             WHERE
                 asy.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
             GROUP BY
-                asy.machine_id;
+                asy.machine_id
+            ORDER BY
+                machine_no;
         ");
 
         if (count($data) == 0) {
@@ -797,9 +798,12 @@ class GeneralReportController extends Component
         // index
         $startColumnItem = 'B';
         $endColumnItem = $columnHeaderEnd;
-        $startColumnItemData = 'D';
         $columnMachineNo = 'B';
         $columnMachineName = 'C';
+        $columnBeratStandart = 'D';
+        $columnBeratProduksi = 'E';
+        $columnInfureBeratLoss = 'H';
+        $startColumnItemData = 'D';
         $startRowItem = 5;
         $rowItem = $startRowItem;
         // daftar departemen
@@ -845,7 +849,7 @@ class GeneralReportController extends Component
                 phpSpreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
                 // weight rate
-                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->berat_standard > 0 ? $dataItem->berat_produksi / $dataItem->berat_standard : 0);
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->berat_standard > 0 ? '=' . $columnBeratProduksi . $rowItem . '/' . $columnBeratStandart . $rowItem : 0);
                 phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem, 3);
                 $columnItem++;
                 // infure cost
@@ -857,9 +861,9 @@ class GeneralReportController extends Component
                 phpSpreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
                 // loss %
-                $lossPercentage = $dataItem->berat_produksi > 0 ? $dataItem->infure_berat_loss / ($dataItem->berat_produksi + $dataItem->infure_berat_loss) : 0;
+                $lossPercentage = $dataItem->berat_produksi > 0 ? '=' . '(' . $columnInfureBeratLoss . $rowItem . '/' . '(' . $columnBeratProduksi . $rowItem . '+' . $columnInfureBeratLoss . $rowItem . ')) * 100' : 0;
                 $activeWorksheet->setCellValue($columnItem . $rowItem, $lossPercentage);
-                phpspreadsheet::numberPercentageOrZero($spreadsheet, $columnItem . $rowItem);
+                phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem, 2);
                 $columnItem++;
                 // panjang produksi
                 $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->panjang_produksi);
@@ -922,7 +926,7 @@ class GeneralReportController extends Component
             $columnItem++;
             // weight rate
             $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - $countMachine) . ':' . $columnItem . ($rowItem - 1) . ')/COUNTIF(' . $columnItem . ($rowItem - $countMachine) . ':' . $columnItem . ($rowItem - 1) . ', "<>0")');
-            phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem, 3);
             $columnItem++;
             // infure cost
             $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - $countMachine) . ':' . $columnItem . ($rowItem - 1) . ')');
@@ -933,8 +937,8 @@ class GeneralReportController extends Component
             phpSpreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnItem . $rowItem);
             $columnItem++;
             // loss %
-            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - $countMachine) . ':' . $columnItem . ($rowItem - 1) . ')/COUNTIF(' . $columnItem . ($rowItem - $countMachine) . ':' . $columnItem . ($rowItem - 1) . ', "<>0")');
-            phpspreadsheet::numberPercentageOrZero($spreadsheet, $columnItem . $rowItem);
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=' . '(' . $columnInfureBeratLoss . $rowItem . '/' . '(' . $columnBeratProduksi . $rowItem . '+' . $columnInfureBeratLoss . $rowItem . ')) * 100');
+            phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem, 2);
             $columnItem++;
             // panjang produksi
             $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - $countMachine) . ':' . $columnItem . ($rowItem - 1) . ')');
@@ -1142,7 +1146,7 @@ class GeneralReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER MESIN SEITAI');
-        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk->format('d-M-Y H:i') . '  ~  ' . $tglKeluar->format('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
         // hide column A
@@ -1592,7 +1596,7 @@ class GeneralReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER TIPE PER MESIN INFURE');
-        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk->format('d-M-Y H:i') . '  ~  ' . $tglKeluar->format('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
         // hide column A
@@ -2025,7 +2029,7 @@ class GeneralReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('A1', 'DAFTAR PRODUKSI PER TIPE PER MESIN SEITAI');
-        $activeWorksheet->setCellValue('A2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        $activeWorksheet->setCellValue('A2', 'Periode : ' . $tglMasuk->format('d-M-Y H:i') . '  ~  ' . $tglKeluar->format('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
 
@@ -2426,7 +2430,7 @@ class GeneralReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER JENIS INFURE');
-        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk->format('d-M-Y H:i') . '  ~  ' . $tglKeluar->format('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
         // hide column A
@@ -2700,7 +2704,7 @@ class GeneralReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER JENIS SEITAI');
-        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk->format('d-M-Y H:i') . '  ~  ' . $tglKeluar->format('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
         // hide column A
@@ -2965,7 +2969,7 @@ class GeneralReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER TIPE INFURE');
-        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk->format('d-M-Y H:i') . '  ~  ' . $tglKeluar->format('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
         // hide column A
@@ -3241,7 +3245,7 @@ class GeneralReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER TIPE SEITAI');
-        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk->format('d-M-Y H:i') . '  ~  ' . $tglKeluar->format('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
         // hide column A
@@ -3511,7 +3515,7 @@ class GeneralReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER PRODUK INFURE');
-        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk->format('d-M-Y H:i') . '  ~  ' . $tglKeluar->format('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
         // hide column A
@@ -3790,7 +3794,7 @@ class GeneralReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER PRODUK SEITAI');
-        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk->format('d-M-Y H:i') . '  ~  ' . $tglKeluar->format('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
         // hide column A
@@ -4050,7 +4054,7 @@ class GeneralReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER DEPARTEMEN PER JENIS INFURE');
-        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk->format('d-M-Y H:i') . '  ~  ' . $tglKeluar->format('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
         // hide column A
@@ -4367,7 +4371,7 @@ class GeneralReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER DEPARTEMEN PER JENIS SEITAI');
-        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk->format('d-M-Y H:i') . '  ~  ' . $tglKeluar->format('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
         // hide column A
@@ -4676,7 +4680,7 @@ class GeneralReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER DEPARTEMEN PER TIPE INFURE');
-        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk->format('d-M-Y H:i') . '  ~  ' . $tglKeluar->format('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
         // hide column A
@@ -4994,7 +4998,7 @@ class GeneralReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER DEPARTEMEN PER TIPE SEITAI');
-        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk->format('d-M-Y H:i') . '  ~  ' . $tglKeluar->format('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
         // hide column A
@@ -5304,7 +5308,7 @@ class GeneralReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER DEPARTEMEN PER PETUGAS INFURE');
-        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk->format('d-M-Y H:i') . '  ~  ' . $tglKeluar->format('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
         // hide column A
@@ -5622,7 +5626,7 @@ class GeneralReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER DEPARTEMEN PER PETUGAS SEITAI');
-        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk->format('d-M-Y H:i') . '  ~  ' . $tglKeluar->format('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
         // hide column A
@@ -5931,7 +5935,7 @@ class GeneralReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR LOSS PER DEPARTEMEN INFURE');
-        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk->format('d-M-Y H:i') . '  ~  ' . $tglKeluar->format('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
         // hide column A
@@ -6244,7 +6248,7 @@ class GeneralReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR LOSS PER DEPARTEMEN SEITAI');
-        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk->format('d-M-Y H:i') . '  ~  ' . $tglKeluar->format('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
         // hide column A
@@ -6556,7 +6560,7 @@ class GeneralReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR LOSS PER DEPARTEMEN PER JENIS INFURE');
-        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk->format('d-M-Y H:i') . '  ~  ' . $tglKeluar->format('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
         // hide column A
@@ -6879,7 +6883,7 @@ class GeneralReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR LOSS PER DEPARTEMEN PER JENIS SEITAI');
-        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk->format('d-M-Y H:i') . '  ~  ' . $tglKeluar->format('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
         // hide column A
@@ -7203,7 +7207,7 @@ class GeneralReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR LOSS PER PETUGAS INFURE');
-        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk->format('d-M-Y H:i') . '  ~  ' . $tglKeluar->format('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
         // hide column A
@@ -7704,7 +7708,7 @@ class GeneralReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR LOSS PER PETUGAS SEITAI');
-        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk->format('d-M-Y H:i') . '  ~  ' . $tglKeluar->format('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
         // hide column A
@@ -8095,7 +8099,7 @@ class GeneralReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR LOSS PER MESIN INFURE');
-        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk->format('d-M-Y H:i') . '  ~  ' . $tglKeluar->format('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
         // hide column A
@@ -8394,7 +8398,7 @@ class GeneralReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR LOSS PER MESIN SEITAI');
-        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk->format('d-M-Y H:i') . '  ~  ' . $tglKeluar->format('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
         // hide column A
@@ -8693,7 +8697,7 @@ class GeneralReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'KAPASITAS PRODUKSI INFURE');
-        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk->format('d-M-Y H:i') . '  ~  ' . $tglKeluar->format('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
         // hide column A
@@ -9008,7 +9012,7 @@ class GeneralReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'KAPASITAS PRODUKSI SEITAI');
-        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk->format('d-M-Y H:i') . '  ~  ' . $tglKeluar->format('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
         // hide column A
@@ -9340,7 +9344,7 @@ class GeneralReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER PALET SEITAI');
-        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk->format('d-M-Y H:i') . '  ~  ' . $tglKeluar->format('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
         // hide column A
@@ -9750,7 +9754,7 @@ class GeneralReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('B1', 'DAFTAR PRODUKSI PER MESIN PER PRODUK INFURE');
-        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk->format('d-M-Y H:i') . '  ~  ' . $tglKeluar->format('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
         // hide column A
@@ -10135,7 +10139,7 @@ class GeneralReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('A1', 'DAFTAR PRODUKSI PER MESIN PER PRODUK SEITAI');
-        $activeWorksheet->setCellValue('A2', 'Periode : ' . $tglMasuk . ' s/d ' . $tglKeluar);
+        $activeWorksheet->setCellValue('A2', 'Periode : ' . $tglMasuk->format('d-M-Y H:i') . '  ~  ' . $tglKeluar->format('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'A1:A2', true, 11, 'Calibri');
 

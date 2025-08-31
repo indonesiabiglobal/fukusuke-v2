@@ -130,7 +130,7 @@ class OrderReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('A1', 'ORDER LIST');
-        $activeWorksheet->setCellValue('A2', 'Periode ' . $this->filter . ': ' . $tglAwal->translatedFormat('d-M-Y H:i') . ' s/d ' . $tglAkhir->translatedFormat('d-M-Y H:i') . ' - Buyer: ' . ($this->buyer_id != null ? MsBuyer::find($this->buyer_id)->name : 'all'));
+        $activeWorksheet->setCellValue('A2', 'Periode ' . $this->filter . ': ' . $tglAwal->translatedFormat('d-M-Y H:i') . '  ~  ' . $tglAkhir->translatedFormat('d-M-Y H:i') . ' - Buyer: ' . ($this->buyer_id != null ? MsBuyer::find($this->buyer_id)->name : 'all'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'A1:A2', true, 11, 'Calibri');
 
@@ -305,7 +305,7 @@ class OrderReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('A1', 'ORDER LIST PER TYPE');
-        $activeWorksheet->setCellValue('A2', 'Periode ' . $this->filter . ': ' . $tglAwal->translatedFormat('d-M-Y  H:i') . ' s/d ' . $tglAkhir->translatedFormat('d-M-Y H:i') . ' - Buyer: ' . ($this->buyer_id != null ? MsBuyer::find($this->buyer_id)->name : 'all'));
+        $activeWorksheet->setCellValue('A2', 'Periode ' . $this->filter . ': ' . $tglAwal->translatedFormat('d-M-Y  H:i') . '  ~  ' . $tglAkhir->translatedFormat('d-M-Y H:i') . ' - Buyer: ' . ($this->buyer_id != null ? MsBuyer::find($this->buyer_id)->name : 'all'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'A1:A2', true, 11, 'Calibri');
 
@@ -508,7 +508,7 @@ class OrderReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('A1', 'CHECKLIST');
-        $activeWorksheet->setCellValue('A2', 'Periode Order: ' . $tglAwal->translatedFormat('d-M-Y H:i') . ' s/d ' . $tglAkhir->translatedFormat('d-M-Y H:i') . ' - Buyer: ' . ($this->buyer_id != null ? MsBuyer::find($this->buyer_id)->name : 'all'));
+        $activeWorksheet->setCellValue('A2', 'Periode Order: ' . $tglAwal->translatedFormat('d-M-Y H:i') . '  ~  ' . $tglAkhir->translatedFormat('d-M-Y H:i') . ' - Buyer: ' . ($this->buyer_id != null ? MsBuyer::find($this->buyer_id)->name : 'all'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'A1:A2', true, 11, 'Calibri');
 
@@ -725,7 +725,7 @@ class OrderReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('A1', 'CHECKLIST LPK');
-        $activeWorksheet->setCellValue('A2', 'Periode LPK: ' . $tglAwal->translatedFormat('d-M-Y H:i') . ' s/d ' . $tglAkhir->translatedFormat('d-M-Y H:i'));
+        $activeWorksheet->setCellValue('A2', 'Periode LPK: ' . $tglAwal->translatedFormat('d-M-Y H:i') . '  ~  ' . $tglAkhir->translatedFormat('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'A1:A2', true, 11, 'Calibri');
 
@@ -1038,7 +1038,7 @@ class OrderReportController extends Component
 
         // Judul
         $activeWorksheet->setCellValue('A1', 'ORDER PROGRESS');
-        $activeWorksheet->setCellValue('A2', 'Periode Proses: ' . $tglAwal->translatedFormat('d-M-Y H:i') . ' s/d ' . $tglAkhir->translatedFormat('d-M-Y H:i'));
+        $activeWorksheet->setCellValue('A2', 'Periode Proses: ' . $tglAwal->translatedFormat('d-M-Y H:i') . '  ~  ' . $tglAkhir->translatedFormat('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'A1:A2', true, 11, 'Calibri');
 
