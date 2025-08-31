@@ -108,7 +108,7 @@ class AddOrderController extends Component
     public $jenissealseitaiid;
 
     protected $rules = [
-        'po_no' => 'required',
+        'po_no' => 'required|unique:tdorder',
         'order_qty' => 'required|integer',
         'order_date' => 'required',
         'stufingdate' => 'required',
@@ -241,6 +241,7 @@ class AddOrderController extends Component
 
         DB::beginTransaction();
         try {
+            dd($this->order_date, $this->stufingdate, $this->etddate, $this->etadate);
             $maxProcessSeq = TdOrders::where('order_date', $this->order_date)->max('processseq');
             $product = MsProduct::where('code', $this->product_id)->first();
             $order = new TdOrders();
