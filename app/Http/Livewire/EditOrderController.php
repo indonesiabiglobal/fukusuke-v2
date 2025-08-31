@@ -131,10 +131,10 @@ class EditOrderController extends Component
         $this->product_code = $order->product_code;
         $this->order_qty = number_format($order->order_qty);
         $this->process_date = Carbon::parse($order->processdate)->format('d-m-Y') . ' - Nomor: ' . $order->processseq;
-        $this->order_date = Carbon::parse($order->order_date)->format('d-m-Y');
-        $this->stufingdate = Carbon::parse($order->stufingdate)->format('d-m-Y');
-        $this->etddate = Carbon::parse($order->etddate)->format('d-m-Y');
-        $this->etadate = Carbon::parse($order->etadate)->format('d-m-Y');
+        $this->order_date = Carbon::parse($order->order_date)->format('d/m/Y');
+        $this->stufingdate = Carbon::parse($order->stufingdate)->format('d/m/Y');
+        $this->etddate = Carbon::parse($order->etddate)->format('d/m/Y');
+        $this->etadate = Carbon::parse($order->etadate)->format('d/m/Y');
         $product = MsProduct::where('id', $order->product_id)->first();
         $this->product_id = $product->code;
         $this->product_name = $product->name;
@@ -248,9 +248,10 @@ class EditOrderController extends Component
             $order->product_id = $product->id;
             $order->product_code = $product->code;
             $order->order_qty = $this->order_qty;
-            $order->stufingdate = $this->stufingdate;
-            $order->etddate = $this->etddate;
-            $order->etadate = $this->etadate;
+            $order->order_date = Carbon::createFromFormat('d/m/Y', $this->order_date)->format('Y-m-d');
+            $order->stufingdate = Carbon::createFromFormat('d/m/Y', $this->stufingdate)->format('Y-m-d');
+            $order->etddate = Carbon::createFromFormat('d/m/Y', $this->etddate)->format('Y-m-d');
+            $order->etadate = Carbon::createFromFormat('d/m/Y', $this->etadate)->format('Y-m-d');
             $order->order_unit = $this->unit_id;
             $order->buyer_id = $this->buyer_id['value'];
             $order->updated_by = auth()->user()->id;
@@ -287,27 +288,6 @@ class EditOrderController extends Component
 
     public function print()
     {
-        // $data = collect(DB::select("
-        // SELECT
-        //     tod.processdate,
-        //     tod.po_no,
-        //     tod.order_date,
-        //     mp.code,
-        //     mp.name,
-        //     mp.ketebalan||'x'||mp.diameterlipat||'x'||mp.productlength as dimensi,
-        //     tod.order_qty,
-        //     tod.stufingdate,
-        //     tod.etddate,
-        //     tod.etadate,
-        //     mbu.name as namabuyer
-        // FROM
-        //     tdorder AS tod
-        //     INNER JOIN msproduct AS mp ON mp.ID = tod.product_id
-        //     INNER JOIN msbuyer AS mbu ON mbu.ID = tod.buyer_id
-        // WHERE
-        //     tod.id = $this->orderId
-        // "))->first();
-
         $this->dispatch('redirectToPrint', $this->orderId);
     }
 

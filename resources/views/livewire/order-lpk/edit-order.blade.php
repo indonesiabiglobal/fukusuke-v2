@@ -5,8 +5,6 @@
             <div class="form-group">
                 <div class="input-group">
                     <label class="control-label col-12 col-lg-3 fw-bold text-muted">Tanggal Proses</label>
-                    {{-- <input class="form-control datepicker-input @error('process_date') is-invalid @enderror"
-                        type="date" wire:model="process_date" placeholder="yyyy/mm/dd"/ disabled> --}}
                     <input type="text" class="form-control disabled bg-light" disabled="disabled" wire:model="process_date" required />
                     @error('process_date')
                         <span class="invalid-feedback">{{ $message }}</span>
