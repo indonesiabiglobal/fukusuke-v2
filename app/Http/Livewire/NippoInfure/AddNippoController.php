@@ -385,24 +385,24 @@ class AddNippoController extends Component
                 'status_lpk' => 1,
             ]);
 
+            DB::commit();
+
             $totalAssembly = DB::select("
-            SELECT
-                CASE WHEN x.A1 IS NULL THEN 0 ELSE x.A1 END AS C1
-            FROM
-                (
-                SELECT SUM(panjang_produksi) AS A1
-                FROM
-                    tdproduct_assembly AS ta
-                WHERE
-                    lpk_id = $lpkid->id
-            ) AS x
-            ");
+                        SELECT
+                            CASE WHEN x.A1 IS NULL THEN 0 ELSE x.A1 END AS C1
+                        FROM
+                            (
+                            SELECT SUM(panjang_produksi) AS A1
+                            FROM
+                                tdproduct_assembly AS ta
+                            WHERE
+                                lpk_id = $lpkid->id
+                        ) AS x
+                        ");
 
             TdOrderLpk::where('id', $lpkid->id)->update([
                 'total_assembly_line' => $totalAssembly[0]->c1,
             ]);
-
-            DB::commit();
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
             return redirect()->route('nippo-infure');
         } catch (\Exception $e) {

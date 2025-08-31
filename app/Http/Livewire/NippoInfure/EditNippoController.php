@@ -446,6 +446,13 @@ class EditNippoController extends Component
             $product->updated_by = auth()->user()->username;
 
             $product->status_production = $productGoodsAssembly->isEmpty() ? '0' : '1';
+            $product->save();
+
+            TdProductAssembly::where('id', $this->orderId)->update([
+                'infure_berat_loss' => $totalBerat,
+            ]);
+
+            DB::commit();
 
             $totalAssembly = DB::select("
                 SELECT
@@ -459,17 +466,10 @@ class EditNippoController extends Component
                         lpk_id = $lpkid->id
                 ) AS x
             ");
-            $product->save();
-
-            TdProductAssembly::where('id', $this->orderId)->update([
-                'infure_berat_loss' => $totalBerat,
-            ]);
 
             TdOrderLpk::where('id', $lpkid->id)->update([
-                'total_assembly_line' => $totalAssembly[0]->c1,
+                'total_assembly_line' => $totalAssembly[0]->c1 ,
             ]);
-
-            DB::commit();
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
             return redirect()->route('nippo-infure');
         } catch (\Exception $e) {
