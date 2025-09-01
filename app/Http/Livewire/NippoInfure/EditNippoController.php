@@ -385,7 +385,10 @@ class EditNippoController extends Component
         $lpkid = TdOrderLpk::where('lpk_no', $this->lpk_no)->first();
         $machine = MsMachine::where('machineno', $this->machineno)->first();
         $employe = MsEmployee::where('employeeno', $this->employeeno)->first();
-        $products = MsProduct::where('code', $this->code)->first();
+        $products = MsProduct::select('msproduct.id', 'mpt.harga_sat_infure', 'msproduct.codebarcode')
+                ->join('msproduct_type as mpt', 'msproduct.product_type_id', '=', 'mpt.id')
+                ->where('msproduct.code', $this->code)
+                ->first();
         $totalBerat = TdProductAssemblyLoss::where('product_assembly_id', $this->orderId)
             ->sum('berat_loss');
 
