@@ -606,7 +606,7 @@ class AddNippoController extends Component
 
         if ($maxGentan == null) {
             $this->gentan_no = 1;
-        } else if (!$this->gentan_no) {
+        } else {
             $this->gentan_no = $maxGentan->gentan_no + 1;
         }
     }
