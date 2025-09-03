@@ -417,27 +417,32 @@
                     <div class="form-group mt-1">
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">GZ Dimensi</label>
+                            {{-- A --}}
                             <span class="input-group-text">
                                 A
                             </span>
                             <input required type="text" class="form-control col-12 col-lg-8"
                                 wire:model="gazette_dimension_a" placeholder="0" />
-                            <span class="input-group-text">
-                                C
-                            </span>
-                            <input required type="text" class="form-control col-12 col-lg-8"
-                                wire:model="gazette_dimension_c" placeholder="0" />
-                        </div>
-                    </div>
-                    <div class="form-group mt-1">
-                        <div class="input-group">
-                            <label class="control-label col-12 col-lg-4">-</label>
+
+                            {{-- B --}}
                             <span class="input-group-text">
                                 B
                             </span>
                             <input required type="text" class="form-control col-12 col-lg-8"
                                 wire:model="gazette_dimension_b" placeholder="0" />
+                        </div>
+                    </div>
+                    <div class="form-group mt-1">
+                        <div class="input-group">
+                            <label class="control-label col-12 col-lg-4">-</label>
+                            {{-- C --}}
+                            <span class="input-group-text">
+                                C
+                            </span>
+                            <input required type="text" class="form-control col-12 col-lg-8"
+                                wire:model="gazette_dimension_c" placeholder="0" />
 
+                            {{-- D --}}
                             <span class="input-group-text">
                                 D
                             </span>
@@ -760,8 +765,10 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterPackagingGaiso as $item)
-                                        <option value="{{ $item->id }}" data-custom-properties='{"code": "{{ $item->code }}"}'>
-                                            {{ $item->code }}, {{ $item->box_class == 1 ? 'Khusus' : 'Standar' }}, {{ $item->name }}
+                                        <option value="{{ $item->id }}"
+                                            data-custom-properties='{"code": "{{ $item->code }}"}'>
+                                            {{ $item->code }}, {{ $item->box_class == 1 ? 'Khusus' : 'Standar' }},
+                                            {{ $item->name }}
                                         </option>
                                     @endforeach`
                                 </select>
@@ -782,8 +789,10 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterPackagingBox as $item)
-                                        <option value="{{ $item->id }}" data-custom-properties='{"code": "{{ $item->code }}"}'>
-                                            {{ $item->code }}, {{ $item->box_class == 1 ? 'Khusus' : 'Standar' }}, {{ $item->name }}
+                                        <option value="{{ $item->id }}"
+                                            data-custom-properties='{"code": "{{ $item->code }}"}'>
+                                            {{ $item->code }}, {{ $item->box_class == 1 ? 'Khusus' : 'Standar' }},
+                                            {{ $item->name }}
                                         </option>
                                     @endforeach`
                                 </select>
@@ -804,8 +813,10 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterPackagingInner as $item)
-                                        <option value="{{ $item->id }}" data-custom-properties='{"code": "{{ $item->code }}"}'>
-                                            {{ $item->code }}, {{ $item->box_class == 1 ? 'Khusus' : 'Standar' }}, {{ $item->name }}
+                                        <option value="{{ $item->id }}"
+                                            data-custom-properties='{"code": "{{ $item->code }}"}'>
+                                            {{ $item->code }}, {{ $item->box_class == 1 ? 'Khusus' : 'Standar' }},
+                                            {{ $item->name }}
                                         </option>
                                     @endforeach`
                                 </select>
@@ -826,8 +837,10 @@
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterPackagingLayer as $item)
-                                        <option value="{{ $item->id }}" data-custom-properties='{"code": "{{ $item->code }}"}'>
-                                            {{ $item->code }}, {{ $item->box_class == 1 ? 'Khusus' : 'Standar' }}, {{ $item->name }}
+                                        <option value="{{ $item->id }}"
+                                            data-custom-properties='{"code": "{{ $item->code }}"}'>
+                                            {{ $item->code }}, {{ $item->box_class == 1 ? 'Khusus' : 'Standar' }},
+                                            {{ $item->name }}
                                         </option>
                                     @endforeach`
                                 </select>
@@ -1043,7 +1056,8 @@
             <hr />
             <div class="col-lg-12" style="border-top:1px solid #efefef">
                 <div class="toolbar">
-                    <button id="btnFilter" type="button" class="btn btn-warning w-lg" wire:click="cancel" wire:loading.attr="disabled">
+                    <button id="btnFilter" type="button" class="btn btn-warning w-lg" wire:click="cancel"
+                        wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="cancel">
                             <i class="ri-close-line"> </i> Close
                         </span>
@@ -1058,7 +1072,8 @@
                             </span>
                         </div>
                     </button>
-                    <button type="button" wire:click="store" class="btn btn-success w-lg" wire:loading.attr="disabled">
+                    <button type="button" wire:click="store" class="btn btn-success w-lg"
+                        wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="store">
                             <i class="ri-save-3-line"></i> Save
                         </span>

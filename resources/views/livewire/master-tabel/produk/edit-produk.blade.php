@@ -434,23 +434,23 @@
                             <input required type="text" class="form-control col-12 col-lg-8"
                                 wire:model="gazette_dimension_a" placeholder="0" />
 
-                            {{-- C --}}
-                            <span class="input-group-text">
-                                C
-                            </span>
-                            <input required type="text" class="form-control col-12 col-lg-8"
-                                wire:model="gazette_dimension_c" placeholder="0" />
-                        </div>
-                    </div>
-                    <div class="form-group mt-1">
-                        <div class="input-group">
-                            <label class="control-label col-12 col-lg-4">-</label>
                             {{-- B --}}
                             <span class="input-group-text">
                                 B
                             </span>
                             <input required type="text" class="form-control col-12 col-lg-8"
                                 wire:model="gazette_dimension_b" placeholder="0" />
+                        </div>
+                    </div>
+                    <div class="form-group mt-1">
+                        <div class="input-group">
+                            <label class="control-label col-12 col-lg-4">-</label>
+                            {{-- C --}}
+                            <span class="input-group-text">
+                                C
+                            </span>
+                            <input required type="text" class="form-control col-12 col-lg-8"
+                                wire:model="gazette_dimension_c" placeholder="0" />
 
                             {{-- D --}}
                             <span class="input-group-text">
