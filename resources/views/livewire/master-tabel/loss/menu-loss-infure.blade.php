@@ -56,21 +56,22 @@
                                                         <option value="{{ $item->id }}">{{ $item->name }}</option>
                                                     @endforeach
                                                 </select>
-                                                {{-- @error('loss_class_id')
+                                                @error('loss_class_id')
                                                     <span class="invalid-feedback">{{ $message }}</span>
-                                                @enderror --}}
+                                                @enderror
                                             </div>
                                         </div>
                                         <div class="col-xxl-12">
                                             <div wire:ignore>
-                                                <label for="name" class="form-label">Kategory Loss</label>
+                                                <label for="name" class="form-label">Kategori Loss</label>
                                                 <select
                                                     class="form-control @error('loss_category_code') is-invalid @enderror"
                                                     wire:model.defer="loss_category_code" data-choices
                                                     data-choices-sorting-false data-choices-removeItem data-choices-search-field-label>
                                                     <option value="">- All -</option>
-                                                    <option value="0">Loss Produksi</option>
-                                                    <option value="1">Loss Kebutuhan</option>
+                                                    @foreach ($categories as $item)
+                                                        <option value="{{ $item->code }}">{{ $item->name }}</option>
+                                                    @endforeach
                                                 </select>
                                                 @error('loss_category_code')
                                                     <span class="invalid-feedback">{{ $message }}</span>

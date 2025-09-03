@@ -33,9 +33,6 @@ class Machine extends Component
 
     public function mount()
     {
-        //     $this->machines = DB::table('msmachine')
-        //         ->get(['id', 'machinename', 'machineno', 'department_id', 'product_group_id', 'capacity_kg', 'capacity_lembar', 'status', 'updated_by', 'updated_on']);
-
         if (empty($this->sortingTable)) {
             $this->sortingTable = [[2, 'asc']];
         }
@@ -80,8 +77,8 @@ class Machine extends Component
             DB::table('msmachine')->insert([
                 'machineno' => $this->machineno,
                 'machinename' => $this->machinename,
-                'department_id' => $this->department_id['value'],
-                'product_group_id' => $this->product_group_id['value'],
+                'department_id' => $this->department_id['value'] ?? $this->department_id,
+                'product_group_id' => $this->product_group_id['value'] ?? $this->product_group_id,
                 'capacity_kg' => $this->capacity_kg,
                 'capacity_lembar' => $this->capacity_lembar,
                 'capacity_size' => $this->capacity_size,

@@ -37,8 +37,6 @@ class KatanukiController extends Component
 
     public function mount()
     {
-        //     $this->katanukis = DB::table('mskatanuki')
-        //         ->get(['id', 'code', 'name', 'filename', 'status', 'updated_by', 'updated_on']);
         if (empty($this->sortingTable)) {
             $this->sortingTable = [[2, 'asc']];
         }
@@ -75,17 +73,22 @@ class KatanukiController extends Component
         $this->validate([
             'code' => 'required|max:10|unique:mskatanuki,code',
             'name' => 'required',
-            // 'photo' => 'required|image|max:10240',
         ]);
+
+        try {
+            $this->validate([
+                'photo' => 'required|image|max:10240',
+            ]);
+        } catch (\Exception $e) {
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'The photo field is required and must be an image file not exceeding 10MB.']);
+            return;
+        }
 
         DB::beginTransaction();
         try {
             $statusActive = 1;
             // menyimpan file image ke storage
             if (isset($this->photo)) {
-                // Membuat nama file custom, misalnya menambahkan timestamp atau ID unik
-                // $originalName = pathinfo($this->photo->getClientOriginalName(), PATHINFO_FILENAME);
-                // $extension = $this->photo->getClientOriginalExtension();
                 $filename = Str::random(20) . '.' . $this->photo->getClientOriginalExtension();
 
                 // Menyimpan file dengan nama custom
@@ -125,7 +128,7 @@ class KatanukiController extends Component
         $this->idUpdate = $id;
         $this->status = $katanuki->status;
         $this->statusIsVisible = $katanuki->status == 0 ? true : false;
-        $this->skipRender();
+        // $this->skipRender();
         $this->dispatch('showModalUpdate');
     }
 

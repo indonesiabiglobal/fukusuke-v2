@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\MasterTabel\Loss;
 
+use App\Models\MsLossCategory;
 use App\Models\MsLossClass;
 use App\Models\MsLossInfure;
 use Carbon\Carbon;
@@ -27,6 +28,7 @@ class MenuLossInfureController extends Component
     public $idUpdate;
     public $idDelete;
     public $class;
+    public $categories;
     public $status;
     public $statusIsVisible = false;
     #[Session]
@@ -40,7 +42,8 @@ class MenuLossInfureController extends Component
     public function mount()
     {
         $this->class = MsLossClass::get();
-    
+        $this->categories = MsLossCategory::get();
+
         if (empty($this->sortingTable)) {
             $this->sortingTable = [[2, 'asc']];
         }

@@ -175,7 +175,7 @@
                                         <div class="col-xxl-12">
                                             <div>
                                                 <label for="machineno" class="form-label">Nomor Machine</label>
-                                                <input type="number"
+                                                <input type="text"
                                                     class="form-control @error('machineno') is-invalid @enderror"
                                                     id="machineno" wire:model.defer="machineno" maxlength="5"
                                                     placeholder="Kode/Nomor">
@@ -318,7 +318,7 @@
                 </div>
                 {{-- end modal machine --}}
 
-                {{-- modal edit machine --}}
+                {{-- modal jadwal machine --}}
                 <div class="modal fade" id="modal-jadwal" tabindex="-1" aria-labelledby="modal-editJadwal"
                     aria-modal="true" wire:ignore.self>
                     <div class="modal-dialog">
@@ -335,7 +335,7 @@
                                         <div class="col-xxl-12">
                                             <div>
                                                 <label for="machineno" class="form-label">Nomor Machine</label>
-                                                <input type="number"
+                                                <input type="text"
                                                     class="form-control @error('machineno') is-invalid @enderror"
                                                     id="machineno" wire:model.defer="machineno" maxlength="5"
                                                     placeholder="Kode/Nomor">

@@ -294,7 +294,6 @@ class AddSeitaiController extends Component
             $products = MsProduct::where('code', $this->code)->first();
 
             $lastQty = TdProductGoods::where('lpk_id', $lpkid->id)
-                // ->whereDate('created_on', Carbon::today())
                 ->sum('qty_produksi');
 
             $seqno = 1;
