@@ -84,7 +84,7 @@ class EditNippoController extends Component
             ->join('tdorderlpk AS tdol', 'tda.lpk_id', '=', 'tdol.id')
             ->join('msmachine AS msm', 'msm.id', '=', 'tda.machine_id')
             ->join('msemployee AS mse', 'mse.id', '=', 'tda.employee_id')
-            ->join('msproduct AS msp', 'msp.id', '=', 'tda.product_id')
+            ->join('msproduct AS msp', 'msp.id', '=', 'tdol.product_id')
             ->join('tdorder AS tdo', 'tdol.order_id', '=', 'tdo.id')
             ->leftJoin('msproduct_type as mt', 'mt.id', '=', 'msp.product_type_id')
             ->leftJoin('tdproduct_goods as tdpg', 'tdpg.lpk_id', '=', 'tdol.id')
