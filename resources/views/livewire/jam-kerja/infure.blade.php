@@ -1,573 +1,546 @@
 <div>
     <div class="row filter-section">
-    <div class="col-12 col-lg-7">
-        <div class="row">
-            <div class="col-12 col-lg-3">
-                <label class="form-label text-muted fw-bold">Tanggal Proses</label>
-            </div>
-            <div class="col-12 col-lg-9 mb-1">
-                <div class="form-group">
+        <div class="col-12 col-lg-7">
+            <div class="row">
+                <div class="col-12 col-lg-3">
+                    <label class="form-label text-muted fw-bold">Filter Tanggal</label>
+                </div>
+                <div class="col-12 col-lg-9 mb-1">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="col-3">
+                                <select class="form-select" style="padding:0.44rem" wire:model.defer="transaksi">
+                                    <option value="1">Produksi</option>
+                                    <option value="2">Proses</option>
+                                </select>
+                            </div>
+                            <div class="col-9">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <input wire:model.defer="tglMasuk" type="text" class="form-control"
+                                            style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
+                                        <span class="input-group-text py-0">
+                                            <i class="ri-calendar-event-fill fs-4"></i>
+                                        </span>
+
+                                        <input wire:model.defer="tglKeluar" type="text" class="form-control"
+                                            style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
+                                        <span class="input-group-text py-0">
+                                            <i class="ri-calendar-event-fill fs-4"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-3">
+                    <label class="form-label text-muted fw-bold">Search</label>
+                </div>
+                <div class="col-12 col-lg-9">
                     <div class="input-group">
-                        <div class="col-12">
-                            <div class="form-group">
-                                <div class="input-group">
-                                    <input wire:model.defer="tglMasuk" type="text" class="form-control"
-                                        style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
-                                    <span class="input-group-text py-0">
-                                        <i class="ri-calendar-event-fill fs-4"></i>
-                                    </span>
-
-                                    <input wire:model.defer="tglKeluar" type="text" class="form-control"
-                                        style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
-                                    <span class="input-group-text py-0">
-                                        <i class="ri-calendar-event-fill fs-4"></i>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
+                        <input wire:model.defer="searchTerm" class="form-control"style="padding:0.44rem" type="text"
+                            placeholder="search kode atau nama" />
                     </div>
                 </div>
             </div>
-            <div class="col-12 col-lg-3">
-                <label class="form-label text-muted fw-bold">Search</label>
-            </div>
-            <div class="col-12 col-lg-9">
-                <div class="input-group">
-                    <input wire:model.defer="searchTerm" class="form-control"style="padding:0.44rem" type="text"
-                        placeholder="search kode atau nama" />
-                </div>
-            </div>
         </div>
-    </div>
 
-    <div class="col-12 col-lg-5">
-        <div class="row">
-            <div class="col-12 col-lg-2">
-                <label class="form-label text-muted fw-bold">Mesin</label>
-            </div>
-            <div class="col-12 col-lg-10">
-                <div class="mb-1" wire:ignore>
-                    <select class="form-control" wire:model.defer="machine_id" data-choices data-choices-sorting-false
-                        data-choices-removeItem data-choices-search-field-label>
-                        <option value="">- All -</option>
-                        @foreach ($machine as $item)
-                            <option value="{{ $item->id }}" @if ($item->id == ($machine_id['value'] ?? null)) selected @endif>
-                                {{ $item->machineno }}</option>
-                        @endforeach
-                    </select>
+        <div class="col-12 col-lg-5">
+            <div class="row">
+                <div class="col-12 col-lg-2">
+                    <label class="form-label text-muted fw-bold">Mesin</label>
                 </div>
-            </div>
-            <div class="col-12 col-lg-2">
-                <label class="form-label text-muted fw-bold">Shift</label>
-            </div>
-            <div class="col-12 col-lg-10">
-                <div class="mb-1" wire:ignore>
-                    <select class="form-control" wire:model.defer="work_shift_filter" data-choices
-                        data-choices-sorting-false data-choices-removeItem data-choices-search-field-label>
-                        <option value="">- All -</option>
-                        @foreach ($workShift as $item)
-                            <option value="{{ $item->id }}" @if ($item->id == ($work_shift_filter['value'] ?? null)) selected @endif>
-                                Shift-{{ $item->work_shift }}</option>
-                        @endforeach
-                    </select>
+                <div class="col-12 col-lg-10">
+                    <div class="mb-1" wire:ignore>
+                        <select class="form-control" wire:model.defer="machine_id" data-choices
+                            data-choices-sorting-false data-choices-removeItem data-choices-search-field-label>
+                            <option value="">- All -</option>
+                            @foreach ($machine as $item)
+                                <option value="{{ $item->id }}" @if ($item->id == ($machine_id['value'] ?? null)) selected @endif>
+                                    {{ $item->machineno }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-2">
+                    <label class="form-label text-muted fw-bold">Shift</label>
+                </div>
+                <div class="col-12 col-lg-10">
+                    <div class="mb-1" wire:ignore>
+                        <select class="form-control" wire:model.defer="work_shift_filter" data-choices
+                            data-choices-sorting-false data-choices-removeItem data-choices-search-field-label>
+                            <option value="">- All -</option>
+                            @foreach ($workShift as $item)
+                                <option value="{{ $item->id }}" @if ($item->id == ($work_shift_filter['value'] ?? null)) selected @endif>
+                                    Shift-{{ $item->work_shift }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="col-lg-10 mt-2">
-        <div class="row">
-            <div class="col-12 col-lg-6">
-                <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1"
-                    wire:loading.attr="disabled">
-                    <span wire:loading.remove wire:target="search">
-                        <i class="ri-search-line"></i> Filter
-                    </span>
-                    <div wire:loading wire:target="search">
-                        <span class="d-flex align-items-center">
-                            <span class="spinner-border flex-shrink-0" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </span>
-                            <span class="flex-grow-1 ms-1">
-                                Loading...
-                            </span>
+        <div class="col-lg-10 mt-2">
+            <div class="row">
+                <div class="col-12 col-lg-6">
+                    <button wire:click="search" type="button" class="btn btn-primary btn-load w-lg p-1"
+                        wire:loading.attr="disabled">
+                        <span wire:loading.remove wire:target="search">
+                            <i class="ri-search-line"></i> Filter
                         </span>
-                    </div>
-                </button>
-
-                <button type="button" class="btn btn-success w-lg p-1" wire:click="showModalCreate">
-                    <i class="ri-add-line"> </i> Add
-                </button>
-
-                <div class="modal fade" id="modal-add" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-                    role="dialog" aria-labelledby="modal-add" aria-hidden="true" wire:ignore.self>
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h2 class="h6 modal-title">Add Jam Kerja Infure</h2>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-                                    wire:click="closeModal"></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="row">
-                                    <div class="col-lg-12 mb-1">
-                                        <label for="">Tanggal</label>
-                                        <div class="form-group" style="margin-left:1px; white-space:nowrap">
-                                            <div class="input-group">
-                                                <input class="form-control" style="padding:0.44rem"
-                                                    data-provider="flatpickr" data-date-format="d-m-Y" type="text"
-                                                    wire:model.defer="working_date" placeholder="yyyy/mm/dd" />
-                                                <span class="input-group-text py-0">
-                                                    <i class="ri-calendar-event-fill fs-4"></i>
-                                                </span>
-                                                @error('working_date')
-                                                    <span class="invalid-feedback">{{ $message }}</span>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-12 mb-1">
-                                        <div class="form-group">
-                                            <label>Shift </label>
-                                            <div class="input-group col-md-9 col-xs-8">
-                                                <input class="form-control" type="text"
-                                                    wire:model.defer="work_shift" placeholder="..." maxlength="1" max="3" />
-                                                @error('work_shift')
-                                                    <span class="invalid-feedback">{{ $message }}</span>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-12 mb-1">
-                                        <div class="form-group">
-                                            <label>Nomor Mesin </label>
-                                            <div class="input-group">
-                                                <input class="form-control" type="text" max="6"
-                                                    x-on:keydown.tab="$event.preventDefault(); $refs.employeenoInput.focus();"
-                                                    wire:model.change="machineno" placeholder="..." />
-                                                <input class="form-control readonly bg-light" readonly="readonly"
-                                                    type="text" wire:model="machinename" placeholder="..." />
-                                                @error('machineno')
-                                                    <span class="invalid-feedback">{{ $message }}</span>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-12 mb-1">
-                                        <div class="form-group">
-                                            <label>Petugas </label>
-                                            <div class="input-group col-md-9 col-xs-8">
-                                                <input class="form-control" wire:model.change="employeeno"
-                                                    max="8"
-                                                    x-on:keydown.tab="$event.preventDefault(); $refs.workHourInput.focus();"
-                                                    x-ref="employeenoInput" type="text" placeholder="..." />
-                                                <input class="form-control readonly bg-light" readonly="readonly"
-                                                    type="text" wire:model="empname" placeholder="..." />
-                                                @error('employeeno')
-                                                    <span class="invalid-feedback">{{ $message }}</span>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-12 mb-1">
-                                        <label for="">Jam Kerja</label>
-                                        <div class="form-group" style="margin-left:1px; white-space:nowrap">
-                                            <input class="form-control" wire:model.lazy="work_hour" type="time"
-                                                x-on:keydown.tab="$event.preventDefault(); $refs.showModalJamMatiMesin.focus();"
-                                                x-ref="workHourInput" placeholder="hh:mm"
-                                                wire:lazy="validateWorkHour" max="08:00">
-                                            @error('work_hour')
-                                                <span class="invalid-feedback">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-12 mb-1">
-                                        <label for="">Lama Mesin Mati</label>
-                                        <div class="form-group" style="margin-left:1px; white-space:nowrap">
-                                            <input class="form-control bg-light readonly" wire:model="totalOffHour"
-                                                wire:model="validateWorkHour" type="time" placeholder="hh:mm"
-                                                readonly="readonly">
-                                            @error('totalOffHour')
-                                                <span class="invalid-feedback">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-12 mb-1">
-                                        <label for="">Jam Mati Mesin</label>
-                                        <div class="border-0 shadow">
-                                            <div class="card-body">
-                                                <div class="table-responsive">
-                                                    <table class="table table-centered table-nowrap mb-0 rounded">
-                                                        <thead class="table-light">
-                                                            <tr>
-                                                                <th class="border-0 rounded-start">Action</th>
-                                                                <th class="border-0">Kode</th>
-                                                                <th class="border-0">Nama</th>
-                                                                <th class="border-0">Jam Mati Mesin</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            @forelse ($dataJamMatiMesin as $index => $item)
-                                                                <tr wire:key="jam-mati-{{ $item['id'] ?? $index }}">
-                                                                    <td>
-                                                                        <button type="button" class="btn btn-danger"
-                                                                            wire:click="deleteJamMatiMesin({{ $item['id'] }})"
-                                                                            wire:loading.attr="disabled">
-                                                                            <span wire:loading.remove
-                                                                                wire:target="deleteJamMatiMesin({{ $item['id'] }})">
-                                                                                <i class="fa fa-trash"></i> Delete
-                                                                            </span>
-                                                                            <div wire:loading
-                                                                                wire:target="deleteJamMatiMesin({{ $item['id'] }})">
-                                                                                <span
-                                                                                    class="d-flex align-items-center">
-                                                                                    <span
-                                                                                        class="spinner-border flex-shrink-0"
-                                                                                        role="status">
-                                                                                        <span
-                                                                                            class="visually-hidden">Loading...</span>
-                                                                                    </span>
-                                                                                    <span class="flex-grow-1 ms-1">
-                                                                                        Loading...
-                                                                                    </span>
-                                                                                </span>
-                                                                            </div>
-                                                                        </button>
-                                                                    </td>
-                                                                    <td>{{ $item['code'] }}</td>
-                                                                    <td>{{ $item['name'] ?? '' }}</td>
-                                                                    <td>{{ $item['off_hour'] ?? '00:00' }}</td>
-                                                                </tr>
-                                                            @empty
-                                                                <tr>
-                                                                    <td colspan="6" class="text-center">
-                                                                        No results found</td>
-                                                                </tr>
-                                                            @endforelse
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div
-                                class="modal-footer d-flex justify-content-between align-items-center flex-wrap gap-2">
-                                <!-- Left side button -->
-                                <button type="button" class="btn btn-outline-success"
-                                    wire:click="showModalJamMatiMesin" x-ref="showModalJamMatiMesin">
-                                    <i class="ri-add-line me-1"></i> Add Jam Mati
-                                </button>
-
-                                <!-- Right side actions -->
-                                <div class="d-flex gap-2 align-items-center">
-                                    <button type="button" class="btn btn-success d-flex align-items-center"
-                                        wire:click="save" wire:loading.attr="disabled" x-ref="save">
-                                        <span wire:loading.remove wire:target="save">
-                                            <i class="ri-save-3-line"></i> Save
-                                        </span>
-                                        <div wire:loading wire:target="save">
-                                            <span class="d-flex align-items-center">
-                                                <span class="spinner-border spinner-border-sm me-1" role="status"
-                                                    aria-hidden="true"></span>
-                                                Saving...
-                                            </span>
-                                        </div>
-                                    </button>
-                                    <!-- Close Button -->
-                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"
-                                        wire:click="closeModal">
-                                        Close
-                                    </button>
-                                </div>
-                            </div>
+                        <div wire:loading wire:target="search">
+                            <span class="d-flex align-items-center">
+                                <span class="spinner-border flex-shrink-0" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </span>
+                                <span class="flex-grow-1 ms-1">
+                                    Loading...
+                                </span>
+                            </span>
                         </div>
-                    </div>
-                </div>
-                <div class="modal fade" id="modal-edit" data-bs-backdrop="static" data-bs-keyboard="false"
-                    tabindex="-1" role="dialog" aria-labelledby="modal-edit" aria-hidden="true" wire:ignore.self>
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h2 class="h6 modal-title">Edit Jam Kerja Infure</h2>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-                                    wire:click="closeModal"></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="row">
-                                    <div class="col-lg-12 mb-1">
-                                        <label for="">Tanggal</label>
-                                        <div class="form-group" style="margin-left:1px; white-space:nowrap">
-                                            <div class="input-group">
-                                                <input class="form-control datepicker-input" type="date"
-                                                    wire:model.defer="working_date" placeholder="yyyy/mm/dd" />
-                                                @error('working_date')
+                    </button>
+
+                    <button type="button" class="btn btn-success w-lg p-1" wire:click="showModalCreate">
+                        <i class="ri-add-line"> </i> Add
+                    </button>
+
+                    <div class="modal fade" id="modal-add" data-bs-backdrop="static" data-bs-keyboard="false"
+                        tabindex="-1" role="dialog" aria-labelledby="modal-add" aria-hidden="true" wire:ignore.self>
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h2 class="h6 modal-title">Add Jam Kerja Infure</h2>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                                        wire:click="closeModal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-lg-12 mb-1">
+                                            <label for="">Tanggal</label>
+                                            <div class="form-group" style="margin-left:1px; white-space:nowrap">
+                                                <div class="input-group">
+                                                    <input class="form-control" style="padding:0.44rem"
+                                                        data-provider="flatpickr" data-date-format="d-m-Y"
+                                                        type="text" wire:model.defer="working_date"
+                                                        placeholder="yyyy/mm/dd" />
+                                                    <span class="input-group-text py-0">
+                                                        <i class="ri-calendar-event-fill fs-4"></i>
+                                                    </span>
+                                                    @error('working_date')
+                                                        <span class="invalid-feedback">{{ $message }}</span>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 mb-1">
+                                            <div class="form-group">
+                                                <label>Shift </label>
+                                                <div class="input-group col-md-9 col-xs-8">
+                                                    <input class="form-control" type="text"
+                                                        wire:model.defer="work_shift" placeholder="..."
+                                                        maxlength="1" max="3" />
+                                                    @error('work_shift')
+                                                        <span class="invalid-feedback">{{ $message }}</span>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 mb-1">
+                                            <div class="form-group">
+                                                <label>Nomor Mesin </label>
+                                                <div class="input-group">
+                                                    <input class="form-control" type="text" max="6"
+                                                        x-on:keydown.tab="$event.preventDefault(); $refs.employeenoInput.focus();"
+                                                        wire:model.change="machineno" placeholder="..." />
+                                                    <input class="form-control readonly bg-light" readonly="readonly"
+                                                        type="text" wire:model="machinename" placeholder="..." />
+                                                    @error('machineno')
+                                                        <span class="invalid-feedback">{{ $message }}</span>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 mb-1">
+                                            <div class="form-group">
+                                                <label>Petugas </label>
+                                                <div class="input-group col-md-9 col-xs-8">
+                                                    <input class="form-control" wire:model.change="employeeno"
+                                                        max="8"
+                                                        x-on:keydown.tab="$event.preventDefault(); $refs.workHourInput.focus();"
+                                                        x-ref="employeenoInput" type="text" placeholder="..." />
+                                                    <input class="form-control readonly bg-light" readonly="readonly"
+                                                        type="text" wire:model="empname" placeholder="..." />
+                                                    @error('employeeno')
+                                                        <span class="invalid-feedback">{{ $message }}</span>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 mb-1">
+                                            <label for="">Jam Kerja</label>
+                                            <div class="form-group" style="margin-left:1px; white-space:nowrap">
+                                                <input class="form-control" wire:model.lazy="work_hour"
+                                                    type="time"
+                                                    x-on:keydown.tab="$event.preventDefault(); $refs.showModalJamMatiMesin.focus();"
+                                                    x-ref="workHourInput" placeholder="hh:mm"
+                                                    wire:lazy="validateWorkHour" max="08:00">
+                                                @error('work_hour')
                                                     <span class="invalid-feedback">{{ $message }}</span>
                                                 @enderror
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="col-lg-12 mb-1">
-                                        <div class="form-group">
-                                            <label>Shift </label>
-                                            <div class="input-group col-md-9 col-xs-8">
-                                                <input class="form-control" type="text"
-                                                    wire:model.defer="work_shift" placeholder="..." maxlength="1" max="3" />
-                                                @error('work_shift')
+                                        <div class="col-lg-12 mb-1">
+                                            <label for="">Lama Mesin Mati</label>
+                                            <div class="form-group" style="margin-left:1px; white-space:nowrap">
+                                                <input class="form-control bg-light readonly"
+                                                    wire:model="totalOffHour" wire:model="validateWorkHour"
+                                                    type="time" placeholder="hh:mm" readonly="readonly">
+                                                @error('totalOffHour')
                                                     <span class="invalid-feedback">{{ $message }}</span>
                                                 @enderror
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="col-lg-12 mb-1">
-                                        <div class="form-group">
-                                            <label>Nomor Mesin </label>
-                                            <div class="input-group">
-                                                <input class="form-control" type="text" max="6"
-                                                    x-on:keydown.tab="$event.preventDefault(); $refs.employeenoEditInput.focus();"
-                                                    wire:model.change="machineno" placeholder="..." />
-                                                <input class="form-control readonly" readonly="readonly"
-                                                    type="text" wire:model="machinename" placeholder="..." />
-                                                @error('machineno')
-                                                    <span class="invalid-feedback">{{ $message }}</span>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-12 mb-1">
-                                        <div class="form-group">
-                                            <label>Petugas </label>
-                                            <div class="input-group col-md-9 col-xs-8">
-                                                <input class="form-control" wire:model.change="employeeno"
-                                                    max="8"
-                                                    x-on:keydown.tab="$event.preventDefault(); $refs.workHourEditInput.focus();"
-                                                    x-ref="employeenoEditInput" type="text" placeholder="..." />
-                                                <input class="form-control readonly" readonly="readonly"
-                                                    type="text" wire:model="empname" placeholder="..." />
-                                                @error('employeeno')
-                                                    <span class="invalid-feedback">{{ $message }}</span>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-12 mb-1">
-                                        <label for="">Jam Kerja</label>
-                                        <div class="form-group" style="margin-left:1px; white-space:nowrap">
-                                            <input class="form-control" wire:model="work_hour" type="time"
-                                                x-on:keydown.tab="$event.preventDefault(); $refs.offHourEditInput.focus();"
-                                                x-ref="workHourEditInput" placeholder="hh:mm"
-                                                wire:change="validateWorkHour" max="08:00">
-                                            @error('work_hour')
-                                                <span class="invalid-feedback">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-12 mb-1">
-                                        <label for="">Lama Mesin Mati</label>
-                                        <div class="form-group" style="margin-left:1px; white-space:nowrap">
-                                            <input class="form-control readonly bg-light" wire:model="totalOffHour"
-                                                wire:change="validateWorkHour" type="time" readonly="readonly"
-                                                x-ref="offHourEditInput" placeholder="hh:mm">
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-12 mb-1">
-                                        <label for="">Jam Mati Mesin</label>
-                                        <div class="border-0 shadow">
-                                            <div class="card-body">
-                                                <div class="table-responsive">
-                                                    <table class="table table-centered table-nowrap mb-0 rounded">
-                                                        <thead class="table-light">
-                                                            <tr>
-                                                                <th class="border-0 rounded-start">Action</th>
-                                                                <th class="border-0">Kode</th>
-                                                                <th class="border-0">Nama</th>
-                                                                <th class="border-0">Jam Mati Mesin</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            @forelse ($dataJamMatiMesin as $index => $item)
-                                                                <tr wire:key="jam-mati-{{ $item['id'] ?? $index }}">
-                                                                    <td>
-                                                                        <button type="button" class="btn btn-danger"
-                                                                            wire:click="deleteJamMatiMesin({{ $item['id'] }})"
-                                                                            wire:loading.attr="disabled">
-                                                                            <span wire:loading.remove
-                                                                                wire:target="deleteJamMatiMesin({{ $item['id'] }})">
-                                                                                <i class="fa fa-trash"></i> Delete
-                                                                            </span>
-                                                                            <div wire:loading
-                                                                                wire:target="deleteJamMatiMesin({{ $item['id'] }})">
-                                                                                <span
-                                                                                    class="d-flex align-items-center">
-                                                                                    <span
-                                                                                        class="spinner-border flex-shrink-0"
-                                                                                        role="status">
-                                                                                        <span
-                                                                                            class="visually-hidden">Loading...</span>
-                                                                                    </span>
-                                                                                    <span class="flex-grow-1 ms-1">
-                                                                                        Loading...
-                                                                                    </span>
-                                                                                </span>
-                                                                            </div>
-                                                                        </button>
-                                                                    </td>
-                                                                    <td>{{ $item['code'] }}</td>
-                                                                    <td>{{ $item['name'] ?? '' }}</td>
-                                                                    <td>{{ $item['off_hour'] ?? '00:00' }}</td>
-                                                                </tr>
-                                                            @empty
+                                        <div class="col-lg-12 mb-1">
+                                            <label for="">Jam Mati Mesin</label>
+                                            <div class="border-0 shadow">
+                                                <div class="card-body">
+                                                    <div class="table-responsive">
+                                                        <table class="table table-centered table-nowrap mb-0 rounded">
+                                                            <thead class="table-light">
                                                                 <tr>
-                                                                    <td colspan="6" class="text-center">
-                                                                        No results found</td>
+                                                                    <th class="border-0 rounded-start">Action</th>
+                                                                    <th class="border-0">Kode</th>
+                                                                    <th class="border-0">Nama</th>
+                                                                    <th class="border-0">Jam Mati Mesin</th>
                                                                 </tr>
-                                                            @endforelse
-                                                        </tbody>
-                                                    </table>
+                                                            </thead>
+                                                            <tbody>
+                                                                @forelse ($dataJamMatiMesin as $index => $item)
+                                                                    <tr
+                                                                        wire:key="jam-mati-{{ $item['id'] ?? $index }}">
+                                                                        <td>
+                                                                            <button type="button"
+                                                                                class="btn btn-danger"
+                                                                                wire:click="deleteJamMatiMesin({{ $item['id'] }})"
+                                                                                wire:loading.attr="disabled">
+                                                                                <span wire:loading.remove
+                                                                                    wire:target="deleteJamMatiMesin({{ $item['id'] }})">
+                                                                                    <i class="fa fa-trash"></i> Delete
+                                                                                </span>
+                                                                                <div wire:loading
+                                                                                    wire:target="deleteJamMatiMesin({{ $item['id'] }})">
+                                                                                    <span
+                                                                                        class="d-flex align-items-center">
+                                                                                        <span
+                                                                                            class="spinner-border flex-shrink-0"
+                                                                                            role="status">
+                                                                                            <span
+                                                                                                class="visually-hidden">Loading...</span>
+                                                                                        </span>
+                                                                                        <span class="flex-grow-1 ms-1">
+                                                                                            Loading...
+                                                                                        </span>
+                                                                                    </span>
+                                                                                </div>
+                                                                            </button>
+                                                                        </td>
+                                                                        <td>{{ $item['code'] }}</td>
+                                                                        <td>{{ $item['name'] ?? '' }}</td>
+                                                                        <td>{{ $item['off_hour'] ?? '00:00' }}</td>
+                                                                    </tr>
+                                                                @empty
+                                                                    <tr>
+                                                                        <td colspan="6" class="text-center">
+                                                                            No results found</td>
+                                                                    </tr>
+                                                                @endforelse
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div
-                                class="modal-footer d-flex justify-content-between align-items-center flex-wrap gap-2">
-                                <!-- Left side button -->
-                                <button type="button" class="btn btn-outline-success"
-                                    wire:click="showModalJamMatiMesin" x-ref="showModalJamMatiMesin">
-                                    <i class="ri-add-line me-1"></i> Add Jam Mati
-                                </button>
-                                <div class="d-flex gap-2 align-items-center">
-                                    <button type="button" class="btn btn-success d-flex align-items-center"
-                                        wire:click="save" wire:loading.attr="disabled" x-ref="saveEdit">
-                                        <span wire:loading.remove wire:target="save">
-                                            <i class="ri-save-3-line"></i> Save
-                                        </span>
-                                        <div wire:loading wire:target="save">
-                                            <span class="d-flex align-items-center">
-                                                <span class="spinner-border flex-shrink-0" role="status">
-                                                    <span class="visually-hidden">Saving...</span>
-                                                </span>
-                                                <span class="flex-grow-1 ms-1">
+                                <div
+                                    class="modal-footer d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                    <!-- Left side button -->
+                                    <button type="button" class="btn btn-outline-success"
+                                        wire:click="showModalJamMatiMesin" x-ref="showModalJamMatiMesin">
+                                        <i class="ri-add-line me-1"></i> Add Jam Mati
+                                    </button>
+
+                                    <!-- Right side actions -->
+                                    <div class="d-flex gap-2 align-items-center">
+                                        <button type="button" class="btn btn-success d-flex align-items-center"
+                                            wire:click="save" wire:loading.attr="disabled" x-ref="save">
+                                            <span wire:loading.remove wire:target="save">
+                                                <i class="ri-save-3-line"></i> Save
+                                            </span>
+                                            <div wire:loading wire:target="save">
+                                                <span class="d-flex align-items-center">
+                                                    <span class="spinner-border spinner-border-sm me-1" role="status"
+                                                        aria-hidden="true"></span>
                                                     Saving...
                                                 </span>
-                                            </span>
-                                        </div>
-                                    </button>
-                                    <!-- Close Button -->
-                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"
-                                        wire:click="closeModal">
-                                        Close
-                                    </button>
+                                            </div>
+                                        </button>
+                                        <!-- Close Button -->
+                                        <button type="button" class="btn btn-outline-secondary"
+                                            data-bs-dismiss="modal" wire:click="closeModal">
+                                            Close
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                {{-- Modal Jam Mati --}}
-                <div class="modal fade modal-backdrop-custom" id="modal-jam-mati" tabindex="-1" role="dialog"
-                    aria-labelledby="modal-jam-mati" aria-hidden="true" wire:ignore.self>
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h2 class="h6 modal-title">Add Jam Mati Mesin</h2>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
+                    <div class="modal fade" id="modal-edit" data-bs-backdrop="static" data-bs-keyboard="false"
+                        tabindex="-1" role="dialog" aria-labelledby="modal-edit" aria-hidden="true"
+                        wire:ignore.self>
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h2 class="h6 modal-title">Edit Jam Kerja Infure</h2>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close" wire:click="closeModal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-lg-12 mb-1">
+                                            <label for="">Tanggal</label>
+                                            <div class="form-group" style="margin-left:1px; white-space:nowrap">
+                                                <div class="input-group">
+                                                    <input class="form-control datepicker-input" type="date"
+                                                        wire:model.defer="working_date" placeholder="yyyy/mm/dd" />
+                                                    @error('working_date')
+                                                        <span class="invalid-feedback">{{ $message }}</span>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 mb-1">
+                                            <div class="form-group">
+                                                <label>Shift </label>
+                                                <div class="input-group col-md-9 col-xs-8">
+                                                    <input class="form-control" type="text"
+                                                        wire:model.defer="work_shift" placeholder="..."
+                                                        maxlength="1" max="3" />
+                                                    @error('work_shift')
+                                                        <span class="invalid-feedback">{{ $message }}</span>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 mb-1">
+                                            <div class="form-group">
+                                                <label>Nomor Mesin </label>
+                                                <div class="input-group">
+                                                    <input class="form-control" type="text" max="6"
+                                                        x-on:keydown.tab="$event.preventDefault(); $refs.employeenoEditInput.focus();"
+                                                        wire:model.change="machineno" placeholder="..." />
+                                                    <input class="form-control readonly" readonly="readonly"
+                                                        type="text" wire:model="machinename" placeholder="..." />
+                                                    @error('machineno')
+                                                        <span class="invalid-feedback">{{ $message }}</span>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 mb-1">
+                                            <div class="form-group">
+                                                <label>Petugas </label>
+                                                <div class="input-group col-md-9 col-xs-8">
+                                                    <input class="form-control" wire:model.change="employeeno"
+                                                        max="8"
+                                                        x-on:keydown.tab="$event.preventDefault(); $refs.workHourEditInput.focus();"
+                                                        x-ref="employeenoEditInput" type="text"
+                                                        placeholder="..." />
+                                                    <input class="form-control readonly" readonly="readonly"
+                                                        type="text" wire:model="empname" placeholder="..." />
+                                                    @error('employeeno')
+                                                        <span class="invalid-feedback">{{ $message }}</span>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 mb-1">
+                                            <label for="">Jam Kerja</label>
+                                            <div class="form-group" style="margin-left:1px; white-space:nowrap">
+                                                <input class="form-control" wire:model="work_hour" type="time"
+                                                    x-on:keydown.tab="$event.preventDefault(); $refs.offHourEditInput.focus();"
+                                                    x-ref="workHourEditInput" placeholder="hh:mm"
+                                                    wire:change="validateWorkHour" max="08:00">
+                                                @error('work_hour')
+                                                    <span class="invalid-feedback">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 mb-1">
+                                            <label for="">Lama Mesin Mati</label>
+                                            <div class="form-group" style="margin-left:1px; white-space:nowrap">
+                                                <input class="form-control readonly bg-light"
+                                                    wire:model="totalOffHour" wire:change="validateWorkHour"
+                                                    type="time" readonly="readonly" x-ref="offHourEditInput"
+                                                    placeholder="hh:mm">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 mb-1">
+                                            <label for="">Jam Mati Mesin</label>
+                                            <div class="border-0 shadow">
+                                                <div class="card-body">
+                                                    <div class="table-responsive">
+                                                        <table class="table table-centered table-nowrap mb-0 rounded">
+                                                            <thead class="table-light">
+                                                                <tr>
+                                                                    <th class="border-0 rounded-start">Action</th>
+                                                                    <th class="border-0">Kode</th>
+                                                                    <th class="border-0">Nama</th>
+                                                                    <th class="border-0">Jam Mati Mesin</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @forelse ($dataJamMatiMesin as $index => $item)
+                                                                    <tr
+                                                                        wire:key="jam-mati-{{ $item['id'] ?? $index }}">
+                                                                        <td>
+                                                                            <button type="button"
+                                                                                class="btn btn-danger"
+                                                                                wire:click="deleteJamMatiMesin({{ $item['id'] }})"
+                                                                                wire:loading.attr="disabled">
+                                                                                <span wire:loading.remove
+                                                                                    wire:target="deleteJamMatiMesin({{ $item['id'] }})">
+                                                                                    <i class="fa fa-trash"></i> Delete
+                                                                                </span>
+                                                                                <div wire:loading
+                                                                                    wire:target="deleteJamMatiMesin({{ $item['id'] }})">
+                                                                                    <span
+                                                                                        class="d-flex align-items-center">
+                                                                                        <span
+                                                                                            class="spinner-border flex-shrink-0"
+                                                                                            role="status">
+                                                                                            <span
+                                                                                                class="visually-hidden">Loading...</span>
+                                                                                        </span>
+                                                                                        <span class="flex-grow-1 ms-1">
+                                                                                            Loading...
+                                                                                        </span>
+                                                                                    </span>
+                                                                                </div>
+                                                                            </button>
+                                                                        </td>
+                                                                        <td>{{ $item['code'] }}</td>
+                                                                        <td>{{ $item['name'] ?? '' }}</td>
+                                                                        <td>{{ $item['off_hour'] ?? '00:00' }}</td>
+                                                                    </tr>
+                                                                @empty
+                                                                    <tr>
+                                                                        <td colspan="6" class="text-center">
+                                                                            No results found</td>
+                                                                    </tr>
+                                                                @endforelse
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div
+                                    class="modal-footer d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                    <!-- Left side button -->
+                                    <button type="button" class="btn btn-outline-success"
+                                        wire:click="showModalJamMatiMesin" x-ref="showModalJamMatiMesin">
+                                        <i class="ri-add-line me-1"></i> Add Jam Mati
+                                    </button>
+                                    <div class="d-flex gap-2 align-items-center">
+                                        <button type="button" class="btn btn-success d-flex align-items-center"
+                                            wire:click="save" wire:loading.attr="disabled" x-ref="saveEdit">
+                                            <span wire:loading.remove wire:target="save">
+                                                <i class="ri-save-3-line"></i> Save
+                                            </span>
+                                            <div wire:loading wire:target="save">
+                                                <span class="d-flex align-items-center">
+                                                    <span class="spinner-border flex-shrink-0" role="status">
+                                                        <span class="visually-hidden">Saving...</span>
+                                                    </span>
+                                                    <span class="flex-grow-1 ms-1">
+                                                        Saving...
+                                                    </span>
+                                                </span>
+                                            </div>
+                                        </button>
+                                        <!-- Close Button -->
+                                        <button type="button" class="btn btn-outline-secondary"
+                                            data-bs-dismiss="modal" wire:click="closeModal">
+                                            Close
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="modal-body">
-                                <div class="row">
-                                    {{-- Kode Jam Mati Mesin --}}
-                                    <div class="col-lg-12 mb-1">
-                                        <div class="form-group">
-                                            <label>Kode Jam Mati Mesin</label>
-                                            <div class="input-group col-md-9 col-xs-8">
-                                                <input class="form-control" wire:model.change="jamMatiMesinCode"
-                                                    x-ref="jamMatiMesinCodeInput" type="text" placeholder="..."
-                                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                                                    maxlength="3" autofocus
-                                                    x-on:keydown.tab="$event.preventDefault(); $refs.offHourInput.focus();" />
-                                                @error('jamMatiMesinCode')
+                        </div>
+                    </div>
+
+                    {{-- Modal Jam Mati --}}
+                    <div class="modal fade modal-backdrop-custom" id="modal-jam-mati" tabindex="-1" role="dialog"
+                        aria-labelledby="modal-jam-mati" aria-hidden="true" wire:ignore.self>
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h2 class="h6 modal-title">Add Jam Mati Mesin</h2>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        {{-- Kode Jam Mati Mesin --}}
+                                        <div class="col-lg-12 mb-1">
+                                            <div class="form-group">
+                                                <label>Kode Jam Mati Mesin</label>
+                                                <div class="input-group col-md-9 col-xs-8">
+                                                    <input class="form-control" wire:model.change="jamMatiMesinCode"
+                                                        x-ref="jamMatiMesinCodeInput" type="text"
+                                                        placeholder="..."
+                                                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                                        maxlength="3" autofocus
+                                                        x-on:keydown.tab="$event.preventDefault(); $refs.offHourInput.focus();" />
+                                                    @error('jamMatiMesinCode')
+                                                        <span class="invalid-feedback">{{ $message }}</span>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {{-- Keterangan Jam Mati --}}
+                                        <div class="col-lg-12 mb-1">
+                                            <label for="">Keterangan Jam Mati</label>
+                                            <div class="form-group" style="margin-left:1px; white-space:nowrap">
+                                                <input class="form-control readonly bg-light" readonly="readonly"
+                                                    type="text" wire:model="jamMatiMesinName" placeholder="..." />
+                                            </div>
+                                        </div>
+                                        {{-- Lama Mesin Mati --}}
+                                        <div class="col-lg-12 mb-1">
+                                            <label for="">Lama Mesin Mati</label>
+                                            <div class="form-group" style="margin-left:1px; white-space:nowrap">
+                                                <input class="form-control" wire:model.lazy="off_hour" type="time"
+                                                    x-ref="offHourInput" max="08:00"
+                                                    x-on:keydown.tab="$event.preventDefault(); $refs.addJamMatiMesin.focus();"
+                                                    placeholder="hh:mm">
+                                                @error('off_hour')
                                                     <span class="invalid-feedback">{{ $message }}</span>
                                                 @enderror
                                             </div>
                                         </div>
                                     </div>
-                                    {{-- Keterangan Jam Mati --}}
-                                    <div class="col-lg-12 mb-1">
-                                        <label for="">Keterangan Jam Mati</label>
-                                        <div class="form-group" style="margin-left:1px; white-space:nowrap">
-                                            <input class="form-control readonly bg-light" readonly="readonly"
-                                                type="text" wire:model="jamMatiMesinName" placeholder="..." />
-                                        </div>
-                                    </div>
-                                    {{-- Lama Mesin Mati --}}
-                                    <div class="col-lg-12 mb-1">
-                                        <label for="">Lama Mesin Mati</label>
-                                        <div class="form-group" style="margin-left:1px; white-space:nowrap">
-                                            <input class="form-control" wire:model.lazy="off_hour" type="time"
-                                                x-ref="offHourInput" max="08:00"
-                                                x-on:keydown.tab="$event.preventDefault(); $refs.addJamMatiMesin.focus();"
-                                                placeholder="hh:mm">
-                                            @error('off_hour')
-                                                <span class="invalid-feedback">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
                                 </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-success" wire:click="addJamMatiMesin"
-                                    wire:loading.attr="disabled" x-ref="addJamMatiMesin">
-                                    <span wire:loading.remove wire:target="addJamMatiMesin">
-                                        <i class="ri-save-3-line"></i> Save
-                                    </span>
-                                    <div wire:loading wire:target="addJamMatiMesin">
-                                        <span class="d-flex align-items-center">
-                                            <span class="spinner-border flex-shrink-0" role="status">
-                                                <span class="visually-hidden">Loading...</span>
-                                            </span>
-                                            <span class="flex-grow-1 ms-1">
-                                                Loading...
-                                            </span>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-success" wire:click="addJamMatiMesin"
+                                        wire:loading.attr="disabled" x-ref="addJamMatiMesin">
+                                        <span wire:loading.remove wire:target="addJamMatiMesin">
+                                            <i class="ri-save-3-line"></i> Save
                                         </span>
-                                    </div>
-                                </button>
-                                <button type="button" class="btn btn-link text-gray-600"
-                                    data-bs-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {{-- delete --}}
-                <div id="removModal" class="modal fade zoomIn" tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-                                    id="close-removModal"></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="mt-2 text-center">
-                                    <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop"
-                                        colors="primary:#f7b84b,secondary:#f06548"
-                                        style="width:100px;height:100px"></lord-icon>
-                                    <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
-                                        <h4>Apakah Anda yakin ingin menghapus data ini?</h4>
-                                        <p class="text-muted mx-4 mb-0">Data
-                                            yang dihapus tidak dapat dikembalikan.
-                                        </p>
-                                    </div>
-                                </div>
-                                <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-                                    <button type="button" class="btn w-sm btn-light"
-                                        data-bs-dismiss="modal">Tutup</button>
-                                    <button wire:click="destroy" id="btnCreate" type="button"
-                                        class="btn w-sm btn-danger" id="remove-item" wire:loading.attr="disabled">
-                                        <span wire:loading.remove wire:target="destroy">
-                                            <i class="ri-save-3-line"></i> Ya, Hapus!
-                                        </span>
-                                        <div wire:loading wire:target="destroy">
+                                        <div wire:loading wire:target="addJamMatiMesin">
                                             <span class="d-flex align-items-center">
                                                 <span class="spinner-border flex-shrink-0" role="status">
                                                     <span class="visually-hidden">Loading...</span>
@@ -578,33 +551,79 @@
                                             </span>
                                         </div>
                                     </button>
+                                    <button type="button" class="btn btn-link text-gray-600"
+                                        data-bs-dismiss="modal">Close</button>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    {{-- delete --}}
+                    <div id="removModal" class="modal fade zoomIn" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close" id="close-removModal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="mt-2 text-center">
+                                        <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop"
+                                            colors="primary:#f7b84b,secondary:#f06548"
+                                            style="width:100px;height:100px"></lord-icon>
+                                        <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
+                                            <h4>Apakah Anda yakin ingin menghapus data ini?</h4>
+                                            <p class="text-muted mx-4 mb-0">Data
+                                                yang dihapus tidak dapat dikembalikan.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
+                                        <button type="button" class="btn w-sm btn-light"
+                                            data-bs-dismiss="modal">Tutup</button>
+                                        <button wire:click="destroy" id="btnCreate" type="button"
+                                            class="btn w-sm btn-danger" id="remove-item"
+                                            wire:loading.attr="disabled">
+                                            <span wire:loading.remove wire:target="destroy">
+                                                <i class="ri-save-3-line"></i> Ya, Hapus!
+                                            </span>
+                                            <div wire:loading wire:target="destroy">
+                                                <span class="d-flex align-items-center">
+                                                    <span class="spinner-border flex-shrink-0" role="status">
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </span>
+                                                    <span class="flex-grow-1 ms-1">
+                                                        Loading...
+                                                    </span>
+                                                </span>
+                                            </div>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {{-- end modal delete --}}
                 </div>
-                {{-- end modal delete --}}
             </div>
         </div>
-    </div>
-    <div class="col-lg-2 mt-2 text-end">
-        <button class="btn btn-info w-lg p-1" wire:click="export" type="button" wire:loading.attr="disabled">
-            <span wire:loading.remove wire:target="export">
-                <i class="ri-printer-line"> </i> Print
-            </span>
-            <div wire:loading wire:target="export">
-                <span class="d-flex align-items-center">
-                    <span class="spinner-border flex-shrink-0" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </span>
-                    <span class="flex-grow-1 ms-1">
-                        Loading...
-                    </span>
+        <div class="col-lg-2 mt-2 text-end">
+            <button class="btn btn-info w-lg p-1" wire:click="export" type="button" wire:loading.attr="disabled">
+                <span wire:loading.remove wire:target="export">
+                    <i class="ri-printer-line"> </i> Print
                 </span>
-            </div>
-        </button>
+                <div wire:loading wire:target="export">
+                    <span class="d-flex align-items-center">
+                        <span class="spinner-border flex-shrink-0" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </span>
+                        <span class="flex-grow-1 ms-1">
+                            Loading...
+                        </span>
+                    </span>
+                </div>
+            </button>
+        </div>
     </div>
-</div>
 
     <div class="table-responsive table-card  mt-2  mb-2">
         {{-- toggle column table --}}
@@ -680,6 +699,12 @@
                             checked> Updated
                     </label>
                 </li>
+                <li>
+                    <label style="cursor: pointer;">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="12"
+                            checked> Created
+                    </label>
+                </li>
             </ul>
         </div>
         <table class="table align-middle" id="infureTable">
@@ -697,6 +722,7 @@
                     {{-- <th>Jam Mati Mesin</th> --}}
                     <th>Update By</th>
                     <th>Updated</th>
+                    <th>Created</th>
                 </tr>
             </thead>
             <tbody class="list form-check-all">
@@ -738,17 +764,9 @@
                         </td> --}}
                         <td>{{ $item->updated_by }}</td>
                         <td>{{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y H:i:s') }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->created_on)->format('d M Y H:i:s') }}</td>
                     </tr>
                 @empty
-                    {{-- <tr>
-                        <td colspan="12" class="text-center">
-                            <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
-                                colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
-                            <h5 class="mt-2">Sorry! No Result Found</h5>
-                            <p class="text-muted mb-0">We've searched more than 150+ Orders We did not find any orders
-                                for you search.</p>
-                        </td>
-                    </tr> --}}
                 @endforelse
             </tbody>
         </table>
@@ -772,6 +790,7 @@
             z-index: 1058;
             /* di bawah modal-jam-mati, tapi di atas modal-jam-kerja */
         }
+
         #infureTable.table>:not(caption)>*>* {
             font-size: 13px !important;
             padding: 4px 2px 4px 4px;

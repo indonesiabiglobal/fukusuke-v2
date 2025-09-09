@@ -3,12 +3,18 @@
         <div class="col-12 col-lg-7">
             <div class="row">
                 <div class="col-12 col-lg-3">
-                    <label class="form-label text-muted fw-bold">Tanggal Proses</label>
+                    <label class="form-label text-muted fw-bold">Filter Tanggal</label>
                 </div>
                 <div class="col-12 col-lg-9 mb-1">
                     <div class="form-group">
                         <div class="input-group">
-                            <div class="col-12">
+                            <div class="col-3">
+                                <select class="form-select" style="padding:0.44rem" wire:model.defer="transaksi">
+                                    <option value="1">Produksi</option>
+                                    <option value="2">Proses</option>
+                                </select>
+                            </div>
+                            <div class="col-9">
                                 <div class="form-group">
                                     <div class="input-group">
                                         <input wire:model.defer="tglMasuk" type="text" class="form-control"
@@ -693,6 +699,12 @@
                             checked> Updated
                     </label>
                 </li>
+                <li>
+                    <label style="cursor: pointer;">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="12"
+                            checked> Created
+                    </label>
+                </li>
             </ul>
         </div>
         <table class="table align-middle" id="seitaiTable">
@@ -710,6 +722,7 @@
                     {{-- <th>Jam Mati Mesin</th> --}}
                     <th>Update By</th>
                     <th>Updated</th>
+                    <th>Created</th>
                 </tr>
             </thead>
             <tbody class="list form-check-all">
@@ -735,6 +748,7 @@
                         <td>{{ $item->on_hour }}</td>
                         <td>{{ $item->updated_by }}</td>
                         <td>{{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y H:i:s') }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->created_on)->format('d M Y H:i:s') }}</td>
                     </tr>
                 @empty
                 @endforelse

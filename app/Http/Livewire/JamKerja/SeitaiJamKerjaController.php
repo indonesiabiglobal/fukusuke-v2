@@ -37,6 +37,7 @@ class SeitaiJamKerjaController extends Component
     public $jamMatiMesinName;
     public $off_hour;
     public $dataJamMatiMesin = [];
+    #[Session]
     public $transaksi;
     public $working_date;
     public $empname;
@@ -69,6 +70,9 @@ class SeitaiJamKerjaController extends Component
         }
         if (empty($this->tglKeluar)) {
             $this->tglKeluar = Carbon::now()->format('d-m-Y');
+        }
+        if (empty($this->transaksi)) {
+            $this->transaksi = 1;
         }
         $this->machine  = MsMachine::whereIn('department_id', departmentHelper::seitaiPabrikDepartment()->pluck('id'))->get();
         $this->workShift  = MsWorkingShift::active()->get();
@@ -471,6 +475,7 @@ class SeitaiJamKerjaController extends Component
                 'tdjkm.on_hour',
                 'tdjkm.updated_by',
                 'tdjkm.updated_on',
+                'tdjkm.created_on',
                 'msm.machineno',
                 'mse.empname',
                 'mse.employeeno',
@@ -479,12 +484,22 @@ class SeitaiJamKerjaController extends Component
             ->join('msemployee AS mse', 'mse.id', '=', 'tdjkm.employee_id')
             ->whereIn('tdjkm.department_id', departmentHelper::seitaiDivision());
 
-        if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
-            $data = $data->where('tdjkm.working_date', '>=', $this->tglMasuk);
-        }
+        if ($this->transaksi == 1) {
+            if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
+                $data = $data->where('tdjkm.working_date', '>=', $this->tglMasuk);
+            }
 
-        if (isset($this->tglKeluar) && $this->tglKeluar != "" && $this->tglKeluar != "undefined") {
-            $data = $data->where('tdjkm.working_date', '<=', $this->tglKeluar);
+            if (isset($this->tglKeluar) && $this->tglKeluar != "" && $this->tglKeluar != "undefined") {
+                $data = $data->where('tdjkm.working_date', '<=', $this->tglKeluar);
+            }
+        } else if ($this->transaksi == 2) {
+            if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
+                $data = $data->where('tdjkm.created_on', '>=', $this->tglMasuk . " 00:00:00");
+            }
+
+            if (isset($this->tglKeluar) && $this->tglKeluar != "" && $this->tglKeluar != "undefined") {
+                $data = $data->where('tdjkm.created_on', '<=', $this->tglKeluar . " 23:59:59");
+            }
         }
 
         if (isset($this->machine_id) && $this->machine_id['value'] != "" && $this->machine_id != "undefined") {
