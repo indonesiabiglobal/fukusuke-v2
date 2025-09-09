@@ -31,7 +31,7 @@ class GeneralReportController extends Component
     {
         $this->tglMasuk = Carbon::now()->format('Y-m-d');
         $this->tglKeluar = Carbon::now()->format('Y-m-d');
-        $this->workingShiftHour = MsWorkingShift::select('work_hour_from', 'work_hour_till')->where('status', 1)->orderBy('work_hour_from', 'ASC')->get();
+        $this->workingShiftHour = MsWorkingShift::select('work_hour_from', 'work_hour_till')->active()->orderBy('work_hour_from', 'ASC')->get();
         $this->jamMasuk = $this->workingShiftHour[0]->work_hour_from;
         $this->jamKeluar = $this->workingShiftHour[count($this->workingShiftHour) - 1]->work_hour_till;
     }

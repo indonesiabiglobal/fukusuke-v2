@@ -32,6 +32,11 @@ class MsProductGroup extends Model
         });
     }
 
+    public function scopeActive($query)
+    {
+        return $query->where('status', 1);
+    }
+
     // protected $fillable = [
     //     'title',
     //     'content',

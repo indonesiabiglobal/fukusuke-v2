@@ -57,7 +57,7 @@
                                                     <option value="" selected>
                                                         Silahkan Pilih
                                                     </option>
-                                                    @foreach (\App\Models\MsDepartment::whereIn('id', [10, 11, 12, 13, 15, 16])->select('id', 'name', 'code')->get() as $department)
+                                                    @foreach (\App\Models\MsDepartment::whereIn('id', [10, 11, 12, 13, 15, 16])->select('id', 'name', 'code')->active()->get() as $department)
                                                         <option value="{{ $department->id }}">
                                                             {{ $department->name }}
                                                         </option>
@@ -78,7 +78,7 @@
                                                     <option value="" selected>
                                                         Silahkan Pilih
                                                     </option>
-                                                    @foreach (\App\Models\MsProductGroup::select('id', 'name')->get() as $productGroup)
+                                                    @foreach (\App\Models\MsProductGroup::select('id', 'name')->active()->get() as $productGroup)
                                                         <option value="{{ $productGroup->id }}">
                                                             {{ $productGroup->name }}
                                                         </option>
@@ -205,7 +205,7 @@
                                                 <select data-choices data-choices-sorting="true"
                                                     class="form-select @error('department_id') is-invalid @enderror"
                                                     wire:model="department_id" placeholder="">
-                                                    @foreach (\App\Models\MsDepartment::whereIn('id', [10, 11, 12, 13, 15, 16])->select('id', 'name')->get() as $department)
+                                                    @foreach (\App\Models\MsDepartment::whereIn('id', [10, 11, 12, 13, 15, 16])->select('id', 'name')->active()->get() as $department)
                                                         <option value="{{ $department->id }}"
                                                             {{ $department_id == $department->id ? 'selected' : '' }}>
                                                             {{ $department->name }}
@@ -224,7 +224,7 @@
                                                 <select data-choices data-choices-sorting="true" id="product_group_id"
                                                     class="form-control @error('product_group_id') is-invalid @enderror"
                                                     wire:model="product_group_id" placeholder="">
-                                                    @foreach (\App\Models\MsProductGroup::select('id', 'name')->get() as $productGroup)
+                                                    @foreach (\App\Models\MsProductGroup::select('id', 'name')->active()->get() as $productGroup)
                                                         <option value="{{ $productGroup->id }}">
                                                             {{ $productGroup->name }}
                                                         </option>
@@ -365,7 +365,7 @@
                                                 <select data-choices data-choices-sorting="true"
                                                     class="form-select @error('department_id') is-invalid @enderror"
                                                     wire:model="department_id" placeholder="">
-                                                    @foreach (\App\Models\MsDepartment::whereIn('id', [10, 11, 12, 13, 15, 16])->select('id', 'name')->get() as $department)
+                                                    @foreach (\App\Models\MsDepartment::whereIn('id', [10, 11, 12, 13, 15, 16])->select('id', 'name')->active()->get() as $department)
                                                         <option value="{{ $department->id }}"
                                                             {{ $department_id == $department->id ? 'selected' : '' }}>
                                                             {{ $department->name }}
@@ -384,7 +384,7 @@
                                                 <select data-choices data-choices-sorting="true" id="product_group_id"
                                                     class="form-control @error('product_group_id') is-invalid @enderror"
                                                     wire:model="product_group_id" placeholder="">
-                                                    @foreach (\App\Models\MsProductGroup::select('id', 'name')->get() as $productGroup)
+                                                    @foreach (\App\Models\MsProductGroup::select('id', 'name')->active()->active()->get() as $productGroup)
                                                         <option value="{{ $productGroup->id }}">
                                                             {{ $productGroup->name }}
                                                         </option>

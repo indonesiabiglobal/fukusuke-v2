@@ -44,7 +44,7 @@ class CheckListSeitaiController extends Component
     {
         $this->tglAwal = Carbon::now()->format('Y-m-d');
         $this->tglAkhir = Carbon::now()->format('Y-m-d');
-        $this->workingShiftHour = MsWorkingShift::select('work_hour_from', 'work_hour_till')->where('status', 1)->orderBy('work_hour_from', 'ASC')->get();
+        $this->workingShiftHour = MsWorkingShift::select('work_hour_from', 'work_hour_till')->active()->orderBy('work_hour_from', 'ASC')->get();
         $this->jamAwal = $this->workingShiftHour[0]->work_hour_from;
         $this->jamAkhir = $this->workingShiftHour[count($this->workingShiftHour) - 1]->work_hour_till;
         $this->machine = MsMachine::where('machineno',  'LIKE', '00S%')->get();

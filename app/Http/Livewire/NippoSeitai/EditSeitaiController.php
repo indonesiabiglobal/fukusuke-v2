@@ -9,7 +9,6 @@ use App\Models\MsEmployee;
 use App\Models\MsLossSeitai;
 use App\Models\MsMachine;
 use App\Models\MsProduct;
-use App\Models\MsWorkingShift;
 use App\Models\TdOrderLpk;
 use App\Models\TdProductAssembly;
 use App\Models\TdProductGoods;
@@ -660,7 +659,8 @@ class EditSeitaiController extends Component
             $workingShift = DB::select("
             SELECT *
                 FROM msworkingshift
-                WHERE (
+                WHERE status = 1
+                AND ((
                     -- Shift does not cross midnight
                     work_hour_from <= work_hour_till
                     AND '$workHourFormatted' BETWEEN work_hour_from AND work_hour_till
@@ -672,7 +672,7 @@ class EditSeitaiController extends Component
                         OR
                         '$workHourFormatted' BETWEEN '00:00:00' AND work_hour_till
                     )
-                )
+                ))
                 ORDER BY work_hour_till ASC
                 LIMIT 1;
             ")[0];

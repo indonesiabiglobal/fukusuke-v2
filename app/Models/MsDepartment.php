@@ -29,4 +29,9 @@ class MsDepartment extends Model
             $model->updated_by = Auth::user()->username;
         });
     }
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', 1);
+    }
 }

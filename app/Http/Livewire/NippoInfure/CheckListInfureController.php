@@ -8,15 +8,11 @@ use App\Models\MsMachine;
 use App\Models\MsDepartment;
 use App\Models\MsWorkingShift;
 use App\Helpers\phpspreadsheet;
-use App\Exports\LossInfureExport;
-use App\Exports\NippoInfureExport;
 use App\Models\MsProduct;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use PHPUnit\TextUI\Configuration\Php;
 
 class CheckListInfureController extends Component
 {
@@ -45,7 +41,7 @@ class CheckListInfureController extends Component
     {
         $this->tglAwal = Carbon::now()->format('Y-m-d');
         $this->tglAkhir = Carbon::now()->format('Y-m-d');
-        $this->workingShiftHour = MsWorkingShift::select('id', 'work_hour_from', 'work_hour_till')->where('status', 1)->orderBy('work_hour_from', 'ASC')->get();
+        $this->workingShiftHour = MsWorkingShift::select('id', 'work_hour_from', 'work_hour_till')->active()->orderBy('work_hour_from', 'ASC')->get();
         $this->jamAwal = $this->workingShiftHour[0]->work_hour_from;
         $this->jamAkhir = $this->workingShiftHour[count($this->workingShiftHour) - 1]->work_hour_till;
         $this->machine = MsMachine::where('machineno',  'LIKE', '00I%')->orderBy('machineno')->get();

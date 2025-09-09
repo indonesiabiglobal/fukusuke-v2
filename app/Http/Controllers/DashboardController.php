@@ -117,7 +117,7 @@ class DashboardController extends Controller
         $shiftSekarang = MsWorkingShift::select('work_shift')
             ->where('work_hour_from', '<=', $today->format('H:i:s'))
             ->where('work_hour_till', '>=', $today->format('H:i:s'))
-            ->where('status', 1)
+            ->active()
             ->first()
             ->work_shift;
         $listMachineInfure = DB::select('
@@ -247,7 +247,7 @@ class DashboardController extends Controller
         $shiftSekarang = MsWorkingShift::select('work_shift')
             ->where('work_hour_from', '<=', $today->format('H:i:s'))
             ->where('work_hour_till', '>=', $today->format('H:i:s'))
-            ->where('status', 1)
+            ->active()
             ->first()
             ->work_shift;
         $listMachineSeitai = DB::select('
