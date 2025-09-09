@@ -65,6 +65,8 @@ class SeitaiJamKerjaController extends Component
 
     public function mount()
     {
+        $this->shouldForgetSession();
+
         if (empty($this->tglMasuk)) {
             $this->tglMasuk = Carbon::now()->format('d-m-Y');
         }
@@ -94,6 +96,15 @@ class SeitaiJamKerjaController extends Component
         }
 
         $this->isUpdatingSorting = false;
+    }
+
+    protected function shouldForgetSession()
+    {
+        $previousUrl = url()->previous();
+        $previousUrl = last(explode('/', $previousUrl));
+        if (!(Str::contains($previousUrl, 'seitai-jam-kerja'))) {
+            $this->reset('tglMasuk', 'tglKeluar', 'transaksi', 'machine_id', 'work_shift_filter', 'searchTerm', 'sortingTable');
+        }
     }
 
     public function search()
@@ -519,12 +530,22 @@ class SeitaiJamKerjaController extends Component
 
     public function export()
     {
-        $tglMasuk = Carbon::parse($this->tglMasuk . " 00:00:00");
-        $tglKeluar = Carbon::parse($this->tglKeluar . " 23:59:59");
+        // validasi
+        if ($this->tglMasuk == $this->tglKeluar) {
+            $this->dispatch('notification', ['type' => 'warning', 'message' => 'Tanggal Masuk dan Tanggal Keluar tidak boleh sama']);
+            return;
+        } else if (Carbon::parse($this->tglMasuk) > Carbon::parse($this->tglKeluar)) {
+            $this->dispatch('notification', ['type' => 'warning', 'message' => 'Tanggal Masuk tidak boleh lebih besar dari Tanggal Keluar']);
+            return;
+        }
+
+        $tglMasuk = Carbon::parse($this->tglMasuk . " 07:01:00");
+        $tglKeluar = Carbon::parse($this->tglKeluar . " 07:00:00");
         $filter = [
             'machine_id' => $this->machine_id['value'] ?? null,
             'work_shift' => $this->work_shift_filter['value'] ?? null,
             'searchTerm' => $this->searchTerm ?? null,
+            'transaksi' => $this->transaksi ?? 1,
         ];
 
         $checklist = new CheckListJamKerjaController();

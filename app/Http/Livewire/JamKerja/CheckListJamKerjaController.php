@@ -129,8 +129,15 @@ class CheckListJamKerjaController extends Component
         }, 'employee' => function ($q) {
             $q->select('id', 'employeeno', 'empname');
         }])
-            ->select('id', 'working_date', 'work_shift', 'machine_id', 'employee_id', 'work_hour', 'off_hour', 'on_hour')
-            ->whereBetween('working_date', [$tglAwal, $tglAkhir]);
+            ->select('id', 'working_date', 'work_shift', 'machine_id', 'employee_id', 'work_hour', 'off_hour', 'on_hour');
+
+        if (isset($filter['transaksi']) && $filter['transaksi'] != '') {
+            if ($filter['transaksi'] == 1) {
+                $query = $query->whereBetween('working_date', [$tglAwal, Carbon::parse($tglAkhir)->subDay()]);
+            } elseif ($filter['transaksi'] == 2) {
+                $query = $query->whereBetween('created_on', [$tglAwal, $tglAkhir]);
+            }
+        }
 
         if ($nippo == 'INFURE') {
             $query = $query->infureDepartment();
