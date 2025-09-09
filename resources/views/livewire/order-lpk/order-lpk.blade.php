@@ -54,14 +54,15 @@
                 </div>
                 <div class="col-12 col-lg-10">
                     <div class="mb-1" wire:ignore>
-                        <select class="form-control" wire:model.defer="idProduct" id="product" name="product"
-                            data-choices data-choices-sorting-false data-choices-removeItem
-                            data-choices-search-field-label data-choices-exact-match>
+                        <select class="form-control" wire:model.defer="idProduct" data-choices
+                            data-choices-sorting-false data-choices-removeItem data-choices-search-field>
                             <option value="">- All -</option>
                             @foreach ($products as $item)
-                                <option data-custom-properties='{"code": "{{ $item->code }}"}'
+                                <option
+                                    data-custom-properties='{"code": "{{ $item->code }} - {{ $item->code_alias }}"}'
                                     value="{{ $item->id }}" @if ($item->id == ($idProduct['value'] ?? null)) selected @endif>
-                                    {{ $item->name }}</option>
+                                    {{ $item->name }},
+                                    {{ $item->code }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -261,7 +262,8 @@
                 </li>
             </ul>
         </div>
-        <table id="tableOrderLPK" class="table table-responsive table-bordered align-middle table-nowrap" style=" width:100%">
+        <table id="tableOrderLPK" class="table table-responsive table-bordered align-middle table-nowrap"
+            style=" width:100%">
             <thead class="table-light">
                 <tr>
                     <th></th>
