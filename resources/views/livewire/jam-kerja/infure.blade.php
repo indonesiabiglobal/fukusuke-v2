@@ -104,6 +104,7 @@
                         <i class="ri-add-line"> </i> Add
                     </button>
 
+                    {{-- Modal ADD jam kerja --}}
                     <div class="modal fade" id="modal-add" data-bs-backdrop="static" data-bs-keyboard="false"
                         tabindex="-1" role="dialog" aria-labelledby="modal-add" aria-hidden="true" wire:ignore.self>
                         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -136,7 +137,7 @@
                                             <div class="form-group">
                                                 <label>Shift </label>
                                                 <div class="input-group col-md-9 col-xs-8">
-                                                    <input class="form-control" type="text"
+                                                    <input class="form-control" type="text" id="work_shift"
                                                         wire:model.defer="work_shift" placeholder="..."
                                                         maxlength="1" max="3" />
                                                     @error('work_shift')
@@ -295,6 +296,7 @@
                             </div>
                         </div>
                     </div>
+                    {{-- Modal Edit jam kerja --}}
                     <div class="modal fade" id="modal-edit" data-bs-backdrop="static" data-bs-keyboard="false"
                         tabindex="-1" role="dialog" aria-labelledby="modal-edit" aria-hidden="true"
                         wire:ignore.self>
@@ -323,7 +325,7 @@
                                             <div class="form-group">
                                                 <label>Shift </label>
                                                 <div class="input-group col-md-9 col-xs-8">
-                                                    <input class="form-control" type="text"
+                                                    <input class="form-control" type="text" id="work_shift"
                                                         wire:model.defer="work_shift" placeholder="..."
                                                         maxlength="1" max="3" />
                                                     @error('work_shift')
@@ -501,9 +503,9 @@
                                                 <div class="input-group col-md-9 col-xs-8">
                                                     <input class="form-control" wire:model.change="jamMatiMesinCode"
                                                         x-ref="jamMatiMesinCodeInput" type="text"
-                                                        placeholder="..."
+                                                        placeholder="..." id="jamMatiMesinCode"
                                                         oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                                                        maxlength="3" autofocus
+                                                        maxlength="3"
                                                         x-on:keydown.tab="$event.preventDefault(); $refs.offHourInput.focus();" />
                                                     @error('jamMatiMesinCode')
                                                         <span class="invalid-feedback">{{ $message }}</span>
@@ -681,12 +683,6 @@
                             checked> Jam Jalan
                     </label>
                 </li>
-                {{-- <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="9"
-                            checked> Jam Mati Mesin
-                    </label>
-                </li> --}}
                 <li>
                     <label style="cursor: pointer;">
                         <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="10"
@@ -719,7 +715,6 @@
                     <th>Jam Kerja</th>
                     <th>Jam Mati</th>
                     <th>Jam Jalan</th>
-                    {{-- <th>Jam Mati Mesin</th> --}}
                     <th>Update By</th>
                     <th>Updated</th>
                     <th>Created</th>
@@ -746,22 +741,6 @@
                         <td>{{ $item->work_hour }}</td>
                         <td>{{ $item->off_hour }}</td>
                         <td>{{ $item->on_hour }}</td>
-                        {{-- <td class="py-3">
-                            <div class="d-flex flex-column gap-1">
-                                <div class="d-flex align-items-center">
-                                    <i class="ri-settings-3-line text-primary me-2 fs-16"></i>
-                                    <span class="fw-semibold text-dark">
-                                        {{ $item->jam_mati_mesin_name }}
-                                    </span>
-                                </div>
-
-                                <div class="d-flex align-items-center ms-4">
-                                    <small class="text-muted font-monospace bg-light px-2 py-1 rounded">
-                                        {{ $item->jam_mati_mesin_code }}
-                                    </small>
-                                </div>
-                            </div>
-                        </td> --}}
                         <td>{{ $item->updated_by }}</td>
                         <td>{{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y H:i:s') }}</td>
                         <td>{{ \Carbon\Carbon::parse($item->created_on)->format('d M Y H:i:s') }}</td>
@@ -770,7 +749,6 @@
                 @endforelse
             </tbody>
         </table>
-        {{-- {{ $data->links(data: ['scrollTo' => false]) }} --}}
     </div>
 
     <style>
@@ -804,9 +782,32 @@
 
 @script
     <script>
-        // Show modal create
+        const setupAddModalFocus = () => {
+            const modalEl = document.getElementById('modal-add');
+            if (!modalEl) return;
+
+            modalEl.addEventListener('shown.bs.modal', () => {
+                setTimeout(() => document.getElementById('work_shift')?.focus(), 0);
+            });
+        };
+
+        // Jalankan segera; kalau DOM belum siap, tunda sampai siap
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', setupAddModalFocus, {
+                once: true
+            });
+        } else {
+            setupAddModalFocus();
+        }
+
+        // Buka modal dari Livewire
         $wire.on('showModalCreate', () => {
-            $('#modal-add').modal('show');
+            const modalEl = document.getElementById('modal-add');
+            const modal = bootstrap.Modal.getOrCreateInstance(modalEl, {
+                backdrop: 'static',
+                keyboard: false,
+            });
+            modal.show();
         });
         // Close modal create
         $wire.on('closeModalCreate', () => {
@@ -820,11 +821,34 @@
         $wire.on('closeModalUpdate', () => {
             $('#modal-edit').modal('hide');
         });
-        // Show modal update
+
+        // Show modal jam mati mesin
+        const setupJamMatiModalFocus = () => {
+            const modalEl = document.getElementById('modal-jam-mati');
+            if (!modalEl) return;
+
+            modalEl.addEventListener('shown.bs.modal', () => {
+                setTimeout(() => document.getElementById('jamMatiMesinCode')?.focus(), 0);
+            });
+        };
+
+        // Jalankan segera; kalau DOM belum siap, tunda sampai siap
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', setupJamMatiModalFocus, {
+                once: true
+            });
+        } else {
+            setupJamMatiModalFocus();
+        }
         $wire.on('showModalJamMatiMesin', () => {
-            $('#modal-jam-mati').modal('show');
+            const modalEl = document.getElementById('modal-jam-mati');
+            const modal = bootstrap.Modal.getOrCreateInstance(modalEl, {
+                backdrop: 'static',
+                keyboard: false,
+            });
+            modal.show();
         });
-        // Close modal update
+        // Close modal jam mati mesin
         $wire.on('closeModalJamMatiMesin', () => {
             $('#modal-jam-mati').modal('hide');
         });
@@ -937,21 +961,3 @@
         }
     </script>
 @endscript
-
-<script>
-    document.addEventListener('livewire:load', function() {
-        // Listener untuk menampilkan modal
-        window.livewire.on('showModal', () => {
-            var modal = new bootstrap.Modal(document.getElementById('modal-add'));
-            modal.show();
-        });
-
-        // Listener untuk menutup modal
-        window.livewire.on('closeModal', () => {
-            var modal = bootstrap.Modal.getInstance(document.getElementById('modal-add'));
-            if (modal) {
-                modal.hide();
-            }
-        });
-    });
-</script>
