@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\MasterTabel\Loss;
 
+use App\Models\MsLossCategory;
 use App\Models\MsLossClass;
 use App\Models\MsLossSeitai;
 use Livewire\Component;
@@ -27,6 +28,7 @@ class MenuLossSeitaiController extends Component
     public $idDelete;
     public $class;
     public $status;
+    public $categories;
     public $statusIsVisible = false;
     #[Session]
     public $sortingTable;
@@ -38,7 +40,8 @@ class MenuLossSeitaiController extends Component
 
     public function mount(){
         $this->class = MsLossClass::get();
-    
+        $this->categories = MsLossCategory::get();
+
         if (empty($this->sortingTable)) {
             $this->sortingTable = [[1, 'asc']];
         }

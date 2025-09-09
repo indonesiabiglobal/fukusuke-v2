@@ -6,7 +6,7 @@
                 <button type="button" class="btn btn-success w-lg p-1" wire:click="showModalCreate">
                     <i class="ri-add-line"> </i> Add
                 </button>
-                {{-- modal add buyer --}}
+                {{-- modal add loss --}}
                 <div class="modal fade" id="modal-add" tabindex="-1" aria-labelledby="modal-addLabel" aria-modal="true"
                     wire:ignore.self>
                     <div class="modal-dialog">
@@ -19,7 +19,7 @@
                             <div class="modal-body">
                                 <form wire:submit.prevent="store">
                                     <div class="row g-3">
-                                        {{-- kode buyer --}}
+                                        {{-- kode loss --}}
                                         <div class="col-xxl-12">
                                             <div>
                                                 <label for="code" class="form-label">Kode Loss</label>
@@ -32,7 +32,7 @@
                                                 @enderror
                                             </div>
                                         </div>
-                                        {{-- nama buyer --}}
+                                        {{-- nama loss --}}
                                         <div class="col-xxl-12">
                                             <div>
                                                 <label for="name" class="form-label">Nama Loss</label>
@@ -99,7 +99,6 @@
                                                         </span>
                                                     </div>
                                                 </button>
-                                                {{-- <button type="submit" class="btn btn-primary">Save</button> --}}
                                             </div>
                                         </div><!--end col-->
                                     </div>
@@ -108,9 +107,9 @@
                         </div>
                     </div>
                 </div>
-                {{-- end modal buyer --}}
+                {{-- end modal loss --}}
 
-                {{-- modal add buyer --}}
+                {{-- modal add loss --}}
                 <div class="modal fade" id="modal-edit" tabindex="-1" aria-labelledby="modal-editLabel"
                     aria-modal="true" wire:ignore.self>
                     <div class="modal-dialog">
@@ -172,12 +171,11 @@
                                                 <select
                                                     class="form-control @error('loss_category_code') is-invalid @enderror"
                                                     wire:model.defer="loss_category_code">
-                                                    <option value="0"
-                                                        {{ $loss_category_code == '0' ? 'selected' : '' }}>
-                                                        Loss Produksi</option>
-                                                    <option value="1"
-                                                        {{ $loss_category_code == '1' ? 'selected' : '' }}>
-                                                        Loss Kebutuhan</option>
+                                                    @foreach ($categories as $item)
+                                                        <option value="{{ $item->code }}" {{ $item->code == $loss_category_code ? 'selected' : '' }}>
+                                                            {{ $item->name }}
+                                                        </option>
+                                                    @endforeach
                                                 </select>
                                                 @error('loss_category_code')
                                                     <span class="invalid-feedback">{{ $message }}</span>
@@ -227,10 +225,10 @@
                         </div>
                     </div>
                 </div>
-                {{-- end modal buyer --}}
+                {{-- end modal loss --}}
 
 
-                {{-- start modal delete buyer --}}
+                {{-- start modal delete loss --}}
                 <div id="removeBuyerModal" class="modal fade zoomIn" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
@@ -273,7 +271,7 @@
                         </div>
                     </div>
                 </div>
-                {{-- end modal delete buyer --}}
+                {{-- end modal delete loss --}}
             </div>
 
             {{-- toggle column table --}}
