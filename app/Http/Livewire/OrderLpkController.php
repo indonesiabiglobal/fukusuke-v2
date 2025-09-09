@@ -96,7 +96,7 @@ class OrderLpkController extends Component
     {
         $previousUrl = url()->previous();
         $previousUrl = last(explode('/', $previousUrl));
-        if (!(Str::contains($previousUrl, 'add-order') || Str::contains($previousUrl, 'edit-order') || Str::contains($previousUrl,'order-lpk'))) {
+        if (!(Str::contains($previousUrl, 'add-order') || Str::contains($previousUrl, 'edit-order') || Str::contains($previousUrl, 'order-lpk'))) {
             $this->reset('tglMasuk', 'tglKeluar', 'searchTerm', 'idProduct', 'idBuyer', 'status', 'transaksi', 'sortingTable', 'entriesPerPage');
         }
     }
@@ -174,21 +174,29 @@ class OrderLpkController extends Component
             ->leftjoin('msbuyer AS mbu', 'mbu.id', '=', 'tod.buyer_id')
             ->orderBy($this->sortField, $this->sortDirection);
 
-        if ($this->transaksi == 2) {
+        if ($this->transaksi == 1) {
             if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
-                $data = $data->where('tod.order_date', '>=', $this->tglMasuk);
+                $data = $data->where('tod.processdate', '>=', $this->tglMasuk . " 00:00");
             }
 
             if (isset($this->tglKeluar) && $this->tglKeluar != "" && $this->tglKeluar != "undefined") {
-                $data = $data->where('tod.order_date', '<=', $this->tglKeluar);
+                $data = $data->where('tod.processdate', '<=', $this->tglKeluar . " 23:59:59");
             }
-        } else {
+        } else if ($this->transaksi == 2) {
             if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
-                $data = $data->where('tod.created_on', '>=', $this->tglMasuk);
+                $data = $data->where('tod.order_date', '>=', $this->tglMasuk  . " 00:00:00");
             }
 
             if (isset($this->tglKeluar) && $this->tglKeluar != "" && $this->tglKeluar != "undefined") {
-                $data = $data->where('tod.created_on', '<=', $this->tglKeluar);
+                $data = $data->where('tod.order_date', '<=', $this->tglKeluar . " 23:59:59");
+            }
+        } else if ($this->transaksi == 3) {
+            if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
+                $data = $data->where('tod.created_on', '>=', $this->tglMasuk . " 00:00");
+            }
+
+            if (isset($this->tglKeluar) && $this->tglKeluar != "" && $this->tglKeluar != "undefined") {
+                $data = $data->where('tod.created_on', '<=', $this->tglKeluar . " 23:59:59");
             }
         }
 

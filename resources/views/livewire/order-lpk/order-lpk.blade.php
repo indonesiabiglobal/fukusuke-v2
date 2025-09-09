@@ -13,6 +13,7 @@
                                 <select class="form-select" style="padding:0.44rem" wire:model.defer="transaksi">
                                     <option value="1">Proses</option>
                                     <option value="2">Order</option>
+                                    {{-- <option value="3">Created On</option> --}}
                                 </select>
                             </div>
                             <div class="col-9">
@@ -303,8 +304,8 @@
                             {{ \Carbon\Carbon::parse($item->etddate)->format('d M Y') }}</td>
                         <td data-order="{{ $item->etadate }}">
                             {{ \Carbon\Carbon::parse($item->etadate)->format('d M Y') }}</td>
-                        <td data-order="{{ $item->created_on }}">
-                            {{ \Carbon\Carbon::parse($item->created_on)->format('d M Y') }}</td>
+                        <td data-order="{{ $item->processdate }}">
+                            {{ \Carbon\Carbon::parse($item->processdate)->format('d M Y') }}</td>
                         <td>{{ $item->updated_by }}</td>
                         <td data-order="{{ $item->updated_on }}">
                             {{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y') }}</td>
