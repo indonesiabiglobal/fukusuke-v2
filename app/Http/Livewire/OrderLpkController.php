@@ -122,10 +122,6 @@ class OrderLpkController extends Component
         return Excel::download(new OrderLpkExport(
             $this->tglMasuk,
             $this->tglKeluar,
-            // $this->searchTerm,
-            // $this->idProduct,
-            // $this->idBuyer,
-            // $this->status,
         ), 'OrderList.xlsx');
     }
 
@@ -189,14 +185,6 @@ class OrderLpkController extends Component
 
             if (isset($this->tglKeluar) && $this->tglKeluar != "" && $this->tglKeluar != "undefined") {
                 $data = $data->where('tod.order_date', '<=', $this->tglKeluar . " 23:59:59");
-            }
-        } else if ($this->transaksi == 3) {
-            if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
-                $data = $data->where('tod.created_on', '>=', $this->tglMasuk . " 00:00");
-            }
-
-            if (isset($this->tglKeluar) && $this->tglKeluar != "" && $this->tglKeluar != "undefined") {
-                $data = $data->where('tod.created_on', '<=', $this->tglKeluar . " 23:59:59");
             }
         }
 

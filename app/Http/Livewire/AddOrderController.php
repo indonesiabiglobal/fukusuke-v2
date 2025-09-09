@@ -241,7 +241,6 @@ class AddOrderController extends Component
 
         DB::beginTransaction();
         try {
-            dd($this->order_date, $this->stufingdate, $this->etddate, $this->etadate);
             $maxProcessSeq = TdOrders::where('order_date', $this->order_date)->max('processseq');
             $product = MsProduct::where('code', $this->product_id)->first();
             $order = new TdOrders();
