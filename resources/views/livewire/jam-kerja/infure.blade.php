@@ -130,7 +130,7 @@
                                             <label>Shift </label>
                                             <div class="input-group col-md-9 col-xs-8">
                                                 <input class="form-control" type="text"
-                                                    wire:model.defer="work_shift" placeholder="..." maxlength="1" />
+                                                    wire:model.defer="work_shift" placeholder="..." maxlength="1" max="3" />
                                                 @error('work_shift')
                                                     <span class="invalid-feedback">{{ $message }}</span>
                                                 @enderror
@@ -312,7 +312,7 @@
                                             <label>Shift </label>
                                             <div class="input-group col-md-9 col-xs-8">
                                                 <input class="form-control" type="text"
-                                                    wire:model.defer="work_shift" placeholder="..." maxlength="1" />
+                                                    wire:model.defer="work_shift" placeholder="..." maxlength="1" max="3" />
                                                 @error('work_shift')
                                                     <span class="invalid-feedback">{{ $message }}</span>
                                                 @enderror

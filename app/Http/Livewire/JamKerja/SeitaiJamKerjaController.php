@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
 use Livewire\Attributes\Session;
+use Illuminate\Support\Str;
 
 class SeitaiJamKerjaController extends Component
 {
@@ -45,9 +46,9 @@ class SeitaiJamKerjaController extends Component
     #[Session]
     public $machine_id;
     public $employee_id;
-    public $work_hour = '00:00';
+    public $work_hour = '06:30';
     public $totalOffHour = "00:00";
-    public $totalOnHour = "00:00";
+    public $totalOnHour = "08:00";
     public $on_hour;
     public $orderid;
     public $workShift;
@@ -70,7 +71,7 @@ class SeitaiJamKerjaController extends Component
             $this->tglKeluar = Carbon::now()->format('d-m-Y');
         }
         $this->machine  = MsMachine::whereIn('department_id', departmentHelper::seitaiPabrikDepartment()->pluck('id'))->get();
-        $this->workShift  = MsWorkingShift::where('status', 1)->get();
+        $this->workShift  = MsWorkingShift::active()->get();
         $this->working_date = Carbon::now()->format('d-m-Y');
         if (empty($this->sortingTable)) {
             $this->sortingTable = [[1, 'asc']];
@@ -157,9 +158,9 @@ class SeitaiJamKerjaController extends Component
         $this->machinename = '';
         $this->employeeno = '';
         $this->empname = '';
-        $this->work_hour = '00:00';
+        $this->work_hour = '06:30';
         $this->totalOffHour = '00:00';
-        $this->totalOnHour = '00:00';
+        $this->totalOnHour = '08:00';
     }
 
     public function resetInputJamMatiMesin()
@@ -167,7 +168,7 @@ class SeitaiJamKerjaController extends Component
         $this->jamMatiMesinId = '';
         $this->jamMatiMesinCode = '';
         $this->jamMatiMesinName = '';
-        $this->off_hour = '';
+        $this->off_hour = '00:00';
     }
 
     public function showModalJamMatiMesin()
@@ -385,22 +386,43 @@ class SeitaiJamKerjaController extends Component
         }
     }
 
-    public function updatedJamMatiMesinCode($jamMatiMesinCode)
-    {
-        $this->jamMatiMesinCode = $jamMatiMesinCode;
 
-        if (isset($this->jamMatiMesinCode) && $this->jamMatiMesinCode != '' && strlen($this->jamMatiMesinCode) >= 3) {
-            $jamMatiMesin = MsJamMatiMesin::where('code', "S" . $this->jamMatiMesinCode)->first();
-            if ($jamMatiMesin == null) {
-                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Jam Mati Mesin ' . $jamMatiMesinCode . ' Tidak Terdaftar']);
-                $this->jamMatiMesinId = '';
-                $this->jamMatiMesinName = '';
-                $this->jamMatiMesinCode = '';
-            } else {
-                $this->jamMatiMesinId = $jamMatiMesin->id;
-                $this->jamMatiMesinName = $jamMatiMesin->name;
-            }
+    public function updatedJamMatiMesinCode($value)
+    {
+        // Normalize
+        $code = trim((string) $value);
+        $this->jamMatiMesinCode = $code;
+
+        // Guard: kosong
+        if ($code === '') {
+            return $this->notify('warning', 'Jam Mati Mesin Tidak Boleh Kosong');
         }
+
+        // Guard: minimal 3 char
+        if (Str::length($code) < 3) {
+            return $this->notify('warning', 'Jam Mati Mesin Minimal 3 Karakter');
+        }
+
+        // Pastikan prefix "S" hanya sekali
+        $fullCode = Str::startsWith($code, 'S') ? $code : 'S' . $code;
+
+        // Query hemat kolom
+        $jam = MsJamMatiMesin::query()
+            ->select('id', 'name')
+            ->where('code', $fullCode)
+            ->first();
+
+        if (!$jam) {
+            $this->jamMatiMesinId = '';
+            $this->jamMatiMesinName = '';
+            $this->jamMatiMesinCode = '';
+
+            return $this->notify('warning', "Jam Mati Mesin {$code} Tidak Terdaftar");
+        }
+
+        // OK
+        $this->jamMatiMesinId   = $jam->id;
+        $this->jamMatiMesinName = $jam->name;
     }
 
     public function updatedMachineno($machineno)
@@ -512,5 +534,10 @@ class SeitaiJamKerjaController extends Component
         if (!$this->isUpdatingSorting && !$this->jamMatiDataUpdated) {
             $this->dispatch('initDataTable');
         }
+    }
+
+    protected function notify(string $type, string $message): void
+    {
+        $this->dispatch('notification', compact('type', 'message'));
     }
 }
