@@ -275,8 +275,28 @@
                                 <li class="nav-item">
                                     <a href="menu-katanuki" class="nav-link" data-key="t-starter"> Katanuki </a>
                                 </li>
+                                {{-- Mesin --}}
                                 <li class="nav-item">
-                                    <a href="mesin" class="nav-link" data-key="t-starter"> Mesin </a>
+                                    <a href="#loss" class="nav-link" data-bs-toggle="collapse" role="button"
+                                        aria-expanded="false" aria-controls="loss" data-key="t-profile"><i
+                                            class="bx bx-printer"></i> Mesin </a>
+                                    <div class="collapse menu-dropdown" id="loss">
+                                        <ul class="nav nav-sm flex-column">
+                                            <li class="nav-item">
+                                                <a href="mesin" class="nav-link" data-key="t-simple-page">
+                                                    Mesin </a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a href="bagian-mesin" class="nav-link" data-key="t-simple-page">
+                                                    Bagian Mesin </a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a href="detail-bagian-mesin" class="nav-link" data-key="t-simple-page">
+                                                    Detail Bagian Mesin
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </li>
                                 <li class="nav-item">
                                     <a href="warehouse" class="nav-link" data-key="t-starter"> Warehouse </a>

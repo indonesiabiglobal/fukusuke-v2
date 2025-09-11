@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire\MasterTabel;
+namespace App\Http\Livewire\MasterTabel\Machine;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -213,7 +213,7 @@ class Machine extends Component
             ->leftJoin('msproduct_group as mpg', 'mpg.id', '=', 'msm.product_group_id')
             ->get();
 
-        return view('livewire.master-tabel.machine', [
+        return view('livewire.master-tabel.machine.machine', [
             'data' => $data
         ])->extends('layouts.master');
     }

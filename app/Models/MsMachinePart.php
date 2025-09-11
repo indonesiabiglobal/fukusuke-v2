@@ -2,14 +2,15 @@
 
 namespace App\Models;
 
+use App\Helpers\departmentHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
-class MsDepartment extends Model
+class MsMachinePart extends Model
 {
     use HasFactory;
-    protected $table = "msdepartment";
+    protected $table = "ms_machine_part";
     protected $fillable = [];
 
     // custom created and updated
@@ -30,13 +31,24 @@ class MsDepartment extends Model
         });
     }
 
+    public function scopeInfureDivision($query)
+    {
+        return $query->whereIn('ms_machine_part.department_id', departmentHelper::infureDivision());
+    }
+
+    public function scopeSeitaiDivision($query)
+    {
+        return $query->whereIn('ms_machine_part.department_id', departmentHelper::seitaiDivision());
+    }
+
     public function scopeActive($query)
     {
         return $query->where('status', 1);
     }
 
-    public function scopeDivision($query)
+    // relations
+    public function department()
     {
-        return $query->whereIn('id', [2,7]);
+        return $this->belongsTo(MsDepartment::class, 'department_id');
     }
 }

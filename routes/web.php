@@ -11,7 +11,7 @@ use App\Http\Livewire\LpkEntryController;
 use App\Http\Livewire\OrderLpkController;
 use App\Http\Controllers\InfureController;
 use App\Http\Livewire\EditOrderController;
-use App\Http\Livewire\MasterTabel\Machine;
+use App\Http\Livewire\MasterTabel\Machine\Machine;
 use App\Http\Livewire\MasterTabel\Employee;
 use App\Http\Livewire\MasterTabel\Warehouse;
 use App\Http\Livewire\OrderReportController;
@@ -80,6 +80,8 @@ use App\Http\Livewire\MasterTabel\Inventory\PengeluaranBarangController;
 use App\Http\Livewire\MasterTabel\Inventory\PosisiWipController;
 use App\Http\Livewire\MasterTabel\JamMatiMesin\JamMatiMesinInfureController;
 use App\Http\Livewire\MasterTabel\JamMatiMesin\JamMatiMesinSeitaiController;
+use App\Http\Livewire\MasterTabel\Machine\MachinePartController;
+use App\Http\Livewire\MasterTabel\Machine\MachinePartDetailController;
 use App\Http\Livewire\MasterTabel\MasalahKenpin\MasalahKenpinInfureController;
 use App\Http\Livewire\MasterTabel\MasalahKenpin\MasalahKenpinSeitaiController;
 
@@ -185,6 +187,8 @@ Route::group(['middleware' => 'auth'], function () {
 
     // master table mesin
     Route::get('/mesin', Machine::class)->name('mesin');
+    Route::get('/bagian-mesin', MachinePartController::class)->name('bagian-mesin');
+    Route::get('/detail-bagian-mesin', MachinePartDetailController::class)->name('detail-bagian-mesin');
 
     Route::get('/jadwal-mesin', JadwalMachineController::class)->name('jadwal-mesin');
 
