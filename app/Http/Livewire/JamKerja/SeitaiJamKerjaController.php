@@ -4,6 +4,7 @@ namespace App\Http\Livewire\jamKerja;
 
 use App\Helpers\departmentHelper;
 use App\Helpers\formatTime;
+use App\Http\Livewire\JamKerja\CheckListJamKerjaController;
 use App\Models\MsEmployee;
 use App\Models\MsMachine;
 use App\Models\MsJamMatiMesin;

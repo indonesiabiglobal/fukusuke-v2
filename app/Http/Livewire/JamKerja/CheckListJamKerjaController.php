@@ -4,21 +4,11 @@ namespace App\Http\Livewire\JamKerja;
 
 use Carbon\Carbon;
 use Livewire\Component;
-use App\Models\MsMachine;
-use App\Models\MsDepartment;
-use App\Models\MsWorkingShift;
 use App\Helpers\phpspreadsheet;
-use App\Exports\LossInfureExport;
-use App\Exports\NippoInfureExport;
 use App\Helpers\formatTime;
-use App\Models\MsProduct;
 use App\Models\TdJamKerjaMesin;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
-use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use PHPUnit\TextUI\Configuration\Php;
 
 class CheckListJamKerjaController extends Component
 {
