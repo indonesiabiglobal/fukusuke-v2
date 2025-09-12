@@ -32,8 +32,6 @@
             </div>
             <div class="col-12 col-lg-9 mb-1">
                 <div class="input-group">
-                    {{-- <input wire:model.defer="lpk_no" class="form-control" style="padding:0.44rem" type="text"
-                        placeholder="000000-000" /> --}}
                         <div class="col-12 col-lg-12 mb-1" x-data="{ lpk_no: @entangle('lpk_no'), status: true }" x-init="$watch('lpk_no', value => {
                             if (value.length === 6 && !value.includes('-') && status) {
                                 lpk_no = value + '-';
@@ -64,20 +62,18 @@
             </div>
             <div class="col-12 col-lg-9">
                 <div class="input-group">
-                    {{-- <input wire:model.defer="searchTerm" class="form-control" style="padding:0.44rem" type="text"
-                        placeholder="_____-_____" /> --}}
                     <div class="col-12 col-lg-12 mb-1" x-data="{ searchTerm: @entangle('searchTerm'), status: true }" x-init="$watch('searchTerm', value => {
-                            if (value.length === 5 && !value.includes('-') && status) {
+                            if (value.length === 7 && !value.includes('-') && status) {
                                 searchTerm = value + '-';
                             }
-                            if (value.length < 5) {
+                            if (value.length < 7) {
                                 status = true;
                             }
-                            if (value.length === 6) {
+                            if (value.length === 11) {
                                 status = false;
                             }
-                            if (value.length > 8) {
-                                searchTerm = value.substring(0, 8);
+                            if (value.length > 11) {
+                                searchTerm = value.substring(0, 11);
                             }
                         })">
                         <input
