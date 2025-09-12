@@ -105,7 +105,7 @@ class MasalahKenpinInfureController extends Component
         try {
             $data = MsMasalahKenpinInfure::create([
                 'code' => $this->code,
-                'jenis_klaim' => $this->name,
+                'name' => $this->name,
                 'status' => 1,
                 'created_by' => Auth::user()->username,
                 'updated_by' => Auth::user()->username,
@@ -126,7 +126,7 @@ class MasalahKenpinInfureController extends Component
         $data = MsMasalahKenpinInfure::where('id', $id)->first();
         $this->idUpdate = $id;
         $this->code = $data->code;
-        $this->name = $data->jenis_klaim;
+        $this->name = $data->name;
         $this->status = $data->status;
         $this->statusIsVisible = $data->status == 0 ? true : false;
         $this->skipRender();
@@ -142,7 +142,7 @@ class MasalahKenpinInfureController extends Component
         try {
             $data = MsMasalahKenpinInfure::where('id', $this->idUpdate)->first();
             $data->code = $this->code;
-            $data->jenis_klaim = $this->name;
+            $data->name = $this->name;
             $data->status = $this->status;
             $data->updated_by = Auth::user()->username;
             $data->save();

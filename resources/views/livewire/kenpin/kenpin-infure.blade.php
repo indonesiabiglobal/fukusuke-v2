@@ -32,8 +32,6 @@
             </div>
             <div class="col-12 col-lg-9 mb-1">
                 <div class="input-group">
-                    {{-- <input wire:model.defer="lpk_no" class="form-control" style="padding:0.44rem" type="text"
-                        placeholder="000000-000" /> --}}
                         <div class="col-12 col-lg-12 mb-1" x-data="{ lpk_no: @entangle('lpk_no'), status: true }" x-init="$watch('lpk_no', value => {
                             if (value.length === 6 && !value.includes('-') && status) {
                                 lpk_no = value + '-';
@@ -64,20 +62,18 @@
             </div>
             <div class="col-12 col-lg-9">
                 <div class="input-group">
-                    {{-- <input wire:model.defer="searchTerm" class="form-control" style="padding:0.44rem" type="text"
-                        placeholder="_____-_____" /> --}}
                         <div class="col-12 col-lg-12 mb-1" x-data="{ searchTerm: @entangle('searchTerm'), status: true }" x-init="$watch('searchTerm', value => {
-                            if (value.length === 5 && !value.includes('-') && status) {
+                            if (value.length === 7 && !value.includes('-') && status) {
                                 searchTerm = value + '-';
                             }
-                            if (value.length < 5) {
+                            if (value.length < 7) {
                                 status = true;
                             }
-                            if (value.length === 6) {
+                            if (value.length === 11) {
                                 status = false;
                             }
-                            if (value.length > 8) {
-                                searchTerm = value.substring(0, 8);
+                            if (value.length > 11) {
+                                searchTerm = value.substring(0, 11);
                             }
                         })">
                         <input
@@ -86,7 +82,7 @@
                             type="text"
                             placeholder="_____-_____"
                             x-model="searchTerm"
-                            maxlength="8"
+                            maxlength="11"
                         />
                     </div>
                 </div>
@@ -316,25 +312,15 @@
                         <td>{{ $item->namaproduk }}</td>
                         <td>{{ $item->code }}</td>
                         <td>{{ $item->empname }}</td>
-                        <td>{{ number_format($item->berat_loss) }}</td>
+                        <td>{{ number_format($item->total_berat_loss) }}</td>
                         <td>{{ $item->status_kenpin }}</td>
                         <td>{{ $item->updated_by }}</td>
                         <td data-order="{{ $item->updated_on }}">{{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y') }}</td>
                     </tr>
                 @empty
-                    {{-- <tr>
-                        <td colspan="10" class="text-center">
-                            <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
-                                colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
-                            <h5 class="mt-2">Sorry! No Result Found</h5>
-                            <p class="text-muted mb-0">We've searched more than 150+ Orders We did not find any orders
-                                for you search.</p>
-                        </td>
-                    </tr> --}}
                 @endforelse
             </tbody>
         </table>
-        {{-- {{ $data->links(data: ['scrollTo' => false]) }} --}}
     </div>
 </div>
 

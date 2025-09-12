@@ -55,7 +55,7 @@ class KenpinInfureController extends Component
         $this->sortingTable = $value;
         $this->skipRender();
     }
-    
+
     public function search()
     {
         $this->resetPage();
@@ -71,39 +71,27 @@ class KenpinInfureController extends Component
     {
         $data = DB::table('tdkenpin_assembly AS tdka')
             ->join('tdorderlpk AS tdol', 'tdka.lpk_id', '=', 'tdol.id')
-            ->leftJoin('tdkenpin_assembly_detail as tdkad', 'tdkad.kenpin_assembly_id', '=', 'tdka.id')
-            ->leftJoin('tdproduct_assembly AS tdpa', 'tdpa.id', '=', 'tdkad.product_assembly_id')
             ->join('msproduct AS msp', 'tdol.product_id', '=', 'msp.id')
             ->join('msemployee AS mse', 'mse.id', '=', 'tdka.employee_id')
             ->select(
                 'tdka.id',
                 'tdka.kenpin_no',
                 'tdka.kenpin_date',
-                'tdka.employee_id',
                 'mse.empname',
                 'tdka.lpk_id',
-                'tdka.berat_loss',
-                'tdka.remark',
+                'tdka.total_berat_loss',
                 DB::raw("CASE WHEN tdka.status_kenpin = 1 THEN 'Proses' ELSE 'Finish' END AS status_kenpin"),
-                'tdka.created_by',
-                'tdka.created_on',
                 'tdka.updated_by',
                 'tdka.updated_on',
                 'tdol.order_id',
-                'tdol.product_id',
                 'tdol.lpk_no',
                 'tdol.lpk_date',
                 'tdol.qty_lpk',
                 'tdol.panjang_lpk',
-                'tdol.qty_gentan',
-                'tdol.qty_gulung',
                 'tdol.qty_lpk',
-                'tdol.total_assembly_line',
-                'tdol.total_assembly_qty',
                 'msp.id AS id1',
                 'msp.code',
                 'msp.name AS namaproduk',
-                'tdpa.nomor_han'
             )
             ->distinct();
 

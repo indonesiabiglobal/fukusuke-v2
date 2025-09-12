@@ -404,7 +404,7 @@
                                         <i class="ri-delete-bin-line text-white"></i>
                                     </button>
                                 </td>
-                                <td>{{ $item->jenis_klaim }}</td>
+                                <td>{{ $item->name }}</td>
                                 <td>{{ $item->code }}</td>
                                 <td>
                                     {!! $item->status == 1

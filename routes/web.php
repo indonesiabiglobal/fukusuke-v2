@@ -19,7 +19,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Livewire\MasterTabel\Department;
 use App\Http\Controllers\ProductionLossReport;
 use App\Http\Livewire\MasterTabel\WorkingShift;
-use App\Http\Livewire\Kenpin\EditKenpinController;
+use App\Http\Livewire\Kenpin\EditKenpinInfureController;
 use App\Http\Livewire\MasterTabel\BuyerController;
 use App\Http\Controllers\DashboardInfureController;
 use App\Http\Controllers\DashboardInfureControllerOld;
@@ -151,7 +151,7 @@ Route::group(['middleware' => 'auth'], function () {
     // Kenpin
     Route::get('/kenpin-infure', KenpinInfureController::class)->name('kenpin-infure');
     Route::get('/add-kenpin-infure', AddKenpinInfureController::class)->name('add-kenpin-infure');
-    Route::get('/edit-kenpin-infure', EditKenpinController::class)->name('edit-kenpin-infure');
+    Route::get('/edit-kenpin-infure', EditKenpinInfureController::class)->name('edit-kenpin-infure');
 
     Route::get('/kenpin-seitai', KenpinSeitaiController::class)->name('kenpin-seitai-kenpin');
     Route::get('/add-kenpin-seitai', AddKenpinSeitaiController::class)->name('add-kenpin-seitai');

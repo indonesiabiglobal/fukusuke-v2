@@ -11,6 +11,8 @@ use App\Models\TdKenpinAssembly;
 use App\Models\TdKenpinAssemblyDetail;
 use App\Models\TdOrderLpk;
 use App\Models\TdProductAssembly;
+use App\Models\MsMachinePartDetail;
+use App\Models\MsMasalahKenpinInfure;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -23,6 +25,7 @@ class AddKenpinInfureController extends Component
     public $lpk_date;
     public $panjang_lpk;
     public $productId;
+    public $productAssemblyId;
     public $code;
     public $name;
     public $employeeno;
@@ -47,6 +50,15 @@ class AddKenpinInfureController extends Component
     public $idKenpinAssemblyDetailUpdate;
     public $currentId = 1;
 
+    public $masalahInfure;
+    public $kode_ng;
+    public $nama_ng;
+    public $bagian_mesin_id;
+    public $bagianMesinList;
+    public $penyebab;
+    public $keterangan_penyebab;
+    public $penanggulangan;
+
     // data master produk
     public $masterKatanuki;
     public $product;
@@ -61,10 +73,134 @@ class AddKenpinInfureController extends Component
         $this->details = collect([]);
         $this->kenpin_date = Carbon::now()->format('d-m-Y');
         $today = Carbon::now();
-        $this->kenpin_no = $today->format('ym') . '-001';
+
+        $latestKenpin = TdKenpinAssembly::whereRaw("kenpin_no LIKE ?", ['INF' . $today->format('ym') . '%'])
+            ->orderBy('kenpin_no', 'desc')
+            ->first();
+
+        if ($latestKenpin) {
+            $lastNumber = (int)substr($latestKenpin->kenpin_no, -3);
+            $nextNumber = $lastNumber + 1;
+        } else {
+            $nextNumber = 1;
+        }
+
+        $this->kenpin_no = 'INF' . $today->format('ym') . '-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+
         $this->msLossKenpin = MsLossKenpin::get();
+        $this->bagianMesinList = MsMachinePartDetail::whereHas('machinePart', function ($query) {
+            $query->where('department_id', 2);
+        })->get();
     }
 
+    public function updatedKodeNg()
+    {
+        if (!empty($this->kode_ng)) {
+            $this->masalahInfure = MsMasalahKenpinInfure::where('code', $this->kode_ng)->first();
+            if ($this->masalahInfure) {
+                $this->nama_ng = $this->masalahInfure->name;
+            } else {
+                $this->kode_ng = '';
+                $this->nama_ng = '';
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Kode NG tidak ditemukan']);
+            }
+        } else {
+            $this->nama_ng = '';
+        }
+    }
+
+    public function updatedLpkNo()
+    {
+        if (isset($this->lpk_no) && $this->lpk_no != '' && strlen($this->lpk_no) >= 10) {
+            $tdorderlpk = DB::table('tdorderlpk as tolp')
+                ->select(
+                    'tolp.lpk_no',
+                    'tolp.id',
+                    'tolp.lpk_date',
+                    'tolp.panjang_lpk',
+                    'tolp.created_on',
+                    'mp.id as productId',
+                    'mp.code',
+                    'mp.name',
+                    'mp.ketebalan',
+                    'mp.diameterlipat',
+                    'tolp.qty_gulung',
+                    'tolp.qty_gentan'
+                )
+                ->join('msproduct as mp', 'mp.id', '=', 'tolp.product_id')
+                ->where('tolp.lpk_no', 'ilike', '%' . $this->lpk_no . '%')
+                ->first();
+
+            if ($tdorderlpk == null) {
+                $this->lpk_date = '';
+                $this->panjang_lpk = '';
+                $this->code = '';
+                $this->name = '';
+                $this->lpk_id = '';
+                $this->lpk_no = '';
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor LPK ' . $this->lpk_no . ' Tidak Terdaftar']);
+            } else {
+                $this->resetValidation('lpk_no');
+
+                $this->lpk_date = Carbon::parse($tdorderlpk->lpk_date)->format('d M Y');
+                $this->panjang_lpk = number_format($tdorderlpk->panjang_lpk);
+                $this->productId = $tdorderlpk->productId;
+                $this->code = $tdorderlpk->code;
+                $this->name = $tdorderlpk->name;
+                $this->lpk_id = $tdorderlpk->id;
+                $this->lpk_no = $tdorderlpk->lpk_no;
+            }
+        }
+    }
+
+    public function updatedEmployeeno()
+    {
+        if (isset($this->employeeno) && $this->employeeno != '' && strlen($this->employeeno) >= 2) {
+            $msemployee = MsEmployee::where('employeeno', 'ilike', '%' . $this->employeeno . '%')->first();
+
+            if ($msemployee == null) {
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
+                $this->employeeno = '';
+                $this->empname = '';
+            } else {
+                $this->employeeno = $msemployee->employeeno;
+                $this->empname = $msemployee->empname;
+                $this->resetValidation('employeeno');
+            }
+        }
+    }
+
+    public function updatedGentanNo()
+    {
+
+        if (isset($this->gentan_no) && $this->gentan_no != '') {
+            $gentan = DB::table('tdproduct_assembly AS tdpa')
+                ->select(
+                    'tdpa.id AS id',
+                    'tdpa.work_shift',
+                    'tdpa.nomor_han',
+                    'tdpa.production_date',
+                    'mse.empname AS namapetugas',
+                    'msm.machineno AS nomesin',
+                )
+                ->join('msemployee AS mse', 'mse.id', '=', 'tdpa.employee_id')
+                ->join('msmachine AS msm', 'msm.id', '=', 'tdpa.machine_id')
+                ->where('tdpa.lpk_id', $this->lpk_id)
+                ->where('tdpa.gentan_no', $this->gentan_no)
+                ->first();
+
+            if ($gentan == null) {
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Gentan ' . $this->gentan_no . ' Tidak Terdaftar']);
+            } else {
+                $this->productAssemblyId = $gentan->id;
+                $this->machineno = $gentan->nomesin;
+                $this->namapetugas = $gentan->namapetugas;
+                $this->workShift = $gentan->work_shift;
+                $this->nomorHan = $gentan->nomor_han;
+                $this->tglproduksi = $gentan->production_date;
+            }
+        }
+    }
 
     public function showModalNoOrder()
     {
@@ -223,7 +359,7 @@ class AddKenpinInfureController extends Component
             $this->namapetugas = '';
             $this->berat_loss = '';
             $this->berat = '';
-            $this->frekuensi = '';
+            // $this->frekuensi = '';
             $this->dispatch('showModalAddGentan');
         }
     }
@@ -232,13 +368,12 @@ class AddKenpinInfureController extends Component
     {
         $this->idKenpinAssemblyDetailUpdate = $idKenpinAssemblyDetailUpdate;
         array_map(function ($detail) use ($idKenpinAssemblyDetailUpdate) {
-            if ($detail->id == $idKenpinAssemblyDetailUpdate) {
-                $this->gentan_no = $detail->gentan_no;
-                $this->machineno = $detail->machineno;
-                $this->namapetugas = $detail->namapetugas;
-                $this->berat_loss = $detail->berat_loss;
-                // $this->berat = $detail->berat;
-                $this->frekuensi = $detail->frekuensi;
+            if ($detail['id'] == $idKenpinAssemblyDetailUpdate) {
+                $this->gentan_no = $detail['gentan_no'];
+                $this->machineno = $detail['machineno'];
+                $this->namapetugas = $detail['namapetugas'];
+                $this->berat_loss = $detail['berat_loss'];
+                $this->frekuensi = $detail['frekuensi'];
             }
         }, $this->details->toArray());
     }
@@ -260,7 +395,6 @@ class AddKenpinInfureController extends Component
                     $detail['nomor_han'] = $this->nomorHan;
                     $detail['berat_loss'] = $this->berat_loss;
                     $detail['tglproduksi'] = $this->tglproduksi;
-                    // $detail['berat'] = $this->berat;
                     $detail['frekuensi'] = $this->frekuensi;
                 }
                 return $detail;
@@ -276,7 +410,6 @@ class AddKenpinInfureController extends Component
                 'nomor_han' => $this->nomorHan,
                 'tglproduksi' => $this->tglproduksi,
                 'berat_loss' => (int)str_replace(',', '', $this->berat_loss),
-                // 'berat' => $this->berat,
                 'frekuensi' => $this->frekuensi,
             ]);
             $this->dispatch('closeModalAddGentan');
@@ -284,7 +417,6 @@ class AddKenpinInfureController extends Component
 
         $this->beratLossTotal = $this->details->sum('berat_loss');
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);
-
     }
 
     public function nextId()
@@ -307,7 +439,12 @@ class AddKenpinInfureController extends Component
         $validatedData = $this->validate([
             'employeeno' => 'required',
             'status_kenpin' => 'required',
-            'lpk_no' => 'required'
+            'lpk_no' => 'required',
+            'kode_ng' => 'required',
+            'penyebab' => 'required',
+            'keterangan_penyebab' => 'required',
+            'penanggulangan' => 'required',
+            'bagian_mesin_id' => 'required'
         ]);
 
         DB::beginTransaction();
@@ -319,29 +456,39 @@ class AddKenpinInfureController extends Component
             $product->kenpin_date = $this->kenpin_date;
             $product->employee_id = $mspetugas->id;
             $product->lpk_id = $this->lpk_id;
-            $product->berat_loss = $this->beratLossTotal;
-            $product->remark = $this->remark;
+            $product->total_berat_loss = $this->beratLossTotal;
             $product->status_kenpin = $this->status_kenpin;
+            $product->masalah_infure_id = $this->masalahInfure->id;
+            $product->machine_part_detail_id = $this->bagian_mesin_id;
+            $product->penyebab = $this->penyebab;
+            $product->keterangan_penyebab = $this->keterangan_penyebab;
+            $product->penanggulangan = $this->penanggulangan;
             $product->created_on = Carbon::now();
             $product->created_by = auth()->user()->username;
             $product->updated_on = Carbon::now();
             $product->updated_by = auth()->user()->username;
             $product->save();
 
-            $totalBerat = 0;
             foreach ($this->details as $item) {
                 $details = new TdKenpinAssemblyDetail();
                 $details->kenpin_assembly_id = $product->id;
-                $details->product_assembly_id = $this->productId;
+                $details->product_assembly_id = $this->productAssemblyId;
                 $details->berat_loss = $item['berat_loss'];
-                // $details->berat = $item['berat'];
                 $details->frekuensi = $item['frekuensi'];
                 $details->created_on = Carbon::now();
                 $details->created_by = auth()->user()->username;
                 $details->updated_on = Carbon::now();
                 $details->updated_by = auth()->user()->username;
-
                 $details->save();
+
+                // update status kenpin on td_product_assembly
+                $productAssembly = TdProductAssembly::find($this->productAssemblyId);
+                if ($productAssembly) {
+                    $productAssembly->status_kenpin = 1; // Mark as kenpin processed
+                    $productAssembly->updated_on = Carbon::now();
+                    $productAssembly->updated_by = auth()->user()->username;
+                    $productAssembly->save();
+                }
             }
 
             DB::commit();
@@ -360,133 +507,6 @@ class AddKenpinInfureController extends Component
 
     public function render()
     {
-        if (isset($this->lpk_no) && $this->lpk_no != '' && strlen($this->lpk_no) >= 10) {
-            $tdorderlpk = DB::table('tdorderlpk as tolp')
-                ->select(
-                    'tolp.lpk_no',
-                    'tolp.id',
-                    'tolp.lpk_date',
-                    'tolp.panjang_lpk',
-                    'tolp.created_on',
-                    'mp.id as productId',
-                    'mp.code',
-                    'mp.name',
-                    'mp.ketebalan',
-                    'mp.diameterlipat',
-                    'tolp.qty_gulung',
-                    'tolp.qty_gentan'
-                )
-                ->join('msproduct as mp', 'mp.id', '=', 'tolp.product_id')
-                // ->where('tolp.lpk_no', $this->lpk_no)
-                // ->whereRaw("LEFT(lpk_no, 6) ILIKE ?", ["{$prefix}"])
-                // ->whereRaw("RIGHT(lpk_no, 3) ILIKE ?", ["{$suffix}"])
-                ->where('tolp.lpk_no', 'ilike', '%' . $this->lpk_no . '%')
-                ->first();
-
-            if ($tdorderlpk == null) {
-                $this->lpk_date = '';
-                $this->panjang_lpk = '';
-                $this->code = '';
-                $this->name = '';
-                $this->lpk_id = '';
-                $this->lpk_no = '';
-                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor LPK ' . $this->lpk_no . ' Tidak Terdaftar']);
-            } else {
-                $this->resetValidation('lpk_no');
-
-                $this->lpk_date = Carbon::parse($tdorderlpk->lpk_date)->format('d M Y');
-                $this->panjang_lpk = number_format($tdorderlpk->panjang_lpk);
-                $this->productId = $tdorderlpk->productId;
-                $this->code = $tdorderlpk->code;
-                $this->name = $tdorderlpk->name;
-                $this->lpk_id = $tdorderlpk->id;
-                $this->lpk_no = $tdorderlpk->lpk_no;
-
-                // $this->details = DB::table('tdproduct_assembly AS tdpa')
-                //     ->select(
-                //         'tad.id AS id',
-                //         'tdpa.lpk_id',
-                //         'tdol.lpk_no AS lpk_no',
-                //         'tdol.lpk_date AS lpk_date',
-                //         'tdol.panjang_lpk AS panjang_lpk',
-                //         'tdpa.production_date AS tglproduksi',
-                //         'tdpa.employee_id AS employee_id',
-                //         'mse.empname AS namapetugas',
-                //         'tdpa.work_shift AS work_shift',
-                //         'tdpa.work_hour AS work_hour',
-                //         'tdpa.machine_id AS machine_id',
-                //         'msm.machineno AS nomesin',
-                //         'msm.machinename AS namamesin',
-                //         'tdpa.nomor_han AS nomor_han',
-                //         'tdpa.gentan_no AS gentan_no',
-                //         'tdpa.product_id',
-                //         'msp.code AS code',
-                //         'msp.name AS namaproduk',
-                //         'tad.berat_loss'
-                //     )
-                //     ->join('tdorderlpk AS tdol', 'tdpa.lpk_id', '=', 'tdol.id')
-                //     ->join('msemployee AS mse', 'mse.id', '=', 'tdpa.employee_id')
-                //     ->join('msproduct AS msp', 'msp.id', '=', 'tdpa.product_id')
-                //     ->join('msmachine AS msm', 'msm.id', '=', 'tdpa.machine_id')
-                //     ->join('tdkenpin_assembly_detail AS tad', 'tad.lpk_id', '=', 'tdol.id')
-                //     ->where('tdpa.lpk_id', $this->lpk_id)
-                //     ->get();
-            }
-        }
-
-        if (isset($this->employeeno) && $this->employeeno != '' && strlen($this->employeeno) >= 2) {
-            $msemployee = MsEmployee::where('employeeno', 'ilike', '%' . $this->employeeno . '%')->first();
-
-            if ($msemployee == null) {
-                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
-                $this->employeeno = '';
-                $this->empname = '';
-            } else {
-                $this->employeeno = $msemployee->employeeno;
-                $this->empname = $msemployee->empname;
-                $this->resetValidation('employeeno');
-            }
-        }
-
-        // if (isset($this->code_loss) && $this->code_loss != '') {
-        //     $mskenpin = MsLossKenpin::where('code', $this->code_loss)->first();
-
-        //     if ($mskenpin == null) {
-        //         $this->dispatch('notification', ['type' => 'warning', 'message' => 'Loss Kenpin ' . $this->code_loss . ' Tidak Terdaftar']);
-        //     } else {
-        //         $this->code_loss = $mskenpin->code;
-        //         $this->remark = $mskenpin->name;
-        //         $this->resetValidation('employeeno');
-        //     }
-        // }
-
-        if (isset($this->gentan_no) && $this->gentan_no != '') {
-            $gentan = DB::table('tdproduct_assembly AS tdpa')
-                ->select(
-                    'tdpa.id AS id',
-                    'tdpa.work_shift',
-                    'tdpa.nomor_han',
-                    'tdpa.production_date',
-                    'mse.empname AS namapetugas',
-                    'msm.machineno AS nomesin',
-                )
-                ->join('msemployee AS mse', 'mse.id', '=', 'tdpa.employee_id')
-                ->join('msmachine AS msm', 'msm.id', '=', 'tdpa.machine_id')
-                ->where('tdpa.lpk_id', $this->lpk_id)
-                ->where('tdpa.gentan_no', $this->gentan_no)
-                ->first();
-
-            if ($gentan == null) {
-                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Gentan ' . $this->gentan_no . ' Tidak Terdaftar']);
-            } else {
-                $this->machineno = $gentan->nomesin;
-                $this->namapetugas = $gentan->namapetugas;
-                $this->workShift = $gentan->work_shift;
-                $this->nomorHan = $gentan->nomor_han;
-                $this->tglproduksi = $gentan->production_date;
-            }
-        }
-
         return view('livewire.kenpin.add-kenpin')->extends('layouts.master');
     }
 }

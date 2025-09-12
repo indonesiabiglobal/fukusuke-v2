@@ -1,24 +1,23 @@
 <div class="row">
     <form wire:submit.prevent="save">
         <div class="row mt-2">
-			<div class="col-12 col-lg-12">
-				<div class="form-group">
-					<div class="input-group">
-						<label class="control-label col-12 col-lg-2">Tanggal Kenpin</label>
-                        <input class="form-control" type="text" data-provider="flatpickr" data-date-format="d-m-Y" wire:model.defer="kenpin_date" placeholder="yyyy/mm/dd"/>
+            <div class="col-12 col-lg-12">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label col-12 col-lg-2">Tanggal Kenpin</label>
+                        <input class="form-control" type="text" data-provider="flatpickr" data-date-format="d-m-Y"
+                            wire:model.defer="kenpin_date" placeholder="yyyy/mm/dd" />
                         <span class="input-group-text py-0">
                             <i class="ri-calendar-event-fill fs-4"></i>
                         </span>
-					</div>
-				</div>
-			</div>
-			<div class="col-12 col-lg-12 mt-1">
-				<div class="form-group">
-					<div class="input-group">
-						<label class="control-label col-12 col-lg-2">Nomor Kenpin</label>
-						{{-- <input type="text" class="form-control" wire:model="kenpin_no" /> --}}
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-12 mt-1">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label col-12 col-lg-2">Nomor Kenpin</label>
                         <div class="col-12 col-lg-10" x-data="{ kenpin_no: @entangle('kenpin_no').live, status: true }" x-init="$watch('kenpin_no', value => {
-                            // Membuat karakter pertama kapital
                             if (value.length >= 4 && !value.includes('-') && status) {
                                 kenpin_no = value + '-';
                             }
@@ -35,43 +34,47 @@
                                 kenpin_no = value.substring(0, 12);
                             }
                         })">
-                            <input type="text" class="form-control" wire:model="kenpin_no" maxlength="8"
-                                x-model="kenpin_no" wire:model="kenpin_no" maxlength="8" />
+                            <input type="text" class="form-control readonly bg-light" wire:model="kenpin_no"
+                                maxlength="8" x-model="kenpin_no" wire:model="kenpin_no" maxlength="8" disabled
+                                readonly="readonly" />
                         </div>
-					</div>
-				</div>
-			</div>
-			<div class="col-12 col-lg-4 mt-1">
-				<div class="form-group">
-					<div class="input-group">
-						<label class="control-label col-12 col-lg-6">
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-4 mt-1">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label col-12 col-lg-6">
                             <a href="#" data-bs-toggle="modal" wire:click="showModalLPK" class="text-underscore">
                                 Nomor LPK <i class="ri-information-fill"></i>
                             </a></label>
-                        <input type="text" class="form-control readonly bg-light" readonly="readonly" placeholder="000000-00" wire:model.live="lpk_no" />
-					</div>
-				</div>
-			</div>
-			<div class="col-12 col-lg-4 mt-1">
-				<div class="form-group">
-					<div class="input-group">
-						<label class="control-label col-12 col-lg-5">Tanggal LPK</label>
-						<input class="form-control readonly datepicker-input bg-light" readonly="readonly" type="date" wire:model.defer="lpk_date" placeholder="yyyy/mm/dd"/>
-					</div>
-				</div>
-			</div>
-			<div class="col-12 col-lg-4 mt-1">
-				<div class="form-group">
-					<div class="input-group">
-						<label class="control-label col-12 col-lg-5">Panjang LPK</label>
-						<input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="panjang_lpk" />
-					</div>
-				</div>
-			</div>
-			<div class="col-12 col-lg-4 mt-1">
-				<div class="form-group">
-					<div class="input-group">
-						{{-- <label class="control-label col-12 col-lg-6">Nomor Order</label>
+                        <input type="text" class="form-control readonly bg-light" readonly="readonly"
+                            placeholder="000000-00" wire:model.live="lpk_no" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-4 mt-1">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label col-12 col-lg-5">Tanggal LPK</label>
+                        <input class="form-control readonly datepicker-input bg-light" readonly="readonly"
+                            type="date" wire:model.defer="lpk_date" placeholder="yyyy/mm/dd" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-4 mt-1">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label col-12 col-lg-5">Panjang LPK</label>
+                        <input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly"
+                            wire:model="panjang_lpk" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-4 mt-1">
+                <div class="form-group">
+                    <div class="input-group">
+                        {{-- <label class="control-label col-12 col-lg-6">Nomor Order</label>
 						<input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="code" /> --}}
                         <label class="control-label col-12 col-lg-6">
                             <a href="#" data-bs-toggle="modal" wire:click="showModalNoOrder"
@@ -81,33 +84,34 @@
                         </label>
                         <input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly"
                             wire:model="code" />
-					</div>
-				</div>
-			</div>
-			<div class="col-12 col-lg-8 mt-1">
-				<div class="form-group">
-					<div class="input-group">
-						<label class="control-label"></label>
-						<input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly" wire:model="name" />
-					</div>
-				</div>
-			</div>
-			<div class="col-12 col-lg-4 mt-1">
-				<div class="form-group">
-					<div class="input-group">
-						<label class="control-label col-12 col-lg-6">Petugas</label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-8 mt-1">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label"></label>
+                        <input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly"
+                            wire:model="name" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-4 mt-1">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label col-12 col-lg-6">Petugas</label>
                         <input type="text" placeholder="-" x-ref="employeenoInput"
                             class="form-control @error('employeeno') is-invalid @enderror" maxlength="8"
                             wire:model.change="employeeno"
-                            x-on:keydown.tab="$event.preventDefault(); $refs.remark.focus();" />
-					</div>
-				</div>
-			</div>
-			<div class="col-12 col-lg-8 mt-1">
-				<div class="form-group">
-					<div class="input-group">
-						<label class="control-label"></label>
-						<input type="text"
+                            x-on:keydown.tab="$event.preventDefault(); $refs.ngInput.focus();" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-8 mt-1">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label"></label>
+                        <input type="text"
                             @error('employeeno') placeholder="{{ $message }}" id="empnameId" @else placeholder="-" @enderror
                             class="form-control col-12 col-lg-8 readonly bg-light" readonly="readonly"
                             wire:model="empname" />
@@ -116,35 +120,142 @@
                                 color: red;
                             }
                         </style>
-					</div>
-				</div>
-			</div>
-			<div class="col-12 col-lg-12 mt-1">
-				<div class="form-group">
-					<div class="input-group">
-						<label class="control-label col-12 col-lg-2">NG</label>
-						<input type="text" class="form-control" wire:model="remark"
-                        x-ref="remark" />
-					</div>
-				</div>
-			</div>
-			<div class="col-12 col-lg-12 mt-1">
-				<div class="form-group">
-					<div class="input-group">
-						<label class="control-label col-12 col-lg-2">Status</label>
-						<select wire:model="status_kenpin" class="form-control" placeholder="- all -">
-							<option value="1">Proses</option>
-							<option value="2">Finish</option>
-						</select>
-					</div>
-				</div>
-			</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-4 mt-1">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label col-12 col-lg-6">Kode NG</label>
+                        <input type="text" placeholder="..."
+                            class="form-control @error('kode_ng') is-invalid @enderror" x-ref="ngInput"
+                            x-on:keydown.tab="$event.preventDefault(); $refs.penyebabSelect.focus();"
+                            wire:model.change="kode_ng" maxlength="10" />
+                        @error('kode_ng')
+                            <span class="invalid-feedback">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-8 mt-1">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label"></label>
+                        <input type="text" placeholder="-" class="form-control readonly bg-light"
+                            readonly="readonly" wire:model="nama_ng" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-4 mt-1">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label col-12 col-lg-6">Penyebab</label>
+                        <select wire:model="penyebab" x-ref="penyebabSelect"
+                            class="form-control @error('penyebab') is-invalid @enderror"
+                            x-on:keydown.tab="$event.preventDefault(); $refs.keteranganPenyebabInput.focus();">
+                            <option value="">- Pilih Penyebab -</option>
+                            <option value="Man">Man</option>
+                            <option value="Machine">Machine</option>
+                            <option value="Method">Method</option>
+                            <option value="Material">Material</option>
+                            <option value="Milieu">Milieu</option>
+                        </select>
+                        @error('penyebab')
+                            <span class="invalid-feedback">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-8 mt-1">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label"></label>
+                        <input type="text" placeholder="Keterangan penyebab..." x-ref="keteranganPenyebabInput"
+                            class="form-control @error('keterangan_penyebab') is-invalid @enderror"
+                            wire:model.defer="keterangan_penyebab"
+                            x-on:keydown.tab="$event.preventDefault(); $refs.penanggulanganInput.focus();" />
+                        @error('keterangan_penyebab')
+                            <span class="invalid-feedback">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-12 mt-1">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label col-12 col-lg-2">Penanggulangan</label>
+                        <input type="text" placeholder="Keterangan penanggulangan..." x-ref="penanggulanganInput"
+                            class="form-control @error('penanggulangan') is-invalid @enderror"
+                            wire:model.defer="penanggulangan" />
+                        @error('penanggulangan')
+                            <span class="invalid-feedback">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-12 mt-1">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label col-12 col-lg-2">Bagian Mesin</label>
+                        <div class="col-12 col-lg-10" wire:ignore>
+                            <select wire:model="bagian_mesin_id" x-ref="bagianMesinSelect"
+                                class="form-control @error('bagian_mesin_id') is-invalid @enderror" data-choices
+                                data-choices-sorting-false data-choices-removeItem
+                                x-on:keydown.tab="$event.preventDefault(); $refs.penyebabSelect.focus();">
+                                <option value="">- Pilih Bagian Mesin -</option>
+                                @if (isset($bagianMesinList))
+                                    @foreach ($bagianMesinList as $bagianMesin)
+                                        <option value="{{ $bagianMesin->id }}"
+                                            {{ $bagian_mesin_id == $bagianMesin->id ? 'selected' : '' }}>
+                                            {{ $bagianMesin->detail_mesin }}
+                                        </option>
+                                    @endforeach
+                                @endif
+                            </select>
+                            @error('bagian_mesin_id')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-12 mt-1">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label col-12 col-lg-2">Status</label>
+                        <select wire:model="status_kenpin" class="form-control" placeholder="- all -">
+                            <option value="1">Proses</option>
+                            <option value="2">Finish</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
         </div>
-        <hr/>
+        <hr />
         <div class="row">
+            <div class="col-12">
+                @if ($status_kenpin == 2)
+                    <div class="alert alert-info">
+                        <i class="ri-information-fill"></i> Kenpin sudah finish, tidak dapat menambah gentan atau
+                        menyimpan perubahan.
+                    </div>
+                @endif
+            </div>
             <div class="col-lg-8">
-				<button wire:click="addGentan" type="button" class="btn btn-success">
-                    <i class="ri-add-line"></i> Add Gentan
+                <button wire:click="addGentan" type="button" class="btn btn-success" wire:loading.attr="disabled"
+                    @disabled($status_kenpin == 2)>
+                    <span wire:loading.remove wire:target="addGentan">
+                        <i class="ri-add-line"></i> Add Gentan
+                    </span>
+
+                    <div wire:loading wire:target="addGentan">
+                        <span class="d-flex align-items-center">
+                            <span class="spinner-border flex-shrink-0" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </span>
+                            <span class="flex-grow-1 ms-1">Loading...</span>
+                        </span>
+                    </div>
                 </button>
             </div>
             <div class="col-lg-4" style="border-top:1px solid #efefef">
@@ -152,10 +263,8 @@
                     <button type="button" class="btn btn-warning" wire:click="cancel">
                         <i class="ri-close-line"></i> Close
                     </button>
-                    {{-- <button type="submit" class="btn btn-success">
-                        <i class="ri-save-3-line"></i> Save
-                    </button> --}}
-                    <button type="submit" class="btn btn-success" wire:loading.attr="disabled">
+                    <button type="submit" class="btn btn-success" wire:loading.attr="disabled" wire:click="save"
+                        @disabled($status_kenpin == 2)>
                         <span wire:loading.remove wire:target="save">
                             <i class="ri-save-3-line"></i> Save
                         </span>
@@ -176,12 +285,14 @@
                 </div>
             </div>
         </div>
-        <div class="modal fade" id="modal-add" tabindex="-1" role="dialog" aria-labelledby="modal-add" aria-hidden="true" wire:ignore.self>
+        <div class="modal fade" id="modal-add" tabindex="-1" role="dialog" aria-labelledby="modal-add"
+            aria-hidden="true" wire:ignore.self>
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h2 class="h6 modal-title">Add Gentan Infure</h2>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <div class="row">
@@ -189,7 +300,9 @@
                                 <div class="form-group">
                                     <label>Nomor Gentan </label>
                                     <div class="input-group col-md-9 col-xs-8">
-                                        <input class="form-control" type="text" wire:model.live="gentan_no" placeholder="..." />
+                                        <input class="form-control" type="text" wire:model.live="gentan_no"
+                                            placeholder="..."
+                                            x-on:keydown.tab="$event.preventDefault(); $refs.beratLossAddInput.focus();" />
                                         @error('loss_infure_id')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror
@@ -200,7 +313,8 @@
                                 <div class="form-group">
                                     <label>Nomor Mesin </label>
                                     <div class="input-group col-md-9 col-xs-8">
-                                        <input class="form-control readonly bg-light" readonly="readonly" type="text" wire:model.defer="machineno" placeholder="..." />
+                                        <input class="form-control readonly bg-light" readonly="readonly"
+                                            type="text" wire:model.defer="machineno" placeholder="..." />
                                     </div>
                                 </div>
                             </div>
@@ -208,7 +322,8 @@
                                 <div class="form-group">
                                     <label>Petugas </label>
                                     <div class="input-group col-md-9 col-xs-8">
-                                        <input class="form-control readonly bg-light" readonly="readonly" type="text" wire:model.defer="namapetugas" placeholder="..." />
+                                        <input class="form-control readonly bg-light" readonly="readonly"
+                                            type="text" wire:model.defer="namapetugas" placeholder="..." />
                                     </div>
                                 </div>
                             </div>
@@ -216,7 +331,8 @@
                                 <div class="form-group">
                                     <label>Berat Loss </label>
                                     <div class="input-group col-md-9 col-xs-8">
-                                        <input class="form-control" type="text" wire:model.defer="berat_loss" placeholder="0" />
+                                        <input class="form-control" type="text" wire:model.defer="berat_loss"
+                                            placeholder="0" x-ref="beratLossAddInput" />
                                         @error('berat_loss')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror
@@ -224,17 +340,6 @@
                                 </div>
                             </div>
                             {{-- <div class="col-lg-12 mb-1">
-                                <div class="form-group">
-                                    <label>Berat </label>
-                                    <div class="input-group col-md-9 col-xs-8">
-                                        <input class="form-control" type="text" wire:model.defer="berat" placeholder="0" />
-                                        @error('berat')
-                                            <span class="invalid-feedback">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-                                </div>
-                            </div> --}}
-                            <div class="col-lg-12 mb-1">
                                 <div class="form-group">
                                     <label>Frekuensi </label>
                                     <div class="input-group col-md-9 col-xs-8">
@@ -244,27 +349,30 @@
                                         @enderror
                                     </div>
                                 </div>
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
                     <div class="modal-footer">
-                        {{-- <button type="button" class="btn btn-secondary">Accept</button> --}}
-                        <button type="button" class="btn btn-link text-gray-600 ms-auto" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-success" wire:click="saveGentan" wire:loading.attr="disabled">
-                            <span wire:loading.remove wire:target="saveGentan">
-								<i class="ri-save-3-line"></i> Update
-							</span>
-							<div wire:loading wire:target="saveGentan">
-								<span class="d-flex align-items-center">
-									<span class="spinner-border flex-shrink-0" role="status">
-										<span class="visually-hidden">Loading...</span>
-									</span>
-									<span class="flex-grow-1 ms-1">
-										Loading...
-									</span>
-								</span>
-							</div>
-                        </button>
+                        <div class="ms-auto">
+                            <button type="button" class="btn btn-success mr-0" wire:target="saveGentan"
+                                wire:click="saveGentan" @disabled(!$gentan_no && !$machineno) wire:loading.attr="disabled">
+                                <span wire:loading.remove wire:target="saveGentan">
+                                    <i class="ri-save-3-line"></i> Save
+                                </span>
+                                <div wire:loading wire:target="saveGentan">
+                                    <span class="d-flex align-items-center">
+                                        <span class="spinner-border flex-shrink-0" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </span>
+                                        <span class="flex-grow-1 ms-1">
+                                            Loading...
+                                        </span>
+                                    </span>
+                                </div>
+                            </button>
+                            <button type="button" class="btn btn-link text-gray-600"
+                                data-bs-dismiss="modal">Close</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -278,9 +386,9 @@
                                 <th class="border-0 rounded-start">Action</th>
                                 <th class="border-0">Gentan</th>
                                 <th class="border-0">No Mesin</th>
-								<th class="border-0">Shift</th>
+                                <th class="border-0">Shift</th>
                                 <th class="border-0">Petugas</th>
-								<th class="border-0">Nomor Han</th>
+                                <th class="border-0">Nomor Han</th>
                                 <th class="border-0">Tgl Produksi</th>
                                 <th class="border-0 rounded-end">Berat Loss (kg)</th>
                             </tr>
@@ -289,8 +397,17 @@
                             @forelse ($details as $item)
                                 <tr>
                                     <td>
-                                        <button type="button" class="btn btn-danger p-1" wire:click="deleteInfure({{$item->id}})">
-                                            <i class="ri-delete-bin-4-fill"></i>
+                                        <button type="button" class="btn btn-danger p-1"
+                                            wire:click="deleteInfure({{ $item->id }})"
+                                            wire:loading.attr="disabled">
+                                            <span wire:loading.remove wire:target="deleteInfure({{ $item->id }})">
+                                                <i class="ri-delete-bin-4-fill"></i>
+                                            </span>
+                                            <span wire:loading wire:target="deleteInfure({{ $item->id }})">
+                                                <span class="spinner-border spinner-border-sm" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </span>
+                                            </span>
                                         </button>
                                     </td>
                                     <td>
@@ -302,7 +419,7 @@
                                     <td>
                                         {{ $item->work_shift }}
                                     </td>
-									<td>
+                                    <td>
                                         {{ $item->namapetugas }}
                                     </td>
                                     <td>
@@ -311,9 +428,9 @@
                                     <td>
                                         {{ $item->tglproduksi }}
                                     </td>
-									<td>
-										{{ $item->berat_loss }}
-									</td>
+                                    <td>
+                                        {{ $item->berat_loss }}
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>
@@ -449,10 +566,10 @@
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-3 fw-bold text-muted">Tanggal
                                                 Proses</label>
-                                            <input value="{{ $orderLPK->processdate ?? '' }}" disabled
-                                                type="date" class="form-control datepicker-input"
-                                                placeholder="yyyy/mm/dd" style="padding:0.44rem"
-                                                data-provider="flatpickr" data-date-format="d/m/Y" />
+                                            <input value="{{ $orderLPK->processdate ?? '' }}" disabled type="date"
+                                                class="form-control datepicker-input" placeholder="yyyy/mm/dd"
+                                                style="padding:0.44rem" data-provider="flatpickr"
+                                                data-date-format="d/m/Y" />
                                             <span class="input-group-text py-0">
                                                 <i class="ri-calendar-event-fill fs-4"></i>
                                             </span>
@@ -1212,28 +1329,46 @@
 
 </div>
 @script
-<script>
-    $wire.on('showModal', () => {
-      $('#modal-add').modal('show');
-    });
+    <script>
+        $wire.on('showModal', () => {
+            $('#modal-add').modal('show');
+        });
 
-    $wire.on('closeModal', () => {
-      $('#modal-add').modal('hide');
-    });
+        $wire.on('closeModal', () => {
+            $('#modal-add').modal('hide');
+        });
 
-    $wire.on('showModalLPK', () => {
-        $('#modal-lpk').modal('show');
-    });
-    $wire.on('closeModalLPK', () => {
-        $('#modal-lpk').modal('hide');
-    });
+        $wire.on('showModalLPK', () => {
+            $('#modal-lpk').modal('show');
+        });
+        $wire.on('closeModalLPK', () => {
+            $('#modal-lpk').modal('hide');
+        });
 
-    $wire.on('showModalNoOrder', () => {
-        $('#modal-noorder-produk').modal('show');
-    });
-    // close modal NoOrder
-    $wire.on('closeModalNoOrder', () => {
-        $('#modal-noorder-produk').modal('hide');
-    });
- </script>
- @endscript
+        $wire.on('showModalNoOrder', () => {
+            $('#modal-noorder-produk').modal('show');
+        });
+        // close modal NoOrder
+        $wire.on('closeModalNoOrder', () => {
+            $('#modal-noorder-produk').modal('hide');
+        });
+
+        // Initialize Choices.js for bagian mesin select
+        document.addEventListener('livewire:navigated', () => {
+            const bagianMesinSelect = document.querySelector('[data-choices]');
+            if (bagianMesinSelect && !bagianMesinSelect.choicesInstance) {
+                const choices = new Choices(bagianMesinSelect, {
+                    searchEnabled: true,
+                    removeItemButton: true,
+                    shouldSort: false
+                });
+                bagianMesinSelect.choicesInstance = choices;
+
+                // Listen for changes and update Livewire
+                bagianMesinSelect.addEventListener('change', function(e) {
+                    @this.set('bagian_mesin_id', e.target.value);
+                });
+            }
+        });
+    </script>
+@endscript
