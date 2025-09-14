@@ -41,6 +41,36 @@
                     </div>
                 </div>
             </div>
+            <div class="col-12 col-lg-12 mt-1">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label col-12 col-lg-2">Departemen</label>
+                        <select wire:model="departemen" class="form-control" placeholder="- all -">
+                            <option value="">Pilihan Infure/Seitai</option>
+                            <option value="infure">Infure</option>
+                            <option value="seitai">Seitai</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-4 mt-1">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label col-12 col-lg-6">Kode Produk</label>
+                        <input type="text" placeholder="Kode Produk" class="form-control readonly bg-light"
+                            readonly="readonly" wire:model="kode_produk" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-8 mt-1">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label"></label>
+                        <input type="text" placeholder="Nama Produk" class="form-control readonly bg-light"
+                            readonly="readonly" wire:model="nama_produk" />
+                    </div>
+                </div>
+            </div>
             <div class="col-12 col-lg-4 mt-1">
                 <div class="form-group">
                     <div class="input-group">
@@ -76,9 +106,12 @@
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-6">Petugas</label>
                         <input type="text" placeholder="-"
-                            class="form-control @error('employeeno') is-invalid @enderror" wire:model.change="employeeno"
-                            x-ref="employeenoInput" maxlength="8"
-                            x-on:keydown.tab="$event.preventDefault(); $refs.remarkInput.focus();" />
+                            class="form-control @error('employeeno') is-invalid @enderror"
+                            wire:model.change="employeeno" x-ref="employeenoInput" maxlength="8"
+                            x-on:keydown.tab="$event.preventDefault(); $refs.ngInput.focus();" />
+                        @error('employeeno')
+                            <span class="invalid-feedback">{{ $message }}</span>
+                        @enderror
                     </div>
                 </div>
             </div>
@@ -97,11 +130,100 @@
                     </div>
                 </div>
             </div>
+            <div class="col-12 col-lg-4 mt-1">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label col-12 col-lg-6">Kode NG</label>
+                        <input type="text" placeholder="Kode NG"
+                            class="form-control @error('kode_ng') is-invalid @enderror" x-ref="ngInput"
+                            x-on:keydown.tab="$event.preventDefault(); $refs.penyebabSelect.focus();"
+                            wire:model.change="kode_ng" maxlength="10" />
+                        @error('kode_ng')
+                            <span class="invalid-feedback">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-8 mt-1">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label"></label>
+                        <input type="text" placeholder="Nama NG" class="form-control readonly bg-light"
+                            readonly="readonly" wire:model="nama_ng" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-4 mt-1">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label col-12 col-lg-6">Penyebab</label>
+                        <select wire:model="penyebab" x-ref="penyebabSelect"
+                            class="form-control @error('penyebab') is-invalid @enderror"
+                            x-on:keydown.tab="$event.preventDefault(); $refs.keteranganPenyebabInput.focus();">
+                            <option value="">- Pilih Penyebab -</option>
+                            <option value="5 M Man Machines Money Method Materials">Pilihan 5 M Man Machines Money
+                                Method Materials</option>
+                            <option value="Man">Man</option>
+                            <option value="Machine">Machine</option>
+                            <option value="Method">Method</option>
+                            <option value="Material">Material</option>
+                            <option value="Milieu">Milieu</option>
+                        </select>
+                        @error('penyebab')
+                            <span class="invalid-feedback">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-8 mt-1">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label"></label>
+                        <input type="text" placeholder="Keterangan Penyebab" x-ref="keteranganPenyebabInput"
+                            class="form-control @error('keterangan_penyebab') is-invalid @enderror"
+                            wire:model.defer="keterangan_penyebab"
+                            x-on:keydown.tab="$event.preventDefault(); $refs.penanggulanganInput.focus();" />
+                        @error('keterangan_penyebab')
+                            <span class="invalid-feedback">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+            </div>
             <div class="col-12 col-lg-12 mt-1">
                 <div class="form-group">
                     <div class="input-group">
-                        <label class="control-label col-12 col-lg-2">NG</label>
-                        <input type="text" class="form-control" wire:model="remark" x-ref="remarkInput" />
+                        <label class="control-label col-12 col-lg-2">Penanggulangan</label>
+                        <input type="text" placeholder="Keterangan penanggulangan" x-ref="penanggulanganInput"
+                            class="form-control @error('penanggulangan') is-invalid @enderror"
+                            wire:model.defer="penanggulangan" />
+                        @error('penanggulangan')
+                            <span class="invalid-feedback">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-12 mt-1">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label col-12 col-lg-2">Bagian Mesin</label>
+                        <div class="col-12 col-lg-10" wire:ignore>
+                            <select wire:model="bagian_mesin_id" x-ref="bagianMesinSelect"
+                                class="form-control @error('bagian_mesin_id') is-invalid @enderror" data-choices
+                                data-choices-sorting-false data-choices-removeItem
+                                x-on:keydown.tab="$event.preventDefault(); $refs.statusKenpinSelect.focus();">
+                                <option value="">- Pilih Bagian -</option>
+                                @if (isset($bagianMesinList))
+                                    @foreach ($bagianMesinList as $bagianMesin)
+                                        <option value="{{ $bagianMesin->id }}">
+                                            {{ $bagianMesin->code . ' - ' . $bagianMesin->detail_mesin }}
+                                        </option>
+                                    @endforeach
+                                @endif
+                            </select>
+                            @error('bagian_mesin_id')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
+                        </div>
                     </div>
                 </div>
             </div>
@@ -144,11 +266,13 @@
                                 nomor_palet = value.substring(0, 12);
                             }
                         })">
-                            <input type="text" class="form-control" x-model="nomor_palet" wire:model="nomor_palet"
-                                maxlength="12" x-on:keydown.tab="$event.preventDefault(); $refs.lotnoInput.focus();"
+                            <input type="text" class="form-control" x-model="nomor_palet"
+                                wire:model="nomor_palet" maxlength="12"
+                                x-on:keydown.tab="$event.preventDefault(); $refs.lotnoInput.focus();"
                                 placeholder="A0000-000000" />
                         </div>
-                        <button wire:click="addPalet" type="button" class="btn btn-info" wire:loading.attr="disabled">
+                        <button wire:click="addPalet" type="button" class="btn btn-info"
+                            wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="addPalet">
                                 <i class="ri-search-line"></i>
                             </span>
@@ -200,7 +324,8 @@
                         </div>
                     </button>
 
-                    <button type="button" class="btn btn-success btn-print" wire:click="export" wire:loading.attr="disabled">
+                    <button type="button" class="btn btn-success btn-print" wire:click="export"
+                        wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="export">
                             <i class="bx bx-printer"></i> Print
                         </span>
@@ -296,7 +421,8 @@
                         {{-- <button type="button" class="btn btn-secondary">Accept</button> --}}
                         <button type="button" class="btn btn-link text-gray-600 ms-auto"
                             data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-success" wire:click="saveSeitai" wire:loading.attr="disabled">
+                        <button type="button" class="btn btn-success" wire:click="saveSeitai"
+                            wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="saveSeitai">
                                 <i class="ri-save-3-line"></i> Save
                             </span>
@@ -396,36 +522,41 @@
                                     <div class="form-group">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-4">Nomor Order</label>
-                                            <input type="text" class="form-control col-12 col-lg-8" name="product.code"
-                                                value="{{ $product->code ?? '' }}" placeholder="KODE" />
+                                            <input type="text" class="form-control col-12 col-lg-8"
+                                                name="product.code" value="{{ $product->code ?? '' }}"
+                                                placeholder="KODE" />
                                         </div>
                                     </div>
                                     <div class="form-group mt-1">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-4">Nama Produk</label>
-                                            <input type="text" class="form-control col-12 col-lg-8" name="product.name"
-                                                value="{{ $product->name ?? '' }}" placeholder="nama" />
+                                            <input type="text" class="form-control col-12 col-lg-8"
+                                                name="product.name" value="{{ $product->name ?? '' }}"
+                                                placeholder="nama" />
                                         </div>
                                     </div>
                                     <div class="form-group mt-1">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-4">Kode Tipe</label>
-                                            <input type="text" class="form-control col-12 col-lg-8" name="product.product_type_id"
+                                            <input type="text" class="form-control col-12 col-lg-8"
+                                                name="product.product_type_id"
                                                 value="{{ $product->product_type_id ?? '' }}" />
                                         </div>
                                     </div>
                                     <div class="form-group mt-1">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-4">Kode Produk (Alias)</label>
-                                            <input type="text" class="form-control col-12 col-lg-8" name="product.code_alias"
-                                                value="{{ $product->code_alias ?? '' }}" placeholder="KODE" />
+                                            <input type="text" class="form-control col-12 col-lg-8"
+                                                name="product.code_alias" value="{{ $product->code_alias ?? '' }}"
+                                                placeholder="KODE" />
                                         </div>
                                     </div>
                                     <div class="form-group mt-1">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-4">Code Barcode</label>
-                                            <input type="text" class="form-control col-12 col-lg-8" name="product.codebarcode"
-                                                value="{{ $product->codebarcode ?? '' }}" placeholder="KODE" />
+                                            <input type="text" class="form-control col-12 col-lg-8"
+                                                name="product.codebarcode" value="{{ $product->codebarcode ?? '' }}"
+                                                placeholder="KODE" />
                                         </div>
                                     </div>
                                 </div>
@@ -453,8 +584,9 @@
                                     <div class="form-group mt-1">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-4">Berat Satuan</label>
-                                            <input type="number" class="form-control col-12 col-lg-8" name="product.unit_weight"
-                                                value="{{ $product->unit_weight ?? '' }}"  />
+                                            <input type="number" class="form-control col-12 col-lg-8"
+                                                name="product.unit_weight"
+                                                value="{{ $product->unit_weight ?? '' }}" />
                                             <span class="input-group-text">
                                                 gram
                                             </span>
@@ -475,7 +607,8 @@
                                     <div class="form-group">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-4">Dimensi</label>
-                                            <input type="text" class="form-control" name="product.inflation_thickness"
+                                            <input type="text" class="form-control"
+                                                name="product.inflation_thickness"
                                                 value="{{ $product->inflation_thickness ?? '' }}"
                                                 placeholder="Tebal" />
                                             @error('inflation_thickness')
@@ -498,8 +631,9 @@
                                     <div class="form-group mt-1">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-4">Panjang Gulung</label>
-                                            <input type="text" class="form-control col-12 col-lg-8" name="product.inflation_length"
-                                                value="{{ $product->one_winding_m_number ?? '' }}"  />
+                                            <input type="text" class="form-control col-12 col-lg-8"
+                                                name="product.inflation_length"
+                                                value="{{ $product->one_winding_m_number ?? '' }}" />
                                             <span class="input-group-text">
                                                 m
                                             </span>
@@ -511,25 +645,25 @@
                                     <div class="form-group mt-1">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-4">Material</label>
-                                            <input type="text" class="form-control col-12 col-lg-8" name="product.material_classification"
-                                                value="{{ $product->material_classification ?? '' }}"
-                                                 />
+                                            <input type="text" class="form-control col-12 col-lg-8"
+                                                name="product.material_classification"
+                                                value="{{ $product->material_classification ?? '' }}" />
                                         </div>
                                     </div>
                                     <div class="form-group mt-1">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-4">Embos</label>
-                                            <input type="text" class="form-control col-12 col-lg-8" name="product.embossed_classification"
-                                                value="{{ $product->embossed_classification ?? '' }}"
-                                                 />
+                                            <input type="text" class="form-control col-12 col-lg-8"
+                                                name="product.embossed_classification"
+                                                value="{{ $product->embossed_classification ?? '' }}" />
                                         </div>
                                     </div>
                                     <div class="form-group mt-1">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-4">Corona</label>
-                                            <input type="text" class="form-control col-12 col-lg-8" name="product.corona_classification"
-                                                value="{{ $product->surface_classification ?? '' }}"
-                                                 />
+                                            <input type="text" class="form-control col-12 col-lg-8"
+                                                name="product.corona_classification"
+                                                value="{{ $product->surface_classification ?? '' }}" />
                                         </div>
                                     </div>
                                 </div>
@@ -600,14 +734,16 @@
                                     <div class="form-group">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-4">Gentan</label>
-                                            <input type="text" class="form-control" name="product.gentan_classification"
+                                            <input type="text" class="form-control"
+                                                name="product.gentan_classification"
                                                 value="{{ $product->gentan_classification ?? '' }}" />
                                         </div>
                                     </div>
                                     <div class="form-group mt-1">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-4">Gazette</label>
-                                            <input type="text" class="form-control" name="product.gazette_classification"
+                                            <input type="text" class="form-control"
+                                                name="product.gazette_classification"
                                                 value="{{ $product->gazette_classification ?? '' }}" />
                                         </div>
                                     </div>
@@ -617,14 +753,16 @@
                                             <span class="input-group-text">
                                                 A
                                             </span>
-                                            <input type="text" class="form-control col-12 col-lg-8" name="product.gazette_dimension_a"
-                                                value="{{ $product->gazette_dimension_a ?? '' }}"  />
+                                            <input type="text" class="form-control col-12 col-lg-8"
+                                                name="product.gazette_dimension_a"
+                                                value="{{ $product->gazette_dimension_a ?? '' }}" />
 
                                             <span class="input-group-text">
                                                 B
                                             </span>
-                                            <input type="text" class="form-control col-12 col-lg-8" name="product.gazette_dimension_b"
-                                                value="{{ $product->gazette_dimension_b ?? '' }}"  />
+                                            <input type="text" class="form-control col-12 col-lg-8"
+                                                name="product.gazette_dimension_b"
+                                                value="{{ $product->gazette_dimension_b ?? '' }}" />
                                         </div>
                                     </div>
                                     <div class="form-group mt-1">
@@ -633,14 +771,16 @@
                                             <span class="input-group-text">
                                                 C
                                             </span>
-                                            <input type="text" class="form-control col-12 col-lg-8" name="product.gazette_dimension_c"
-                                                value="{{ $product->gazette_dimension_c ?? '' }}"  />
+                                            <input type="text" class="form-control col-12 col-lg-8"
+                                                name="product.gazette_dimension_c"
+                                                value="{{ $product->gazette_dimension_c ?? '' }}" />
 
                                             <span class="input-group-text">
                                                 D
                                             </span>
-                                            <input type="text" class="form-control col-12 col-lg-8" name="product.gazette_dimension_d"
-                                                value="{{ $product->gazette_dimension_d ?? '' }}"  />
+                                            <input type="text" class="form-control col-12 col-lg-8"
+                                                name="product.gazette_dimension_d"
+                                                value="{{ $product->gazette_dimension_d ?? '' }}" />
                                         </div>
                                     </div>
                                 </div>
@@ -662,25 +802,25 @@
                                     <div class="form-group mt-1">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-4">A.</label>
-                                            <input type="number" class="form-control col-12 col-lg-8" name="product.extracted_dimension_a"
-                                                value="{{ $product->extracted_dimension_a ?? '' }}"
-                                                 />
+                                            <input type="number" class="form-control col-12 col-lg-8"
+                                                name="product.extracted_dimension_a"
+                                                value="{{ $product->extracted_dimension_a ?? '' }}" />
                                         </div>
                                     </div>
                                     <div class="form-group mt-1">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-4">B.</label>
-                                            <input type="number" class="form-control col-12 col-lg-8" name="product.extracted_dimension_b"
-                                                value="{{ $product->extracted_dimension_b ?? '' }}"
-                                                 />
+                                            <input type="number" class="form-control col-12 col-lg-8"
+                                                name="product.extracted_dimension_b"
+                                                value="{{ $product->extracted_dimension_b ?? '' }}" />
                                         </div>
                                     </div>
                                     <div class="form-group mt-1">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-4">C.</label>
-                                            <input type="number" class="form-control col-12 col-lg-8" name="product.extracted_dimension_c"
-                                                value="{{ $product->extracted_dimension_c ?? '' }}"
-                                                 />
+                                            <input type="number" class="form-control col-12 col-lg-8"
+                                                name="product.extracted_dimension_c"
+                                                value="{{ $product->extracted_dimension_c ?? '' }}" />
                                         </div>
                                     </div>
                                 </div>
@@ -747,7 +887,8 @@
                                             <span class="input-group-text">
                                                 Warna Belakang:
                                             </span>
-                                            <input type="text" class="form-control" name="product.back_color_number"
+                                            <input type="text" class="form-control"
+                                                name="product.back_color_number"
                                                 value="{{ $product->back_color_number ?? '' }}" placeholder="..." />
                                         </div>
                                     </div>
@@ -798,21 +939,24 @@
                                     <div class="form-group mt-1">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-4">Sifat Tinta</label>
-                                            <input type="text" class="form-control" name="product.ink_characteristic"
+                                            <input type="text" class="form-control"
+                                                name="product.ink_characteristic"
                                                 value="{{ $product->ink_characteristic ?? '' }}" />
                                         </div>
                                     </div>
                                     <div class="form-group mt-1">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-4">Endless</label>
-                                            <input type="text" class="form-control" name="product.endless_printing"
+                                            <input type="text" class="form-control"
+                                                name="product.endless_printing"
                                                 value="{{ $product->endless_printing ?? '' }}" />
                                         </div>
                                     </div>
                                     <div class="form-group mt-1">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-4">Arah Gulung</label>
-                                            <input type="text" class="form-control" name="product.winding_direction_of_the_web"
+                                            <input type="text" class="form-control"
+                                                name="product.winding_direction_of_the_web"
                                                 value="{{ $product->winding_direction_of_the_web ?? '' }}" />
                                         </div>
                                     </div>
@@ -824,14 +968,16 @@
                                     <div class="form-group">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-6">Klarifikasi Seal</label>
-                                            <input type="text" class="form-control" name="product.seal_classification"
+                                            <input type="text" class="form-control"
+                                                name="product.seal_classification"
                                                 value="{{ $product->seal_classification ?? '' }}" />
                                         </div>
                                     </div>
                                     <div class="form-group mt-1">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-6">Jarak Seal dari Pola</label>
-                                            <input type="number" class="form-control" name="product.from_seal_design"
+                                            <input type="number" class="form-control"
+                                                name="product.from_seal_design"
                                                 value="{{ $product->from_seal_design ?? '' }}" placeholder="..."
                                                 min="0" />
                                         </div>
@@ -839,7 +985,8 @@
                                     <div class="form-group mt-1">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-6">Jarak Seal Bawah</label>
-                                            <input type="number" class="form-control" name="product.lower_sealing_length"
+                                            <input type="number" class="form-control"
+                                                name="product.lower_sealing_length"
                                                 value="{{ $product->lower_sealing_length ?? '' }}" placeholder="..."
                                                 min="0" />
                                         </div>
@@ -847,7 +994,8 @@
                                     <div class="form-group mt-1">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-6">Jumlah Baris Palet</label>
-                                            <input type="number" class="form-control" name="product.palet_jumlah_baris"
+                                            <input type="number" class="form-control"
+                                                name="product.palet_jumlah_baris"
                                                 value="{{ $product->palet_jumlah_baris ?? '' }}" placeholder="..."
                                                 min="0" />
                                         </div>
@@ -884,7 +1032,8 @@
                                     <div class="form-group mt-1">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-6">Jenis Seal Seitai</label>
-                                            <input type="text" class="form-control" name="product.jenissealseitaiid"
+                                            <input type="text" class="form-control"
+                                                name="product.jenissealseitaiid"
                                                 value="{{ $product->jenissealseitaiid ?? '' }}" />
                                         </div>
                                     </div>
@@ -921,8 +1070,7 @@
                                     <div class="form-group mt-1">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-3">Catatan Produksi</label>
-                                            <textarea class="form-control" rows="2" name="product.manufacturing_summary"
-                                             placeholder="Catatan Produksi">{{ $product->manufacturing_summary ?? '' }}</textarea>
+                                            <textarea class="form-control" rows="2" name="product.manufacturing_summary" placeholder="Catatan Produksi">{{ $product->manufacturing_summary ?? '' }}</textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -930,27 +1078,32 @@
                                     <div class="form-group">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-2">Isi</label>
-                                            <input type="number" class="form-control" name="product.case_gaiso_count"
-                                                value="{{ $product->case_gaiso_count ?? '' }}"  />
-                                            <input type="text" class="form-control" name="product.case_gaiso_count_unit"
+                                            <input type="number" class="form-control"
+                                                name="product.case_gaiso_count"
+                                                value="{{ $product->case_gaiso_count ?? '' }}" />
+                                            <input type="text" class="form-control"
+                                                name="product.case_gaiso_count_unit"
                                                 value="{{ $product->case_gaiso_count_unit ?? '' }}" />
                                         </div>
                                     </div>
                                     <div class="form-group mt-1">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-2">Isi</label>
-                                            <input type="number" class="form-control"  name="product.case_box_count"
-                                                value="{{ $product->case_box_count ?? '' }}"  />
-                                            <input type="text" class="form-control" name="product.case_box_count_unit"
+                                            <input type="number" class="form-control" name="product.case_box_count"
+                                                value="{{ $product->case_box_count ?? '' }}" />
+                                            <input type="text" class="form-control"
+                                                name="product.case_box_count_unit"
                                                 value="{{ $product->case_box_count_unit ?? '' }}" />
                                         </div>
                                     </div>
                                     <div class="form-group mt-1">
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-2">Isi</label>
-                                            <input type="text" class="form-control" name="product.case_inner_count"
+                                            <input type="text" class="form-control"
+                                                name="product.case_inner_count"
                                                 value="{{ $product->case_inner_count ?? '' }}" />
-                                            <input type="text" class="form-control" name="product.case_inner_count_unit"
+                                            <input type="text" class="form-control"
+                                                name="product.case_inner_count_unit"
                                                 value="{{ $product->case_inner_count_unit ?? '' }}" />
                                         </div>
                                     </div>
@@ -983,6 +1136,24 @@
         // close modal NoOrder
         $wire.on('closeModalNoOrder', () => {
             $('#modal-noorder-produk').modal('hide');
+        });
+
+        // Initialize Choices.js for bagian mesin select
+        document.addEventListener('livewire:navigated', () => {
+            const bagianMesinSelect = document.querySelector('[data-choices]');
+            if (bagianMesinSelect && !bagianMesinSelect.choicesInstance) {
+                const choices = new Choices(bagianMesinSelect, {
+                    searchEnabled: true,
+                    removeItemButton: true,
+                    shouldSort: false
+                });
+                bagianMesinSelect.choicesInstance = choices;
+
+                // Listen for changes and update Livewire
+                bagianMesinSelect.addEventListener('change', function(e) {
+                    @this.set('bagian_mesin_id', e.target.value);
+                });
+            }
         });
     </script>
 @endscript

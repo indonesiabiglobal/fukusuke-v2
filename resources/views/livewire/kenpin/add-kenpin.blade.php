@@ -194,7 +194,7 @@
                 <div class="form-group">
                     <div class="input-group">
                         <label class="control-label"></label>
-                        <input type="text" placeholder="Keterangan penyebab..." x-ref="keteranganPenyebabInput"
+                        <input type="text" placeholder="Keterangan penyebab" x-ref="keteranganPenyebabInput"
                             class="form-control @error('keterangan_penyebab') is-invalid @enderror"
                             wire:model.defer="keterangan_penyebab"
                             x-on:keydown.tab="$event.preventDefault(); $refs.penanggulanganInput.focus();" />
@@ -208,7 +208,7 @@
                 <div class="form-group">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-2">Penanggulangan</label>
-                        <input type="text" placeholder="Keterangan penanggulangan..." x-ref="penanggulanganInput"
+                        <input type="text" placeholder="Keterangan penanggulangan" x-ref="penanggulanganInput"
                             class="form-control @error('penanggulangan') is-invalid @enderror"
                             wire:model.defer="penanggulangan" />
                         @error('penanggulangan')
