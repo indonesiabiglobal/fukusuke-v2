@@ -2,16 +2,16 @@
 
 namespace App\Models;
 
-use App\Helpers\departmentHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
-class MsMachinePartDetail extends Model
+class TdKenpinGoodsDetailBox extends Model
 {
     use HasFactory;
-    protected $table = "ms_machine_part_detail";
+    protected $table = "tdkenpin_goods_detail_box";
     protected $fillable = [];
+    // public $timestamps = false;
 
     // custom created and updated
     const CREATED_AT = 'created_on';
@@ -29,11 +29,5 @@ class MsMachinePartDetail extends Model
         static::updating(function ($model) {
             $model->updated_by = Auth::user()->username;
         });
-    }
-
-    // Relations
-    public function machinePart()
-    {
-        return $this->belongsTo(MsMachinePart::class, 'machine_part_id');
     }
 }

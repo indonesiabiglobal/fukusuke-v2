@@ -436,7 +436,7 @@ class AddKenpinInfureController extends Component
 
     public function save()
     {
-        $validatedData = $this->validate([
+        $this->validate([
             'employeeno' => 'required',
             'status_kenpin' => 'required',
             'lpk_no' => 'required',

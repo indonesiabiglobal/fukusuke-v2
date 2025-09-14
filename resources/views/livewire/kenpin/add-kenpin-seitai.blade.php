@@ -35,8 +35,8 @@
                                 kenpin_no = value.substring(0, 12);
                             }
                         })">
-                            <input type="text" class="form-control" wire:model="kenpin_no" maxlength="8"
-                                x-model="kenpin_no" wire:model="kenpin_no" maxlength="8" />
+                            <input type="text" class="form-control readonly bg-light" disabled wire:model="kenpin_no"
+                                maxlength="8" x-model="kenpin_no" wire:model="kenpin_no" maxlength="8" />
                         </div>
                     </div>
                 </div>
@@ -45,10 +45,9 @@
                 <div class="form-group">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-2">Departemen</label>
-                        <select wire:model="departemen" class="form-control" placeholder="- all -">
-                            <option value="">Pilihan Infure/Seitai</option>
-                            <option value="infure">Infure</option>
-                            <option value="seitai">Seitai</option>
+                        <select wire:model.change="department_id" class="form-control" placeholder="- all -">
+                            <option value="7">Seitai</option>
+                            <option value="2">Infure</option>
                         </select>
                     </div>
                 </div>
@@ -56,9 +55,14 @@
             <div class="col-12 col-lg-4 mt-1">
                 <div class="form-group">
                     <div class="input-group">
-                        <label class="control-label col-12 col-lg-6">Kode Produk</label>
-                        <input type="text" placeholder="Kode Produk" class="form-control readonly bg-light"
-                            readonly="readonly" wire:model="kode_produk" />
+                        <label class="control-label col-12 col-lg-6">Produk</label>
+                        <input type="text" placeholder="Kode Produk"
+                            class="form-control readonly bg-light @error('kode_produk') is-invalid @enderror"
+                            readonly="readonly" wire:model="kode_produk"
+                            x-on:keydown.tab="$event.preventDefault(); $refs.employeenoInput.focus();" />
+                        @error('kode_produk')
+                            <span class="invalid-feedback">{{ $message }}</span>
+                        @enderror
                     </div>
                 </div>
             </div>
@@ -66,12 +70,19 @@
                 <div class="form-group">
                     <div class="input-group">
                         <label class="control-label"></label>
-                        <input type="text" placeholder="Nama Produk" class="form-control readonly bg-light"
+                        <input type="text"
+                            @error('kode_produk') placeholder="{{ $message }}" id="nama_produk" @else placeholder="Nama Produk" @enderror
+                            class="form-control readonly bg-light @error('nama_produk') is-invalid @enderror"
                             readonly="readonly" wire:model="nama_produk" />
+                        <style>
+                            #nama_produk::placeholder {
+                                color: red;
+                            }
+                        </style>
                     </div>
                 </div>
             </div>
-            <div class="col-12 col-lg-4 mt-1">
+            {{-- <div class="col-12 col-lg-4 mt-1">
                 <div class="form-group">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-6">
@@ -100,7 +111,7 @@
                         </style>
                     </div>
                 </div>
-            </div>
+            </div> --}}
             <div class="col-12 col-lg-4 mt-1">
                 <div class="form-group">
                     <div class="input-group">
@@ -133,10 +144,10 @@
             <div class="col-12 col-lg-4 mt-1">
                 <div class="form-group">
                     <div class="input-group">
-                        <label class="control-label col-12 col-lg-6">Kode NG</label>
+                        <label class="control-label col-12 col-lg-6">NG</label>
                         <input type="text" placeholder="Kode NG"
                             class="form-control @error('kode_ng') is-invalid @enderror" x-ref="ngInput"
-                            x-on:keydown.tab="$event.preventDefault(); $refs.penyebabSelect.focus();"
+                            x-on:keydown.tab="$event.preventDefault(); $refs.statusKenpinSelect.focus();"
                             wire:model.change="kode_ng" maxlength="10" />
                         @error('kode_ng')
                             <span class="invalid-feedback">{{ $message }}</span>
@@ -148,12 +159,81 @@
                 <div class="form-group">
                     <div class="input-group">
                         <label class="control-label"></label>
-                        <input type="text" placeholder="Nama NG" class="form-control readonly bg-light"
+                        <input type="text"
+                            @error('kode_ng') placeholder="{{ $message }}" id="nama_ng" @else placeholder="Nama NG" @enderror
+                            class="form-control readonly bg-light @error('nama_ng') is-invalid @enderror"
                             readonly="readonly" wire:model="nama_ng" />
+                        <style>
+                            #nama_ng::placeholder {
+                                color: red;
+                            }
+                        </style>
                     </div>
                 </div>
             </div>
-            <div class="col-12 col-lg-4 mt-1">
+            {{-- status --}}
+            <div class="col-12 col-lg-12 mt-1">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label col-12 col-lg-2">Status</label>
+                        <select wire:model.change="status" class="form-control" placeholder="- all -"
+                            x-ref="statusKenpinSelect">
+                            <option value="1">Proses</option>
+                            <option value="2">Finish</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            {{-- bagian mesin infure --}}
+            <div class="col-12 col-lg-12 mt-1" @if ($department_id == 7) style="display: none" @endif>
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label col-12 col-lg-2">Bagian Mesin</label>
+                        <div class="col-12 col-lg-10" wire:ignore>
+                            <select wire:model="bagian_mesin_id" x-ref="bagianMesinSelect"
+                                class="form-control @error('bagian_mesin_id') is-invalid @enderror" data-choices
+                                data-choices-sorting-false data-choices-removeItem
+                                x-on:keydown.tab="$event.preventDefault(); $refs.statusKenpinSelect.focus();">
+                                <option value="">- Pilih Bagian -</option>
+                                @foreach ($bagianMesinListInfure as $bagianMesin)
+                                    <option value="{{ $bagianMesin->id }}">
+                                        {{ $bagianMesin->code . ' - ' . $bagianMesin->detail_mesin }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('bagian_mesin_id')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{-- bagian mesin seitai --}}
+            <div class="col-12 col-lg-12 mt-1" @if ($department_id == 2) style="display: none" @endif>
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label col-12 col-lg-2">Bagian Mesin</label>
+                        <div class="col-12 col-lg-10" wire:ignore>
+                            <select wire:model="bagian_mesin_id" x-ref="bagianMesinSelect"
+                                class="form-control @error('bagian_mesin_id') is-invalid @enderror" data-choices
+                                data-choices-sorting-false data-choices-removeItem
+                                x-on:keydown.tab="$event.preventDefault(); $refs.statusKenpinSelect.focus();">
+                                <option value="">- Pilih Bagian -</option>
+                                @foreach ($bagianMesinListSeitai as $bagianMesin)
+                                    <option value="{{ $bagianMesin->id }}">
+                                        {{ $bagianMesin->code . ' - ' . $bagianMesin->detail_mesin }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('bagian_mesin_id')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{-- penyebab --}}
+            <div class="col-12 col-lg-4 mt-1" @if ($status == 1) style="display: none" @endif>
                 <div class="form-group">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-6">Penyebab</label>
@@ -175,7 +255,8 @@
                     </div>
                 </div>
             </div>
-            <div class="col-12 col-lg-8 mt-1">
+            {{-- keterangan penyebab --}}
+            <div class="col-12 col-lg-8 mt-1" @if ($status == 1) style="display: none" @endif>
                 <div class="form-group">
                     <div class="input-group">
                         <label class="control-label"></label>
@@ -189,7 +270,8 @@
                     </div>
                 </div>
             </div>
-            <div class="col-12 col-lg-12 mt-1">
+            {{-- penanggulangan --}}
+            <div class="col-12 col-lg-12 mt-1" @if ($status == 1) style="display: none" @endif>
                 <div class="form-group">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-2">Penanggulangan</label>
@@ -199,42 +281,6 @@
                         @error('penanggulangan')
                             <span class="invalid-feedback">{{ $message }}</span>
                         @enderror
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 col-lg-12 mt-1">
-                <div class="form-group">
-                    <div class="input-group">
-                        <label class="control-label col-12 col-lg-2">Bagian Mesin</label>
-                        <div class="col-12 col-lg-10" wire:ignore>
-                            <select wire:model="bagian_mesin_id" x-ref="bagianMesinSelect"
-                                class="form-control @error('bagian_mesin_id') is-invalid @enderror" data-choices
-                                data-choices-sorting-false data-choices-removeItem
-                                x-on:keydown.tab="$event.preventDefault(); $refs.statusKenpinSelect.focus();">
-                                <option value="">- Pilih Bagian -</option>
-                                @if (isset($bagianMesinList))
-                                    @foreach ($bagianMesinList as $bagianMesin)
-                                        <option value="{{ $bagianMesin->id }}">
-                                            {{ $bagianMesin->code . ' - ' . $bagianMesin->detail_mesin }}
-                                        </option>
-                                    @endforeach
-                                @endif
-                            </select>
-                            @error('bagian_mesin_id')
-                                <span class="invalid-feedback">{{ $message }}</span>
-                            @enderror
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 col-lg-12 mt-1">
-                <div class="form-group">
-                    <div class="input-group">
-                        <label class="control-label col-12 col-lg-2">Status</label>
-                        <select wire:model="status" class="form-control" placeholder="- all -">
-                            <option value="1">Proses</option>
-                            <option value="2">Finish</option>
-                        </select>
                     </div>
                 </div>
             </div>
@@ -271,7 +317,7 @@
                                 x-on:keydown.tab="$event.preventDefault(); $refs.lotnoInput.focus();"
                                 placeholder="A0000-000000" />
                         </div>
-                        <button wire:click="addPalet" type="button" class="btn btn-info"
+                        <button wire:click="addPalet" type="button" class="btn btn-info z-0"
                             wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="addPalet">
                                 <i class="ri-search-line"></i>
@@ -343,6 +389,7 @@
                 </div>
             </div>
         </div>
+        {{-- Modal edit palet --}}
         <div class="modal fade" id="modal-edit" tabindex="-1" role="dialog" aria-labelledby="modal-edit"
             aria-hidden="true" wire:ignore.self>
             <div class="modal-dialog modal-dialog-centered" role="document">
@@ -415,28 +462,46 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-lg-12 mb-1">
+                                <div class="form-group">
+                                    <label>Nomor Box </label>
+                                    <div class="mb-2">
+                                        @foreach($nomor_box as $index => $box)
+                                            <div class="input-group mb-1">
+                                                <input type="number" class="form-control" wire:model="nomor_box.{{ $index }}" placeholder="Masukkan nomor box" />
+                                                <button type="button" class="btn btn-danger btn-sm" wire:click="removeBox({{ $index }})">Remove</button>
+                                            </div>
+                                        @endforeach
+                                        <button type="button" class="btn btn-primary btn-sm" wire:click="addBox">Add Box</button>
+                                    </div>
+                                    @error('nomor_box.*')
+                                        <span class="invalid-feedback">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        {{-- <button type="button" class="btn btn-secondary">Accept</button> --}}
-                        <button type="button" class="btn btn-link text-gray-600 ms-auto"
-                            data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-success" wire:click="saveSeitai"
-                            wire:loading.attr="disabled">
-                            <span wire:loading.remove wire:target="saveSeitai">
-                                <i class="ri-save-3-line"></i> Save
-                            </span>
-                            <div wire:loading wire:target="saveSeitai">
-                                <span class="d-flex align-items-center">
-                                    <span class="spinner-border flex-shrink-0" role="status">
-                                        <span class="visually-hidden">Loading...</span>
-                                    </span>
-                                    <span class="flex-grow-1 ms-1">
-                                        Loading...
-                                    </span>
+                        <div class="ms-auto">
+                            <button type="button" class="btn btn-success" wire:click="saveSeitai"
+                                wire:loading.attr="disabled">
+                                <span wire:loading.remove wire:target="saveSeitai">
+                                    <i class="ri-save-3-line"></i> Save
                                 </span>
-                            </div>
-                        </button>
+                                <div wire:loading wire:target="saveSeitai">
+                                    <span class="d-flex align-items-center">
+                                        <span class="spinner-border flex-shrink-0" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </span>
+                                        <span class="flex-grow-1 ms-1">
+                                            Loading...
+                                        </span>
+                                    </span>
+                                </div>
+                            </button>
+                            <button type="button" class="btn btn-link text-gray-600 ms-auto"
+                                data-bs-dismiss="modal">Close</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -453,6 +518,7 @@
                                 <th class="border-0">No LPK</th>
                                 <th class="border-0">Tgl Produksi</th>
                                 <th class="border-0">Quantity</th>
+                                <th class="border-0">Nomor Box</th>
                                 <th class="border-0 rounded-end">Loss (Lembar)</th>
                             </tr>
                         </thead>
@@ -486,16 +552,23 @@
                                         {{ number_format($item->qty_produksi) }}
                                     </td>
                                     <td>
+                                        @if($item->nomor_box && is_array($item->nomor_box))
+                                            {{ implode(', ', $item->nomor_box) }}
+                                        @else
+                                            -
+                                        @endif
+                                    </td>
+                                    <td>
                                         {{ number_format($item->qty_loss) }}
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="text-center">No results found</td>
+                                    <td colspan="8" class="text-center">No results found</td>
                                 </tr>
                             @endforelse
                             <tr>
-                                <td colspan="6" class="text-end">Berat Loss Total (kg):</td>
+                                <td colspan="7" class="text-end">Berat Loss Total (kg):</td>
                                 <td colspan="1" class="text-center">{{ number_format($beratLossTotal) }}</td>
                             </tr>
                         </tbody>
@@ -503,621 +576,6 @@
                 </div>
             </div>
         </div>
-
-        <!--  modal master produk -->
-        <div class="modal fade" id="modal-noorder-produk" tabindex="-1" role="dialog"
-            aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-xl">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="myExtraLargeModalLabel">Produk Info - Nomor: <span
-                                class="fw-bold">{{ $code }}</span></h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                            aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="col-lg-12">
-                            <div class="row">
-                                <div class="col-12 col-lg-6">
-                                    <div class="form-group">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-4">Nomor Order</label>
-                                            <input type="text" class="form-control col-12 col-lg-8"
-                                                name="product.code" value="{{ $product->code ?? '' }}"
-                                                placeholder="KODE" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-4">Nama Produk</label>
-                                            <input type="text" class="form-control col-12 col-lg-8"
-                                                name="product.name" value="{{ $product->name ?? '' }}"
-                                                placeholder="nama" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-4">Kode Tipe</label>
-                                            <input type="text" class="form-control col-12 col-lg-8"
-                                                name="product.product_type_id"
-                                                value="{{ $product->product_type_id ?? '' }}" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-4">Kode Produk (Alias)</label>
-                                            <input type="text" class="form-control col-12 col-lg-8"
-                                                name="product.code_alias" value="{{ $product->code_alias ?? '' }}"
-                                                placeholder="KODE" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-4">Code Barcode</label>
-                                            <input type="text" class="form-control col-12 col-lg-8"
-                                                name="product.codebarcode" value="{{ $product->codebarcode ?? '' }}"
-                                                placeholder="KODE" />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-lg-6">
-                                    <div class="form-group">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-4">Dimensi (T x L x P)</label>
-                                            <span class="input-group-text">
-                                                T
-                                            </span>
-                                            <input type="number" class="form-control" name="product.ketebalan"
-                                                value="{{ $product->ketebalan ?? '' }}" placeholder="Tebal" />
-                                            <span class="input-group-text">
-                                                L
-                                            </span>
-                                            <input type="number" class="form-control" name="product.lebar"
-                                                value="{{ $product->diameterlipat ?? '' }}" placeholder="Lebar" />
-                                            <span class="input-group-text">
-                                                P
-                                            </span>
-                                            <input type="number" class="form-control" name="product.panjang"
-                                                value="{{ $product->productlength ?? '' }}" placeholder="Panjang" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-4">Berat Satuan</label>
-                                            <input type="number" class="form-control col-12 col-lg-8"
-                                                name="product.unit_weight"
-                                                value="{{ $product->unit_weight ?? '' }}" />
-                                            <span class="input-group-text">
-                                                gram
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-4">Satuan</label>
-                                            <input type="text" class="form-control" name="product.product_unit"
-                                                value="{{ $product->product_unit ?? '' }}" />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12 ">
-                                    <p class="text-success fw-bold">INFURE</p>
-                                </div>
-                                <div class="col-12 col-lg-6">
-                                    <div class="form-group">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-4">Dimensi</label>
-                                            <input type="text" class="form-control"
-                                                name="product.inflation_thickness"
-                                                value="{{ $product->inflation_thickness ?? '' }}"
-                                                placeholder="Tebal" />
-                                            @error('inflation_thickness')
-                                                <span class="invalid-feedback">{{ $message }}</span>
-                                            @enderror
-                                            <span class="input-group-text">
-                                                x
-                                            </span>
-                                            <input type="text" class="form-control" name="product.inflation_width"
-                                                value="{{ $product->inflation_fold_diameter ?? '' }}"
-                                                placeholder="Lebar" />
-                                            @error('inflation_fold_diameter')
-                                                <span class="invalid-feedback">{{ $message }}</span>
-                                            @enderror
-                                            <span class="input-group-text">
-                                                mm
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-4">Panjang Gulung</label>
-                                            <input type="text" class="form-control col-12 col-lg-8"
-                                                name="product.inflation_length"
-                                                value="{{ $product->one_winding_m_number ?? '' }}" />
-                                            <span class="input-group-text">
-                                                m
-                                            </span>
-                                            @error('one_winding_m_number')
-                                                <span class="invalid-feedback">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-4">Material</label>
-                                            <input type="text" class="form-control col-12 col-lg-8"
-                                                name="product.material_classification"
-                                                value="{{ $product->material_classification ?? '' }}" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-4">Embos</label>
-                                            <input type="text" class="form-control col-12 col-lg-8"
-                                                name="product.embossed_classification"
-                                                value="{{ $product->embossed_classification ?? '' }}" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-4">Corona</label>
-                                            <input type="text" class="form-control col-12 col-lg-8"
-                                                name="product.corona_classification"
-                                                value="{{ $product->surface_classification ?? '' }}" />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-lg-6">
-                                    <div class="form-group">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-4">MB -1 (Master Batch) </label>
-                                            <input type="text" class="form-control" name="product.coloring_1"
-                                                value="{{ $product->coloring_1 ?? '' }}" placeholder="warna mb 1" />
-                                            @error('coloring_1')
-                                                <span class="invalid-feedback">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-4">MB -2 </label>
-                                            <input type="text" class="form-control" name="product.coloring_2"
-                                                value="{{ $product->coloring_2 ?? '' }}" placeholder="warna mb 2" />
-                                            @error('coloring_2')
-                                                <span class="invalid-feedback">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-4">MB -3 </label>
-                                            <input type="text" class="form-control" name="product.coloring_3"
-                                                value="{{ $product->coloring_3 ?? '' }}" placeholder="warna mb 3" />
-                                            @error('coloring_3')
-                                                <span class="invalid-feedback">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-4">MB -4 </label>
-                                            <input type="text" class="form-control" name="product.coloring_4"
-                                                value="{{ $product->coloring_4 ?? '' }}" placeholder="warna mb 4" />
-                                            @error('coloring_4')
-                                                <span class="invalid-feedback">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-4">MB -5 </label>
-                                            <input type="text" class="form-control" name="product.coloring_5"
-                                                value="{{ $product->coloring_5 ?? '' }}" placeholder="warna mb 5" />
-                                            @error('coloring_5')
-                                                <span class="invalid-feedback">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-4">Catatan </label>
-                                            <input type="text" class="form-control" name="product.inflation_notes"
-                                                value="{{ $product->inflation_notes ?? '' }}"
-                                                placeholder="Catatan" />
-                                            @error('inflation_notes')
-                                                <span class="invalid-feedback">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-lg-6 mt-3">
-                                    <div class="form-group">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-4">Gentan</label>
-                                            <input type="text" class="form-control"
-                                                name="product.gentan_classification"
-                                                value="{{ $product->gentan_classification ?? '' }}" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-4">Gazette</label>
-                                            <input type="text" class="form-control"
-                                                name="product.gazette_classification"
-                                                value="{{ $product->gazette_classification ?? '' }}" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-4">GZ Dimensi</label>
-                                            <span class="input-group-text">
-                                                A
-                                            </span>
-                                            <input type="text" class="form-control col-12 col-lg-8"
-                                                name="product.gazette_dimension_a"
-                                                value="{{ $product->gazette_dimension_a ?? '' }}" />
-
-                                            <span class="input-group-text">
-                                                B
-                                            </span>
-                                            <input type="text" class="form-control col-12 col-lg-8"
-                                                name="product.gazette_dimension_b"
-                                                value="{{ $product->gazette_dimension_b ?? '' }}" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-4">-</label>
-                                            <span class="input-group-text">
-                                                C
-                                            </span>
-                                            <input type="text" class="form-control col-12 col-lg-8"
-                                                name="product.gazette_dimension_c"
-                                                value="{{ $product->gazette_dimension_c ?? '' }}" />
-
-                                            <span class="input-group-text">
-                                                D
-                                            </span>
-                                            <input type="text" class="form-control col-12 col-lg-8"
-                                                name="product.gazette_dimension_d"
-                                                value="{{ $product->gazette_dimension_d ?? '' }}" />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-lg-6 mt-3 d-flex justify-content-center">
-                                    <img src="{{ asset('asset/image/Gazette-ent.png') }}" width="240"
-                                        height="130" alt="img">
-                                </div>
-                                <div class="col-12">
-                                    <p class="text-success">HAGATA</p>
-                                </div>
-                                <div class="col-12 col-lg-6">
-                                    <div class="form-group">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-4">Kode Nukigata</label>
-                                            <input type="text" class="form-control" name="product.katanuki_id"
-                                                value="{{ $katanuki_id ?? '' }}" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-4">A.</label>
-                                            <input type="number" class="form-control col-12 col-lg-8"
-                                                name="product.extracted_dimension_a"
-                                                value="{{ $product->extracted_dimension_a ?? '' }}" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-4">B.</label>
-                                            <input type="number" class="form-control col-12 col-lg-8"
-                                                name="product.extracted_dimension_b"
-                                                value="{{ $product->extracted_dimension_b ?? '' }}" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-4">C.</label>
-                                            <input type="number" class="form-control col-12 col-lg-8"
-                                                name="product.extracted_dimension_c"
-                                                value="{{ $product->extracted_dimension_c ?? '' }}" />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-lg-6 mt-3 d-flex justify-content-center">
-                                    @if ($photoKatanuki)
-                                        <img src="{{ asset('storage/' . $photoKatanuki) }}" width="240"
-                                            height="130" alt="img">
-                                    @endif
-                                </div>
-                                <div class="col-12">
-                                    <p class="text-success">PRINTING</p>
-                                </div>
-                                <div class="col-12 col-lg-4">
-                                    <div class="form-group">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-1">*</label>
-                                            <span class="input-group-text">
-                                                Warna Depan:
-                                            </span>
-                                            <input type="number" class="form-control" name="product.number_of_color"
-                                                value="{{ $product->number_of_color ?? '' }}" placeholder="..." />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-1">1</label>
-                                            <input type="text" class="form-control" name="product.color_spec_1"
-                                                value="{{ $product->color_spec_1 ?? '' }}" placeholder="..." />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-1">2</label>
-                                            <input type="text" class="form-control" name="product.color_spec_2"
-                                                value="{{ $product->color_spec_2 ?? '' }}" placeholder="..." />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-1">3</label>
-                                            <input type="text" class="form-control" name="product.color_spec_3"
-                                                value="{{ $product->color_spec_3 ?? '' }}" placeholder="..." />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-1">4</label>
-                                            <input type="text" class="form-control" name="product.color_spec_4"
-                                                value="{{ $product->color_spec_4 ?? '' }}" placeholder="..." />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-1">5</label>
-                                            <input type="text" class="form-control" name="product.color_spec_5"
-                                                value="{{ $product->color_spec_5 ?? '' }}" placeholder="..." />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-lg-4">
-                                    <div class="form-group">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-1">*</label>
-                                            <span class="input-group-text">
-                                                Warna Belakang:
-                                            </span>
-                                            <input type="text" class="form-control"
-                                                name="product.back_color_number"
-                                                value="{{ $product->back_color_number ?? '' }}" placeholder="..." />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-1">1</label>
-                                            <input type="text" class="form-control" name="product.back_color_1"
-                                                value="{{ $product->back_color_1 ?? '' }}" placeholder="..." />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-1">2</label>
-                                            <input type="text" class="form-control" name="product.back_color_2"
-                                                value="{{ $product->back_color_2 ?? '' }}" placeholder="..." />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-1">3</label>
-                                            <input type="text" class="form-control" name="product.back_color_3"
-                                                value="{{ $product->back_color_3 ?? '' }}" placeholder="..." />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-1">4</label>
-                                            <input type="text" class="form-control" name="product.back_color_4"
-                                                value="{{ $product->back_color_4 ?? '' }}" placeholder="..." />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-1">5</label>
-                                            <input type="text" class="form-control" name="product.back_color_5"
-                                                value="{{ $product->back_color_5 ?? '' }}" placeholder="..." />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-lg-4">
-                                    <div class="form-group">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-4">Jenis Cetak</label>
-                                            <input type="text" class="form-control" name="product.print_type"
-                                                value="{{ $product->print_type ?? '' }}" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-4">Sifat Tinta</label>
-                                            <input type="text" class="form-control"
-                                                name="product.ink_characteristic"
-                                                value="{{ $product->ink_characteristic ?? '' }}" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-4">Endless</label>
-                                            <input type="text" class="form-control"
-                                                name="product.endless_printing"
-                                                value="{{ $product->endless_printing ?? '' }}" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-4">Arah Gulung</label>
-                                            <input type="text" class="form-control"
-                                                name="product.winding_direction_of_the_web"
-                                                value="{{ $product->winding_direction_of_the_web ?? '' }}" />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <p class="text-success">SEITAI</p>
-                                </div>
-                                <div class="col-12 col-lg-4">
-                                    <div class="form-group">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-6">Klarifikasi Seal</label>
-                                            <input type="text" class="form-control"
-                                                name="product.seal_classification"
-                                                value="{{ $product->seal_classification ?? '' }}" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-6">Jarak Seal dari Pola</label>
-                                            <input type="number" class="form-control"
-                                                name="product.from_seal_design"
-                                                value="{{ $product->from_seal_design ?? '' }}" placeholder="..."
-                                                min="0" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-6">Jarak Seal Bawah</label>
-                                            <input type="number" class="form-control"
-                                                name="product.lower_sealing_length"
-                                                value="{{ $product->lower_sealing_length ?? '' }}" placeholder="..."
-                                                min="0" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-6">Jumlah Baris Palet</label>
-                                            <input type="number" class="form-control"
-                                                name="product.palet_jumlah_baris"
-                                                value="{{ $product->palet_jumlah_baris ?? '' }}" placeholder="..."
-                                                min="0" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-6">Isi Baris Palet</label>
-                                            <input type="number" class="form-control" name="product.palet_isi_baris"
-                                                value="{{ $product->palet_isi_baris ?? '' }}" placeholder="..."
-                                                min="0" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-6">Lakban Seitai</label>
-                                            <input type="text" class="form-control" name="product.lakbanseitaiid"
-                                                value="{{ $product->lakbanseitaiid ?? '' }}" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-6">Stempel Seitai</label>
-                                            <input type="text" class="form-control" name="product.stampelseitaiid"
-                                                value="{{ $product->stampelseitaiid ?? '' }}" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-6">Hagata Seitai</label>
-                                            <input type="text" class="form-control" name="product.hagataseitaiid"
-                                                value="{{ $product->hagataseitaiid ?? '' }}" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-6">Jenis Seal Seitai</label>
-                                            <input type="text" class="form-control"
-                                                name="product.jenissealseitaiid"
-                                                value="{{ $product->jenissealseitaiid ?? '' }}" />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-lg-5">
-                                    <div class="form-group">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-3">Kode Gasio</label>
-                                            <input type="text" class="form-control" name="product.pack_gaiso_id"
-                                                value="{{ $product->pack_gaiso_id ?? '' }}" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-3">Kode Box</label>
-                                            <input type="text" class="form-control" name="product.pack_box_id"
-                                                value="{{ $product->pack_box_id ?? '' }}" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-3">Kode Inner</label>
-                                            <input type="text" class="form-control" name="product.pack_inner_id"
-                                                value="{{ $product->pack_inner_id ?? '' }}" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-3">Kode Layer</label>
-                                            <input type="text" class="form-control" name="product.pack_layer_id"
-                                                value="{{ $product->pack_layer_id ?? '' }}" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-3">Catatan Produksi</label>
-                                            <textarea class="form-control" rows="2" name="product.manufacturing_summary" placeholder="Catatan Produksi">{{ $product->manufacturing_summary ?? '' }}</textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-lg-3">
-                                    <div class="form-group">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-2">Isi</label>
-                                            <input type="number" class="form-control"
-                                                name="product.case_gaiso_count"
-                                                value="{{ $product->case_gaiso_count ?? '' }}" />
-                                            <input type="text" class="form-control"
-                                                name="product.case_gaiso_count_unit"
-                                                value="{{ $product->case_gaiso_count_unit ?? '' }}" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-2">Isi</label>
-                                            <input type="number" class="form-control" name="product.case_box_count"
-                                                value="{{ $product->case_box_count ?? '' }}" />
-                                            <input type="text" class="form-control"
-                                                name="product.case_box_count_unit"
-                                                value="{{ $product->case_box_count_unit ?? '' }}" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-1">
-                                        <div class="input-group">
-                                            <label class="control-label col-12 col-lg-2">Isi</label>
-                                            <input type="text" class="form-control"
-                                                name="product.case_inner_count"
-                                                value="{{ $product->case_inner_count ?? '' }}" />
-                                            <input type="text" class="form-control"
-                                                name="product.case_inner_count_unit"
-                                                value="{{ $product->case_inner_count_unit ?? '' }}" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <a href="javascript:void(0);" class="btn btn-light link-success fw-medium"
-                            data-bs-dismiss="modal"><i class="ri-close-line me-1 align-middle"></i> Close</a>
-                    </div>
-                </div><!-- /.modal-content -->
-            </div><!-- /.modal-dialog -->
-        </div><!-- /.modal -->
     </form>
 </div>
 @script
@@ -1157,13 +615,3 @@
         });
     </script>
 @endscript
-{{-- <script>
-    document.addEventListener('livewire:load', function () {
-        Livewire.on('showModal', () => {
-            $('#modal-edit').modal('show');
-        });
-        Livewire.on('closeModal', () => {
-            $('#modal-edit').modal('hide');
-        });
-    });
-</script> --}}

@@ -2,16 +2,16 @@
 
 namespace App\Models;
 
-use App\Helpers\departmentHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
-class MsMachinePartDetail extends Model
+class MsMasalahKenpin extends Model
 {
     use HasFactory;
-    protected $table = "ms_machine_part_detail";
+    protected $table = "msmasalahkenpin";
     protected $fillable = [];
+    protected $guarded = [];
 
     // custom created and updated
     const CREATED_AT = 'created_on';
@@ -31,9 +31,8 @@ class MsMachinePartDetail extends Model
         });
     }
 
-    // Relations
-    public function machinePart()
+    public function departmentGroup()
     {
-        return $this->belongsTo(MsMachinePart::class, 'machine_part_id');
+        return $this->belongsTo(MsDepartmentGroup::class, 'department_group_id', 'id');
     }
 }

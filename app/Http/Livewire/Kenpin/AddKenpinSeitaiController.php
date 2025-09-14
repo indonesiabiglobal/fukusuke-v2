@@ -4,21 +4,14 @@ namespace App\Http\Livewire\Kenpin;
 
 use App\Helpers\phpspreadsheet;
 use Livewire\Component;
-use App\Models\TdOrder;
-use App\Models\MsBuyer;
 use App\Models\MsEmployee;
-use App\Models\MsProduct;
 use App\Models\TdKenpinGoods;
 use App\Models\TdKenpinGoodsDetail;
-use App\Models\TdProductGoods;
 use App\Models\MsMachinePartDetail;
-use App\Models\MsMasalahKenpinSeitai;
-use Illuminate\Http\Request;
+use App\Models\MsMasalahKenpin;
+use App\Models\TdKenpinGoodsDetailBox;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\ValidationException;
-use Livewire\Attributes\Validate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -26,11 +19,10 @@ class AddKenpinSeitaiController extends Component
 {
     public $kenpin_no;
     public $kenpin_date;
-    public $departemen = 'seitai';
+    public $department_id = 7; // default ke seitai
     public $kode_produk;
     public $nama_produk;
-    public $name;
-    public $code;
+    public $product_id;
     public $code_alias;
     public $empname;
     public $employeeno;
@@ -40,7 +32,8 @@ class AddKenpinSeitaiController extends Component
     public $keterangan_penyebab;
     public $penanggulangan;
     public $bagian_mesin_id;
-    public $bagianMesinList;
+    public $bagianMesinListInfure;
+    public $bagianMesinListSeitai;
     public $details;
     public $nomor_palet;
     public $orderid;
@@ -55,27 +48,49 @@ class AddKenpinSeitaiController extends Component
     public $beratLossTotal;
     public $qtyProduksiTotal = 0;
 
-    // data master produk
-    public $masterKatanuki;
-    public $product;
-    public $photoKatanuki;
-    public $katanuki_id;
-
     // Master data for NG codes
-    public $masalahSeitai;
+    public $nomor_box = [];
+    public $masalahKenpin;
 
     public function mount()
     {
         $this->details = collect([]);
         $this->kenpin_date = Carbon::now()->format('d-m-Y');
-        $today = Carbon::now();
-        $lastKenpinGoods = TdKenpinGoods::where('kenpin_no', 'like', $today->format('ym') . '%')->orderBy('kenpin_no', 'desc')->first();
-        $this->kenpin_no = $today->format('ym') . '-' . str_pad((int)substr($lastKenpinGoods->kenpin_no ?? 0, 5, 3) + 1, 3, '0', STR_PAD_LEFT);
 
-        // Load bagian mesin list for Seitai department (department_id = 3)
-        $this->bagianMesinList = MsMachinePartDetail::whereHas('machinePart', function ($query) {
-            $query->where('department_id', 3);
-        })->get();
+        // Generate kenpin number
+        $this->generateKenpinNo();
+        $bagianMesinList = MsMachinePartDetail::with('machinePart')->get();
+        $this->bagianMesinListInfure = $bagianMesinList->filter(function ($item) {
+            return $item->machinePart && $item->machinePart->department_id == 2;
+        });
+        $this->bagianMesinListSeitai = $bagianMesinList->filter(function ($item) {
+            return $item->machinePart && $item->machinePart->department_id == 7;
+        });
+    }
+
+    public function generateKenpinNo()
+    {
+        $kenpin_date = Carbon::createFromFormat('d-m-Y', $this->kenpin_date);
+
+        // check department
+        if ($this->department_id == 2) {
+            $prefix = 'INF';
+        } elseif ($this->department_id == 7) {
+            $prefix = 'SEI';
+        }
+
+        $latestKenpin = TdKenpinGoods::whereRaw("kenpin_no LIKE ?", [$prefix . $kenpin_date->format('ym') . '%'])
+            ->orderBy('kenpin_no', 'desc')
+            ->first();
+
+        if ($latestKenpin) {
+            $lastNumber = (int)substr($latestKenpin->kenpin_no, -3);
+            $nextNumber = $lastNumber + 1;
+        } else {
+            $nextNumber = 1;
+        }
+
+        $this->kenpin_no = $prefix . $kenpin_date->format('ym') . '-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
     }
 
     public function edit($idKenpinGoodDetailUpdate)
@@ -89,28 +104,15 @@ class AddKenpinSeitaiController extends Component
                 $this->no_lpk = $detail->lpk_no;
                 $this->quantity = number_format($detail->qty_produksi);
                 $this->qty_loss = number_format($detail->qty_loss);
+                $this->nomor_box = json_decode($detail->nomor_box ?? '[]', true);
             }
         }, $this->details->toArray());
     }
 
-    public function updatedCode()
+    public function updatedDepartmentId()
     {
-        if (isset($this->code) && $this->code != '') {
-            $product = MsProduct::where('code', 'ilike', $this->code . '%')->first();
-
-            if ($product == null) {
-                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Order ' . $this->code . ' Tidak Terdaftar']);
-                $this->name = '';
-                $this->kode_produk = '';
-                $this->nama_produk = '';
-            } else {
-                $this->code = $product->code;
-                $this->name = $product->name;
-                $this->kode_produk = $product->code;
-                $this->nama_produk = $product->name;
-                $this->resetValidation('code');
-            }
-        }
+        // Reset kenpin number
+        $this->generateKenpinNo();
     }
 
     public function updatedEmployeeno()
@@ -133,9 +135,14 @@ class AddKenpinSeitaiController extends Component
     public function updatedKodeNg()
     {
         if (!empty($this->kode_ng)) {
-            $this->masalahSeitai = MsMasalahKenpinSeitai::where('code', $this->kode_ng)->first();
-            if ($this->masalahSeitai) {
-                $this->nama_ng = $this->masalahSeitai->name;
+            $this->masalahKenpin = MsMasalahKenpin::where('code', $this->kode_ng)
+                ->whereHas('departmentGroup', function ($query) {
+                    $query->where('department_id', $this->department_id);
+                })
+                ->first();
+
+            if ($this->masalahKenpin) {
+                $this->nama_ng = $this->masalahKenpin->name;
                 $this->resetValidation('kode_ng');
             } else {
                 $this->kode_ng = '';
@@ -144,55 +151,7 @@ class AddKenpinSeitaiController extends Component
             }
         } else {
             $this->nama_ng = '';
-        }
-    }
-
-    public function showModalNoOrder()
-    {
-        if (isset($this->code) && $this->code != '') {
-            $this->product = MsProduct::where('code', $this->code)->first();
-            if ($this->product == null) {
-                $this->name = '';
-                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Order ' . $this->code . ' Tidak Terdaftar']);
-            } else {
-                // nomor order produk
-                // $this->productNomorOrder = DB::table('msproduct')->where('code', $this->product_id)->first();
-                $this->masterKatanuki = DB::table('mskatanuki')->where('id', $this->product->katanuki_id)->first(['name', 'filename']);
-
-                // $this->code = $this->product->code;
-                // $this->name = $this->product->name;
-                $this->product->product_type_id = DB::table('msproduct_type')->where('id', $this->product->product_type_id)->first(['name'])->name ?? '';
-                $this->product->product_unit = DB::table('msunit')->where('code', $this->product->product_unit)->first(['name'])->name ?? '';
-                $this->product->material_classification = DB::table('msmaterial')->where('id', $this->product->material_classification)->first(['name'])->name ?? '';
-                $this->product->embossed_classification = DB::table('msembossedclassification')->where('id', $this->product->embossed_classification)->first(['name'])->name ?? '';
-                $this->product->surface_classification = DB::table('mssurfaceclassification')->where('id', $this->product->surface_classification)->first(['name'])->name ?? '';
-                $this->product->gentan_classification = DB::table('msgentanclassification')->where('id', $this->product->gentan_classification)->first(['name'])->name ?? '';
-                $this->product->gazette_classification = DB::table('msgazetteclassification')->where('id', $this->product->gazette_classification)->first(['name'])->name ?? '';
-                $this->katanuki_id = $this->masterKatanuki->name ?? '';
-                $this->photoKatanuki = $this->masterKatanuki->filename ?? '';
-                $this->product->print_type = DB::table('msjeniscetak')->where('code', $this->product->print_type)->first(['name'])->name ?? '';
-                $this->product->ink_characteristic = DB::table('mssifattinta')->where('code', $this->product->ink_characteristic)->first(['name'])->name ?? '';
-                $this->product->endless_printing = DB::table('msendless')->where('code', $this->product->endless_printing)->first(['name'])->name ?? '';
-                $this->product->winding_direction_of_the_web = DB::table('msarahgulung')->where('code', $this->product->winding_direction_of_the_web)->first(['name'])->name ?? '';
-                $this->product->seal_classification = DB::table('msklasifikasiseal')->where('code', $this->product->seal_classification)->first(['name'])->name ?? '';
-                $this->product->pack_gaiso_id = DB::table('mspackaginggaiso')->where('id', $this->product->pack_gaiso_id)->first(['name'])->name ?? '';
-                $this->product->pack_box_id = DB::table('mspackagingbox')->where('id', $this->product->pack_box_id)->first(['name'])->name ?? '';
-                $this->product->pack_inner_id = DB::table('mspackaginginner')->where('id', $this->product->pack_inner_id)->first(['name'])->name ?? '';
-                $this->product->pack_layer_id = DB::table('mspackaginglayer')->where('id', $this->product->pack_layer_id)->first(['name'])->name ?? '';
-                $this->product->case_gaiso_count_unit = DB::table('msunit')->where('id', $this->product->case_gaiso_count_unit)->first(['name'])->name ?? '';
-                $this->product->case_box_count_unit = DB::table('msunit')->where('id', $this->product->case_box_count_unit)->first(['name'])->name ?? '';
-                $this->product->case_inner_count_unit = DB::table('msunit')->where('id', $this->product->case_inner_count_unit)->first(['name'])->name ?? '';
-                $this->product->lakbaninfureid = DB::table('mslakbaninfure')->where('id', $this->product->lakbaninfureid)->first(['name'])->name ?? '';
-                $this->product->lakbanseitaiid = DB::table('mslakbanseitai')->where('id', $this->product->lakbanseitaiid)->first(['name'])->name ?? '';
-                $this->product->stampelseitaiid = DB::table('msstampleseitai')->where('id', $this->product->stampelseitaiid)->first(['name'])->name ?? '';
-                $this->product->hagataseitaiid = DB::table('mshagataseitai')->where('id', $this->product->hagataseitaiid)->first(['name'])->name ?? '';
-                $this->product->jenissealseitaiid = DB::table('msjenissealseitai')->where('id', $this->product->jenissealseitaiid)->first(['name'])->name ?? '';
-
-                // show modal
-                $this->dispatch('showModalNoOrder');
-            }
-        } else {
-            $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Order tidak boleh kosong']);
+            $this->dispatch('notification', ['type' => 'warning', 'message' => 'Kode NG tidak boleh kosong']);
         }
     }
 
@@ -211,13 +170,15 @@ class AddKenpinSeitaiController extends Component
     {
         $validatedData = $this->validate([
             'qty_loss' => 'required',
+            'nomor_box' => 'array',
+            'nomor_box.*' => 'nullable|numeric',
         ]);
 
         // update pada details
         foreach ($this->details as &$detail) {
             if ($detail->id == $this->idKenpinGoodDetailUpdate) {
-                // Perform the update you need here
                 $detail->qty_loss = (int)str_replace(',', '', $validatedData['qty_loss']);
+                $detail->nomor_box = array_filter($this->nomor_box);
                 break;
             }
         }
@@ -232,16 +193,16 @@ class AddKenpinSeitaiController extends Component
 
     public function save()
     {
-        $validatedData = $this->validate([
-            'code' => 'required',
+        $this->validate([
+            'kode_produk' => 'required',
             'employeeno' => 'required',
             'kode_ng' => 'required',
-            'penyebab' => 'required',
-            'keterangan_penyebab' => 'required',
-            'penanggulangan' => 'required',
-            'bagian_mesin_id' => 'required'
+            'penyebab' => 'required_if:status,2',
+            'keterangan_penyebab' => 'required_if:status,2',
+            'penanggulangan' => 'required_if:status,2',
+            'bagian_mesin_id' => 'required_if:status,2'
         ], [
-            'code.required' => 'Nomor Order tidak boleh kosong',
+            'kode_produk.required' => 'Kode Produk tidak boleh kosong',
             'employeeno.required' => 'Petugas tidak boleh kosong',
             'kode_ng.required' => 'Kode NG tidak boleh kosong',
             'penyebab.required' => 'Penyebab tidak boleh kosong',
@@ -253,24 +214,22 @@ class AddKenpinSeitaiController extends Component
         DB::beginTransaction();
         try {
             $mspetugas = MsEmployee::where('employeeno', $this->employeeno)->first();
-            $product = MsProduct::where('code', $this->code)->first();
-            $productGoods = TdProductGoods::where('id', $this->orderid)->get();
 
             $data = new TdKenpinGoods();
             $data->kenpin_no = $this->kenpin_no;
             $data->kenpin_date = $this->kenpin_date;
             $data->employee_id = $mspetugas->id;
-            $data->product_id = $product->id;
+            $data->product_id = $this->product_id;
+            $data->department_id = $this->department_id;
+            $data->nomor_palet = $this->nomor_palet;
             $qtyLoss = $this->details->sum('qty_loss');
             $data->qty_loss = $qtyLoss;
-            $data->remark = $this->remark;
             $data->status_kenpin = $this->status;
 
-            // Add new fields for Seitai
-            if ($this->masalahSeitai) {
-                $data->masalah_seitai_id = $this->masalahSeitai->id;
+            if ($this->masalahKenpin) {
+                $data->masalah_kenpin_id = $this->masalahKenpin->id;
             }
-            $data->machine_part_detail_id = $this->bagian_mesin_id;
+            $data->machine_part_detail_id = is_array($this->bagian_mesin_id) ? $this->bagian_mesin_id['value'] : $this->bagian_mesin_id;
             $data->penyebab = $this->penyebab;
             $data->keterangan_penyebab = $this->keterangan_penyebab;
             $data->penanggulangan = $this->penanggulangan;
@@ -287,13 +246,26 @@ class AddKenpinSeitaiController extends Component
                 $kenpinGoodsDetail = new TdKenpinGoodsDetail();
                 $kenpinGoodsDetail->product_goods_id = $detail->id;
                 $kenpinGoodsDetail->kenpin_goods_id = $data->id;
-                $kenpinGoodsDetail->qty_loss = $data->qty_loss ?? 0;
-                $kenpinGoodsDetail->trial468 = 'T';
+                $kenpinGoodsDetail->qty_loss = $detail->qty_loss ?? 0;
                 $kenpinGoodsDetail->created_on = Carbon::now();
                 $kenpinGoodsDetail->created_by = auth()->user()->username;
                 $kenpinGoodsDetail->updated_on = Carbon::now();
                 $kenpinGoodsDetail->updated_by = auth()->user()->username;
                 $kenpinGoodsDetail->save();
+
+                // save nomor box if available
+                if (!empty($detail->nomor_box) && is_array($detail->nomor_box)) {
+                    foreach ($detail->nomor_box as $boxNumber) {
+                        $kenpinGoodsDetailBox = new TdKenpinGoodsDetailBox();
+                        $kenpinGoodsDetailBox->kenpin_goods_detail_id = $kenpinGoodsDetail->id;
+                        $kenpinGoodsDetailBox->box_number = $boxNumber;
+                        $kenpinGoodsDetailBox->created_on = Carbon::now();
+                        $kenpinGoodsDetailBox->created_by = auth()->user()->username;
+                        $kenpinGoodsDetailBox->updated_on = Carbon::now();
+                        $kenpinGoodsDetailBox->updated_by = auth()->user()->username;
+                        $kenpinGoodsDetailBox->save();
+                    }
+                }
             }
 
             DB::commit();
@@ -614,20 +586,9 @@ class AddKenpinSeitaiController extends Component
         ];
     }
 
-
     public function addPalet()
     {
-        try {
-            $this->validate();
-        } catch (ValidationException $e) {
-            $this->dispatch('notification', ['type' => 'error', 'message' => 'Data belum lengkap']);
-            $this->setErrorBag($e->validator->errors());
-
-            return;
-        }
-
         if (isset($this->nomor_palet) && $this->nomor_palet != '') {
-            $product = MsProduct::where('code', $this->code)->first();
             $this->details = DB::table('tdproduct_goods AS tdpg')
                 ->select(
                     'tdpg.id AS id',
@@ -644,21 +605,23 @@ class AddKenpinSeitaiController extends Component
                     'tdol.order_id AS order_id',
                     'tdol.lpk_no AS lpk_no',
                     'tdol.lpk_date AS lpk_date',
-                    'tgd.qty_loss'
+                    DB::raw('0 AS qty_loss'),
+                    DB::raw(" '[]' AS nomor_box ")
                 )
                 ->join('tdorderlpk AS tdol', 'tdpg.lpk_id', '=', 'tdol.id')
                 ->join('msproduct AS msp', 'tdpg.product_id', '=', 'msp.id')
-                ->leftJoin('tdkenpin_goods_detail AS tgd', 'tgd.product_goods_id', '=', 'tdpg.id')
-                ->where('tdpg.product_id', $product->id)
                 ->where('tdpg.nomor_palet', $this->nomor_palet)
                 ->get();
 
             $this->qtyProduksiTotal = $this->details->sum('qty_produksi');
 
             if ($this->details == null) {
-                // session()->flash('error', 'Nomor PO ' . $this->po_no . ' Tidak Terdaftar');
                 $this->dispatch('notification', ['type' => 'error', 'message' => 'Employee ' . $this->details . ' Tidak Terdaftar']);
             }
+
+            $this->kode_produk = $this->details[0]->code ?? '';
+            $this->nama_produk = $this->details[0]->namaproduk ?? '';
+            $this->product_id = $this->details[0]->product_id ?? '';
         } else {
             $this->dispatch('notification', ['type' => 'error', 'message' => 'Nomor Palet yang dicari tidak boleh kosong']);
         }
@@ -669,39 +632,19 @@ class AddKenpinSeitaiController extends Component
         $this->render();
     }
 
+    public function addBox()
+    {
+        $this->nomor_box[] = '';
+    }
+
+    public function removeBox($index)
+    {
+        unset($this->nomor_box[$index]);
+        $this->nomor_box = array_values($this->nomor_box);
+    }
+
     public function render()
     {
-        if (isset($this->code) && $this->code != '') {
-            $product = MsProduct::where('code', 'ilike', $this->code . '%')->first();
-
-            if ($product == null) {
-                $this->dispatch('notification', ['type' => 'error', 'message' => 'Nomor Order ' . $this->code . ' Tidak Terdaftar']);
-                $this->code = '';
-                $this->name = '';
-                $this->kode_produk = '';
-                $this->nama_produk = '';
-            } else {
-                $this->resetValidation('code');
-                $this->code = $product->code;
-                $this->name = $product->name;
-                $this->kode_produk = $product->code;
-                $this->nama_produk = $product->name;
-            }
-        }
-
-        if (isset($this->employeeno) && $this->employeeno != '' && strlen($this->employeeno) >= 2) {
-            $msemployee = MsEmployee::where('employeeno', 'ilike', '%' . $this->employeeno . '%')->active()->first();
-
-            if ($msemployee == null) {
-                $this->dispatch('notification', ['type' => 'error', 'message' => 'Petugas ' . $this->employeeno . ' Tidak Terdaftar']);
-                $this->empname = '';
-            } else {
-                $this->resetValidation('employeeno');
-                $this->empname = $msemployee->empname;
-                $this->employeeno = $msemployee->employeeno;
-            }
-        }
-
-        return view('livewire.kenpin.add-kenpin-seitai');
+        return view('livewire.kenpin.add-kenpin-seitai')->extends('layouts.master');
     }
 }

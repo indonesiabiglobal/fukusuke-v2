@@ -2,15 +2,14 @@
 
 namespace App\Models;
 
-use App\Helpers\departmentHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
-class MsMachinePartDetail extends Model
+class MsDepartmentGroup extends Model
 {
     use HasFactory;
-    protected $table = "ms_machine_part_detail";
+    protected $table = "msdepartment_group";
     protected $fillable = [];
 
     // custom created and updated
@@ -31,9 +30,13 @@ class MsMachinePartDetail extends Model
         });
     }
 
-    // Relations
-    public function machinePart()
+    public function scopeActive($query)
     {
-        return $this->belongsTo(MsMachinePart::class, 'machine_part_id');
+        return $query->where('status', 1);
+    }
+
+    public function scopeDivision($query)
+    {
+        return $query->whereIn('id', [2,7]);
     }
 }
