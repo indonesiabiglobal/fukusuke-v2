@@ -74,9 +74,9 @@
                 <div class="col-12 col-lg-9">
                     <select class="form-select" wire:model.defer="reportType">
                         {{-- detail report --}}
-                        <option disabled>────────── Detail Report ──────────</option>
+                        <option disabled>────────── Detail Report {{ $nippo }} ──────────</option>
                         <option value="detail">Detail Report</option>
-                        <option disabled>────────── General Report ──────────</option>
+                        <option disabled>────────── General Report {{ $nippo }} ──────────</option>
                         {{-- general report --}}
                         @if ($nippo == 'INFURE')
                             @foreach ($generalReportInfureList as $item)
