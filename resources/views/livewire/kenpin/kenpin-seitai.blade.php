@@ -235,13 +235,19 @@
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="8">
-                        Update By
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="8"
+                            checked> Department
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
                         <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="9">
+                        Update By
+                    </label>
+                </li>
+                <li>
+                    <label style="cursor: pointer;">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="10">
                         Updated
                     </label>
                 </li>
@@ -258,6 +264,7 @@
                     <th>Petugas</th>
                     <th>Jumlah Loss (lbr)</th>
                     <th>Status</th>
+                    <th>Department</th>
                     <th>Update By</th>
                     <th>Updated</th>
                 </tr>
@@ -277,20 +284,12 @@
                         <td>{{ $item->code }}</td>
                         <td>{{ $item->namapetugas }}</td>
                         <td>{{ number_format($item->qty_loss) }}</td>
-                        <td>{{ $item->status_kenpin == 1 ? 'Proses' : 'Finish' }}</td>
+                        <td>{{ $item->status_kenpin == 2 ? 'Finish' : 'Proses'  }}</td>
+                        <td>{{ $item->nama_department }}</td>
                         <td>{{ $item->updated_by }}</td>
                         <td data-order="{{ $item->updated_on }}">{{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y') }}</td>
                     </tr>
                 @empty
-                    {{-- <tr>
-                        <td colspan="10" class="text-center">
-                            <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
-                                colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
-                            <h5 class="mt-2">Sorry! No Result Found</h5>
-                            <p class="text-muted mb-0">We've searched more than 150+ Orders We did not find any orders
-                                for you search.</p>
-                        </td>
-                    </tr> --}}
                 @endforelse
             </tbody>
         </table>

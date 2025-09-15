@@ -6,10 +6,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
-class TdKenpinGoods extends Model
+class TdKenpin extends Model
 {
     use HasFactory;
-    protected $table = "tdkenpin_goods";
+    protected $table = "tdkenpin";
     protected $fillable = [];
     // public $timestamps = false;
 

@@ -5,10 +5,11 @@ namespace App\Http\Livewire\Kenpin;
 use App\Helpers\phpspreadsheet;
 use Livewire\Component;
 use App\Models\MsEmployee;
-use App\Models\TdKenpinGoods;
+use App\Models\TdKenpin;
 use App\Models\TdKenpinGoodsDetail;
 use App\Models\MsMachinePartDetail;
 use App\Models\MsMasalahKenpin;
+use App\Models\TdKenpinAssembly;
 use App\Models\TdKenpinGoodsDetailBox;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -79,7 +80,8 @@ class AddKenpinSeitaiController extends Component
             $prefix = 'SEI';
         }
 
-        $latestKenpin = TdKenpinGoods::whereRaw("kenpin_no LIKE ?", [$prefix . $kenpin_date->format('ym') . '%'])
+        $latestKenpin = TdKenpin::whereRaw("kenpin_no LIKE ?", [$prefix . $kenpin_date->format('ym') . '%'])
+            ->where('department_id', $this->department_id)
             ->orderBy('kenpin_no', 'desc')
             ->first();
 
@@ -95,6 +97,7 @@ class AddKenpinSeitaiController extends Component
 
     public function edit($idKenpinGoodDetailUpdate)
     {
+        $this->resetSeitai();
         $this->idKenpinGoodDetailUpdate = $idKenpinGoodDetailUpdate;
         array_map(function ($detail) use ($idKenpinGoodDetailUpdate) {
             if ($detail->id == $idKenpinGoodDetailUpdate) {
@@ -104,7 +107,7 @@ class AddKenpinSeitaiController extends Component
                 $this->no_lpk = $detail->lpk_no;
                 $this->quantity = number_format($detail->qty_produksi);
                 $this->qty_loss = number_format($detail->qty_loss);
-                $this->nomor_box = json_decode($detail->nomor_box ?? '[]', true);
+                $this->nomor_box = is_array($detail->nomor_box) ? $detail->nomor_box : [];
             }
         }, $this->details->toArray());
     }
@@ -166,6 +169,17 @@ class AddKenpinSeitaiController extends Component
         }
     }
 
+    public function resetSeitai()
+    {
+        $this->qty_loss = '';
+        $this->nomor_box = [];
+        $this->orderid = '';
+        $this->no_palet = '';
+        $this->no_lot = '';
+        $this->no_lpk = '';
+        $this->quantity = '';
+    }
+
     public function saveSeitai()
     {
         $validatedData = $this->validate([
@@ -188,6 +202,7 @@ class AddKenpinSeitaiController extends Component
         $this->qtyProduksiTotal = $this->details->sum('qty_produksi');
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);
 
+        $this->resetSeitai();
         $this->dispatch('closeModal');
     }
 
@@ -215,9 +230,9 @@ class AddKenpinSeitaiController extends Component
         try {
             $mspetugas = MsEmployee::where('employeeno', $this->employeeno)->first();
 
-            $data = new TdKenpinGoods();
+            $data = new TdKenpin();
             $data->kenpin_no = $this->kenpin_no;
-            $data->kenpin_date = $this->kenpin_date;
+            $data->kenpin_date = Carbon::parse($this->kenpin_date);
             $data->employee_id = $mspetugas->id;
             $data->product_id = $this->product_id;
             $data->department_id = $this->department_id;
@@ -234,6 +249,13 @@ class AddKenpinSeitaiController extends Component
             $data->keterangan_penyebab = $this->keterangan_penyebab;
             $data->penanggulangan = $this->penanggulangan;
 
+            if ($this->status == 2) {
+                $data->done_at = Carbon::now();
+            }
+
+            // kenpin department menu seitai
+            $data->kenpin_department_id = 7;
+
             $data->created_on = Carbon::now();
             $data->created_by = auth()->user()->username;
             $data->updated_on = Carbon::now();
@@ -245,7 +267,7 @@ class AddKenpinSeitaiController extends Component
             foreach ($this->details as $detail) {
                 $kenpinGoodsDetail = new TdKenpinGoodsDetail();
                 $kenpinGoodsDetail->product_goods_id = $detail->id;
-                $kenpinGoodsDetail->kenpin_goods_id = $data->id;
+                $kenpinGoodsDetail->kenpin_id = $data->id;
                 $kenpinGoodsDetail->qty_loss = $detail->qty_loss ?? 0;
                 $kenpinGoodsDetail->created_on = Carbon::now();
                 $kenpinGoodsDetail->created_by = auth()->user()->username;
@@ -606,7 +628,7 @@ class AddKenpinSeitaiController extends Component
                     'tdol.lpk_no AS lpk_no',
                     'tdol.lpk_date AS lpk_date',
                     DB::raw('0 AS qty_loss'),
-                    DB::raw(" '[]' AS nomor_box ")
+                    DB::raw("ARRAY[]::text[] AS nomor_box")
                 )
                 ->join('tdorderlpk AS tdol', 'tdpg.lpk_id', '=', 'tdol.id')
                 ->join('msproduct AS msp', 'tdpg.product_id', '=', 'msp.id')

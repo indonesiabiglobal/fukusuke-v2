@@ -5,11 +5,11 @@ namespace App\Http\Livewire\Kenpin;
 use Livewire\Component;
 use App\Models\MsEmployee;
 use App\Models\MsProduct;
-use App\Models\TdKenpinAssembly;
+use App\Models\TdKenpin;
 use App\Models\TdKenpinAssemblyDetail;
 use App\Models\TdProductAssembly;
 use App\Models\MsMachinePartDetail;
-use App\Models\MsMasalahKenpinInfure;
+use App\Models\MsMasalahKenpin;
 use App\Models\MsLossKenpin;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -66,11 +66,11 @@ class EditKenpinInfureController extends Component
 
     public function mount(Request $request)
     {
-        $data = DB::table('tdkenpin_assembly AS tda')
+        $data = DB::table('tdkenpin AS tda')
             ->join('tdorderlpk AS tdo', 'tdo.id', '=', 'tda.lpk_id')
             ->join('msproduct AS msp', 'msp.id', '=', 'tdo.product_id')
             ->join('msemployee AS mse', 'mse.id', '=', 'tda.employee_id')
-            ->leftJoin('msmasalahinfure AS mmi', 'mmi.id', '=', 'tda.masalah_infure_id')
+            ->leftJoin('msmasalahkenpin AS mmi', 'mmi.id', '=', 'tda.masalah_kenpin_id')
             ->where('tda.id', $request->query('orderId'))
             ->select(
                 'tda.id',
@@ -91,7 +91,7 @@ class EditKenpinInfureController extends Component
                 'tda.penanggulangan',
                 'mmi.code as kode_ng',
                 'mmi.name as nama_ng',
-                'mmi.id as masalah_infure_id'
+                'mmi.id as masalah_kenpin_id'
             )
             ->first();
 
@@ -122,15 +122,15 @@ class EditKenpinInfureController extends Component
             $query->where('department_id', 2);
         })->get();
 
-        if ($data->masalah_infure_id) {
-            $this->masalahInfure = MsMasalahKenpinInfure::find($data->masalah_infure_id);
+        if ($data->masalah_kenpin_id) {
+            $this->masalahInfure = MsMasalahKenpin::find($data->masalah_kenpin_id);
         }
 
         $this->details = DB::table('tdkenpin_assembly_detail AS tkad')
             ->join('tdproduct_assembly AS tpa', 'tpa.id', '=', 'tkad.product_assembly_id')
             ->join('msemployee AS mse', 'mse.id', '=', 'tpa.employee_id')
             ->join('msmachine AS msm', 'msm.id', '=', 'tpa.machine_id')
-            ->where('tkad.kenpin_assembly_id', $this->orderid)
+            ->where('tkad.kenpin_id', $this->orderid)
             ->select(
                 'tkad.id',
                 'tkad.berat_loss',
@@ -149,7 +149,7 @@ class EditKenpinInfureController extends Component
     public function updatedKodeNg()
     {
         if (!empty($this->kode_ng)) {
-            $this->masalahInfure = MsMasalahKenpinInfure::where('code', $this->kode_ng)->first();
+            $this->masalahInfure = MsMasalahKenpin::where('code', $this->kode_ng)->first();
             if ($this->masalahInfure) {
                 $this->nama_ng = $this->masalahInfure->name;
             } else {
@@ -431,7 +431,7 @@ class EditKenpinInfureController extends Component
             $datas->product_assembly_id = $this->productAssemblyId;
             $datas->berat_loss = $this->berat_loss;
             $datas->frekuensi = $this->frekuensi;
-            $datas->kenpin_assembly_id = $this->orderid;
+            $datas->kenpin_id = $this->orderid;
 
             $datas->created_on = Carbon::now();
             $datas->created_by = auth()->user()->username;
@@ -441,7 +441,7 @@ class EditKenpinInfureController extends Component
             $datas->save();
 
             // update total berat loss di table utama
-            $product = TdKenpinAssembly::find($this->orderid);
+            $product = TdKenpin::find($this->orderid);
             $this->beratLossTotal = $this->details->sum('berat_loss') + (int)str_replace(',', '', $this->berat_loss);
             $product->total_berat_loss = $this->beratLossTotal;
             $product->updated_on = Carbon::now();
@@ -480,7 +480,7 @@ class EditKenpinInfureController extends Component
             $data->delete();
 
             // menghitung ulang total berat loss
-            $product = TdKenpinAssembly::find($this->orderid);
+            $product = TdKenpin::find($this->orderid);
             $this->beratLossTotal = $this->details->where('id', '!=', $id)->sum('berat_loss');
             $product->total_berat_loss = $this->beratLossTotal;
             $product->updated_on = Carbon::now();
@@ -525,7 +525,7 @@ class EditKenpinInfureController extends Component
         try {
             $mspetugas = MsEmployee::where('employeeno', $this->employeeno)->first();
 
-            $product = TdKenpinAssembly::find($this->orderid);
+            $product = TdKenpin::find($this->orderid);
             $product->kenpin_no = $this->kenpin_no;
             $product->kenpin_date = $this->kenpin_date;
             $product->employee_id = $mspetugas->id;
@@ -539,19 +539,21 @@ class EditKenpinInfureController extends Component
             $product->keterangan_penyebab = $this->keterangan_penyebab;
             $product->penanggulangan = $this->penanggulangan;
 
-            // Set masalah_infure_id berdasarkan kode_ng
+            // Set masalah_kenpin_id berdasarkan kode_ng
             if (!empty($this->kode_ng) && $this->masalahInfure) {
-                $product->masalah_infure_id = $this->masalahInfure->id;
+                $product->masalah_kenpin_id = $this->masalahInfure->id;
             } else {
-                $product->masalah_infure_id = null;
+                $product->masalah_kenpin_id = null;
             }
+
+            $product->done_at = Carbon::now();
 
             $product->updated_on = Carbon::now();
             $product->updated_by = auth()->user()->username;
             $product->save();
 
             TdKenpinAssemblyDetail::where('product_assembly_id', $this->productAssemblyId)->update([
-                'kenpin_assembly_id' => $product->id,
+                'kenpin_id' => $product->id,
             ]);
 
             // Jika status kenpin adalah 2 "Finish", maka update status pada tabel tdproduct_assembly
@@ -559,7 +561,7 @@ class EditKenpinInfureController extends Component
                 TdProductAssembly::whereIn('id', function ($query) use ($product) {
                     $query->select('product_assembly_id')
                         ->from('tdkenpin_assembly_detail')
-                        ->where('kenpin_assembly_id', $product->id);
+                        ->where('kenpin_id', $product->id);
                 })->update(['status_kenpin' => 0]); // 0 = Tidak dalam proses kenpin
             }
 

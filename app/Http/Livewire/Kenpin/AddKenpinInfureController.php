@@ -7,12 +7,12 @@ use App\Models\TdOrder;
 use App\Models\MsEmployee;
 use App\Models\MsLossKenpin;
 use App\Models\MsProduct;
-use App\Models\TdKenpinAssembly;
+use App\Models\TdKenpin;
 use App\Models\TdKenpinAssemblyDetail;
 use App\Models\TdOrderLpk;
 use App\Models\TdProductAssembly;
 use App\Models\MsMachinePartDetail;
-use App\Models\MsMasalahKenpinInfure;
+use App\Models\MsMasalahKenpin;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -74,7 +74,7 @@ class AddKenpinInfureController extends Component
         $this->kenpin_date = Carbon::now()->format('d-m-Y');
         $today = Carbon::now();
 
-        $latestKenpin = TdKenpinAssembly::whereRaw("kenpin_no LIKE ?", ['INF' . $today->format('ym') . '%'])
+        $latestKenpin = TdKenpin::whereRaw("kenpin_no LIKE ?", ['INF' . $today->format('ym') . '%'])
             ->orderBy('kenpin_no', 'desc')
             ->first();
 
@@ -96,7 +96,7 @@ class AddKenpinInfureController extends Component
     public function updatedKodeNg()
     {
         if (!empty($this->kode_ng)) {
-            $this->masalahInfure = MsMasalahKenpinInfure::where('code', $this->kode_ng)->first();
+            $this->masalahInfure = MsMasalahKenpin::where('code', $this->kode_ng)->first();
             if ($this->masalahInfure) {
                 $this->nama_ng = $this->masalahInfure->name;
             } else {
@@ -451,27 +451,36 @@ class AddKenpinInfureController extends Component
         try {
             $mspetugas = MsEmployee::where('employeeno', $this->employeeno)->first();
 
-            $product = new TdKenpinAssembly();
-            $product->kenpin_no = $this->kenpin_no;
-            $product->kenpin_date = $this->kenpin_date;
-            $product->employee_id = $mspetugas->id;
-            $product->lpk_id = $this->lpk_id;
-            $product->total_berat_loss = $this->beratLossTotal;
-            $product->status_kenpin = $this->status_kenpin;
-            $product->masalah_infure_id = $this->masalahInfure->id;
-            $product->machine_part_detail_id = $this->bagian_mesin_id;
-            $product->penyebab = $this->penyebab;
-            $product->keterangan_penyebab = $this->keterangan_penyebab;
-            $product->penanggulangan = $this->penanggulangan;
-            $product->created_on = Carbon::now();
-            $product->created_by = auth()->user()->username;
-            $product->updated_on = Carbon::now();
-            $product->updated_by = auth()->user()->username;
-            $product->save();
+            $kenpinAssembly = new TdKenpin();
+            $kenpinAssembly->kenpin_no = $this->kenpin_no;
+            $kenpinAssembly->kenpin_date = $this->kenpin_date;
+            $kenpinAssembly->employee_id = $mspetugas->id;
+            $kenpinAssembly->lpk_id = $this->lpk_id;
+            $kenpinAssembly->total_berat_loss = $this->beratLossTotal;
+            $kenpinAssembly->status_kenpin = $this->status_kenpin;
+            $kenpinAssembly->masalah_kenpin_id = $this->masalahInfure->id;
+            $kenpinAssembly->machine_part_detail_id = $this->bagian_mesin_id;
+            $kenpinAssembly->penyebab = $this->penyebab;
+            $kenpinAssembly->keterangan_penyebab = $this->keterangan_penyebab;
+            $kenpinAssembly->penanggulangan = $this->penanggulangan;
+
+            if ($this->status_kenpin == 2) {
+                $kenpinAssembly->done_at = Carbon::now();
+            }
+
+            // kenpin department menu seitai
+            $kenpinAssembly->kenpin_department_id = 2;
+            $kenpinAssembly->department_id = 2;
+
+            $kenpinAssembly->created_on = Carbon::now();
+            $kenpinAssembly->created_by = auth()->user()->username;
+            $kenpinAssembly->updated_on = Carbon::now();
+            $kenpinAssembly->updated_by = auth()->user()->username;
+            $kenpinAssembly->save();
 
             foreach ($this->details as $item) {
                 $details = new TdKenpinAssemblyDetail();
-                $details->kenpin_assembly_id = $product->id;
+                $details->kenpin_id = $kenpinAssembly->id;
                 $details->product_assembly_id = $this->productAssemblyId;
                 $details->berat_loss = $item['berat_loss'];
                 $details->frekuensi = $item['frekuensi'];

@@ -2,7 +2,7 @@
 
 namespace App\Http\Livewire\MasterTabel\MasalahKenpin;
 
-use App\Models\MsMasalahKenpinInfure;
+use App\Models\MsMasalahKenpin;
 use Livewire\Component;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -74,7 +74,7 @@ class MasalahKenpinInfureController extends Component
 
     public function getTotalRecordsProperty()
     {
-        return MsMasalahKenpinInfure::count();
+        return MsMasalahKenpin::count();
     }
 
     public function updateSortingTable($value)
@@ -103,7 +103,7 @@ class MasalahKenpinInfureController extends Component
 
         DB::beginTransaction();
         try {
-            $data = MsMasalahKenpinInfure::create([
+            $data = MsMasalahKenpin::create([
                 'code' => $this->code,
                 'name' => $this->name,
                 'status' => 1,
@@ -123,7 +123,7 @@ class MasalahKenpinInfureController extends Component
 
     public function edit($id)
     {
-        $data = MsMasalahKenpinInfure::where('id', $id)->first();
+        $data = MsMasalahKenpin::where('id', $id)->first();
         $this->idUpdate = $id;
         $this->code = $data->code;
         $this->name = $data->name;
@@ -140,7 +140,7 @@ class MasalahKenpinInfureController extends Component
 
         DB::beginTransaction();
         try {
-            $data = MsMasalahKenpinInfure::where('id', $this->idUpdate)->first();
+            $data = MsMasalahKenpin::where('id', $this->idUpdate)->first();
             $data->code = $this->code;
             $data->name = $this->name;
             $data->status = $this->status;
@@ -171,7 +171,7 @@ class MasalahKenpinInfureController extends Component
         DB::beginTransaction();
         try {
             $statusInactive = 0;
-            $data = MsMasalahKenpinInfure::where('id', $this->idDelete)->first();
+            $data = MsMasalahKenpin::where('id', $this->idDelete)->first();
             $data->status = $statusInactive;
             $data->updated_by = Auth::user()->username;
             $data->save();
@@ -188,7 +188,7 @@ class MasalahKenpinInfureController extends Component
 
     public function render()
     {
-        $query = MsMasalahKenpinInfure::query();
+        $query = MsMasalahKenpin::query();
 
         // Apply status filter
         if ($this->statusFilter !== 'all') {

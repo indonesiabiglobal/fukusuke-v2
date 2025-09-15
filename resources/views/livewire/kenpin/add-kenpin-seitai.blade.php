@@ -454,7 +454,7 @@
                                     <label>Loss (Lembar) </label>
                                     <div class="input-group col-md-9 col-xs-8">
                                         <input class="form-control" type="text" wire:model.defer="qty_loss"
-                                            placeholder="..."
+                                            placeholder="..." wire:loading.attr="disabled" wire:loading.class="bg-light readonly"
                                             oninput="this.value = window.formatNumberDecimal(this.value)" />
                                         @error('qty_loss')
                                             <span class="invalid-feedback">{{ $message }}</span>
@@ -468,11 +468,25 @@
                                     <div class="mb-2">
                                         @foreach($nomor_box as $index => $box)
                                             <div class="input-group mb-1">
-                                                <input type="number" class="form-control" wire:model="nomor_box.{{ $index }}" placeholder="Masukkan nomor box" />
-                                                <button type="button" class="btn btn-danger btn-sm" wire:click="removeBox({{ $index }})">Remove</button>
+                                                <input type="number" class="form-control" wire:model="nomor_box.{{ $index }}" placeholder="Masukkan nomor box"
+                                                wire:loading.attr="disabled" wire:loading.class="bg-light readonly" />
+                                                <button type="button" class="btn btn-danger btn-sm" wire:click="removeBox({{ $index }})"
+                                                wire:loading.attr="disabled" wire:loading.class="bg-light readonly">Remove</button>
                                             </div>
                                         @endforeach
-                                        <button type="button" class="btn btn-primary btn-sm" wire:click="addBox">Add Box</button>
+                                        <button type="button" class="btn btn-primary btn-sm" wire:click="addBox" wire:loading.attr="disabled">
+                                            <span wire:loading.remove wire:target="addBox">
+                                                Add Box
+                                            </span>
+                                            <span wire:loading wire:target="addBox">
+                                                <span class="d-flex align-items-center">
+                                                    <span class="spinner-border spinner-border-sm flex-shrink-0" role="status">
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </span>
+                                                    <span class="flex-grow-1 ms-1">Loading...</span>
+                                                </span>
+                                            </span>
+                                        </button>
                                     </div>
                                     @error('nomor_box.*')
                                         <span class="invalid-feedback">{{ $message }}</span>
@@ -500,7 +514,7 @@
                                 </div>
                             </button>
                             <button type="button" class="btn btn-link text-gray-600 ms-auto"
-                                data-bs-dismiss="modal">Close</button>
+                                data-bs-dismiss="modal" wire:click="resetSeitai">Close</button>
                         </div>
                     </div>
                 </div>

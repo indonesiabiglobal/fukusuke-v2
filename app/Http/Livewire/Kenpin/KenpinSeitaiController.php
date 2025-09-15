@@ -64,9 +64,9 @@ class KenpinSeitaiController extends Component
 
     public function render()
     {
-        $data = DB::table('tdkenpin_goods AS tdkg')
+        $data = DB::table('tdkenpin AS tdkg')
             ->join(
-                DB::raw("(SELECT DISTINCT tdkgd.kenpin_goods_id AS kenpin_goods_id
+                DB::raw("(SELECT DISTINCT tdkgd.kenpin_id AS kenpin_goods_id
                       FROM tdkenpin_goods_detail AS tdkgd
                       INNER JOIN tdproduct_goods AS tdpg ON tdkgd.product_goods_id = tdpg.id
                       INNER JOIN tdorderlpk AS tdol ON tdpg.lpk_id = tdol.id
@@ -75,6 +75,7 @@ class KenpinSeitaiController extends Component
                 '=',
                 'distinct1.kenpin_goods_id'
             )
+            ->join('msdepartment AS msd', 'msd.id', '=', 'tdkg.department_id')
             ->join('msproduct AS msp', 'tdkg.product_id', '=', 'msp.id')
             ->join('msemployee AS mse', 'mse.id', '=', 'tdkg.employee_id')
             ->select(
@@ -91,15 +92,15 @@ class KenpinSeitaiController extends Component
                 'tdkg.updated_on',
                 'msp.code',
                 'msp.name AS namaproduk',
-                'mse.empname AS namapetugas'
-            )
-            ->where('tdkg.department_id', 7); // Department 7 = Seitai
+                'mse.empname AS namapetugas',
+                'msd.name AS nama_department',
+            );
 
         if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
-            $data = $data->where('tdkg.kenpin_date', '>=', $this->tglMasuk);
+            $data = $data->where('tdkg.kenpin_date', '>=', $this->tglMasuk . ' 00:00:00');
         }
         if (isset($this->tglKeluar) && $this->tglKeluar != "" && $this->tglKeluar != "undefined") {
-            $data = $data->where('tdkg.kenpin_date', '<=', $this->tglKeluar);
+            $data = $data->where('tdkg.kenpin_date', '<=', $this->tglKeluar . ' 23:59:59');
         }
         if (isset($this->lpk_no) && $this->lpk_no != "" && $this->lpk_no != "undefined") {
             $data = $data->where('tdol.lpk_no', 'ilike', "%{$this->lpk_no}%");

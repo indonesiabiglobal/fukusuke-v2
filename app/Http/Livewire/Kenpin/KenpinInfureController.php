@@ -69,7 +69,7 @@ class KenpinInfureController extends Component
 
     public function render()
     {
-        $data = DB::table('tdkenpin_assembly AS tdka')
+        $data = DB::table('tdkenpin AS tdka')
             ->join('tdorderlpk AS tdol', 'tdka.lpk_id', '=', 'tdol.id')
             ->join('msproduct AS msp', 'tdol.product_id', '=', 'msp.id')
             ->join('msemployee AS mse', 'mse.id', '=', 'tdka.employee_id')
