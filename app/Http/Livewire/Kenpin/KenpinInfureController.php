@@ -96,10 +96,10 @@ class KenpinInfureController extends Component
             ->distinct();
 
         if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
-            $data = $data->where('tdka.kenpin_date', '>=', $this->tglMasuk);
+            $data = $data->where('tdka.kenpin_date', '>=', $this->tglMasuk . ' 00:00:00');
         }
         if (isset($this->tglKeluar) && $this->tglKeluar != "" && $this->tglKeluar != "undefined") {
-            $data = $data->where('tdka.kenpin_date', '<=', $this->tglKeluar);
+            $data = $data->where('tdka.kenpin_date', '<=', $this->tglKeluar . ' 23:59:59');
         }
         if (isset($this->lpk_no) && $this->lpk_no != "" && $this->lpk_no != "undefined") {
             $data = $data->where('tdol.lpk_no', 'ilike', "%{$this->lpk_no}%");

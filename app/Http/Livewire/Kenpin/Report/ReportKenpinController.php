@@ -49,13 +49,15 @@ class ReportKenpinController extends Component
         $this->department = MsDepartment::division()->get();
         $this->nippo = $this->department[0]->name;
         $this->generalReportInfureList = [
-            ['value' => 'per-mesin', 'label' => 'Per Mesin Infure', 'type' => 'General Report'],
-            ['value' => 'loss-kenpin', 'label' => 'Loss Kenpin', 'type' => 'General Report'],
+            ['value' => 'per-mesin', 'label' => 'Per Mesin Infure'],
+            ['value' => 'loss-kenpin-berat', 'label' => 'Loss Kenpin Berat (Kg)'],
+            ['value' => 'box-kenpin-qty', 'label' => 'Loss Kenpin Qty (Lembar)'],
+
         ];
         $this->generalReportSeitaiList = [
-            ['value' => 'per-mesin', 'label' => 'Per Mesin Seitai', 'type' => 'General Report'],
-            ['value' => 'loss-kenpin', 'label' => 'Loss Kenpin', 'type' => 'General Report'],
-            ['value' => 'box-kenpin', 'label' => 'Loss Kenpin', 'type' => 'General Report'],
+            ['value' => 'per-mesin', 'label' => 'Per Mesin Seitai'],
+            ['value' => 'loss-kenpin', 'label' => 'Loss Kenpin'],
+            ['value' => 'box-kenpin', 'label' => 'Loss Kenpin'],
         ];
     }
 
@@ -110,21 +112,62 @@ class ReportKenpinController extends Component
                 'statusKenpin' => $this->status,
             ];
 
-            $detailReportKenpinInfure = new DetailReportKenpinInfureController();
-            $response = $detailReportKenpinInfure->detailReportKenpinInfure($tglAwal, $tglAkhir, $filter);
-            if ($response['status'] == 'success') {
-                return response()->download($response['filename'])->deleteFileAfterSend(true);
-            } else if ($response['status'] == 'error') {
-                $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
-                return;
+            if ($this->reportType == 'detail') {
+                $detailReportKenpinInfure = new DetailReportKenpinInfureController();
+                $response = $detailReportKenpinInfure->detailReportKenpinInfure($tglAwal, $tglAkhir, $filter);
+                if ($response['status'] == 'success') {
+                    return response()->download($response['filename'])->deleteFileAfterSend(true);
+                } else if ($response['status'] == 'error') {
+                    $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                    return;
+                }
+            } else if ($this->reportType == 'per-mesin') {
+                $generalReportKenpinInfure = new GeneralReportKenpinInfureController();
+                $response = $generalReportKenpinInfure->perMesinReportKenpinInfure($tglAwal, $tglAkhir, $filter);
+                if ($response['status'] == 'success') {
+                    return response()->download($response['filename'])->deleteFileAfterSend(true);
+                } else if ($response['status'] == 'error') {
+                    $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                    return;
+                }
+            } else if ($this->reportType == 'loss-kenpin-berat') {
+                $generalReportKenpinInfure = new GeneralReportKenpinInfureController();
+                $response = $generalReportKenpinInfure->beratLossReportKenpinInfure($tglAwal, $tglAkhir, $filter);
+                if ($response['status'] == 'success') {
+                    return response()->download($response['filename'])->deleteFileAfterSend(true);
+                } else if ($response['status'] == 'error') {
+                    $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                    return;
+                }
+            } else if ($this->reportType == 'box-kenpin-qty') {
+                $generalReportKenpinInfure = new GeneralReportKenpinInfureController();
+                $response = $generalReportKenpinInfure->qtyLossReportKenpinInfure($tglAwal, $tglAkhir, $filter);
+                if ($response['status'] == 'success') {
+                    return response()->download($response['filename'])->deleteFileAfterSend(true);
+                } else if ($response['status'] == 'error') {
+                    $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                    return;
+                }
             }
         } else if ($this->nippo == 'SEITAI') {
-            $response = $this->reportSeitai($tglAwal, $tglAkhir);
-            if ($response['status'] == 'success') {
-                return response()->download($response['filename']);
-            } else if ($response['status'] == 'error') {
-                $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
-                return;
+            $filter = [
+                'lpk_no' => $this->lpk_no,
+                'productId' => is_array($this->productId) ? $this->productId['value'] : $this->productId,
+                'nomorKenpin' => $this->nomorKenpin,
+                'statusKenpin' => $this->status,
+                'nomorPalet' => $this->nomorPalet,
+                'nomorLot' => $this->nomorLot,
+            ];
+
+            if ($this->reportType == 'detail') {
+                $detailReportKenpinSeitai = new DetailReportKenpinSeitaiController();
+                $response = $detailReportKenpinSeitai->detailReportKenpinSeitai($tglAwal, $tglAkhir, $filter);
+                if ($response['status'] == 'success') {
+                    return response()->download($response['filename'])->deleteFileAfterSend(true);
+                } else if ($response['status'] == 'error') {
+                    $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+                    return;
+                }
             }
         }
     }

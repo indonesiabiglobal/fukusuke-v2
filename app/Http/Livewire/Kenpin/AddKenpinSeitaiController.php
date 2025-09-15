@@ -232,7 +232,7 @@ class AddKenpinSeitaiController extends Component
 
             $data = new TdKenpin();
             $data->kenpin_no = $this->kenpin_no;
-            $data->kenpin_date = Carbon::parse($this->kenpin_date);
+            $data->kenpin_date = Carbon::createFromFormat('d-m-Y H:i:s', $this->kenpin_date . ' ' . Carbon::now()->format('H:i:s'));
             $data->employee_id = $mspetugas->id;
             $data->product_id = $this->product_id;
             $data->department_id = $this->department_id;

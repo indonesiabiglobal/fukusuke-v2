@@ -14,9 +14,7 @@
                         </span>
 
                         <div class="mb-1" wire:ignore>
-                            <select class="form-control" wire:model.defer="jamAwal" data-choices
-                                data-choices-sorting-false data-choices-removeItem data-choices-search-field-label>
-                                <option value="">- All -</option>
+                            <select class="form-control" wire:model.defer="jamAwal" >
                                 @foreach ($workingShiftHour as $item)
                                     <option value="{{ $item->work_hour_from }}"
                                         @if ($jamAwal == $item->work_hour_from) selected @endif>{{ $item->work_hour_from }}
@@ -43,9 +41,7 @@
                         </span>
 
                         <div class="mb-1" wire:ignore>
-                            <select class="form-control" wire:model.defer="jamAkhir" data-choices
-                                data-choices-sorting-false data-choices-removeItem data-choices-search-field-label>
-                                <option value="">- All -</option>
+                            <select class="form-control" wire:model.defer="jamAkhir" >
                                 @foreach ($workingShiftHour as $item)
                                     <option value="{{ $item->work_hour_till }}"
                                         @if ($jamAkhir == $item->work_hour_till) selected @endif>{{ $item->work_hour_till }}
@@ -64,7 +60,7 @@
             <div class="input-group">
                 <span class="input-group-addon col-12 col-lg-3">Departemen </span>
                 <div class="col-12 col-lg-9">
-                    <select class="form-select" wire:model="nippo">
+                    <select class="form-select" wire:model.live="nippo">
                         @foreach ($department as $item)
                             <option value="{{ $item->name }}">{{ $item->name }}</option>
                         @endforeach

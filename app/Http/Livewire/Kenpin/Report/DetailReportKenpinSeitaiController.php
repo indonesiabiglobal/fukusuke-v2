@@ -15,7 +15,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-class DetailReportKenpinInfureController extends Component
+class DetailReportKenpinSeitaiController extends Component
 {
     public $tglAwal;
     public $tglAkhir;
@@ -35,7 +35,7 @@ class DetailReportKenpinInfureController extends Component
     public $nomorLot;
     public $status;
 
-    public function detailReportKenpinInfure($tglAwal, $tglAkhir, $filter = null, $isSingleReport = false)
+    public function detailReportKenpinSeitai($tglAwal, $tglAkhir, $filter = null, $isSingleReport = false)
     {
 
         $spreadsheet = new Spreadsheet();
@@ -75,7 +75,7 @@ class DetailReportKenpinInfureController extends Component
         Carbon::setLocale('id');
 
         // Judul
-        $activeWorksheet->setCellValue('A1', 'DAFTAR KENPIN PER DEPARTEMEN INFURE');
+        $activeWorksheet->setCellValue('A1', 'DAFTAR KENPIN PER DEPARTEMEN SEITAI');
         if ($isSingleReport) {
             $activeWorksheet->setCellValue('A2', 'Tanggal: ' . $tglAwal->translatedFormat('d-M-Y'));
         } else {
@@ -92,20 +92,21 @@ class DetailReportKenpinInfureController extends Component
         $header = [
             'Tanggal Input',
             'No. Kartu Kenpin',
+            'No. Label Gudang',
+            'Department NG',
             'Status Kenpin',
             'No. Produk',
             'Nama Produk',
-            'No. Mesin Infure',
+            'No. Mesin Seitai',
             'Bagian Mesin',
             'Kode Masalah',
             'Masalah',
-            'Jumlah Gentan',
-            'Shift',
+            'Jumlah Box Palet',
+            'Jumlah Box Kenpin',
             'NIK',
             'Nama Operator',
-            'Nomor Gentan',
             'Tanggal Selesai Kenpin',
-            'Loss (Kg)',
+            'Loss (Lembar)',
             'Penyebab',
             'Keterangan Penyebab',
             'Penanggulangan Masalah',
@@ -128,55 +129,77 @@ class DetailReportKenpinInfureController extends Component
         // Filter Query
         $filterKenpinId = $filter && isset($filter['kenpin_id']) ? " AND (tdka.ID = '" . $filter['kenpin_id'] . "')" : '';
         $filterDate = "AND tdka.kenpin_date BETWEEN '" . $tglAwal . "' AND '" . $tglAkhir . "'";
-        $filterNoLPK = $filter && isset($filter['lpk_no']) ? " AND (tdol.lpk_no = '" . $filter['lpk_no'] . "')" : '';
-        $filterProduct = isset($filter['productId']) ? " AND (tdpa.product_id = '" . $filter['productId'] . "')" : '';
+        $filterProduct = isset($filter['productId']) ? " AND (tdpg.product_id = '" . $filter['productId'] . "')" : '';
         $filterNomorKenpin = isset($filter['nomorKenpin']) ? " AND (tdka.kenpin_no = '" . $filter['nomorKenpin'] . "')" : '';
         $filterStatus = isset($filter['status']) ? " AND (tdka.status_kenpin = '" . $filter['status'] . "')" : '';
-        $filterNomorHan = isset($filter['nomorHan']) ? " AND (tdpa.nomor_han = '" . $this->nomorHan . "')" : '';
+        $filterNomorPalet = isset($filter['nomorPalet']) ? " AND (tdpg.nomor_palet = '" . $this->nomorPalet . "')" : '';
+        $filterNomorLot = isset($filter['nomorLot']) ? " AND (tdpg.nomor_lot = '" . $this->nomorLot . "')" : '';
 
         $data = DB::select(
             "
                 SELECT
-                    tdka.kenpin_no AS kenpin_no,
                     tdka.kenpin_date AS kenpin_date,
+                    tdka.kenpin_no AS kenpin_no,
+                    tdka.nomor_palet AS nomor_palet,
                     tdka.status_kenpin AS status_kenpin,
-                    tdka.done_at,
                     tdka.penyebab,
                     tdka.keterangan_penyebab,
                     tdka.penanggulangan,
                     tdka.done_at,
-                    tdkad.berat_loss AS berat_loss,
-                    msp.code_alias as produk_code,
+                    msd.name AS department_ng,
+                    tdkad.qty_loss AS qty_loss,
+                    msp.code_alias AS produk_code,
                     msp.NAME AS nama_produk,
                     mse.empname AS nama_petugas,
                     mse.employeeno AS nik_petugas,
-                    tdpa.gentan_no AS gentan_no,
                     msm.machineno,
-                    tdpa.work_shift AS work_shift,
+                    msmpd.code AS code_bagian_mesin,
                     msmpd.name AS nama_bagian_mesin,
                     msmk.code AS code_masalah,
-                    msmk.name AS nama_masalah
+                    msmk.name AS nama_masalah,
+                    CAST(ROUND(SUM(CAST(tdpg.qty_produksi AS numeric) / NULLIF(CAST(msp.case_box_count AS numeric),0)), 0) AS integer) AS jumlah_box_palet,
+                    COUNT(tdkadb.ID) AS jumlah_box_kenpin
                 FROM
-                    tdKenpin AS tdka
-                    INNER JOIN tdKenpin_Assembly_Detail AS tdkad ON tdka.ID = tdkad.kenpin_id
-                    INNER JOIN tdProduct_Assembly AS tdpa ON tdkad.product_assembly_id = tdpa.ID
-                    INNER JOIN tdOrderLpk AS tdol ON tdka.lpk_id = tdol.ID
-                    INNER JOIN msProduct AS msp ON tdol.product_id = msp.ID
+                    tdkenpin AS tdka
+                    INNER JOIN msdepartment AS msd ON msd.ID = tdka.kenpin_department_id
+                    INNER JOIN tdkenpin_goods_detail AS tdkad ON tdka.ID = tdkad.kenpin_id
+                    INNER JOIN tdproduct_goods AS tdpg ON tdkad.product_goods_id = tdpg.ID
+                    INNER JOIN msProduct AS msp ON tdpg.product_id = msp.ID
                     INNER JOIN msemployee AS mse ON mse.ID = tdka.employee_id
-                    INNER JOIN msmachine AS msm ON msm.ID = tdpa.machine_id
+                    INNER JOIN msmachine AS msm ON msm.ID = tdpg.machine_id
                     INNER JOIN ms_machine_part_detail AS msmpd ON msmpd.ID = tdka.machine_part_detail_id
                     INNER JOIN msmasalahkenpin AS msmk ON msmk.ID = tdka.masalah_kenpin_id
+                    LEFT JOIN tdkenpin_goods_detail_box AS tdkadb ON tdkadb.kenpin_goods_detail_id = tdkad.ID
                 WHERE
-                    tdka.department_id = 2 AND
-                    tdka.kenpin_department_id = 2
+                    tdka.kenpin_department_id = 7
                     $filterKenpinId
                     $filterDate
-                    $filterNoLPK
                     $filterProduct
                     $filterNomorKenpin
                     $filterStatus
-                    $filterNomorHan
-                ORDER BY tdka.kenpin_no ASC, tdka.kenpin_date ASC, tdpa.gentan_no ASC",
+                    $filterNomorPalet
+                    $filterNomorLot
+                GROUP BY
+                    tdka.kenpin_no,
+                    tdka.kenpin_date,
+                    tdka.nomor_palet,
+                    tdka.status_kenpin,
+                    tdka.penyebab,
+                    tdka.keterangan_penyebab,
+                    tdka.penanggulangan,
+                    tdka.done_at,
+                    msd.name,
+                    tdkad.qty_loss,
+                    msp.code_alias,
+                    msp.NAME,
+                    mse.empname,
+                    mse.employeeno,
+                    msm.machineno,
+                    msmpd.code,
+                    msmpd.name,
+                    msmk.code,
+                    msmk.name
+                ORDER BY tdka.kenpin_no ASC, tdka.kenpin_date ASC",
         );
 
         if (count($data) == 0) {
@@ -190,39 +213,34 @@ class DetailReportKenpinInfureController extends Component
 
         $dataFiltered = [];
         foreach ($data as $item) {
-            if (!isset($dataFiltered[$item->kenpin_no])) {
-                $dataFiltered[$item->kenpin_no] = [
-                    'kenpin_no' => $item->kenpin_no,
-                    'kenpin_date' => $item->kenpin_date,
-                    'status_kenpin' => $item->status_kenpin,
-                    'penyebab' => $item->penyebab,
-                    'keterangan_penyebab' => $item->keterangan_penyebab,
-                    'penanggulangan' => $item->penanggulangan,
-                    'berat_loss' => $item->berat_loss,
-                    'produk_code' => $item->produk_code,
-                    'nama_produk' => $item->nama_produk,
-                    'machineno' => $item->machineno,
-                    'nama_bagian_mesin' => $item->nama_bagian_mesin,
-                    'code_masalah' => $item->code_masalah,
-                    'nama_masalah' => $item->nama_masalah,
-                    'gentan' => []
-                ];
-            }
-
-            $dataFiltered[$item->kenpin_no]['gentan'][] = [
-                'work_shift' => $item->work_shift,
+            $dataFiltered[$item->kenpin_no] = [
+                'kenpin_date' => $item->kenpin_date,
+                'kenpin_no' => $item->kenpin_no,
+                'nomor_palet' => $item->nomor_palet,
+                'status_kenpin' => $item->status_kenpin,
+                'penyebab' => $item->penyebab,
+                'keterangan_penyebab' => $item->keterangan_penyebab,
+                'penanggulangan' => $item->penanggulangan,
+                'done_at' => $item->done_at,
+                'department_ng' => $item->department_ng,
+                'qty_loss' => $item->qty_loss,
+                'produk_code' => $item->produk_code,
+                'nama_produk' => $item->nama_produk,
                 'nik_petugas' => $item->nik_petugas,
                 'nama_petugas' => $item->nama_petugas,
-                'gentan_no' => $item->gentan_no,
-                'done_at' => $item->done_at,
-                'berat_loss' => $item->berat_loss,
+                'machineno' => $item->machineno,
+                'code_bagian_mesin' => $item->code_bagian_mesin,
+                'nama_bagian_mesin' => $item->nama_bagian_mesin,
+                'code_masalah' => $item->code_masalah,
+                'nama_masalah' => $item->nama_masalah,
+                'jumlah_box_palet' => $item->jumlah_box_palet,
+                'jumlah_box_kenpin' => $item->jumlah_box_kenpin,
             ];
         }
 
         // index
         $rowItemStart = 4;
         $columnItemStart = 'A';
-        $columnGentanStart = 'K';
         $rowItem = $rowItemStart;
         foreach ($dataFiltered as $kenpinNo => $itemKenpin) {
             $columnItemEnd = $columnItemStart;
@@ -232,6 +250,14 @@ class DetailReportKenpinInfureController extends Component
 
             // nomor kenpin
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['kenpin_no']);
+            $columnItemEnd++;
+
+            // nomor palet
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['nomor_palet']);
+            $columnItemEnd++;
+
+            // department NG
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['department_ng']);
             $columnItemEnd++;
 
             // status kenpin
@@ -246,12 +272,12 @@ class DetailReportKenpinInfureController extends Component
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['nama_produk']);
             $columnItemEnd++;
 
-            // no mesin infure
+            // no mesin seitai
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, substr($itemKenpin['machineno'], -2));
             $columnItemEnd++;
 
             // bagian mesin
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['nama_bagian_mesin']);
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['code_bagian_mesin'] . ' - ' . $itemKenpin['nama_bagian_mesin']);
             $columnItemEnd++;
 
             // kode masalah
@@ -262,41 +288,29 @@ class DetailReportKenpinInfureController extends Component
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['nama_masalah']);
             $columnItemEnd++;
 
-            // jumlah gentan
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, count($itemKenpin['gentan']));
+            // jumlah box palet
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['jumlah_box_palet']);
             $columnItemEnd++;
 
-            $rowItemGentan = $rowItem;
-            foreach ($itemKenpin['gentan'] as $gentanNo => $itemGentan) {
-                $columnItemEnd = $columnGentanStart;
+            // jumlah box kenpin
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['jumlah_box_kenpin']);
+            $columnItemEnd++;
 
-                // shift
-                $activeWorksheet->setCellValue($columnItemEnd . $rowItemGentan, $itemGentan['work_shift']);
-                $columnItemEnd++;
+            // nik petugas
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['nik_petugas']);
+            $columnItemEnd++;
 
-                // nik petugas
-                $activeWorksheet->setCellValue($columnItemEnd . $rowItemGentan, $itemGentan['nik_petugas']);
-                $columnItemEnd++;
+            // nama petugas
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['nama_petugas']);
+            $columnItemEnd++;
 
-                // nama petugas
-                $activeWorksheet->setCellValue($columnItemEnd . $rowItemGentan, $itemGentan['nama_petugas']);
-                $columnItemEnd++;
+            // tanggal selesai kenpin
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['done_at'] ? Carbon::parse($itemKenpin['done_at'])->translatedFormat('d-M-Y') : '-');
+            $columnItemEnd++;
 
-                // nomor gentan
-                $activeWorksheet->setCellValue($columnItemEnd . $rowItemGentan, $itemGentan['gentan_no']);
-                $columnItemEnd++;
-
-                // tanggal selesai kenpin
-                $activeWorksheet->setCellValue($columnItemEnd . $rowItemGentan, $itemGentan['done_at'] ? Carbon::parse($itemGentan['done_at'])->translatedFormat('d-M-Y') : '-');
-                $columnItemEnd++;
-
-                // loss (kg)
-                $activeWorksheet->setCellValue($columnItemEnd . $rowItemGentan, $itemGentan['berat_loss']);
-                phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnItemEnd . $rowItemGentan);
-                $columnItemEnd++;
-
-                $rowItemGentan++;
-            }
+            // loss (lembar)
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['qty_loss'] ?? 0);
+            $columnItemEnd++;
 
             // penyebab
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['penyebab']);
@@ -309,7 +323,7 @@ class DetailReportKenpinInfureController extends Component
             // penanggulangan
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['penanggulangan']);
 
-            $rowItem = $rowItemGentan;
+            $rowItem++;
         }
         phpspreadsheet::addFullBorder($spreadsheet, $columnItemStart . $rowItemStart . ':' . $columnItemEnd . $rowItem - 1);
         phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItemStart . ':' . $columnItemEnd . $rowItem - 1, false, 8, 'Calibri');

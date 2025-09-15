@@ -467,7 +467,7 @@ class AddKenpinInfureController extends Component
 
             $kenpinAssembly = new TdKenpin();
             $kenpinAssembly->kenpin_no = $this->kenpin_no;
-            $kenpinAssembly->kenpin_date = $this->kenpin_date;
+            $kenpinAssembly->kenpin_date = Carbon::createFromFormat('d-m-Y H:i:s', $this->kenpin_date . ' ' . Carbon::now()->format('H:i:s'));
             $kenpinAssembly->employee_id = $mspetugas->id;
             $kenpinAssembly->lpk_id = $this->lpk_id;
             $kenpinAssembly->total_berat_loss = $this->beratLossTotal;

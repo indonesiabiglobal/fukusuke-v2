@@ -31,6 +31,11 @@ class MsMachine extends Model
         });
     }
 
+    public function scopeActive($query)
+    {
+        return $query->where('msmachine.status', true);
+    }
+
     public function scopeInfureDepartment($query)
     {
         return $query->whereIn('msmachine.department_id', departmentHelper::infureDepartment());
