@@ -382,12 +382,25 @@ class AddKenpinInfureController extends Component
     {
         $validatedData = $this->validate([
             'gentan_no' => 'required',
+            'machineno' => 'required',
+            'namapetugas' => 'required',
             'berat_loss' => 'required',
         ]);
+
+        // validasi tidak boleh gentan yang sama
+        $isDuplicate = $this->details->contains(function ($detail) {
+            return $detail['gentan_no'] === $this->gentan_no && $detail['id'] != $this->idKenpinAssemblyDetailUpdate;
+        });
+
+        if ($isDuplicate) {
+            $this->dispatch('notification', ['type' => 'warning', 'message' => 'Gentan dengan nomor yang sama sudah ada']);
+            return;
+        }
 
         if ($this->idKenpinAssemblyDetailUpdate) {
             $this->details = $this->details->map(function ($detail) {
                 if ($detail['id'] == $this->idKenpinAssemblyDetailUpdate) {
+                    $detail['productAssemblyId'] = $this->productAssemblyId;
                     $detail['gentan_no'] = $this->gentan_no;
                     $detail['machineno'] = $this->machineno;
                     $detail['namapetugas'] = $this->namapetugas;
@@ -403,6 +416,7 @@ class AddKenpinInfureController extends Component
         } else {
             $this->details->push([
                 'id' => $this->nextId(),
+                'productAssemblyId' => $this->productAssemblyId,
                 'gentan_no' => $this->gentan_no,
                 'machineno' => $this->machineno,
                 'namapetugas' => $this->namapetugas,
@@ -481,7 +495,7 @@ class AddKenpinInfureController extends Component
             foreach ($this->details as $item) {
                 $details = new TdKenpinAssemblyDetail();
                 $details->kenpin_id = $kenpinAssembly->id;
-                $details->product_assembly_id = $this->productAssemblyId;
+                $details->product_assembly_id = $item['productAssemblyId'];
                 $details->berat_loss = $item['berat_loss'];
                 $details->frekuensi = $item['frekuensi'];
                 $details->created_on = Carbon::now();
@@ -491,7 +505,7 @@ class AddKenpinInfureController extends Component
                 $details->save();
 
                 // update status kenpin on td_product_assembly
-                $productAssembly = TdProductAssembly::find($this->productAssemblyId);
+                $productAssembly = TdProductAssembly::find($item['productAssemblyId']);
                 if ($productAssembly) {
                     $productAssembly->status_kenpin = 1; // Mark as kenpin processed
                     $productAssembly->updated_on = Carbon::now();

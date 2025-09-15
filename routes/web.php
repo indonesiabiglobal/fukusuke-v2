@@ -26,7 +26,7 @@ use App\Http\Controllers\DashboardInfureControllerOld;
 use App\Http\Controllers\DashboardSeitaiController;
 use App\Http\Livewire\Kenpin\KenpinInfureController;
 use App\Http\Livewire\Kenpin\KenpinSeitaiController;
-use App\Http\Livewire\Kenpin\ReportKenpinController;
+use App\Http\Livewire\Kenpin\Report\ReportKenpinController;
 use App\Http\Livewire\MasterTabel\Produk\EditProduk;
 use App\Http\Livewire\MasterTabel\Produk\TipeProduk;
 use App\Http\Livewire\Report\DetailReportController;

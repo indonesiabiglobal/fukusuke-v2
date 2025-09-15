@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire\Kenpin;
+namespace App\Http\Livewire\Kenpin\Report;
 
 use App\Exports\KenpinExport;
 use App\Helpers\phpspreadsheet;
@@ -26,6 +26,9 @@ class ReportKenpinController extends Component
     public $productId;
     public $department;
     public $nippo;
+    public $reportType = 'detail';
+    public $generalReportInfureList;
+    public $generalReportSeitaiList;
     public $buyer;
     public $buyer_id;
     public $lpk_no;
@@ -43,8 +46,17 @@ class ReportKenpinController extends Component
         $this->jamAwal = $this->workingShiftHour[0]->work_hour_from;
         $this->jamAkhir = $this->workingShiftHour[count($this->workingShiftHour) - 1]->work_hour_till;
         $this->product = MsProduct::get();
-        $this->department = MsDepartment::whereIn('id', [2, 7])->get();
-        $this->nippo['value'] = $this->department[0]->name;
+        $this->department = MsDepartment::division()->get();
+        $this->nippo = $this->department[0]->name;
+        $this->generalReportInfureList = [
+            ['value' => 'per-mesin', 'label' => 'Per Mesin Infure', 'type' => 'General Report'],
+            ['value' => 'loss-kenpin', 'label' => 'Loss Kenpin', 'type' => 'General Report'],
+        ];
+        $this->generalReportSeitaiList = [
+            ['value' => 'per-mesin', 'label' => 'Per Mesin Seitai', 'type' => 'General Report'],
+            ['value' => 'loss-kenpin', 'label' => 'Loss Kenpin', 'type' => 'General Report'],
+            ['value' => 'box-kenpin', 'label' => 'Loss Kenpin', 'type' => 'General Report'],
+        ];
     }
 
     public function export()
@@ -55,6 +67,7 @@ class ReportKenpinController extends Component
             'jamAwal' => 'required',
             'jamAkhir' => 'required',
             'nippo' => 'required',
+            'reportType' => 'required',
         ];
 
         $messages = [
@@ -63,6 +76,7 @@ class ReportKenpinController extends Component
             'jamAwal.required' => 'Jam Awal tidak boleh kosong',
             'jamAkhir.required' => 'Jam Akhir tidak boleh kosong',
             'nippo.required' => 'Jenis Report tidak boleh kosong',
+            'reportType.required' => 'Tipe Report tidak boleh kosong',
         ];
 
         $validate = Validator::make([
@@ -71,6 +85,7 @@ class ReportKenpinController extends Component
             'jamAwal' => $this->jamAwal,
             'jamAkhir' => $this->jamAkhir,
             'nippo' => $this->nippo,
+            'reportType' => $this->reportType,
         ], $rules, $messages);
 
         if ($validate->fails()) {
@@ -86,15 +101,24 @@ class ReportKenpinController extends Component
         $tglAwal = Carbon::parse($this->tglAwal . ' ' . $this->jamAwal);
         $tglAkhir = Carbon::parse($this->tglAkhir . ' ' . $this->jamAkhir);
 
-        if ($this->nippo['value'] == 'INFURE') {
-            $response = $this->reportInfure($tglAwal, $tglAkhir);
+        if ($this->nippo == 'INFURE') {
+            $filter = [
+                'lpk_no' => $this->lpk_no,
+                'productId' => is_array($this->productId) ? $this->productId['value'] : $this->productId,
+                'nomorKenpin' => $this->nomorKenpin,
+                'nomorHan' => $this->nomorHan,
+                'statusKenpin' => $this->status,
+            ];
+
+            $detailReportKenpinInfure = new DetailReportKenpinInfureController();
+            $response = $detailReportKenpinInfure->detailReportKenpinInfure($tglAwal, $tglAkhir, $filter);
             if ($response['status'] == 'success') {
-                return response()->download($response['filename']);
+                return response()->download($response['filename'])->deleteFileAfterSend(true);
             } else if ($response['status'] == 'error') {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                 return;
             }
-        } else if ($this->nippo['value'] == 'SEITAI') {
+        } else if ($this->nippo == 'SEITAI') {
             $response = $this->reportSeitai($tglAwal, $tglAkhir);
             if ($response['status'] == 'success') {
                 return response()->download($response['filename']);
@@ -348,7 +372,6 @@ class ReportKenpinController extends Component
                 $rowItem++;
                 $rowItem++;
             }
-
         }
 
         // grand total
@@ -389,7 +412,7 @@ class ReportKenpinController extends Component
         }
 
         $writer = new Xlsx($spreadsheet);
-        $filename = 'Kenpin-' . $this->nippo['value'] . '.xlsx';
+        $filename = 'Kenpin-' . $this->nippo . '.xlsx';
         $writer->save($filename);
         $response = [
             'status' => 'success',
@@ -681,7 +704,7 @@ class ReportKenpinController extends Component
         }
 
         $writer = new Xlsx($spreadsheet);
-        $filename = 'Kenpin-' . $this->nippo['value'] . '.xlsx';
+        $filename = 'Kenpin-' . $this->nippo . '.xlsx';
         $writer->save($filename);
         $response = [
             'status' => 'success',

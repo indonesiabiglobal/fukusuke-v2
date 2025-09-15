@@ -63,11 +63,34 @@
         <div class="form-group mt-1">
             <div class="input-group">
                 <span class="input-group-addon col-12 col-lg-3">Departemen </span>
-                <div class="col-12 col-lg-9" wire:ignore>
-                    <select class="form-select" wire:model.live="nippo" data-choices data-choices-search-false>
+                <div class="col-12 col-lg-9">
+                    <select class="form-select" wire:model="nippo">
                         @foreach ($department as $item)
                             <option value="{{ $item->name }}">{{ $item->name }}</option>
                         @endforeach
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-group mt-1">
+            <div class="input-group">
+                <span class="input-group-addon col-12 col-lg-3">Report </span>
+                <div class="col-12 col-lg-9">
+                    <select class="form-select" wire:model.defer="reportType">
+                        {{-- detail report --}}
+                        <option disabled>────────── Detail Report ──────────</option>
+                        <option value="detail">Detail Report</option>
+                        <option disabled>────────── General Report ──────────</option>
+                        {{-- general report --}}
+                        @if ($nippo == 'INFURE')
+                            @foreach ($generalReportInfureList as $item)
+                                <option value="{{ $item['value'] }}">{{ $item['label'] }}</option>
+                            @endforeach
+                        @elseif ($nippo == 'SEITAI')
+                            @foreach ($generalReportSeitaiList as $item)
+                                <option value="{{ $item['value'] }}">{{ $item['label'] }}</option>
+                            @endforeach
+                        @endif
                     </select>
                 </div>
             </div>
@@ -128,8 +151,8 @@
                 <span class="input-group-addon col-12 col-lg-3">Status</span>
                 <select class="form-control" wire:model.defer="status">
                     <option value="">- all -</option>
-                    <option value="proses">Proses</option>
-                    <option value="finish">Finish</option>
+                    <option value="1">Proses</option>
+                    <option value="2">Finish</option>
                 </select>
             </div>
         </div>

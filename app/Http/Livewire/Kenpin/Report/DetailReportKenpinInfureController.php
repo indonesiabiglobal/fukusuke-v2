@@ -176,7 +176,7 @@ class DetailReportKenpinInfureController extends Component
                     $filterNomorKenpin
                     $filterStatus
                     $filterNomorHan
-                ORDER BY tdka.kenpin_date ASC",
+                ORDER BY tdka.kenpin_date ASC, tdka.kenpin_no ASC, tdpa.gentan_no ASC",
         );
 
         if (count($data) == 0) {
@@ -287,7 +287,7 @@ class DetailReportKenpinInfureController extends Component
                 $columnItemEnd++;
 
                 // tanggal selesai kenpin
-                $activeWorksheet->setCellValue($columnItemEnd . $rowItemGentan, $itemGentan['done_at'] ? Carbon::parse($itemGentan['done_at'])->translatedFormat('d-M-Y') : '');
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItemGentan, $itemGentan['done_at'] ? Carbon::parse($itemGentan['done_at'])->translatedFormat('d-M-Y') : '-');
                 $columnItemEnd++;
 
                 // loss (kg)
@@ -308,10 +308,12 @@ class DetailReportKenpinInfureController extends Component
 
             // penanggulangan
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['penanggulangan']);
+
+            $rowItem = $rowItemGentan;
         }
-        phpspreadsheet::addFullBorder($spreadsheet, $columnItemStart . $rowItemStart . ':' . $columnItemEnd . $rowItemGentan - 1);
-        phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItemStart . ':' . $columnItemEnd . $rowItemGentan - 1, false, 8, 'Calibri');
-        phpspreadsheet::textAlignCenter($spreadsheet, $columnItemStart . $rowItemStart . ':' . $columnItemEnd . $rowItemGentan - 1);
+        phpspreadsheet::addFullBorder($spreadsheet, $columnItemStart . $rowItemStart . ':' . $columnItemEnd . $rowItem - 1);
+        phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItemStart . ':' . $columnItemEnd . $rowItem - 1, false, 8, 'Calibri');
+        phpspreadsheet::textAlignCenter($spreadsheet, $columnItemStart . $rowItemStart . ':' . $columnItemEnd . $rowItem - 1);
 
         $activeWorksheet->getStyle($columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart)->getAlignment()->setWrapText(true);
 
