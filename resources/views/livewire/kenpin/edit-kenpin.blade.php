@@ -288,8 +288,21 @@
                             </span>
                         </div>
                     </button>
-                    <button type="button" class="btn btn-success btn-print" disabled="disabled">
-                        <i class="bx bx-printer"></i> Print
+                    <button type="button" class="btn btn-success btn-print" wire:click="export"
+                        wire:loading.attr="disabled">
+                        <span wire:loading.remove wire:target="export">
+                            <i class="bx bx-printer"></i> Print
+                        </span>
+                        <div wire:loading wire:target="export">
+                            <span class="d-flex align-items-center">
+                                <span class="spinner-border flex-shrink-0" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </span>
+                                <span class="flex-grow-1 ms-1">
+                                    Loading...
+                                </span>
+                            </span>
+                        </div>
                     </button>
                 </div>
             </div>

@@ -2,6 +2,8 @@
 
 namespace App\Http\Livewire\Kenpin;
 
+use App\Http\Livewire\Kenpin\Report\DetailReportKenpinInfureController;
+use App\Http\Livewire\Report\DetailReportController;
 use Livewire\Component;
 use App\Models\MsEmployee;
 use App\Models\MsProduct;
@@ -36,6 +38,7 @@ class EditKenpinInfureController extends Component
     public $namapetugas;
     public $berat_loss;
     public $orderid;
+    public $kenpinId;
     public $berat;
     public $frekuensi;
     public $idKenpinAssemblyDetailUpdate;
@@ -97,6 +100,7 @@ class EditKenpinInfureController extends Component
 
         // Inisialisasi data dasar
         $this->orderid = $data->id;
+        $this->kenpinId = $data->id;
         $this->kenpin_date = Carbon::parse($data->kenpin_date)->format('d-m-Y');
         $this->kenpin_no = $data->kenpin_no;
         $this->lpk_id = $data->lpk_id;
@@ -640,6 +644,26 @@ class EditKenpinInfureController extends Component
     public function cancel()
     {
         return redirect()->route('kenpin-infure');
+    }
+
+    public function export()
+    {
+        $tglAwal = Carbon::parse($this->kenpin_date)->startOfDay();
+        $tglAkhir = Carbon::parse($this->kenpin_date)->endOfDay();
+
+        $filter = [
+            'kenpin_id' => $this->kenpinId,
+            'kenpin_no' => $this->kenpin_no,
+        ];
+
+        $detailReportKenpinInfure = new DetailReportKenpinInfureController();
+        $response = $detailReportKenpinInfure->detailReportKenpinInfure($tglAwal, $tglAkhir, $filter, true);
+        if ($response['status'] == 'success') {
+            return response()->download($response['filename'])->deleteFileAfterSend(true);
+        } else if ($response['status'] == 'error') {
+            $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+            return;
+        }
     }
 
     public function render()
