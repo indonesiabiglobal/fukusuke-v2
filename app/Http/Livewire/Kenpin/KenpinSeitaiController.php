@@ -65,7 +65,7 @@ class KenpinSeitaiController extends Component
     public function render()
     {
         $data = DB::table('tdkenpin AS tdkg')
-            ->join(
+            ->leftJoin(
                 DB::raw("(SELECT DISTINCT tdkgd.kenpin_id AS kenpin_goods_id
                       FROM tdkenpin_goods_detail AS tdkgd
                       INNER JOIN tdproduct_goods AS tdpg ON tdkgd.product_goods_id = tdpg.id

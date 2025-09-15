@@ -411,9 +411,32 @@ class EditKenpinInfureController extends Component
         $this->machineno = '';
         $this->namapetugas = '';
         $this->berat_loss = '';
+        $this->frekuensi = '';
+        $this->idKenpinAssemblyDetailUpdate = null;
 
         if ($validatedData) {
             $this->dispatch('showModal');
+        }
+    }
+
+    public function edit($idKenpinAssemblyDetailUpdate)
+    {
+        $this->idKenpinAssemblyDetailUpdate = $idKenpinAssemblyDetailUpdate;
+
+        // Find the detail to edit from the details collection
+        $detailToEdit = $this->details->where('id', $idKenpinAssemblyDetailUpdate)->first();
+
+        if ($detailToEdit) {
+            $this->gentan_no = $detailToEdit->gentan_no;
+            $this->machineno = $detailToEdit->nomesin;
+            $this->namapetugas = $detailToEdit->namapetugas;
+            $this->berat_loss = $detailToEdit->berat_loss;
+            $this->workShift = $detailToEdit->work_shift;
+            $this->nomorHan = $detailToEdit->nomor_han;
+            $this->tglproduksi = $detailToEdit->tglproduksi;
+            $this->productAssemblyId = $detailToEdit->product_assembly_id;
+
+            $this->dispatch('showModalEdit');
         }
     }
 
@@ -424,48 +447,83 @@ class EditKenpinInfureController extends Component
             'berat_loss' => 'required',
         ]);
 
-
         try {
             DB::beginTransaction();
-            $datas = new TdKenpinAssemblyDetail();
-            $datas->product_assembly_id = $this->productAssemblyId;
-            $datas->berat_loss = $this->berat_loss;
-            $datas->frekuensi = $this->frekuensi;
-            $datas->kenpin_id = $this->orderid;
 
-            $datas->created_on = Carbon::now();
-            $datas->created_by = auth()->user()->username;
-            $datas->updated_on = Carbon::now();
-            $datas->updated_by = auth()->user()->username;
+            if ($this->idKenpinAssemblyDetailUpdate) {
+                // Update existing gentan
+                $existingData = TdKenpinAssemblyDetail::find($this->idKenpinAssemblyDetailUpdate);
+                if ($existingData) {
+                    // Update the existing record
+                    $existingData->product_assembly_id = $this->productAssemblyId;
+                    $existingData->berat_loss = $this->berat_loss;
+                    $existingData->frekuensi = $this->frekuensi;
+                    $existingData->updated_on = Carbon::now();
+                    $existingData->updated_by = auth()->user()->username;
+                    $existingData->save();
 
-            $datas->save();
+                    // Update the details collection
+                    $this->details = $this->details->map(function ($item) {
+                        if ($item->id == $this->idKenpinAssemblyDetailUpdate) {
+                            $item->gentan_no = $this->gentan_no;
+                            $item->nomesin = $this->machineno;
+                            $item->namapetugas = $this->namapetugas;
+                            $item->work_shift = $this->workShift;
+                            $item->nomor_han = $this->nomorHan;
+                            $item->berat_loss = (int)str_replace(',', '', $this->berat_loss);
+                            $item->tglproduksi = $this->tglproduksi;
+                            $item->frekuensi = $this->frekuensi;
+                            $item->product_assembly_id = $this->productAssemblyId;
+                        }
+                        return $item;
+                    });
+
+                    $this->dispatch('closeModalEdit');
+                }
+            } else {
+                // Add new gentan
+                $datas = new TdKenpinAssemblyDetail();
+                $datas->product_assembly_id = $this->productAssemblyId;
+                $datas->berat_loss = $this->berat_loss;
+                $datas->frekuensi = 1;
+                $datas->kenpin_id = $this->orderid;
+
+                $datas->created_on = Carbon::now();
+                $datas->created_by = auth()->user()->username;
+                $datas->updated_on = Carbon::now();
+                $datas->updated_by = auth()->user()->username;
+
+                $datas->save();
+
+                // update status pada tabel tdproduct_assembly
+                TdProductAssembly::where('id', $this->productAssemblyId)->update(['status_kenpin' => 1]); // 1 = Dalam proses kenpin
+
+                $detail = new \stdClass();
+                $detail->id = $datas->id;
+                $detail->berat_loss = (int)str_replace(',', '', $this->berat_loss);
+                $detail->product_assembly_id = $this->productAssemblyId;
+                $detail->tglproduksi = $this->tglproduksi;
+                $detail->work_shift = $this->workShift;
+                $detail->nomesin = $this->machineno;
+                $detail->namapetugas = $this->namapetugas;
+                $detail->nomor_han = $this->nomorHan;
+                $detail->gentan_no = $this->gentan_no;
+                $detail->frekuensi = 1;
+
+                $this->details->push($detail);
+                $this->dispatch('closeModal');
+            }
 
             // update total berat loss di table utama
             $product = TdKenpin::find($this->orderid);
-            $this->beratLossTotal = $this->details->sum('berat_loss') + (int)str_replace(',', '', $this->berat_loss);
+            $this->beratLossTotal = $this->details->sum('berat_loss');
             $product->total_berat_loss = $this->beratLossTotal;
             $product->updated_on = Carbon::now();
             $product->updated_by = auth()->user()->username;
             $product->save();
 
-            // update status pada tabel tdproduct_assembly
-            TdProductAssembly::where('id', $this->productAssemblyId)->update(['status_kenpin' => 1]); // 1 = Dalam proses kenpin
-
-            $detail = new \stdClass();
-            $detail->id = $datas->id;
-            $detail->berat_loss = (int)str_replace(',', '', $this->berat_loss);
-            $detail->product_assembly_id = $this->productAssemblyId;
-            $detail->tglproduksi = $this->tglproduksi;
-            $detail->work_shift = $this->workShift;
-            $detail->nomesin = $this->machineno;
-            $detail->namapetugas = $this->namapetugas;
-            $detail->nomor_han = $this->nomorHan;
-            $detail->gentan_no = $this->gentan_no;
-
-            $this->details->push($detail);
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);
 
-            $this->dispatch('closeModal');
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
@@ -499,6 +557,11 @@ class EditKenpinInfureController extends Component
         } catch (\Exception $e) {
             $this->dispatch('notification', ['type' => 'error', 'message' => 'Gagal menghapus data: ' . $e->getMessage()]);
         }
+    }
+
+    public function nextId()
+    {
+        return $this->currentId++;
     }
 
     public function save()

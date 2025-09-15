@@ -202,12 +202,11 @@
                                 class="form-control @error('bagian_mesin_id') is-invalid @enderror" data-choices
                                 data-choices-sorting-false data-choices-removeItem
                                 x-on:keydown.tab="$event.preventDefault(); $refs.penyebabSelect.focus();">
-                                <option value="">- Pilih Bagian Mesin -</option>
                                 @if (isset($bagianMesinList))
                                     @foreach ($bagianMesinList as $bagianMesin)
                                         <option value="{{ $bagianMesin->id }}"
                                             {{ $bagian_mesin_id == $bagianMesin->id ? 'selected' : '' }}>
-                                            {{ $bagianMesin->detail_mesin }}
+                                            {{ $bagianMesin->code . ' - ' . $bagianMesin->name }}
                                         </option>
                                     @endforeach
                                 @endif
@@ -260,8 +259,18 @@
             </div>
             <div class="col-lg-4" style="border-top:1px solid #efefef">
                 <div class="toolbar">
-                    <button type="button" class="btn btn-warning" wire:click="cancel">
-                        <i class="ri-close-line"></i> Close
+                    <button type="button" class="btn btn-warning" wire:click="cancel" wire:loading.attr="disabled" wire:target="cancel">
+                        <span wire:loading.remove wire:target="cancel">
+                            <i class="ri-close-line"></i> Close
+                        </span>
+                        <span wire:loading wire:target="cancel">
+                            <span class="d-flex align-items-center">
+                                <span class="spinner-border spinner-border-sm flex-shrink-0" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </span>
+                                <span class="flex-grow-1 ms-1">Closing...</span>
+                            </span>
+                        </span>
                     </button>
                     <button type="submit" class="btn btn-success" wire:loading.attr="disabled" wire:click="save"
                         @disabled($status_kenpin == 2)>
@@ -377,6 +386,92 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="modal-edit" tabindex="-1" role="dialog" aria-labelledby="modal-edit"
+            aria-hidden="true" wire:ignore.self>
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="h6 modal-title">Edit Gentan Infure</h2>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-lg-12 mb-1">
+                                <div class="form-group">
+                                    <label>Nomor Gentan </label>
+                                    <div class="input-group col-md-9 col-xs-8">
+                                        <input class="form-control" type="text" wire:model.change="gentan_no"
+                                            maxlength="3"
+                                            oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');"
+                                            placeholder="..."
+                                            x-on:keydown.tab="$event.preventDefault(); $refs.beratLossEditInput.focus();" />
+                                        @error('gentan_no')
+                                            <span class="invalid-feedback">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 mb-1">
+                                <div class="form-group">
+                                    <label>Nomor Mesin </label>
+                                    <div class="input-group col-md-9 col-xs-8">
+                                        <input class="form-control readonly bg-light" readonly="readonly"
+                                            type="text" wire:model.defer="machineno" placeholder="..." />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 mb-1">
+                                <div class="form-group">
+                                    <label>Petugas </label>
+                                    <div class="input-group col-md-9 col-xs-8">
+                                        <input class="form-control readonly bg-light" readonly="readonly"
+                                            type="text" wire:model.defer="namapetugas" placeholder="..." />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 mb-1">
+                                <div class="form-group">
+                                    <label>Berat Loss </label>
+                                    <div class="input-group col-md-9 col-xs-8">
+                                        <input class="form-control" type="text" wire:model.defer="berat_loss"
+                                            placeholder="0" x-ref="beratLossEditInput"
+                                            oninput="this.value = window.formatNumberDecimal(this.value)" />
+                                        <span class="input-group-text">
+                                            Kg
+                                        </span>
+                                        @error('berat_loss')
+                                            <span class="invalid-feedback">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="ms-auto">
+                            <button type="button" class="btn btn-success mr-0" wire:click="saveGentan" wire:loading.attr="disabled"
+                                @disabled(!$gentan_no && !$machineno) wire:target="saveGentan">
+                                <span wire:loading.remove wire:target="saveGentan">
+                                    <i class="ri-save-3-line"></i> Save
+                                </span>
+                                <div wire:loading wire:target="saveGentan">
+                                    <span class="d-flex align-items-center">
+                                        <span class="spinner-border flex-shrink-0" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </span>
+                                        <span class="flex-grow-1 ms-1">
+                                            Loading...
+                                        </span>
+                                    </span>
+                                </div>
+                            </button>
+                            <button type="button" class="btn btn-link text-gray-600" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="card border-0 shadow mb-4 mt-4">
             <div class="card-body">
                 <div class="table-responsive">
@@ -397,9 +492,23 @@
                             @forelse ($details as $item)
                                 <tr>
                                     <td>
+                                        <button type="button" class="btn btn-primary p-1"
+                                            wire:click="edit({{ $item->id }})"
+                                            wire:loading.attr="disabled"
+                                            @disabled($status_kenpin == 2)
+                                            wire:target="edit({{ $item->id }})">
+                                            <span wire:loading.remove wire:target="edit({{ $item->id }})">
+                                                <i class="ri-edit-2-fill"></i>
+                                            </span>
+                                            <span wire:loading wire:target="edit({{ $item->id }})">
+                                                <span class="spinner-border spinner-border-sm" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </span>
+                                            </span>
+                                        </button>
                                         <button type="button" class="btn btn-danger p-1"
                                             wire:click="deleteInfure({{ $item->id }})"
-                                            wire:loading.attr="disabled">
+                                            wire:loading.attr="disabled" @disabled($status_kenpin == 2)>
                                             <span wire:loading.remove wire:target="deleteInfure({{ $item->id }})">
                                                 <i class="ri-delete-bin-4-fill"></i>
                                             </span>
@@ -1336,6 +1445,14 @@
 
         $wire.on('closeModal', () => {
             $('#modal-add').modal('hide');
+        });
+
+        $wire.on('showModalEdit', () => {
+            $('#modal-edit').modal('show');
+        });
+
+        $wire.on('closeModalEdit', () => {
+            $('#modal-edit').modal('hide');
         });
 
         $wire.on('showModalLPK', () => {

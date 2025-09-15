@@ -19,7 +19,7 @@ class MachinePartDetailController extends Component
     // Fields untuk ms_machine_part_detail
     public $code;
     public $machine_part_id;
-    public $detail_mesin;
+    public $name;
     public $status = 1;
 
     public $idUpdate;
@@ -51,7 +51,7 @@ class MachinePartDetailController extends Component
     {
         $this->code = '';
         $this->machine_part_id = '';
-        $this->detail_mesin = '';
+        $this->name = '';
         $this->status = 1;
 
         $this->idUpdate = null;
@@ -71,7 +71,7 @@ class MachinePartDetailController extends Component
         $this->validate([
             'code'            => 'required|unique:ms_machine_part_detail,code',
             'machine_part_id' => 'required|exists:ms_machine_part,id',
-            'detail_mesin'    => 'required',
+            'name'    => 'required',
         ]);
 
         DB::beginTransaction();
@@ -82,7 +82,7 @@ class MachinePartDetailController extends Component
                 'machine_part_id' => is_array($this->machine_part_id)
                     ? ($this->machine_part_id['value'] ?? null)
                     : $this->machine_part_id,
-                'detail_mesin'    => $this->detail_mesin,
+                'name'    => $this->name,
                 'status'          => $statusActive,
                 'created_by'      => auth()->user()->username,
                 'created_on'      => now(),
@@ -113,7 +113,7 @@ class MachinePartDetailController extends Component
         $this->idUpdate        = $detail->id;
         $this->code            = $detail->code;
         $this->machine_part_id = $detail->machine_part_id;
-        $this->detail_mesin    = $detail->detail_mesin;
+        $this->name    = $detail->name;
         $this->status          = $detail->status;
         $this->statusIsVisible = ((int)$detail->status === 0);
 
@@ -132,7 +132,7 @@ class MachinePartDetailController extends Component
         $this->validate([
             'code'            => 'required|unique:ms_machine_part_detail,code,' . $this->idUpdate,
             'machine_part_id' => 'required|exists:ms_machine_part,id',
-            'detail_mesin'    => 'required',
+            'name'    => 'required',
         ]);
 
         DB::beginTransaction();
@@ -144,7 +144,7 @@ class MachinePartDetailController extends Component
                     'machine_part_id' => is_array($this->machine_part_id)
                         ? ($this->machine_part_id['value'] ?? null)
                         : $this->machine_part_id,
-                    'detail_mesin'    => $this->detail_mesin,
+                    'name'    => $this->name,
                     'status'          => $this->status ?? 1,
                     'updated_by'      => auth()->user()->username,
                     'updated_on'      => now(),
@@ -198,7 +198,7 @@ class MachinePartDetailController extends Component
             ->select(
                 'mspd.id',
                 'mspd.code',
-                'mspd.detail_mesin',
+                'mspd.name',
                 'msp.part_machine',
                 'msd.name as departmentname',
                 'mspd.status',

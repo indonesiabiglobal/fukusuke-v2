@@ -57,11 +57,11 @@
                                             {{-- Detail Mesin --}}
                                             <div class="col-xxl-12">
                                                 <div>
-                                                    <label for="detail_mesin" class="form-label">Detail Mesin</label>
+                                                    <label for="name" class="form-label">Detail Mesin</label>
                                                     <input type="text"
-                                                           class="form-control @error('detail_mesin') is-invalid @enderror"
-                                                           id="detail_mesin" wire:model.defer="detail_mesin" placeholder="Nama/Detail Mesin">
-                                                    @error('detail_mesin') <span class="invalid-feedback">{{ $message }}</span> @enderror
+                                                           class="form-control @error('name') is-invalid @enderror"
+                                                           id="name" wire:model.defer="name" placeholder="Nama/Detail Mesin">
+                                                    @error('name') <span class="invalid-feedback">{{ $message }}</span> @enderror
                                                 </div>
                                             </div>
 
@@ -136,11 +136,11 @@
                                             {{-- Detail Mesin --}}
                                             <div class="col-xxl-12">
                                                 <div>
-                                                    <label for="detail_mesin_edit" class="form-label">Detail Mesin</label>
+                                                    <label for="name_edit" class="form-label">Detail Mesin</label>
                                                     <input type="text"
-                                                           class="form-control @error('detail_mesin') is-invalid @enderror"
-                                                           id="detail_mesin_edit" wire:model.defer="detail_mesin" placeholder="Nama/Detail Mesin">
-                                                    @error('detail_mesin') <span class="invalid-feedback">{{ $message }}</span> @enderror
+                                                           class="form-control @error('name') is-invalid @enderror"
+                                                           id="name_edit" wire:model.defer="name" placeholder="Nama/Detail Mesin">
+                                                    @error('name') <span class="invalid-feedback">{{ $message }}</span> @enderror
                                                 </div>
                                             </div>
 
@@ -310,7 +310,7 @@
                         </td>
                         <td>{{ $item->part_machine }}</td>
                         <td>{{ $item->code }}</td>
-                        <td>{{ $item->detail_mesin }}</td>
+                        <td>{{ $item->name }}</td>
                         <td>{{ $item->departmentname }}</td>
                         <td>
                             {!! $item->status == 1

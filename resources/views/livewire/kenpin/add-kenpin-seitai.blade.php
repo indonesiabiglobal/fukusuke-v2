@@ -197,7 +197,7 @@
                                 <option value="">- Pilih Bagian -</option>
                                 @foreach ($bagianMesinListInfure as $bagianMesin)
                                     <option value="{{ $bagianMesin->id }}">
-                                        {{ $bagianMesin->code . ' - ' . $bagianMesin->detail_mesin }}
+                                        {{ $bagianMesin->code . ' - ' . $bagianMesin->name }}
                                     </option>
                                 @endforeach
                             </select>
@@ -221,7 +221,7 @@
                                 <option value="">- Pilih Bagian -</option>
                                 @foreach ($bagianMesinListSeitai as $bagianMesin)
                                     <option value="{{ $bagianMesin->id }}">
-                                        {{ $bagianMesin->code . ' - ' . $bagianMesin->detail_mesin }}
+                                        {{ $bagianMesin->code . ' - ' . $bagianMesin->name }}
                                     </option>
                                 @endforeach
                             </select>
@@ -349,7 +349,7 @@
                                     <span class="visually-hidden">Loading...</span>
                                 </span>
                                 <span class="flex-grow-1 ms-1">
-                                    Loading...
+                                    Closing...
                                 </span>
                             </span>
                         </div>
@@ -470,13 +470,15 @@
                                             <div class="input-group mb-1">
                                                 <input type="number" class="form-control" wire:model="nomor_box.{{ $index }}" placeholder="Masukkan nomor box"
                                                 wire:loading.attr="disabled" wire:loading.class="bg-light readonly" />
-                                                <button type="button" class="btn btn-danger btn-sm" wire:click="removeBox({{ $index }})"
-                                                wire:loading.attr="disabled" wire:loading.class="bg-light readonly">Remove</button>
+                                                <button type="button" class="btn btn-outline-danger"
+                                                    wire:click="removeBox({{ $index }})" wire:loading.attr="disabled" wire:loading.class="bg-light readonly">
+                                                    <i class="ri-close-line"></i>
+                                                </button>
                                             </div>
                                         @endforeach
                                         <button type="button" class="btn btn-primary btn-sm" wire:click="addBox" wire:loading.attr="disabled">
                                             <span wire:loading.remove wire:target="addBox">
-                                                Add Box
+                                                Tambah Box
                                             </span>
                                             <span wire:loading wire:target="addBox">
                                                 <span class="d-flex align-items-center">

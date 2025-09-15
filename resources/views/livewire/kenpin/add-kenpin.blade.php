@@ -229,7 +229,7 @@
                                 <option value="">- Pilih Bagian -</option>
                                 @if (isset($bagianMesinList))
                                     @foreach ($bagianMesinList as $bagianMesin)
-                                        <option value="{{ $bagianMesin->id }}">{{ $bagianMesin->code . ' - ' . ($bagianMesin->detail_mesin) }}
+                                        <option value="{{ $bagianMesin->id }}">{{ $bagianMesin->code . ' - ' . ($bagianMesin->name) }}
                                         </option>
                                     @endforeach
                                 @endif
@@ -277,8 +277,18 @@
             </div>
             <div class="col-lg-4" style="border-top:1px solid #efefef">
                 <div class="toolbar">
-                    <button type="button" class="btn btn-warning" wire:click="cancel">
-                        <i class="ri-close-line"></i> Close
+                    <button type="button" class="btn btn-warning" wire:click="cancel" wire:loading.attr="disabled" wire:target="cancel">
+                        <span wire:loading.remove wire:target="cancel">
+                            <i class="ri-close-line"></i> Close
+                        </span>
+                        <span wire:loading wire:target="cancel">
+                            <span class="d-flex align-items-center">
+                                <span class="spinner-border spinner-border-sm flex-shrink-0" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </span>
+                                <span class="flex-grow-1 ms-1">Closing...</span>
+                            </span>
+                        </span>
                     </button>
                     <button wire:click="save" type="button" class="btn btn-success w-lg"
                         wire:loading.attr="disabled">
@@ -521,12 +531,24 @@
                                 <tr>
                                     <td>
                                         <button type="button" class="btn btn-primary p-1" data-bs-toggle="modal"
-                                            data-bs-target="#modal-edit" wire:click="edit({{ $item['id'] }})">
-                                            <i class="ri-edit-2-fill"></i>
+                                            data-bs-target="#modal-edit" wire:click="edit({{ $item['id'] }})"
+                                            wire:loading.attr="disabled" wire:target="edit">
+                                            <span wire:loading.remove wire:target="edit">
+                                                <i class="ri-edit-2-fill"></i>
+                                            </span>
+                                            <span wire:loading wire:target="edit">
+                                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                            </span>
                                         </button>
+
                                         <button type="button" class="btn btn-danger p-1"
-                                            wire:click="deleteInfure({{ $item['id'] }})">
-                                            <i class="ri-delete-bin-4-fill"></i>
+                                            wire:click="deleteInfure({{ $item['id'] }})" wire:loading.attr="disabled" wire:target="deleteInfure">
+                                            <span wire:loading.remove wire:target="deleteInfure">
+                                                <i class="ri-delete-bin-4-fill"></i>
+                                            </span>
+                                            <span wire:loading wire:target="deleteInfure">
+                                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                            </span>
                                         </button>
                                     </td>
                                     <td>
