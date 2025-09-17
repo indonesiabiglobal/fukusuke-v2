@@ -380,6 +380,7 @@ class EditSeitaiController extends Component
             'status_production' => 0,
         ]);
 
+        $this->dispatch('closeModalDeleteGentan', $orderId);
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Hapus']);
     }
 
@@ -393,6 +394,7 @@ class EditSeitaiController extends Component
             'seitai_berat_loss' => $this->jumlahBeratLoss - $data->berat_loss
         ]);
 
+        $this->dispatch('closeModalDeleteLoss', $orderId);
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Hapus']);
     }
 

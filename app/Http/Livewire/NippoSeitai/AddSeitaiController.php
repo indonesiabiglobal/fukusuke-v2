@@ -502,9 +502,12 @@ class AddSeitaiController extends Component
         $index = array_search($orderId, array_column($this->detailsGentan, 'id'));
 
         if ($index !== false) {
+            // mengurangi dari jumlah berat produksi
+            $this->jumlahBeratProduksi -= $this->detailsGentan[$index]['berat'];
             array_splice($this->detailsGentan, $index, 1);
         }
 
+        $this->dispatch('closeModalDeleteGentan', $orderId);
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Hapus']);
     }
 
@@ -518,6 +521,7 @@ class AddSeitaiController extends Component
             // mengurangi dari jumlah berat loss
         }
 
+        $this->dispatch('closeModalDeleteLoss', $orderId);
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Hapus']);
     }
 

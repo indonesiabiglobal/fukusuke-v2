@@ -619,23 +619,48 @@
                                             </div>
                                         </button>
                                         <button type="button" class="btn btn-danger"
-                                            wire:click="deleteInfure({{ $item->loss_infure_id }})"
-                                            wire:loading.attr="disabled">
-                                            <span wire:loading.remove
-                                                wire:target="deleteInfure({{ $item->loss_infure_id }})">
-                                                <i class="fa fa-trash"></i> Delete
-                                            </span>
-                                            <div wire:loading wire:target="deleteInfure({{ $item->loss_infure_id }})">
-                                                <span class="d-flex align-items-center">
-                                                    <span class="spinner-border flex-shrink-0" role="status">
-                                                        <span class="visually-hidden">Loading...</span>
-                                                    </span>
-                                                    <span class="flex-grow-1 ms-1">
-                                                        Loading...
-                                                    </span>
-                                                </span>
-                                            </div>
+                                            data-bs-toggle="modal" data-bs-target="#modal-delete-loss-infure-{{ $item->loss_infure_id }}">
+                                            <i class="fa fa-trash"></i> Delete
                                         </button>
+
+                                        <div id="modal-delete-loss-infure-{{ $item->loss_infure_id }}" class="modal fade zoomIn" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                                                            id="close-remove-loss-infure-{{ $item->loss_infure_id }}"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="mt-2 text-center">
+                                                            <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop"
+                                                                colors="primary:#f7b84b,secondary:#f06548"
+                                                                style="width:100px;height:100px"></lord-icon>
+                                                            <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
+                                                                <h4>Are you sure ?</h4>
+                                                                <p class="text-muted mx-4 mb-0">Are you sure you want to remove this loss infure ?</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
+                                                            <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">Close</button>
+                                                            <button wire:click="deleteInfure({{ $item->loss_infure_id }})" type="button"
+                                                                class="btn w-sm btn-danger" wire:loading.attr="disabled">
+                                                                <span wire:loading.remove wire:target="deleteInfure({{ $item->loss_infure_id }})">
+                                                                    <i class="ri-save-3-line"></i> Yes, Delete It!
+                                                                </span>
+                                                                <div wire:loading wire:target="deleteInfure({{ $item->loss_infure_id }})">
+                                                                    <span class="d-flex align-items-center">
+                                                                        <span class="spinner-border flex-shrink-0" role="status">
+                                                                            <span class="visually-hidden">Loading...</span>
+                                                                        </span>
+                                                                        <span class="flex-grow-1 ms-1">Loading...</span>
+                                                                    </span>
+                                                                </div>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </td>
                                     <td>
                                         {{ $item->loss_infure_code }}
@@ -1789,6 +1814,10 @@
         // close modal delete machine
         $wire.on('closeModalDelete', () => {
             $('#modal-delete').modal('hide');
+        });
+
+        $wire.on('closeModalDeleteLossInfure', (id) => {
+            $('#modal-delete-loss-infure-' + id).modal('hide');
         });
     </script>
 @endscript

@@ -500,6 +500,7 @@ class AddNippoController extends Component
             array_splice($this->details, $index, 1);
         }
 
+        $this->dispatch('closeModalDeleteLossInfure', $orderId);
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Hapus']);
     }
 

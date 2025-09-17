@@ -551,6 +551,7 @@ class EditNippoController extends Component
         });
 
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Hapus']);
+        $this->dispatch('closeModalDeleteLossInfure', $loss_infure_id);
     }
 
     public function cancel()
