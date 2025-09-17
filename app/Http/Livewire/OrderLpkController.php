@@ -67,10 +67,13 @@ class OrderLpkController extends Component
         $this->buyer = MsBuyer::get();
 
         if (empty($this->tglMasuk)) {
-            $this->tglMasuk = Carbon::now()->startOfDay()->format('d M Y');
+            $this->tglMasuk = Carbon::now()->format('d M Y');
         }
         if (empty($this->tglKeluar)) {
-            $this->tglKeluar = Carbon::now()->endOfDay()->format('d M Y');
+            $this->tglKeluar = Carbon::now()->format('d M Y');
+        }
+        if (empty($this->transaksi)) {
+            $this->transaksi = 1;
         }
         if (empty($this->sortingTable)) {
             $this->sortingTable = [[1, 'asc']];
@@ -147,6 +150,9 @@ class OrderLpkController extends Component
 
     public function render()
     {
+        $tglAwal = Carbon::parse($this->tglMasuk)->format('d-m-Y 00:00:00');
+        $tglAkhir = Carbon::parse($this->tglKeluar)->format('d-m-Y 23:59:59');
+
         $data = DB::table('tdorder AS tod')
             ->select(
                 'tod.id',
@@ -172,19 +178,19 @@ class OrderLpkController extends Component
 
         if ($this->transaksi == 1) {
             if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
-                $data = $data->where('tod.processdate', '>=', $this->tglMasuk . " 00:00");
+                $data = $data->where('tod.processdate', '>=', $tglAwal);
             }
 
             if (isset($this->tglKeluar) && $this->tglKeluar != "" && $this->tglKeluar != "undefined") {
-                $data = $data->where('tod.processdate', '<=', $this->tglKeluar . " 23:59:59");
+                $data = $data->where('tod.processdate', '<=', $tglAkhir);
             }
         } else if ($this->transaksi == 2) {
             if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
-                $data = $data->where('tod.order_date', '>=', $this->tglMasuk  . " 00:00:00");
+                $data = $data->where('tod.order_date', '>=', $tglAwal);
             }
 
             if (isset($this->tglKeluar) && $this->tglKeluar != "" && $this->tglKeluar != "undefined") {
-                $data = $data->where('tod.order_date', '<=', $this->tglKeluar . " 23:59:59");
+                $data = $data->where('tod.order_date', '<=', $tglAkhir);
             }
         }
 
