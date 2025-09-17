@@ -649,7 +649,6 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-
                         <button type="button" wire:click="saveLoss" class="btn btn-success ms-auto" wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="saveLoss">
                                 <i class="ri-save-3-line"></i> Save

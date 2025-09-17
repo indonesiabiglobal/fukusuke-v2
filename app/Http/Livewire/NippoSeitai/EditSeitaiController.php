@@ -324,6 +324,11 @@ class EditSeitaiController extends Component
         }
     }
 
+    public function changeTab($tab)
+    {
+        $this->activeTab = $tab;
+    }
+
     public function addGentan()
     {
         $validatedData = $this->validate([
@@ -333,7 +338,7 @@ class EditSeitaiController extends Component
         ]);
 
         if ($validatedData) {
-            $this->activeTab = 'Gentan';
+            $this->gentan_no = '';
             $this->dispatch('showModalGentan');
         }
     }
@@ -347,7 +352,9 @@ class EditSeitaiController extends Component
         ]);
 
         if ($validatedData) {
-            $this->activeTab = 'Loss';
+            $this->loss_seitai_id = '';
+            $this->berat_loss = '';
+            $this->frekuensi_fr = '';
             $this->dispatch('showModalLoss');
         }
     }
@@ -550,6 +557,152 @@ class EditSeitaiController extends Component
         return redirect()->route('nippo-seitai');
     }
 
+    public function updatedMachineno($machineno)
+    {
+        $this->machineno = $machineno;
+
+        if (isset($this->machineno) && $this->machineno != '') {
+            $machine = MsMachine::seitaiDepartment()->first();
+
+            if ($machine == null) {
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Machine ' . $this->machineno . ' Tidak Terdaftar']);
+                $this->machineno = '';
+                $this->machinename = '';
+            } else {
+                $this->machineno = $machine->machineno;
+                $this->machinename = $machine->machinename;
+            }
+        }
+    }
+
+    public function updatedWorkHour($work_hour)
+    {
+        $this->work_hour = $work_hour;
+
+        if (isset($this->work_hour) && $this->work_hour != '') {
+            if (
+                Carbon::createFromFormat('d/m/Y', $this->production_date)->isSameDay(Carbon::now())
+                && Carbon::parse($this->work_hour)->format('H:i') > Carbon::now()->format('H:i')
+            ) {
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Jam Kerja Tidak Boleh Melebihi Jam Sekarang']);
+                $this->work_hour = Carbon::now()->format('H:i');
+            }
+
+            $this->workShift();
+        }
+    }
+
+    public function workShift()
+    {
+        if (isset($this->work_hour) && $this->work_hour != '') {
+            $workHourFormatted = Carbon::parse($this->work_hour)->format('H:i:s');
+
+            $workingShift = DB::select("
+                SELECT *
+                FROM msworkingshift
+                WHERE status = 1
+                AND ((
+                    -- Shift does not cross midnight
+                    work_hour_from <= work_hour_till
+                    AND '$workHourFormatted' BETWEEN work_hour_from AND work_hour_till
+                ) OR (
+                    -- Shift crosses midnight
+                    work_hour_from > work_hour_till
+                    AND (
+                        '$workHourFormatted' BETWEEN work_hour_from AND '23:59:59'
+                        OR
+                        '$workHourFormatted' BETWEEN '00:00:00' AND work_hour_till
+                    )
+                ))
+                ORDER BY work_hour_till ASC
+                LIMIT 1;
+            ")[0];
+
+            $this->work_shift = $workingShift->id;
+        }
+    }
+
+    public function updatedEmployeeno($employeeno)
+    {
+        $this->employeeno = $employeeno;
+
+        if (isset($this->employeeno) && $this->employeeno != '' && strlen($this->employeeno) >= 3) {
+            $msemployee = MsEmployee::where('employeeno', 'ilike', '%' . $this->employeeno . '%')->first();
+
+            if ($msemployee == null) {
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
+                $this->employeeno = '';
+                $this->empname = '';
+            } else {
+                $this->employeeno = $msemployee->employeeno;
+                $this->empname = $msemployee->empname;
+            }
+        }
+    }
+
+    public function updatedEmployeenoinfure($employeenoinfure)
+    {
+        $this->employeenoinfure = $employeenoinfure;
+
+        if (isset($this->employeenoinfure) && $this->employeenoinfure != '' && strlen($this->employeenoinfure) >= 3) {
+            $msemployeeinfure = MsEmployee::where('employeeno', 'ilike', '%' . $this->employeenoinfure . '%')->first();
+
+            if ($msemployeeinfure == null) {
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->employeenoinfure . ' Tidak Terdaftar']);
+                $this->employeenoinfure = '';
+                $this->empnameinfure = '';
+            } else {
+                $this->employeenoinfure = $msemployeeinfure->employeeno;
+                $this->empnameinfure = $msemployeeinfure->empname;
+            }
+        }
+    }
+
+    public function updatedGentanNo($gentan_no)
+    {
+        $this->gentan_no = $gentan_no;
+
+        if (isset($this->gentan_no) && $this->gentan_no != '') {
+            $lpkid = TdOrderLpk::where('lpk_no', $this->lpk_no)->first();
+            $tdProduct = DB::table('tdproduct_assembly as tdpa')
+                ->leftJoin('msmachine as mm', 'mm.id', '=', 'tdpa.machine_id')
+                ->leftJoin('msemployee as mse', 'mse.id', '=', 'tdpa.employee_id')
+                ->select(
+                    'mm.machineno',
+                    'mse.empname',
+                    'tdpa.berat_produksi'
+                )
+                ->where('lpk_id', $lpkid->id)
+                ->where('gentan_no', $this->gentan_no)
+                ->first();
+
+            if ($tdProduct == null) {
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Gentan ' . $this->gentan_no . ' Tidak Terdaftar']);
+                $this->resetGentan();
+            } else {
+                $this->petugas = $tdProduct->empname;
+                $this->machine_no = $tdProduct->machineno;
+                $this->berat_produksi = $tdProduct->berat_produksi;
+            }
+        }
+    }
+
+    public function updatedLossSeitaiId($loss_seitai_id)
+    {
+        $this->loss_seitai_id = $loss_seitai_id;
+
+        if (isset($this->loss_seitai_id) && $this->loss_seitai_id != '') {
+            $lossSeitai = MsLossSeitai::where('code', $this->loss_seitai_id)->first();
+
+            if ($lossSeitai == null) {
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Kode Loss ' . $this->loss_seitai_id . ' Tidak Terdaftar']);
+                $this->resetSeitai();
+            } else {
+                $this->namaloss = $lossSeitai->name;
+            }
+        }
+    }
+
     public function render()
     {
         if (isset($this->lpk_no) && $this->lpk_no != '') {
@@ -623,128 +776,10 @@ class EditSeitaiController extends Component
             }
         }
 
-        if (isset($this->machineno) && $this->machineno != '') {
-            $machine = MsMachine::where('machineno', 'ilike', '%' . $this->machineno . '%')->first();
-            if ($machine == null) {
-                $this->dispatch('notification', ['type' => 'error', 'message' => 'Machine ' . $this->machineno . ' Tidak Terdaftar']);
-            } else {
-                $this->machineno = $machine->machineno;
-                $this->machinename = $machine->machinename;
-            }
-        }
-
-        if (isset($this->employeeno) && $this->employeeno != '' && strlen($this->employeeno) >= 3) {
-            $msemployee = MsEmployee::where('employeeno', 'ilike', '%' . $this->employeeno . '%')->first();
-
-            if ($msemployee == null) {
-                $this->employeeno = '';
-                $this->empname = '';
-                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
-            } else {
-                $this->employeeno = $msemployee->employeeno;
-                $this->empname = $msemployee->empname;
-            }
-        }
-
-        if (isset($this->work_hour) && $this->work_hour != '') {
-            if (
-                Carbon::createFromFormat('d/m/Y', $this->production_date)->isSameDay(Carbon::now())
-                && Carbon::parse($this->work_hour)->format('H:i') > Carbon::now()->format('H:i')
-            ) {
-                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Jam Kerja Tidak Boleh Melebihi Jam Sekarang']);
-                $this->work_hour = Carbon::now()->format('H:i');
-            }
-
-            $workHourFormatted = Carbon::parse($this->work_hour)->format('H:i:s');
-            $workingShift = DB::select("
-            SELECT *
-                FROM msworkingshift
-                WHERE status = 1
-                AND ((
-                    -- Shift does not cross midnight
-                    work_hour_from <= work_hour_till
-                    AND '$workHourFormatted' BETWEEN work_hour_from AND work_hour_till
-                ) OR (
-                    -- Shift crosses midnight
-                    work_hour_from > work_hour_till
-                    AND (
-                        '$workHourFormatted' BETWEEN work_hour_from AND '23:59:59'
-                        OR
-                        '$workHourFormatted' BETWEEN '00:00:00' AND work_hour_till
-                    )
-                ))
-                ORDER BY work_hour_till ASC
-                LIMIT 1;
-            ")[0];
-            $this->work_shift = $workingShift->id;
-        }
-
-        if (isset($this->employeenoinfure) && $this->employeenoinfure != '' && strlen($this->employeenoinfure) >= 3) {
-            $msemployeeinfure = MsEmployee::where('employeeno', 'ilike', '%' . $this->employeenoinfure . '%')->first();
-
-            if ($msemployeeinfure == null) {
-                $this->employeenoinfure = '';
-                $this->empnameinfure = '';
-                // session()->flash('error', 'Nomor PO ' . $this->po_no . ' Tidak Terdaftar');
-                $this->dispatch('notification', ['type' => 'error', 'message' => 'Employee ' . $this->employeenoinfure . ' Tidak Terdaftar']);
-            } else {
-                $this->employeenoinfure = $msemployeeinfure->employeeno;
-                $this->empnameinfure = $msemployeeinfure->empname;
-            }
-        }
-
-        if (isset($this->gentan_no) && $this->gentan_no != '') {
-            $lpkid = TdOrderLpk::where('lpk_no', $this->lpk_no)->first();
-            // $tdProduct=TdProductAssembly::where('gentan_no', $this->gentan_no)->where('lpk_id', $lpkid->id)->first();
-            $tdProduct = DB::table('tdproduct_assembly as tdpa')
-                ->leftJoin('msmachine as mm', 'mm.id', '=', 'tdpa.machine_id')
-                ->leftJoin('msemployee as mse', 'mse.id', '=', 'tdpa.employee_id')
-                ->select(
-                    'mm.machineno',
-                    'mse.empname',
-                    'tdpa.berat_produksi'
-                )
-                ->where('lpk_id', $lpkid->id)
-                ->where('gentan_no', $this->gentan_no)
-                ->first();
-
-            if ($tdProduct == null) {
-                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Gentan ' . $this->employeenoinfure . ' Tidak Terdaftar']);
-            } else {
-                $this->petugas = $tdProduct->empname;
-                $this->machine_no = $tdProduct->machineno;
-                $this->berat_produksi = $tdProduct->berat_produksi;
-            }
-        }
-
-        if (isset($this->loss_seitai_id) && $this->loss_seitai_id != '') {
-            $lossSeitai = MsLossSeitai::where('code', $this->loss_seitai_id)->first();
-
-            if ($lossSeitai == null) {
-                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Kode Loss ' . $this->employeenoinfure . ' Tidak Terdaftar']);
-            } else {
-                $this->namaloss = $lossSeitai->name;
-            }
-        }
-
         if (isset($this->qty_produksi) && $this->qty_produksi != '' && isset($this->qty_lpk) && $this->qty_lpk != '') {
             $this->total_assembly_qty = number_format((int)str_replace(',', '', $this->total_assembly_qty) + (int)str_replace(',', '', $this->qty_produksi));
             $this->selisih = (int)str_replace(',', '', $this->selisihOld) - (int)str_replace(',', '', $this->qty_produksi);
         }
-
-        // $lpkid = TdOrderLpk::where('lpk_no', $this->lpk_no)->first();
-
-        // $this->gentan_no = 1;
-        // if (!empty($lpkid)) {
-        //     $lastGentan = TdProductAssembly::where('lpk_id', $lpkid->lpk_id)
-        //         ->max('gentan_no');
-
-        //     $nogentan = 1;
-        //     if(!empty($lastGentan)){
-        //         $nogentan = $lastGentan->seq_no + 1;
-        //     }
-        //     $this->gentan_no=$nogentan;
-        // }
 
         return view('livewire.nippo-seitai.edit-seitai')->extends('layouts.master');
     }
