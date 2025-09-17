@@ -105,7 +105,9 @@ class JamMatiReportService
             'machinename',
             'code_jam_mati',
             'name_jam_mati'
-        )->get();
+        )
+        ->orderBy('total_off_minutes', 'DESC')
+        ->get();
 
         if (count($data) == 0) {
             $response = [
