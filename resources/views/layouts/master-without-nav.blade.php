@@ -10,8 +10,8 @@
     <meta content="Themesbrand" name="author" />
     <meta name="keywords" content="hybrix,hybrix laravel,admin,dashboard,vite,livewire,livewire admin,laravel vite">
 
-    <link rel="shortcut icon" href="{{ URL::asset('build/images/fukusuke.ico') }}">
-     
+    <link rel="shortcut icon" href="{{ URL::asset('build/images/fukusuke.png') }}">
+
     <!-- App favicon -->
     {{-- <link rel="shortcut icon" href="{{ URL::asset('build/images/favicon.ico') }}"> --}}
 
