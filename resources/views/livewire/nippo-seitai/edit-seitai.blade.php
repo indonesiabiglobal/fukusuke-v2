@@ -377,7 +377,6 @@
                                             <th class="border-0">Shift</th>
                                             <th class="border-0">Petugas</th>
                                             <th class="border-0">Tg. Produksi</th>
-                                            {{-- <th class="border-0">Frekuensi</th> --}}
                                             <th class="border-0 rounded-end">Berat Produksi (kg)</th>
                                         </tr>
                                     </thead>
@@ -501,6 +500,18 @@
                                         @forelse ($detailsLoss as $item)
                                             <tr>
                                                 <td>
+                                                    <button type="button" class="btn btn-warning me-1"
+                                                        wire:click="editLoss({{ $item->id }})"
+                                                        wire:loading.attr="disabled"
+                                                        wire:target="editLoss({{ $item->id }})">
+                                                        <span wire:loading.remove wire:target="editLoss({{ $item->id }})">
+                                                            <i class="fa fa-edit"></i> Edit
+                                                        </span>
+                                                        <span wire:loading wire:target="editLoss({{ $item->id }})">
+                                                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                            Loading...
+                                                        </span>
+                                                    </button>
                                                     <button type="button" class="btn btn-danger"
                                                         data-bs-toggle="modal" data-bs-target="#modal-delete-loss-{{ $item->id }}">
                                                         <i class="fa fa-trash"></i> Delete
@@ -685,9 +696,9 @@
                                     <label>Kode Loss </label>
                                     <div class="input-group col-md-9 col-xs-8">
                                         <input id="inputKodeLoss" class="form-control" type="text"
-                                            wire:model.live.debounce.300ms="loss_seitai_id" placeholder="..."
+                                            wire:model.live.debounce.300ms="code_loss" placeholder="..."
                                             x-on:keydown.tab="$event.preventDefault(); $refs.berat_loss.focus();" />
-                                        @error('loss_seitai_id')
+                                        @error('code_loss')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror
                                     </div>
@@ -718,9 +729,9 @@
                                 <div class="form-group">
                                     <label>Frekuensi </label>
                                     <div class="input-group col-md-9 col-xs-8">
-                                        <input class="form-control" type="text" wire:model.defer="frekuensi_fr"
+                                        <input class="form-control" type="text" wire:model.defer="frekuensi"
                                             placeholder="0" />
-                                        @error('frekuensi_fr')
+                                        @error('frekuensi')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror
                                     </div>
@@ -747,6 +758,62 @@
                         </button>
                         <button type="button" class="btn btn-link text-gray-600"
                             data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- modal edit loss seitai-->
+        <div class="modal fade" id="modal-edit-loss" tabindex="-1" role="dialog" aria-labelledby="modal-edit-loss"
+            aria-hidden="true" wire:ignore.self>
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="h6 modal-title">Edit Loss Seitai</h2>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-12 col-lg-12">
+                                <div class="form-group">
+                                    <label>Kode Loss</label>
+                                    <input type="text" id="inputKodeLossEdit" wire:model.live="code_loss" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-12 mt-2">
+                                <div class="form-group">
+                                    <label>Nama Loss</label>
+                                    <input type="text" wire:model="namaloss" class="form-control bg-light" readonly />
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6 mt-2">
+                                <div class="form-group">
+                                    <label>Berat Loss</label>
+                                    <input type="number" step="any" wire:model="berat_loss" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6 mt-2">
+                                <div class="form-group">
+                                    <label>Frekuensi</label>
+                                    <input type="text" wire:model="frekuensi" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success ms-auto" wire:click="updateLoss"
+                            wire:loading.attr="disabled">
+                            <span wire:loading.remove wire:target="updateLoss">
+                                <i class="ri-save-3-line"></i> Update
+                            </span>
+                            <div wire:loading wire:target="updateLoss">
+                                <span class="d-flex align-items-center">
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    <span class="ms-2">Updating...</span>
+                                </span>
+                            </div>
+                        </button>
+                        <button type="button" class="btn btn-link" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
@@ -1749,6 +1816,14 @@
 
         $wire.on('closeModalDeleteLoss', (id) => {
             $('#modal-delete-loss-' + id).modal('hide');
+        });
+
+        $wire.on('openModalEditLoss', (modalId) => {
+            $('#modal-edit-loss').modal('show');
+        });
+
+        $wire.on('closeModal', (modalId) => {
+            $('#' + modalId).modal('hide');
         });
     </script>
 @endscript

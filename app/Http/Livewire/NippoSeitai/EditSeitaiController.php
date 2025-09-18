@@ -55,18 +55,19 @@ class EditSeitaiController extends Component
     public $machine_no;
     public $namaloss;
     public $gentan_line;
+    public $code_loss;
     public $loss_seitai_id;
     public $berat_loss;
     public $berat;
     public $frekuensi;
     public $berat_fr;
-    public $frekuensi_fr;
     public $jumlahBeratProduksi;
     public $jumlahBeratLoss;
     public $seq_no;
     public $selisih;
     public $selisihOld;
     public $idDelete;
+    public $editing_id;
     public $activeTab = 'Gentan';
 
     // data master produk
@@ -352,9 +353,9 @@ class EditSeitaiController extends Component
         ]);
 
         if ($validatedData) {
-            $this->loss_seitai_id = '';
+            $this->code_loss = '';
             $this->berat_loss = '';
-            $this->frekuensi_fr = '';
+            $this->frekuensi = '';
             $this->dispatch('showModalLoss');
         }
     }
@@ -396,6 +397,61 @@ class EditSeitaiController extends Component
 
         $this->dispatch('closeModalDeleteLoss', $orderId);
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Hapus']);
+    }
+
+    public function editLoss($orderId)
+    {
+        $data = TdProductGoodsLoss::find($orderId);
+        if ($data) {
+            $this->editing_id = $data->id;
+            $this->loss_seitai_id = $data->loss_seitai_id;
+
+            $loss = MsLossSeitai::find($data->loss_seitai_id);
+            $this->code_loss = $loss->code ?? '';
+            $this->namaloss = $loss->name ?? '';
+
+            $this->berat_loss = $data->berat_loss;
+            $this->frekuensi = $data->frekuensi;
+
+            $this->dispatch('openModalEditLoss');
+        } else {
+            $this->dispatch('notification', ['type' => 'warning', 'message' => 'Data Tidak Ditemukan']);
+        }
+    }
+
+    public function updateLoss()
+    {
+        $validatedData = $this->validate([
+            'loss_seitai_id' => 'required',
+            'berat_loss' => 'required|numeric',
+            'frekuensi' => 'required',
+        ]);
+
+        try {
+            $data = TdProductGoodsLoss::findOrFail($this->editing_id);
+            $oldBerat = $data->berat_loss;
+
+            $data->loss_seitai_id = $this->loss_seitai_id;
+            $data->berat_loss = $this->berat_loss;
+            $data->frekuensi = $this->frekuensi;
+            $data->updated_on = Carbon::now();
+            $data->updated_by = auth()->user()->username;
+            $data->save();
+
+            // update total berat loss on tdproduct_goods
+            $newTotal = $this->jumlahBeratLoss - $oldBerat + $this->berat_loss;
+            TdProductGoods::where('id', $this->tdpgId)->update([
+                'seitai_berat_loss' => $newTotal
+            ]);
+
+            $this->editing_id = null;
+            $this->clearLoss();
+
+            $this->dispatch('closeModal', 'modal-edit-loss');
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Update']);
+        } catch (\Exception $e) {
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Gagal Update Data']);
+        }
     }
 
     public function resetGentan()
@@ -453,22 +509,23 @@ class EditSeitaiController extends Component
     public function clearLoss()
     {
         $this->loss_seitai_id = '';
+        $this->code_loss = '';
         $this->namaloss = '';
         $this->berat_loss = '';
-        $this->frekuensi_fr = '';
+        $this->frekuensi = '';
     }
 
     public function saveLoss()
     {
         $lpkid = TdOrderLpk::where('lpk_no', $this->lpk_no)->first();
-        $loss = MsLossSeitai::where('code', $this->loss_seitai_id)
+        $loss = MsLossSeitai::where('code', $this->code_loss)
             ->first();
 
         $datas = new TdProductGoodsLoss();
         $datas->product_goods_id = $this->tdpgId;
         $datas->loss_seitai_id = $loss->id;
         $datas->berat_loss = $this->berat_loss;
-        $datas->frekuensi = $this->frekuensi_fr;
+        $datas->frekuensi = $this->frekuensi;
         $datas->lpk_id = $lpkid->id;
 
         $datas->created_on = Carbon::now();
@@ -701,6 +758,23 @@ class EditSeitaiController extends Component
                 $this->resetSeitai();
             } else {
                 $this->namaloss = $lossSeitai->name;
+            }
+        }
+    }
+
+    public function updatedCodeLoss($code_loss)
+    {
+        $this->code_loss = $code_loss;
+
+        if (isset($this->code_loss) && $this->code_loss != '') {
+            $lossSeitai = MsLossSeitai::where('code', $this->code_loss)->first();
+
+            if ($lossSeitai == null) {
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Kode Loss ' . $this->code_loss . ' Tidak Terdaftar']);
+                $this->clearLoss();
+            } else {
+                $this->namaloss = $lossSeitai->name;
+                $this->loss_seitai_id = $lossSeitai->id;
             }
         }
     }

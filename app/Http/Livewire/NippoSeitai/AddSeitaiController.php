@@ -50,13 +50,13 @@ class AddSeitaiController extends Component
     public $detailsGentan = [];
     public $detailsLoss = [];
     public $orderid;
+    public $code_loss;
     public $loss_seitai_id;
     public $berat_loss;
     public $namaloss;
     public $berat;
-    public $frekuensi;
     public $berat_fr;
-    public $frekuensi_fr;
+    public $frekuensi;
     public $jumlahBeratProduksi;
     public $jumlahBeratLoss;
     public $currentLossId = 1;
@@ -64,6 +64,7 @@ class AddSeitaiController extends Component
     public $total_assembly_qty;
     public $selisih;
     public $activeTab = 'Gentan';
+    public $editing_id = null;
 
     // data master produk
     public $masterKatanuki;
@@ -252,9 +253,9 @@ class AddSeitaiController extends Component
         ]);
 
         if ($validatedData) {
-            $this->loss_seitai_id = '';
+            $this->code_loss = '';
             $this->berat_loss = '';
-            $this->frekuensi_fr = '';
+            $this->frekuensi = '';
             $this->dispatch('showModalLoss');
         }
     }
@@ -354,7 +355,6 @@ class AddSeitaiController extends Component
                     ]);
             }
 
-
             // menginput data loss
             foreach ($this->detailsLoss as $loss) {
                 $datas = new TdProductGoodsLoss();
@@ -445,7 +445,6 @@ class AddSeitaiController extends Component
             'product_goods_id' => $this->product_goods_id,
             'product_assembly_id' => $assembly->id,
             'berat' => $this->berat_produksi,
-            // 'frekuensi' => $this->frekuensi,
             'lpk_id' => $lpkid->id,
         ];
         $this->jumlahBeratProduksi += $this->berat_produksi;
@@ -459,10 +458,10 @@ class AddSeitaiController extends Component
 
     public function resetLoss()
     {
-        $this->loss_seitai_id = '';
+        $this->code_loss = '';
         $this->namaloss = '';
         $this->berat_loss = '';
-        $this->frekuensi_fr = '';
+        $this->frekuensi = '';
     }
 
     public function nextIdLoss()
@@ -473,17 +472,17 @@ class AddSeitaiController extends Component
     public function saveLoss()
     {
         $lpkid = TdOrderLpk::where('lpk_no', $this->lpk_no)->first();
-        $loss = MsLossSeitai::where('code', $this->loss_seitai_id)
+        $loss = MsLossSeitai::where('code', $this->code_loss)
             ->first();
 
         $this->detailsLoss[] = [
             'id' => $this->nextIdLoss(),
-            'code' => $loss->code,
-            'name' => $loss->name,
+            'code_loss' => $loss->code,
+            'namaloss' => $loss->name,
             'product_goods_id' => $this->product_goods_id,
             'loss_seitai_id' => $loss->id,
             'berat_loss' => $this->berat_loss,
-            'frekuensi' => $this->frekuensi_fr,
+            'frekuensi' => $this->frekuensi,
             'lpk_id' => $lpkid->id,
         ];
 
@@ -525,9 +524,105 @@ class AddSeitaiController extends Component
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Hapus']);
     }
 
+    public function editLoss($orderId)
+    {
+        $index = array_search($orderId, array_column($this->detailsLoss, 'id'));
+
+        if ($index !== false) {
+            $this->editing_id = $orderId;
+            $this->loss_seitai_id = $this->detailsLoss[$index]['loss_seitai_id'];
+            $this->code_loss = $this->detailsLoss[$index]['code_loss'];
+            $this->namaloss = $this->detailsLoss[$index]['namaloss'];
+            $this->berat_loss = $this->detailsLoss[$index]['berat_loss'];
+            $this->frekuensi = $this->detailsLoss[$index]['frekuensi'];
+            $this->dispatch('openModal', 'modal-edit-loss');
+        } else {
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Data tidak ditemukan']);
+        }
+    }
+
+    public function editGentan($orderId)
+    {
+        $index = array_search($orderId, array_column($this->detailsGentan, 'id'));
+
+        if ($index !== false) {
+            $this->editing_id = $orderId;
+            $this->gentan_no = $this->detailsGentan[$index]['gentan_no'];
+            $this->gentan_line = $this->detailsGentan[$index]['gentan_line'] ?? '';
+            $this->machine_no = $this->detailsGentan[$index]['machineno'] ?? '';
+            $this->petugas = $this->detailsGentan[$index]['empname'] ?? '';
+            $this->berat_produksi = $this->detailsGentan[$index]['berat'] ?? '';
+            $this->dispatch('openModal', 'modal-edit-gentan');
+        } else {
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Data tidak ditemukan']);
+        }
+    }
+
+    public function updateGentan()
+    {
+        $validatedData = $this->validate([
+            'gentan_no' => 'required',
+            'gentan_line' => 'required',
+            'berat_produksi' => 'required',
+        ]);
+
+        if ($validatedData) {
+            $index = array_search($this->editing_id, array_column($this->detailsGentan, 'id'));
+            if ($index !== false) {
+                // adjust jumlah berat produksi
+                $oldBerat = $this->detailsGentan[$index]['berat'] ?? 0;
+                $this->jumlahBeratProduksi -= $oldBerat;
+
+                $this->detailsGentan[$index]['gentan_no'] = $this->gentan_no;
+                $this->detailsGentan[$index]['gentan_line'] = $this->gentan_line;
+                $this->detailsGentan[$index]['machineno'] = $this->machine_no;
+                $this->detailsGentan[$index]['empname'] = $this->petugas;
+                $this->detailsGentan[$index]['berat'] = $this->berat_produksi;
+
+                // add new berat
+                $this->jumlahBeratProduksi += $this->berat_produksi;
+            }
+
+            $this->resetGentan();
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Gentan berhasil diupdate']);
+            $this->dispatch('closeModal', 'modal-edit-gentan');
+
+            // hapus validasi
+            $this->resetErrorBag();
+        }
+    }
+
+    public function updateLoss()
+    {
+        $validatedData = $this->validate([
+            'loss_seitai_id' => 'required',
+            'code_loss' => 'required',
+            'berat_loss' => 'required',
+            'frekuensi' => 'required',
+        ]);
+
+        if ($validatedData) {
+            $index = array_search($this->editing_id, array_column($this->detailsLoss, 'id'));
+            if ($index !== false) {
+                $this->detailsLoss[$index]['loss_seitai_id'] = $this->loss_seitai_id;
+                $this->detailsLoss[$index]['code_loss'] = $this->code_loss;
+                $this->detailsLoss[$index]['namaloss'] = $this->namaloss;
+                $this->detailsLoss[$index]['berat_loss'] = $this->berat_loss;
+                $this->detailsLoss[$index]['frekuensi'] = $this->frekuensi;
+            }
+
+            $this->resetInputFields();
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Loss Seitai berhasil diupdate']);
+            $this->dispatch('closeModal', 'modal-edit-loss');
+
+            // hapus validasi
+            $this->resetErrorBag();
+        }
+    }
+
     public function resetSeitai()
     {
-        $this->loss_seitai_id = '';
+        $this->code_loss = '';
         $this->namaloss = '';
         $this->berat_loss = '';
     }
@@ -695,18 +790,19 @@ class AddSeitaiController extends Component
         }
     }
 
-    public function updatedLossSeitaiId($loss_seitai_id)
+    public function updatedCodeLoss($code_loss)
     {
-        $this->loss_seitai_id = $loss_seitai_id;
+        $this->code_loss = $code_loss;
 
-        if (isset($this->loss_seitai_id) && $this->loss_seitai_id != '') {
-            $lossSeitai = MsLossSeitai::where('code', $this->loss_seitai_id)->first();
+        if (isset($this->code_loss) && $this->code_loss != '') {
+            $lossSeitai = MsLossSeitai::where('code', $this->code_loss)->first();
 
             if ($lossSeitai == null) {
-                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Kode Loss ' . $this->loss_seitai_id . ' Tidak Terdaftar']);
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Kode Loss ' . $this->code_loss . ' Tidak Terdaftar']);
                 $this->resetSeitai();
             } else {
                 $this->namaloss = $lossSeitai->name;
+                $this->loss_seitai_id = $lossSeitai->id;
             }
         }
     }
@@ -766,6 +862,15 @@ class AddSeitaiController extends Component
             $this->total_assembly_qty = number_format((int)str_replace(',', '', $this->total_assembly_qty) + (int)str_replace(',', '', $this->qty_produksi));
             $this->selisih = $this->selisih - (int)str_replace(',', '', $this->qty_produksi);
         }
+    }
+
+    private function resetInputFields()
+    {
+        $this->editing_id = null;
+        $this->code_loss = null;
+        $this->namaloss = '';
+        $this->berat_loss = '';
+        $this->frekuensi = '';
     }
 
     public function render()
