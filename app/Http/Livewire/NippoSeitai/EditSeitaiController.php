@@ -69,6 +69,8 @@ class EditSeitaiController extends Component
     public $idDelete;
     public $editing_id;
     public $activeTab = 'Gentan';
+    public $start_box;
+    public $end_box;
 
     // data master produk
     public $masterKatanuki;
@@ -110,6 +112,8 @@ class EditSeitaiController extends Component
                 'tdpg.status_warehouse AS status_warehouse',
                 'tdpg.kenpin_qty_loss AS kenpin_qty_loss',
                 'tdpg.kenpin_qty_loss_proses AS kenpin_qty_loss_proses',
+                'tdpg.start_box AS start_box',
+                'tdpg.end_box AS end_box',
                 'tdpg.created_by AS created_by',
                 'tdpg.created_on AS created_on',
                 'tdpg.updated_by AS updated_by',
@@ -157,6 +161,8 @@ class EditSeitaiController extends Component
         $this->empnameinfure = $data->empnameinfure;
         $this->work_hour = $data->work_hour;
         $this->work_shift = $data->work_shift;
+        $this->start_box = $data->start_box;
+        $this->end_box = $data->end_box;
 
         $this->detailsGentan = DB::table('tdproduct_assembly as tdpa')
             ->join('tdproduct_goods_assembly as tga', 'tga.product_assembly_id', '=', 'tdpa.id')
@@ -576,6 +582,8 @@ class EditSeitaiController extends Component
             'nomor_palet' => 'required',
             'nomor_lot' => 'required',
             'work_hour' => 'required|regex:/^[0-9]{2}:[0-9]{2}$/',
+            'start_box' => 'nullable',
+            'end_box' => 'nullable',
         ]);
 
         try {
@@ -593,6 +601,13 @@ class EditSeitaiController extends Component
             $data->qty_produksi = $this->qty_produksi;
             $data->nomor_palet = $this->nomor_palet;
             $data->nomor_lot = $this->nomor_lot;
+            // start and end box (Nomor Box range)
+            if (isset($this->start_box)) {
+                $data->start_box = $this->start_box ? $this->start_box : null;
+            }
+            if (isset($this->end_box)) {
+                $data->end_box = $this->end_box ? $this->end_box : null;
+            }
             $data->infure_berat_loss = $this->infure_berat_loss;
             $data->work_shift = $this->work_shift;
             $data->work_hour = $this->work_hour;

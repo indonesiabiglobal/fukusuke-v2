@@ -173,6 +173,23 @@
                             </div>
                         </div>
                     </div>
+                    {{-- Informasi nomor box (range: Awal sampai Akhir) --}}
+                    <div class="col-12 mt-1">
+                        <div class="form-group">
+                            <div class="row align-items-center">
+                                <label class="control-label col-12 col-md-1 pe-2">Nomor Box</label>
+                                <div class="col-12 col-md-11">
+                                    <div class="d-flex align-items-center ms-md-5">
+                                        <input type="number" placeholder="Awal" class="form-control me-2" style="max-width:160px;"
+                                            wire:model.defer="start_box" id="start_box" />
+                                        <div class="mx-2">sampai</div>
+                                        <input type="number" placeholder="Akhir" class="form-control ms-2" style="max-width:160px;"
+                                            wire:model.defer="end_box" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="col-12 col-lg-4 mt-1">
                         <div class="form-group">
                             <div class="input-group">

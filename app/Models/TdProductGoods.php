@@ -10,7 +10,7 @@ class TdProductGoods extends Model
 {
     use HasFactory;
     protected $table = "tdproduct_goods";
-    protected $fillable = [];
+    protected $guarded = ['id'];
     // public $timestamps = false;
 
     // custom created and updated

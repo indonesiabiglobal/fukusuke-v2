@@ -42,6 +42,8 @@ class AddSeitaiController extends Component
     public $nomor_lot;
     public $qty_produksi;
     public $nomor_palet;
+    public $start_box;
+    public $end_box;
     public $infure_berat_loss;
     public $berat_produksi;
     public $petugas;
@@ -271,6 +273,8 @@ class AddSeitaiController extends Component
             'nomor_lot' => 'required',
             'infure_berat_loss' => 'required',
             'work_hour' => 'required|regex:/^[0-9]{2}:[0-9]{2}$/',
+            'start_box' => 'nullable',
+            'end_box' => 'nullable',
         ]);
 
         // mengecek detailsGentan yang tidak boleh kosong
@@ -317,6 +321,13 @@ class AddSeitaiController extends Component
             $data->seq_no = $seqno;
             $data->nomor_palet = $this->nomor_palet;
             $data->nomor_lot = $this->nomor_lot;
+            // start and end box (Nomor Box range)
+            if (isset($this->start_box)) {
+                $data->start_box = $this->start_box ? $this->start_box : null;
+            }
+            if (isset($this->end_box)) {
+                $data->end_box = $this->end_box ? $this->end_box : null;
+            }
             $data->created_on = $createdOn;
             $data->created_by = auth()->user()->username;
             $data->updated_on = $createdOn;
@@ -641,6 +652,8 @@ class AddSeitaiController extends Component
         $this->total_assembly_qty = 0;
         $this->qty_lpk = '';
         $this->selisih = '';
+        $this->start_box = null;
+        $this->end_box = null;
     }
 
     public function processLpkNo($lpkNo = null)
@@ -871,6 +884,8 @@ class AddSeitaiController extends Component
         $this->namaloss = '';
         $this->berat_loss = '';
         $this->frekuensi = '';
+        $this->start_box = null;
+        $this->end_box = null;
     }
 
     public function render()
