@@ -506,7 +506,7 @@
                                                         placeholder="..." id="jamMatiMesinCode"
                                                         oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                                         maxlength="3"
-                                                        x-on:keydown.tab="$event.preventDefault(); $refs.offHourInput.focus();" />
+                                                        x-on:keydown.tab="$event.preventDefault(); $refs.jamMatiFromInput.focus();" />
                                                     @error('jamMatiMesinCode')
                                                         <span class="invalid-feedback">{{ $message }}</span>
                                                     @enderror
@@ -521,12 +521,33 @@
                                                     type="text" wire:model="jamMatiMesinName" placeholder="..." />
                                             </div>
                                         </div>
-                                        {{-- Lama Mesin Mati --}}
+                                        {{-- Dari / Sampai dan Lama Mesin Mati --}}
+                                        <div class="col-lg-6 mb-1">
+                                            <label for="">Dari (HH:MM)</label>
+                                            <div class="form-group" style="margin-left:1px; white-space:nowrap">
+                                                <input class="form-control" wire:model.change="jamMatiFrom"
+                                                    type="time" placeholder="hh:mm" x-ref="jamMatiFromInput">
+                                                @error('jamMatiFrom')
+                                                    <span class="invalid-feedback">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6 mb-1">
+                                            <label for="">Sampai (HH:MM)</label>
+                                            <div class="form-group" style="margin-left:1px; white-space:nowrap">
+                                                <input class="form-control" wire:model.change="jamMatiTo"
+                                                    type="time" placeholder="hh:mm" x-ref="jamMatiToInput">
+                                                @error('jamMatiTo')
+                                                    <span class="invalid-feedback">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                        </div>
+
                                         <div class="col-lg-12 mb-1">
                                             <label for="">Lama Mesin Mati</label>
                                             <div class="form-group" style="margin-left:1px; white-space:nowrap">
-                                                <input class="form-control" wire:model.lazy="off_hour" type="time"
-                                                    x-ref="offHourInput" max="08:00"
+                                                <input class="form-control bg-light" wire:model.lazy="off_hour"
+                                                    type="time" x-ref="offHourInput" max="08:00" disabled
                                                     x-on:keydown.tab="$event.preventDefault(); $refs.addJamMatiMesin.focus();"
                                                     placeholder="hh:mm">
                                                 @error('off_hour')

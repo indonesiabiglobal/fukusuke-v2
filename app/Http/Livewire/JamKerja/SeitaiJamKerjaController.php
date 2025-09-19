@@ -36,6 +36,8 @@ class SeitaiJamKerjaController extends Component
     public $jamMatiMesinId;
     public $jamMatiMesinCode;
     public $jamMatiMesinName;
+    public $jamMatiFrom;
+    public $jamMatiTo;
     public $off_hour;
     public $dataJamMatiMesin = [];
     #[Session]
@@ -142,6 +144,8 @@ class SeitaiJamKerjaController extends Component
                     'name' => $item->jamMatiMesin->name,
                     'off_hour' => Carbon::parse($item->off_hour)->format('H:i'),
                     'off_hour_minutes' => formatTime::timeToMinutes($item->off_hour),
+                    'from' => isset($item->from) ? Carbon::parse($item->from)->format('H:i') : null,
+                    'to' => isset($item->to) ? Carbon::parse($item->to)->format('H:i') : null,
                 ];
             });
 
@@ -185,6 +189,44 @@ class SeitaiJamKerjaController extends Component
         $this->jamMatiMesinCode = '';
         $this->jamMatiMesinName = '';
         $this->off_hour = '00:00';
+        $this->jamMatiFrom = '';
+        $this->jamMatiTo = '';
+    }
+
+    protected function computeOffHourFromTimes(): void
+    {
+        if (empty($this->jamMatiFrom) || empty($this->jamMatiTo)) {
+            $this->off_hour = '00:00';
+            return;
+        }
+
+        try {
+            $from = Carbon::createFromFormat('H:i', $this->jamMatiFrom);
+            $to = Carbon::createFromFormat('H:i', $this->jamMatiTo);
+
+            if ($to->lessThan($from)) {
+                $to->addDay();
+            }
+
+            $minutes = $to->diffInMinutes($from);
+            $this->off_hour = formatTime::minutesToTime($minutes);
+        } catch (\Exception $e) {
+            $this->off_hour = '00:00';
+        }
+    }
+
+    public function updatedJamMatiFrom($value)
+    {
+        $this->jamMatiFrom = $value;
+        $this->computeOffHourFromTimes();
+        $this->skipRender();
+    }
+
+    public function updatedJamMatiTo($value)
+    {
+        $this->jamMatiTo = $value;
+        $this->computeOffHourFromTimes();
+        $this->skipRender();
     }
 
     public function showModalJamMatiMesin()
@@ -198,15 +240,21 @@ class SeitaiJamKerjaController extends Component
     public function addJamMatiMesin()
     {
         try {
+            $this->computeOffHourFromTimes();
+
             $validatedData = $this->validate([
                 'jamMatiMesinId' => 'required',
                 'jamMatiMesinCode' => 'required',
                 'jamMatiMesinName' => 'required',
+                'jamMatiFrom' => 'required',
+                'jamMatiTo' => 'required',
                 'off_hour' => 'required',
             ], [
                 'jamMatiMesinId.required' => 'Jam Mati Mesin harus diisi',
                 'jamMatiMesinCode.required' => 'Jam Mati Mesin harus diisi',
                 'jamMatiMesinName.required' => 'Nama Jam Mati Mesin harus diisi',
+                'jamMatiFrom.required' => 'Field Dari harus diisi',
+                'jamMatiTo.required' => 'Field Sampai harus diisi',
                 'off_hour.required' => 'Lama Mesin Mati harus diisi',
             ]);
 
@@ -229,6 +277,8 @@ class SeitaiJamKerjaController extends Component
                 'code' => $this->jamMatiMesinCode,
                 'name' => $this->jamMatiMesinName,
                 'off_hour' => $this->off_hour,
+                'from' => $this->jamMatiFrom,
+                'to' => $this->jamMatiTo,
             ];
             $this->dataJamMatiMesin[] = $data;
 
@@ -238,6 +288,8 @@ class SeitaiJamKerjaController extends Component
                     'jam_kerja_mesin_id' => $this->orderid,
                     'jam_mati_mesin_id' => $this->jamMatiMesinId,
                     'off_hour' => $data['off_hour'],
+                    'from' => $this->jamMatiFrom,
+                    'to' => $this->jamMatiTo,
                 ];
                 TdJamKerjaJamMatiMesin::insert($data);
                 TdJamKerjaMesin::where('id', $this->orderid)->update(['off_hour' => $this->totalOffHour, 'on_hour' => $this->totalOnHour]);
@@ -378,6 +430,8 @@ class SeitaiJamKerjaController extends Component
                         'jam_kerja_mesin_id' => $jamKerjaMesin->id,
                         'jam_mati_mesin_id' => $item['jam_mati_mesin_id'],
                         'off_hour' => $item['off_hour'],
+                        'from' => $item['from'] ?? null,
+                        'to' => $item['to'] ?? null,
                     ];
                 }, $this->dataJamMatiMesin);
                 TdJamKerjaJamMatiMesin::insert($dataJamMatiMesin);
