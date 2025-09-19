@@ -375,6 +375,8 @@ class AddKenpinInfureController extends Component
             // $this->frekuensi = '';
             $this->dispatch('showModalAddGentan');
         }
+
+        $this->idKenpinAssemblyDetailUpdate = null;
     }
 
     public function edit($idKenpinAssemblyDetailUpdate)
@@ -445,7 +447,6 @@ class AddKenpinInfureController extends Component
             $this->dispatch('closeModalAddGentan');
         }
 
-        $this->idKenpinAssemblyDetailUpdate = null;
         $this->beratLossTotal = $this->details->sum('berat_loss');
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);
     }
