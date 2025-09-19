@@ -429,11 +429,11 @@ class InfureJamKerjaController extends Component
 
                 $dataJamMatiMesin = array_map(function ($item) use ($jamKerjaMesin) {
                     return [
-                    'jam_kerja_mesin_id' => $jamKerjaMesin->id,
-                    'jam_mati_mesin_id' => $item['jam_mati_mesin_id'],
-                    'off_hour' => $item['off_hour'],
-                    'from' => $item['from'] ?? null,
-                    'to' => $item['to'] ?? null,
+                        'jam_kerja_mesin_id' => $jamKerjaMesin->id,
+                        'jam_mati_mesin_id' => $item['jam_mati_mesin_id'],
+                        'off_hour' => $item['off_hour'],
+                        'from' => $item['from'] ?? null,
+                        'to' => $item['to'] ?? null,
                     ];
                 }, $this->dataJamMatiMesin);
                 TdJamKerjaJamMatiMesin::insert($dataJamMatiMesin);
@@ -501,7 +501,10 @@ class InfureJamKerjaController extends Component
         $this->machineno = $machineno;
 
         if (isset($this->machineno) && $this->machineno != '') {
-            $machine = MsMachine::where('machineno', 'ilike', '%' . $this->machineno)->whereIn('department_id', departmentHelper::infureDepartment())->first();
+            $machine = MsMachine::where('machineno', 'ilike', '%' . $this->machineno)
+                ->whereIn('department_id', departmentHelper::infureDepartment())
+                ->orderBy('machineno', 'ASC')
+                ->first();
             if ($machine == null) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Machine ' . $this->machineno . ' Tidak Terdaftar']);
                 $this->machinename = '';
