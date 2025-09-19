@@ -406,7 +406,7 @@ class AddKenpinInfureController extends Component
                     $detail['namapetugas'] = $this->namapetugas;
                     $detail['work_shift'] = $this->workShift;
                     $detail['nomor_han'] = $this->nomorHan;
-                    $detail['berat_loss'] = $this->berat_loss;
+                    $detail['berat_loss'] = floatval($this->berat_loss);
                     $detail['tglproduksi'] = $this->tglproduksi;
                     $detail['frekuensi'] = $this->frekuensi;
                 }
@@ -423,7 +423,7 @@ class AddKenpinInfureController extends Component
                 'work_shift' => $this->workShift,
                 'nomor_han' => $this->nomorHan,
                 'tglproduksi' => $this->tglproduksi,
-                'berat_loss' => (int)str_replace(',', '', $this->berat_loss),
+                'berat_loss' => floatval($this->berat_loss),
                 'frekuensi' => $this->frekuensi,
             ]);
             $this->dispatch('closeModalAddGentan');
