@@ -66,6 +66,7 @@ use App\Http\Livewire\Kenpin\PrintLabelGudangKenpinController;
 use App\Http\Livewire\MasterTabel\Loss\MenuLossInfureController;
 use App\Http\Livewire\MasterTabel\Loss\MenuLossSeitaiController;
 use App\Http\Livewire\Administration\SecurityManagementController;
+use App\Http\Livewire\JamKerja\CheckListJamKerjaController;
 use App\Http\Livewire\Kenpin\EditKenpinSeitaiController;
 use App\Http\Livewire\MasterTabel\Inventory\BahanBakuController;
 use App\Http\Livewire\MasterTabel\Inventory\BarangJadiController;
@@ -147,6 +148,7 @@ Route::group(['middleware' => 'auth'], function () {
     // Jam Kerja
     Route::get('/infure-jam-kerja', InfureJamKerjaController::class)->name('infure-jam-kerja');
     Route::get('/seitai-jam-kerja', SeitaiJamKerjaController::class)->name('seitai-jam-kerja');
+    Route::get('/checklist-jam-kerja', CheckListJamKerjaController::class)->name('checklist-jam-kerja');
 
     // Kenpin
     Route::get('/kenpin-infure', KenpinInfureController::class)->name('kenpin-infure');

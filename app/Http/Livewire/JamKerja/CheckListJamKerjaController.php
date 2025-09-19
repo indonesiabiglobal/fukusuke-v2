@@ -6,7 +6,12 @@ use Carbon\Carbon;
 use Livewire\Component;
 use App\Helpers\phpspreadsheet;
 use App\Helpers\formatTime;
+use App\Http\Livewire\MasterTabel\WorkingShift;
+use App\Models\MsDepartment;
+use App\Models\MsMachine;
+use App\Models\MsWorkingShift;
 use App\Models\TdJamKerjaMesin;
+use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -24,7 +29,7 @@ class CheckListJamKerjaController extends Component
     public $nomorOrder;
     public $department;
     public $jenisReport = "Checklist";
-    public $departmentId;
+    public $departmentId = 2; // default INFURE
     public $machineId;
     public $nomorHan;
     public $transaksi = 1;
@@ -33,7 +38,81 @@ class CheckListJamKerjaController extends Component
     public $status;
     public $searchTerm;
 
-    public function checklistJamKerja($tglAwal, $tglAkhir, $filter = null, $nippo = 'INFURE')
+    public function mount()
+    {
+        $this->tglAwal = Carbon::now()->format('Y-m-d');
+        $this->tglAkhir = Carbon::now()->format('Y-m-d');
+        $this->workingShiftHour = MsWorkingShift::select('id', 'work_hour_from', 'work_hour_till')->active()->orderBy('work_hour_from', 'ASC')->get();
+        $this->jamAwal = $this->workingShiftHour[0]->work_hour_from;
+        $this->jamAkhir = $this->workingShiftHour[count($this->workingShiftHour) - 1]->work_hour_till;
+        $this->machine = MsMachine::where('machineno',  'LIKE', '00I%')->orderBy('machineno')->get();
+        $this->department = MsDepartment::division()->get();
+    }
+
+    public function export()
+    {
+        $rules = [
+            'tglAwal' => 'required',
+            'tglAkhir' => 'required',
+            'jamAwal' => 'required',
+            'jamAkhir' => 'required',
+        ];
+
+        $messages = [
+            'tglAwal.required' => 'Tanggal Awal tidak boleh kosong',
+            'tglAkhir.required' => 'Tanggal Akhir tidak boleh kosong',
+            'jamAwal.required' => 'Jam Awal tidak boleh kosong',
+            'jamAkhir.required' => 'Jam Akhir tidak boleh kosong',
+        ];
+
+        $validate = Validator::make([
+            'tglAwal' => $this->tglAwal,
+            'tglAkhir' => $this->tglAkhir,
+            'jamAwal' => $this->jamAwal,
+            'jamAkhir' => $this->jamAkhir,
+        ], $rules, $messages);
+
+        if ($validate->fails()) {
+            $this->dispatch('notification', ['type' => 'warning', 'message' => $validate->errors()->first()]);
+            return;
+        }
+
+        if ($this->tglAwal > $this->tglAkhir) {
+            $this->dispatch('notification', ['type' => 'warning', 'message' => 'Tanggal akhir tidak boleh kurang dari tanggal awal']);
+            return;
+        }
+
+        // pengecekan inputan jam awal dan jam akhir
+        if (is_array($this->jamAwal)) {
+            $this->jamAwal = $this->jamAwal['value'];
+        } else {
+            $this->jamAwal = $this->jamAwal;
+        }
+
+        if (is_array($this->jamAkhir)) {
+            $this->jamAkhir = $this->jamAkhir['value'];
+        } else {
+            $this->jamAkhir = $this->jamAkhir;
+        }
+
+        $tglAwal = Carbon::parse($this->tglAwal . ' ' . $this->jamAwal);
+        $tglAkhir = Carbon::parse($this->tglAkhir . ' ' . $this->jamAkhir);
+
+        $filter = [
+            'machine_id' => $this->machineId['value'] ?? null,
+            'transaksi' => $this->transaksi ?? 1,
+        ];
+
+        $response = $this->checklistJamKerja($tglAwal, $tglAkhir, $filter, $this->departmentId == 2 ? 'INFURE' : 'SEITAI', true);
+        if ($response['status'] == 'success') {
+            return response()->download($response['filename'])->deleteFileAfterSend(true);
+        } else if ($response['status'] == 'error') {
+            $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+            return;
+        }
+    }
+
+    public function checklistJamKerja($tglAwal, $tglAkhir, $filter = null, $nippo = 'INFURE', $isChecklist = false)
     {
         ini_set('max_execution_time', '300');
         $spreadsheet = new Spreadsheet();
@@ -113,17 +192,31 @@ class CheckListJamKerjaController extends Component
         phpspreadsheet::styleFont($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart, true, 9, 'Calibri');
         phpspreadsheet::textAlignCenter($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
 
+        if (!$isChecklist) {
+            $tglAkhir = Carbon::parse($tglAkhir)->subDay();
+        }
 
         $query = TdJamKerjaMesin::with(['machine' => function ($q) {
             $q->select('id', 'machineno', 'machinename');
         }, 'employee' => function ($q) {
             $q->select('id', 'employeeno', 'empname');
+        }, 'workingShift' => function ($q) {
+            // relasi workingShift mengambil jam shift (work_hour_from / work_hour_till)
+            $q->select('id', 'work_hour_from', 'work_hour_till');
         }])
             ->select('id', 'working_date', 'work_shift', 'machine_id', 'employee_id', 'work_hour', 'off_hour', 'on_hour');
 
+        $tableName = (new TdJamKerjaMesin)->getTable();
         if (isset($filter['transaksi']) && $filter['transaksi'] != '') {
             if ($filter['transaksi'] == 1) {
-                $query = $query->whereBetween('working_date', [$tglAwal, Carbon::parse($tglAkhir)->subDay()]);
+                // gunakan subquery untuk mengambil work_hour_from dari tabel msworkingshift agar tidak perlu join
+                $query = $query->whereRaw(
+                    "({$tableName}.working_date + (select work_hour_from from msworkingshift where id = {$tableName}.work_shift)) BETWEEN ? AND ?",
+                    [
+                        $tglAwal->toDateTimeString(),
+                        $tglAkhir->toDateTimeString()
+                    ]
+                );
             } elseif ($filter['transaksi'] == 2) {
                 $query = $query->whereBetween('created_on', [$tglAwal, $tglAkhir]);
             }
@@ -183,9 +276,14 @@ class CheckListJamKerjaController extends Component
             $columnItemEnd = $columnItemStart;
 
             // No
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $key + 1);
+            // tanggal (gabungkan tanggal dengan jam dari relasi workingShift jika tersedia)
+            $workingDate = Carbon::parse($dataItem['working_date']);
+            if (isset($dataItem['workingShift']['work_hour_from']) && !empty($dataItem['workingShift']['work_hour_from'])) {
+                // setTimeFromTimeString akan menambahkan jam dari master shift ke tanggal working_date
+                $workingDate->setTimeFromTimeString($dataItem['workingShift']['work_hour_from']);
+            }
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $workingDate->translatedFormat('d-M-Y H:i'));
             $columnItemEnd++;
-
             // tanggal
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($dataItem['working_date'])->translatedFormat('d-M-Y'));
             $columnItemEnd++;
@@ -226,33 +324,41 @@ class CheckListJamKerjaController extends Component
         }
 
         phpspreadsheet::textAlignCenter($spreadsheet, $columnItemStart . $rowItemStart . ':' . $columnNIK . $rowItem);
-        phpSpreadsheet::textAlignCenter($spreadsheet, $columnJamKerja . $rowItemStart . ':' . $columnJamJalan . $rowItem);
+        phpspreadsheet::textAlignCenter($spreadsheet, $columnJamKerja . $rowItemStart . ':' . $columnJamJalan . $rowItem);
         phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItemStart . ':' . $columnItemEnd . $rowItem, false, 8, 'Calibri');
 
         // grand total
         $columnItemEnd = 'F';
-        $spreadsheet->getActiveSheet()->mergeCells($columnItemStart . $rowItem . ':' . $columnItemEnd . $rowItem + 1);
+        $spreadsheet->getActiveSheet()->mergeCells($columnItemStart . $rowItem . ':' . $columnItemEnd . ($rowItem + 1));
         $activeWorksheet->setCellValue($columnItemStart . $rowItem, 'TOTAL');
-        phpSpreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItem, true, 8, 'Calibri');
+        phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItem, true, 8, 'Calibri');
         $columnItemEnd++;
 
         // total jam kerja
         $activeWorksheet->setCellValue($columnItemEnd . $rowItem, formatTime::minutesToTime($totalJamKerja));
-        $spreadsheet->getActiveSheet()->mergeCells($columnItemEnd . $rowItem . ':' . $columnItemEnd . $rowItem + 1);
+        $spreadsheet->getActiveSheet()->mergeCells($columnItemEnd . $rowItem . ':' . $columnItemEnd . ($rowItem + 1));
         $columnItemEnd++;
 
         // total jam mati
         $activeWorksheet->setCellValue($columnItemEnd . $rowItem, formatTime::minutesToTime($totalJamMati));
-        $percentageJamMati = ($totalJamMati / $totalJamKerja);
-        $activeWorksheet->setCellValue($columnItemEnd . $rowItem + 1, $percentageJamMati);
-        phpspreadsheet::numberPercentageOrZero($spreadsheet, $columnItemEnd . $rowItem + 1);
+        $percentageJamMati = ($totalJamMati / ($totalJamKerja ?: 1));
+        $activeWorksheet->setCellValue($columnItemEnd . ($rowItem + 1), $percentageJamMati);
+        phpspreadsheet::numberPercentageOrZero($spreadsheet, $columnItemEnd . ($rowItem + 1));
         $columnItemEnd++;
 
         // total jam jalan
         $activeWorksheet->setCellValue($columnItemEnd . $rowItem, formatTime::minutesToTime($totalJamJalan));
-        $percentageJamJalan = ($totalJamJalan / $totalJamKerja);
-        $activeWorksheet->setCellValue($columnItemEnd . $rowItem + 1, $percentageJamJalan);
-        phpspreadsheet::numberPercentageOrZero($spreadsheet, $columnItemEnd . $rowItem + 1);
+        $percentageJamJalan = ($totalJamJalan / ($totalJamKerja ?: 1));
+        $activeWorksheet->setCellValue($columnItemEnd . ($rowItem + 1), $percentageJamJalan);
+        phpspreadsheet::numberPercentageOrZero($spreadsheet, $columnItemEnd . ($rowItem + 1));
+
+        phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItem . ':' . $columnItemEnd . ($rowItem + 1), true, 8, 'Calibri');
+        phpspreadsheet::addFullBorder($spreadsheet, $columnItemStart . $rowItemStart . ':' . $columnItemEnd . ($rowItem + 1));
+        phpspreadsheet::textAlignCenter($spreadsheet, $columnItemStart . $rowItem . ':' . $columnItemEnd . ($rowItem + 1));
+
+        // mengatur lebar kolom
+        $spreadsheet->getActiveSheet()->getColumnDimension('E')->setAutoSize(true);
+        $spreadsheet->getActiveSheet()->getColumnDimension('F')->setAutoSize(true);
 
         phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItem . ':' . $columnItemEnd . $rowItem + 1, true, 8, 'Calibri');
         phpspreadsheet::addFullBorder($spreadsheet, $columnItemStart . $rowItemStart . ':' . $columnItemEnd . $rowItem + 1);
@@ -270,5 +376,10 @@ class CheckListJamKerjaController extends Component
             'filename' => $filename
         ];
         return $response;
+    }
+
+    public function render()
+    {
+        return view('livewire.jam-kerja.check-list')->extends('layouts.master');
     }
 }

@@ -65,4 +65,9 @@ class TdJamKerjaMesin extends Model
     {
         return $this->belongsTo(MsEmployee::class, 'employee_id', 'id');
     }
+
+    public function workingShift()
+    {
+        return $this->belongsTo(MsWorkingShift::class, 'work_shift', 'id');
+    }
 }

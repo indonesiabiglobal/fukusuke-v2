@@ -154,6 +154,9 @@
                                 <li class="nav-item">
                                     <a href="seitai-jam-kerja" class="nav-link" data-key="t-starter"> Seitai </a>
                                 </li>
+                                <li class="nav-item">
+                                    <a href="checklist-jam-kerja" class="nav-link" data-key="t-starter"> Check List </a>
+                                </li>
                             </ul>
                         </div>
                     </li>
