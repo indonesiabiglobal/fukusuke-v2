@@ -276,13 +276,7 @@ class CheckListJamKerjaController extends Component
             $columnItemEnd = $columnItemStart;
 
             // No
-            // tanggal (gabungkan tanggal dengan jam dari relasi workingShift jika tersedia)
-            $workingDate = Carbon::parse($dataItem['working_date']);
-            if (isset($dataItem['workingShift']['work_hour_from']) && !empty($dataItem['workingShift']['work_hour_from'])) {
-                // setTimeFromTimeString akan menambahkan jam dari master shift ke tanggal working_date
-                $workingDate->setTimeFromTimeString($dataItem['workingShift']['work_hour_from']);
-            }
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $workingDate->translatedFormat('d-M-Y H:i'));
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $key + 1);
             $columnItemEnd++;
             // tanggal
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($dataItem['working_date'])->translatedFormat('d-M-Y'));
