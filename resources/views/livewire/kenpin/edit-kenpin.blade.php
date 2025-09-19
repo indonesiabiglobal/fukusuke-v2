@@ -355,7 +355,8 @@
                                     <label>Berat Loss </label>
                                     <div class="input-group col-md-9 col-xs-8">
                                         <input class="form-control" type="text" wire:model.defer="berat_loss"
-                                            placeholder="0" x-ref="beratLossAddInput" />
+                                            placeholder="0" x-ref="beratLossAddInput"
+                                            oninput="this.value = window.formatNumberDecimal(this.value)" />
                                         @error('berat_loss')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror
@@ -562,7 +563,7 @@
                             @endforelse
                             <tr>
                                 <td colspan="7" class="text-end">Berat Loss Total (kg):</td>
-                                <td colspan="1" class="text-center">{{ number_format($beratLossTotal) }}</td>
+                                <td colspan="1" class="text-center">{{ $beratLossTotal }}</td>
                             </tr>
                         </tbody>
                     </table>

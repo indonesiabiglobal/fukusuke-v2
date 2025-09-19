@@ -5,8 +5,8 @@
                 <div class="form-group">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-2">Tanggal Kenpin</label>
-                        <input class="form-control" type="text" data-provider="flatpickr" data-date-format="d-m-Y"
-                            wire:model.defer="kenpin_date" placeholder="yyyy/mm/dd" />
+                        <input class="form-control" type="text" data-provider="flatpickr" data-date-format="d-m-Y" data-maxDate="{{ now()->format('d/m/Y') }}"
+                            wire:model.change="kenpin_date" placeholder="yyyy/mm/dd" />
                         <span class="input-group-text py-0">
                             <i class="ri-calendar-event-fill fs-4"></i>
                         </span>
@@ -311,7 +311,7 @@
             </div>
         </div>
 
-        <div class="modal fade" id="modal-add" tabindex="-1" role="dialog" aria-labelledby="modal-add"
+        <div class="modal fade" id="modal-add-gentan" tabindex="-1" role="dialog" aria-labelledby="modal-add-gentan"
             aria-hidden="true" wire:ignore.self>
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
@@ -410,7 +410,7 @@
                 </div>
             </div>
         </div>
-        <div class="modal fade" id="modal-edit" tabindex="-1" role="dialog" aria-labelledby="modal-edit"
+        <div class="modal fade" id="modal-edit-gentan" tabindex="-1" role="dialog" aria-labelledby="modal-edit-gentan"
             aria-hidden="true" wire:ignore.self>
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
@@ -531,8 +531,8 @@
                             @forelse ($details as $item)
                                 <tr>
                                     <td>
-                                        <button type="button" class="btn btn-primary p-1" data-bs-toggle="modal"
-                                            data-bs-target="#modal-edit" wire:click="edit({{ $item['id'] }})"
+                                        <button type="button" class="btn btn-primary p-1"
+                                            wire:click="edit({{ $item['id'] }})"
                                             wire:loading.attr="disabled" wire:target="edit">
                                             <span wire:loading.remove wire:target="edit">
                                                 <i class="ri-edit-2-fill"></i>
@@ -571,7 +571,7 @@
                                         {{ \Carbon\Carbon::parse($item['tglproduksi'])->format('d M Y') }}
                                     </td>
                                     <td>
-                                        {{ number_format($item['berat_loss']) }}
+                                        {{ $item['berat_loss'] }}
                                     </td>
                                 </tr>
                             @empty
@@ -581,7 +581,7 @@
                             @endforelse
                             <tr>
                                 <td colspan="7" class="text-end">Berat Loss Total (kg):</td>
-                                <td colspan="1" class="text-center">{{ number_format($beratLossTotal) }}</td>
+                                <td colspan="1" class="text-center">{{ $beratLossTotal }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -1480,18 +1480,18 @@
 @script
     <script>
         $wire.on('showModalAddGentan', () => {
-            $('#modal-add').modal('show');
+            $('#modal-add-gentan').modal('show');
         });
 
         $wire.on('closeModalAddGentan', () => {
-            $('#modal-add').modal('hide');
+            $('#modal-add-gentan').modal('hide');
         });
-        $wire.on('showModalEdit', () => {
-            $('#modal-edit').modal('show');
+        $wire.on('showModalEditGentan', () => {
+            $('#modal-edit-gentan').modal('show');
         });
 
         $wire.on('closeModalEditGentan', () => {
-            $('#modal-edit').modal('hide');
+            $('#modal-edit-gentan').modal('hide');
         });
         $wire.on('showModalNoOrder', () => {
             $('#modal-noorder-produk').modal('show');

@@ -72,9 +72,18 @@ class AddKenpinInfureController extends Component
     {
         $this->details = collect([]);
         $this->kenpin_date = Carbon::now()->format('d-m-Y');
-        $today = Carbon::now();
 
-        $latestKenpin = TdKenpin::whereRaw("kenpin_no LIKE ?", ['INF' . $today->format('ym') . '%'])
+        $this->generateKenpinNo();
+        $this->msLossKenpin = MsLossKenpin::get();
+        $this->bagianMesinList = MsMachinePartDetail::whereHas('machinePart', function ($query) {
+            $query->where('department_id', 2);
+        })->get();
+    }
+
+    public function generateKenpinNo()
+    {
+        $kenpinDate = Carbon::parse($this->kenpin_date);
+        $latestKenpin = TdKenpin::whereRaw("kenpin_no LIKE ?", ['INF' . $kenpinDate->format('ym') . '%'])
             ->orderBy('kenpin_no', 'desc')
             ->first();
 
@@ -85,12 +94,16 @@ class AddKenpinInfureController extends Component
             $nextNumber = 1;
         }
 
-        $this->kenpin_no = 'INF' . $today->format('ym') . '-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+        $this->kenpin_no = 'INF' . $kenpinDate->format('ym') . '-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+    }
 
-        $this->msLossKenpin = MsLossKenpin::get();
-        $this->bagianMesinList = MsMachinePartDetail::whereHas('machinePart', function ($query) {
-            $query->where('department_id', 2);
-        })->get();
+    public function updatedKenpinDate()
+    {
+        if (!empty($this->kenpin_date)) {
+            $this->generateKenpinNo();
+        } else {
+            $this->kenpin_no = '';
+        }
     }
 
     public function updatedKodeNg()
@@ -376,6 +389,9 @@ class AddKenpinInfureController extends Component
                 $this->frekuensi = $detail['frekuensi'];
             }
         }, $this->details->toArray());
+
+        // show modal
+        $this->dispatch('showModalEditGentan');
     }
 
     public function saveGentan()
@@ -429,6 +445,7 @@ class AddKenpinInfureController extends Component
             $this->dispatch('closeModalAddGentan');
         }
 
+        $this->idKenpinAssemblyDetailUpdate = null;
         $this->beratLossTotal = $this->details->sum('berat_loss');
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Simpan']);
     }

@@ -434,7 +434,7 @@ class EditKenpinInfureController extends Component
             $this->gentan_no = $detailToEdit->gentan_no;
             $this->machineno = $detailToEdit->nomesin;
             $this->namapetugas = $detailToEdit->namapetugas;
-            $this->berat_loss = $detailToEdit->berat_loss;
+            $this->berat_loss = floatval($detailToEdit->berat_loss);
             $this->workShift = $detailToEdit->work_shift;
             $this->nomorHan = $detailToEdit->nomor_han;
             $this->tglproduksi = $detailToEdit->tglproduksi;
@@ -460,8 +460,8 @@ class EditKenpinInfureController extends Component
                 if ($existingData) {
                     // Update the existing record
                     $existingData->product_assembly_id = $this->productAssemblyId;
-                    $existingData->berat_loss = $this->berat_loss;
-                    $existingData->frekuensi = $this->frekuensi;
+                    $existingData->berat_loss = floatval($this->berat_loss);
+                    $existingData->frekuensi = $this->frekuensi ? (int)$this->frekuensi : 1;
                     $existingData->updated_on = Carbon::now();
                     $existingData->updated_by = auth()->user()->username;
                     $existingData->save();
@@ -474,7 +474,7 @@ class EditKenpinInfureController extends Component
                             $item->namapetugas = $this->namapetugas;
                             $item->work_shift = $this->workShift;
                             $item->nomor_han = $this->nomorHan;
-                            $item->berat_loss = (int)str_replace(',', '', $this->berat_loss);
+                            $item->berat_loss = floatval($this->berat_loss);
                             $item->tglproduksi = $this->tglproduksi;
                             $item->frekuensi = $this->frekuensi;
                             $item->product_assembly_id = $this->productAssemblyId;
@@ -488,7 +488,7 @@ class EditKenpinInfureController extends Component
                 // Add new gentan
                 $datas = new TdKenpinAssemblyDetail();
                 $datas->product_assembly_id = $this->productAssemblyId;
-                $datas->berat_loss = $this->berat_loss;
+                $datas->berat_loss = floatval($this->berat_loss);
                 $datas->frekuensi = 1;
                 $datas->kenpin_id = $this->orderid;
 
@@ -504,7 +504,7 @@ class EditKenpinInfureController extends Component
 
                 $detail = new \stdClass();
                 $detail->id = $datas->id;
-                $detail->berat_loss = (int)str_replace(',', '', $this->berat_loss);
+                $detail->berat_loss = floatval($this->berat_loss);
                 $detail->product_assembly_id = $this->productAssemblyId;
                 $detail->tglproduksi = $this->tglproduksi;
                 $detail->work_shift = $this->workShift;
@@ -597,7 +597,6 @@ class EditKenpinInfureController extends Component
             $product->kenpin_date = $this->kenpin_date;
             $product->employee_id = $mspetugas->id;
             $product->lpk_id = $this->lpk_id;
-            // $product->berat_loss = $this->berat_loss;
             $product->status_kenpin = $this->status_kenpin;
 
             // Field baru yang ditambahkan
