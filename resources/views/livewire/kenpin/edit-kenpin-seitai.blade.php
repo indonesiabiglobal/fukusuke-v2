@@ -186,11 +186,12 @@
                             class="form-control @error('penyebab') is-invalid @enderror"
                             x-on:change="$refs.keteranganPenyebabInput.focus();">
                             <option value="">- Pilih Penyebab -</option>
-                            <option value="Mesin">Mesin</option>
-                            <option value="Manusia">Manusia</option>
+                            <option value="Man">Man</option>
+                            <option value="Machine">Machine</option>
+                            <option value="Method">Method</option>
                             <option value="Material">Material</option>
-                            <option value="Metode">Metode</option>
-                            <option value="Lingkungan">Lingkungan</option>
+                            <option value="Measure">Measure</option>
+                            <option value="Environment">Environment</option>
                         </select>
                         @error('penyebab')
                             <span class="invalid-feedback">{{ $message }}</span>

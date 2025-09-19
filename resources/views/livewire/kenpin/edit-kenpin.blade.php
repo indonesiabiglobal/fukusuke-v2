@@ -158,7 +158,8 @@
                             <option value="Machine">Machine</option>
                             <option value="Method">Method</option>
                             <option value="Material">Material</option>
-                            <option value="Milieu">Milieu</option>
+                            <option value="Measure">Measure</option>
+                            <option value="Environment">Environment</option>
                         </select>
                         @error('penyebab')
                             <span class="invalid-feedback">{{ $message }}</span>
