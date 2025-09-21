@@ -99,7 +99,7 @@
                         <label class="control-label col-12 col-lg-6">NG</label>
                         <input type="text" placeholder="Kode NG"
                             class="form-control @error('kode_ng') is-invalid @enderror" x-ref="ngInput"
-                            wire:model.change="kode_ng" maxlength="10" x-on:keydown.tab="$event.preventDefault(); $refs.statusSelect.focus();"/>
+                            wire:model.change="kode_ng" maxlength="10" x-on:keydown.tab="$event.preventDefault(); $refs.isKasusInput.focus();"/>
                         @error('kode_ng')
                             <span class="invalid-feedback">{{ $message }}</span>
                         @enderror
@@ -118,6 +118,32 @@
                                 background-color: #f8f9fa !important;
                             }
                         </style>
+                    </div>
+                </div>
+            </div>
+            {{-- Is Kasus --}}
+            <div class="col-12 col-lg-4 mt-1">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label col-12 col-lg-6">
+                            Kasus
+                        </label>
+                        <div class="form-check">
+                            <input class="form-check-input @error('is_kasus') is-invalid @enderror" type="checkbox"
+                                id="isKasus" x-ref="isKasusInput" wire:model.change="is_kasus"
+                                x-on:keydown.tab="$event.preventDefault(); $refs.statusSelect.focus();" />
+                            <label class="form-check-label" for="isKasus">Ya</label>
+                            @error('is_kasus')
+                                <span class="invalid-feedback d-block">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-8 mt-1">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label"></label>
                     </div>
                 </div>
             </div>

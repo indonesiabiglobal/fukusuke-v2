@@ -576,20 +576,9 @@ class EditKenpinInfureController extends Component
         $validatedData = $this->validate([
             'employeeno' => 'required',
             'status_kenpin' => 'required',
-            'lpk_no' => 'required'
+            'lpk_no' => 'required',
+            'is_kasus' => 'required',
         ]);
-
-        if ($this->status_kenpin == 2) {
-            // Validasi tambahan jika status kenpin adalah 2 "Finish"
-            // validasi untuk field penyebab, keterangan_penyebab, penanggulangan, kode_ng, bagian_mesin_id
-            $additionalValidation = $this->validate([
-                'penyebab' => 'required',
-                'keterangan_penyebab' => 'required',
-                'penanggulangan' => 'required',
-                'kode_ng' => 'required',
-                'bagian_mesin_id' => 'required',
-            ]);
-        }
 
         DB::beginTransaction();
         try {

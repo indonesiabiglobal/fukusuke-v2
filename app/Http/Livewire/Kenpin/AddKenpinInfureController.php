@@ -474,7 +474,7 @@ class AddKenpinInfureController extends Component
             'status_kenpin' => 'required',
             'lpk_no' => 'required',
             'kode_ng' => 'required',
-            'is_kasus' => 'required',
+            'is_kasus' => 'required|boolean',
             'penyebab' => 'required',
             'keterangan_penyebab' => 'required',
             'penanggulangan' => 'required',

@@ -48,6 +48,7 @@ class AddKenpinSeitaiController extends Component
     public $idKenpinGoodDetailUpdate;
     public $beratLossTotal;
     public $qtyProduksiTotal = 0;
+    public $is_kasus;
 
     // Master data for NG codes
     public $nomor_box = [];
@@ -212,6 +213,7 @@ class AddKenpinSeitaiController extends Component
             'kode_produk' => 'required',
             'employeeno' => 'required',
             'kode_ng' => 'required',
+            'is_kasus' => 'required',
             'penyebab' => 'required_if:status,2',
             'keterangan_penyebab' => 'required_if:status,2',
             'penanggulangan' => 'required_if:status,2',
@@ -240,6 +242,7 @@ class AddKenpinSeitaiController extends Component
             $qtyLoss = $this->details->sum('qty_loss');
             $data->qty_loss = $qtyLoss;
             $data->status_kenpin = $this->status;
+            $data->is_kasus = $this->is_kasus;
 
             if ($this->masalahKenpin) {
                 $data->masalah_kenpin_id = $this->masalahKenpin->id;
