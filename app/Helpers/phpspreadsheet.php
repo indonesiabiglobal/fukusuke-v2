@@ -48,6 +48,38 @@ class phpspreadsheet
         ]);
     }
 
+    public static function addBorderDottedMiddleHorizontal($spreadsheet, $range, $color = 'FF000000')
+    {
+        $spreadsheet->getActiveSheet()->getStyle($range)->applyFromArray([
+            'borders' => [
+                'top' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    'color' => ['argb' => $color],
+                ],
+                'bottom' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    'color' => ['argb' => $color],
+                ],
+                'left' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    'color' => ['argb' => $color],
+                ],
+                'right' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    'color' => ['argb' => $color],
+                ],
+                'vertical' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    'color' => ['argb' => $color],
+                ],
+                'horizontal' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_DOTTED,
+                    'color' => ['argb' => $color],
+                ],
+            ],
+        ]);
+    }
+
     public static function addInlineBorderDotted($spreadsheet, $range, $color = 'FF000000')
     {
         $spreadsheet->getActiveSheet()->getStyle($range)->applyFromArray([
@@ -134,6 +166,70 @@ class phpspreadsheet
         $spreadsheet->getActiveSheet()->getStyle($range)->applyFromArray([
             'borders' => [
                 'bottom' => [
+                    'borderStyle' => $borderStyle,
+                    'color' => ['argb' => $color],
+                ],
+            ],
+        ]);
+    }
+
+    public static function addMiddleBorder($spreadsheet, $range, $borderStyle = \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_DOTTED, $color = 'FF000000')
+    {
+        $spreadsheet->getActiveSheet()->getStyle($range)->applyFromArray([
+            'borders' => [
+                'top' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    'color' => ['argb' => $color],
+                ],
+                'bottom' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    'color' => ['argb' => $color],
+                ],
+                'left' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    'color' => ['argb' => $color],
+                ],
+                'right' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    'color' => ['argb' => $color],
+                ],
+                'vertical' => [
+                    'borderStyle' => $borderStyle,
+                    'color' => ['argb' => $color],
+                ],
+                'horizontal' => [
+                    'borderStyle' => $borderStyle,
+                    'color' => ['argb' => $color],
+                ],
+            ],
+        ]);
+    }
+
+    public static function addXHorizontalVerticalBorder($spreadsheet, $range, $borderStyle = \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_DOTTED, $color = 'FF000000')
+    {
+        $spreadsheet->getActiveSheet()->getStyle($range)->applyFromArray([
+            'borders' => [
+                'top' => [
+                    'borderStyle' => $borderStyle,
+                    'color' => ['argb' => $color],
+                ],
+                'bottom' => [
+                    'borderStyle' => $borderStyle,
+                    'color' => ['argb' => $color],
+                ],
+                'left' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    'color' => ['argb' => $color],
+                ],
+                'right' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    'color' => ['argb' => $color],
+                ],
+                'vertical' => [
+                    'borderStyle' => $borderStyle,
+                    'color' => ['argb' => $color],
+                ],
+                'horizontal' => [
                     'borderStyle' => $borderStyle,
                     'color' => ['argb' => $color],
                 ],
