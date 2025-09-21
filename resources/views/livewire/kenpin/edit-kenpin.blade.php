@@ -129,7 +129,7 @@
                         <label class="control-label col-12 col-lg-6">Kode NG</label>
                         <input type="text" placeholder="..."
                             class="form-control @error('kode_ng') is-invalid @enderror" x-ref="ngInput"
-                            x-on:keydown.tab="$event.preventDefault(); $refs.penyebabSelect.focus();"
+                            x-on:keydown.tab="$event.preventDefault(); $refs.isKasusInput.focus();"
                             wire:model.change="kode_ng" maxlength="10" />
                         @error('kode_ng')
                             <span class="invalid-feedback">{{ $message }}</span>
@@ -143,6 +143,32 @@
                         <label class="control-label"></label>
                         <input type="text" placeholder="-" class="form-control readonly bg-light"
                             readonly="readonly" wire:model="nama_ng" />
+                    </div>
+                </div>
+            </div>
+            {{-- Is Kasus --}}
+            <div class="col-12 col-lg-4 mt-1">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label col-12 col-lg-6">
+                            Kasus
+                        </label>
+                        <div class="form-check">
+                            <input class="form-check-input @error('is_kasus') is-invalid @enderror" type="checkbox"
+                                id="isKasus" x-ref="isKasusInput" wire:model.change="is_kasus"
+                                x-on:keydown.tab="$event.preventDefault(); $refs.penyebabSelect.focus();" />
+                            <label class="form-check-label" for="isKasus">Ya</label>
+                            @error('is_kasus')
+                                <span class="invalid-feedback d-block">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-8 mt-1">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label"></label>
                     </div>
                 </div>
             </div>

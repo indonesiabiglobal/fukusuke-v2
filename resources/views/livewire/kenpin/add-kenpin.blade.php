@@ -5,8 +5,9 @@
                 <div class="form-group">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-2">Tanggal Kenpin</label>
-                        <input class="form-control" type="text" data-provider="flatpickr" data-date-format="d-m-Y" data-maxDate="{{ now()->format('d/m/Y') }}"
-                            wire:model.change="kenpin_date" placeholder="yyyy/mm/dd" />
+                        <input class="form-control" type="text" data-provider="flatpickr" data-date-format="d-m-Y"
+                            data-maxDate="{{ now()->format('d/m/Y') }}" wire:model.change="kenpin_date"
+                            placeholder="yyyy/mm/dd" />
                         <span class="input-group-text py-0">
                             <i class="ri-calendar-event-fill fs-4"></i>
                         </span>
@@ -36,7 +37,7 @@
                             }
                         })">
                             <input type="text" class="form-control" wire:model="kenpin_no" maxlength="8"
-                                x-model="kenpin_no" wire:model="kenpin_no" maxlength="8" disabled/>
+                                x-model="kenpin_no" wire:model="kenpin_no" maxlength="8" disabled />
                         </div>
                     </div>
                 </div>
@@ -153,7 +154,7 @@
                         <label class="control-label col-12 col-lg-6">Kode NG</label>
                         <input type="text" placeholder="..."
                             class="form-control @error('kode_ng') is-invalid @enderror" x-ref="ngInput"
-                            x-on:keydown.tab="$event.preventDefault(); $refs.penyebabSelect.focus();"
+                            x-on:keydown.tab="$event.preventDefault(); $refs.isKasusInput.focus();"
                             wire:model.change="kode_ng" maxlength="10" />
                         @error('kode_ng')
                             <span class="invalid-feedback">{{ $message }}</span>
@@ -167,6 +168,31 @@
                         <label class="control-label"></label>
                         <input type="text" placeholder="-" class="form-control readonly bg-light"
                             readonly="readonly" wire:model="nama_ng" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-4 mt-1">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label col-12 col-lg-6">
+                            Kasus
+                        </label>
+                        <div class="form-check">
+                            <input class="form-check-input @error('is_kasus') is-invalid @enderror" type="checkbox"
+                                id="isKasus" x-ref="isKasusInput" wire:model.change="is_kasus"
+                                x-on:keydown.tab="$event.preventDefault(); $refs.penyebabSelect.focus();" />
+                            <label class="form-check-label" for="isKasus">Ya</label>
+                            @error('is_kasus')
+                                <span class="invalid-feedback d-block">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-8 mt-1">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label"></label>
                     </div>
                 </div>
             </div>
@@ -230,7 +256,8 @@
                                 <option value="">- Pilih Bagian -</option>
                                 @if (isset($bagianMesinList))
                                     @foreach ($bagianMesinList as $bagianMesin)
-                                        <option value="{{ $bagianMesin->id }}">{{ $bagianMesin->code . ' - ' . ($bagianMesin->name) }}
+                                        <option value="{{ $bagianMesin->id }}">
+                                            {{ $bagianMesin->code . ' - ' . $bagianMesin->name }}
                                         </option>
                                     @endforeach
                                 @endif
@@ -278,7 +305,8 @@
             </div>
             <div class="col-lg-4" style="border-top:1px solid #efefef">
                 <div class="toolbar">
-                    <button type="button" class="btn btn-warning" wire:click="cancel" wire:loading.attr="disabled" wire:target="cancel">
+                    <button type="button" class="btn btn-warning" wire:click="cancel" wire:loading.attr="disabled"
+                        wire:target="cancel">
                         <span wire:loading.remove wire:target="cancel">
                             <i class="ri-close-line"></i> Close
                         </span>
@@ -311,8 +339,8 @@
             </div>
         </div>
 
-        <div class="modal fade" id="modal-add-gentan" tabindex="-1" role="dialog" aria-labelledby="modal-add-gentan"
-            aria-hidden="true" wire:ignore.self>
+        <div class="modal fade" id="modal-add-gentan" tabindex="-1" role="dialog"
+            aria-labelledby="modal-add-gentan" aria-hidden="true" wire:ignore.self>
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -387,8 +415,8 @@
                     </div>
                     <div class="modal-footer">
                         <div class="ms-auto">
-                            <button type="button" class="btn btn-success mr-0" wire:target="saveGentan" wire:click="saveGentan"
-                                @disabled(!$gentan_no && !$machineno) wire:loading.attr="disabled" >
+                            <button type="button" class="btn btn-success mr-0" wire:target="saveGentan"
+                                wire:click="saveGentan" @disabled(!$gentan_no && !$machineno) wire:loading.attr="disabled">
                                 <span wire:loading.remove wire:target="saveGentan">
                                     <i class="ri-save-3-line"></i> Save
                                 </span>
@@ -410,8 +438,8 @@
                 </div>
             </div>
         </div>
-        <div class="modal fade" id="modal-edit-gentan" tabindex="-1" role="dialog" aria-labelledby="modal-edit-gentan"
-            aria-hidden="true" wire:ignore.self>
+        <div class="modal fade" id="modal-edit-gentan" tabindex="-1" role="dialog"
+            aria-labelledby="modal-edit-gentan" aria-hidden="true" wire:ignore.self>
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -486,8 +514,8 @@
                     </div>
                     <div class="modal-footer">
                         <div class="ms-auto">
-                            <button type="button" class="btn btn-success mr-0" wire:click="saveGentan" wire:loading.attr="disabled"
-                                @disabled(!$gentan_no && !$machineno) wire:target="saveGentan">
+                            <button type="button" class="btn btn-success mr-0" wire:click="saveGentan"
+                                wire:loading.attr="disabled" @disabled(!$gentan_no && !$machineno) wire:target="saveGentan">
                                 <span wire:loading.remove wire:target="saveGentan">
                                     <i class="ri-save-3-line"></i> Save
                                 </span>
@@ -502,7 +530,8 @@
                                     </span>
                                 </div>
                             </button>
-                            <button type="button" class="btn btn-link text-gray-600" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-link text-gray-600"
+                                data-bs-dismiss="modal">Close</button>
                         </div>
                     </div>
                 </div>
@@ -532,23 +561,26 @@
                                 <tr>
                                     <td>
                                         <button type="button" class="btn btn-primary p-1"
-                                            wire:click="edit({{ $item['id'] }})"
-                                            wire:loading.attr="disabled" wire:target="edit">
+                                            wire:click="edit({{ $item['id'] }})" wire:loading.attr="disabled"
+                                            wire:target="edit">
                                             <span wire:loading.remove wire:target="edit">
                                                 <i class="ri-edit-2-fill"></i>
                                             </span>
                                             <span wire:loading wire:target="edit">
-                                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                <span class="spinner-border spinner-border-sm" role="status"
+                                                    aria-hidden="true"></span>
                                             </span>
                                         </button>
 
                                         <button type="button" class="btn btn-danger p-1"
-                                            wire:click="deleteInfure({{ $item['id'] }})" wire:loading.attr="disabled" wire:target="deleteInfure">
+                                            wire:click="deleteInfure({{ $item['id'] }})"
+                                            wire:loading.attr="disabled" wire:target="deleteInfure">
                                             <span wire:loading.remove wire:target="deleteInfure">
                                                 <i class="ri-delete-bin-4-fill"></i>
                                             </span>
                                             <span wire:loading wire:target="deleteInfure">
-                                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                <span class="spinner-border spinner-border-sm" role="status"
+                                                    aria-hidden="true"></span>
                                             </span>
                                         </button>
                                     </td>

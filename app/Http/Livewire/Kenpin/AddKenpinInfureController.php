@@ -52,6 +52,7 @@ class AddKenpinInfureController extends Component
 
     public $masalahInfure;
     public $kode_ng;
+    public $is_kasus;
     public $nama_ng;
     public $bagian_mesin_id;
     public $bagianMesinList;
@@ -473,6 +474,7 @@ class AddKenpinInfureController extends Component
             'status_kenpin' => 'required',
             'lpk_no' => 'required',
             'kode_ng' => 'required',
+            'is_kasus' => 'required',
             'penyebab' => 'required',
             'keterangan_penyebab' => 'required',
             'penanggulangan' => 'required',
@@ -490,6 +492,7 @@ class AddKenpinInfureController extends Component
             $kenpinAssembly->lpk_id = $this->lpk_id;
             $kenpinAssembly->total_berat_loss = $this->beratLossTotal;
             $kenpinAssembly->status_kenpin = $this->status_kenpin;
+            $kenpinAssembly->is_kasus = $this->is_kasus;
             $kenpinAssembly->masalah_kenpin_id = $this->masalahInfure->id;
             $kenpinAssembly->machine_part_detail_id = $this->bagian_mesin_id;
             $kenpinAssembly->penyebab = $this->penyebab;

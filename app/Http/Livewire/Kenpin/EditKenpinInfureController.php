@@ -50,6 +50,7 @@ class EditKenpinInfureController extends Component
     public $tglproduksi;
 
     public $masalahInfure;
+    public $is_kasus;
     public $kode_ng;
     public $nama_ng;
     public $bagian_mesin_id;
@@ -80,6 +81,7 @@ class EditKenpinInfureController extends Component
                 'tda.kenpin_date',
                 'tda.kenpin_no',
                 'tda.lpk_id',
+                'tda.is_kasus',
                 'tdo.lpk_no',
                 'tdo.lpk_date',
                 'tdo.panjang_lpk',
@@ -105,6 +107,7 @@ class EditKenpinInfureController extends Component
         $this->kenpin_no = $data->kenpin_no;
         $this->lpk_id = $data->lpk_id;
         $this->lpk_no = $data->lpk_no;
+        $this->is_kasus = $data->is_kasus;
         $this->lpk_date = Carbon::parse($data->lpk_date)->format('d-m-Y');
         $this->panjang_lpk = $data->panjang_lpk;
         $this->code = $data->code;
@@ -598,6 +601,7 @@ class EditKenpinInfureController extends Component
             $product->employee_id = $mspetugas->id;
             $product->lpk_id = $this->lpk_id;
             $product->status_kenpin = $this->status_kenpin;
+            $product->is_kasus = $this->is_kasus;
 
             // Field baru yang ditambahkan
             $product->machine_part_detail_id = $this->bagian_mesin_id;
