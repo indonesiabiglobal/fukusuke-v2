@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\JamKerja;
 
+use App\Helpers\departmentHelper;
 use Carbon\Carbon;
 use Livewire\Component;
 use App\Helpers\phpspreadsheet;
@@ -27,9 +28,13 @@ class CheckListJamKerjaController extends Component
     public $noprosesakhir;
     public $lpk_no;
     public $nomorOrder;
-    public $department;
+    public $divisions;
+    public $divisionId = 2; // default INFURE
+    public $departments;
+    public $infureDepartments;
+    public $seitaiDepartments;
+    public $departmentId;
     public $jenisReport = "Checklist";
-    public $departmentId = 2; // default INFURE
     public $machineId;
     public $nomorHan;
     public $transaksi = 1;
@@ -46,7 +51,19 @@ class CheckListJamKerjaController extends Component
         $this->jamAwal = $this->workingShiftHour[0]->work_hour_from;
         $this->jamAkhir = $this->workingShiftHour[count($this->workingShiftHour) - 1]->work_hour_till;
         $this->machine = MsMachine::where('machineno',  'LIKE', '00I%')->orderBy('machineno')->get();
-        $this->department = MsDepartment::division()->get();
+        $this->divisions = MsDepartment::division()->get();
+        $this->infureDepartments = departmentHelper::infurePabrikDepartment();
+        $this->departments = $this->infureDepartments;
+        $this->seitaiDepartments = departmentHelper::seitaiPabrikDepartment();
+    }
+
+    public function updatedDivisionId($value)
+    {
+        if ($value == 2) {
+            $this->departments = $this->infureDepartments;
+        } else if ($value == 7) {
+            $this->departments = $this->seitaiDepartments;
+        }
     }
 
     public function export()
@@ -101,9 +118,10 @@ class CheckListJamKerjaController extends Component
         $filter = [
             'machine_id' => $this->machineId['value'] ?? null,
             'transaksi' => $this->transaksi ?? 1,
+            'department_id' => $this->departmentId ?? null,
         ];
 
-        $response = $this->checklistJamKerja($tglAwal, $tglAkhir, $filter, $this->departmentId == 2 ? 'INFURE' : 'SEITAI', true);
+        $response = $this->checklistJamKerja($tglAwal, $tglAkhir, $filter, $this->divisionId == 2 ? 'INFURE' : 'SEITAI', true);
         if ($response['status'] == 'success') {
             return response()->download($response['filename'])->deleteFileAfterSend(true);
         } else if ($response['status'] == 'error') {
@@ -123,7 +141,7 @@ class CheckListJamKerjaController extends Component
         Carbon::setLocale('id');
 
         // Judul
-        $activeWorksheet->setCellValue('A1', 'CHECKLIST JAM KERJA ' . strtoupper($nippo));
+        $activeWorksheet->setCellValue('A1', 'CHECKLIST JAM KERJA ' . strtoupper($nippo) . ' DEPARTMENT :' . ($filter['department_id'] ? MsDepartment::find($filter['department_id'])->name : 'ALL'));
         $activeWorksheet->setCellValue('A2', 'Periode: ' . $tglAwal->translatedFormat('d-M-Y H:i') . '  ~  ' . $tglAkhir->translatedFormat('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'A1:A2', true, 11, 'Calibri');
@@ -201,7 +219,6 @@ class CheckListJamKerjaController extends Component
         }, 'employee' => function ($q) {
             $q->select('id', 'employeeno', 'empname');
         }, 'workingShift' => function ($q) {
-            // relasi workingShift mengambil jam shift (work_hour_from / work_hour_till)
             $q->select('id', 'work_hour_from', 'work_hour_till');
         }])
             ->select('id', 'working_date', 'work_shift', 'machine_id', 'employee_id', 'work_hour', 'off_hour', 'on_hour');
@@ -226,6 +243,12 @@ class CheckListJamKerjaController extends Component
             $query = $query->infureDepartment();
         } elseif ($nippo == 'SEITAI') {
             $query = $query->seitaiDepartment();
+        }
+
+        if (isset($filter['department_id']) && $filter['department_id'] != '') {
+            $query = $query->whereHas('machine', function ($q) use ($filter) {
+                $q->where('department_id', $filter['department_id']);
+            });
         }
 
         if (isset($filter['machine_id']) && $filter['machine_id'] != '') {
