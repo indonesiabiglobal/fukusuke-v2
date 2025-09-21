@@ -24,6 +24,59 @@
                     </div>
                 </div>
             </div>
+            <div class="col-12 col-lg-12">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label col-12 col-lg-2">Nomor Palet</label>
+                        <div class="col-12 col-lg-10">
+                            <div class="d-flex">
+                                <div class="flex-grow-1 me-2" x-data="{ nomor_palet: @entangle('nomor_palet').live, status: true }" x-init="$watch('nomor_palet', value => {
+                                    // Membuat karakter pertama kapital
+                                    nomor_palet = value.charAt(0).toUpperCase() + value.slice(1).replace(/[^0-9-]/g, '');
+                                    if (value.length === 5 && !value.includes('-') && status) {
+                                        nomor_palet = value + '-';
+                                    }
+                                    if (value.length < 5) {
+                                        status = true;
+                                    }
+                                    if (value.length === 6) {
+                                        status = false;
+                                    }
+                                    {{-- membatasi 12 karakter --}}
+                                    if (value.length == 11 && !value.includes('-') && status) {
+                                        nomor_palet = value.substring(0, 5) + '-' + value.substring(5, 11);
+                                    } else if (value.length > 12) {
+                                        nomor_palet = value.substring(0, 12);
+                                    }
+                                })">
+                                    <input type="text" class="form-control" x-model="nomor_palet"
+                                        wire:model="nomor_palet" maxlength="12"
+                                        x-on:keydown.tab="$event.preventDefault(); $refs.lotnoInput.focus();"
+                                        placeholder="A0000-000000" @disabled($status_kenpin_old == 2) />
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <button wire:click="addPalet" type="button" class="btn btn-info z-0"
+                                        wire:loading.attr="disabled" @disabled($status_kenpin_old == 2)>
+                                        <span wire:loading.remove wire:target="addPalet">
+                                            <i class="ri-search-line"></i>
+                                        </span>
+                                        <div wire:loading wire:target="addPalet">
+                                            <span class="d-flex align-items-center">
+                                                <span class="spinner-border flex-shrink-0" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </span>
+                                                <span class="flex-grow-1 ms-1">
+                                                    Loading...
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="col-12 col-lg-12 mt-1">
                 <div class="form-group">
                     <div class="input-group">
@@ -83,8 +136,8 @@
                 <div class="form-group">
                     <div class="input-group">
                         <label class="control-label"></label>
-                        <input type="text" placeholder="-" class="form-control readonly bg-light" readonly="readonly"
-                            wire:model="empname" />
+                        <input type="text" placeholder="-" class="form-control readonly bg-light"
+                            readonly="readonly" wire:model="empname" />
                         <style>
                             .readonly {
                                 background-color: #f8f9fa !important;
@@ -99,7 +152,8 @@
                         <label class="control-label col-12 col-lg-6">NG</label>
                         <input type="text" placeholder="Kode NG"
                             class="form-control @error('kode_ng') is-invalid @enderror" x-ref="ngInput"
-                            wire:model.change="kode_ng" maxlength="10" x-on:keydown.tab="$event.preventDefault(); $refs.isKasusInput.focus();"/>
+                            wire:model.change="kode_ng" maxlength="10"
+                            x-on:keydown.tab="$event.preventDefault(); $refs.isKasusInput.focus();" />
                         @error('kode_ng')
                             <span class="invalid-feedback">{{ $message }}</span>
                         @enderror
@@ -157,7 +211,8 @@
                                 if ($event.target.value == '1') {
                                     $refs.penyebabSelect.value = '';
                                 }
-                            " x-refs="statusSelect">
+                            "
+                            x-refs="statusSelect">
                             <option value="1">Proses</option>
                             <option value="2">Finish</option>
                         </select>
@@ -195,7 +250,7 @@
                                 @foreach ($bagianMesinListSeitai as $item)
                                     <option value="{{ $item->id }}"
                                         {{ $bagian_mesin_id == $item->id ? 'selected' : '' }}>
-                                       {{ $item->code . ' - ' . $item->name }}
+                                        {{ $item->code . ' - ' . $item->name }}
                                     </option>
                                 @endforeach
                             </select>
@@ -204,7 +259,7 @@
                 </div>
             </div>
             {{-- penyebab --}}
-            <div class="col-12 col-lg-4 mt-1" @if ($status == 1) style="display: none" @endif>
+            <div class="col-12 col-lg-4 mt-1">
                 <div class="form-group">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-6">Penyebab</label>
@@ -226,7 +281,7 @@
                 </div>
             </div>
             {{-- keterangan penyebab --}}
-            <div class="col-12 col-lg-8 mt-1" @if ($status == 1) style="display: none" @endif>
+            <div class="col-12 col-lg-8 mt-1">
                 <div class="form-group">
                     <div class="input-group">
                         <label class="control-label"></label>
@@ -241,7 +296,7 @@
                 </div>
             </div>
             {{-- penanggulangan --}}
-            <div class="col-12 col-lg-12 mt-1" @if ($status == 1) style="display: none" @endif>
+            <div class="col-12 col-lg-12 mt-1">
                 <div class="form-group">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-2">Penanggulangan</label>
@@ -266,53 +321,6 @@
                 @endif
             </div>
             <div class="col-12 col-lg-5">
-                <div class="form-group">
-                    <div class="input-group">
-                        <span class="input-group-text readonly">
-                            Nomor Palet
-                        </span>
-                        <div x-data="{ nomor_palet: @entangle('nomor_palet').live, status: true }" x-init="$watch('nomor_palet', value => {
-                            // Membuat karakter pertama kapital
-                            nomor_palet = value.charAt(0).toUpperCase() + value.slice(1).replace(/[^0-9-]/g, '');
-                            if (value.length === 5 && !value.includes('-') && status) {
-                                nomor_palet = value + '-';
-                            }
-                            if (value.length < 5) {
-                                status = true;
-                            }
-                            if (value.length === 6) {
-                                status = false;
-                            }
-                            {{-- membatasi 12 karakter --}}
-                            if (value.length == 11 && !value.includes('-') && status) {
-                                nomor_palet = value.substring(0, 5) + '-' + value.substring(5, 11);
-                            } else if (value.length > 12) {
-                                nomor_palet = value.substring(0, 12);
-                            }
-                        })">
-                            <input type="text" class="form-control" x-model="nomor_palet"
-                                wire:model="nomor_palet" maxlength="12"
-                                x-on:keydown.tab="$event.preventDefault(); $refs.lotnoInput.focus();"
-                                placeholder="A0000-000000" @disabled($status_kenpin_old == 2) />
-                        </div>
-                        <button wire:click="addPalet" type="button" class="btn btn-info z-0"
-                            wire:loading.attr="disabled" @disabled($status_kenpin_old == 2)>
-                            <span wire:loading.remove wire:target="addPalet">
-                                <i class="ri-search-line"></i>
-                            </span>
-                            <div wire:loading wire:target="addPalet">
-                                <span class="d-flex align-items-center">
-                                    <span class="spinner-border flex-shrink-0" role="status">
-                                        <span class="visually-hidden">Loading...</span>
-                                    </span>
-                                    <span class="flex-grow-1 ms-1">
-                                        Loading...
-                                    </span>
-                                </span>
-                            </div>
-                        </button>
-                    </div>
-                </div>
             </div>
             <div class="col-lg-3"></div>
             <div class="col-lg-4">
