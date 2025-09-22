@@ -98,9 +98,13 @@ class AutoInsertJamKerja extends Command
                 if ($department === 'infure') {
                     $jamMatiMesinId = 10; // Infure specific jam mati mesin
                     $offHour = '08:00:00';
+                    $workShiftTo = $previousShift->work_hour_till;
                 } elseif ($department === 'seitai') {
                     $jamMatiMesinId = 17; // Seitai specific jam mati mesin
                     $offHour = '06:30:00';
+                    // karena hanya 6:30 jam
+                    // add 6 hours 30 minutes to the shift start time using Carbon
+                    $workShiftTo = Carbon::parse($previousShift->work_hour_till)->subMinutes(90)->format('H:i:s');
                 }
 
                 // Insert jam kerja mesin
@@ -123,8 +127,8 @@ class AutoInsertJamKerja extends Command
                     'jam_kerja_mesin_id' => $jamKerjaMesin->id,
                     'jam_mati_mesin_id' => $jamMatiMesinId,
                     'off_hour' => $offHour,
-                    'from' => null,
-                    'to' => null,
+                    'from' => $previousShift->work_hour_from,
+                    'to' => $workShiftTo,
                 ]);
 
                 $insertedCount++;

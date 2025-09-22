@@ -70,4 +70,9 @@ class TdJamKerjaMesin extends Model
     {
         return $this->belongsTo(MsWorkingShift::class, 'work_shift', 'id');
     }
+
+    public function jamKerjaJamMatiMesin()
+    {
+        return $this->hasMany(TdJamKerjaJamMatiMesin::class, 'jam_kerja_mesin_id', 'id');
+    }
 }

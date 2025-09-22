@@ -161,6 +161,12 @@ class CheckListJamKerjaController extends Component
             'Jam Kerja',
             'Jam Mati',
             'Jam Jalan',
+            '% Jalan Mesin',
+            'Kode Jam Mati Mesin',
+            'Nama Jam Mati Mesin',
+            'Jam Mati Mesin',
+            'Dari Jam',
+            'Sampai Jam'
         ];
 
         foreach ($header as $key => $value) {
@@ -220,7 +226,7 @@ class CheckListJamKerjaController extends Component
             $q->select('id', 'employeeno', 'empname');
         }, 'workingShift' => function ($q) {
             $q->select('id', 'work_hour_from', 'work_hour_till');
-        }])
+        }, 'jamKerjaJamMatiMesin', 'jamKerjaJamMatiMesin.jamMatiMesin'])
             ->select('id', 'working_date', 'work_shift', 'machine_id', 'employee_id', 'work_hour', 'off_hour', 'on_hour');
 
         $tableName = (new TdJamKerjaMesin)->getTable();
@@ -281,7 +287,6 @@ class CheckListJamKerjaController extends Component
             return $response;
         }
 
-
         $rowItemStart = 4;
         $columnItemStart = 'A';
         $rowItem = $rowItemStart;
@@ -297,6 +302,7 @@ class CheckListJamKerjaController extends Component
 
         foreach ($data as $key => $dataItem) {
             $columnItemEnd = $columnItemStart;
+            $rowDataStart = $rowItem;
 
             // No
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $key + 1);
@@ -336,12 +342,39 @@ class CheckListJamKerjaController extends Component
             $totalJamJalan += formatTime::timeToMinutes($dataItem['on_hour']);
             $columnItemEnd++;
 
+            // %jam jalan mesin
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['on_hour'] && $dataItem['work_hour'] ? (formatTime::timeToMinutes($dataItem['on_hour']) / formatTime::timeToMinutes($dataItem['work_hour'])) : 0);
+            phpspreadsheet::numberPercentageOrZero($spreadsheet, $columnItemEnd . $rowItem);
             $columnItemEnd++;
-            $rowItem++;
+
+            $columnDetailStart = $columnItemEnd;
+            foreach ($dataItem['jamKerjaJamMatiMesin'] as $detail) {
+                $columnItemEnd = $columnDetailStart;
+                // Kode Jam Mati Mesin
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $detail->jamMatiMesin->code ?? '');
+                $columnItemEnd++;
+                // Nama Jam Mati Mesin
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $detail->jamMatiMesin->name ?? '');
+                $columnItemEnd++;
+                // Jam Mati Mesin
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($detail->off_hour)->translatedFormat('H:i'));
+                $columnItemEnd++;
+                // Dari Jam
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($detail->from)->translatedFormat('H:i'));
+                $columnItemEnd++;
+                // Sampai Jam
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($detail->to)->translatedFormat('H:i'));
+                $columnItemEnd++;
+                $rowItem++;
+            }
+            phpspreadsheet::addBorderDottedMiddleHorizontal($spreadsheet, $columnItemStart . $rowDataStart . ':' . chr(ord($columnItemEnd) - 1) . $rowItem);
+
+            $columnItemEnd++;
         }
 
         phpspreadsheet::textAlignCenter($spreadsheet, $columnItemStart . $rowItemStart . ':' . $columnNIK . $rowItem);
         phpspreadsheet::textAlignCenter($spreadsheet, $columnJamKerja . $rowItemStart . ':' . $columnJamJalan . $rowItem);
+        phpspreadsheet::textAlignCenter($spreadsheet, 'K' . $rowItemStart . ':' . 'K' . $rowItem);
         phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItemStart . ':' . $columnItemEnd . $rowItem, false, 8, 'Calibri');
 
         // grand total
@@ -368,22 +401,16 @@ class CheckListJamKerjaController extends Component
         $percentageJamJalan = ($totalJamJalan / ($totalJamKerja ?: 1));
         $activeWorksheet->setCellValue($columnItemEnd . ($rowItem + 1), $percentageJamJalan);
         phpspreadsheet::numberPercentageOrZero($spreadsheet, $columnItemEnd . ($rowItem + 1));
+        $columnItemEnd = 'O';
 
         phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItem . ':' . $columnItemEnd . ($rowItem + 1), true, 8, 'Calibri');
-        phpspreadsheet::addFullBorder($spreadsheet, $columnItemStart . $rowItemStart . ':' . $columnItemEnd . ($rowItem + 1));
+        phpspreadsheet::addFullBorder($spreadsheet, $columnItemStart . $rowItem . ':' . $columnItemEnd . ($rowItem + 1));
         phpspreadsheet::textAlignCenter($spreadsheet, $columnItemStart . $rowItem . ':' . $columnItemEnd . ($rowItem + 1));
 
         // mengatur lebar kolom
         $spreadsheet->getActiveSheet()->getColumnDimension('E')->setAutoSize(true);
         $spreadsheet->getActiveSheet()->getColumnDimension('F')->setAutoSize(true);
-
-        phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItem . ':' . $columnItemEnd . $rowItem + 1, true, 8, 'Calibri');
-        phpspreadsheet::addFullBorder($spreadsheet, $columnItemStart . $rowItemStart . ':' . $columnItemEnd . $rowItem + 1);
-        phpSpreadsheet::textAlignCenter($spreadsheet, $columnItemStart . $rowItem . ':' . $columnItemEnd . $rowItem + 1);
-
-        // mengatur lebar kolom
-        $spreadsheet->getActiveSheet()->getColumnDimension('E')->setAutoSize(true);
-        $spreadsheet->getActiveSheet()->getColumnDimension('F')->setAutoSize(true);
+        $spreadsheet->getActiveSheet()->getColumnDimension('L')->setAutoSize(true);
 
         $writer = new Xlsx($spreadsheet);
         $filename = 'asset/report/JamKerja-' . $nippo . '.xlsx';
