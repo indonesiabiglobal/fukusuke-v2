@@ -636,12 +636,9 @@ class EditSeitaiController extends Component
         $this->machineno = $machineno;
 
         if (isset($this->machineno) && $this->machineno != '') {
-            $machine = MsMachine::seitaiDepartment()->first();
-
+            $machine = MsMachine::where('machineno', 'ilike', '%' . $this->machineno . '%')->first();
             if ($machine == null) {
-                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Machine ' . $this->machineno . ' Tidak Terdaftar']);
-                $this->machineno = '';
-                $this->machinename = '';
+                $this->dispatch('notification', ['type' => 'error', 'message' => 'Machine ' . $this->machineno . ' Tidak Terdaftar']);
             } else {
                 $this->machineno = $machine->machineno;
                 $this->machinename = $machine->machinename;
