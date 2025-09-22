@@ -39,7 +39,7 @@ class Kernel extends ConsoleKernel
 
         // Run at 3:15 PM (after afternoon shift starts)
         $schedule->command('jamkerja:auto-insert --department=infure')
-                ->dailyAt('12:21')
+                ->dailyAt('15:15')
                 ->withoutOverlapping();
         $schedule->command('jamkerja:auto-insert --department=seitai')
                 ->dailyAt('15:15')
