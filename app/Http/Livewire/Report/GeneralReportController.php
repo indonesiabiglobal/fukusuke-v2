@@ -813,6 +813,7 @@ class GeneralReportController extends Component
             $spreadsheet->getActiveSheet()->mergeCells($startColumnItem . $rowItem . ':' . $endColumnItem . $rowItem);
             phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $rowItem, true, 9, 'Calibri');
             $rowItem++;
+            $startRowDepartment = $rowItem;
             $countMachine = 0;
             // daftar mesin
             foreach ($listMachine[$department['department_id']] as $machineNo => $machineName) {
@@ -905,17 +906,19 @@ class GeneralReportController extends Component
                 // jalan mesin
                 $activeWorksheet->setCellValue($columnItem . $rowItem, $workHours > 0 ? $workHours / ($offHours + $workHours) : 0);
                 phpspreadsheet::numberPercentageOrZero($spreadsheet, $columnItem . $rowItem);
-                phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
+                // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
                 $columnItem++;
 
                 phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem, false, 8, 'Calibri');
                 $rowItem++;
             }
+            $columnItem = $startColumnItemData;
+            $columnItemEnd = chr(ord($columnItem) + count($header) - 1);
+            phpspreadsheet::addBorderDottedMiddleHorizontal($spreadsheet, $columnMachineNo . $startRowDepartment . ':' . $columnItemEnd . $rowItem - 1);
+
             // perhitungan jumlah berdasarkan departemen
             $spreadsheet->getActiveSheet()->mergeCells($columnMachineNo . $rowItem . ':' . $columnMachineName . $rowItem);
             // $activeWorksheet->setCellValue($columnMachineNo . $rowItem, 'Total ' . $department['department_name']);
-            $columnItem = $startColumnItemData;
-            $columnItemEnd = chr(ord($columnItem) + count($header) - 1);
             // berat standard
             $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - $countMachine) . ':' . $columnItem . ($rowItem - 1) . ')');
             phpSpreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnItem . $rowItem, 1);
