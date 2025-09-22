@@ -1101,6 +1101,8 @@ class GeneralReportController extends Component
         phpspreadsheet::addFullBorder($spreadsheet, $columnMachineNo . $rowGrandTotal . ':' . $columnItem . $rowGrandTotal);
 
         $activeWorksheet->getStyle($columnMesin . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart)->getAlignment()->setWrapText(true);
+        // buatkan agar auto size pada column nama mesin
+        $spreadsheet->getActiveSheet()->getColumnDimension($columnMesinEnd)->setAutoSize(true);
 
         $writer = new Xlsx($spreadsheet);
         $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';

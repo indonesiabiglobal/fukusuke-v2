@@ -382,10 +382,15 @@ class EditNippoController extends Component
         $lpkid = TdOrderLpk::where('lpk_no', $this->lpk_no)->first();
         $machine = MsMachine::where('machineno', $this->machineno)->first();
         $employe = MsEmployee::where('employeeno', $this->employeeno)->first();
-        $products = MsProduct::select('msproduct.id', 'mpt.harga_sat_infure', 'msproduct.codebarcode')
-                ->join('msproduct_type as mpt', 'msproduct.product_type_id', '=', 'mpt.id')
-                ->where('msproduct.code', $this->code)
-                ->first();
+        $msProduct = MsProduct::select(
+            'msproduct.id',
+            'mpt.harga_sat_infure',
+            'msproduct.codebarcode',
+            'mpt.product_cetak_id'
+        )
+            ->join('msproduct_type as mpt', 'msproduct.product_type_id', '=', 'mpt.id')
+            ->where('msproduct.code', $this->code)
+            ->first();
         $totalBerat = TdProductAssemblyLoss::where('product_assembly_id', $this->orderId)
             ->sum('berat_loss');
 
@@ -410,7 +415,7 @@ class EditNippoController extends Component
 
             // mengecek apakah nomor barcode sesuai dengan barcode produk
             if (isset($this->nomor_barcode)) {
-                if ($products->codebarcode != $this->nomor_barcode) {
+                if ($msProduct->codebarcode != $this->nomor_barcode) {
                     $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Barcode ' . $this->nomor_barcode . ' Tidak Sesuai']);
                 }
             } else {
@@ -437,11 +442,16 @@ class EditNippoController extends Component
             }
             $product->gentan_no = $this->gentan_no;
             $product->nomor_han = $this->nomor_han;
-            $product->product_id = $products->id;
+            $product->product_id = $msProduct->id;
             $product->panjang_produksi = $this->panjang_produksi;
             $product->berat_produksi = $this->berat_produksi;
             $product->berat_standard = $this->berat_standard;
-            $product->infure_cost = $this->berat_produksi * $products->harga_sat_infure;
+            $product->infure_cost = $this->berat_produksi * 20;
+            if ($msProduct->product_cetak_id == 1) {
+                $product->panjang_printing_inline = $this->panjang_produksi;
+                $product->infure_cost_printing = $product->panjang_printing_inline * 0.2;
+            }
+
             $product->updated_on = Carbon::now();
             $product->updated_by = auth()->user()->username;
 
@@ -468,7 +478,7 @@ class EditNippoController extends Component
             ");
 
             TdOrderLpk::where('id', $lpkid->id)->update([
-                'total_assembly_line' => $totalAssembly[0]->c1 ,
+                'total_assembly_line' => $totalAssembly[0]->c1,
             ]);
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
             return redirect()->route('nippo-infure');
