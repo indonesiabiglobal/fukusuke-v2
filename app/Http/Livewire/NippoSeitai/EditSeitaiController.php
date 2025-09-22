@@ -65,6 +65,8 @@ class EditSeitaiController extends Component
     public $jumlahBeratLoss;
     public $seq_no;
     public $selisih;
+    public $jumlah_box;
+    public $jumlah_box_product;
     public $selisihOld;
     public $idDelete;
     public $editing_id;
@@ -128,6 +130,7 @@ class EditSeitaiController extends Component
                 'tdol.total_assembly_qty AS total_assembly_qty',
                 'msp.code',
                 'msp.name',
+                'msp.case_box_count',
                 'msm.machineno',
                 'msm.machinename',
                 'mse.employeeno',
@@ -194,6 +197,9 @@ class EditSeitaiController extends Component
             ->where('tgl.product_goods_id', $request->query('orderId'))
             ->get();
         $this->jumlahBeratLoss = $this->detailsLoss->sum('berat_loss');
+
+        $caseBoxCount = isset($data->case_box_count) ? (int) $data->case_box_count : 0;
+        $this->jumlah_box_product = $caseBoxCount > 0 ? (int) ceil($data->qty_produksi / $caseBoxCount) : 0;
     }
 
     public function showModalNoOrder()
@@ -791,6 +797,34 @@ class EditSeitaiController extends Component
         }
     }
 
+    public function updatedStartBox($start_box)
+    {
+        $this->start_box = $start_box;
+
+        if (isset($this->start_box) && isset($this->end_box)) {
+            if ($this->start_box > $this->end_box) {
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Start Box tidak boleh lebih besar dari End Box']);
+                $this->start_box = null;
+            }
+
+            $this->jumlah_box = ($this->end_box - $this->start_box) + 1;
+        }
+    }
+
+    public function updatedEndBox($end_box)
+    {
+        $this->end_box = $end_box;
+
+        if (isset($this->start_box) && isset($this->end_box)) {
+            if ($this->start_box > $this->end_box) {
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'End Box tidak boleh lebih kecil dari Start Box']);
+                $this->end_box = null;
+            }
+
+            $this->jumlah_box = ($this->end_box - $this->start_box) + 1;
+        }
+    }
+
     public function render()
     {
         if (isset($this->lpk_no) && $this->lpk_no != '') {
@@ -805,6 +839,7 @@ class EditSeitaiController extends Component
                     'mp.name',
                     'mp.ketebalan',
                     'mp.diameterlipat',
+                    'mp.case_box_count',
                     'tolp.qty_gulung',
                     'tolp.qty_gentan',
                     'tolp.total_assembly_qty'
@@ -865,8 +900,12 @@ class EditSeitaiController extends Component
         }
 
         if (isset($this->qty_produksi) && $this->qty_produksi != '' && isset($this->qty_lpk) && $this->qty_lpk != '') {
-            $this->total_assembly_qty = number_format((int)str_replace(',', '', $this->total_assembly_qty) + (int)str_replace(',', '', $this->qty_produksi));
-            $this->selisih = (int)str_replace(',', '', $this->selisihOld) - (int)str_replace(',', '', $this->qty_produksi);
+            $qty = (int) str_replace(',', '', $this->qty_produksi);
+            $this->total_assembly_qty = number_format((int)str_replace(',', '', $this->total_assembly_qty) + $qty);
+            $this->selisih = (int)str_replace(',', '', $this->selisihOld) - $qty;
+
+            $caseBoxCount = isset($tdorderlpk->case_box_count) ? (int) $tdorderlpk->case_box_count : 0;
+            $this->jumlah_box_product = $caseBoxCount > 0 ? (int) ceil($qty / $caseBoxCount) : 0;
         }
 
         return view('livewire.nippo-seitai.edit-seitai')->extends('layouts.master');

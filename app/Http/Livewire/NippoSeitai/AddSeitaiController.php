@@ -65,6 +65,8 @@ class AddSeitaiController extends Component
     public $currentGentanId = 1;
     public $total_assembly_qty;
     public $selisih;
+    public $jumlah_box;
+    public $jumlah_box_product;
     public $activeTab = 'Gentan';
     public $editing_id = null;
 
@@ -683,6 +685,7 @@ class AddSeitaiController extends Component
                         'mp.name',
                         'mp.ketebalan',
                         'mp.diameterlipat',
+                        'mp.case_box_count',
                         'tolp.qty_gulung',
                         'tolp.qty_gentan',
                         'tolp.total_assembly_qty'
@@ -872,8 +875,40 @@ class AddSeitaiController extends Component
         $this->qty_produksi = $qty_produksi;
 
         if (isset($this->qty_produksi) && $this->qty_produksi != '' && isset($this->qty_lpk) && $this->qty_lpk != '') {
-            $this->total_assembly_qty = number_format((int)str_replace(',', '', $this->total_assembly_qty) + (int)str_replace(',', '', $this->qty_produksi));
-            $this->selisih = $this->selisih - (int)str_replace(',', '', $this->qty_produksi);
+            $qty = (int) str_replace(',', '', $this->qty_produksi);
+            $this->total_assembly_qty = number_format((int)str_replace(',', '', $this->total_assembly_qty) + $qty);
+            $this->selisih = $this->selisih - $qty;
+
+            $caseBoxCount = isset($this->tdorderlpk->case_box_count) ? (int) $this->tdorderlpk->case_box_count : 0;
+            $this->jumlah_box_product = $caseBoxCount > 0 ? (int) ceil($qty / $caseBoxCount) : 0;
+        }
+    }
+
+    public function updatedStartBox($start_box)
+    {
+        $this->start_box = $start_box;
+
+        if (isset($this->start_box) && isset($this->end_box)) {
+            if ($this->start_box > $this->end_box) {
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Start Box tidak boleh lebih besar dari End Box']);
+                $this->start_box = null;
+            }
+
+            $this->jumlah_box = ($this->end_box - $this->start_box) + 1;
+        }
+    }
+
+    public function updatedEndBox($end_box)
+    {
+        $this->end_box = $end_box;
+
+        if (isset($this->start_box) && isset($this->end_box)) {
+            if ($this->start_box > $this->end_box) {
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'End Box tidak boleh lebih kecil dari Start Box']);
+                $this->end_box = null;
+            }
+
+            $this->jumlah_box = ($this->end_box - $this->start_box) + 1;
         }
     }
 

@@ -8,8 +8,9 @@
                             <div class="input-group">
                                 <label class="control-label col-12 col-md-3 col-lg-3 pe-2">Tanggal Produksi</label>
                                 <input class="form-control" type="text" style="padding:0.44rem"
-                                    data-provider="flatpickr" data-date-format="d/m/Y" data-maxDate="{{ now()->format('d/m/Y') }}"
-                                    wire:model.change="production_date" placeholder="yyyy/mm/dd" />
+                                    data-provider="flatpickr" data-date-format="d/m/Y"
+                                    data-maxDate="{{ now()->format('d/m/Y') }}" wire:model.change="production_date"
+                                    placeholder="yyyy/mm/dd" />
                             </div>
                         </div>
                     </div>
@@ -17,9 +18,9 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-12 col-md-3 col-lg-3 pe-2">Tanggal Proses</label>
-                                <input class="form-control bg-light" type="text" style="padding:0.44rem" readonly="readonly" disabled
-                                    data-provider="flatpickr" data-date-format="d/m/y" wire:model.defer="created_on"
-                                    placeholder="yyyy/mm/dd" />
+                                <input class="form-control bg-light" type="text" style="padding:0.44rem"
+                                    readonly="readonly" disabled data-provider="flatpickr" data-date-format="d/m/y"
+                                    wire:model.defer="created_on" placeholder="yyyy/mm/dd" />
                             </div>
                         </div>
                     </div>
@@ -167,7 +168,7 @@
                     </div>
                     <div class="col-12 col-md-12 col-lg-4 mt-1">
                         <div class="form-group">
-                            <div class="input-group">
+                            <div class="input-group align-items-center">
                                 <label class="control-label col-12 col-md-3 col-lg-5">Total Produksi</label>
                                 <input type="text" placeholder="-" class="form-control readonly bg-light"
                                     readonly="readonly" wire:model="total_assembly_qty" />
@@ -190,20 +191,73 @@
                         </div>
                     </div>
                     {{-- Informasi nomor box (range: Awal sampai Akhir) --}}
-                    <div class="col-12 mt-1">
+                    <div class="col-12 col-lg-6 mt-1">
                         <div class="form-group">
                             <div class="row align-items-center">
-                                <label class="control-label col-12 col-md-1 pe-2">Nomor Box</label>
-                                <div class="col-12 col-md-11">
+                                <label class="control-label col-12 col-md-2 pe-2">Nomor Box</label>
+                                <div class="col-12 col-md-10">
                                     <div class="d-flex align-items-center ms-md-5">
-                                        <input type="number" placeholder="Awal" class="form-control me-2" style="max-width:160px;"
-                                            wire:model.defer="start_box" id="start_box" />
+                                        <input type="number" placeholder="Awal" class="form-control me-2"
+                                            style="max-width:160px;" wire:model.change="start_box" id="start_box" />
                                         <div class="mx-2">sampai</div>
-                                        <input type="number" placeholder="Akhir" class="form-control ms-2" style="max-width:160px;"
-                                            wire:model.defer="end_box" />
+                                        <input type="number" placeholder="Akhir" class="form-control ms-2"
+                                            style="max-width:160px;" wire:model.change="end_box" />
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                    {{-- Informasi jumlah box --}}
+                    <div class="col-12 col-lg-6 mt-1">
+                        <div class="form-group">
+                            <div class="input-group align-items-center">
+                                <label class="control-label col-12 col-md-3 col-lg-5">Jumlah Box</label>
+                                <input type="text" placeholder="-" class="form-control readonly bg-light"
+                                    readonly="readonly" wire:model="jumlah_box" />
+                                <span class="input-group-text">
+                                    box
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    {{-- error jumlah box --}}
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            @php
+                                $diffBox = $jumlah_box - $jumlah_box_product;
+                                $diffLabel = $diffBox > 0 ? '+' . $diffBox : (string) $diffBox;
+                            @endphp
+
+                            @if ($jumlah_box > 0 && $jumlah_box != $jumlah_box_product)
+                                <div class="alert alert-danger d-flex align-items-start">
+                                    <div class="me-3 fs-3">
+                                        <i class="ri-error-warning-line"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold mb-1">Cek Hasil Produksi — Ketidaksesuaian Ditemukan</div>
+                                        <div>Jumlah Box terinput: <span class="fw-bold">{{ $jumlah_box }}</span></div>
+                                        <div>Jumlah Box sesuai produk (harusnya): <span class="fw-bold">{{ $jumlah_box_product }}</span></div>
+                                        <div>Selisih: <span class="fw-bold">{{ $diffLabel }}</span> box</div>
+                                        <small class="text-muted d-block mt-2">
+                                            Tindakan yang disarankan:
+                                            <ul class="mb-0 mt-1">
+                                                <li>Periksa input Nomor Box (Awal/Akhir) dan jumlah produksi.</li>
+                                                <li>Verifikasi data LPK / Nomor Order terkait.</li>
+                                                <li>Jika data sudah benar, koreksi jumlah box atau jumlah produksi sebelum menyimpan.</li>
+                                            </ul>
+                                        </small>
+                                    </div>
+                                </div>
+                            @elseif ($jumlah_box > 0)
+                                <div class="alert alert-success d-flex align-items-center">
+                                    <div class="me-2 fs-3">
+                                        <i class="ri-check-line"></i>
+                                    </div>
+                                    <div>
+                                        <strong>OK:</strong> Jumlah Box sesuai produk — <span class="fw-bold">{{ $jumlah_box }}</span> box.
+                                    </div>
+                                </div>
+                            @endif
                         </div>
                     </div>
                     <div class="col-12 col-md-12 col-lg-4 mt-1">
@@ -230,8 +284,8 @@
                                     }
                                 })">
                                     <input class="form-control @error('nomor_palet') is-invalid @enderror"
-                                        style="padding:0.44rem" type="text" placeholder="A0000-000000" id="nomor_palet"
-                                        x-model="nomor_palet" maxlength="12"
+                                        style="padding:0.44rem" type="text" placeholder="A0000-000000"
+                                        id="nomor_palet" x-model="nomor_palet" maxlength="12"
                                         x-on:keydown.tab="$event.preventDefault(); $refs.nomor_lot.focus();" />
                                 </div>
                                 @error('nomor_palet')
@@ -293,7 +347,8 @@
                                 <label class="control-label col-12 col-md-3 col-lg-7 pe-2">Jam Produksi</label>
                                 <input
                                     class="form-control col-12 col-md-9 col-lg-5 @error('work_hour') is-invalid @enderror"
-                                    wire:model.change="work_hour" type="time" placeholder="HH:mm" x-ref="work_hour">
+                                    wire:model.change="work_hour" type="time" placeholder="HH:mm"
+                                    x-ref="work_hour">
                             </div>
                         </div>
                     </div>
@@ -326,7 +381,8 @@
                         <li class="nav-item" role="presentation">
                             <button class="nav-link @if ($activeTab == 'Gentan') active @endif"
                                 id="periode1SP-tab" data-bs-toggle="tab" wire:click="changeTab('Gentan')"
-                                data-bs-target="#periode1SP" type="button" role="tab" aria-controls="periode1SP" aria-selected="true">Gentan(s)</button>
+                                data-bs-target="#periode1SP" type="button" role="tab"
+                                aria-controls="periode1SP" aria-selected="true">Gentan(s)</button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link @if ($activeTab == 'Loss') active @endif"
@@ -373,7 +429,8 @@
 
 
         <div class="tab-content" id="myTabContent">
-            <div class="tab-pane fade @if ($activeTab == 'Gentan') show active @endif " id="periode1SP" role="tabpanel" aria-labelledby="periode1SP-tab">
+            <div class="tab-pane fade @if ($activeTab == 'Gentan') show active @endif " id="periode1SP"
+                role="tabpanel" aria-labelledby="periode1SP-tab">
                 <div class="row justify-content-start">
                     <div class="row mt-3">
                         <div class="col-lg-8">
@@ -410,49 +467,72 @@
                                                         wire:click="editGentan({{ $item['id'] }})"
                                                         wire:loading.attr="disabled"
                                                         wire:target="editGentan({{ $item['id'] }})">
-                                                        <span wire:loading.remove wire:target="editGentan({{ $item['id'] }})">
+                                                        <span wire:loading.remove
+                                                            wire:target="editGentan({{ $item['id'] }})">
                                                             <i class="fa fa-edit"></i> Edit
                                                         </span>
-                                                        <span wire:loading wire:target="editGentan({{ $item['id'] }})">
-                                                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                        <span wire:loading
+                                                            wire:target="editGentan({{ $item['id'] }})">
+                                                            <span class="spinner-border spinner-border-sm"
+                                                                role="status" aria-hidden="true"></span>
                                                             Loading...
                                                         </span>
                                                     </button>
                                                     <button type="button" class="btn btn-danger"
-                                                        data-bs-toggle="modal" data-bs-target="#modal-delete-gentan-{{ $item['id'] }}">
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#modal-delete-gentan-{{ $item['id'] }}">
                                                         <i class="fa fa-trash"></i> Delete
                                                     </button>
 
-                                                    <div id="modal-delete-gentan-{{ $item['id'] }}" class="modal fade zoomIn" tabindex="-1" aria-hidden="true">
+                                                    <div id="modal-delete-gentan-{{ $item['id'] }}"
+                                                        class="modal fade zoomIn" tabindex="-1" aria-hidden="true">
                                                         <div class="modal-dialog modal-dialog-centered">
                                                             <div class="modal-content">
                                                                 <div class="modal-header">
-                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                                                                    <button type="button" class="btn-close"
+                                                                        data-bs-dismiss="modal" aria-label="Close"
                                                                         id="close-remove-gentan-{{ $item['id'] }}"></button>
                                                                 </div>
                                                                 <div class="modal-body">
                                                                     <div class="mt-2 text-center">
-                                                                        <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop"
+                                                                        <lord-icon
+                                                                            src="https://cdn.lordicon.com/gsqxdxog.json"
+                                                                            trigger="loop"
                                                                             colors="primary:#f7b84b,secondary:#f06548"
                                                                             style="width:100px;height:100px"></lord-icon>
                                                                         <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
                                                                             <h4>Are you sure ?</h4>
-                                                                            <p class="text-muted mx-4 mb-0">Are you sure you want to remove this gentan ?</p>
+                                                                            <p class="text-muted mx-4 mb-0">Are you
+                                                                                sure you want to remove this gentan ?
+                                                                            </p>
                                                                         </div>
                                                                     </div>
-                                                                    <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-                                                                        <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">Close</button>
-                                                                        <button wire:click="deleteGentan({{ $item['id'] }})" type="button"
-                                                                            class="btn w-sm btn-danger" wire:loading.attr="disabled">
-                                                                            <span wire:loading.remove wire:target="deleteGentan({{ $item['id'] }})">
-                                                                                <i class="ri-save-3-line"></i> Yes, Delete It!
+                                                                    <div
+                                                                        class="d-flex gap-2 justify-content-center mt-4 mb-2">
+                                                                        <button type="button"
+                                                                            class="btn w-sm btn-light"
+                                                                            data-bs-dismiss="modal">Close</button>
+                                                                        <button
+                                                                            wire:click="deleteGentan({{ $item['id'] }})"
+                                                                            type="button" class="btn w-sm btn-danger"
+                                                                            wire:loading.attr="disabled">
+                                                                            <span wire:loading.remove
+                                                                                wire:target="deleteGentan({{ $item['id'] }})">
+                                                                                <i class="ri-save-3-line"></i> Yes,
+                                                                                Delete It!
                                                                             </span>
-                                                                            <div wire:loading wire:target="deleteGentan({{ $item['id'] }})">
-                                                                                <span class="d-flex align-items-center">
-                                                                                    <span class="spinner-border flex-shrink-0" role="status">
-                                                                                        <span class="visually-hidden">Loading...</span>
+                                                                            <div wire:loading
+                                                                                wire:target="deleteGentan({{ $item['id'] }})">
+                                                                                <span
+                                                                                    class="d-flex align-items-center">
+                                                                                    <span
+                                                                                        class="spinner-border flex-shrink-0"
+                                                                                        role="status">
+                                                                                        <span
+                                                                                            class="visually-hidden">Loading...</span>
                                                                                     </span>
-                                                                                    <span class="flex-grow-1 ms-1">Loading...</span>
+                                                                                    <span
+                                                                                        class="flex-grow-1 ms-1">Loading...</span>
                                                                                 </span>
                                                                             </div>
                                                                         </button>
@@ -500,7 +580,8 @@
                     </div>
                 </div>
             </div>
-            <div class="tab-pane fade @if ($activeTab == 'Loss') show active @endif" id="periode2SP" role="tabpanel" aria-labelledby="periode2SP-tab">
+            <div class="tab-pane fade @if ($activeTab == 'Loss') show active @endif" id="periode2SP"
+                role="tabpanel" aria-labelledby="periode2SP-tab">
                 <div class="row justify-content-start">
                     <div class="row mt-3">
                         <div class="col-lg-8">
@@ -534,49 +615,71 @@
                                                         wire:click="editLoss({{ $item['id'] }})"
                                                         wire:loading.attr="disabled"
                                                         wire:target="editLoss({{ $item['id'] }})">
-                                                        <span wire:loading.remove wire:target="editLoss({{ $item['id'] }})">
+                                                        <span wire:loading.remove
+                                                            wire:target="editLoss({{ $item['id'] }})">
                                                             <i class="fa fa-edit"></i> Edit
                                                         </span>
-                                                        <span wire:loading wire:target="editLoss({{ $item['id'] }})">
-                                                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                        <span wire:loading
+                                                            wire:target="editLoss({{ $item['id'] }})">
+                                                            <span class="spinner-border spinner-border-sm"
+                                                                role="status" aria-hidden="true"></span>
                                                             Loading...
                                                         </span>
                                                     </button>
                                                     <button type="button" class="btn btn-danger"
-                                                        data-bs-toggle="modal" data-bs-target="#modal-delete-loss-{{ $item['id'] }}">
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#modal-delete-loss-{{ $item['id'] }}">
                                                         <i class="fa fa-trash"></i> Delete
                                                     </button>
 
-                                                    <div id="modal-delete-loss-{{ $item['id'] }}" class="modal fade zoomIn" tabindex="-1" aria-hidden="true">
+                                                    <div id="modal-delete-loss-{{ $item['id'] }}"
+                                                        class="modal fade zoomIn" tabindex="-1" aria-hidden="true">
                                                         <div class="modal-dialog modal-dialog-centered">
                                                             <div class="modal-content">
                                                                 <div class="modal-header">
-                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                                                                    <button type="button" class="btn-close"
+                                                                        data-bs-dismiss="modal" aria-label="Close"
                                                                         id="close-remove-loss-{{ $item['id'] }}"></button>
                                                                 </div>
                                                                 <div class="modal-body">
                                                                     <div class="mt-2 text-center">
-                                                                        <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop"
+                                                                        <lord-icon
+                                                                            src="https://cdn.lordicon.com/gsqxdxog.json"
+                                                                            trigger="loop"
                                                                             colors="primary:#f7b84b,secondary:#f06548"
                                                                             style="width:100px;height:100px"></lord-icon>
                                                                         <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
                                                                             <h4>Are you sure ?</h4>
-                                                                            <p class="text-muted mx-4 mb-0">Are you sure you want to remove this loss ?</p>
+                                                                            <p class="text-muted mx-4 mb-0">Are you
+                                                                                sure you want to remove this loss ?</p>
                                                                         </div>
                                                                     </div>
-                                                                    <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-                                                                        <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">Close</button>
-                                                                        <button wire:click="deleteLoss({{ $item['id'] }})" type="button"
-                                                                            class="btn w-sm btn-danger" wire:loading.attr="disabled">
-                                                                            <span wire:loading.remove wire:target="deleteLoss({{ $item['id'] }})">
-                                                                                <i class="ri-save-3-line"></i> Yes, Delete It!
+                                                                    <div
+                                                                        class="d-flex gap-2 justify-content-center mt-4 mb-2">
+                                                                        <button type="button"
+                                                                            class="btn w-sm btn-light"
+                                                                            data-bs-dismiss="modal">Close</button>
+                                                                        <button
+                                                                            wire:click="deleteLoss({{ $item['id'] }})"
+                                                                            type="button" class="btn w-sm btn-danger"
+                                                                            wire:loading.attr="disabled">
+                                                                            <span wire:loading.remove
+                                                                                wire:target="deleteLoss({{ $item['id'] }})">
+                                                                                <i class="ri-save-3-line"></i> Yes,
+                                                                                Delete It!
                                                                             </span>
-                                                                            <div wire:loading wire:target="deleteLoss({{ $item['id'] }})">
-                                                                                <span class="d-flex align-items-center">
-                                                                                    <span class="spinner-border flex-shrink-0" role="status">
-                                                                                        <span class="visually-hidden">Loading...</span>
+                                                                            <div wire:loading
+                                                                                wire:target="deleteLoss({{ $item['id'] }})">
+                                                                                <span
+                                                                                    class="d-flex align-items-center">
+                                                                                    <span
+                                                                                        class="spinner-border flex-shrink-0"
+                                                                                        role="status">
+                                                                                        <span
+                                                                                            class="visually-hidden">Loading...</span>
                                                                                     </span>
-                                                                                    <span class="flex-grow-1 ms-1">Loading...</span>
+                                                                                    <span
+                                                                                        class="flex-grow-1 ms-1">Loading...</span>
                                                                                 </span>
                                                                             </div>
                                                                         </button>
@@ -687,7 +790,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" wire:click="saveGentan" class="btn btn-success ms-auto" wire:loading.attr="disabled">
+                        <button type="button" wire:click="saveGentan" class="btn btn-success ms-auto"
+                            wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="saveGentan">
                                 <i class="ri-save-3-line"></i> Save
                             </span>
@@ -769,7 +873,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" wire:click="saveLoss" class="btn btn-success ms-auto" wire:loading.attr="disabled">
+                        <button type="button" wire:click="saveLoss" class="btn btn-success ms-auto"
+                            wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="saveLoss">
                                 <i class="ri-save-3-line"></i> Save
                             </span>
@@ -792,8 +897,8 @@
         </div>
 
         <!-- modal edit loss seitai-->
-        <div class="modal fade" id="modal-edit-loss" tabindex="-1" role="dialog" aria-labelledby="modal-edit-loss"
-            aria-hidden="true" wire:ignore.self>
+        <div class="modal fade" id="modal-edit-loss" tabindex="-1" role="dialog"
+            aria-labelledby="modal-edit-loss" aria-hidden="true" wire:ignore.self>
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -806,28 +911,38 @@
                             <div class="col-12">
                                 <div class="form-group">
                                     <label for="edit-code_loss">Kode Loss Seitai</label>
-                                    <input type="text" wire:model.live="code_loss" id="edit-code_loss" class="form-control" placeholder="Kode Loss Seitai">
-                                    @error('code_loss') <span class="text-danger">{{ $message }}</span> @enderror
+                                    <input type="text" wire:model.live="code_loss" id="edit-code_loss"
+                                        class="form-control" placeholder="Kode Loss Seitai">
+                                    @error('code_loss')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
                                 </div>
                             </div>
                             <div class="col-12 mt-2">
                                 <div class="form-group">
                                     <label for="edit-namaloss">Nama Loss Seitai</label>
-                                    <input type="text" wire:model="namaloss" id="edit-namaloss" class="form-control readonly bg-light" readonly>
+                                    <input type="text" wire:model="namaloss" id="edit-namaloss"
+                                        class="form-control readonly bg-light" readonly>
                                 </div>
                             </div>
                             <div class="col-12 mt-2">
                                 <div class="form-group">
                                     <label for="edit-berat-loss">Berat Loss (kg)</label>
-                                    <input type="number" step="0.01" wire:model.live="berat_loss" id="edit-berat-loss" class="form-control" placeholder="Berat Loss">
-                                    @error('berat_loss') <span class="text-danger">{{ $message }}</span> @enderror
+                                    <input type="number" step="0.01" wire:model.live="berat_loss"
+                                        id="edit-berat-loss" class="form-control" placeholder="Berat Loss">
+                                    @error('berat_loss')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
                                 </div>
                             </div>
                             <div class="col-12 mt-2">
                                 <div class="form-group">
                                     <label for="edit-frekuensi-fr">Frekuensi</label>
-                                    <input type="number" wire:model.live="frekuensi" id="edit-frekuensi-fr" class="form-control" placeholder="Frekuensi">
-                                    @error('frekuensi') <span class="text-danger">{{ $message }}</span> @enderror
+                                    <input type="number" wire:model.live="frekuensi" id="edit-frekuensi-fr"
+                                        class="form-control" placeholder="Frekuensi">
+                                    @error('frekuensi')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
                                 </div>
                             </div>
                         </div>
@@ -840,7 +955,8 @@
                             </span>
                             <div wire:loading wire:target="updateLoss">
                                 <span class="d-flex align-items-center">
-                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    <span class="spinner-border spinner-border-sm" role="status"
+                                        aria-hidden="true"></span>
                                     <span class="ms-2">Updating...</span>
                                 </span>
                             </div>
@@ -853,8 +969,8 @@
         </div>
 
         <!-- modal edit gentan -->
-        <div class="modal fade" id="modal-edit-gentan" tabindex="-1" role="dialog" aria-labelledby="modal-edit-gentan"
-            aria-hidden="true" wire:ignore.self>
+        <div class="modal fade" id="modal-edit-gentan" tabindex="-1" role="dialog"
+            aria-labelledby="modal-edit-gentan" aria-hidden="true" wire:ignore.self>
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -867,36 +983,44 @@
                             <div class="col-12">
                                 <div class="form-group">
                                     <label for="edit-gentan_no">No Gentan</label>
-                                    <input type="text" wire:model.change="gentan_no" id="edit-gentan_no" class="form-control" placeholder="No Gentan"
-                                    x-on:keydown.tab="$event.preventDefault(); $refs.gentan_line_edit.focus();">
-                                    @error('gentan_no') <span class="text-danger">{{ $message }}</span> @enderror
+                                    <input type="text" wire:model.change="gentan_no" id="edit-gentan_no"
+                                        class="form-control" placeholder="No Gentan"
+                                        x-on:keydown.tab="$event.preventDefault(); $refs.gentan_line_edit.focus();">
+                                    @error('gentan_no')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
                                 </div>
                             </div>
                             <div class="col-12 mt-2">
                                 <div class="form-group">
                                     <label for="edit-machineno">No Mesin</label>
-                                    <input type="text" wire:model.live="machine_no" id="edit-machineno" class="form-control bg-light" readonly="readonly">
+                                    <input type="text" wire:model.live="machine_no" id="edit-machineno"
+                                        class="form-control bg-light" readonly="readonly">
                                 </div>
                             </div>
                             <div class="col-12 mt-2">
                                 <div class="form-group">
                                     <label for="edit-petugas">Petugas</label>
-                                    <input type="text" wire:model.live="petugas" id="edit-petugas" class="form-control bg-light" readonly="readonly">
+                                    <input type="text" wire:model.live="petugas" id="edit-petugas"
+                                        class="form-control bg-light" readonly="readonly">
                                 </div>
                             </div>
                             <div class="col-12 mt-2">
                                 <div class="form-group">
                                     <label for="edit-berat-produksi">Berat Produksi (kg)</label>
-                                    <input type="number" step="0.01" wire:model.live="berat_produksi" id="edit-berat-produksi" class="form-control bg-light" readonly="readonly">
-                                    @error('berat_produksi') <span class="text-danger">{{ $message }}</span> @enderror
+                                    <input type="number" step="0.01" wire:model.live="berat_produksi"
+                                        id="edit-berat-produksi" class="form-control bg-light" readonly="readonly">
+                                    @error('berat_produksi')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
                                 </div>
                             </div>
                             <div class="col-12 mt-2">
                                 <div class="form-group">
                                     <label for="edit-gentan_line">Line</label>
                                     <div class="input-group col-md-9 col-xs-8">
-                                        <select class="form-select" wire:model.defer="gentan_line" id="edit-gentan_line"
-                                            x-ref="gentan_line_edit">
+                                        <select class="form-select" wire:model.defer="gentan_line"
+                                            id="edit-gentan_line" x-ref="gentan_line_edit">
                                             <option value="">Pilih Line</option>
                                             <option value="A">A</option>
                                             <option value="B">B</option>
@@ -905,7 +1029,9 @@
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror
                                     </div>
-                                    @error('gentan_line') <span class="text-danger">{{ $message }}</span> @enderror
+                                    @error('gentan_line')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
                                 </div>
                             </div>
                         </div>
@@ -918,7 +1044,8 @@
                             </span>
                             <div wire:loading wire:target="updateGentan">
                                 <span class="d-flex align-items-center">
-                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    <span class="spinner-border spinner-border-sm" role="status"
+                                        aria-hidden="true"></span>
                                     <span class="ms-2">Updating...</span>
                                 </span>
                             </div>
@@ -1300,7 +1427,8 @@
                                                 Warna Belakang:
                                             </span>
                                             <input required type="text" class="form-control"
-                                                value="{{ $product->back_color_number ?? '' }}" placeholder="..." />
+                                                value="{{ $product->back_color_number ?? '' }}"
+                                                placeholder="..." />
                                         </div>
                                     </div>
                                     <div class="form-group mt-1">
@@ -1392,8 +1520,8 @@
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-6">Jarak Seal Bawah</label>
                                             <input required type="number" class="form-control"
-                                                value="{{ $product->lower_sealing_length ?? '' }}" placeholder="..."
-                                                min="0" />
+                                                value="{{ $product->lower_sealing_length ?? '' }}"
+                                                placeholder="..." min="0" />
                                         </div>
                                     </div>
                                     <div class="form-group mt-1">

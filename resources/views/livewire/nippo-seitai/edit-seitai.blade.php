@@ -173,20 +173,73 @@
                         </div>
                     </div>
                     {{-- Informasi nomor box (range: Awal sampai Akhir) --}}
-                    <div class="col-12 mt-1">
+                    <div class="col-12 col-lg-6 mt-1">
                         <div class="form-group">
                             <div class="row align-items-center">
-                                <label class="control-label col-12 col-md-1 pe-2">Nomor Box</label>
-                                <div class="col-12 col-md-11">
+                                <label class="control-label col-12 col-md-2 pe-2">Nomor Box</label>
+                                <div class="col-12 col-md-10">
                                     <div class="d-flex align-items-center ms-md-5">
                                         <input type="number" placeholder="Awal" class="form-control me-2" style="max-width:160px;"
-                                            wire:model.defer="start_box" id="start_box" />
+                                            wire:model.change="start_box" id="start_box" />
                                         <div class="mx-2">sampai</div>
                                         <input type="number" placeholder="Akhir" class="form-control ms-2" style="max-width:160px;"
-                                            wire:model.defer="end_box" />
+                                            wire:model.change="end_box" />
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                    {{-- Informasi jumlah box --}}
+                    <div class="col-12 col-lg-6 mt-1">
+                        <div class="form-group">
+                            <div class="input-group align-items-center">
+                                <label class="control-label col-12 col-md-3 col-lg-5">Jumlah Box</label>
+                                <input type="text" placeholder="-" class="form-control readonly bg-light"
+                                    readonly="readonly" wire:model="jumlah_box" />
+                                <span class="input-group-text">
+                                    box
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    {{-- error jumlah box --}}
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            @php
+                                $diffBox = $jumlah_box - $jumlah_box_product;
+                                $diffLabel = $diffBox > 0 ? '+' . $diffBox : (string) $diffBox;
+                            @endphp
+
+                            @if ($jumlah_box > 0 && $jumlah_box != $jumlah_box_product)
+                                <div class="alert alert-danger d-flex align-items-start">
+                                    <div class="me-3 fs-3">
+                                        <i class="ri-error-warning-line"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold mb-1">Cek Hasil Produksi — Ketidaksesuaian Ditemukan</div>
+                                        <div>Jumlah Box terinput: <span class="fw-bold">{{ $jumlah_box }}</span></div>
+                                        <div>Jumlah Box sesuai produk (harusnya): <span class="fw-bold">{{ $jumlah_box_product }}</span></div>
+                                        <div>Selisih: <span class="fw-bold">{{ $diffLabel }}</span> box</div>
+                                        <small class="text-muted d-block mt-2">
+                                            Tindakan yang disarankan:
+                                            <ul class="mb-0 mt-1">
+                                                <li>Periksa input Nomor Box (Awal/Akhir) dan jumlah produksi.</li>
+                                                <li>Verifikasi data LPK / Nomor Order terkait.</li>
+                                                <li>Jika data sudah benar, koreksi jumlah box atau jumlah produksi sebelum menyimpan.</li>
+                                            </ul>
+                                        </small>
+                                    </div>
+                                </div>
+                            @elseif ($jumlah_box > 0)
+                                <div class="alert alert-success d-flex align-items-center">
+                                    <div class="me-2 fs-3">
+                                        <i class="ri-check-line"></i>
+                                    </div>
+                                    <div>
+                                        <strong>OK:</strong> Jumlah Box sesuai produk — <span class="fw-bold">{{ $jumlah_box }}</span> box.
+                                    </div>
+                                </div>
+                            @endif
                         </div>
                     </div>
                     <div class="col-12 col-lg-4 mt-1">
