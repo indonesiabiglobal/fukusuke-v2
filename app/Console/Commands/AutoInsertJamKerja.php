@@ -95,6 +95,14 @@ class AutoInsertJamKerja extends Command
                     continue;
                 }
 
+                if ($department === 'infure') {
+                    $jamMatiMesinId = 10; // Infure specific jam mati mesin
+                    $offHour = '08:00:00';
+                } elseif ($department === 'seitai') {
+                    $jamMatiMesinId = 17; // Seitai specific jam mati mesin
+                    $offHour = '06:30:00';
+                }
+
                 // Insert jam kerja mesin
                 $jamKerjaMesin = new TdJamKerjaMesin();
                 $jamKerjaMesin->working_date = $workingDate->format('Y-m-d');
@@ -103,7 +111,7 @@ class AutoInsertJamKerja extends Command
                 $jamKerjaMesin->employee_id = null;
                 $jamKerjaMesin->department_id = $this->getDepartmentId($department);
                 $jamKerjaMesin->work_hour = '00:00:00';
-                $jamKerjaMesin->off_hour = '08:00:00';
+                $jamKerjaMesin->off_hour = $offHour;
                 $jamKerjaMesin->on_hour = '00:00:00';
                 $jamKerjaMesin->created_on = $currentTime;
                 $jamKerjaMesin->created_by = 'system';
@@ -111,17 +119,10 @@ class AutoInsertJamKerja extends Command
                 $jamKerjaMesin->updated_by = 'system';
 
                 $jamKerjaMesin->save();
-
-                // Insert jam mati mesin with id 10 and off_hour 08:00
-                if ($department === 'infure') {
-                    $jamMatiMesinId = 10; // Infure specific jam mati mesin
-                } elseif ($department === 'seitai') {
-                    $jamMatiMesinId = 17; // Seitai specific jam mati mesin
-                }
                 TdJamKerjaJamMatiMesin::create([
                     'jam_kerja_mesin_id' => $jamKerjaMesin->id,
                     'jam_mati_mesin_id' => $jamMatiMesinId,
-                    'off_hour' => '08:00',
+                    'off_hour' => $offHour,
                     'from' => null,
                     'to' => null,
                 ]);
