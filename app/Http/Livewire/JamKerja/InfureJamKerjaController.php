@@ -411,32 +411,56 @@ class InfureJamKerjaController extends Component
                 $machine = MsMachine::where('machineno', $this->machineno)->first();
                 $msemployee = MsEmployee::where('employeeno', $this->employeeno)->first();
 
-                $jamKerjaMesin = new TdJamKerjaMesin();
-                $jamKerjaMesin->working_date = $this->working_date;
-                $jamKerjaMesin->work_shift = $this->work_shift;
-                $jamKerjaMesin->machine_id = $machine->id;
-                $jamKerjaMesin->employee_id = $msemployee->id;
-                $jamKerjaMesin->department_id = departmentHelper::infureDivision()->id;
-                $jamKerjaMesin->work_hour = $this->work_hour;
-                $jamKerjaMesin->off_hour =  $this->totalOffHour;
-                $jamKerjaMesin->on_hour = $onHour;
-                $jamKerjaMesin->created_on = Carbon::now();
-                $jamKerjaMesin->created_by = auth()->user()->username;
-                $jamKerjaMesin->updated_on = Carbon::now();
-                $jamKerjaMesin->updated_by = auth()->user()->username;
+                // Upsert menggunakan kombinasi unique (working_date, machine_id, work_shift)
+                $now = Carbon::now();
+                $insertRow = [
+                    'working_date'   => $this->working_date,
+                    'work_shift'     => $this->work_shift,
+                    'machine_id'     => $machine->id,
+                    'employee_id'    => $msemployee->id,
+                    'department_id'  => departmentHelper::infureDivision()->id,
+                    'work_hour'      => $this->work_hour,
+                    'off_hour'       => $this->totalOffHour,
+                    'on_hour'        => $onHour,
+                    'created_on'     => $now,
+                    'created_by'     => auth()->user()->username,
+                    'updated_on'     => $now,
+                    'updated_by'     => auth()->user()->username,
+                ];
 
-                $jamKerjaMesin->save();
+                // Kolom unik sebagai constraint upsert
+                $uniqueBy = ['working_date', 'machine_id', 'work_shift'];
 
-                $dataJamMatiMesin = array_map(function ($item) use ($jamKerjaMesin) {
-                    return [
-                        'jam_kerja_mesin_id' => $jamKerjaMesin->id,
-                        'jam_mati_mesin_id' => $item['jam_mati_mesin_id'],
-                        'off_hour' => $item['off_hour'],
-                        'from' => $item['from'] ?? null,
-                        'to' => $item['to'] ?? null,
-                    ];
-                }, $this->dataJamMatiMesin);
-                TdJamKerjaJamMatiMesin::insert($dataJamMatiMesin);
+                // Kolom yang akan diupdate jika record sudah ada
+                $updateCols = ['employee_id', 'department_id', 'work_hour', 'off_hour', 'on_hour', 'updated_on', 'updated_by'];
+
+                TdJamKerjaMesin::upsert([$insertRow], $uniqueBy, $updateCols);
+
+                // Ambil record yang sekarang tersimpan/diupdate
+                $jamKerjaMesin = TdJamKerjaMesin::where('working_date', $this->working_date)
+                    ->where('machine_id', $machine->id)
+                    ->where('work_shift', $this->work_shift)
+                    ->first();
+
+                // Simpan/replace jam mati mesin: hapus dulu yg lama lalu insert yg baru
+                TdJamKerjaJamMatiMesin::where('jam_kerja_mesin_id', $jamKerjaMesin->id)->delete();
+
+                if (!empty($this->dataJamMatiMesin)) {
+                    $dataJamMatiMesin = array_map(function ($item) use ($jamKerjaMesin) {
+                        return [
+                            'jam_kerja_mesin_id' => $jamKerjaMesin->id,
+                            'jam_mati_mesin_id'  => $item['jam_mati_mesin_id'],
+                            'off_hour'           => $item['off_hour'],
+                            'from'               => $item['from'] ?? null,
+                            'to'                 => $item['to'] ?? null,
+                        ];
+                    }, $this->dataJamMatiMesin);
+
+                    TdJamKerjaJamMatiMesin::insert($dataJamMatiMesin);
+                }
+
+                // Pastikan orderid diarahkan ke record yang tersimpan/diupdate
+                $this->orderid = $jamKerjaMesin->id;
                 $this->resetInputJamMatiMesin();
                 $this->dataJamMatiMesin = [];
 

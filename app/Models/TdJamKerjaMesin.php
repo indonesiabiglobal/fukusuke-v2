@@ -23,12 +23,12 @@ class TdJamKerjaMesin extends Model
         parent::boot();
 
         static::creating(function ($model) {
-            $model->created_by = Auth::user()->username;
-            $model->updated_by = Auth::user()->username;
+            $model->created_by = Auth::user()->username ?? 'system';
+            $model->updated_by = Auth::user()->username ?? 'system';
         });
 
         static::updating(function ($model) {
-            $model->updated_by = Auth::user()->username;
+            $model->updated_by = Auth::user()->username ?? 'system';
         });
     }
 

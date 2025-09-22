@@ -120,10 +120,9 @@
                                             <label for="">Tanggal</label>
                                             <div class="form-group" style="margin-left:1px; white-space:nowrap">
                                                 <div class="input-group">
-                                                    <input class="form-control" style="padding:0.44rem"
-                                                        data-provider="flatpickr" data-date-format="d-m-Y"
-                                                        type="text" wire:model.defer="working_date"
-                                                        placeholder="yyyy/mm/dd" />
+                                                    <input class="form-control" style="padding:0.44rem" autocomplete="off"
+                                                        data-provider="flatpickr" data-date-format="d-m-Y" data-max-date="{{ now()->format('d-m-Y') }}"
+                                                        type="text" wire:model.defer="working_date" placeholder="yyyy/mm/dd" />
                                                     <span class="input-group-text py-0">
                                                         <i class="ri-calendar-event-fill fs-4"></i>
                                                     </span>

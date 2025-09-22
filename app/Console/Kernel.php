@@ -12,7 +12,47 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        // Auto-insert jam kerja for Infure department
+        // Run every 2 hours to catch shift changes
+        // $schedule->command('jamkerja:auto-insert --department=infure')
+        //         ->everyTwoHours()
+        //         ->withoutOverlapping()
+        //         ->runInBackground();
+
+        // Auto-insert jam kerja for Seitai department
+        // Run every 2 hours to catch shift changes
+        // $schedule->command('jamkerja:auto-insert --department=seitai')
+        //         ->everyTwoHours()
+        //         ->withoutOverlapping()
+        //         ->runInBackground();
+
+        // Alternative: Run at specific times that align with shift changes
+        // Uncomment and modify the times below based on your shift schedule
+
+        // Run at 7:15 AM (after morning shift starts)
+        $schedule->command('jamkerja:auto-insert --department=infure')
+                ->dailyAt('07:15')
+                ->withoutOverlapping();
+        $schedule->command('jamkerja:auto-insert --department=seitai')
+                ->dailyAt('07:15')
+                ->withoutOverlapping();
+
+        // Run at 3:15 PM (after afternoon shift starts)
+        $schedule->command('jamkerja:auto-insert --department=infure')
+                ->dailyAt('12:21')
+                ->withoutOverlapping();
+        $schedule->command('jamkerja:auto-insert --department=seitai')
+                ->dailyAt('15:15')
+                ->withoutOverlapping();
+
+
+        // Run at 11:15 PM (after night shift starts)
+        $schedule->command('jamkerja:auto-insert --department=infure')
+                ->dailyAt('23:15')
+                ->withoutOverlapping();
+        $schedule->command('jamkerja:auto-insert --department=seitai')
+                ->dailyAt('23:15')
+                ->withoutOverlapping();
     }
 
     /**

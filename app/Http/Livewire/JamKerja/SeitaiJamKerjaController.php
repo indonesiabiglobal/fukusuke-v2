@@ -408,33 +408,69 @@ class SeitaiJamKerjaController extends Component
             } else {
                 $machine = MsMachine::where('machineno', $this->machineno)->first();
                 $msemployee = MsEmployee::where('employeeno', $this->employeeno)->first();
+                // cek apakah sudah ada record unik berdasarkan working_date, work_shift, machine_id
+                $existing = TdJamKerjaMesin::where('working_date', $this->working_date)
+                    ->where('work_shift', $this->work_shift)
+                    ->where('machine_id', $machine->id)
+                    ->first();
 
-                $jamKerjaMesin = new TdJamKerjaMesin();
-                $jamKerjaMesin->working_date = $this->working_date;
-                $jamKerjaMesin->work_shift = $this->work_shift;
-                $jamKerjaMesin->machine_id = $machine->id;
-                $jamKerjaMesin->employee_id = $msemployee->id;
-                $jamKerjaMesin->department_id = departmentHelper::seitaiDivision()->id;
-                $jamKerjaMesin->work_hour = $this->work_hour;
-                $jamKerjaMesin->off_hour =  $this->totalOffHour;
-                $jamKerjaMesin->on_hour = $onHour;
-                $jamKerjaMesin->created_on = Carbon::now();
-                $jamKerjaMesin->created_by = auth()->user()->username;
-                $jamKerjaMesin->updated_on = Carbon::now();
-                $jamKerjaMesin->updated_by = auth()->user()->username;
+                if ($existing) {
+                    // lakukan update (upsert -> update)
+                    $existing->employee_id = $msemployee->id;
+                    $existing->department_id = departmentHelper::seitaiDivision()->id;
+                    $existing->work_hour = $this->work_hour;
+                    $existing->off_hour = $this->totalOffHour;
+                    $existing->on_hour = $onHour;
+                    $existing->updated_on = Carbon::now();
+                    $existing->updated_by = auth()->user()->username;
+                    $existing->save();
 
-                $jamKerjaMesin->save();
+                    // ganti semua jam mati mesin yang terkait dengan data baru
+                    TdJamKerjaJamMatiMesin::where('jam_kerja_mesin_id', $existing->id)->delete();
 
-                $dataJamMatiMesin = array_map(function ($item) use ($jamKerjaMesin) {
-                    return [
-                        'jam_kerja_mesin_id' => $jamKerjaMesin->id,
-                        'jam_mati_mesin_id' => $item['jam_mati_mesin_id'],
-                        'off_hour' => $item['off_hour'],
-                        'from' => $item['from'] ?? null,
-                        'to' => $item['to'] ?? null,
-                    ];
-                }, $this->dataJamMatiMesin);
-                TdJamKerjaJamMatiMesin::insert($dataJamMatiMesin);
+                    if (!empty($this->dataJamMatiMesin)) {
+                        $dataJamMatiMesin = array_map(function ($item) use ($existing) {
+                            return [
+                                'jam_kerja_mesin_id' => $existing->id,
+                                'jam_mati_mesin_id' => $item['jam_mati_mesin_id'],
+                                'off_hour' => $item['off_hour'],
+                                'from' => $item['from'] ?? null,
+                                'to' => $item['to'] ?? null,
+                            ];
+                        }, $this->dataJamMatiMesin);
+                        TdJamKerjaJamMatiMesin::insert($dataJamMatiMesin);
+                    }
+                } else {
+                    // belum ada -> insert baru
+                    $jamKerjaMesin = new TdJamKerjaMesin();
+                    $jamKerjaMesin->working_date = $this->working_date;
+                    $jamKerjaMesin->work_shift = $this->work_shift;
+                    $jamKerjaMesin->machine_id = $machine->id;
+                    $jamKerjaMesin->employee_id = $msemployee->id;
+                    $jamKerjaMesin->department_id = departmentHelper::seitaiDivision()->id;
+                    $jamKerjaMesin->work_hour = $this->work_hour;
+                    $jamKerjaMesin->off_hour =  $this->totalOffHour;
+                    $jamKerjaMesin->on_hour = $onHour;
+                    $jamKerjaMesin->created_on = Carbon::now();
+                    $jamKerjaMesin->created_by = auth()->user()->username;
+                    $jamKerjaMesin->updated_on = Carbon::now();
+                    $jamKerjaMesin->updated_by = auth()->user()->username;
+
+                    $jamKerjaMesin->save();
+
+                    if (!empty($this->dataJamMatiMesin)) {
+                        $dataJamMatiMesin = array_map(function ($item) use ($jamKerjaMesin) {
+                            return [
+                                'jam_kerja_mesin_id' => $jamKerjaMesin->id,
+                                'jam_mati_mesin_id' => $item['jam_mati_mesin_id'],
+                                'off_hour' => $item['off_hour'],
+                                'from' => $item['from'] ?? null,
+                                'to' => $item['to'] ?? null,
+                            ];
+                        }, $this->dataJamMatiMesin);
+                        TdJamKerjaJamMatiMesin::insert($dataJamMatiMesin);
+                    }
+                }
                 $this->resetInputJamMatiMesin();
                 $this->dataJamMatiMesin = [];
 

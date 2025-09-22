@@ -10,7 +10,7 @@ class TdJamKerjaJamMatiMesin extends Model
 {
     use HasFactory;
     protected $table = "tdjamkerja_jammatimesin";
-    protected $fillable = [];
+    protected $guarded = ['id'];
     public $timestamps = false;
 
     // relations
