@@ -343,7 +343,7 @@ class CheckListJamKerjaController extends Component
             $columnItemEnd++;
 
             // %jam jalan mesin
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['on_hour'] && $dataItem['work_hour'] ? (formatTime::timeToMinutes($dataItem['on_hour']) / formatTime::timeToMinutes($dataItem['work_hour'])) : 0);
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['on_hour'] && $dataItem['work_hour'] && formatTime::timeToMinutes($dataItem['work_hour']) > 0 ? (formatTime::timeToMinutes($dataItem['on_hour']) / formatTime::timeToMinutes($dataItem['work_hour'])) : 0);
             phpspreadsheet::numberPercentageOrZero($spreadsheet, $columnItemEnd . $rowItem);
             $columnItemEnd++;
 
