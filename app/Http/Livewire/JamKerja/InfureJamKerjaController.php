@@ -304,8 +304,6 @@ class InfureJamKerjaController extends Component
             $this->resetInputJamMatiMesin();
         } catch (\Exception $e) {
             $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            $this->dispatch('notification', ['type' => 'warning', 'message' => $e->validator->errors()]);
         }
     }
 

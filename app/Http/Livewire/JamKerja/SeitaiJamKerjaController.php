@@ -242,7 +242,7 @@ class SeitaiJamKerjaController extends Component
         try {
             $this->computeOffHourFromTimes();
 
-            $validatedData = $this->validate([
+            $this->validate([
                 'jamMatiMesinId' => 'required',
                 'jamMatiMesinCode' => 'required',
                 'jamMatiMesinName' => 'required',
@@ -302,8 +302,6 @@ class SeitaiJamKerjaController extends Component
             $this->resetInputJamMatiMesin();
         } catch (\Exception $e) {
             $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            $this->dispatch('notification', ['type' => 'warning', 'message' => $e->validator->errors()]);
         }
     }
 

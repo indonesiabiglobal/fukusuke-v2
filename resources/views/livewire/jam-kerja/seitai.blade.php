@@ -107,7 +107,7 @@
                     {{-- Modal ADD jam kerja --}}
                     <div class="modal fade" id="modal-add" data-bs-backdrop="static" data-bs-keyboard="false"
                         tabindex="-1" role="dialog" aria-labelledby="modal-add" aria-hidden="true" wire:ignore.self>
-                        <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h2 class="h6 modal-title">Add Jam Kerja Seitai</h2>
@@ -213,6 +213,8 @@
                                                                     <th class="border-0">Kode</th>
                                                                     <th class="border-0">Nama</th>
                                                                     <th class="border-0">Jam Mati Mesin</th>
+                                                                    <th class="border-0">Dari</th>
+                                                                    <th class="border-0">Sampai</th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
@@ -248,6 +250,8 @@
                                                                         <td>{{ $item['code'] }}</td>
                                                                         <td>{{ $item['name'] ?? '' }}</td>
                                                                         <td>{{ $item['off_hour'] ?? '00:00' }}</td>
+                                                                        <td>{{ $item['from'] ?? '00:00' }}</td>
+                                                                        <td>{{ $item['to'] ?? '00:00' }}</td>
                                                                     </tr>
                                                                 @empty
                                                                     <tr>
@@ -299,7 +303,7 @@
                     <div class="modal fade" id="modal-edit" data-bs-backdrop="static" data-bs-keyboard="false"
                         tabindex="-1" role="dialog" aria-labelledby="modal-edit" aria-hidden="true"
                         wire:ignore.self>
-                        <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h2 class="h6 modal-title">Edit Jam Kerja Seitai</h2>
@@ -398,6 +402,8 @@
                                                                     <th class="border-0">Kode</th>
                                                                     <th class="border-0">Nama</th>
                                                                     <th class="border-0">Jam Mati Mesin</th>
+                                                                    <th class="border-0">Dari</th>
+                                                                    <th class="border-0">Sampai</th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
@@ -433,6 +439,8 @@
                                                                         <td>{{ $item['code'] }}</td>
                                                                         <td>{{ $item['name'] ?? '' }}</td>
                                                                         <td>{{ $item['off_hour'] ?? '00:00' }}</td>
+                                                                        <td>{{ $item['from'] ?? '00:00' }}</td>
+                                                                        <td>{{ $item['to'] ?? '00:00' }}</td>
                                                                     </tr>
                                                                 @empty
                                                                     <tr>
@@ -502,7 +510,7 @@
                                                 <div class="input-group col-md-9 col-xs-8">
                                                     <input class="form-control" wire:model.change="jamMatiMesinCode"
                                                         x-ref="jamMatiMesinCodeInput" type="text"
-                                                        placeholder="..."  id="jamMatiMesinCode"
+                                                        placeholder="..."  id="jamMatiMesinCode" name="jamMatiMesinCode"
                                                         oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                                         maxlength="3" autofocus
                                                         x-on:keydown.tab="$event.preventDefault(); $refs.jamMatiFromInput.focus();" />
