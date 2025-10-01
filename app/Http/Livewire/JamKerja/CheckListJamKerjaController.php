@@ -134,23 +134,112 @@ class CheckListJamKerjaController extends Component
     {
         ini_set('max_execution_time', '300');
         $spreadsheet = new Spreadsheet();
-        $activeWorksheet = $spreadsheet->getActiveSheet();
-        $activeWorksheet->setShowGridlines(false);
+
+        // Buat sheet pertama (General)
+        $generalWorksheet = $spreadsheet->getActiveSheet();
+        $generalWorksheet->setTitle('General');
+        $generalWorksheet->setShowGridlines(false);
+
+        // Buat sheet kedua (Detail)
+        $detailWorksheet = $spreadsheet->createSheet();
+        $detailWorksheet->setTitle('Detail');
+        $detailWorksheet->setShowGridlines(false);
 
         // Set locale agar tanggal indonesia
         Carbon::setLocale('id');
 
+        // Setup General Sheet (Ringkasan)
+        $this->setupGeneralSheet($generalWorksheet, $nippo, $filter, $tglAwal, $tglAkhir, $spreadsheet);
+
+        // Setup Detail Sheet (Detail dengan Jam Mati Mesin)
+        $this->setupDetailSheet($detailWorksheet, $nippo, $filter, $tglAwal, $tglAkhir, $spreadsheet);
+
+        // Get data
+        $data = $this->getData($tglAwal, $tglAkhir, $filter, $nippo, $isChecklist);
+
+        if (count($data) == 0) {
+            $response = [
+                'status' => 'error',
+                'message' => "Data pada periode tanggal tersebut tidak ditemukan"
+            ];
+            return $response;
+        }
+
+        // Fill General Sheet (ringkasan tanpa detail jam mati)
+        $this->fillGeneralSheet($generalWorksheet, $data, $spreadsheet);
+
+        // Fill Detail Sheet (dengan detail jam mati mesin)
+        $this->fillDetailSheet($detailWorksheet, $data, $spreadsheet);
+
+        // Set active sheet to General
+        $spreadsheet->setActiveSheetIndex(0);
+
+        $writer = new Xlsx($spreadsheet);
+        $filename = 'asset/report/JamKerja-' . $nippo . '.xlsx';
+        $writer->save($filename);
+        $response = [
+            'status' => 'success',
+            'filename' => $filename
+        ];
+        return $response;
+    }
+
+    private function setupGeneralSheet($worksheet, $nippo, $filter, $tglAwal, $tglAkhir, $spreadsheet)
+    {
         // Judul
-        $activeWorksheet->setCellValue('A1', 'CHECKLIST JAM KERJA ' . strtoupper($nippo) . ' DEPARTMENT :' . ($filter['department_id'] ? MsDepartment::find($filter['department_id'])->name : 'ALL'));
-        $activeWorksheet->setCellValue('A2', 'Periode: ' . $tglAwal->translatedFormat('d-M-Y H:i') . '  ~  ' . $tglAkhir->translatedFormat('d-M-Y H:i'));
+        $worksheet->setCellValue('A1', 'CHECKLIST JAM KERJA ' . strtoupper($nippo) . ' DEPARTMENT :' . (isset($filter['department_id']) ? MsDepartment::find($filter['department_id'])->name : 'ALL'));
+        $worksheet->setCellValue('A2', 'Periode: ' . $tglAwal->translatedFormat('d-M-Y H:i') . '  ~  ' . $tglAkhir->translatedFormat('d-M-Y H:i'));
+
         // Style Judul
-        phpspreadsheet::styleFont($spreadsheet, 'A1:A2', true, 11, 'Calibri');
+        $worksheet->getStyle('A1:A2')->getFont()->setBold(true)->setName('Calibri')->setSize(11);
 
-        // header
+        // Header General (tanpa detail jam mati mesin)
         $rowHeaderStart = 3;
-        $columnHeaderStart = 'A';
-        $columnHeaderEnd = 'A';
+        $header = [
+            'No.',
+            'Tanggal',
+            'Shift',
+            'Nomor Mesin',
+            'NIK',
+            'Petugas',
+            'Jam Kerja',
+            'Jam Mati',
+            'Jam Jalan',
+            '% Jalan Mesin'
+        ];
 
+        $columnHeaderEnd = 'A';
+        foreach ($header as $value) {
+            $worksheet->setCellValue($columnHeaderEnd . $rowHeaderStart, $value);
+            $columnHeaderEnd++;
+        }
+        $columnHeaderEnd = chr(ord($columnHeaderEnd) - 1);
+
+        // Setup halaman
+        $this->setupPageSettings($worksheet);
+
+        // Style header
+        $worksheet->getStyle('A' . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart)
+            ->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        $worksheet->getStyle('A' . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart)
+            ->getFont()->setBold(true)->setName('Calibri')->setSize(9);
+        $worksheet->getStyle('A' . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart)
+            ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $worksheet->getStyle('A' . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart)->getAlignment()->setWrapText(true);
+        phpspreadsheet::textAlignCenter($spreadsheet, 'A' . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
+    }
+
+    private function setupDetailSheet($worksheet, $nippo, $filter, $tglAwal, $tglAkhir, $spreadsheet)
+    {
+        // Judul
+        $worksheet->setCellValue('A1', 'CHECKLIST JAM KERJA ' . strtoupper($nippo) . ' DEPARTMENT :' . (isset($filter['department_id']) ? MsDepartment::find($filter['department_id'])->name : 'ALL'));
+        $worksheet->setCellValue('A2', 'Periode: ' . $tglAwal->translatedFormat('d-M-Y H:i') . '  ~  ' . $tglAkhir->translatedFormat('d-M-Y H:i'));
+
+        // Style Judul
+        $worksheet->getStyle('A1:A2')->getFont()->setBold(true)->setName('Calibri')->setSize(11);
+
+        // Header Detail (dengan detail jam mati mesin)
+        $rowHeaderStart = 3;
         $header = [
             'No.',
             'Tanggal',
@@ -169,53 +258,57 @@ class CheckListJamKerjaController extends Component
             'Sampai Jam'
         ];
 
-        foreach ($header as $key => $value) {
-            $activeWorksheet->setCellValue($columnHeaderEnd . $rowHeaderStart, $value);
+        $columnHeaderEnd = 'A';
+        foreach ($header as $value) {
+            $worksheet->setCellValue($columnHeaderEnd . $rowHeaderStart, $value);
             $columnHeaderEnd++;
         }
+        $columnHeaderEnd = chr(ord($columnHeaderEnd) - 1);
 
-        /**
-         * Mengatur halaman
-         */
-        $activeWorksheet->freezePane('A4');
-        // Mengatur ukuran kertas menjadi A4
-        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
-        // Mengatur orientasi menjadi landscape
-        $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_PORTRAIT);
-        $activeWorksheet->getStyle($columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart)->getAlignment()->setWrapText(true);
-        // Mengatur agar semua kolom muat dalam satu halaman
-        $activeWorksheet->getPageSetup()->setFitToWidth(1);
-        $activeWorksheet->getPageSetup()->setFitToHeight(0); // Biarkan tinggi menyesuaikan otomatis
-        // Set header berulang untuk print
-        $activeWorksheet->getPageSetup()->setRowsToRepeatAtTop([1, 3]);
+        // Setup halaman
+        $this->setupPageSettings($worksheet);
 
-        // Jika ingin memastikan rasio tetap terjaga
-        $activeWorksheet->getPageSetup()->setFitToPage(true);
-        // Mengatur margin halaman menjadi 0.75 cm di semua sisi
-        $activeWorksheet->getPageMargins()->setTop(1.1 / 2.54);
-        $activeWorksheet->getPageMargins()->setBottom(1.0 / 2.54);
-        $activeWorksheet->getPageMargins()->setLeft(0.75 / 2.54);
-        $activeWorksheet->getPageMargins()->setRight(0.75 / 2.54);
-        $activeWorksheet->getPageMargins()->setHeader(0.4 / 2.54);
-        $activeWorksheet->getPageMargins()->setFooter(0.5 / 2.54);
-        // Mengatur tinggi sel agar otomatis menyesuaikan dengan konten
-        $activeWorksheet->getDefaultRowDimension()->setRowHeight(-1);
+        // Style header
+        $worksheet->getStyle('A' . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart)
+            ->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        $worksheet->getStyle('A' . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart)
+            ->getFont()->setBold(true)->setName('Calibri')->setSize(9);
+        $worksheet->getStyle('A' . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart)
+            ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $worksheet->getStyle('A' . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart)->getAlignment()->setWrapText(true);
+        phpspreadsheet::textAlignCenter($spreadsheet, 'A' . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
+    }
 
-        // Header yang hanya muncul saat print
-        $activeWorksheet->getHeaderFooter()->setOddHeader('&L&"Calibri,Bold"&14Fukusuke - Production Control');
-        // Footer
+    private function setupPageSettings($worksheet)
+    {
+        $worksheet->freezePane('A4');
+        $worksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        $worksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_PORTRAIT);
+        $worksheet->getPageSetup()->setFitToWidth(1);
+        $worksheet->getPageSetup()->setFitToHeight(0);
+        $worksheet->getPageSetup()->setRowsToRepeatAtTop([1, 3]);
+        $worksheet->getPageSetup()->setFitToPage(true);
+
+        // Margins
+        $worksheet->getPageMargins()->setTop(1.1 / 2.54);
+        $worksheet->getPageMargins()->setBottom(1.0 / 2.54);
+        $worksheet->getPageMargins()->setLeft(0.75 / 2.54);
+        $worksheet->getPageMargins()->setRight(0.75 / 2.54);
+        $worksheet->getPageMargins()->setHeader(0.4 / 2.54);
+        $worksheet->getPageMargins()->setFooter(0.5 / 2.54);
+
+        $worksheet->getDefaultRowDimension()->setRowHeight(-1);
+
+        // Header Footer
+        $worksheet->getHeaderFooter()->setOddHeader('&L&"Calibri,Bold"&14Fukusuke - Production Control');
         $currentDate = date('d M Y - H:i');
         $footerLeft = '&L&"Calibri"&10Printed: ' . $currentDate . ', by: ' . auth()->user()->username;
         $footerRight = '&R&"Calibri"&10Page: &P of: &N';
-        $activeWorksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
+        $worksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
+    }
 
-        $columnHeaderEnd = chr(ord($columnHeaderEnd) - 1);
-
-        // style header
-        phpspreadsheet::addFullBorder($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
-        phpspreadsheet::styleFont($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart, true, 9, 'Calibri');
-        phpspreadsheet::textAlignCenter($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
-
+    private function getData($tglAwal, $tglAkhir, $filter, $nippo, $isChecklist)
+    {
         if (!$isChecklist) {
             $tglAkhir = Carbon::parse($tglAkhir)->subDay();
         }
@@ -232,7 +325,6 @@ class CheckListJamKerjaController extends Component
         $tableName = (new TdJamKerjaMesin)->getTable();
         if (isset($filter['transaksi']) && $filter['transaksi'] != '') {
             if ($filter['transaksi'] == 1) {
-                // gunakan subquery untuk mengambil work_hour_from dari tabel msworkingshift agar tidak perlu join
                 $query = $query->whereRaw(
                     "({$tableName}.working_date + (select work_hour_from from msworkingshift where id = {$tableName}.work_shift)) BETWEEN ? AND ?",
                     [
@@ -272,154 +364,240 @@ class CheckListJamKerjaController extends Component
             });
         }
 
-        $data = $query
+        return $query
             ->orderBy('working_date', 'asc')
             ->orderBy('machine_id', 'asc')
             ->orderBy('work_shift', 'asc')
             ->get();
+    }
 
-        if (count($data) == 0) {
-            $response = [
-                'status' => 'error',
-                'message' => "Data pada periode tanggal tersebut tidak ditemukan"
-            ];
-
-            return $response;
-        }
-
+    private function fillGeneralSheet($worksheet, $data, $spreadsheet)
+    {
         $rowItemStart = 4;
-        $columnItemStart = 'A';
         $rowItem = $rowItemStart;
 
-        $columnNIK = 'E';
-        $columnJamKerja = 'G';
-        $columnJamJalan = 'I';
-
-        // inisialisasi total
         $totalJamKerja = 0;
         $totalJamMati = 0;
         $totalJamJalan = 0;
 
         foreach ($data as $key => $dataItem) {
-            $columnItemEnd = $columnItemStart;
-            $rowDataStart = $rowItem;
+            $columnItemEnd = 'A';
 
             // No
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $key + 1);
+            $worksheet->setCellValue($columnItemEnd . $rowItem, $key + 1);
             $columnItemEnd++;
-            // tanggal
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($dataItem['working_date'])->translatedFormat('d-M-Y'));
+            // Tanggal
+            $worksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($dataItem['working_date'])->translatedFormat('d-M-Y'));
             $columnItemEnd++;
-
-            // shift
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['work_shift']);
+            // Shift
+            $worksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['work_shift']);
             $columnItemEnd++;
-
-            // nomor mesin
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['machine']['machineno'] ?? '');
+            // Nomor mesin
+            $worksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['machine']['machineno'] ?? '');
             $columnItemEnd++;
-
-            // nik
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['employee']['employeeno'] ?? '');
+            // NIK
+            $worksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['employee']['employeeno'] ?? '');
             $columnItemEnd++;
-
-            // nama petugas
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['employee']['empname'] ?? '');
+            // Nama petugas
+            $worksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['employee']['empname'] ?? '');
             $columnItemEnd++;
-
-            // jam kerja
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($dataItem['work_hour'])->translatedFormat('H:i'));
+            // Jam kerja
+            $worksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($dataItem['work_hour'])->translatedFormat('H:i'));
             $totalJamKerja += formatTime::timeToMinutes($dataItem['work_hour']);
             $columnItemEnd++;
-
-            // jam mati
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($dataItem['off_hour'])->translatedFormat('H:i'));
+            // Jam mati
+            $worksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($dataItem['off_hour'])->translatedFormat('H:i'));
             $totalJamMati += formatTime::timeToMinutes($dataItem['off_hour']);
             $columnItemEnd++;
-
-            // jam jalan
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($dataItem['on_hour'])->translatedFormat('H:i'));
+            // Jam jalan
+            $worksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($dataItem['on_hour'])->translatedFormat('H:i'));
             $totalJamJalan += formatTime::timeToMinutes($dataItem['on_hour']);
             $columnItemEnd++;
+            // % Jalan mesin
+            $percentage = $dataItem['on_hour'] && $dataItem['work_hour'] && formatTime::timeToMinutes($dataItem['work_hour']) > 0
+                ? (formatTime::timeToMinutes($dataItem['on_hour']) / formatTime::timeToMinutes($dataItem['work_hour']))
+                : 0;
+            $worksheet->setCellValue($columnItemEnd . $rowItem, $percentage);
+            $worksheet->getStyle($columnItemEnd . $rowItem)->getNumberFormat()->setFormatCode('0.00%');
 
-            // %jam jalan mesin
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['on_hour'] && $dataItem['work_hour'] && formatTime::timeToMinutes($dataItem['work_hour']) > 0 ? (formatTime::timeToMinutes($dataItem['on_hour']) / formatTime::timeToMinutes($dataItem['work_hour'])) : 0);
-            phpspreadsheet::numberPercentageOrZero($spreadsheet, $columnItemEnd . $rowItem);
+            $rowItem++;
+        }
+
+        // Style data
+        $worksheet->getStyle('A' . $rowItemStart . ':E' . $rowItem)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $worksheet->getStyle('G' . $rowItemStart . ':J' . $rowItem)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $worksheet->getStyle('A' . $rowItemStart . ':J' . $rowItem)->getFont()->setName('Calibri')->setSize(8);
+
+        // style header
+        phpspreadsheet::addFullBorder($spreadsheet, 'A' . $rowItemStart . ':J' . $rowItem);
+        phpspreadsheet::styleFont($spreadsheet, 'A' . $rowItemStart . ':J' . $rowItem, false, 8, 'Calibri');
+        phpspreadsheet::textAlignCenter($spreadsheet, 'A' . $rowItemStart . ':J' . $rowItem);
+
+        // Total
+        $this->addGeneralTotal($worksheet, $rowItem, $totalJamKerja, $totalJamMati, $totalJamJalan);
+
+        // Auto size columns
+        $worksheet->getColumnDimension('E')->setAutoSize(true);
+        $worksheet->getColumnDimension('F')->setAutoSize(true);
+    }
+
+    private function fillDetailSheet($worksheet, $data, $spreadsheet)
+    {
+        $rowItemStart = 4;
+        $rowItem = $rowItemStart;
+
+        $totalJamKerja = 0;
+        $totalJamMati = 0;
+        $totalJamJalan = 0;
+
+        foreach ($data as $key => $dataItem) {
+            $rowDataStart = $rowItem;
+            $columnItemEnd = 'A';
+
+            // No
+            $worksheet->setCellValue($columnItemEnd . $rowItem, $key + 1);
             $columnItemEnd++;
+            // Tanggal
+            $worksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($dataItem['working_date'])->translatedFormat('d-M-Y'));
+            $columnItemEnd++;
+            // Shift
+            $worksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['work_shift']);
+            $columnItemEnd++;
+            // Nomor mesin
+            $worksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['machine']['machineno'] ?? '');
+            $columnItemEnd++;
+            // NIK
+            $worksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['employee']['employeeno'] ?? '');
+            $columnItemEnd++;
+            // Nama petugas
+            $worksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['employee']['empname'] ?? '');
+            $columnItemEnd++;
+            // Jam kerja
+            $worksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($dataItem['work_hour'])->translatedFormat('H:i'));
+            $totalJamKerja += formatTime::timeToMinutes($dataItem['work_hour']);
+            $columnItemEnd++;
+            // Jam mati
+            $worksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($dataItem['off_hour'])->translatedFormat('H:i'));
+            $totalJamMati += formatTime::timeToMinutes($dataItem['off_hour']);
+            $columnItemEnd++;
+            // Jam jalan
+            $worksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($dataItem['on_hour'])->translatedFormat('H:i'));
+            $totalJamJalan += formatTime::timeToMinutes($dataItem['on_hour']);
+            $columnItemEnd++;
+            // % Jalan mesin
+            $percentage = $dataItem['on_hour'] && $dataItem['work_hour'] && formatTime::timeToMinutes($dataItem['work_hour']) > 0
+                ? (formatTime::timeToMinutes($dataItem['on_hour']) / formatTime::timeToMinutes($dataItem['work_hour']))
+                : 0;
+            $worksheet->setCellValue($columnItemEnd . $rowItem, $percentage);
+            $worksheet->getStyle($columnItemEnd . $rowItem)->getNumberFormat()->setFormatCode('0.00%');
+            $columnItemEnd++;
+            phpspreadsheet::addFullBorder($spreadsheet, 'A' . $rowItem . ':O' . $rowItem);
 
+            // Detail jam mati mesin
             $columnDetailStart = $columnItemEnd;
             foreach ($dataItem['jamKerjaJamMatiMesin'] as $detail) {
                 $columnItemEnd = $columnDetailStart;
                 // Kode Jam Mati Mesin
-                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $detail->jamMatiMesin->code ?? '');
+                $worksheet->setCellValue($columnItemEnd . $rowItem, $detail->jamMatiMesin->code ?? '');
                 $columnItemEnd++;
                 // Nama Jam Mati Mesin
-                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $detail->jamMatiMesin->name ?? '');
+                $worksheet->setCellValue($columnItemEnd . $rowItem, $detail->jamMatiMesin->name ?? '');
                 $columnItemEnd++;
                 // Jam Mati Mesin
-                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($detail->off_hour)->translatedFormat('H:i'));
+                $worksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($detail->off_hour)->translatedFormat('H:i'));
                 $columnItemEnd++;
                 // Dari Jam
-                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($detail->from)->translatedFormat('H:i'));
+                $worksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($detail->from)->translatedFormat('H:i'));
                 $columnItemEnd++;
                 // Sampai Jam
-                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($detail->to)->translatedFormat('H:i'));
+                $worksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($detail->to)->translatedFormat('H:i'));
                 $columnItemEnd++;
+                phpspreadsheet::addFullBorder($spreadsheet, 'K' . $rowItem . ':O' . $rowItem);
                 $rowItem++;
             }
-            phpspreadsheet::addBorderDottedMiddleHorizontal($spreadsheet, $columnItemStart . $rowDataStart . ':' . chr(ord($columnItemEnd) - 1) . $rowItem);
-
-            $columnItemEnd++;
         }
+        phpspreadsheet::styleFont($spreadsheet, 'A' . $rowItem . ':O' . $rowItem, false, 8, 'Calibri');
+        phpspreadsheet::textAlignCenter($spreadsheet, 'A' . $rowItem . ':O' . $rowItem);
 
-        phpspreadsheet::textAlignCenter($spreadsheet, $columnItemStart . $rowItemStart . ':' . $columnNIK . $rowItem);
-        phpspreadsheet::textAlignCenter($spreadsheet, $columnJamKerja . $rowItemStart . ':' . $columnJamJalan . $rowItem);
-        phpspreadsheet::textAlignCenter($spreadsheet, 'K' . $rowItemStart . ':' . 'K' . $rowItem);
-        phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItemStart . ':' . $columnItemEnd . $rowItem, false, 8, 'Calibri');
+        // Style data
+        $worksheet->getStyle('A' . $rowItemStart . ':E' . $rowItem)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $worksheet->getStyle('G' . $rowItemStart . ':I' . $rowItem)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $worksheet->getStyle('K' . $rowItemStart . ':K' . $rowItem)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $worksheet->getStyle('A' . $rowItemStart . ':O' . $rowItem)->getFont()->setName('Calibri')->setSize(8);
+        // Total
+        $this->addDetailTotal($worksheet, $rowItem, $totalJamKerja, $totalJamMati, $totalJamJalan);
 
-        // grand total
-        $columnItemEnd = 'F';
-        $spreadsheet->getActiveSheet()->mergeCells($columnItemStart . $rowItem . ':' . $columnItemEnd . ($rowItem + 1));
-        $activeWorksheet->setCellValue($columnItemStart . $rowItem, 'TOTAL');
-        phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItem, true, 8, 'Calibri');
-        $columnItemEnd++;
+        // Auto size columns
+        $worksheet->getColumnDimension('E')->setAutoSize(true);
+        $worksheet->getColumnDimension('F')->setAutoSize(true);
+        $worksheet->getColumnDimension('L')->setAutoSize(true);
+    }
 
-        // total jam kerja
-        $activeWorksheet->setCellValue($columnItemEnd . $rowItem, formatTime::minutesToTime($totalJamKerja));
-        $spreadsheet->getActiveSheet()->mergeCells($columnItemEnd . $rowItem . ':' . $columnItemEnd . ($rowItem + 1));
-        $columnItemEnd++;
+    private function addGeneralTotal($worksheet, $rowItem, $totalJamKerja, $totalJamMati, $totalJamJalan)
+    {
+        // Merge cells for TOTAL
+        $worksheet->mergeCells('A' . $rowItem . ':F' . ($rowItem + 1));
+        $worksheet->setCellValue('A' . $rowItem, 'TOTAL');
+        $worksheet->getStyle('A' . $rowItem)->getFont()->setBold(true)->setName('Calibri')->setSize(8);
 
-        // total jam mati
-        $activeWorksheet->setCellValue($columnItemEnd . $rowItem, formatTime::minutesToTime($totalJamMati));
+        // Total jam kerja
+        $worksheet->setCellValue('G' . $rowItem, formatTime::minutesToTime($totalJamKerja));
+        $worksheet->mergeCells('G' . $rowItem . ':G' . ($rowItem + 1));
+
+        // Total jam mati
+        $worksheet->setCellValue('H' . $rowItem, formatTime::minutesToTime($totalJamMati));
         $percentageJamMati = ($totalJamMati / ($totalJamKerja ?: 1));
-        $activeWorksheet->setCellValue($columnItemEnd . ($rowItem + 1), $percentageJamMati);
-        phpspreadsheet::numberPercentageOrZero($spreadsheet, $columnItemEnd . ($rowItem + 1));
-        $columnItemEnd++;
+        $worksheet->setCellValue('H' . ($rowItem + 1), $percentageJamMati);
+        $worksheet->getStyle('H' . ($rowItem + 1))->getNumberFormat()->setFormatCode('0.00%');
 
-        // total jam jalan
-        $activeWorksheet->setCellValue($columnItemEnd . $rowItem, formatTime::minutesToTime($totalJamJalan));
+        // Total jam jalan
+        $worksheet->setCellValue('I' . $rowItem, formatTime::minutesToTime($totalJamJalan));
         $percentageJamJalan = ($totalJamJalan / ($totalJamKerja ?: 1));
-        $activeWorksheet->setCellValue($columnItemEnd . ($rowItem + 1), $percentageJamJalan);
-        phpspreadsheet::numberPercentageOrZero($spreadsheet, $columnItemEnd . ($rowItem + 1));
-        $columnItemEnd = 'O';
+        $worksheet->setCellValue('I' . ($rowItem + 1), $percentageJamJalan);
+        $worksheet->getStyle('I' . ($rowItem + 1))->getNumberFormat()->setFormatCode('0.00%');
 
-        phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItem . ':' . $columnItemEnd . ($rowItem + 1), true, 8, 'Calibri');
-        phpspreadsheet::addFullBorder($spreadsheet, $columnItemStart . $rowItem . ':' . $columnItemEnd . ($rowItem + 1));
-        phpspreadsheet::textAlignCenter($spreadsheet, $columnItemStart . $rowItem . ':' . $columnItemEnd . ($rowItem + 1));
+        // % Total
+        $worksheet->setCellValue('J' . $rowItem, ($totalJamJalan / ($totalJamKerja ?: 1)));
+        $worksheet->setCellValue('J' . ($rowItem + 1), ($totalJamJalan / ($totalJamKerja ?: 1)));
+        $worksheet->getStyle('J' . $rowItem . ':J' . ($rowItem + 1))->getNumberFormat()->setFormatCode('0.00%');
 
-        // mengatur lebar kolom
-        $spreadsheet->getActiveSheet()->getColumnDimension('E')->setAutoSize(true);
-        $spreadsheet->getActiveSheet()->getColumnDimension('F')->setAutoSize(true);
-        $spreadsheet->getActiveSheet()->getColumnDimension('L')->setAutoSize(true);
+        // Style total
+        $worksheet->getStyle('A' . $rowItem . ':J' . ($rowItem + 1))->getFont()->setBold(true)->setName('Calibri')->setSize(8);
+        $worksheet->getStyle('A' . $rowItem . ':J' . ($rowItem + 1))
+            ->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        $worksheet->getStyle('A' . $rowItem . ':J' . ($rowItem + 1))
+            ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+    }
 
-        $writer = new Xlsx($spreadsheet);
-        $filename = 'asset/report/JamKerja-' . $nippo . '.xlsx';
-        $writer->save($filename);
-        $response = [
-            'status' => 'success',
-            'filename' => $filename
-        ];
-        return $response;
+    private function addDetailTotal($worksheet, $rowItem, $totalJamKerja, $totalJamMati, $totalJamJalan)
+    {
+        // Merge cells for TOTAL
+        $worksheet->mergeCells('A' . $rowItem . ':F' . ($rowItem + 1));
+        $worksheet->setCellValue('A' . $rowItem, 'TOTAL');
+        $worksheet->getStyle('A' . $rowItem)->getFont()->setBold(true)->setName('Calibri')->setSize(8);
+
+        // Total jam kerja
+        $worksheet->setCellValue('G' . $rowItem, formatTime::minutesToTime($totalJamKerja));
+        $worksheet->mergeCells('G' . $rowItem . ':G' . ($rowItem + 1));
+
+        // Total jam mati
+        $worksheet->setCellValue('H' . $rowItem, formatTime::minutesToTime($totalJamMati));
+        $percentageJamMati = ($totalJamMati / ($totalJamKerja ?: 1));
+        $worksheet->setCellValue('H' . ($rowItem + 1), $percentageJamMati);
+        $worksheet->getStyle('H' . ($rowItem + 1))->getNumberFormat()->setFormatCode('0.00%');
+
+        // Total jam jalan
+        $worksheet->setCellValue('I' . $rowItem, formatTime::minutesToTime($totalJamJalan));
+        $percentageJamJalan = ($totalJamJalan / ($totalJamKerja ?: 1));
+        $worksheet->setCellValue('I' . ($rowItem + 1), $percentageJamJalan);
+        $worksheet->getStyle('I' . ($rowItem + 1))->getNumberFormat()->setFormatCode('0.00%');
+
+        // Style total
+        $worksheet->getStyle('A' . $rowItem . ':O' . ($rowItem + 1))->getFont()->setBold(true)->setName('Calibri')->setSize(8);
+        $worksheet->getStyle('A' . $rowItem . ':O' . ($rowItem + 1))
+            ->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        $worksheet->getStyle('A' . $rowItem . ':O' . ($rowItem + 1))
+            ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
     }
 
     public function render()
