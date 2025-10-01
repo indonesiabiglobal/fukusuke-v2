@@ -29,7 +29,8 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Kode Tipe</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select required data-choices data-choices-search-field
+                                <select required data-choices data-choices-sorting-true data-choices-removeItem
+                                    data-choices-sorter data-choices-search-field-label
                                     class="form-select col-12 col-lg-8 @error('product_type_id') is-invalid @enderror"
                                     wire:model="product_type_id" placeholder="">
                                     <option value="" selected>
