@@ -718,6 +718,12 @@ class AddSeitaiController extends Component
         $this->total_assembly_qty = number_format($this->tdorderlpk->total_assembly_qty);
         $this->qty_lpk = number_format($this->tdorderlpk->qty_lpk);
         $this->selisih = $this->tdorderlpk->qty_lpk - $this->tdorderlpk->total_assembly_qty;
+
+        // update jumlah_box_product
+        $qty = (int) str_replace(',', '', $this->qty_produksi);
+        if ($this->qty_produksi) {
+            $this->jumlah_box_product = ceil($qty / $this->tdorderlpk->case_box_count);
+        }
     }
 
     public function updatedMachineno($machineno)
