@@ -614,7 +614,7 @@ class EditSeitaiController extends Component
             if (isset($this->end_box)) {
                 $data->end_box = $this->end_box ? $this->end_box : null;
             }
-            $data->infure_berat_loss = $this->infure_berat_loss;
+            $data->infure_berat_loss = $this->infure_berat_loss == '' ? 0 : $this->infure_berat_loss;
             $data->work_shift = $this->work_shift;
             $data->work_hour = $this->work_hour;
 
@@ -624,7 +624,7 @@ class EditSeitaiController extends Component
             $data->save();
 
             DB::commit();
-            session()->flash('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
             return redirect()->route('nippo-seitai');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -909,5 +909,16 @@ class EditSeitaiController extends Component
         }
 
         return view('livewire.nippo-seitai.edit-seitai')->extends('layouts.master');
+    }
+
+    public function print()
+    {
+        $response = CheckListSeitaiController::dataProduksi($this->orderId);
+        if ($response['status'] == 'success') {
+            return response()->download($response['filename'])->deleteFileAfterSend(true);
+        } else if ($response['status'] == 'error') {
+            $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
+            return;
+        }
     }
 }

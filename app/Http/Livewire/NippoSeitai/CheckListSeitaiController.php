@@ -1042,8 +1042,314 @@ class CheckListSeitaiController extends Component
         return $response;
     }
 
+    public static function dataProduksi($orderId)
+    {
+        // Get production data based on order ID
+        $data = DB::select("
+            SELECT
+                tdpg.id as id_tdpg,
+                tdpg.production_date as tglproduksi,
+                tdpg.created_on as tglproses,
+                tdpg.seq_no as noproses,
+                tdpg.product_id,
+                tdpg.qty_produksi,
+                tdpg.nomor_palet,
+                tdpg.nomor_lot,
+                tdpg.status_production,
+                tdpg.seq_no,
+                tdol.lpk_no as nolpk,
+                td.po_no,
+                td.stufingdate,
+                mp.name as namaproduk,
+                mp.code as noorder,
+                mp.code_alias as kode_produk,
+                mp.product_type_id,
+                mp.case_box_count,
+                mm.machineno as mesinno,
+                mm.machinename as namamesin,
+                emp.employeeno as nikpetugas,
+                emp.empname as namapetugas,
+                ws.work_shift as shift,
+                dep.name as department_name
+            FROM
+                tdProduct_Goods tdpg
+                INNER JOIN tdOrderLpk tdol ON tdol.id = tdpg.lpk_id
+                INNER JOIN tdorder td ON td.id = tdol.order_id
+                LEFT JOIN msProduct mp ON mp.id = tdpg.product_id
+                LEFT JOIN msMachine mm ON mm.id = tdpg.machine_id
+                LEFT JOIN msEmployee emp ON emp.id = tdpg.employee_id
+                LEFT JOIN msWorkingShift ws ON ws.id = tdpg.work_shift
+                LEFT JOIN msDepartment dep ON dep.id = mm.department_id
+            WHERE
+                tdpg.id = '$orderId'
+            ORDER BY
+                tdpg.production_date DESC,
+                tdpg.seq_no ASC
+            LIMIT 1
+        ");
+
+        if (empty($data)) {
+            return [
+                'status' => 'error',
+                'message' => 'No production data found for this order'
+            ];
+        }
+
+        $item = $data[0]; // Get the first record for the label
+
+        // Create spreadsheet
+        $spreadsheet = new Spreadsheet();
+        $activeWorksheet = $spreadsheet->getActiveSheet();
+
+        // Remove gridlines
+        $activeWorksheet->setShowGridlines(false);
+
+        // Page setup - Portrait for label format
+        $activeWorksheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        $activeWorksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_PORTRAIT);
+        $activeWorksheet->getPageSetup()->setFitToWidth(1);
+        $activeWorksheet->getPageSetup()->setFitToHeight(1);
+
+        // Page margins
+        $activeWorksheet->getPageMargins()->setTop(0.5 / 2.54);
+        $activeWorksheet->getPageMargins()->setBottom(0.5 / 2.54);
+        $activeWorksheet->getPageMargins()->setLeft(0.5 / 2.54);
+        $activeWorksheet->getPageMargins()->setRight(0.5 / 2.54);
+
+        // Title Row 1
+        $activeWorksheet->mergeCells('A1:V1');
+        $activeWorksheet->setCellValue('A1', '');
+
+        // Title Row 2 - Main Title
+        $activeWorksheet->mergeCells('B2:V2');
+        $activeWorksheet->setCellValue('B2', 'DATA PRODUKSI SEITAI');
+        phpspreadsheet::styleFont($spreadsheet, 'B2', false, 16, 'Tahoma');
+
+        // Row 3 - Empty
+        $activeWorksheet->mergeCells('A3:V3');
+
+        // Row 4 - Headers for main info
+        $activeWorksheet->setCellValue('B4', 'Nomor LPK');
+        $activeWorksheet->setCellValue('H4', 'Nomor Order');
+        $activeWorksheet->setCellValue('M4', 'Kode Produk');
+        $activeWorksheet->setCellValue('R4', 'Nomor LOT');
+        phpspreadsheet::styleFont($spreadsheet, 'B4', false, 8, 'Tahoma');
+        phpspreadsheet::styleFont($spreadsheet, 'H4', false, 8, 'Tahoma');
+        phpspreadsheet::styleFont($spreadsheet, 'M4', false, 8, 'Tahoma');
+        phpspreadsheet::styleFont($spreadsheet, 'R4', false, 8, 'Tahoma');
+        $activeWorksheet->mergeCells('B4:G4');
+        $activeWorksheet->mergeCells('H4:L4');
+        $activeWorksheet->mergeCells('M4:Q4');
+        $activeWorksheet->mergeCells('R4:V4');
+        phpspreadsheet::textAlignCenter($spreadsheet, 'H4:V4');
+        $spreadsheet->getActiveSheet()->getStyle('B4:V4')->applyFromArray([
+            'borders' => [
+                'top' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    'color' => ['argb' => '000000'],
+                ],
+                'bottom' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_DOTTED,
+                    'color' => ['argb' => '000000'],
+                ],
+            ],
+        ]);
+
+        // Row 5 - Empty
+        $activeWorksheet->mergeCells('A5:V5');
+
+        // Row 6 - Values for main info with background
+        $activeWorksheet->mergeCells('B6:G6');
+        $activeWorksheet->setCellValue('B6', $item->nolpk);
+        $activeWorksheet->getStyle('B6:G6')->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setRGB('000000');
+        phpspreadsheet::styleFont($spreadsheet, 'B6:G6', true, 18, 'Tahoma', 'FFFFFF');
+        phpspreadsheet::textAlignCenter($spreadsheet, 'B6:G6');
+
+        $activeWorksheet->mergeCells('H6:L6');
+        $activeWorksheet->setCellValue('H6', $item->noorder);
+        phpspreadsheet::styleFont($spreadsheet, 'H6:L6', false, 18, 'Tahoma');
+        phpspreadsheet::textAlignCenter($spreadsheet, 'H6:L6');
+
+        $activeWorksheet->mergeCells('M6:P6');
+        $activeWorksheet->setCellValue('M6', $item->kode_produk);
+        phpspreadsheet::styleFont($spreadsheet, 'M6:P6', false, 18, 'Tahoma');
+        phpspreadsheet::textAlignCenter($spreadsheet, 'M6:P6');
+
+        $activeWorksheet->mergeCells('R6:V6');
+        $activeWorksheet->setCellValue('R6', $item->nomor_lot);
+        phpspreadsheet::styleFont($spreadsheet, 'R6:V6', false, 18, 'Tahoma');
+        phpspreadsheet::textAlignCenter($spreadsheet, 'R6:V6');
+
+        phpspreadsheet::addBottomBorderDotted($spreadsheet, 'B6:V6');
+        // Row 7 - Product Name
+        $activeWorksheet->mergeCells('B7:V7');
+        $activeWorksheet->setCellValue('B7', $item->namaproduk);
+        phpspreadsheet::styleFont($spreadsheet, 'B7', false, 24, 'Tahoma');
+        phpspreadsheet::textAlignCenter($spreadsheet, 'B7');
+        phpspreadsheet::addBottomBorderDotted($spreadsheet, 'B7:V7');
+
+        // Production Details Section
+        // Row 9 - Tanggal Produksi
+        $activeWorksheet->setCellValue('B9', 'Tanggal Produksi');
+        $activeWorksheet->setCellValue('H9', ':');
+        $activeWorksheet->setCellValue('I9', Carbon::parse($item->tglproduksi)->format('d-m-Y'));
+        phpspreadsheet::styleFont($spreadsheet, 'B9', false, 14, 'Tahoma');
+        phpspreadsheet::styleFont($spreadsheet, 'I9', false, 14, 'Tahoma');
+
+        // Nomor Palet (right side)
+        $nomorPalet = explode('-', $item->nomor_palet);
+        $activeWorksheet->setCellValue('P8', 'Nomor Palet');
+        phpspreadsheet::styleFont($spreadsheet, 'P8', false, 8, 'Tahoma');
+        $activeWorksheet->mergeCells('P9:V9');
+        $activeWorksheet->setCellValue('P9', $nomorPalet[1]);
+        phpspreadsheet::textAlignCenter($spreadsheet, 'P9:V9');
+        phpspreadsheet::styleFont($spreadsheet, 'P9:V9', false, 14, 'Tahoma');
+
+        // Row 10 - Shift
+        $activeWorksheet->setCellValue('B10', 'Shift');
+        $activeWorksheet->setCellValue('H10', ':');
+        $activeWorksheet->setCellValue('I10', $item->shift);
+        phpspreadsheet::styleFont($spreadsheet, 'B10', false, 14, 'Tahoma');
+        phpspreadsheet::styleFont($spreadsheet, 'I10', false, 14, 'Tahoma');
+
+        // Row 11 - Nomor Mesin
+        $activeWorksheet->setCellValue('B11', 'Nomor Mesin');
+        $activeWorksheet->setCellValue('H11', ':');
+        $activeWorksheet->setCellValue('I11', $item->mesinno);
+        phpspreadsheet::styleFont($spreadsheet, 'B11', false, 14, 'Tahoma');
+        phpspreadsheet::styleFont($spreadsheet, 'I11', false, 14, 'Tahoma');
+
+        // Large Palet Display (right side)
+        $activeWorksheet->mergeCells('P10:V11');
+        $activeWorksheet->setCellValue('P10', $nomorPalet[0]);
+        phpspreadsheet::styleFont($spreadsheet, 'P10', false, 36, 'Tahoma');
+
+        phpspreadsheet::textAlignCenter($spreadsheet, 'P10:V11');
+        $activeWorksheet->getStyle('P10:V11')->getAlignment()->setWrapText(true);
+        phpspreadsheet::addOutlineBorder($spreadsheet, 'P9:V11');
+
+        // Row 13 - PO Number
+        $activeWorksheet->setCellValue('B13', 'PO Number');
+        $activeWorksheet->setCellValue('H13', ':');
+        $activeWorksheet->setCellValue('I13', $item->po_no);
+        phpspreadsheet::styleFont($spreadsheet, 'B13', false, 14, 'Tahoma');
+        phpspreadsheet::styleFont($spreadsheet, 'I13', false, 14, 'Tahoma');
+
+        // Row 14 - Tanggal Stuffing
+        $activeWorksheet->setCellValue('B14', 'Tanggal Stuffing');
+        $activeWorksheet->setCellValue('H14', ':');
+        $stuffingDate = Carbon::parse($item->stufingdate)->format('d-m-Y');
+        $activeWorksheet->setCellValue('I14', $stuffingDate);
+        phpspreadsheet::styleFont($spreadsheet, 'B14', false, 14, 'Tahoma');
+        phpspreadsheet::styleFont($spreadsheet, 'I14', false, 14, 'Tahoma');
+
+        // Quantity section
+        $activeWorksheet->setCellValue('P12', 'Quantity');
+        phpspreadsheet::styleFont($spreadsheet, 'P12', false, 8, 'Tahoma');
+        $activeWorksheet->mergeCells('P13:T13');
+        $activeWorksheet->setCellValue('P13', number_format($item->qty_produksi));
+        $activeWorksheet->mergeCells('U13:V13');
+        $activeWorksheet->setCellValue('U13', 'lbr');
+        phpspreadsheet::textAlignCenter($spreadsheet, 'P13:T13');
+        phpspreadsheet::styleFont($spreadsheet, 'P13:V13', false, 14, 'Tahoma');
+        phpspreadsheet::addBottomBorder($spreadsheet, 'P13:V13', \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_DOTTED);
+
+        // Box quantity
+        $activeWorksheet->mergeCells('P14:T15');
+        $boxQty = $item->case_box_count > 0 ? (int) ceil($item->qty_produksi / $item->case_box_count) : 0;
+        $activeWorksheet->setCellValue('P14', $boxQty);
+        $activeWorksheet->mergeCells('U14:V15');
+        $activeWorksheet->setCellValue('U14', 'box');
+        phpspreadsheet::textAlignCenter($spreadsheet, 'P14:V15');
+        phpspreadsheet::styleFont($spreadsheet, 'P14:T15', false, 36, 'Tahoma');
+        phpspreadsheet::styleFont($spreadsheet, 'U14', false, 14, 'Tahoma');
+        phpspreadsheet::addOutlineBorder($spreadsheet, 'P13:V15');
+
+        // Row 17 - Bottom section with employee info
+        $activeWorksheet->mergeCells('B17:V17');
+        $employeeInfo = $item->nikpetugas . '  ' . $item->namapetugas . '  ' .
+                       Carbon::parse($item->tglproduksi)->format('d-m-Y') . ' ( ' .
+                       $item->seq_no . ' )';
+        $activeWorksheet->setCellValue('B17', $employeeInfo);
+        phpspreadsheet::textAlignCenter($spreadsheet, 'B17:V17');
+        phpspreadsheet::styleFont($spreadsheet, 'B17:V17', false, 14, 'Tahoma');
+        phpspreadsheet::addTopBorder($spreadsheet, 'B17:V17', \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_DOTTED);
+        phpspreadsheet::addBottomBorder($spreadsheet, 'B17:V17', \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+
+        // Column widths
+        for ($col = 'A'; $col <= 'W'; $col++) {
+            $activeWorksheet->getColumnDimension($col)->setWidth(3.5);
+        }
+
+        // Row heights
+        // for ($row = 1; $row <= 17; $row++) {
+        //     $activeWorksheet->getRowDimension($row)->setRowHeight(25);
+        // }
+
+        // // Special row heights
+        // $activeWorksheet->getRowDimension(11)->setRowHeight(40);
+        // $activeWorksheet->getRowDimension(12)->setRowHeight(40);
+        // $activeWorksheet->getRowDimension(13)->setRowHeight(40);
+        // $activeWorksheet->getRowDimension(14)->setRowHeight(40);
+
+        // Save file
+        $writer = new Xlsx($spreadsheet);
+        $filename = 'asset/report/Label-Seitai-' . $orderId . '-' . date('YmdHis') . '.xlsx';
+        $writer->save($filename);
+
+        return [
+            'status' => 'success',
+            'filename' => $filename,
+            'message' => 'Label Seitai berhasil dibuat',
+            'data' => [
+                'lpk_no' => $item->nolpk,
+                'order_no' => $item->noorder,
+                'product_name' => $item->namaproduk,
+                'nomor_palet' => $item->nomor_palet,
+                'qty_produksi' => $item->qty_produksi
+            ]
+        ];
+    }
+
+    public function generateLabelSeitai()
+    {
+        if (!$this->noorder) {
+            $this->dispatch('showAlert', [
+                'type' => 'error',
+                'message' => 'Nomor Order harus diisi!'
+            ]);
+            return;
+        }
+
+        try {
+            $result = self::dataProduksi($this->noorder);
+
+            if ($result['status'] === 'success') {
+                $this->dispatch('showAlert', [
+                    'type' => 'success',
+                    'message' => $result['message'] . '! File: ' . $result['filename']
+                ]);
+
+                // Optional: trigger download
+                $this->dispatch('downloadFile', ['filename' => $result['filename']]);
+            } else {
+                $this->dispatch('showAlert', [
+                    'type' => 'error',
+                    'message' => $result['message']
+                ]);
+            }
+        } catch (\Exception $e) {
+            $this->dispatch('showAlert', [
+                'type' => 'error',
+                'message' => 'Error: ' . $e->getMessage()
+            ]);
+        }
+    }
+
     public function render()
     {
-        return view('livewire.nippo-seitai.check-list-seitai')->extends('layouts.master');
+        return view('livewire.nippo-seitai.check-list-seitai');
     }
 }

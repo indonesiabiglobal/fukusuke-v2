@@ -136,6 +136,18 @@ class phpspreadsheet
         ]);
     }
 
+    public static function addTopBorder($spreadsheet, $range, $borderStyle = \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN, $color = 'FF000000')
+    {
+        $spreadsheet->getActiveSheet()->getStyle($range)->applyFromArray([
+            'borders' => [
+                'top' => [
+                    'borderStyle' => $borderStyle,
+                    'color' => ['argb' => $color],
+                ],
+            ],
+        ]);
+    }
+
     public static function addBottomBorder($spreadsheet, $range, $borderStyle = \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN, $color = 'FF000000')
     {
         $spreadsheet->getActiveSheet()->getStyle($range)->applyFromArray([
