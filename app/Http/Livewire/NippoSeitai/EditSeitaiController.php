@@ -400,12 +400,12 @@ class EditSeitaiController extends Component
     public function deleteLoss($orderId)
     {
         $data = TdProductGoodsLoss::findOrFail($orderId);
-        $data->delete();
-
         // mengurangi dari tdproduct_goods
         $tdproductgoods = TdProductGoods::where('id', $this->tdpgId)->update([
             'seitai_berat_loss' => $this->jumlahBeratLoss - $data->berat_loss
         ]);
+
+        $data->delete();
 
         $this->dispatch('closeModalDeleteLoss', $orderId);
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Hapus']);
@@ -452,6 +452,7 @@ class EditSeitaiController extends Component
 
             // update total berat loss on tdproduct_goods
             $newTotal = $this->jumlahBeratLoss - $oldBerat + $this->berat_loss;
+            dd($newTotal);
             TdProductGoods::where('id', $this->tdpgId)->update([
                 'seitai_berat_loss' => $newTotal
             ]);
