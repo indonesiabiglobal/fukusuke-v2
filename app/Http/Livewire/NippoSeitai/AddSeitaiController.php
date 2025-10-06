@@ -653,7 +653,7 @@ class AddSeitaiController extends Component
         $this->qty_gentan = '';
         $this->total_assembly_qty = 0;
         $this->qty_lpk = '';
-        $this->selisih = '';
+        $this->selisih = 0;
         $this->start_box = null;
         $this->end_box = null;
     }
