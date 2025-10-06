@@ -155,8 +155,8 @@ class InfureJamKerjaController extends Component
         $this->work_shift = $item->work_shift;
         $this->machineno = $machine->machineno;
         $this->machinename = $machine->machinename;
-        $this->employeeno = $msemployee->employeeno;
-        $this->empname = $msemployee->empname;
+        $this->employeeno = $msemployee->employeeno ?? '';
+        $this->empname = $msemployee->empname ?? '';
         $this->work_hour = Carbon::parse($item->work_hour)->format('H:i');
         $this->totalOnHour = Carbon::parse($item->on_hour)->format('H:i');
         $this->totalOffHour = formatTime::minutesToTime($jamMatiMesin->sum('off_hour_minutes'));
@@ -373,7 +373,7 @@ class InfureJamKerjaController extends Component
                 'working_date.required' => 'Tanggal Produksi harus diisi',
                 'work_shift.required' => 'Shift Kerja harus diisi',
                 'machineno.required' => 'Nomor Mesin harus diisi',
-                'employeeno.required' => 'Nomor Karyawan harus diisi',
+                'employeeno.required' => 'Petugas harus diisi',
                 'work_hour.required' => 'Jam Kerja harus diisi',
             ]);
 
@@ -408,6 +408,21 @@ class InfureJamKerjaController extends Component
             } else {
                 $machine = MsMachine::where('machineno', $this->machineno)->first();
                 $msemployee = MsEmployee::where('employeeno', $this->employeeno)->first();
+
+                // get data jam kerja mesin jika ada
+                $existing = TdJamKerjaMesin::with('jamKerjaJamMatiMesin')
+                    ->where('working_date', $this->working_date)
+                    ->where('machine_id', $machine->id)
+                    ->where('work_shift', $this->work_shift)
+                    ->whereDoesntHave('jamKerjaJamMatiMesin', function ($query) {
+                        $query->whereHas('jamMatiMesin', function ($q) {
+                            $q->where('id', 10);
+                        });
+                    })
+                    ->first();
+                if ($existing) {
+                    return $this->dispatch('notification', ['type' => 'warning', 'message' => 'Data sudah ada. Silakan edit data tersebut jika ingin mengubahnya.']);
+                }
 
                 // Upsert menggunakan kombinasi unique (working_date, machine_id, work_shift)
                 $now = Carbon::now();
@@ -572,8 +587,8 @@ class InfureJamKerjaController extends Component
                 'mse.empname',
                 'mse.employeeno',
             )
-            ->join('msmachine AS msm', 'msm.id', '=', 'tdjkm.machine_id')
-            ->join('msemployee AS mse', 'mse.id', '=', 'tdjkm.employee_id')
+            ->leftJoin('msmachine AS msm', 'msm.id', '=', 'tdjkm.machine_id')
+            ->leftJoin('msemployee AS mse', 'mse.id', '=', 'tdjkm.employee_id')
             ->whereIn('tdjkm.department_id', departmentHelper::infureDivision());
 
         if ($this->transaksi == 1) {
