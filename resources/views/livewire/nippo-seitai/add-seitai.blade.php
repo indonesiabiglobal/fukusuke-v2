@@ -316,7 +316,7 @@
                                 <label class="control-label col-12 col-md-3 col-lg-5">Loss Infure</label>
                                 <input type="text"
                                     class="form-control @error('infure_berat_loss') is-invalid @enderror"
-                                    wire:model="infure_berat_loss"
+                                    wire:model.change="infure_berat_loss"
                                     x-on:keydown.tab="$event.preventDefault(); $refs.employeenoinfure.focus();"
                                     x-ref="infure_berat_loss" />
                                 <span class="input-group-text">

@@ -733,6 +733,9 @@ class EditSeitaiController extends Component
                 $this->employeenoinfure = $msemployeeinfure->employeeno;
                 $this->empnameinfure = $msemployeeinfure->empname;
             }
+        } else {
+            $this->employeenoinfure = null;
+            $this->empnameinfure = null;
         }
     }
 
@@ -823,6 +826,17 @@ class EditSeitaiController extends Component
             }
 
             $this->jumlah_box = ($this->end_box - $this->start_box) + 1;
+        }
+    }
+
+    public function updatedInfureBeratLoss($infure_berat_loss)
+    {
+        $this->infure_berat_loss = $infure_berat_loss;
+
+        if (!isset($this->infure_berat_loss) || $this->infure_berat_loss == 0 || $this->infure_berat_loss == '') {
+            $this->infure_berat_loss = 0;
+            $this->employeenoinfure = null;
+            $this->empnameinfure = null;
         }
     }
 

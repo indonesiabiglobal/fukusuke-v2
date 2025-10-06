@@ -290,7 +290,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5">Loss Infure</label>
-                                <input type="text" class="form-control" wire:model="infure_berat_loss"
+                                <input type="text" class="form-control" wire:model.change="infure_berat_loss"
                                     x-ref="infure_berat_loss" />
                                 <span class="input-group-text">
                                     kg
