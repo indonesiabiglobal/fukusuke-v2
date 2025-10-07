@@ -154,7 +154,9 @@
                     $('.select2-machine').select2('destroy');
                 }
 
-                $('.select2-machine').select2().on('change', function(e) {
+                $('.select2-machine').select2({
+                    theme: 'bootstrap-5',
+                }).on('change', function(e) {
                     var data = $(this).val();
                     @this.set('machineId', data);
                 });

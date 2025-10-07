@@ -29,9 +29,7 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Kode Tipe</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select required data-choices data-choices-sorting-true data-choices-removeItem
-                                    data-choices-sorter data-choices-search-field-label
-                                    class="form-select col-12 col-lg-8 @error('product_type_id') is-invalid @enderror"
+                                <select required class="form-select col-12 col-lg-8 @error('product_type_id') is-invalid @enderror select2-kode-tipe"
                                     wire:model="product_type_id" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
@@ -39,7 +37,7 @@
                                     @foreach ($masterProductType as $item)
                                         <option value="{{ $item->id }}"
                                             data-custom-properties='{"code": "{{ $item->code }}"}'
-                                            {{ $product_type_id['value'] != null ? ($item->id == $product_type_id['value'] ? 'selected' : '') : '' }}>
+                                            {{ $product_type_id != null ? ($item->id == $product_type_id ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -779,15 +777,13 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-3">Kode Gaiso</label>
                             <div class="col-12 col-lg-9" wire:ignore>
-                                <select data-choices data-choices-sorting="true" data-choices-search-field
-                                    class="form-select @error('pack_gaiso_id') is-invalid @enderror"
+                                <select class="form-select @error('pack_gaiso_id') is-invalid @enderror select2-kode-gaiso"
                                     wire:model="pack_gaiso_id" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterPackagingGaiso as $item)
-                                        <option value="{{ $item->code }}" data-custom-properties='{"code": "{{ $item->name }}"}'
-                                            {{ $pack_gaiso_id['value'] != null ? ($item->id == $pack_gaiso_id['value'] ? 'selected' : '') : '' }}>
+                                        <option value="{{ $item->id }}" {{ $pack_gaiso_id != null ? ($item->id == $pack_gaiso_id ? 'selected' : '') : '' }}>
                                             {{ $item->code }}, {{ $item->box_class == 1 ? 'Khusus' : 'Standar' }},
                                             {{ $item->name }}
                                         </option>
@@ -803,15 +799,13 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-3">Kode Box</label>
                             <div class="col-12 col-lg-9" wire:ignore>
-                                <select data-choices data-choices-sorting="true" data-choices-search-field
-                                    class="form-select @error('pack_box_id') is-invalid @enderror"
+                                <select class="form-select @error('pack_box_id') is-invalid @enderror select2-kode-box"
                                     wire:model="pack_box_id" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterPackagingBox as $item)
-                                        <option value="{{ $item->code }}" data-custom-properties='{"code": "{{ $item->name }}"}'
-                                            {{ $pack_box_id['value'] != null ? ($item->id == $pack_box_id['value'] ? 'selected' : '') : '' }}>
+                                        <option value="{{ $item->id }}" {{ $pack_box_id != null ? ($item->id == $pack_box_id ? 'selected' : '') : '' }}>
                                             {{ $item->code }}, {{ $item->box_class == 1 ? 'Khusus' : 'Standar' }},
                                             {{ $item->name }}
                                         </option>
@@ -827,15 +821,13 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-3">Kode Inner</label>
                             <div class="col-12 col-lg-9" wire:ignore>
-                                <select data-choices data-choices-sorting="true" data-choices-search-field
-                                    class="form-select @error('pack_inner_id') is-invalid @enderror"
+                                <select class="form-select @error('pack_inner_id') is-invalid @enderror select2-kode-inner"
                                     wire:model="pack_inner_id" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterPackagingInner as $item)
-                                        <option value="{{ $item->code }}" data-custom-properties='{"code": "{{ $item->name }}"}'
-                                            {{ $pack_inner_id['value'] != null ? ($item->id == $pack_inner_id['value'] ? 'selected' : '') : '' }}>
+                                        <option value="{{ $item->id }}" {{ $pack_inner_id != null ? ($item->id == $pack_inner_id ? 'selected' : '') : '' }}>
                                             {{ $item->code }}, {{ $item->box_class == 1 ? 'Khusus' : 'Standar' }},
                                             {{ $item->name }}
                                         </option>
@@ -851,15 +843,13 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-3">Kode Layer</label>
                             <div class="col-12 col-lg-9" wire:ignore>
-                                <select data-choices data-choices-sorting="true" data-choices-search-field
-                                    class="form-select @error('pack_layer_id') is-invalid @enderror"
+                                <select class="form-select @error('pack_layer_id') is-invalid @enderror select2-kode-layer"
                                     wire:model="pack_layer_id" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterPackagingLayer as $item)
-                                        <option value="{{ $item->code }}" data-custom-properties='{"code": "{{ $item->name }}"}'
-                                            {{ $pack_layer_id['value'] != null ? ($item->id == $pack_layer_id['value'] ? 'selected' : '') : '' }}>
+                                        <option value="{{ $item->id }}" {{ $pack_layer_id != null ? ($item->id == $pack_layer_id ? 'selected' : '') : '' }}>
                                             {{ $item->code }}, {{ $item->box_class == 1 ? 'Khusus' : 'Standar' }},
                                             {{ $item->name }}
                                         </option>
@@ -1119,3 +1109,98 @@
         </form>
     </div>
 </div>
+
+@script
+    <script type="text/javascript">
+        document.addEventListener('livewire:initialized', function() {
+            function selectKodeTipe() {
+                // Destroy instance Select2 yang ada
+                if ($('.select2-kode-tipe').hasClass("select2-hidden-accessible")) {
+                    $('.select2-kode-tipe').select2('destroy');
+                }
+
+                $('.select2-kode-tipe').select2({
+                    theme: 'bootstrap-5',
+                }).on('change', function(e) {
+                    var data = $(this).val();
+                    @this.set('product_type_id', data);
+                });
+            }
+            selectKodeTipe();
+
+            function selectKodeGaiso() {
+                // Destroy instance Select2 yang ada
+                if ($('.select2-kode-gaiso').hasClass("select2-hidden-accessible")) {
+                    $('.select2-kode-gaiso').select2('destroy');
+                }
+
+                $('.select2-kode-gaiso').select2({
+                    theme: 'bootstrap-5',
+                }).on('change', function(e) {
+                    var data = $(this).val();
+                    @this.set('pack_gaiso_id', data);
+                });
+            }
+            selectKodeGaiso();
+
+            function selectKodeBox() {
+                // Destroy instance Select2 yang ada
+                if ($('.select2-kode-box').hasClass("select2-hidden-accessible")) {
+                    $('.select2-kode-box').select2('destroy');
+                }
+
+                $('.select2-kode-box').select2({
+                    theme: 'bootstrap-5',
+                }).on('change', function(e) {
+                    var data = $(this).val();
+                    @this.set('pack_box_id', data);
+                });
+            }
+            selectKodeBox();
+
+            function selectKodeInner() {
+                // Destroy instance Select2 yang ada
+                if ($('.select2-kode-inner').hasClass("select2-hidden-accessible")) {
+                    $('.select2-kode-inner').select2('destroy');
+                }
+
+                $('.select2-kode-inner').select2({
+                    theme: 'bootstrap-5',
+                }).on('change', function(e) {
+                    var data = $(this).val();
+                    @this.set('pack_inner_id', data);
+                });
+            }
+            selectKodeInner();
+
+            function selectKodeLayer() {
+                // Destroy instance Select2 yang ada
+                if ($('.select2-kode-layer').hasClass("select2-hidden-accessible")) {
+                    $('.select2-kode-layer').select2('destroy');
+                }
+
+                $('.select2-kode-layer').select2({
+                    theme: 'bootstrap-5',
+                }).on('change', function(e) {
+                    var data = $(this).val();
+                    @this.set('pack_layer_id', data);
+                });
+            }
+            selectKodeLayer();
+
+            // Hook untuk Livewire v3
+            Livewire.hook('morph', ({
+                el,
+                component
+            }) => {
+                setTimeout(() => {
+                    selectKodeTipe();
+                    selectKodeGaiso();
+                    selectKodeBox();
+                    selectKodeInner();
+                    selectKodeLayer();
+                }, 100);
+            });
+        });
+    </script>
+@endscript

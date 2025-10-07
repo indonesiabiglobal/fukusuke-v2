@@ -245,13 +245,13 @@ class AddMasterProduk extends Component
     public function store()
     {
         try {
-            if ($this->pack_gaiso_id !== null && $this->pack_gaiso_id['value'] !== "") {
+            if ($this->pack_gaiso_id !== null && $this->pack_gaiso_id !== "") {
                 $this->rules['case_gaiso_count'] = 'required';
                 $this->rules['case_gaiso_count_unit'] = 'required';
                 $this->rules['case_gaiso_stampel'] = 'required';
             }
 
-            if ($this->pack_inner_id !== null && $this->pack_inner_id['value'] !== "") {
+            if ($this->pack_inner_id !== null && $this->pack_inner_id !== "") {
                 $this->rules['case_inner_count'] = 'required';
                 $this->rules['case_inner_count_unit'] = 'required';
                 $this->rules['case_inner_stampel'] = 'required';
@@ -269,7 +269,7 @@ class AddMasterProduk extends Component
             $product = new MsProduct();
             $product->code = isset($this->code) ? $this->code : null;
             $product->name = isset($this->name) ? $this->name : null;
-            $productType = DB::table('msproduct_type')->where('id', $this->product_type_id['value'])->first();
+            $productType = DB::table('msproduct_type')->where('id', $this->product_type_id)->first();
             $product->product_type_id = $productType->id;
             $product->product_type_code = $productType->code;
             $product->code_alias = isset($this->code_alias) ? $this->code_alias : null;
@@ -397,10 +397,10 @@ class AddMasterProduk extends Component
             $product->lower_sealing_length = isset($this->lower_sealing_length) ? $this->lower_sealing_length : 0;
             $product->palet_jumlah_baris = isset($this->palet_jumlah_baris) ? $this->palet_jumlah_baris : 0;
             $product->palet_isi_baris = isset($this->palet_isi_baris)   ? $this->palet_isi_baris : 0;
-            $product->pack_gaiso_id = isset($this->pack_gaiso_id) ? $this->pack_gaiso_id['value'] : null;;
-            $product->pack_box_id = isset($this->pack_box_id) ? $this->pack_box_id['value'] : null;
-            $product->pack_inner_id = isset($this->pack_inner_id) ? $this->pack_inner_id['value'] : null;;
-            $product->pack_layer_id = isset($this->pack_layer_id) ? $this->pack_layer_id['value'] : null;;
+            $product->pack_gaiso_id = $this->pack_gaiso_id ? $this->pack_gaiso_id : null;;
+            $product->pack_box_id = $this->pack_box_id ? $this->pack_box_id : null;
+            $product->pack_inner_id = $this->pack_inner_id ? $this->pack_inner_id : null;
+            $product->pack_layer_id = $this->pack_layer_id ? $this->pack_layer_id : null;
             $product->manufacturing_summary = isset($this->manufacturing_summary)   ? $this->manufacturing_summary : null;
             $product->case_gaiso_count = isset($this->case_gaiso_count) ? $this->case_gaiso_count : null;
             $product->case_gaiso_count_unit = isset($this->case_gaiso_count_unit) ? $this->case_gaiso_count_unit['value'] : null;

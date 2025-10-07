@@ -209,7 +209,7 @@ class EditProduk extends Component
 
         $this->code = $this->product->code;
         $this->name = $this->product->name;
-        $this->product_type_id['value'] = $this->product->product_type_id;
+        $this->product_type_id = $this->product->product_type_id;
         $this->code_alias = $this->product->code_alias;
         $this->codebarcode = $this->product->codebarcode;
         $this->ketebalan = $this->product->ketebalan;
@@ -260,10 +260,10 @@ class EditProduk extends Component
         $this->lower_sealing_length = $this->product->lower_sealing_length;
         $this->palet_jumlah_baris = $this->product->palet_jumlah_baris;
         $this->palet_isi_baris = $this->product->palet_isi_baris;
-        $this->pack_gaiso_id['value'] = $this->product->pack_gaiso_id;
-        $this->pack_box_id['value'] = $this->product->pack_box_id;
-        $this->pack_inner_id['value'] = $this->product->pack_inner_id;
-        $this->pack_layer_id['value'] = $this->product->pack_layer_id;
+        $this->pack_gaiso_id = $this->product->pack_gaiso_id;
+        $this->pack_box_id = $this->product->pack_box_id;
+        $this->pack_inner_id = $this->product->pack_inner_id;
+        $this->pack_layer_id = $this->product->pack_layer_id;
         $this->manufacturing_summary = $this->product->manufacturing_summary;
         $this->case_gaiso_count = $this->product->case_gaiso_count;
         $this->case_gaiso_count_unit['value'] = $this->product->case_gaiso_count_unit;
@@ -299,7 +299,7 @@ class EditProduk extends Component
             $product->code = isset($this->code) ? $this->code : null;
             $product->name = isset($this->name) ? $this->name : null;
 
-            $productType = DB::table('msproduct_type')->where('id', $this->product_type_id['value'])->first();
+            $productType = DB::table('msproduct_type')->where('id', $this->product_type_id)->first();
             $product->product_type_id = $productType->id;
             $product->product_type_code = $productType->code;
 
@@ -428,10 +428,10 @@ class EditProduk extends Component
             $product->lower_sealing_length = isset($this->lower_sealing_length) ? $this->lower_sealing_length : null;
             $product->palet_jumlah_baris = isset($this->palet_jumlah_baris) ? $this->palet_jumlah_baris : null;
             $product->palet_isi_baris = isset($this->palet_isi_baris) ? $this->palet_isi_baris : null;
-            $product->pack_gaiso_id = isset($this->pack_gaiso_id) ? $this->pack_gaiso_id['value'] : null;;
-            $product->pack_box_id = isset($this->pack_box_id) ? $this->pack_box_id['value'] : null;
-            $product->pack_inner_id = isset($this->pack_inner_id) ? $this->pack_inner_id['value'] : null;;
-            $product->pack_layer_id = isset($this->pack_layer_id) ? $this->pack_layer_id['value'] : null;;
+            $product->pack_gaiso_id = $this->pack_gaiso_id ? $this->pack_gaiso_id : null;
+            $product->pack_box_id = $this->pack_box_id ? $this->pack_box_id : null;
+            $product->pack_inner_id = $this->pack_inner_id ? $this->pack_inner_id : null;
+            $product->pack_layer_id = $this->pack_layer_id ? $this->pack_layer_id : null;
             $product->manufacturing_summary = isset($this->manufacturing_summary) ? $this->manufacturing_summary : null;
             $product->case_gaiso_count = isset($this->case_gaiso_count) ? $this->case_gaiso_count : null;
             $product->case_gaiso_count_unit = isset($this->case_gaiso_count_unit) ? $this->case_gaiso_count_unit['value'] : null;
