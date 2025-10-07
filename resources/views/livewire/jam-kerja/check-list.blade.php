@@ -109,12 +109,12 @@
                     <label for="product" class="form-label text-muted fw-bold">Mesin</label>
                 </div>
                 <div class="col-12 col-lg-9">
-                    <div class="mb-1" wire:ignore>
-                        <select class="form-control" wire:model.defer="machineId" data-choices
-                            data-choices-sorting-false data-choices-removeItem data-choices-search-field-label>
+                    <div class="mb-1">
+                        <select class="form-control select2-machine" wire:model="machineId">
                             <option value="">- All -</option>
                             @foreach ($machine as $item)
-                                <option value="{{ $item->id }}">{{ $item->machineno }} - {{ $item->machinename }}
+                                <option value="{{ $item->id }}">{{ $item->machineno }} -
+                                    {{ $item->machinename }}
                                 </option>
                             @endforeach
                         </select>
@@ -142,3 +142,22 @@
     </div>
     <div class="col-lg-4"></div>
 </div>
+
+@script
+    <script type="text/javascript">
+        document.addEventListener('livewire:initialized', function() {
+            function selectMachine() {
+                $('.select2-machine').select2().on('change', function(e) {
+                    var data = $(this).val();
+                    @this.set('machineId', data);
+                });
+            }
+
+            selectMachine();
+
+            Livewire.hook("morphed", () => {
+                selectMachine();
+            });
+        });
+    </script>
+@endscript

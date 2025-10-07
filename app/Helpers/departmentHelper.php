@@ -19,7 +19,9 @@ class departmentHelper
     public static function infurePabrikDepartment()
     {
         return MsDepartment::select('id', 'name', 'code')
-            ->where('name', 'ilike', '%INFURE PAB%')->get();
+            ->active()
+            ->where('name', 'ilike', '%INFURE PAB%')
+            ->get();
     }
 
     public static function seitaiDivision()
@@ -35,7 +37,9 @@ class departmentHelper
     public static function seitaiPabrikDepartment()
     {
         return MsDepartment::select('id', 'name', 'code')
-            ->where('name', 'ilike', '%SEITAI PAB%')->get();
+            ->active()
+            ->where('name', 'ilike', '%SEITAI PAB%')
+            ->get();
     }
 
     public static function masalahKenpinSeitaiDepartment()

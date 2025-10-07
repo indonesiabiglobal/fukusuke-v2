@@ -24,6 +24,8 @@ class CheckListJamKerjaController extends Component
     public $jamAkhir;
     public $workingShiftHour;
     public $machine;
+    public $machineInfure;
+    public $machineSeitai;
     public $noprosesawal;
     public $noprosesakhir;
     public $lpk_no;
@@ -50,7 +52,9 @@ class CheckListJamKerjaController extends Component
         $this->workingShiftHour = MsWorkingShift::select('id', 'work_hour_from', 'work_hour_till')->active()->orderBy('work_hour_from', 'ASC')->get();
         $this->jamAwal = $this->workingShiftHour[0]->work_hour_from;
         $this->jamAkhir = $this->workingShiftHour[count($this->workingShiftHour) - 1]->work_hour_till;
-        $this->machine = MsMachine::where('machineno',  'LIKE', '00I%')->orderBy('machineno')->get();
+        $this->machineInfure = MsMachine::infureDepartment()->orderBy('machineno')->get();
+        $this->machineSeitai = MsMachine::seitaiDepartment()->orderBy('machineno')->get();
+        $this->machine = $this->machineInfure;
         $this->divisions = MsDepartment::division()->get();
         $this->infureDepartments = departmentHelper::infurePabrikDepartment();
         $this->departments = $this->infureDepartments;
@@ -61,8 +65,10 @@ class CheckListJamKerjaController extends Component
     {
         if ($value == 2) {
             $this->departments = $this->infureDepartments;
+            $this->machine = $this->machineInfure;
         } else if ($value == 7) {
             $this->departments = $this->seitaiDepartments;
+            $this->machine = $this->machineSeitai;
         }
     }
 
