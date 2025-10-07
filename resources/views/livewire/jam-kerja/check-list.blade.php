@@ -110,7 +110,7 @@
                 </div>
                 <div class="col-12 col-lg-9">
                     <div class="mb-1" wire:ignore>
-                        <select class="form-control" wire:model.defer="machineId" data-choices
+                        <select class="form-control machine-select" id="machineSelect" wire:model.defer="machineId" data-choices
                             data-choices-sorting-false data-choices-removeItem data-choices-search-field-label>
                             <option value="">- All -</option>
                             @foreach ($machine as $item)
@@ -142,3 +142,50 @@
     </div>
     <div class="col-lg-4"></div>
 </div>
+
+@script
+    <script>
+        // Function to initialize Choices.js for machine select
+        function initMachineSelect() {
+            const machineSelect = document.getElementById('machineSelect');
+            
+            if (machineSelect) {
+                // Destroy existing Choices instance if it exists
+                if (machineSelect.choicesInstance) {
+                    machineSelect.choicesInstance.destroy();
+                }
+                
+                // Initialize new Choices instance
+                const choices = new Choices(machineSelect, {
+                    searchEnabled: true,
+                    removeItemButton: true,
+                    shouldSort: false,
+                    searchFields: ['label']
+                });
+                
+                // Store the instance for later destruction
+                machineSelect.choicesInstance = choices;
+                
+                // Listen for changes and update Livewire property
+                machineSelect.addEventListener('change', function(e) {
+                    @this.set('machineId', e.target.value);
+                });
+            }
+        }
+        
+        // Initialize on component load
+        document.addEventListener('livewire:init', () => {
+            initMachineSelect();
+        });
+        
+        // Reinitialize after Livewire updates the DOM
+        Livewire.hook('morph', ({ component, cleanup }) => {
+            cleanup(() => {
+                // Reinitialize after the morph is complete
+                setTimeout(() => {
+                    initMachineSelect();
+                }, 100);
+            });
+        });
+    </script>
+@endscript
