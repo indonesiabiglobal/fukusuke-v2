@@ -1350,6 +1350,6 @@ class CheckListSeitaiController extends Component
 
     public function render()
     {
-        return view('livewire.nippo-seitai.check-list-seitai');
+        return view('livewire.nippo-seitai.check-list-seitai')->extends('layouts.master');
     }
 }
