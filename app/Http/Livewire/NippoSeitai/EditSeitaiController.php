@@ -67,6 +67,7 @@ class EditSeitaiController extends Component
     public $selisih;
     public $jumlah_box;
     public $jumlah_box_product;
+    public $caseBoxCount;
     public $selisihOld;
     public $idDelete;
     public $editing_id;
@@ -198,8 +199,8 @@ class EditSeitaiController extends Component
             ->get();
         $this->jumlahBeratLoss = $this->detailsLoss->sum('berat_loss');
 
-        $caseBoxCount = isset($data->case_box_count) ? (int) $data->case_box_count : 0;
-        $this->jumlah_box_product = $caseBoxCount > 0 ? (int) ceil($data->qty_produksi / $caseBoxCount) : 0;
+        $this->caseBoxCount = isset($data->case_box_count) ? (int) $data->case_box_count : 0;
+        $this->jumlah_box_product = $this->caseBoxCount > 0 ? (int) ceil($data->qty_produksi / $this->caseBoxCount) : 0;
     }
 
     public function showModalNoOrder()
@@ -919,8 +920,7 @@ class EditSeitaiController extends Component
             $this->total_assembly_qty = number_format((int)str_replace(',', '', $this->total_assembly_qty) + $qty);
             $this->selisih = (int)str_replace(',', '', $this->selisihOld) - $qty;
 
-            $caseBoxCount = isset($tdorderlpk->case_box_count) ? (int) $tdorderlpk->case_box_count : 0;
-            $this->jumlah_box_product = $caseBoxCount > 0 ? (int) ceil($qty / $caseBoxCount) : 0;
+            $this->jumlah_box_product = $this->caseBoxCount > 0 ? (int) ceil($qty / $this->caseBoxCount) : 0;
         }
 
         return view('livewire.nippo-seitai.edit-seitai')->extends('layouts.master');

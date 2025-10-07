@@ -208,18 +208,22 @@
                             @php
                                 $diffBox = $jumlah_box - $jumlah_box_product;
                                 $diffLabel = $diffBox > 0 ? '+' . $diffBox : (string) $diffBox;
+                                $diffLembar = (int) str_replace(',', '', $qty_produksi) - ($jumlah_box_product * $caseBoxCount);
+                                $diffLembarLabel = $diffLembar > 0 ? '+' . $diffLembar : (string) $diffLembar;
                             @endphp
 
-                            @if ($jumlah_box > 0 && $jumlah_box != $jumlah_box_product)
+                            @if (($jumlah_box > 0 && $jumlah_box != $jumlah_box_product) || ($diffLembar != 0 && $caseBoxCount > 0))
                                 <div class="alert alert-danger d-flex align-items-start">
                                     <div class="me-3 fs-3">
                                         <i class="ri-error-warning-line"></i>
                                     </div>
                                     <div>
                                         <div class="fw-bold mb-1">Cek Hasil Produksi — Ketidaksesuaian Ditemukan</div>
+                                        <div>Jumlah Lembar per Box: <span class="fw-bold">{{ $caseBoxCount }}</span></div>
                                         <div>Jumlah Box terinput: <span class="fw-bold">{{ $jumlah_box }}</span></div>
                                         <div>Jumlah Box sesuai produk (harusnya): <span class="fw-bold">{{ $jumlah_box_product }}</span></div>
-                                        <div>Selisih: <span class="fw-bold">{{ $diffLabel }}</span> box</div>
+                                        <div>Selisih Box: <span class="fw-bold">{{ $diffLabel }}</span> box</div>
+                                        <div>Selisih Lembar: <span class="fw-bold">{{ $diffLembarLabel }}</span> lembar</div>
                                         <small class="text-muted d-block mt-2">
                                             Tindakan yang disarankan:
                                             <ul class="mb-0 mt-1">

@@ -67,6 +67,7 @@ class AddSeitaiController extends Component
     public $selisih;
     public $jumlah_box;
     public $jumlah_box_product;
+    public $caseBoxCount;
     public $activeTab = 'Gentan';
     public $editing_id = null;
 
@@ -724,6 +725,7 @@ class AddSeitaiController extends Component
         if ($this->qty_produksi) {
             $this->jumlah_box_product = ceil($qty / $this->tdorderlpk->case_box_count);
         }
+        $this->caseBoxCount = isset($this->tdorderlpk->case_box_count) ? (int) $this->tdorderlpk->case_box_count : 0;
     }
 
     public function updatedMachineno($machineno)
@@ -887,8 +889,7 @@ class AddSeitaiController extends Component
             $this->total_assembly_qty = number_format((int)str_replace(',', '', $this->total_assembly_qty) + $qty);
             $this->selisih = $this->selisih - $qty;
 
-            $caseBoxCount = isset($this->tdorderlpk->case_box_count) ? (int) $this->tdorderlpk->case_box_count : 0;
-            $this->jumlah_box_product = $caseBoxCount > 0 ? (int) ceil($qty / $caseBoxCount) : 0;
+            $this->jumlah_box_product = $this->caseBoxCount > 0 ? (int) ceil($qty / $this->caseBoxCount) : 0;
         }
     }
 
