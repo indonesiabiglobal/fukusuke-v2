@@ -22,12 +22,15 @@ class TdOrderLpk extends Model
         parent::boot();
 
         static::creating(function ($model) {
+            $model->created_on = now();
+            $model->updated_on = now();
             $model->created_by = Auth::user()->username;
             $model->updated_by = Auth::user()->username;
         });
 
         static::updating(function ($model) {
             $model->updated_by = Auth::user()->username;
+            $model->updated_on = now();
         });
     }
 }

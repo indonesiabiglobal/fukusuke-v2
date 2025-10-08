@@ -197,8 +197,7 @@ class EditLpkController extends Component
 
             $orderlpk = TdOrderLpk::findOrFail($this->orderId);
             $orderlpk->lpk_no = $this->lpk_no;
-            // $orderlpk->lpk_date = $this->lpk_date;
-            $orderlpk->order_id = $orderlpk->id;
+            $orderlpk->order_id = $orderlpk->order_id;
             $orderlpk->product_id = $orderlpk->product_id;
             $orderlpk->machine_id = $machine->id;
             $orderlpk->qty_lpk = (int)str_replace(',', '', $this->qty_lpk);
@@ -309,8 +308,6 @@ class EditLpkController extends Component
                 ->select(
                     'tod.id',
                     'tod.product_code',
-                    // 'tod.processdate',
-                    DB::raw("TO_CHAR(tolp.lpk_date, 'DD/MM/YYYY') || ' - Nomor: ' || tolp.seq_no as processdate"),
                     'tod.order_date',
                     'mp.name as produk_name',
                     'mbu.name as buyer_name',
@@ -328,7 +325,6 @@ class EditLpkController extends Component
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor PO ' . $this->po_no . ' Tidak Terdaftar']);
             } else {
                 $this->no_order = $tdorder->product_code;
-                $this->processdate = $tdorder->processdate;
                 $this->order_date = $tdorder->order_date;
                 $this->buyer_name = $tdorder->buyer_name;
                 $this->product_name = $tdorder->produk_name;
