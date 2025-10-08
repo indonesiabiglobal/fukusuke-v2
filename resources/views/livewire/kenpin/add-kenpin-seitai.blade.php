@@ -271,8 +271,7 @@
                         <label class="control-label col-12 col-lg-2">Bagian Mesin</label>
                         <div class="col-12 col-lg-10" wire:ignore>
                             <select wire:model="bagian_mesin_id" x-ref="bagianMesinSelect"
-                                class="form-control @error('bagian_mesin_id') is-invalid @enderror" data-choices
-                                data-choices-sorting-false data-choices-removeItem
+                                class="form-control @error('bagian_mesin_id') is-invalid @enderror select2-bagian-mesin"
                                 x-on:keydown.tab="$event.preventDefault(); $refs.statusKenpinSelect.focus();">
                                 <option value="">- Pilih Bagian -</option>
                                 @foreach ($bagianMesinListInfure as $bagianMesin)
@@ -295,8 +294,7 @@
                         <label class="control-label col-12 col-lg-2">Bagian Mesin</label>
                         <div class="col-12 col-lg-10" wire:ignore>
                             <select wire:model="bagian_mesin_id" x-ref="bagianMesinSelect"
-                                class="form-control @error('bagian_mesin_id') is-invalid @enderror" data-choices
-                                data-choices-sorting-false data-choices-removeItem
+                                class="form-control @error('bagian_mesin_id') is-invalid @enderror select2-bagian-mesin"
                                 x-on:keydown.tab="$event.preventDefault(); $refs.statusKenpinSelect.focus();">
                                 <option value="">- Pilih Bagian -</option>
                                 @foreach ($bagianMesinListSeitai as $bagianMesin)
@@ -653,22 +651,32 @@
             $('#modal-noorder-produk').modal('hide');
         });
 
-        // Initialize Choices.js for bagian mesin select
-        document.addEventListener('livewire:navigated', () => {
-            const bagianMesinSelect = document.querySelector('[data-choices]');
-            if (bagianMesinSelect && !bagianMesinSelect.choicesInstance) {
-                const choices = new Choices(bagianMesinSelect, {
-                    searchEnabled: true,
-                    removeItemButton: true,
-                    shouldSort: false
-                });
-                bagianMesinSelect.choicesInstance = choices;
+        document.addEventListener('livewire:initialized', function() {
+            function selectMachine() {
+                // Destroy instance Select2 yang ada
+                if ($('.select2-bagian-mesin').hasClass("select2-hidden-accessible")) {
+                    $('.select2-bagian-mesin').select2('destroy');
+                }
 
-                // Listen for changes and update Livewire
-                bagianMesinSelect.addEventListener('change', function(e) {
-                    @this.set('bagian_mesin_id', e.target.value);
+                $('.select2-bagian-mesin').select2({
+                    theme: 'bootstrap-5',
+                }).on('change', function(e) {
+                    var data = $(this).val();
+                    @this.set('bagian_mesin_id', data);
                 });
             }
+
+            selectMachine();
+
+            // Hook untuk Livewire v3
+            Livewire.hook('morph', ({
+                el,
+                component
+            }) => {
+                setTimeout(() => {
+                    selectMachine();
+                }, 100);
+            });
         });
     </script>
 @endscript

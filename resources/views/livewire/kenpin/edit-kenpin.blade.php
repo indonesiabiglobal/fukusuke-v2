@@ -226,8 +226,7 @@
                         <label class="control-label col-12 col-lg-2">Bagian Mesin</label>
                         <div class="col-12 col-lg-10" wire:ignore>
                             <select wire:model="bagian_mesin_id" x-ref="bagianMesinSelect"
-                                class="form-control @error('bagian_mesin_id') is-invalid @enderror" data-choices
-                                data-choices-sorting-false data-choices-removeItem
+                                class="form-control @error('bagian_mesin_id') is-invalid @enderror select2-bagian-mesin"
                                 x-on:keydown.tab="$event.preventDefault(); $refs.penyebabSelect.focus();">
                                 @if (isset($bagianMesinList))
                                     @foreach ($bagianMesinList as $bagianMesin)
@@ -260,7 +259,7 @@
         <hr />
         <div class="row">
             <div class="col-12">
-                @if ($status_kenpin == 2)
+                @if ($status_kenpin_old == 2)
                     <div class="alert alert-info">
                         <i class="ri-information-fill"></i> Kenpin sudah finish, tidak dapat menambah gentan atau
                         menyimpan perubahan.
@@ -269,7 +268,7 @@
             </div>
             <div class="col-lg-8">
                 <button wire:click="addGentan" type="button" class="btn btn-success" wire:loading.attr="disabled"
-                    @disabled($status_kenpin == 2)>
+                    @disabled($status_kenpin_old == 2)>
                     <span wire:loading.remove wire:target="addGentan">
                         <i class="ri-add-line"></i> Add Gentan
                     </span>
@@ -300,7 +299,7 @@
                         </span>
                     </button>
                     <button type="submit" class="btn btn-success" wire:loading.attr="disabled" wire:click="save"
-                        @disabled($status_kenpin == 2)>
+                        @disabled($status_kenpin_old == 2)>
                         <span wire:loading.remove wire:target="save">
                             <i class="ri-save-3-line"></i> Save
                         </span>
@@ -536,7 +535,7 @@
                                         <button type="button" class="btn btn-primary p-1"
                                             wire:click="edit({{ $item->id }})"
                                             wire:loading.attr="disabled"
-                                            @disabled($status_kenpin == 2)
+                                            @disabled($status_kenpin_old == 2)
                                             wire:target="edit({{ $item->id }})">
                                             <span wire:loading.remove wire:target="edit({{ $item->id }})">
                                                 <i class="ri-edit-2-fill"></i>
@@ -549,7 +548,7 @@
                                         </button>
                                         <button type="button" class="btn btn-danger p-1"
                                             wire:click="deleteInfure({{ $item->id }})"
-                                            wire:loading.attr="disabled" @disabled($status_kenpin == 2)>
+                                            wire:loading.attr="disabled" @disabled($status_kenpin_old == 2)>
                                             <span wire:loading.remove wire:target="deleteInfure({{ $item->id }})">
                                                 <i class="ri-delete-bin-4-fill"></i>
                                             </span>
@@ -1511,22 +1510,32 @@
             $('#modal-noorder-produk').modal('hide');
         });
 
-        // Initialize Choices.js for bagian mesin select
-        document.addEventListener('livewire:navigated', () => {
-            const bagianMesinSelect = document.querySelector('[data-choices]');
-            if (bagianMesinSelect && !bagianMesinSelect.choicesInstance) {
-                const choices = new Choices(bagianMesinSelect, {
-                    searchEnabled: true,
-                    removeItemButton: true,
-                    shouldSort: false
-                });
-                bagianMesinSelect.choicesInstance = choices;
+        document.addEventListener('livewire:initialized', function() {
+            function selectMachine() {
+                // Destroy instance Select2 yang ada
+                if ($('.select2-bagian-mesin').hasClass("select2-hidden-accessible")) {
+                    $('.select2-bagian-mesin').select2('destroy');
+                }
 
-                // Listen for changes and update Livewire
-                bagianMesinSelect.addEventListener('change', function(e) {
-                    @this.set('bagian_mesin_id', e.target.value);
+                $('.select2-bagian-mesin').select2({
+                    theme: 'bootstrap-5',
+                }).on('change', function(e) {
+                    var data = $(this).val();
+                    @this.set('bagian_mesin_id', data);
                 });
             }
+
+            selectMachine();
+
+            // Hook untuk Livewire v3
+            Livewire.hook('morph', ({
+                el,
+                component
+            }) => {
+                setTimeout(() => {
+                    selectMachine();
+                }, 100);
+            });
         });
     </script>
 @endscript

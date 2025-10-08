@@ -369,7 +369,7 @@ class EditKenpinSeitaiController extends Component
             if ($this->masalahKenpin) {
                 $data->masalah_kenpin_id = $this->masalahKenpin->id;
             }
-            $data->machine_part_detail_id = is_array($this->bagian_mesin_id) ? $this->bagian_mesin_id['value'] : $this->bagian_mesin_id;
+            $data->machine_part_detail_id = $this->bagian_mesin_id;
             $data->penyebab = $this->penyebab;
             $data->keterangan_penyebab = $this->keterangan_penyebab;
             $data->penanggulangan = $this->penanggulangan;

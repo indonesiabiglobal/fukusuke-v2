@@ -48,7 +48,7 @@ class AddKenpinSeitaiController extends Component
     public $idKenpinGoodDetailUpdate;
     public $beratLossTotal;
     public $qtyProduksiTotal = 0;
-    public $is_kasus;
+    public $is_kasus = false;
 
     // Master data for NG codes
     public $nomor_box = [];
@@ -214,17 +214,17 @@ class AddKenpinSeitaiController extends Component
             'employeeno' => 'required',
             'kode_ng' => 'required',
             'is_kasus' => 'required',
-            'penyebab' => 'required_if:status,2',
-            'keterangan_penyebab' => 'required_if:status,2',
+            'penyebab' => 'required',
+            'keterangan_penyebab' => 'required',
             'penanggulangan' => 'required_if:status,2',
-            'bagian_mesin_id' => 'required_if:status,2'
+            'bagian_mesin_id' => 'required'
         ], [
             'kode_produk.required' => 'Kode Produk tidak boleh kosong',
             'employeeno.required' => 'Petugas tidak boleh kosong',
             'kode_ng.required' => 'Kode NG tidak boleh kosong',
             'penyebab.required' => 'Penyebab tidak boleh kosong',
             'keterangan_penyebab.required' => 'Keterangan penyebab tidak boleh kosong',
-            'penanggulangan.required' => 'Penanggulangan tidak boleh kosong',
+            'penanggulangan.required_if' => 'Penanggulangan tidak boleh kosong',
             'bagian_mesin_id.required' => 'Bagian mesin tidak boleh kosong'
         ]);
 
@@ -247,7 +247,7 @@ class AddKenpinSeitaiController extends Component
             if ($this->masalahKenpin) {
                 $data->masalah_kenpin_id = $this->masalahKenpin->id;
             }
-            $data->machine_part_detail_id = is_array($this->bagian_mesin_id) ? $this->bagian_mesin_id['value'] : $this->bagian_mesin_id;
+            $data->machine_part_detail_id = $this->bagian_mesin_id;
             $data->penyebab = $this->penyebab;
             $data->keterangan_penyebab = $this->keterangan_penyebab;
             $data->penanggulangan = $this->penanggulangan;

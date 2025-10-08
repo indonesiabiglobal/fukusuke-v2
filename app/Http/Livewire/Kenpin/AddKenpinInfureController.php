@@ -52,7 +52,7 @@ class AddKenpinInfureController extends Component
 
     public $masalahInfure;
     public $kode_ng;
-    public $is_kasus;
+    public $is_kasus = false;
     public $nama_ng;
     public $bagian_mesin_id;
     public $bagianMesinList;
@@ -371,8 +371,7 @@ class AddKenpinInfureController extends Component
             $this->gentan_no = '';
             $this->machineno = '';
             $this->namapetugas = '';
-            $this->berat_loss = '';
-            $this->berat = '';
+            $this->berat_loss = 0;
             // $this->frekuensi = '';
             $this->dispatch('showModalAddGentan');
         }
@@ -474,11 +473,21 @@ class AddKenpinInfureController extends Component
             'status_kenpin' => 'required',
             'lpk_no' => 'required',
             'kode_ng' => 'required',
-            'is_kasus' => 'required|boolean',
+            'is_kasus' => 'boolean',
             'penyebab' => 'required',
             'keterangan_penyebab' => 'required',
-            'penanggulangan' => 'required',
+            'penanggulangan' => 'required_if:status_kenpin,2',
             'bagian_mesin_id' => 'required'
+        ], [
+            'employeeno.required' => 'Petugas tidak boleh kosong',
+            'status_kenpin.required' => 'Status Kenpin tidak boleh kosong',
+            'lpk_no.required' => 'Nomor LPK tidak boleh kosong',
+            'kode_ng.required' => 'Kode NG tidak boleh kosong',
+            'is_kasus.boolean' => 'Kasus harus bernilai true atau false',
+            'penyebab.required' => 'Penyebab tidak boleh kosong',
+            'keterangan_penyebab.required' => 'Keterangan Penyebab tidak boleh kosong',
+            'penanggulangan.required_if' => 'Penanggulangan tidak boleh kosong jika status selesai',
+            'bagian_mesin_id.required' => 'Bagian Mesin tidak boleh kosong',
         ]);
 
         DB::beginTransaction();

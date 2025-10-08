@@ -225,8 +225,7 @@
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-2">Bagian Mesin</label>
                         <div class="col-12 col-lg-10" wire:ignore>
-                            <select id="bagian-mesin-infure" name="bagian_mesin_id" class="form-control" data-choices
-                                data-choices-search-false>
+                            <select id="bagian-mesin-infure" name="bagian_mesin_id" class="form-control select2-bagian-mesin">
                                 @foreach ($bagianMesinListInfure as $item)
                                     <option value="{{ $item->id }}"
                                         {{ $bagian_mesin_id == $item->id ? 'selected' : '' }}>
@@ -1248,22 +1247,32 @@
             $('#modal-noorder-produk').modal('hide');
         });
 
-        // Initialize Choices.js for bagian mesin select
-        document.addEventListener('livewire:navigated', () => {
-            const bagianMesinSelect = document.querySelector('[data-choices]');
-            if (bagianMesinSelect && !bagianMesinSelect.choicesInstance) {
-                const choices = new Choices(bagianMesinSelect, {
-                    searchEnabled: true,
-                    removeItemButton: true,
-                    shouldSort: false
-                });
-                bagianMesinSelect.choicesInstance = choices;
+        document.addEventListener('livewire:initialized', function() {
+            function selectMachine() {
+                // Destroy instance Select2 yang ada
+                if ($('.select2-bagian-mesin').hasClass("select2-hidden-accessible")) {
+                    $('.select2-bagian-mesin').select2('destroy');
+                }
 
-                // Listen for changes and update Livewire
-                bagianMesinSelect.addEventListener('change', function(e) {
-                    @this.set('bagian_mesin_id', e.target.value);
+                $('.select2-bagian-mesin').select2({
+                    theme: 'bootstrap-5',
+                }).on('change', function(e) {
+                    var data = $(this).val();
+                    @this.set('bagian_mesin_id', data);
                 });
             }
+
+            selectMachine();
+
+            // Hook untuk Livewire v3
+            Livewire.hook('morph', ({
+                el,
+                component
+            }) => {
+                setTimeout(() => {
+                    selectMachine();
+                }, 100);
+            });
         });
     </script>
 @endscript

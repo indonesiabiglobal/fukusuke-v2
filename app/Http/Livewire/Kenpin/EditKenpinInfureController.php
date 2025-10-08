@@ -30,6 +30,7 @@ class EditKenpinInfureController extends Component
     public $empname;
     public $remark;
     public $status_kenpin;
+    public $status_kenpin_old;
     public $details;
     public $beratLossTotal = 0;
     public $lpk_id;
@@ -115,6 +116,7 @@ class EditKenpinInfureController extends Component
         $this->employeeno = $data->employeeno;
         $this->empname = $data->empname;
         $this->status_kenpin = $data->status_kenpin;
+        $this->status_kenpin_old = $data->status_kenpin;
 
         // Inisialisasi field baru
         $this->bagian_mesin_id = $data->machine_part_detail_id;
@@ -417,7 +419,7 @@ class EditKenpinInfureController extends Component
         $this->gentan_no = '';
         $this->machineno = '';
         $this->namapetugas = '';
-        $this->berat_loss = '';
+        $this->berat_loss = 0;
         $this->frekuensi = '';
         $this->idKenpinAssemblyDetailUpdate = null;
 
@@ -577,7 +579,22 @@ class EditKenpinInfureController extends Component
             'employeeno' => 'required',
             'status_kenpin' => 'required',
             'lpk_no' => 'required',
-            'is_kasus' => 'required',
+            'kode_ng' => 'required',
+            'is_kasus' => 'boolean',
+            'penyebab' => 'required',
+            'keterangan_penyebab' => 'required',
+            'penanggulangan' => 'required_if:status_kenpin,2',
+            'bagian_mesin_id' => 'required'
+        ], [
+            'employeeno.required' => 'Nomor Petugas tidak boleh kosong',
+            'status_kenpin.required' => 'Status Kenpin tidak boleh kosong',
+            'lpk_no.required' => 'Nomor LPK tidak boleh kosong',
+            'kode_ng.required' => 'Kode NG tidak boleh kosong',
+            'is_kasus.boolean' => 'Is Kasus harus berupa nilai boolean',
+            'penyebab.required' => 'Penyebab tidak boleh kosong',
+            'keterangan_penyebab.required' => 'Keterangan Penyebab tidak boleh kosong',
+            'penanggulangan.required_if' => 'Penanggulangan harus diisi jika status kenpin adalah Finish',
+            'bagian_mesin_id.required' => 'Bagian Mesin tidak boleh kosong',
         ]);
 
         DB::beginTransaction();
@@ -592,7 +609,6 @@ class EditKenpinInfureController extends Component
             $product->status_kenpin = $this->status_kenpin;
             $product->is_kasus = $this->is_kasus;
 
-            // Field baru yang ditambahkan
             $product->machine_part_detail_id = $this->bagian_mesin_id;
             $product->penyebab = $this->penyebab;
             $product->keterangan_penyebab = $this->keterangan_penyebab;
