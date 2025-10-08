@@ -501,24 +501,28 @@ class CheckListJamKerjaController extends Component
 
             // Detail jam mati mesin
             $columnDetailStart = $columnItemEnd;
-            foreach ($dataItem['jamKerjaJamMatiMesin'] as $detail) {
-                $columnItemEnd = $columnDetailStart;
-                // Kode Jam Mati Mesin
-                $worksheet->setCellValue($columnItemEnd . $rowItem, $detail->jamMatiMesin->code ?? '');
-                $columnItemEnd++;
-                // Nama Jam Mati Mesin
-                $worksheet->setCellValue($columnItemEnd . $rowItem, $detail->jamMatiMesin->name ?? '');
-                $columnItemEnd++;
-                // Jam Mati Mesin
-                $worksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($detail->off_hour)->translatedFormat('H:i'));
-                $columnItemEnd++;
-                // Dari Jam
-                $worksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($detail->from)->translatedFormat('H:i'));
-                $columnItemEnd++;
-                // Sampai Jam
-                $worksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($detail->to)->translatedFormat('H:i'));
-                $columnItemEnd++;
-                phpspreadsheet::addFullBorder($spreadsheet, 'K' . $rowItem . ':O' . $rowItem);
+            if (isset($dataItem['jamKerjaJamMatiMesin']) && count($dataItem['jamKerjaJamMatiMesin']) > 0) {
+                foreach ($dataItem['jamKerjaJamMatiMesin'] as $detail) {
+                    $columnItemEnd = $columnDetailStart;
+                    // Kode Jam Mati Mesin
+                    $worksheet->setCellValue($columnItemEnd . $rowItem, $detail->jamMatiMesin->code ?? '');
+                    $columnItemEnd++;
+                    // Nama Jam Mati Mesin
+                    $worksheet->setCellValue($columnItemEnd . $rowItem, $detail->jamMatiMesin->name ?? '');
+                    $columnItemEnd++;
+                    // Jam Mati Mesin
+                    $worksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($detail->off_hour)->translatedFormat('H:i'));
+                    $columnItemEnd++;
+                    // Dari Jam
+                    $worksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($detail->from)->translatedFormat('H:i'));
+                    $columnItemEnd++;
+                    // Sampai Jam
+                    $worksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($detail->to)->translatedFormat('H:i'));
+                    $columnItemEnd++;
+                    phpspreadsheet::addFullBorder($spreadsheet, 'K' . $rowItem . ':O' . $rowItem);
+                    $rowItem++;
+                }
+            } else {
                 $rowItem++;
             }
         }
