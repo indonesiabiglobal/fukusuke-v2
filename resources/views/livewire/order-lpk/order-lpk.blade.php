@@ -54,13 +54,10 @@
                 </div>
                 <div class="col-12 col-lg-10">
                     <div class="mb-1" wire:ignore>
-                        <select class="form-control" wire:model.defer="idProduct" data-choices data-choices-sorting-true
-                            data-choices-removeItem data-choices-sorter data-choices-search-field-label>
+                        <select class="form-control select2-product" wire:model.defer="idProduct">
                             <option value="">- All -</option>
                             @foreach ($products as $item)
-                                <option
-                                    data-custom-properties='{"code": "{{ $item->code }} - {{ $item->code_alias }}"}'
-                                    value="{{ $item->id }}" @if ($item->id == ($idProduct['value'] ?? null)) selected @endif>
+                                <option value="{{ $item->id }}" @if ($item->id == ($idProduct['value'] ?? null)) selected @endif>
                                     {{ $item->name }},
                                     {{ $item->code }}</option>
                             @endforeach
@@ -416,5 +413,35 @@
                 });
             }, 500);
         }
+
+        document.addEventListener('livewire:initialized', function() {
+            function selectProduct() {
+                // Destroy instance Select2 yang ada
+                if ($('.select2-product').hasClass("select2-hidden-accessible")) {
+                    $('.select2-product').select2('destroy');
+                }
+
+                $('.select2-product').select2({
+                    theme: 'bootstrap-5',
+                    allowClear: true,
+                    placeholder: '-- All --',
+                }).on('change', function(e) {
+                    var data = $(this).val();
+                    @this.set('idProduct', data);
+                });
+            }
+
+            selectProduct();
+
+            // Hook untuk Livewire v3
+            Livewire.hook('morph', ({
+                el,
+                component
+            }) => {
+                setTimeout(() => {
+                    selectProduct();
+                }, 100);
+            });
+        });
     </script>
 @endscript

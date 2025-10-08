@@ -220,8 +220,8 @@ class LpkEntryController extends Component
         if (isset($this->idBuyer) && $this->idBuyer['value'] != "" && $this->idBuyer != "undefined") {
             $data = $data->where('tod.buyer_id', $this->idBuyer['value']);
         }
-        if (isset($this->idProduct) && $this->idProduct['value'] != "" && $this->idProduct != "undefined") {
-            $data = $data->where('mp.id', $this->idProduct['value']);
+        if (isset($this->idProduct) && $this->idProduct != "" && $this->idProduct != "undefined") {
+            $data = $data->where('mp.id', $this->idProduct);
         }
 
         if (isset($this->idLPKColor) && $this->idLPKColor['value'] != "" && $this->idLPKColor != "undefined") {
