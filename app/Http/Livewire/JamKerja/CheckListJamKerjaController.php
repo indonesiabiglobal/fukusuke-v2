@@ -329,6 +329,8 @@ class CheckListJamKerjaController extends Component
             ->select('id', 'working_date', 'work_shift', 'machine_id', 'employee_id', 'work_hour', 'off_hour', 'on_hour');
 
         $tableName = (new TdJamKerjaMesin)->getTable();
+        $machineTable = (new MsMachine)->getTable();
+
         if (isset($filter['transaksi']) && $filter['transaksi'] != '') {
             if ($filter['transaksi'] == 1) {
                 $query = $query->whereRaw(
@@ -370,10 +372,12 @@ class CheckListJamKerjaController extends Component
             });
         }
 
-        return $query
+        $query = $query
             ->orderBy('working_date', 'asc')
-            ->orderBy('machine_id', 'asc')
-            ->orderBy('work_shift', 'asc')
+            ->orderByRaw("(select machineno from {$machineTable} where id = {$tableName}.machine_id) asc")
+            ->orderBy('work_shift', 'asc');
+
+        return $query
             ->get();
     }
 
