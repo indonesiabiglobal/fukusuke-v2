@@ -330,6 +330,23 @@
                             </span>
                         </div>
                     </button>
+                    <button type="button" class="btn btn-danger" wire:click="deleteModal"
+                        wire:loading.attr="disabled"
+                        @disabled($status_kenpin_old == 2)>
+                        <span wire:loading.remove wire:target="deleteModal">
+                            <i class="ri-delete-bin-line"></i> Delete
+                        </span>
+                        <div wire:loading wire:target="deleteModal">
+                            <span class="d-flex align-items-center">
+                                <span class="spinner-border flex-shrink-0" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </span>
+                                <span class="flex-grow-1 ms-1">
+                                    Deleting...
+                                </span>
+                            </span>
+                        </div>
+                    </button>
                 </div>
             </div>
         </div>
@@ -512,6 +529,51 @@
                 </div>
             </div>
         </div>
+
+        <div id="modal-delete" class="modal fade zoomIn" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                            id="close-modal-delete"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mt-2 text-center">
+                            <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop"
+                                colors="primary:#f7b84b,secondary:#f06548"
+                                style="width:100px;height:100px"></lord-icon>
+                            <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
+                                <h4>Are you sure ?</h4>
+                                <p class="text-muted mx-4 mb-0">Are you sure you want to remove this kenpin record
+                                    ?
+                                </p>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
+                            <button type="button" class="btn w-sm btn-light"
+                                data-bs-dismiss="modal">Close</button>
+                            <button wire:click="deleteKenpin" id="btnCreate" type="button"
+                                class="btn w-sm btn-danger" id="remove-item" wire:loading.attr="disabled">
+                                <span wire:loading.remove wire:target="deleteKenpin">
+                                    <i class="ri-save-3-line"></i> Yes, Delete It!
+                                </span>
+                                <div wire:loading wire:target="deleteKenpin">
+                                    <span class="d-flex align-items-center">
+                                        <span class="spinner-border flex-shrink-0" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </span>
+                                        <span class="flex-grow-1 ms-1">
+                                            Loading...
+                                        </span>
+                                    </span>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="card border-0 shadow mb-4 mt-4">
             <div class="card-body">
                 <div class="table-responsive">
@@ -1536,6 +1598,16 @@
                     selectMachine();
                 }, 100);
             });
+        });
+
+
+        $wire.on('showModalDelete', () => {
+            $('#modal-delete').modal('show');
+        });
+
+        // close modal delete machine
+        $wire.on('closeModalDelete', () => {
+            $('#modal-delete').modal('hide');
         });
     </script>
 @endscript

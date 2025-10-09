@@ -516,6 +516,49 @@ class EditKenpinSeitaiController extends Component
         }
     }
 
+    public function deleteModal()
+    {
+        $this->dispatch('showModalDelete');
+        $this->skipRender();
+    }
+
+    public function deleteKenpin()
+    {
+        try {
+            DB::beginTransaction();
+
+            // Ambil data kenpin yang akan dihapus
+            $kenpin = TdKenpin::find($this->idKenpinGoods);
+
+            if (!$kenpin) {
+                $this->dispatch('notification', ['type' => 'error', 'message' => 'Data kenpin tidak ditemukan']);
+                return;
+            }
+
+            // Hapus semua detail kenpin goods yang terkait
+            TdKenpinGoodsDetail::where('kenpin_id', $kenpin->id)->delete();
+
+            // Hapus semua detail box kenpin goods yang terkait
+            DB::table('tdkenpin_goods_detail_box')
+                ->whereIn('kenpin_goods_detail_id', function ($query) use ($kenpin) {
+                    $query->select('id')
+                        ->from('tdkenpin_goods_detail')
+                        ->where('kenpin_id', $kenpin->id);
+                })
+                ->delete();
+            // Hapus data kenpin utama
+            $kenpin->delete();
+
+            DB::commit();
+
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Data kenpin berhasil dihapus']);
+            return redirect()->route('kenpin-seitai-kenpin');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Gagal menghapus data kenpin: ' . $e->getMessage()]);
+        }
+    }
+
     public function render()
     {
         return view('livewire.kenpin.edit-kenpin-seitai')->extends('layouts.master');

@@ -674,6 +674,49 @@ class EditKenpinInfureController extends Component
         }
     }
 
+    public function deleteModal()
+    {
+        $this->dispatch('showModalDelete');
+        $this->skipRender();
+    }
+
+    public function deleteKenpin()
+    {
+        try {
+            DB::beginTransaction();
+
+            // Ambil data kenpin yang akan dihapus
+            $kenpin = TdKenpin::find($this->orderid);
+
+            if (!$kenpin) {
+                $this->dispatch('notification', ['type' => 'error', 'message' => 'Data kenpin tidak ditemukan']);
+                return;
+            }
+
+            // Update status_kenpin pada TdProductAssembly yang berhubungan dengan kenpin menjadi 0
+            TdProductAssembly::whereIn('id', function ($query) use ($kenpin) {
+                $query->select('product_assembly_id')
+                    ->from('tdkenpin_assembly_detail')
+                    ->where('kenpin_id', $kenpin->id);
+            })->update(['status_kenpin' => 0]); // 0 = Tidak dalam proses kenpin
+
+            // Hapus semua detail kenpin assembly yang terkait
+            TdKenpinAssemblyDetail::where('kenpin_id', $kenpin->id)->delete();
+
+            // Hapus data kenpin utama
+            $kenpin->delete();
+
+            DB::commit();
+
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Data kenpin berhasil dihapus']);
+            return redirect()->route('kenpin-infure');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Gagal menghapus data kenpin: ' . $e->getMessage()]);
+        }
+    }
+
     public function render()
     {
         return view('livewire.kenpin.edit-kenpin')->extends('layouts.master');

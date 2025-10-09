@@ -1588,8 +1588,7 @@
                                 style="width:100px;height:100px"></lord-icon>
                             <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
                                 <h4>Are you sure ?</h4>
-                                <p class="text-muted mx-4 mb-0">Are you sure you want to remove this machine
-                                    ?
+                                <p class="text-muted mx-4 mb-0">Are you sure you want to remove this nippo infure record?
                                 </p>
                             </div>
                         </div>
