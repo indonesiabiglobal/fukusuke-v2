@@ -175,7 +175,8 @@ class CheckListJamKerjaController extends Component
         $this->fillGeneralSheet($generalWorksheet, $data, $spreadsheet);
 
         // Fill Detail Sheet (dengan detail jam mati mesin)
-        $this->fillDetailSheet($detailWorksheet, $data, $spreadsheet);
+        $detailData = $this->getData($tglAwal, $tglAkhir, $filter, $nippo, $isChecklist, true);
+        $this->fillDetailSheet($detailWorksheet, $detailData, $spreadsheet);
 
         // Set active sheet to General
         $spreadsheet->setActiveSheetIndex(0);
@@ -313,7 +314,7 @@ class CheckListJamKerjaController extends Component
         $worksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
     }
 
-    private function getData($tglAwal, $tglAkhir, $filter, $nippo, $isChecklist)
+    private function getData($tglAwal, $tglAkhir, $filter, $nippo, $isChecklist, $isDetail = false)
     {
         if (!$isChecklist) {
             $tglAkhir = Carbon::parse($tglAkhir)->subDay();
@@ -372,10 +373,14 @@ class CheckListJamKerjaController extends Component
             });
         }
 
-        $query = $query
+        if ($isDetail) {
+            $query = $query->orderBy('off_hour', 'desc');
+        } else {
+            $query = $query
             ->orderBy('working_date', 'asc')
             ->orderByRaw("(select machineno from {$machineTable} where id = {$tableName}.machine_id) asc")
             ->orderBy('work_shift', 'asc');
+        }
 
         return $query
             ->get();
