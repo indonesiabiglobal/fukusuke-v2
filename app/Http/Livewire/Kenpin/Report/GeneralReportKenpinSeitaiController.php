@@ -243,7 +243,7 @@ class GeneralReportKenpinSeitaiController extends Component
         // Apply styles to data area
         $lastRow = $rowItem - 1;
         $dataRange = $columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $lastRow;
-        phpspreadsheet::addFullBorder($spreadsheet, $dataRange);
+        phpspreadsheet::addBorderDottedMiddleHorizontal($spreadsheet, $dataRange);
         phpspreadsheet::styleFont($spreadsheet, $dataRange, false, 8, 'Calibri');
         phpspreadsheet::textAlignCenter($spreadsheet, $dataRange);
 
@@ -476,7 +476,7 @@ class GeneralReportKenpinSeitaiController extends Component
         // Apply styles to data area
         $lastRow = $rowItem - 1;
         $dataRange = $columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $lastRow;
-        phpspreadsheet::addFullBorder($spreadsheet, $dataRange);
+        phpspreadsheet::addBorderDottedMiddleHorizontal($spreadsheet, $dataRange);
         phpspreadsheet::styleFont($spreadsheet, $dataRange, false, 8, 'Calibri');
         phpspreadsheet::textAlignCenter($spreadsheet, $dataRange);
 
@@ -714,7 +714,7 @@ class GeneralReportKenpinSeitaiController extends Component
         // Apply styles to data area
         $lastRow = $rowItem - 1;
         $dataRange = $columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $lastRow;
-        phpspreadsheet::addFullBorder($spreadsheet, $dataRange);
+        phpspreadsheet::addBorderDottedMiddleHorizontal($spreadsheet, $dataRange);
         phpspreadsheet::styleFont($spreadsheet, $dataRange, false, 8, 'Calibri');
         phpspreadsheet::textAlignCenter($spreadsheet, $dataRange);
 
@@ -952,7 +952,7 @@ class GeneralReportKenpinSeitaiController extends Component
         // Apply styles to data area
         $lastRow = $rowItem - 1;
         $dataRange = $columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $lastRow;
-        phpspreadsheet::addFullBorder($spreadsheet, $dataRange);
+        phpspreadsheet::addBorderDottedMiddleHorizontal($spreadsheet, $dataRange);
         phpspreadsheet::styleFont($spreadsheet, $dataRange, false, 8, 'Calibri');
         phpspreadsheet::textAlignCenter($spreadsheet, $dataRange);
 

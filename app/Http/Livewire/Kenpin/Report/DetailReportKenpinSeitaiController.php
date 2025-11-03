@@ -325,7 +325,7 @@ class DetailReportKenpinSeitaiController extends Component
 
             $rowItem++;
         }
-        phpspreadsheet::addFullBorder($spreadsheet, $columnItemStart . $rowItemStart . ':' . $columnItemEnd . $rowItem - 1);
+        phpspreadsheet::addBorderDottedMiddleHorizontal($spreadsheet, $columnItemStart . $rowItemStart . ':' . $columnItemEnd . $rowItem - 1);
         phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItemStart . ':' . $columnItemEnd . $rowItem - 1, false, 8, 'Calibri');
         phpspreadsheet::textAlignCenter($spreadsheet, $columnItemStart . $rowItemStart . ':' . $columnItemEnd . $rowItem - 1);
 
