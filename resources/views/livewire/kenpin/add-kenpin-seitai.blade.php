@@ -67,12 +67,12 @@
                                     }
                                 })">
                                     <input type="text" class="form-control" x-model="nomor_palet"
-                                        wire:model="nomor_palet" maxlength="12"
-                                        x-on:keydown.tab="$event.preventDefault(); $refs.lotnoInput.focus();"
+                                        wire:model.change="nomor_palet" maxlength="12"
+                                        x-on:keydown.tab="$event.preventDefault(); $refs.departmentInput.focus();"
                                         placeholder="A0000-000000" />
                                 </div>
 
-                                <div class="d-flex align-items-center">
+                                {{-- <div class="d-flex align-items-center">
                                     <button wire:click="addPalet" type="button" class="btn btn-info"
                                         wire:loading.attr="disabled">
                                         <span wire:loading.remove wire:target="addPalet">
@@ -89,7 +89,7 @@
                                             </span>
                                         </div>
                                     </button>
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
                     </div>
@@ -99,7 +99,7 @@
                 <div class="form-group">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-2">Departemen</label>
-                        <select wire:model.change="department_id" class="form-control" placeholder="- all -">
+                        <select wire:model.change="department_id" class="form-control" placeholder="- all -" x-ref="departmentInput">
                             <option value="7">Seitai</option>
                             <option value="2">Infure</option>
                         </select>

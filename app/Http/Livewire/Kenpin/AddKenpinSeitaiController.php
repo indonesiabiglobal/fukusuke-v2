@@ -652,6 +652,13 @@ class AddKenpinSeitaiController extends Component
         }
     }
 
+    public function updatedNomorPalet()
+    {
+        if (isset($this->nomor_palet) && $this->nomor_palet != '' && strlen($this->nomor_palet) >= 12) {
+            $this->addPalet();
+        }
+    }
+
     public function search()
     {
         $this->render();
