@@ -115,12 +115,12 @@ class GeneralReportKenpinSeitaiController extends Component
                 FROM
                     tdKenpin AS tdka
                     INNER JOIN tdkenpin_goods_detail AS tdkgd ON tdka.ID = tdkgd.kenpin_id
-                    INNER JOIN tdproduct_goods AS tdpa ON tdkgd.product_goods_id = tdpa.ID
+                    LEFT JOIN tdproduct_goods AS tdpa ON tdkgd.product_goods_id = tdpa.ID
                     INNER JOIN tdorderlpk AS tdol ON tdol.ID = tdpa.lpk_id
                     INNER JOIN msmachine AS msm ON msm.ID = tdpa.machine_id
                     INNER JOIN msmasalahkenpin AS msmk ON msmk.ID = tdka.masalah_kenpin_id
                 WHERE
-                    tdka.department_id = 7
+                    tdka.kenpin_department_id = 7
                     $filterKenpinId
                     $filterDate
                     $filterNoLPK
@@ -148,9 +148,9 @@ class GeneralReportKenpinSeitaiController extends Component
         // Get all masalah kenpin with department id = 3 for complete list
         $allMasalah = MsMasalahKenpin::with('departmentGroup')
             ->whereHas('departmentGroup', function ($query) {
-                $query->where('department_id', 7);
+                $query->where('department_id', 7)->orWhere('department_id', 2);
             })
-            ->orderBy('code', 'ASC')
+            ->orderByRaw('CAST(code AS INTEGER) ASC')
             ->get();
 
         // Build complete masalah list from department id = 3
@@ -341,19 +341,16 @@ class GeneralReportKenpinSeitaiController extends Component
         $data = DB::select(
             "
                 SELECT
-                    tdkgdb.box_number,
                     msmk.code AS code_masalah,
-                    msmk.name AS nama_masalah,
-                    COUNT(DISTINCT tdka.id) AS jumlah_kenpin
+                    msmk.name AS nama_masalah
                 FROM
                     tdKenpin AS tdka
                     INNER JOIN tdkenpin_goods_detail AS tdkgd ON tdka.ID = tdkgd.kenpin_id
-                    INNER JOIN tdkenpin_goods_detail_box AS tdkgdb ON tdkgd.ID = tdkgdb.kenpin_goods_detail_id
-                    INNER JOIN tdproduct_goods AS tdpa ON tdkgd.product_goods_id = tdpa.ID
+                    LEFT JOIN tdproduct_goods AS tdpa ON tdkgd.product_goods_id = tdpa.ID
                     INNER JOIN tdorderlpk AS tdol ON tdol.ID = tdpa.lpk_id
                     INNER JOIN msmasalahkenpin AS msmk ON msmk.ID = tdka.masalah_kenpin_id
                 WHERE
-                    tdka.department_id = 7
+                    tdka.kenpin_department_id = 7
                     $filterKenpinId
                     $filterDate
                     $filterNoLPK
@@ -362,7 +359,7 @@ class GeneralReportKenpinSeitaiController extends Component
                     $filterStatus
                     $filterNomorPalet
                     $filterNomorLot
-                GROUP BY tdkgdb.box_number, msmk.code, msmk.name
+                GROUP BY tdka.id, msmk.code, msmk.name
                 ORDER BY msmk.code ASC, tdkgdb.box_number ASC",
         );
 
@@ -381,9 +378,9 @@ class GeneralReportKenpinSeitaiController extends Component
         // Get all masalah kenpin with department id = 7 for complete list
         $allMasalah = MsMasalahKenpin::with('departmentGroup')
             ->whereHas('departmentGroup', function ($query) {
-                $query->where('department_id', 7);
+                $query->where('department_id', 7)->orWhere('department_id', 2);
             })
-            ->orderBy('code', 'ASC')
+            ->orderByRaw('CAST(code AS INTEGER) ASC')
             ->get();
 
         // Build complete masalah list from department id = 7
@@ -402,7 +399,7 @@ class GeneralReportKenpinSeitaiController extends Component
         foreach ($data as $item) {
             $masalahKey = $item->code_masalah;
             // Store kenpin count data and qty
-            $kenpinData[$masalahKey][$item->box_number] = $item->jumlah_kenpin;
+            $kenpinData[$masalahKey][$item->box_number] = ($kenpinData[$masalahKey][$item->box_number] ?? 0) + 1;
         }
 
         $header = [
@@ -582,11 +579,11 @@ class GeneralReportKenpinSeitaiController extends Component
                 FROM
                     tdKenpin AS tdka
                     INNER JOIN tdkenpin_goods_detail AS tdkgd ON tdka.ID = tdkgd.kenpin_id
-                    INNER JOIN tdproduct_goods AS tdpa ON tdkgd.product_goods_id = tdpa.ID
+                    LEFT JOIN tdproduct_goods AS tdpa ON tdkgd.product_goods_id = tdpa.ID
                     INNER JOIN tdorderlpk AS tdol ON tdol.ID = tdpa.lpk_id
                     INNER JOIN msmasalahkenpin AS msmk ON msmk.ID = tdka.masalah_kenpin_id
                 WHERE
-                    tdka.department_id = 7
+                    tdka.kenpin_department_id = 7
                     AND tdka.nomor_palet IS NOT NULL
                     AND tdka.nomor_palet != ''
                     $filterKenpinId
@@ -616,9 +613,9 @@ class GeneralReportKenpinSeitaiController extends Component
         // Get all masalah kenpin with department id = 7 for complete list
         $allMasalah = MsMasalahKenpin::with('departmentGroup')
             ->whereHas('departmentGroup', function ($query) {
-                $query->where('department_id', 7);
+                $query->where('department_id', 7)->orWhere('department_id', 2);
             })
-            ->orderBy('code', 'ASC')
+            ->orderByRaw('CAST(code AS INTEGER) ASC')
             ->get();
 
         // Build complete masalah list from department id = 7
@@ -824,12 +821,12 @@ class GeneralReportKenpinSeitaiController extends Component
             FROM
                 tdKenpin AS tdka
                 INNER JOIN tdkenpin_goods_detail AS tdkgd ON tdka.ID = tdkgd.kenpin_id
-                INNER JOIN tdProduct_goods AS tdpg ON tdkgd.product_goods_id = tdpg.ID
+                LEFT JOIN tdProduct_goods AS tdpg ON tdkgd.product_goods_id = tdpg.ID
                 INNER JOIN tdorderlpk AS tdol ON tdol.ID = tdpg.lpk_id
                 INNER JOIN msmachine AS msm ON msm.ID = tdpg.machine_id
                 INNER JOIN msmasalahkenpin AS msmk ON msmk.ID = tdka.masalah_kenpin_id
             WHERE
-                tdka.department_id = 7
+                tdka.kenpin_department_id = 7
                 $filterKenpinId
                 $filterDate
                 $filterNoLPK
@@ -856,9 +853,9 @@ class GeneralReportKenpinSeitaiController extends Component
         // Get all masalah kenpin with department id = 3 for complete list
         $allMasalah = MsMasalahKenpin::with('departmentGroup')
             ->whereHas('departmentGroup', function ($query) {
-                $query->where('department_id', 7);
+                $query->where('department_id', 7)->orWhere('department_id', 2);
             })
-            ->orderBy('code', 'ASC')
+            ->orderByRaw('CAST(code AS INTEGER) ASC')
             ->get();
 
         // Build complete masalah list from department id = 3

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Livewire\Component;
 use Maatwebsite\Excel\Facades\Excel;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -102,13 +103,17 @@ class DetailReportKenpinSeitaiController extends Component
             'Bagian Mesin',
             'Kode Masalah',
             'Masalah',
-            'Total Loss',
+            'Jumlah Box Seitai',
+            'No Lot',
             'Jumlah Box Palet',
+            'No Box Dari',
+            'No Box Sampai',
             'Jumlah Box Kenpin',
+            'Qty Loss',
             'NIK',
             'Nama Operator',
             'Tanggal Selesai Kenpin',
-            'Loss (Lembar)',
+            'Total Loss (Lembar)',
             'Penyebab',
             'Keterangan Penyebab',
             'Penanggulangan Masalah',
@@ -120,7 +125,7 @@ class DetailReportKenpinSeitaiController extends Component
         }
 
         $activeWorksheet->freezePane('A4');
-        $columnHeaderEnd = chr(ord($columnHeaderEnd) - 1);
+        $columnHeaderEnd = Coordinate::stringFromColumnIndex(Coordinate::columnIndexFromString($columnHeaderEnd) - 1);
 
         // style header
         phpspreadsheet::addFullBorder($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
@@ -152,8 +157,11 @@ class DetailReportKenpinSeitaiController extends Component
                     tdka.qty_loss as total_qty_loss,
                     msd.name AS department_ng,
                     tdkad.qty_loss AS qty_loss,
+                    tdkad.nomor_box_dari,
+                    tdkad.nomor_box_sampai,
                     msp.code_alias AS produk_code,
                     msp.NAME AS nama_produk,
+                    msp.case_box_count,
                     mse.empname AS nama_petugas,
                     mse.employeeno AS nik_petugas,
                     msm.machineno,
@@ -161,19 +169,18 @@ class DetailReportKenpinSeitaiController extends Component
                     msmpd.name AS nama_bagian_mesin,
                     msmk.code AS code_masalah,
                     msmk.name AS nama_masalah,
-                    CAST(ROUND(SUM(CAST(tdpg.qty_produksi AS numeric) / NULLIF(CAST(msp.case_box_count AS numeric),0)), 0) AS integer) AS jumlah_box_palet,
-                    COUNT(tdkadb.ID) AS jumlah_box_kenpin
+                    tdpg.nomor_lot,
+                    tdpg.qty_produksi
                 FROM
                     tdkenpin AS tdka
                     INNER JOIN msdepartment AS msd ON msd.ID = tdka.kenpin_department_id
                     INNER JOIN tdkenpin_goods_detail AS tdkad ON tdka.ID = tdkad.kenpin_id
-                    INNER JOIN tdproduct_goods AS tdpg ON tdkad.product_goods_id = tdpg.ID
+                    LEFT JOIN tdproduct_goods AS tdpg ON tdkad.product_goods_id = tdpg.ID
                     INNER JOIN msProduct AS msp ON tdpg.product_id = msp.ID
                     INNER JOIN msemployee AS mse ON mse.ID = tdka.employee_id
                     INNER JOIN msmachine AS msm ON msm.ID = tdpg.machine_id
                     INNER JOIN ms_machine_part_detail AS msmpd ON msmpd.ID = tdka.machine_part_detail_id
                     INNER JOIN msmasalahkenpin AS msmk ON msmk.ID = tdka.masalah_kenpin_id
-                    LEFT JOIN tdkenpin_goods_detail_box AS tdkadb ON tdkadb.kenpin_goods_detail_id = tdkad.ID
                 WHERE
                     tdka.kenpin_department_id = 7
                     $filterKenpinId
@@ -183,28 +190,6 @@ class DetailReportKenpinSeitaiController extends Component
                     $filterStatus
                     $filterNomorPalet
                     $filterNomorLot
-                GROUP BY
-                    tdka.kenpin_no,
-                    tdka.kenpin_date,
-                    tdka.nomor_palet,
-                    tdka.status_kenpin,
-                    tdka.penyebab,
-                    tdka.keterangan_penyebab,
-                    tdka.penanggulangan,
-                    tdka.done_at,
-                    tdka.is_kasus,
-                    tdka.qty_loss,
-                    msd.name,
-                    tdkad.qty_loss,
-                    msp.code_alias,
-                    msp.NAME,
-                    mse.empname,
-                    mse.employeeno,
-                    msm.machineno,
-                    msmpd.code,
-                    msmpd.name,
-                    msmk.code,
-                    msmk.name
                 ORDER BY tdka.kenpin_no ASC, tdka.kenpin_date ASC",
         );
 
@@ -219,36 +204,51 @@ class DetailReportKenpinSeitaiController extends Component
 
         $dataFiltered = [];
         foreach ($data as $item) {
-            $dataFiltered[$item->kenpin_no] = [
-                'kenpin_date' => $item->kenpin_date,
-                'kenpin_no' => $item->kenpin_no,
-                'nomor_palet' => $item->nomor_palet,
-                'status_kenpin' => $item->status_kenpin,
-                'penyebab' => $item->penyebab,
-                'keterangan_penyebab' => $item->keterangan_penyebab,
-                'penanggulangan' => $item->penanggulangan,
-                'is_kasus' => $item->is_kasus,
-                'total_qty_loss' => $item->total_qty_loss,
-                'done_at' => $item->done_at,
-                'department_ng' => $item->department_ng,
+            if (!isset($dataFiltered[$item->kenpin_no])) {
+                $dataFiltered[$item->kenpin_no] = [
+                    'kenpin_date' => $item->kenpin_date,
+                    'kenpin_no' => $item->kenpin_no,
+                    'nomor_palet' => $item->nomor_palet,
+                    'status_kenpin' => $item->status_kenpin,
+                    'penyebab' => $item->penyebab,
+                    'keterangan_penyebab' => $item->keterangan_penyebab,
+                    'penanggulangan' => $item->penanggulangan,
+                    'is_kasus' => $item->is_kasus,
+                    'total_qty_loss' => $item->total_qty_loss,
+                    'done_at' => $item->done_at,
+                    'department_ng' => $item->department_ng,
+                    'qty_loss' => $item->qty_loss,
+                    'produk_code' => $item->produk_code,
+                    'nama_produk' => $item->nama_produk,
+                    'nik_petugas' => $item->nik_petugas,
+                    'nama_petugas' => $item->nama_petugas,
+                    'machineno' => $item->machineno,
+                    'code_bagian_mesin' => $item->code_bagian_mesin,
+                    'nama_bagian_mesin' => $item->nama_bagian_mesin,
+                    'code_masalah' => $item->code_masalah,
+                    'nama_masalah' => $item->nama_masalah,
+                    'nomor_lot' => $item->nomor_lot,
+                ];
+            }
+
+            $jumlahBoxPalet = $item->qty_produksi / $item->case_box_count ?: 0;
+            $dataFiltered[$item->kenpin_no][$item->nomor_palet][] = [
+                'nomor_lot' => $item->nomor_lot,
+                'jumlah_box_palet' => $jumlahBoxPalet,
+                'jumlah_box_kenpin' => $item->nomor_box_sampai ? $item->nomor_box_sampai - $item->nomor_box_dari + 1 : 0,
+                'nomor_box_dari' => $item->nomor_box_dari ?? '-',
+                'nomor_box_sampai' => $item->nomor_box_sampai ?? '-',
                 'qty_loss' => $item->qty_loss,
-                'produk_code' => $item->produk_code,
-                'nama_produk' => $item->nama_produk,
-                'nik_petugas' => $item->nik_petugas,
-                'nama_petugas' => $item->nama_petugas,
-                'machineno' => $item->machineno,
-                'code_bagian_mesin' => $item->code_bagian_mesin,
-                'nama_bagian_mesin' => $item->nama_bagian_mesin,
-                'code_masalah' => $item->code_masalah,
-                'nama_masalah' => $item->nama_masalah,
-                'jumlah_box_palet' => $item->jumlah_box_palet,
-                'jumlah_box_kenpin' => $item->jumlah_box_kenpin,
             ];
+
+            // jumlah box palet dan kenpin total
+            $dataFiltered[$item->kenpin_no]['jumlah_box_seitai'] = isset($dataFiltered[$item->kenpin_no]['jumlah_box_seitai']) ? $dataFiltered[$item->kenpin_no]['jumlah_box_seitai'] + $jumlahBoxPalet : $jumlahBoxPalet;
         }
 
         // index
         $rowItemStart = 4;
         $columnItemStart = 'A';
+        $columnLotStart = 'N';
         $rowItem = $rowItemStart;
         foreach ($dataFiltered as $kenpinNo => $itemKenpin) {
             $columnItemEnd = $columnItemStart;
@@ -300,18 +300,40 @@ class DetailReportKenpinSeitaiController extends Component
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['nama_masalah']);
             $columnItemEnd++;
 
-            // total loss
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['total_qty_loss']);
-            phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnItemEnd . $rowItem);
+            // jumlah box seitai
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['jumlah_box_seitai']);
             $columnItemEnd++;
 
-            // jumlah box palet
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['jumlah_box_palet']);
-            $columnItemEnd++;
+            $rowItemLot = $rowItem;
+            foreach ($itemKenpin[$itemKenpin['nomor_palet']] as $lotNo => $itemLot) {
+                $columnItemEnd = $columnLotStart;
 
-            // jumlah box kenpin
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['jumlah_box_kenpin']);
-            $columnItemEnd++;
+                // nomor lot
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItemLot, $itemLot['nomor_lot']);
+                $columnItemEnd++;
+
+                // jumlah box palet
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItemLot, $itemLot['jumlah_box_palet']);
+                $columnItemEnd++;
+
+                // nomor box dari
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItemLot, $itemLot['nomor_box_dari']);
+                $columnItemEnd++;
+
+                // nomor box sampai
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItemLot, $itemLot['nomor_box_sampai']);
+                $columnItemEnd++;
+
+                // jumlah box kenpin
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItemLot, $itemLot['jumlah_box_kenpin']);
+                $columnItemEnd++;
+
+                // qty loss
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItemLot, $itemLot['qty_loss']);
+                $columnItemEnd++;
+
+                $rowItemLot++;
+            }
 
             // nik petugas
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['nik_petugas']);
@@ -326,7 +348,8 @@ class DetailReportKenpinSeitaiController extends Component
             $columnItemEnd++;
 
             // loss (lembar)
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['qty_loss'] ?? 0);
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['total_qty_loss'] ?? 0);
+            phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnItemEnd . $rowItem);
             $columnItemEnd++;
 
             // penyebab
@@ -340,7 +363,7 @@ class DetailReportKenpinSeitaiController extends Component
             // penanggulangan
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['penanggulangan']);
 
-            $rowItem++;
+            $rowItem = $rowItemLot;
         }
         phpspreadsheet::addBorderDottedMiddleHorizontal($spreadsheet, $columnItemStart . $rowItemStart . ':' . $columnItemEnd . $rowItem - 1);
         phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItemStart . ':' . $columnItemEnd . $rowItem - 1, false, 8, 'Calibri');

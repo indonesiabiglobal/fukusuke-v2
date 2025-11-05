@@ -114,7 +114,7 @@ class GeneralReportKenpinInfureController extends Component
                     INNER JOIN msmachine AS msm ON msm.ID = tdpa.machine_id
                     INNER JOIN msmasalahkenpin AS msmk ON msmk.ID = tdka.masalah_kenpin_id
                 WHERE
-                    tdka.department_id = 2 AND
+                    tdka.kenpin_department_id = 2 AND
                     tdka.is_kasus = true
                     $filterKenpinId
                     $filterDate
@@ -325,7 +325,7 @@ class GeneralReportKenpinInfureController extends Component
                 INNER JOIN msmachine AS msm ON msm.ID = tdpa.machine_id
                 INNER JOIN msmasalahkenpin AS msmk ON msmk.ID = tdka.masalah_kenpin_id
             WHERE
-                tdka.department_id = 2
+                tdka.kenpin_department_id = 2
                 $filterKenpinId
                 $filterDate
                 $filterNoLPK
@@ -537,7 +537,7 @@ class GeneralReportKenpinInfureController extends Component
                 INNER JOIN msmachine AS msm ON msm.ID = tdpg.machine_id
                 INNER JOIN msmasalahkenpin AS msmk ON msmk.ID = tdka.masalah_kenpin_id
             WHERE
-                tdka.department_id = 2
+                tdka.kenpin_department_id = 2
                 $filterKenpinId
                 $filterDate
                 $filterNoLPK
