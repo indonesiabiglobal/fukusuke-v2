@@ -49,9 +49,12 @@ class AddKenpinSeitaiController extends Component
     public $beratLossTotal;
     public $qtyProduksiTotal = 0;
     public $is_kasus = false;
+    public $nomor_box_dari;
+    public $nomor_box_sampai;
+    public $waktu_kenpin_dari;
+    public $waktu_kenpin_sampai;
 
     // Master data for NG codes
-    public $nomor_box = [];
     public $masalahKenpin;
 
     public function mount()
@@ -108,7 +111,10 @@ class AddKenpinSeitaiController extends Component
                 $this->no_lpk = $detail->lpk_no;
                 $this->quantity = number_format($detail->qty_produksi);
                 $this->qty_loss = number_format($detail->qty_loss);
-                $this->nomor_box = is_array($detail->nomor_box) ? $detail->nomor_box : [];
+                $this->nomor_box_dari = $detail->nomor_box_dari ?? '';
+                $this->nomor_box_sampai = $detail->nomor_box_sampai ?? '';
+                $this->waktu_kenpin_dari = $detail->waktu_kenpin_dari ?? '';
+                $this->waktu_kenpin_sampai = $detail->waktu_kenpin_sampai ?? '';
             }
         }, $this->details->toArray());
     }
@@ -173,7 +179,10 @@ class AddKenpinSeitaiController extends Component
     public function resetSeitai()
     {
         $this->qty_loss = '';
-        $this->nomor_box = [];
+        $this->nomor_box_dari = '';
+        $this->nomor_box_sampai = '';
+        $this->waktu_kenpin_dari = '00:00';
+        $this->waktu_kenpin_sampai = '00:00';
         $this->orderid = '';
         $this->no_palet = '';
         $this->no_lot = '';
@@ -185,15 +194,20 @@ class AddKenpinSeitaiController extends Component
     {
         $validatedData = $this->validate([
             'qty_loss' => 'required',
-            'nomor_box' => 'array',
-            'nomor_box.*' => 'nullable|numeric',
+            'nomor_box_dari' => 'nullable|numeric',
+            'nomor_box_sampai' => 'nullable|numeric|gte:nomor_box_dari',
+            'waktu_kenpin_dari' => 'nullable|date_format:H:i',
+            'waktu_kenpin_sampai' => 'nullable|date_format:H:i',
         ]);
 
         // update pada details
         foreach ($this->details as &$detail) {
             if ($detail->id == $this->idKenpinGoodDetailUpdate) {
                 $detail->qty_loss = (int)str_replace(',', '', $validatedData['qty_loss']);
-                $detail->nomor_box = array_filter($this->nomor_box);
+                $detail->nomor_box_dari = $this->nomor_box_dari;
+                $detail->nomor_box_sampai = $this->nomor_box_sampai;
+                $detail->waktu_kenpin_dari = $this->waktu_kenpin_dari;
+                $detail->waktu_kenpin_sampai = $this->waktu_kenpin_sampai;
                 break;
             }
         }
@@ -272,25 +286,15 @@ class AddKenpinSeitaiController extends Component
                 $kenpinGoodsDetail->product_goods_id = $detail->id;
                 $kenpinGoodsDetail->kenpin_id = $data->id;
                 $kenpinGoodsDetail->qty_loss = $detail->qty_loss ?? 0;
+                $kenpinGoodsDetail->nomor_box_dari = $detail->nomor_box_dari ?? null;
+                $kenpinGoodsDetail->nomor_box_sampai = $detail->nomor_box_sampai ?? null;
+                $kenpinGoodsDetail->waktu_kenpin_dari = $detail->waktu_kenpin_dari ?? null;
+                $kenpinGoodsDetail->waktu_kenpin_sampai = $detail->waktu_kenpin_sampai ?? null;
                 $kenpinGoodsDetail->created_on = Carbon::now();
                 $kenpinGoodsDetail->created_by = auth()->user()->username;
                 $kenpinGoodsDetail->updated_on = Carbon::now();
                 $kenpinGoodsDetail->updated_by = auth()->user()->username;
                 $kenpinGoodsDetail->save();
-
-                // save nomor box if available
-                if (!empty($detail->nomor_box) && is_array($detail->nomor_box)) {
-                    foreach ($detail->nomor_box as $boxNumber) {
-                        $kenpinGoodsDetailBox = new TdKenpinGoodsDetailBox();
-                        $kenpinGoodsDetailBox->kenpin_goods_detail_id = $kenpinGoodsDetail->id;
-                        $kenpinGoodsDetailBox->box_number = $boxNumber;
-                        $kenpinGoodsDetailBox->created_on = Carbon::now();
-                        $kenpinGoodsDetailBox->created_by = auth()->user()->username;
-                        $kenpinGoodsDetailBox->updated_on = Carbon::now();
-                        $kenpinGoodsDetailBox->updated_by = auth()->user()->username;
-                        $kenpinGoodsDetailBox->save();
-                    }
-                }
             }
 
             DB::commit();
@@ -631,7 +635,10 @@ class AddKenpinSeitaiController extends Component
                     'tdol.lpk_no AS lpk_no',
                     'tdol.lpk_date AS lpk_date',
                     DB::raw('0 AS qty_loss'),
-                    DB::raw("ARRAY[]::text[] AS nomor_box")
+                    DB::raw('NULL AS nomor_box_dari'),
+                    DB::raw('NULL AS nomor_box_sampai'),
+                    DB::raw('NULL AS waktu_kenpin_dari'),
+                    DB::raw('NULL AS waktu_kenpin_sampai')
                 )
                 ->join('tdorderlpk AS tdol', 'tdpg.lpk_id', '=', 'tdol.id')
                 ->join('msproduct AS msp', 'tdpg.product_id', '=', 'msp.id')
@@ -662,17 +669,6 @@ class AddKenpinSeitaiController extends Component
     public function search()
     {
         $this->render();
-    }
-
-    public function addBox()
-    {
-        $this->nomor_box[] = '';
-    }
-
-    public function removeBox($index)
-    {
-        unset($this->nomor_box[$index]);
-        $this->nomor_box = array_values($this->nomor_box);
     }
 
     public function render()

@@ -63,9 +63,12 @@ class EditKenpinSeitaiController extends Component
     public $qtyLossTotal = 0;
     public $qtyProduksiTotal = 0;
     public $is_kasus;
+    public $nomor_box_dari;
+    public $nomor_box_sampai;
+    public $waktu_kenpin_dari;
+    public $waktu_kenpin_sampai;
 
     // Master data for NG codes
-    public $nomor_box = [];
     public $masalahKenpin;
 
     // data master produk
@@ -139,12 +142,10 @@ class EditKenpinSeitaiController extends Component
                 'tdol.lpk_no AS lpk_no',
                 'tdol.lpk_date AS lpk_date',
                 'tgd.qty_loss',
-                DB::raw('COALESCE(
-                    (SELECT ARRAY_AGG(box_number)
-                     FROM tdkenpin_goods_detail_box
-                     WHERE kenpin_goods_detail_id = tgd.id),
-                    ARRAY[]::integer[]
-                ) AS nomor_box')
+                'tgd.nomor_box_dari',
+                'tgd.nomor_box_sampai',
+                'tgd.waktu_kenpin_dari',
+                'tgd.waktu_kenpin_sampai'
             )
             ->join('tdorderlpk AS tdol', 'tdpg.lpk_id', '=', 'tdol.id')
             ->join('msproduct AS msp', 'tdpg.product_id', '=', 'msp.id')
@@ -163,7 +164,8 @@ class EditKenpinSeitaiController extends Component
             ->get()
             ->map(function ($item) {
                 $item->qty_loss = $item->qty_loss ?? 0;
-                $item->nomor_box = is_array($item->nomor_box) ? $item->nomor_box : (!empty($item->nomor_box) ? explode(',', trim($item->nomor_box, '{}')) : []);
+                $item->nomor_box_dari = $item->nomor_box_dari ?? null;
+                $item->nomor_box_sampai = $item->nomor_box_sampai ?? null;
                 return $item;
             });
 
@@ -209,7 +211,10 @@ class EditKenpinSeitaiController extends Component
                 $this->no_lpk = $detail->lpk_no;
                 $this->quantity = number_format($detail->qty_produksi);
                 $this->qty_loss = number_format($detail->qty_loss);
-                $this->nomor_box = is_array($detail->nomor_box) ? $detail->nomor_box : [];
+                $this->nomor_box_dari = $detail->nomor_box_dari ?? '';
+                $this->nomor_box_sampai = $detail->nomor_box_sampai ?? '';
+                $this->waktu_kenpin_dari = $detail->waktu_kenpin_dari ?? '';
+                $this->waktu_kenpin_sampai = $detail->waktu_kenpin_sampai ?? '';
             }
         }, $this->details->toArray());
 
@@ -285,7 +290,10 @@ class EditKenpinSeitaiController extends Component
     public function resetSeitai()
     {
         $this->qty_loss = '';
-        $this->nomor_box = [];
+        $this->nomor_box_dari = '';
+        $this->nomor_box_sampai = '';
+        $this->waktu_kenpin_dari = '';
+        $this->waktu_kenpin_sampai = '';
         $this->orderid = '';
         $this->no_palet = '';
         $this->no_lot = '';
@@ -293,30 +301,26 @@ class EditKenpinSeitaiController extends Component
         $this->quantity = '';
     }
 
-    public function addBox()
-    {
-        $this->nomor_box[] = '';
-    }
-
-    public function removeBox($index)
-    {
-        unset($this->nomor_box[$index]);
-        $this->nomor_box = array_values($this->nomor_box);
-    }
-
     public function saveSeitai()
     {
         $validatedData = $this->validate([
             'qty_loss' => 'required',
-            'nomor_box' => 'array',
-            'nomor_box.*' => 'nullable|numeric',
+            'nomor_box_dari' => 'nullable|numeric',
+            'nomor_box_sampai' => 'nullable|numeric|gte:nomor_box_dari',
+            'waktu_kenpin_dari' => 'nullable|date_format:H:i',
+            'waktu_kenpin_sampai' => 'nullable|date_format:H:i|after:waktu_kenpin_dari',
+        ], [
+            'nomor_box_sampai.gte' => 'Nomor box sampai harus lebih besar atau sama dengan nomor box dari'
         ]);
 
         // update pada details
         foreach ($this->details as &$detail) {
             if ($detail->id == $this->idKenpinGoodDetailUpdate) {
                 $detail->qty_loss = (int)str_replace(',', '', $validatedData['qty_loss']);
-                $detail->nomor_box = array_filter($this->nomor_box);
+                $detail->nomor_box_dari = $this->nomor_box_dari;
+                $detail->nomor_box_sampai = $this->nomor_box_sampai;
+                $detail->waktu_kenpin_dari = $this->waktu_kenpin_dari;
+                $detail->waktu_kenpin_sampai = $this->waktu_kenpin_sampai;
                 break;
             }
         }
@@ -387,14 +391,6 @@ class EditKenpinSeitaiController extends Component
 
             // hapus data pada kenpin goods detail
             TdKenpinGoodsDetail::where('kenpin_id', $this->idKenpinGoods)->delete();
-            // hapus data pada kenpin goods detail box
-            DB::table('tdkenpin_goods_detail_box')
-                ->whereIn('kenpin_goods_detail_id', function ($query) {
-                    $query->select('id')
-                        ->from('tdkenpin_goods_detail')
-                        ->where('kenpin_id', $this->idKenpinGoods);
-                })
-                ->delete();
 
             // update pada kenpin goods detail
             foreach ($this->details as $detail) {
@@ -402,27 +398,15 @@ class EditKenpinSeitaiController extends Component
                 $kenpinGoodsDetail->product_goods_id = $detail->id;
                 $kenpinGoodsDetail->kenpin_id = $data->id;
                 $kenpinGoodsDetail->qty_loss = $detail->qty_loss ?? 0;
+                $kenpinGoodsDetail->nomor_box_dari = $detail->nomor_box_dari ?? null;
+                $kenpinGoodsDetail->nomor_box_sampai = $detail->nomor_box_sampai ?? null;
+                $kenpinGoodsDetail->waktu_kenpin_dari = $detail->waktu_kenpin_dari ?? null;
+                $kenpinGoodsDetail->waktu_kenpin_sampai = $detail->waktu_kenpin_sampai ?? null;
                 $kenpinGoodsDetail->created_on = Carbon::now();
                 $kenpinGoodsDetail->created_by = auth()->user()->username;
                 $kenpinGoodsDetail->updated_on = Carbon::now();
                 $kenpinGoodsDetail->updated_by = auth()->user()->username;
                 $kenpinGoodsDetail->save();
-
-                // save nomor box if available
-                if (!empty($detail->nomor_box) && is_array($detail->nomor_box)) {
-                    foreach ($detail->nomor_box as $boxNumber) {
-                        if (!empty($boxNumber)) {
-                            $kenpinGoodsDetailBox = new TdKenpinGoodsDetailBox();
-                            $kenpinGoodsDetailBox->kenpin_goods_detail_id = $kenpinGoodsDetail->id;
-                            $kenpinGoodsDetailBox->box_number = $boxNumber;
-                            $kenpinGoodsDetailBox->created_on = Carbon::now();
-                            $kenpinGoodsDetailBox->created_by = auth()->user()->username;
-                            $kenpinGoodsDetailBox->updated_on = Carbon::now();
-                            $kenpinGoodsDetailBox->updated_by = auth()->user()->username;
-                            $kenpinGoodsDetailBox->save();
-                        }
-                    }
-                }
             }
 
             DB::commit();
@@ -478,7 +462,8 @@ class EditKenpinSeitaiController extends Component
                     'tdol.lpk_no AS lpk_no',
                     'tdol.lpk_date AS lpk_date',
                     DB::raw('0 AS qty_loss'),
-                    DB::raw("ARRAY[]::text[] AS nomor_box")
+                    DB::raw('NULL AS nomor_box_dari'),
+                    DB::raw('NULL AS nomor_box_sampai')
                 )
                 ->join('tdorderlpk AS tdol', 'tdpg.lpk_id', '=', 'tdol.id')
                 ->join('msproduct AS msp', 'tdpg.product_id', '=', 'msp.id')
@@ -538,14 +523,6 @@ class EditKenpinSeitaiController extends Component
             // Hapus semua detail kenpin goods yang terkait
             TdKenpinGoodsDetail::where('kenpin_id', $kenpin->id)->delete();
 
-            // Hapus semua detail box kenpin goods yang terkait
-            DB::table('tdkenpin_goods_detail_box')
-                ->whereIn('kenpin_goods_detail_id', function ($query) use ($kenpin) {
-                    $query->select('id')
-                        ->from('tdkenpin_goods_detail')
-                        ->where('kenpin_id', $kenpin->id);
-                })
-                ->delete();
             // Hapus data kenpin utama
             $kenpin->delete();
 

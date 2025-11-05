@@ -319,8 +319,6 @@
                             class="form-control @error('penyebab') is-invalid @enderror"
                             x-on:keydown.tab="$event.preventDefault(); $refs.keteranganPenyebabInput.focus();">
                             <option value="">- Pilih Penyebab -</option>
-                            <option value="5 M Man Machines Money Method Materials">Pilihan 5 M Man Machines Money
-                                Method Materials</option>
                             <option value="Man">Man</option>
                             <option value="Machine">Machine</option>
                             <option value="Method">Method</option>
@@ -495,43 +493,60 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-12 mb-1">
+                            <div class="col-lg-6 mb-1">
                                 <div class="form-group">
-                                    <label>Nomor Box </label>
-                                    <div class="mb-2">
-                                        @foreach ($nomor_box as $index => $box)
-                                            <div class="input-group mb-1">
-                                                <input type="number" class="form-control"
-                                                    wire:model="nomor_box.{{ $index }}"
-                                                    placeholder="Masukkan nomor box" wire:loading.attr="disabled"
-                                                    wire:loading.class="bg-light readonly" />
-                                                <button type="button" class="btn btn-outline-danger"
-                                                    wire:click="removeBox({{ $index }})"
-                                                    wire:loading.attr="disabled"
-                                                    wire:loading.class="bg-light readonly">
-                                                    <i class="ri-close-line"></i>
-                                                </button>
-                                            </div>
-                                        @endforeach
-                                        <button type="button" class="btn btn-primary btn-sm" wire:click="addBox"
-                                            wire:loading.attr="disabled">
-                                            <span wire:loading.remove wire:target="addBox">
-                                                Tambah Box
-                                            </span>
-                                            <span wire:loading wire:target="addBox">
-                                                <span class="d-flex align-items-center">
-                                                    <span class="spinner-border spinner-border-sm flex-shrink-0"
-                                                        role="status">
-                                                        <span class="visually-hidden">Loading...</span>
-                                                    </span>
-                                                    <span class="flex-grow-1 ms-1">Loading...</span>
-                                                </span>
-                                            </span>
-                                        </button>
+                                    <label>Nomor Box Dari</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control @error('nomor_box_dari') is-invalid @enderror"
+                                            wire:model.defer="nomor_box_dari"
+                                            placeholder="Nomor awal" wire:loading.attr="disabled"
+                                            wire:loading.class="bg-light readonly" />
+                                        @error('nomor_box_dari')
+                                            <span class="invalid-feedback">{{ $message }}</span>
+                                        @enderror
                                     </div>
-                                    @error('nomor_box.*')
-                                        <span class="invalid-feedback">{{ $message }}</span>
-                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-lg-6 mb-1">
+                                <div class="form-group">
+                                    <label>Nomor Box Sampai</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control @error('nomor_box_sampai') is-invalid @enderror"
+                                            wire:model.defer="nomor_box_sampai"
+                                            placeholder="Nomor akhir" wire:loading.attr="disabled"
+                                            wire:loading.class="bg-light readonly" />
+                                        @error('nomor_box_sampai')
+                                            <span class="invalid-feedback">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 mb-1">
+                                <div class="form-group">
+                                    <label>Waktu Kenpin Dari</label>
+                                    <div class="input-group">
+                                        <input type="time" class="form-control @error('waktu_kenpin_dari') is-invalid @enderror"
+                                            wire:model.defer="waktu_kenpin_dari"
+                                            placeholder="HH:MM" wire:loading.attr="disabled"
+                                            wire:loading.class="bg-light readonly" />
+                                        @error('waktu_kenpin_dari')
+                                            <span class="invalid-feedback">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 mb-1">
+                                <div class="form-group">
+                                    <label>Waktu Kenpin Sampai</label>
+                                    <div class="input-group">
+                                        <input type="time" class="form-control @error('waktu_kenpin_sampai') is-invalid @enderror"
+                                            wire:model.defer="waktu_kenpin_sampai"
+                                            placeholder="HH:MM" wire:loading.attr="disabled"
+                                            wire:loading.class="bg-light readonly" />
+                                        @error('waktu_kenpin_sampai')
+                                            <span class="invalid-feedback">{{ $message }}</span>
+                                        @enderror
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -574,6 +589,7 @@
                                 <th class="border-0">Tgl Produksi</th>
                                 <th class="border-0">Quantity</th>
                                 <th class="border-0">Nomor Box</th>
+                                <th class="border-0">Waktu Kenpin</th>
                                 <th class="border-0 rounded-end">Loss (Lembar)</th>
                             </tr>
                         </thead>
@@ -607,8 +623,20 @@
                                         {{ number_format($item->qty_produksi) }}
                                     </td>
                                     <td>
-                                        @if ($item->nomor_box && is_array($item->nomor_box))
-                                            {{ implode(', ', $item->nomor_box) }}
+                                        @if (isset($item->nomor_box_dari) && isset($item->nomor_box_sampai))
+                                            {{ $item->nomor_box_dari }} - {{ $item->nomor_box_sampai }}
+                                        @elseif (isset($item->nomor_box_dari))
+                                            {{ $item->nomor_box_dari }}
+                                        @else
+                                            -
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if (isset($item->waktu_kenpin_dari) && isset($item->waktu_kenpin_sampai))
+                                            {{ \Carbon\Carbon::parse($item->waktu_kenpin_dari)->format('H:i') }} -
+                                            {{ \Carbon\Carbon::parse($item->waktu_kenpin_sampai)->format('H:i') }}
+                                        @elseif (isset($item->waktu_kenpin_dari))
+                                            {{ \Carbon\Carbon::parse($item->waktu_kenpin_dari)->format('H:i') }}
                                         @else
                                             -
                                         @endif
@@ -623,7 +651,7 @@
                                 </tr>
                             @endforelse
                             <tr>
-                                <td colspan="7" class="text-end">Berat Loss Total (kg):</td>
+                                <td colspan="7" class="text-end">Qty Loss Total (Lembar):</td>
                                 <td colspan="1" class="text-center">{{ number_format($beratLossTotal) }}</td>
                             </tr>
                         </tbody>
