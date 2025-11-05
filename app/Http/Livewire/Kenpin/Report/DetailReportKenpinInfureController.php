@@ -93,6 +93,7 @@ class DetailReportKenpinInfureController extends Component
             'Tanggal Input',
             'No. Kartu Kenpin',
             'Status Kenpin',
+            'Kasus',
             'No. Produk',
             'Nama Produk',
             'No. Mesin Infure',
@@ -100,6 +101,7 @@ class DetailReportKenpinInfureController extends Component
             'Kode Masalah',
             'Masalah',
             'Jumlah Gentan',
+            'Total Loss',
             'Shift',
             'NIK',
             'Nama Operator',
@@ -145,6 +147,8 @@ class DetailReportKenpinInfureController extends Component
                     tdka.keterangan_penyebab,
                     tdka.penanggulangan,
                     tdka.done_at,
+                    tdka.is_kasus,
+                    tdka.total_berat_loss,
                     tdkad.berat_loss AS berat_loss,
                     msp.code_alias as produk_code,
                     msp.NAME AS nama_produk,
@@ -198,6 +202,8 @@ class DetailReportKenpinInfureController extends Component
                     'penyebab' => $item->penyebab,
                     'keterangan_penyebab' => $item->keterangan_penyebab,
                     'penanggulangan' => $item->penanggulangan,
+                    'is_kasus' => $item->is_kasus,
+                    'total_berat_loss' => $item->total_berat_loss,
                     'berat_loss' => $item->berat_loss,
                     'produk_code' => $item->produk_code,
                     'nama_produk' => $item->nama_produk,
@@ -222,7 +228,7 @@ class DetailReportKenpinInfureController extends Component
         // index
         $rowItemStart = 4;
         $columnItemStart = 'A';
-        $columnGentanStart = 'K';
+        $columnGentanStart = 'M';
         $rowItem = $rowItemStart;
         foreach ($dataFiltered as $kenpinNo => $itemKenpin) {
             $columnItemEnd = $columnItemStart;
@@ -236,6 +242,10 @@ class DetailReportKenpinInfureController extends Component
 
             // status kenpin
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['status_kenpin'] == 1 ? 'Proses' : ($itemKenpin['status_kenpin'] == 2 ? 'Finish' : ''));
+            $columnItemEnd++;
+
+            // kasus
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['is_kasus'] ? 'Ya' : 'Tidak');
             $columnItemEnd++;
 
             // No Produk
@@ -264,6 +274,11 @@ class DetailReportKenpinInfureController extends Component
 
             // jumlah gentan
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, count($itemKenpin['gentan']));
+            $columnItemEnd++;
+
+            // total loss
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['total_berat_loss']);
+            phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnItemEnd . $rowItem);
             $columnItemEnd++;
 
             $rowItemGentan = $rowItem;

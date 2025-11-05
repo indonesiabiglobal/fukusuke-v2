@@ -95,12 +95,14 @@ class DetailReportKenpinSeitaiController extends Component
             'No. Label Gudang',
             'Department NG',
             'Status Kenpin',
+            'Kasus',
             'No. Produk',
             'Nama Produk',
             'No. Mesin Seitai',
             'Bagian Mesin',
             'Kode Masalah',
             'Masalah',
+            'Total Loss',
             'Jumlah Box Palet',
             'Jumlah Box Kenpin',
             'NIK',
@@ -146,6 +148,8 @@ class DetailReportKenpinSeitaiController extends Component
                     tdka.keterangan_penyebab,
                     tdka.penanggulangan,
                     tdka.done_at,
+                    tdka.is_kasus,
+                    tdka.qty_loss as total_qty_loss,
                     msd.name AS department_ng,
                     tdkad.qty_loss AS qty_loss,
                     msp.code_alias AS produk_code,
@@ -188,6 +192,8 @@ class DetailReportKenpinSeitaiController extends Component
                     tdka.keterangan_penyebab,
                     tdka.penanggulangan,
                     tdka.done_at,
+                    tdka.is_kasus,
+                    tdka.qty_loss,
                     msd.name,
                     tdkad.qty_loss,
                     msp.code_alias,
@@ -221,6 +227,8 @@ class DetailReportKenpinSeitaiController extends Component
                 'penyebab' => $item->penyebab,
                 'keterangan_penyebab' => $item->keterangan_penyebab,
                 'penanggulangan' => $item->penanggulangan,
+                'is_kasus' => $item->is_kasus,
+                'total_qty_loss' => $item->total_qty_loss,
                 'done_at' => $item->done_at,
                 'department_ng' => $item->department_ng,
                 'qty_loss' => $item->qty_loss,
@@ -264,6 +272,10 @@ class DetailReportKenpinSeitaiController extends Component
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['status_kenpin'] == 1 ? 'Proses' : ($itemKenpin['status_kenpin'] == 2 ? 'Finish' : ''));
             $columnItemEnd++;
 
+            // kasus
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['is_kasus'] ? 'Ya' : 'Tidak');
+            $columnItemEnd++;
+
             // No Produk
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['produk_code']);
             $columnItemEnd++;
@@ -286,6 +298,11 @@ class DetailReportKenpinSeitaiController extends Component
 
             // masalah
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['nama_masalah']);
+            $columnItemEnd++;
+
+            // total loss
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['total_qty_loss']);
+            phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnItemEnd . $rowItem);
             $columnItemEnd++;
 
             // jumlah box palet
