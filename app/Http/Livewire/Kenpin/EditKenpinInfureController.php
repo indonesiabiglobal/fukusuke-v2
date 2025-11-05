@@ -607,7 +607,7 @@ class EditKenpinInfureController extends Component
             $product->employee_id = $mspetugas->id;
             $product->lpk_id = $this->lpk_id;
             $product->status_kenpin = $this->status_kenpin;
-            $product->is_kasus = $this->is_kasus;
+            $product->is_kasus = $this->is_kasus ? true : false;
 
             $product->machine_part_detail_id = $this->bagian_mesin_id;
             $product->penyebab = $this->penyebab;

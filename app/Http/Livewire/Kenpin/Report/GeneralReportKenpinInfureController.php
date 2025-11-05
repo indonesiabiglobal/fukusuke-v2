@@ -106,8 +106,7 @@ class GeneralReportKenpinInfureController extends Component
                 SELECT
                     msm.machineno,
                     msmk.code AS code_masalah,
-                    msmk.name AS nama_masalah,
-                    COUNT(*) AS jumlah_kenpin
+                    msmk.name AS nama_masalah
                 FROM
                     tdKenpin AS tdka
                     INNER JOIN tdOrderLpk AS tdol ON tdka.lpk_id = tdol.ID
@@ -115,7 +114,8 @@ class GeneralReportKenpinInfureController extends Component
                     INNER JOIN msmachine AS msm ON msm.ID = tdpa.machine_id
                     INNER JOIN msmasalahkenpin AS msmk ON msmk.ID = tdka.masalah_kenpin_id
                 WHERE
-                    tdka.department_id = 2
+                    tdka.department_id = 2 AND
+                    tdka.is_kasus = true
                     $filterKenpinId
                     $filterDate
                     $filterNoLPK
@@ -123,7 +123,7 @@ class GeneralReportKenpinInfureController extends Component
                     $filterNomorKenpin
                     $filterStatus
                     $filterNomorHan
-                GROUP BY msm.machineno, msmk.code, msmk.name
+                GROUP BY tdka.id, msm.machineno, msmk.code, msmk.name
                 ORDER BY msmk.code ASC, msm.machineno ASC",
         );
 
@@ -160,8 +160,8 @@ class GeneralReportKenpinInfureController extends Component
         foreach ($data as $item) {
             $masalahKey = $item->code_masalah;
             // Store kenpin count data
-            $kenpinData[$masalahKey][$item->machineno] = $item->jumlah_kenpin;
-        }        // Update header to include all machines (from the existing $machineInfure)
+            $kenpinData[$masalahKey][$item->machineno] = ($kenpinData[$masalahKey][$item->machineno] ?? 0) + 1;
+        }
         $header = [
             'Kode Masalah',
             'Masalah',

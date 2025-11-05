@@ -256,7 +256,7 @@ class AddKenpinSeitaiController extends Component
             $qtyLoss = $this->details->sum('qty_loss');
             $data->qty_loss = $qtyLoss;
             $data->status_kenpin = $this->status;
-            $data->is_kasus = $this->is_kasus;
+            $data->is_kasus = $this->is_kasus ? true : false;
 
             if ($this->masalahKenpin) {
                 $data->masalah_kenpin_id = $this->masalahKenpin->id;

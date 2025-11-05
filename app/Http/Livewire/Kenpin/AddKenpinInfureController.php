@@ -501,7 +501,7 @@ class AddKenpinInfureController extends Component
             $kenpinAssembly->lpk_id = $this->lpk_id;
             $kenpinAssembly->total_berat_loss = $this->beratLossTotal;
             $kenpinAssembly->status_kenpin = $this->status_kenpin;
-            $kenpinAssembly->is_kasus = $this->is_kasus;
+            $kenpinAssembly->is_kasus = $this->is_kasus ? true : false;
             $kenpinAssembly->masalah_kenpin_id = $this->masalahInfure->id;
             $kenpinAssembly->machine_part_detail_id = $this->bagian_mesin_id;
             $kenpinAssembly->penyebab = $this->penyebab;
