@@ -328,6 +328,12 @@ class GeneralReportKenpinSeitaiController extends Component
         $columnHeaderStart = 'A';
         $columnHeaderEnd = 'A';
 
+        // machine seitai
+        $machineSeitai = MsMachine::seitaiDepartment()
+            ->active()
+            ->orderBy('machineno', 'ASC')
+            ->get();
+
         // Filter Query
         $filterKenpinId = $filter && isset($filter['kenpin_id']) ? " AND (tdka.ID = '" . $filter['kenpin_id'] . "')" : '';
         $filterDate = "AND tdka.kenpin_date BETWEEN '" . $tglAwal . "' AND '" . $tglAkhir . "'";
@@ -341,12 +347,21 @@ class GeneralReportKenpinSeitaiController extends Component
         $data = DB::select(
             "
                 SELECT
+                    msm.machineno,
                     msmk.code AS code_masalah,
-                    msmk.name AS nama_masalah
+                    msmk.name AS nama_masalah,
+                    -- SUM(tdkgd.nomor_box_sampai ? tdkgd.nomor_box_sampai - tdkgd.nomor_box_dari + 1 : 0) AS total_box
+                    SUM(
+                        CASE
+                            WHEN tdkgd.nomor_box_sampai IS NOT NULL AND tdkgd.nomor_box_dari IS NOT NULL THEN (tdkgd.nomor_box_sampai - tdkgd.nomor_box_dari + 1)
+                            ELSE 0
+                        END
+                    ) AS total_box
                 FROM
                     tdKenpin AS tdka
                     INNER JOIN tdkenpin_goods_detail AS tdkgd ON tdka.ID = tdkgd.kenpin_id
                     LEFT JOIN tdproduct_goods AS tdpa ON tdkgd.product_goods_id = tdpa.ID
+                    INNER JOIN msmachine AS msm ON msm.ID = tdpa.machine_id
                     INNER JOIN tdorderlpk AS tdol ON tdol.ID = tdpa.lpk_id
                     INNER JOIN msmasalahkenpin AS msmk ON msmk.ID = tdka.masalah_kenpin_id
                 WHERE
@@ -359,8 +374,8 @@ class GeneralReportKenpinSeitaiController extends Component
                     $filterStatus
                     $filterNomorPalet
                     $filterNomorLot
-                GROUP BY tdka.id, msmk.code, msmk.name
-                ORDER BY msmk.code ASC, tdkgdb.box_number ASC",
+                GROUP BY msm.machineno, msmk.code, msmk.name
+                ORDER BY msmk.code ASC",
         );
 
         if (count($data) == 0) {
@@ -373,7 +388,7 @@ class GeneralReportKenpinSeitaiController extends Component
         }
 
         // Get all unique box numbers for consistent ordering
-        $allBoxNumbers = collect($data)->pluck('box_number')->unique()->sort()->values()->toArray();
+        $allMachines = $machineSeitai->pluck('machineno')->toArray();
 
         // Get all masalah kenpin with department id = 7 for complete list
         $allMasalah = MsMasalahKenpin::with('departmentGroup')
@@ -399,7 +414,7 @@ class GeneralReportKenpinSeitaiController extends Component
         foreach ($data as $item) {
             $masalahKey = $item->code_masalah;
             // Store kenpin count data and qty
-            $kenpinData[$masalahKey][$item->box_number] = ($kenpinData[$masalahKey][$item->box_number] ?? 0) + 1;
+            $kenpinData[$masalahKey][$item->machineno] = ($kenpinData[$masalahKey][$item->machineno] ?? 0) + $item->total_box;
         }
 
         $header = [
@@ -408,8 +423,8 @@ class GeneralReportKenpinSeitaiController extends Component
             'Masalah',
         ];
 
-        foreach ($allBoxNumbers as $boxNumber) {
-            $header[] = 'Box ' . $boxNumber;
+        foreach ($allMachines as $machine) {
+            $header[] = $machine;
         }
 
         // Write headers to Excel
@@ -443,9 +458,9 @@ class GeneralReportKenpinSeitaiController extends Component
             $activeWorksheet->setCellValue($columnItem . $rowItem, $masalah['name']);
             $columnItem++;
 
-            // Fill kenpin counts for each box
-            foreach ($allBoxNumbers as $boxNumber) {
-                $count = isset($kenpinData[$codeMasalah][$boxNumber]) ? $kenpinData[$codeMasalah][$boxNumber] : 0;
+            // Fill kenpin counts for each machine
+            foreach ($allMachines as $machine) {
+                $count = isset($kenpinData[$codeMasalah][$machine]) ? $kenpinData[$codeMasalah][$machine] : 0;
                 if ($count > 0) {
                     $activeWorksheet->setCellValue($columnItem . $rowItem, $count);
                     phpspreadsheet::numberFormatThousands($spreadsheet, $columnItem . $rowItem);
