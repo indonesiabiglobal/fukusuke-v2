@@ -282,9 +282,7 @@ class EditKenpinSeitaiController extends Component
 
     public function updatedStatus()
     {
-        $this->penyebab = '';
-        $this->keterangan_penyebab = '';
-        $this->penanggulangan = '';
+        $this->penyebab = $this->penyebab;
     }
 
     public function resetSeitai()

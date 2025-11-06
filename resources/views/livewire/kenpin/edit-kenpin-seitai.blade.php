@@ -262,7 +262,7 @@
                 <div class="form-group">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-6">Penyebab</label>
-                        <select wire:model="penyebab" x-ref="penyebabSelect"
+                        <select wire:model.defer="penyebab" x-ref="penyebabSelect"
                             class="form-control @error('penyebab') is-invalid @enderror"
                             x-on:change="$refs.keteranganPenyebabInput.focus();">
                             <option value="">- Pilih Penyebab -</option>
