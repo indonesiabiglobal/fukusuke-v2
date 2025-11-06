@@ -381,9 +381,9 @@ class DetailReportKenpinSeitaiController extends Component
 
         $writer = new Xlsx($spreadsheet);
         if ($isSingleReport) {
-            $filename = 'Detail-Kenpin-Infure-' . $filter['kenpin_no'] . '.xlsx';
+            $filename = 'Detail-Kenpin-Seitai-' . $filter['kenpin_no'] . '.xlsx';
         } else {
-            $filename = 'Detail-Kenpin-Infure-' . $tglAwal->format('dmyHi') . '-' . $tglAkhir->format('dmyHi') . '.xlsx';
+            $filename = 'Detail-Kenpin-Seitai-' . $tglAwal->format('dmyHi') . '-' . $tglAkhir->format('dmyHi') . '.xlsx';
         }
         $writer->save($filename);
         $response = [

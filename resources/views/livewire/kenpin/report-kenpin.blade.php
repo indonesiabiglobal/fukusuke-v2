@@ -12,19 +12,6 @@
                         <span class="input-group-text py-0">
                             <i class="ri-calendar-event-fill fs-4"></i>
                         </span>
-
-                        <div class="mb-1" wire:ignore>
-                            <select class="form-control" wire:model.defer="jamAwal" >
-                                @foreach ($workingShiftHour as $item)
-                                    <option value="{{ $item->work_hour_from }}"
-                                        @if ($jamAwal == $item->work_hour_from) selected @endif>{{ $item->work_hour_from }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <span class="input-group-text py-0">
-                            <i class="ri-time-line fs-4"></i>
-                        </span>
                     </div>
                 </div>
             </div>
@@ -38,19 +25,6 @@
                             data-provider="flatpickr" data-date-format="Y-m-d">
                         <span class="input-group-text py-0">
                             <i class="ri-calendar-event-fill fs-4"></i>
-                        </span>
-
-                        <div class="mb-1" wire:ignore>
-                            <select class="form-control" wire:model.defer="jamAkhir" >
-                                @foreach ($workingShiftHour as $item)
-                                    <option value="{{ $item->work_hour_till }}"
-                                        @if ($jamAkhir == $item->work_hour_till) selected @endif>{{ $item->work_hour_till }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <span class="input-group-text py-0">
-                            <i class="ri-time-line fs-4"></i>
                         </span>
                     </div>
                 </div>

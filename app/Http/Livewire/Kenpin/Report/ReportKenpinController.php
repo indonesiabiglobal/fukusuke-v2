@@ -43,8 +43,6 @@ class ReportKenpinController extends Component
         $this->tglAwal = Carbon::now()->format('Y-m-d');
         $this->tglAkhir = Carbon::now()->format('Y-m-d');
         $this->workingShiftHour = MsWorkingShift::select('work_hour_from', 'work_hour_till')->active()->orderBy('work_hour_from', 'ASC')->get();
-        $this->jamAwal = $this->workingShiftHour[0]->work_hour_from;
-        $this->jamAkhir = $this->workingShiftHour[count($this->workingShiftHour) - 1]->work_hour_till;
         $this->product = MsProduct::get();
         $this->department = MsDepartment::division()->get();
         $this->nippo = $this->department[0]->name;
@@ -67,8 +65,6 @@ class ReportKenpinController extends Component
         $rules = [
             'tglAwal' => 'required',
             'tglAkhir' => 'required',
-            'jamAwal' => 'required',
-            'jamAkhir' => 'required',
             'nippo' => 'required',
             'reportType' => 'required',
         ];
@@ -76,8 +72,6 @@ class ReportKenpinController extends Component
         $messages = [
             'tglAwal.required' => 'Tanggal Awal tidak boleh kosong',
             'tglAkhir.required' => 'Tanggal Akhir tidak boleh kosong',
-            'jamAwal.required' => 'Jam Awal tidak boleh kosong',
-            'jamAkhir.required' => 'Jam Akhir tidak boleh kosong',
             'nippo.required' => 'Jenis Report tidak boleh kosong',
             'reportType.required' => 'Tipe Report tidak boleh kosong',
         ];
@@ -85,8 +79,6 @@ class ReportKenpinController extends Component
         $validate = Validator::make([
             'tglAwal' => $this->tglAwal,
             'tglAkhir' => $this->tglAkhir,
-            'jamAwal' => $this->jamAwal,
-            'jamAkhir' => $this->jamAkhir,
             'nippo' => $this->nippo,
             'reportType' => $this->reportType,
         ], $rules, $messages);
@@ -101,8 +93,8 @@ class ReportKenpinController extends Component
             return;
         }
 
-        $tglAwal = Carbon::parse($this->tglAwal . ' ' . $this->jamAwal);
-        $tglAkhir = Carbon::parse($this->tglAkhir . ' ' . $this->jamAkhir);
+        $tglAwal = Carbon::parse($this->tglAwal);
+        $tglAkhir = Carbon::parse($this->tglAkhir);
 
         if ($this->nippo == 'INFURE') {
             $filter = [
