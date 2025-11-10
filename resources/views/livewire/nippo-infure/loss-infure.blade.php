@@ -290,75 +290,77 @@
                 </li>
             </ul>
         </div>
-        <table class="table align-middle table-nowrap" id="lossInfureTable">
-            <thead class="table-light">
-                <tr>
-                    <th></th>
-                    <th>Nomor LPK</th>
-                    <th>Tanggal LPK</th>
-                    <th>Panjang LPK</th>
-                    <th>Panjang Produksi</th>
-                    <th>Berat Gentan</th>
-                    <th>Nomor Gentan</th>
-                    <th>Berat Standard</th>
-                    <th>Rasio %</th>
-                    <th>Selisih</th>
-                    <th>Nama Produk</th>
-                    <th>Nomor Order</th>
-                    <th>Mesin</th>
-                    <th>Tanggal Produksi</th>
-                    <th>Tanggal Proses</th>
-                    <th>Shift</th>
-                    <th>Seq</th>
-                    <th>Loss</th>
-                    <th>Update By</th>
-                    <th>Updated</th>
-                </tr>
-            </thead>
-            <tbody class="list form-check-all">
-                @forelse ($data as $item)
+        <div class="table-responsive">
+            <table class="table align-middle table-nowrap" id="lossInfureTable">
+                <thead class="table-light">
                     <tr>
-                        <td>
-                            <a href="/edit-nippo?orderId={{ $item->id }}&status=true"
-                                class="link-success fs-15 p-1 bg-primary rounded">
-                                <i class="ri-edit-box-line text-white"></i>
-                            </a>
-                        </td>
-                        <td>{{ $item->lpk_no }}</td>
-                        <td data-order="{{ $item->lpk_date }}">
-                            {{ \Carbon\Carbon::parse($item->lpk_date)->format('d M Y') }}</td>
-                        <td>{{ number_format($item->panjang_lpk, 0, ',', ',') }}</td>
-                        <td>{{ number_format($item->panjang_produksi, 0, ',', ',') }}</td>
-                        <td>{{ $item->qty_gentan }}</td>
-                        <td>{{ $item->gentan_no }}</td>
-                        <td>{{ number_format($item->berat_standard, 0, ',', ',') }}</td>
-                        <td>{{ number_format($item->rasio, 2, ',', ',') }}</td>
-                        <td>{{ number_format($item->selisih, 0, ',', ',') }}</td>
-                        <td>{{ $item->product_name }}</td>
-                        <td>{{ $item->code }}</td>
-                        <td>{{ $item->machineno }}</td>
-                        <td data-order="{{ $item->production_date }}">
-                            {{ \Carbon\Carbon::parse($item->production_date)->format('d M Y') }}</td>
-                        <td data-order="{{ $item->created_on }}">
-                            {{ \Carbon\Carbon::parse($item->created_on)->format('d M Y') }}</td>
-                        <td>{{ $item->work_shift }} - {{ $item->work_hour }}</td>
-                        <td>{{ $item->seq_no }}</td>
-                        <td>{{ $item->infure_berat_loss }}</td>
-                        <td>{{ $item->updated_by }}</td>
-                        <td data-order="{{ $item->updated_on }}">
-                            {{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y') }}</td>
+                        <th></th>
+                        <th>Nomor LPK</th>
+                        <th>Tanggal LPK</th>
+                        <th>Panjang LPK</th>
+                        <th>Panjang Produksi</th>
+                        <th>Berat Gentan</th>
+                        <th>Nomor Gentan</th>
+                        <th>Berat Standard</th>
+                        <th>Rasio %</th>
+                        <th>Selisih</th>
+                        <th>Nama Produk</th>
+                        <th>Nomor Order</th>
+                        <th>Mesin</th>
+                        <th>Tanggal Produksi</th>
+                        <th>Tanggal Proses</th>
+                        <th>Shift</th>
+                        <th>Seq</th>
+                        <th>Loss</th>
+                        <th>Update By</th>
+                        <th>Updated</th>
                     </tr>
-                @empty
-                    {{-- <tr>
-                            <td colspan="12" class="text-center">
-                                <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
-                                <h5 class="mt-2">Sorry! No Result Found</h5>
-                                <p class="text-muted mb-0">We've searched more than 150+ Orders We did not find any orders for you search.</p>
+                </thead>
+                <tbody class="list form-check-all">
+                    @forelse ($data as $item)
+                        <tr>
+                            <td>
+                                <a href="/edit-nippo?orderId={{ $item->id }}&status=true"
+                                    class="link-success fs-15 p-1 bg-primary rounded">
+                                    <i class="ri-edit-box-line text-white"></i>
+                                </a>
                             </td>
-                        </tr> --}}
-                @endforelse
-            </tbody>
-        </table>
+                            <td>{{ $item->lpk_no }}</td>
+                            <td data-order="{{ $item->lpk_date }}">
+                                {{ \Carbon\Carbon::parse($item->lpk_date)->format('d M Y') }}</td>
+                            <td>{{ number_format($item->panjang_lpk, 0, ',', ',') }}</td>
+                            <td>{{ number_format($item->panjang_produksi, 0, ',', ',') }}</td>
+                            <td>{{ $item->qty_gentan }}</td>
+                            <td>{{ $item->gentan_no }}</td>
+                            <td>{{ number_format($item->berat_standard, 0, ',', ',') }}</td>
+                            <td>{{ number_format($item->rasio, 2, ',', ',') }}</td>
+                            <td>{{ number_format($item->selisih, 0, ',', ',') }}</td>
+                            <td>{{ $item->product_name }}</td>
+                            <td>{{ $item->code }}</td>
+                            <td>{{ $item->machineno }}</td>
+                            <td data-order="{{ $item->production_date }}">
+                                {{ \Carbon\Carbon::parse($item->production_date)->format('d M Y') }}</td>
+                            <td data-order="{{ $item->created_on }}">
+                                {{ \Carbon\Carbon::parse($item->created_on)->format('d M Y') }}</td>
+                            <td>{{ $item->work_shift }} - {{ $item->work_hour }}</td>
+                            <td>{{ $item->seq_no }}</td>
+                            <td>{{ $item->infure_berat_loss }}</td>
+                            <td>{{ $item->updated_by }}</td>
+                            <td data-order="{{ $item->updated_on }}">
+                                {{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y') }}</td>
+                        </tr>
+                    @empty
+                        {{-- <tr>
+                                <td colspan="12" class="text-center">
+                                    <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
+                                    <h5 class="mt-2">Sorry! No Result Found</h5>
+                                    <p class="text-muted mb-0">We've searched more than 150+ Orders We did not find any orders for you search.</p>
+                                </td>
+                            </tr> --}}
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
         {{-- {{ $data->links(data: ['scrollTo' => false]) }} --}}
     </div>
 
@@ -424,8 +426,6 @@
                     "responsive": true,
                     "scrollX": true,
                     "order": defaultOrder,
-                    "scrollY": calculateTableHeight() + 'px',
-                    "scrollCollapse": true,
                     "language": {
                         "emptyTable": `
                             <div class="text-center">

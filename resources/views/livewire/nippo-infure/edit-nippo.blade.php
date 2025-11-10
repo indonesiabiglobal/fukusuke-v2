@@ -1,12 +1,12 @@
 <div class="row">
     <form wire:submit.prevent="save">
         <div class="row mt-2">
-            <div class="col-4 col-lg-12">
+            <div class="col-12 col-lg-12">
                 <div class="row">
                     <div class="col-12 col-lg-4">
                         <div class="form-group">
-                            <div class="input-group">
-                                <label class="control-label col-5">Tanggal Produksi</label>
+                            <div class="input-group flex-column flex-sm-row">
+                                <label class="control-label col-12 col-sm-5">Tanggal Produksi</label>
                                 {{-- <input class="form-control datepicker-input"  style="padding:0.44rem" type="datetime-local" wire:model.defer="production_date" /> --}}
                                 <input
                                     class="form-control @if ($statusEditLoss) readonly bg-light @endif
@@ -27,8 +27,8 @@
                     </div>
                     <div class="col-12 col-lg-4 mt-1">
                         <div class="form-group">
-                            <div class="input-group">
-                                <label class="control-label col-5 pe-2">Nomor Produksi</label>
+                            <div class="input-group flex-column flex-sm-row">
+                                <label class="control-label col-12 col-sm-5 pe-2">Nomor Produksi</label>
                                 <input type="text" class="form-control readonly bg-light" readonly="readonly"
                                     wire:model="production_no" />
                                 @error('production_no')
@@ -39,7 +39,7 @@
                     </div>
                     <div class="col-12 col-lg-4">
                         <div class="form-group">
-                            <div class="input-group">
+                            <div class="input-group flex-column flex-sm-row">
                                 <label class="control-label pe-2">Tanggal Proses</label>
                                 {{-- <input class="form-control readonly bg-light datepicker-input" readonly="readonly"  style="padding:0.44rem" type="datetime-local" wire:model.defer="created_on" /> --}}
                                 <input type="text" class="form-control readonly bg-light" readonly="readonly"
@@ -52,9 +52,9 @@
                     </div>
                     <div class="col-12 col-lg-4 mt-1">
                         <div class="form-group">
-                            <div class="input-group">
-                                {{-- <label class="control-label col-5 pe-2">Nomor LPK</label> --}}
-                                <label class="control-label col-5 pe-2 fw-bold text-muted"
+                            <div class="input-group flex-column flex-sm-row">
+                                {{-- <label class="control-label col-12 col-sm-5 pe-2">Nomor LPK</label> --}}
+                                <label class="control-label col-12 col-sm-5 pe-2 fw-bold text-muted"
                                     style="text-decoration: underline;">
                                     <a href="#" data-bs-toggle="modal" wire:click="showModalLPK"
                                         class="text-muted">
@@ -71,7 +71,7 @@
                     </div>
                     <div class="col-12 col-lg-4 mt-1">
                         <div class="form-group">
-                            <div class="input-group">
+                            <div class="input-group flex-column flex-sm-row">
                                 <label class="control-label pe-2">Tanggal LPK</label>
                                 {{-- <input class="form-control readonly datepicker-input bg-light" readonly="readonly" type="date" wire:model.defer="lpk_date" placeholder="yyyy/mm/dd"/> --}}
                                 <input class="form-control readonly datepicker-input bg-light" readonly="readonly"
@@ -82,7 +82,7 @@
                     </div>
                     <div class="col-12 col-lg-4 mt-1">
                         <div class="form-group">
-                            <div class="input-group">
+                            <div class="input-group flex-column flex-sm-row">
                                 <label class="control-label pe-2">Panjang LPK</label>
                                 <input type="text" placeholder="-" class="form-control readonly bg-light"
                                     readonly="readonly" value="{{ number_format($panjang_lpk) }}" />
@@ -94,8 +94,8 @@
                     </div>
                     <div class="col-12 col-lg-4 mt-1">
                         <div class="form-group">
-                            <div class="input-group">
-                                <label class="control-label col-5 pe-2 fw-bold text-muted"
+                            <div class="input-group flex-column flex-sm-row">
+                                <label class="control-label col-12 col-sm-5 pe-2 fw-bold text-muted"
                                     style="text-decoration: underline;">
                                     <a href="#" data-bs-toggle="modal" wire:click="showModalNoOrder"
                                         class="text-muted">
@@ -109,7 +109,7 @@
                     </div>
                     <div class="col-12 col-lg-8 mt-1">
                         <div class="form-group">
-                            <div class="input-group">
+                            <div class="input-group flex-column flex-sm-row">
                                 <label class="control-label"></label>
                                 <input type="text" placeholder="-" class="form-control readonly bg-light"
                                     readonly="readonly" wire:model="name" />
@@ -118,8 +118,8 @@
                     </div>
                     <div class="col-12 col-lg-4 mt-1">
                         <div class="form-group">
-                            <div class="input-group">
-                                <label class="control-label col-5 pe-2">Nomor Mesin</label>
+                            <div class="input-group flex-column flex-sm-row">
+                                <label class="control-label col-12 col-sm-5 pe-2">Nomor Mesin</label>
                                 <input type="text" placeholder=" ... "
                                     class="form-control
                                 @if ($statusEditLoss) readonly bg-light @endif
@@ -136,7 +136,7 @@
                     </div>
                     <div class="col-12 col-lg-8 mt-1">
                         <div class="form-group">
-                            <div class="input-group">
+                            <div class="input-group flex-column flex-sm-row">
                                 <label class="control-label"></label>
                                 <input type="text" placeholder="-" class="form-control readonly bg-light"
                                     readonly="readonly" wire:model="machinename" />
@@ -145,8 +145,8 @@
                     </div>
                     <div class="col-12 col-lg-4 mt-1">
                         <div class="form-group">
-                            <div class="input-group">
-                                <label class="control-label col-5 pe-2">Petugas</label>
+                            <div class="input-group flex-column flex-sm-row">
+                                <label class="control-label col-12 col-sm-5 pe-2">Petugas</label>
                                 <input type="text" placeholder=" ... "
                                     class="form-control @if ($statusEditLoss) readonly bg-light @endif
                                 "
@@ -162,7 +162,7 @@
                     </div>
                     <div class="col-12 col-lg-8 mt-1">
                         <div class="form-group">
-                            <div class="input-group">
+                            <div class="input-group flex-column flex-sm-row">
                                 <label class="control-label"></label>
                                 <input type="text" placeholder="-" class="form-control readonly bg-light"
                                     readonly="readonly" wire:model="empname" />
@@ -172,8 +172,8 @@
 
                     <div class="col-12 col-lg-4 mt-1">
                         <div class="form-group">
-                            <div class="input-group">
-                                <label class="control-label col-5 pe-2">Nomor Barcode</label>
+                            <div class="input-group flex-column flex-sm-row">
+                                <label class="control-label col-12 col-sm-5 pe-2">Nomor Barcode</label>
                                 <input type="text"
                                     class="form-control @if ($statusEditLoss) readonly bg-light @endif"
                                     @if ($statusEditLoss) readonly="readonly" @endif
@@ -188,8 +188,8 @@
                     <div class="w-100"></div>
                     <div class="col-12 col-lg-4 mt-1">
                         <div class="form-group">
-                            <div class="input-group">
-                                <label class="control-label col-5">Dimensi Infure</label>
+                            <div class="input-group flex-column flex-sm-row">
+                                <label class="control-label col-12 col-sm-5">Dimensi Infure</label>
                                 <input type="text" placeholder="-" class="form-control readonly bg-light"
                                     readonly="readonly" wire:model="dimensiinfure" />
                                 <span class="input-group-text">
@@ -200,7 +200,7 @@
                     </div>
                     <div class="col-12 col-lg-8 mt-1">
                         <div class="form-group">
-                            <div class="input-group">
+                            <div class="input-group flex-column flex-sm-row">
                                 <label class="control-label col-3">Meter Gulung</label>
                                 <input type="text" placeholder="-" class="form-control readonly bg-light"
                                     readonly="readonly" wire:model="qty_gulung" />
@@ -220,8 +220,8 @@
                     </div>
                     <div class="col-12 col-lg-4 mt-1">
                         <div class="form-group">
-                            <div class="input-group">
-                                <label class="control-label col-5">Panjang Produksi</label>
+                            <div class="input-group flex-column flex-sm-row">
+                                <label class="control-label col-12 col-sm-5">Panjang Produksi</label>
                                 <input type="text" placeholder="-"
                                     class="form-control @error('panjang_produksi') is-invalid @enderror @if ($statusEditLoss) readonly bg-light @endif
                                 "
@@ -244,7 +244,7 @@
                     </div>
                     <div class="col-12 col-lg-5 mt-1">
                         <div class="form-group">
-                            <div class="input-group">
+                            <div class="input-group flex-column flex-sm-row">
                                 <label class="control-label col-6">Total Panjang Produksi</label>
                                 <input type="text" placeholder="0" class="form-control readonly bg-light"
                                     readonly="readonly" value="{{ number_format($total_assembly_line) }}" />
@@ -256,7 +256,7 @@
                     </div>
                     <div class="col-12 col-lg-3 mt-1">
                         <div class="form-group">
-                            <div class="input-group">
+                            <div class="input-group flex-column flex-sm-row">
                                 <label class="control-label col-3">Selisih</label>
                                 <input type="text" placeholder="0" class="form-control readonly bg-light"
                                     readonly="readonly" value="{{ number_format($selisih) }}" />
@@ -268,8 +268,8 @@
                     </div>
                     <div class="col-12 col-lg-4 mt-1">
                         <div class="form-group">
-                            <div class="input-group">
-                                <label class="control-label col-5">Berat Gentan</label>
+                            <div class="input-group flex-column flex-sm-row">
+                                <label class="control-label col-12 col-sm-5">Berat Gentan</label>
                                 <input type="text"
                                     class="form-control @if ($statusEditLoss) readonly bg-light @endif
                                 "
@@ -289,7 +289,7 @@
                     </div>
                     <div class="col-12 col-lg-5 mt-1">
                         <div class="form-group">
-                            <div class="input-group">
+                            <div class="input-group flex-column flex-sm-row">
                                 <label class="control-label col-6">Berat Standard</label>
                                 <input type="text" placeholder="0" class="form-control readonly bg-light"
                                     readonly="readonly" value="{{ number_format($berat_standard, 2) }}" />
@@ -301,7 +301,7 @@
                     </div>
                     <div class="col-12 col-lg-3 mt-1">
                         <div class="form-group">
-                            <div class="input-group">
+                            <div class="input-group flex-column flex-sm-row">
                                 <label class="control-label col-3">
                                     @if ($rasio == 0 || ($rasio >= 50 && $rasio <= 150))
                                         Rasio
@@ -321,8 +321,8 @@
                     </div>
                     <div class="col-12 col-lg-4 mt-1">
                         <div class="form-group">
-                            <div class="input-group">
-                                <label class="control-label col-5 pe-2">Jam Produksi</label>
+                            <div class="input-group flex-column flex-sm-row">
+                                <label class="control-label col-12 col-sm-5 pe-2">Jam Produksi</label>
                                 <input class="form-control @error('work_hour') is-invalid @enderror"
                                     wire:model.change="work_hour" type="time" placeholder="HH:mm"
                                     x-ref="work_hour">
@@ -334,7 +334,7 @@
                     </div>
                     <div class="col-12 col-lg-4 mt-1">
                         <div class="form-group">
-                            <div class="input-group">
+                            <div class="input-group flex-column flex-sm-row">
                                 <label class="control-label col-4">Shift Kerja</label>
                                 <input type="text" class="form-control readonly bg-light" readonly="readonly"
                                     wire:model="work_shift" />
@@ -345,7 +345,7 @@
                     {{-- Nomor Han --}}
                     <div class="col-12 col-lg-4 mt-1">
                         <div class="form-group">
-                            <div class="input-group">
+                            <div class="input-group flex-column flex-sm-row">
                                 <label class="control-label col-4">Nomor Han</label>
                                 {{-- <input type="text" class="form-control" placeholder="00-00-00-00A" wire:model="nomor_han" x-on:keydown.tab="$event.preventDefault(); $refs.nomor_barcode.focus();"
                                 x-ref="nomor_han" /> --}}
@@ -385,8 +385,8 @@
                     </div>
                     <div class="col-12 col-lg-4 mt-1">
                         <div class="form-group">
-                            <div class="input-group">
-                                <label class="control-label col-5 pe-2">Nomor Gentan</label>
+                            <div class="input-group flex-column flex-sm-row">
+                                <label class="control-label col-12 col-sm-5 pe-2">Nomor Gentan</label>
                                 <input type="text"
                                     class="form-control @if ($statusEditLoss) readonly bg-light @endif
                                 "

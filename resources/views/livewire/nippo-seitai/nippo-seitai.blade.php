@@ -423,7 +423,6 @@
                     "order": defaultOrder,
                     "multiColumnSort": true,
                     "scrollX": true,
-                    "scrollY": calculateTableHeight() + 'px',
                     "scrollCollapse": true,
                     "language": {
                         "emptyTable": `
