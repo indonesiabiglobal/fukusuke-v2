@@ -7,22 +7,24 @@
                 </div>
                 <div class="col-12 col-lg-9 mb-1">
                     <div class="form-group" wire:ignore>
-                        <div class="input-group">
-                            <div class="col-3">
+                        <div class="input-group flex-column flex-sm-row">
+                            <div class="col-12 col-sm-3 mb-2 mb-sm-0">
                                 <select class="form-select" style="padding:0.44rem" wire:model.defer="transaksi">
                                     <option value="1">Proses</option>
                                     <option value="2">LPK</option>
                                 </select>
                             </div>
-                            <div class="col-9">
-                                <div class="form-group">
+                            <div class="col-12 col-sm-9">
+                                <div class="d-flex flex-column flex-sm-row gap-2">
                                     <div class="input-group">
                                         <input wire:model.defer="tglMasuk" type="text" class="form-control"
                                             style="padding:0.44rem" data-provider="flatpickr" data-date-format="d M Y">
                                         <span class="input-group-text py-0">
                                             <i class="ri-calendar-event-fill fs-4"></i>
                                         </span>
+                                    </div>
 
+                                    <div class="input-group">
                                         <input wire:model.defer="tglKeluar" type="text" class="form-control"
                                             style="padding:0.44rem" data-provider="flatpickr" data-date-format="d M Y">
                                         <span class="input-group-text py-0">

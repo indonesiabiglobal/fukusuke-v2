@@ -22,29 +22,27 @@
     </div> --}}
     <div class="container-fluid px-0">
         <div class="row g-0">
-            <div class="col-xl-8 col-lg-6">
+            <div class="col-xl-8 col-lg-6 d-none d-md-block">
                 <div class="h-100 mb-0 p-4 d-flex flex-column justify-content-between">
-                    <div class="d-flex">
+                    <div class="d-flex flex-column flex-lg-row">
                         <div class="flex-grow-1">
-                            {{-- <img src="{{ URL::asset('build/images/logo-production.png') }}" alt=""
-                                height="32" /> --}}
-                                <h1 class="text-dark">Production Control System</h1>
-                                <h5 class="text-dark mt-3">Sistem aplikasi monitoring dan <br>
-                                pengendalian produksi, untuk mengatur <br>
-                                output atau hasil produksi yang optimal <br>
-                                dan memperoleh jaminan yang wajar <br>
-                                bahwa spesifikasi akan terpenuhi.</h5>
+                            <h1 class="text-dark">Production Control System</h1>
+                            <h5 class="text-dark mt-3">Sistem aplikasi monitoring dan <br class="d-none d-lg-block">
+                            pengendalian produksi, untuk mengatur <br class="d-none d-lg-block">
+                            output atau hasil produksi yang optimal <br class="d-none d-lg-block">
+                            dan memperoleh jaminan yang wajar <br class="d-none d-lg-block">
+                            bahwa spesifikasi akan terpenuhi.</h5>
                         </div>
-                        <img src="{{ URL::asset('build/images/phone.png') }}" width="250" alt="" />
+                        <img src="{{ URL::asset('build/images/phone.png') }}" class="mt-3 mt-lg-0 mx-auto mx-lg-0" style="max-width: 250px; width: 100%; height: auto;" alt="" />
                     </div>
 
                     <div class="text-dark mt-4">
                         <div class="row">
-                            <div class="col-6">
+                            <div class="col-lg-6">
                                 <p class="mb-1 fw-bold">PT Fukusuke Kogyo Indonesia</p>
                                 <span>Blok M-3-2 Kawasan Berikat Mm2100 Cibitung, Bekasi, Jawa Barat, Indonesia.</span>
                             </div>
-                            <div class="col-6">
+                            <div class="col-lg-6">
                                 <p class="mb-1 fw-bold">Produk Usaha</p>
                                 <span>Kantong Plastik</span>
                             </div>
@@ -53,7 +51,7 @@
                 </div>
             </div>
             <!--end col-->
-            <div class="col-xl-4 col-lg-6">
+            <div class="col-xl-4 col-lg-6 col-md-8 mx-auto">
                 <div class="card mb-0 py-2 border border-3">
                     <div class="card-body p-4 p-sm-5 m-lg-2">
                         <h5 class="fs-22">Sign In</h5>
