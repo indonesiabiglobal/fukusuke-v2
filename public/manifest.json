@@ -1,15 +1,16 @@
 {
-    "name": "Fukusuke",
+    "name": "Fukusuke Kogyo Indonesia",
     "short_name": "FKI",
-    "start_url": "/index.php",
-    "id": "/index.php",
+    "start_url": "/",
+    "id": "/",
+    "scope": "/",
     "background_color": "#6777ef",
     "description": "Fukusuke",
-    "display": "fullscreen",
+    "display": "standalone",
     "theme_color": "#6777ef",
     "icons": [
         {
-            "src": "logo.PNG",
+            "src": "/logo.png",
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "any maskable"
