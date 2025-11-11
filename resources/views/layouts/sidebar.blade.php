@@ -25,7 +25,11 @@
     </div>
 
     @php
-        $userRoles = auth()->user()->useraccessrole->pluck('rolename')->toArray();
+        // Get user roles with safe null checking
+        $userRoles = [];
+        if (auth()->check() && auth()->user()->roles) {
+            $userRoles = auth()->user()->roles->pluck('rolename')->toArray();
+        }
     @endphp
 
     <div id="scrollbar">
@@ -280,10 +284,10 @@
                                 </li>
                                 {{-- Mesin --}}
                                 <li class="nav-item">
-                                    <a href="#loss" class="nav-link" data-bs-toggle="collapse" role="button"
-                                        aria-expanded="false" aria-controls="loss" data-key="t-profile"><i
+                                    <a href="#mesin" class="nav-link" data-bs-toggle="collapse" role="button"
+                                        aria-expanded="false" aria-controls="mesin" data-key="t-profile"><i
                                             class="bx bx-printer"></i> Mesin </a>
-                                    <div class="collapse menu-dropdown" id="loss">
+                                    <div class="collapse menu-dropdown" id="mesin">
                                         <ul class="nav nav-sm flex-column">
                                             <li class="nav-item">
                                                 <a href="mesin" class="nav-link" data-key="t-simple-page">
@@ -409,7 +413,7 @@
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#administration" data-bs-toggle="collapse"
                             role="button" aria-expanded="false" aria-controls="administration">
-                            <i class="ri-admin-line"></i> <span data-key="t-pages">administration</span>
+                            <i class="ri-admin-line"></i> <span data-key="t-pages">Administration</span>
                         </a>
                         <div class="collapse menu-dropdown" id="administration">
                             <ul class="nav nav-sm flex-column">
@@ -426,7 +430,7 @@
                     <li class="nav-item d-none">
                         <a class="nav-link menu-link" href="#inventory" data-bs-toggle="collapse" role="button"
                             aria-expanded="false" aria-controls="inventory">
-                            <i class=" ri-store-line"></i> <span data-key="t-pages">inventory</span>
+                            <i class=" ri-store-line"></i> <span data-key="t-pages">Inventory</span>
                         </a>
                         <div class="collapse menu-dropdown" id="inventory">
                             <ul class="nav nav-sm flex-column">

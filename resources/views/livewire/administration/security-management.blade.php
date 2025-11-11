@@ -1,17 +1,20 @@
-{{-- @include('layouts.customizer') --}}
-<div class="row">
-    {{-- <div class="col-12 col-lg-4">
-        <div class="row">
-            <div class="col-12 col-lg-3">
-                <label class="form-label text-muted fw-bold">Search</label>
-            </div>
-            <div class="col-12 col-lg-9">
-                <div class="input-group">
-                    <input wire:model.defer="searchTerm" class="form-control"style="padding:0.44rem" type="text" placeholder="Enter name or code" />
+<div>
+    {{-- @include('layouts.customizer') --}}
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                <h4 class="mb-sm-0">Security Management</h4>
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="/">Administration</a></li>
+                        <li class="breadcrumb-item active">Security Management</li>
+                    </ol>
                 </div>
             </div>
         </div>
-    </div> --}}
+    </div>
+
+<div class="row">
     <div class="col-12 col-lg-8">
         <div class="row">
             <div class="col-12 col-lg-1">
@@ -19,7 +22,7 @@
             </div>
             <div class="col-12 col-lg-6">
                 <div class="mb-1" wire:ignore>
-                    <select class="form-control" wire:model.defer="idRole" data-choices data-choices-sorting-false  data-choices-removeItem data-choices-search-field-label>
+                    <select class="form-control" wire:model.defer="idRole" data-choices data-choices-sorting-false data-choices-removeItem data-choices-search-field-label>
                         <option value="">- All -</option>
                         @foreach ($userrole as $item)
                             <option value="{{ $item->id }}">{{ $item->description }}</option>
@@ -32,7 +35,7 @@
             </div>
             <div class="col-12 col-lg-4">
                 <div class="mb-1" wire:ignore>
-                    <select class="form-control" wire:model.defer="status" data-choices data-choices-sorting-false  data-choices-removeItem data-choices-search-field-label>
+                    <select class="form-control" wire:model.defer="status" data-choices data-choices-sorting-false data-choices-removeItem data-choices-search-field-label>
                         <option value="">- All -</option>
                         <option value="1">Active</option>
                         <option value="0">Inactive</option>
@@ -63,8 +66,7 @@
                 <button
                     type="button"
                     class="btn btn-success w-lg p-1"
-                    onclick="window.location.href='/add-user'"
-                    >
+                    onclick="window.location.href='/add-user'">
                     <i class="ri-add-line"> </i> Add
                 </button>
             </div>
@@ -132,64 +134,58 @@
                                 <i class="ri-edit-box-line text-white"></i>
                             </a>
                             <button type="button" class="btn fs-15 ms-1 p-1 bg-danger removeBuyerModal"
-                                href="#removeBuyerModal" data-bs-toggle="modal" data-bs-target="#removeBuyerModal"
-                                data-remove-id="{{ $item->id }}">
-                                <i class="ri-delete-bin-line  text-white"></i>
+                                wire:click="setDeleteId({{ $item->id }})"
+                                data-bs-toggle="modal" data-bs-target="#removeBuyerModal">
+                                <i class="ri-delete-bin-line text-white"></i>
                             </button>
-                            {{-- <a href="/edit-order?orderId={{ $item->id }}" class="link-success ms-1 fs-15 p-1 bg-danger rounded">
-                                <i class="ri-delete-bin-6-line text-white"></i>
-                            </a> --}}
-                            <div id="removeBuyerModal" class="modal fade zoomIn" tabindex="-1" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-                                                id="close-removeBuyerModal"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <div class="mt-2 text-center">
-                                                <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop"
-                                                    colors="primary:#f7b84b,secondary:#f06548"
-                                                    style="width:100px;height:100px"></lord-icon>
-                                                <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
-                                                    <h4>Are you sure ?</h4>
-                                                    <p class="text-muted mx-4 mb-0">Are you sure you want to remove this order ?
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-                                                <button type="button" class="btn w-sm btn-light"
-                                                    data-bs-dismiss="modal">Close</button>
-                                                <button type="button" class="btn w-sm btn-danger" id="remove-item"
-                                                    wire:click="delete">Yes, Delete It!</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
                         </td>
                         <td>{{ $item->username }}</td>
                         <td>{{ $item->email }}</td>
                         <td>{{ $item->empname }}</td>
                         <td>{{ $item->job }}</td>
-                        <td>{{ $item->status }}</td>
+                        <td>
+                            @if($item->status == 'Active')
+                                <span class="badge bg-success">Active</span>
+                            @else
+                                <span class="badge bg-danger">Inactive</span>
+                            @endif
+                        </td>
                     </tr>
                 @empty
-                    {{-- <tr>
-                        <td colspan="10" class="text-center">
-                            <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
-                            <h5 class="mt-2">Sorry! No Result Found</h5>
-                            <p class="text-muted mb-0">We've searched more than 150+ Orders We did not find any orders for you search.</p>
-                        </td>
-                    </tr> --}}
                 @endforelse
             </tbody>
         </table>
-        {{-- {{ $data->links() }} --}}
     </div>
+</div>
 
-    {{-- <livewire:tdorder/> --}}
+<!-- Remove Modal -->
+<div id="removeBuyerModal" class="modal fade zoomIn" tabindex="-1" aria-hidden="true" wire:ignore.self>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                    id="close-removeBuyerModal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mt-2 text-center">
+                    <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop"
+                        colors="primary:#f7b84b,secondary:#f06548"
+                        style="width:100px;height:100px"></lord-icon>
+                    <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
+                        <h4>Are you sure ?</h4>
+                        <p class="text-muted mx-4 mb-0">Are you sure you want to remove this user?</p>
+                    </div>
+                </div>
+                <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
+                    <button type="button" class="btn w-sm btn-light"
+                        data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn w-sm btn-danger"
+                        wire:click="delete"
+                        data-bs-dismiss="modal">Yes, Delete It!</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 @script
@@ -200,23 +196,49 @@
             initDataTable();
         });
 
+        // Close modal after delete
+        $wire.on('closeModal', () => {
+            var modal = bootstrap.Modal.getInstance(document.getElementById('removeBuyerModal'));
+            if (modal) {
+                modal.hide();
+            }
+        });
+
+        // Show toast notification
+        $wire.on('showToast', (data) => {
+            const [event] = data;
+            if (event.type === 'success') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: event.message,
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            } else if (event.type === 'error') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: event.message,
+                    showConfirmButton: true
+                });
+            }
+        });
+
         // Fungsi untuk menginisialisasi ulang DataTable
         function initDataTable() {
-
             const savedOrder = $wire.get('sortingTable');
-            
-            let defaultOrder = [
-                [1, "asc"]
-            ];
+
+            let defaultOrder = [[1, "asc"]];
             if (savedOrder) {
                 defaultOrder = savedOrder;
             }
+
             // Hapus DataTable jika sudah ada
             if ($.fn.dataTable.isDataTable('#securityTable')) {
                 let table = $('#securityTable').DataTable();
-                table.clear(); // Bersihkan data tabel
-                table.destroy(); // Hancurkan DataTable
-                // Hindari penggunaan $('#securityTable').empty(); di sini
+                table.clear();
+                table.destroy();
             }
 
             setTimeout(() => {
@@ -237,7 +259,6 @@
                         `
                     }
                 });
-
 
                 // Listen to sort event
                 table.on('order.dt', function() {
@@ -263,3 +284,31 @@
         }
     </script>
 @endscript
+
+@if (session()->has('success'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: '{{ session('success') }}',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        });
+    </script>
+@endif
+
+@if (session()->has('error'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: '{{ session('error') }}',
+                showConfirmButton: true
+            });
+        });
+    </script>
+@endif
+</div>

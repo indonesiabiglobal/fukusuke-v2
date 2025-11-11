@@ -1,190 +1,172 @@
-<div class="row">
-    {{-- <div class="col-lg-2"></div> --}}
-    <div class="col-12 col-lg-12">
-        <form wire:submit.prevent="save">
-            <div class="form-group">
-                <div class="input-group mb-1">
-                    <label class="control-label col-12 col-lg-3 fw-bold text-muted">Email</label>
-                    <input type="text" class="form-control @error('email') is-invalid @enderror" wire:model="email" required/>
-                    @error('email')
-                        <div class="invalid-feedback">
-                            {{ $message }}
-                        </div>
-                    @enderror
-                </div>
-                <div class="input-group mb-1">
-                    <label class="control-label col-12 col-lg-3 fw-bold text-muted">User Name</label>
-                    <input type="text" class="form-control @error('username') is-invalid @enderror" wire:model="username" required/>
-                    @error('username')
-                        <div class="invalid-feedback">
-                            {{ $message }}
-                        </div>
-                    @enderror
-                </div>
-                <div class="input-group mb-1">
-                    <label class="control-label col-12 col-lg-3 fw-bold text-muted">Password</label>
-                    <input type="text" class="form-control @error('password') is-invalid @enderror" wire:model="password" required/>
-                    @error('password')
-                        <div class="invalid-feedback">
-                            {{ $message }}
-                        </div>
-                    @enderror
+<div>
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                <h4 class="mb-sm-0">Edit User</h4>
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="/security-management">Security Management</a></li>
+                        <li class="breadcrumb-item active">Edit User</li>
+                    </ol>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-12">
-                    <div class="card mb-0">
-                        <div class="card-body">
-                            <h6 class="fs-15">User Roles</h6>
-                            
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="" id="selectAll">
-                                <label class="form-check-label" for="selectAll">
-                                    Select All
-                                </label>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div class="col-12 col-lg-4">
-                                    <div class="form-check d-flex align-items-center">
-                                        <input class="form-check-input" type="checkbox" value="" id="isAdmin">
-                                        <label class="form-check-label" for="isAdmin">
-                                            Administrator
-                                        </label>
-                                        <select wire:model.defer="isAdministrator" class="ms-auto">
-                                            <option value="1">Read</option>
-                                            <option value="2">Write</option>
-                                        </select>
-                                    </div>
+        </div>
+    </div>
 
-                                    <div class="form-check d-flex align-items-center">
-                                        <input class="form-check-input" type="checkbox" value="" id="isKenpin">
-                                        <label class="form-check-label" for="isKenpin">
-                                            Kenpin
-                                        </label>
-                                        <select wire:model.defer="isKenpin" class="ms-auto">
-                                            <option value="1">Read</option>
-                                            <option value="2">Write</option>
-                                        </select>
-                                    </div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">User Information</h5>
+            </div>
+            <div class="card-body">
+                <form wire:submit.prevent="update">
+                    <div class="row">
+                        <!-- Username -->
+                        <div class="col-md-6 mb-3">
+                            <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
+                            <input type="text" wire:model="username" class="form-control @error('username') is-invalid @enderror" id="username" placeholder="Enter username">
+                            @error('username')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                                    <div class="form-check d-flex align-items-center">
-                                        <input class="form-check-input" type="checkbox" value="" id="isNippoInfure">
-                                        <label class="form-check-label" for="isNippoInfure">
-                                            Nippo Infure
-                                        </label>
-                                        <select wire:model.defer="isNippoInfure" class="ms-auto">
-                                            <option value="1">Read</option>
-                                            <option value="2">Write</option>
-                                        </select>
-                                    </div>
-                                </div>
+                        <!-- Email -->
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                            <input type="email" wire:model="email" class="form-control @error('email') is-invalid @enderror" id="email" placeholder="Enter email">
+                            @error('email')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                                <div class="col-12 col-lg-4">
-                                    <div class="form-check d-flex align-items-center">
-                                        <input class="form-check-input" type="checkbox" value="" id="isOrder">
-                                        <label class="form-check-label" for="isOrder">
-                                            Order Transaction
-                                        </label>
-                                        <select wire:model.defer="isOrder" class="ms-auto">
-                                            <option value="1">Read</option>
-                                            <option value="2">Write</option>
-                                        </select>
-                                    </div>
+                        <!-- Employee Name -->
+                        <div class="col-md-6 mb-3">
+                            <label for="empname" class="form-label">Employee Name <span class="text-danger">*</span></label>
+                            <input type="text" wire:model="empname" class="form-control @error('empname') is-invalid @enderror" id="empname" placeholder="Enter employee name">
+                            @error('empname')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                                    <div class="form-check d-flex align-items-center">
-                                        <input class="form-check-input" type="checkbox" value="" id="isWarehouse">
-                                        <label class="form-check-label" for="isWarehouse">
-                                            Warehouse
-                                        </label>
-                                        <select wire:model.defer="isWarehouse" class="ms-auto">
-                                            <option value="1">Read</option>
-                                            <option value="2">Write</option>
-                                        </select>
-                                    </div>
+                        <!-- Employee ID -->
+                        <div class="col-md-6 mb-3">
+                            <label for="empid" class="form-label">Employee ID</label>
+                            <input type="text" wire:model="empid" class="form-control" id="empid" placeholder="Enter employee ID">
+                        </div>
 
-                                    <div class="form-check d-flex align-items-center">
-                                        <input class="form-check-input" type="checkbox" value="" id="isJamKerja">
-                                        <label class="form-check-label" for="isJamKerja">
-                                            Jam Kerja
-                                        </label>
-                                        <select wire:model.defer="isJamKerja" class="ms-auto">
-                                            <option value="1">Read</option>
-                                            <option value="2">Write</option>
-                                        </select>
-                                    </div>
-                                </div>
+                        <!-- Password -->
+                        <div class="col-md-6 mb-3">
+                            <label for="password" class="form-label">Password <small class="text-muted">(kosongkan jika tidak ingin mengubah)</small></label>
+                            <input type="password" wire:model="password" class="form-control @error('password') is-invalid @enderror" id="password" placeholder="Enter new password">
+                            @error('password')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                                <div class="col-12 col-lg-4">
-                                    <div class="form-check d-flex align-items-center">
-                                        <input class="form-check-input" type="checkbox" value="" id="isMasterTable">
-                                        <label class="form-check-label" for="isMasterTable">
-                                            Master Table
-                                        </label>
-                                        <select wire:model.defer="isMasterTable" class="ms-auto">
-                                            <option value="1">Read</option>
-                                            <option value="2">Write</option>
-                                        </select>
-                                    </div>
+                        <!-- Password Confirmation -->
+                        <div class="col-md-6 mb-3">
+                            <label for="password_confirmation" class="form-label">Confirm Password</label>
+                            <input type="password" wire:model="password_confirmation" class="form-control @error('password_confirmation') is-invalid @enderror" id="password_confirmation" placeholder="Confirm new password">
+                            @error('password_confirmation')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                                    <div class="form-check d-flex align-items-center">
-                                        <input class="form-check-input" type="checkbox" value="" id="isNippoSeitai">
-                                        <label class="form-check-label" for="isNippoSeitai">
-                                            Warehouse
-                                        </label>
-                                        <select wire:model.defer="isNippoSeitai" class="ms-auto">
-                                            <option value="1">Read</option>
-                                            <option value="2">Write</option>
-                                        </select>
-                                    </div>
+                        <!-- Role -->
+                        <div class="col-md-6 mb-3">
+                            <label for="roleid" class="form-label">Role <span class="text-danger">*</span></label>
+                            <select wire:model="roleid" class="form-select @error('roleid') is-invalid @enderror" id="roleid">
+                                <option value="">- Select Role -</option>
+                                @foreach ($userroles as $role)
+                                    <option value="{{ $role->id }}">{{ $role->description }}</option>
+                                @endforeach
+                            </select>
+                            @error('roleid')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                                    {{-- <div class="form-check d-flex align-items-center">
-                                        <input class="form-check-input" type="checkbox" value="" id="isJamKerja">
-                                        <label class="form-check-label" for="isJamKerja">
-                                            Jam Kerja
-                                        </label>
-                                        <select wire:model.defer="isJamKerja" class="ms-auto">
-                                            <option value="1">Read</option>
-                                            <option value="2">Write</option>
-                                        </select>
-                                    </div> --}}
-                                </div>
-                            </div>
+                        <!-- Role Mode -->
+                        <div class="col-md-6 mb-3">
+                            <label for="rolemode" class="form-label">Role Mode</label>
+                            <select wire:model="rolemode" class="form-select" id="rolemode">
+                                <option value="readonly">Read Only</option>
+                                <option value="readwrite">Read Write</option>
+                            </select>
+                        </div>
+
+                        <!-- Code -->
+                        <div class="col-md-6 mb-3">
+                            <label for="code" class="form-label">Code</label>
+                            <input type="text" wire:model="code" class="form-control" id="code" placeholder="Enter code">
+                        </div>
+
+                        <!-- Territory -->
+                        <div class="col-md-6 mb-3">
+                            <label for="territory_ix" class="form-label">Territory</label>
+                            <input type="text" wire:model="territory_ix" class="form-control" id="territory_ix" placeholder="Enter territory">
+                        </div>
+
+                        <!-- Status -->
+                        <div class="col-md-12 mb-3">
+                            <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
+                            <select wire:model="status" class="form-select @error('status') is-invalid @enderror" id="status">
+                                <option value="1">Active</option>
+                                <option value="0">Inactive</option>
+                            </select>
+                            @error('status')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
-                </div> 
+
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary" wire:loading.attr="disabled">
+                                <span wire:loading.remove wire:target="update">
+                                    <i class="ri-save-line"></i> Update
+                                </span>
+                                <span wire:loading wire:target="update">
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    Updating...
+                                </span>
+                            </button>
+                            <a href="/security-management" class="btn btn-secondary">
+                                <i class="ri-arrow-left-line"></i> Back
+                            </a>
+                        </div>
+                    </div>
+                </form>
             </div>
-            <br>
-            <button type="button" class="btn btn-warning" wire:click="cancel" wire:loading.attr="disabled">
-                <span wire:loading.remove wire:target="cancel">
-                    <i class="ri-close-line"> </i> Close
-                </span>
-                <div wire:loading wire:target="cancel">
-                    <span class="d-flex align-items-center">
-                        <span class="spinner-border flex-shrink-0" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </span>
-                        <span class="flex-grow-1 ms-1">
-                            Loading...
-                        </span>
-                    </span>                    
-                </div>
-            </button>
-            <button type="submit" class="btn btn-success" wire:loading.attr="disabled">
-                <span wire:loading.remove wire:target="save">
-                    <i class="ri-save-3-line"></i> Save
-                </span>
-                <div wire:loading wire:target="save">
-                    <span class="d-flex align-items-center">
-                        <span class="spinner-border flex-shrink-0" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </span>
-                        <span class="flex-grow-1 ms-1">
-                            Loading...
-                        </span>
-                    </span>
-                </div>
-            </button>
-        </form>
+        </div>
     </div>
+</div>
+
+@if (session()->has('success'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: '{{ session('success') }}',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        });
+    </script>
+@endif
+
+@if (session()->has('error'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: '{{ session('error') }}',
+                showConfirmButton: true
+            });
+        });
+    </script>
+@endif
 </div>
