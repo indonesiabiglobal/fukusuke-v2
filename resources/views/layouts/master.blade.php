@@ -137,38 +137,31 @@
     <script src="{{ asset('/sw.js') }}"></script>
     <script>
     if ("serviceWorker" in navigator) {
-        // Unregister service worker lama dulu
+        // Clear old service workers first
         navigator.serviceWorker.getRegistrations().then(function(registrations) {
-            for(let registration of registrations) {
+            registrations.forEach(function(registration) {
                 registration.unregister();
-            }
+            });
         }).then(function() {
-            // Register service worker baru
-            navigator.serviceWorker.register("/sw.js").then(
-                (registration) => {
-                    console.log("Service worker registration succeeded:", registration);
+            // Register new service worker
+            return navigator.serviceWorker.register("/sw.js", {
+                scope: '/'
+            });
+        }).then(function(registration) {
+            console.log("Service worker registered:", registration.scope);
 
-                    // Check for updates
-                    registration.addEventListener('updatefound', () => {
-                        const newWorker = registration.installing;
-                        console.log('New service worker found, installing...');
-
-                        newWorker.addEventListener('statechange', () => {
-                            if (newWorker.state === 'activated') {
-                                console.log('New service worker activated, reloading...');
-                                // Optional: auto reload
-                                // window.location.reload();
-                            }
-                        });
-                    });
-                },
-                (error) => {
-                    console.error(`Service worker registration failed: ${error}`);
-                }
-            );
+            // Update on refresh
+            registration.addEventListener('updatefound', () => {
+                const newWorker = registration.installing;
+                newWorker.addEventListener('statechange', () => {
+                    if (newWorker.state === 'activated') {
+                        console.log('New service worker activated');
+                    }
+                });
+            });
+        }).catch(function(error) {
+            console.error("Service worker registration failed:", error);
         });
-    } else {
-        console.error("Service workers are not supported.");
     }
 </script>
 

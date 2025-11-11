@@ -5,10 +5,15 @@
     "id": "/",
     "scope": "/",
     "background_color": "#6777ef",
-    "description": "Fukusuke",
+    "description": "Fukusuke Kogyo System",
     "display": "standalone",
     "theme_color": "#6777ef",
     "icons": [
+        {
+            "src": "/logo.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
         {
             "src": "/logo.png",
             "sizes": "512x512",
