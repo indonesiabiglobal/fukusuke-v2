@@ -270,7 +270,7 @@ class GeneralReportKenpinSeitaiController extends Component
         }
 
         $writer = new Xlsx($spreadsheet);
-        $filename = 'Kenpin-Seitai-Per-Mesin-' . $tglAwal->format('dmyHi') . '-' . $tglAkhir->format('dmyHi') . '.xlsx';
+        $filename = 'Kenpin-Seitai-Per-Mesin-' . $tglAwal->format('dmy') . '-' . $tglAkhir->format('dmy') . '.xlsx';
         $writer->save($filename);
         $response = [
             'status' => 'success',
@@ -515,7 +515,7 @@ class GeneralReportKenpinSeitaiController extends Component
         }
 
         $writer = new Xlsx($spreadsheet);
-        $filename = 'Kenpin-Seitai-Per-Box-' . $tglAwal->format('dmyHi') . '-' . $tglAkhir->format('dmyHi') . '.xlsx';
+        $filename = 'Kenpin-Seitai-Per-Box-' . $tglAwal->format('dmy') . '-' . $tglAkhir->format('dmy') . '.xlsx';
         $writer->save($filename);
         $response = [
             'status' => 'success',
@@ -586,16 +586,15 @@ class GeneralReportKenpinSeitaiController extends Component
         $data = DB::select(
             "
                 SELECT
-                    tdka.nomor_palet,
+                    msm.machineno,
                     msmk.code AS code_masalah,
                     msmk.name AS nama_masalah,
-                    COUNT(DISTINCT tdka.id) AS jumlah_kenpin,
-                    SUM(tdka.qty_loss) AS total_qty_loss
+                    COUNT(DISTINCT tdka.id) AS jumlah_kenpin
                 FROM
                     tdKenpin AS tdka
                     INNER JOIN tdkenpin_goods_detail AS tdkgd ON tdka.ID = tdkgd.kenpin_id
                     LEFT JOIN tdproduct_goods AS tdpa ON tdkgd.product_goods_id = tdpa.ID
-                    INNER JOIN tdorderlpk AS tdol ON tdol.ID = tdpa.lpk_id
+                    INNER JOIN msmachine AS msm ON msm.ID = tdpa.machine_id
                     INNER JOIN msmasalahkenpin AS msmk ON msmk.ID = tdka.masalah_kenpin_id
                 WHERE
                     tdka.kenpin_department_id = 7
@@ -609,8 +608,8 @@ class GeneralReportKenpinSeitaiController extends Component
                     $filterStatus
                     $filterNomorPalet
                     $filterNomorLot
-                GROUP BY tdka.nomor_palet, msmk.code, msmk.name
-                ORDER BY msmk.code ASC, tdka.nomor_palet ASC",
+                GROUP BY msm.machineno, msmk.code, msmk.name
+                ORDER BY msmk.code ASC, msm.machineno ASC",
         );
 
         if (count($data) == 0) {
@@ -621,9 +620,6 @@ class GeneralReportKenpinSeitaiController extends Component
 
             return $response;
         }
-
-        // Get all unique palet numbers for consistent ordering
-        $allPaletNumbers = collect($data)->pluck('nomor_palet')->unique()->sort()->values()->toArray();
 
         // Get all masalah kenpin with department id = 7 for complete list
         $allMasalah = MsMasalahKenpin::with('departmentGroup')
@@ -649,11 +645,18 @@ class GeneralReportKenpinSeitaiController extends Component
         foreach ($data as $item) {
             $masalahKey = $item->code_masalah;
             // Store kenpin count data and qty loss
-            $kenpinData[$masalahKey][$item->nomor_palet] = [
+            $kenpinData[$masalahKey][$item->machineno] = [
                 'jumlah_kenpin' => $item->jumlah_kenpin,
-                'total_qty_loss' => $item->total_qty_loss
             ];
         }
+
+        // machine seitai
+        $machineSeitai = MsMachine::seitaiDepartment()
+            ->active()
+            ->orderBy('machineno', 'ASC')
+            ->get();
+
+        $allMachines = $machineSeitai->pluck('machineno')->toArray();
 
         $header = [
             'Kode Masalah',
@@ -661,8 +664,8 @@ class GeneralReportKenpinSeitaiController extends Component
             'Masalah',
         ];
 
-        foreach ($allPaletNumbers as $paletNumber) {
-            $header[] = $paletNumber;
+        foreach ($allMachines as $machine) {
+            $header[] = $machine;
         }
 
         // Write headers to Excel
@@ -697,8 +700,8 @@ class GeneralReportKenpinSeitaiController extends Component
             $columnItem++;
 
             // Fill kenpin counts for each palet
-            foreach ($allPaletNumbers as $paletNumber) {
-                $count = isset($kenpinData[$codeMasalah][$paletNumber]) ? $kenpinData[$codeMasalah][$paletNumber]['jumlah_kenpin'] : 0;
+            foreach ($allMachines as $machine) {
+                $count = isset($kenpinData[$codeMasalah][$machine]) ? $kenpinData[$codeMasalah][$machine]['jumlah_kenpin'] : 0;
                 if ($count > 0) {
                     $activeWorksheet->setCellValue($columnItem . $rowItem, $count);
                     phpspreadsheet::numberFormatThousands($spreadsheet, $columnItem . $rowItem);
@@ -753,7 +756,7 @@ class GeneralReportKenpinSeitaiController extends Component
         }
 
         $writer = new Xlsx($spreadsheet);
-        $filename = 'Kenpin-Seitai-Per-Palet-' . $tglAwal->format('dmyHi') . '-' . $tglAkhir->format('dmyHi') . '.xlsx';
+        $filename = 'Kenpin-Seitai-Per-Palet-' . $tglAwal->format('dmy') . '-' . $tglAkhir->format('dmy') . '.xlsx';
         $writer->save($filename);
         $response = [
             'status' => 'success',
@@ -988,7 +991,7 @@ class GeneralReportKenpinSeitaiController extends Component
         }
 
         $writer = new Xlsx($spreadsheet);
-        $filename = 'Qty-Loss-Kenpin-Seitai-Per-Mesin-' . $tglAwal->format('dmyHi') . '-' . $tglAkhir->format('dmyHi') . '.xlsx';
+        $filename = 'Qty-Loss-Kenpin-Seitai-Per-Mesin-' . $tglAwal->format('dmy') . '-' . $tglAkhir->format('dmy') . '.xlsx';
         $writer->save($filename);
         $response = [
             'status' => 'success',
