@@ -11,14 +11,21 @@ class UserAccessRole extends Model
 
     protected $table = 'useraccess_role';
 
+    // DISABLE automatic timestamps
+    public $timestamps = false;
+
+    // PENTING: Set incrementing ke false karena tidak ada kolom id
+    public $incrementing = false;
+
+    // PENTING: Set primary key ke composite key atau null
+    protected $primaryKey = null; // Atau ['userid', 'roleid'] jika pakai composite
+
     protected $fillable = [
         'userid',
         'roleid',
         'rolemode',
         'trial523'
     ];
-
-    public $timestamps = false;
 
     // Relationship dengan user
     public function user()
