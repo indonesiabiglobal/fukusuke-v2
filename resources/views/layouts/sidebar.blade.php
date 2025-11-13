@@ -38,28 +38,31 @@
             <div id="two-column-menu">
             </div>
             <ul class="navbar-nav" id="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="#dashboard" data-bs-toggle="collapse" role="button"
-                        aria-expanded="false" aria-controls="dashboard">
-                        <i class="ri-dashboard-line"></i> <span data-key="d-dashboard">Dashboard</span>
-                    </a>
-                    <div class="collapse menu-dropdown" id="dashboard">
-                        <ul class="nav nav-sm flex-column">
-                            <li class="nav-item">
-                                <a href="dashboard-infure" class="nav-link" data-key="d-infure"> INFURE </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="dashboard-seitai" class="nav-link" data-key="d-seitai"> SEITAI </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="dashboard-ppic" class="nav-link" data-key="d-ppic"> PPIC </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="dashboard-qc" class="nav-link" data-key="d-qc"> QC </a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
+                @if (in_array('Admin', $userRoles) || in_array('Admin', $userRoles))
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="#dashboard" data-bs-toggle="collapse" role="button"
+                            aria-expanded="false" aria-controls="dashboard">
+                            <i class="ri-dashboard-line"></i> <span data-key="d-dashboard">Dashboard</span>
+                        </a>
+                        <div class="collapse menu-dropdown" id="dashboard">
+                            <ul class="nav nav-sm flex-column">
+                                <li class="nav-item">
+                                    <a href="dashboard-infure" class="nav-link" data-key="d-infure"> INFURE </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="dashboard-seitai" class="nav-link" data-key="d-seitai"> SEITAI </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="dashboard-ppic" class="nav-link" data-key="d-ppic"> PPIC </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="dashboard-qc" class="nav-link" data-key="d-qc"> QC </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                @endif
+
 
                 {{-- <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">MENU</span></li> --}}
                 @if (in_array('Order', $userRoles) || in_array('Admin', $userRoles))
