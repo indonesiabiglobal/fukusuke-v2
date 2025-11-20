@@ -68,6 +68,7 @@ class AddNippoController extends Component
     // data LPK
     public $orderLPK;
     public $tdorderlpk = null;
+    public $lpkProcessed = false;
 
     public function mount(Request $request)
     {
@@ -76,7 +77,7 @@ class AddNippoController extends Component
             $this->processLpkNo();
         }
 
-        $this->production_date = Carbon::now()->format('d/m/Y');
+        $this->production_date = Carbon::now()->format('Y-m-d');
         $this->created_on = Carbon::now()->format('d/m/Y H:i:s');
         $this->work_hour = Carbon::now()->format('H:i');
 
@@ -130,6 +131,14 @@ class AddNippoController extends Component
             $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Order tidak boleh kosong']);
         }
     }
+
+    public function checkLpkProcessed()
+{
+    if ($this->lpkProcessed) {
+        $this->lpkProcessed = false; // Reset
+        $this->dispatch('focus-machine');
+    }
+}
 
     public function showModalLPK()
     {
@@ -335,7 +344,7 @@ class AddNippoController extends Component
             $today = Carbon::now();
             $createdOn = Carbon::createFromFormat('d/m/Y H:i:s', $this->created_on);
 
-            $productionDate = Carbon::createFromFormat('d/m/Y', $this->production_date)
+             $productionDate = Carbon::createFromFormat('Y-m-d', $this->production_date)
             ->setTimeFromTimeString($this->work_hour)
             ->format('Y-m-d H:i:s');
 
@@ -585,14 +594,15 @@ class AddNippoController extends Component
                     ->first();
 
                 if ($this->tdorderlpk == null) {
-                    $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor LPK ' . $this->lpk_no . ' Tidak Terdaftar']);
-                    $this->resetLpkNo();
-                    return;
-                } else {
-                    $this->updateLpkData();
+        $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor LPK ' . $this->lpk_no . ' Tidak Terdaftar']);
+        $this->resetLpkNo();
+        return;
+    } else {
+        $this->updateLpkData();
 
-                    $this->dispatch('lpk-processed');
-                }
+        // Set flag
+        $this->lpkProcessed = true;
+    }
             }
         } catch (\Exception $e) {
             $this->addError('lpk_no', 'Terjadi kesalahan: ' . $e->getMessage());
@@ -775,8 +785,15 @@ class AddNippoController extends Component
 
     public function render()
     {
-        if (!(isset($this->production_date) && $this->production_date != '')) {
-            $this->production_date = Carbon::now()->format('d/m/Y');
+        // Set default dengan format Y-m-d
+        if (empty($this->production_date)) {
+            $this->production_date = Carbon::now()->format('Y-m-d');
+        }
+        if (empty($this->created_on)) {
+            $this->created_on = Carbon::now()->format('d/m/Y H:i:s');
+        }
+        if (empty($this->work_hour)) {
+            $this->work_hour = Carbon::now()->format('H:i');
         }
 
         return view('livewire.nippo-infure.add-nippo')->extends('layouts.master');

@@ -7,10 +7,13 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Tanggal Produksi</label>
-                                <input required class="form-control @error('production_date') is-invalid @enderror"
-                                    type="text" style="padding:0.44rem" data-provider="flatpickr"
-                                    data-date-format="d/m/Y" data-maxDate="{{ now()->format('d/m/Y') }}"
-                                    wire:model.change="production_date" placeholder="yyyy/mm/dd" />
+                                <input required
+                                    class="form-control @error('production_date') is-invalid @enderror"
+                                    type="date"
+                                    wire:model.live="production_date"
+                                    max="{{ now()->format('Y-m-d') }}"
+                                    value="{{ \Carbon\Carbon::parse($production_date)->format('Y-m-d') }}" />
+
                                 <span class="input-group-text py-0">
                                     <i class="ri-calendar-event-fill fs-4"></i>
                                 </span>
@@ -48,24 +51,16 @@
                                     </a>
                                 </label>
                                 <div x-data="{ lpk_no: @entangle('lpk_no').live, status: true }"
-                                    x-init="
-                                        $nextTick(() => $refs.lpkInput.focus());
-
-                                        Livewire.on('lpk-processed', () => {
-                                            setTimeout(() => {
-                                                let machineInput = document.querySelector('[x-ref=machineInput]');
-                                                if (machineInput) {
-                                                    machineInput.focus();
-                                                    machineInput.select();
-                                                }
-                                            }, 100);
-                                        });
-
-                                        $watch('lpk_no', value => {
-                                            // Hapus semua dash dulu
+                                    x-init="$nextTick(() => $refs.lpkInput.focus())">
+                                    <input class="form-control @error('lpk_no') is-invalid @enderror"
+                                        style="padding:0.44rem" type="text" placeholder="000000-000"
+                                        x-model="lpk_no"
+                                        x-ref="lpkInput"
+                                        maxlength="10"
+                                        x-on:keydown.tab="$event.preventDefault(); document.querySelector('[x-ref=machineInput]')?.focus();"
+                                        x-init="$watch('lpk_no', value => {
                                             let cleanValue = value.replace(/-/g, '');
 
-                                            // Auto tambah dash setelah 6 digit
                                             if (cleanValue.length >= 6) {
                                                 lpk_no = cleanValue.substring(0, 6) + '-' + cleanValue.substring(6, 9);
                                                 status = false;
@@ -74,24 +69,14 @@
                                                 status = true;
                                             }
 
-                                            // Limit maksimal 10 karakter (termasuk dash)
                                             if (lpk_no.length > 10) {
                                                 lpk_no = lpk_no.substring(0, 10);
                                             }
 
-                                            // Panggil function ketika 10 karakter
                                             if (lpk_no.length === 10) {
                                                 $wire.processLpkNo(lpk_no);
                                             }
-                                        });
-                                    "
-                                    @keydown.window="if($event.key === 'F2') $refs.lpkInput.focus()">
-                                    <input class="form-control @error('lpk_no') is-invalid @enderror"
-                                        style="padding:0.44rem" type="text" placeholder="000000-000"
-                                        x-model="lpk_no"
-                                        x-ref="lpkInput"
-                                        maxlength="10"
-                                        x-on:keydown.tab="$event.preventDefault(); $refs.machineInput.focus();" />
+                                        })" />
                                 </div>
                                 @error('lpk_no')
                                     <span class="invalid-feedback">{{ $message }}</span>
@@ -99,6 +84,36 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Polling HANYA untuk mobile/tablet -->
+                    <div wire:poll.500ms="checkLpkProcessed" class="d-lg-none" style="display:none;"></div>
+
+                    <!-- Script untuk focus - PISAHKAN desktop dan mobile -->
+                    <script>
+                        document.addEventListener('livewire:initialized', () => {
+                            window.lastLpkProcessed = false;
+
+                            Livewire.on('focus-machine', () => {
+                                // Detect device
+                                let isMobile = window.innerWidth < 992; // Bootstrap lg breakpoint
+
+                                if (isMobile) {
+                                    // Mobile: use polling result
+                                    setTimeout(() => {
+                                        let input = document.querySelector('input[wire\\:model\\.change="machineno"]');
+                                        if (input) {
+                                            input.scrollIntoView({ block: 'center' });
+                                            setTimeout(() => {
+                                                input.focus();
+                                                input.click();
+                                            }, 300);
+                                        }
+                                    }, 200);
+                                }
+                                // Desktop: tidak perlu, sudah handle dengan Tab
+                            });
+                        });
+                    </script>
                     <div class="col-12 col-lg-4 mt-1 d-none d-lg-block">
                         <div class="form-group">
                             <div class="input-group">
