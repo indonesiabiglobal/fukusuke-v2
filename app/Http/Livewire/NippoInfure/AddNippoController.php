@@ -335,9 +335,13 @@ class AddNippoController extends Component
             $today = Carbon::now();
             $createdOn = Carbon::createFromFormat('d/m/Y H:i:s', $this->created_on);
 
+            $productionDate = Carbon::createFromFormat('d/m/Y', $this->production_date)
+            ->setTimeFromTimeString($this->work_hour)
+            ->format('Y-m-d H:i:s');
+
             $product = new TdProductAssembly();
             $product->production_no = $today->format('dmy') . '-' . $seqno;
-            $product->production_date = $this->production_date . ' ' . $this->work_hour;
+            $product->production_date = $productionDate;
             $product->machine_id = $machine->id;
             $product->employee_id = $employe->id;
             $product->work_shift = $this->work_shift;

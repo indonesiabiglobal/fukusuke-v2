@@ -20,7 +20,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-lg-6">
+                    <div class="col-12 col-lg-6 d-none d-lg-block">
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Tanggal Proses</label>
@@ -78,7 +78,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-lg-4 mt-1">
+                    <div class="col-12 col-lg-4 mt-1 d-none d-lg-block">
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label pe-2">Tanggal LPK</label>
@@ -95,7 +95,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-lg-4 mt-1">
+                    <div class="col-12 col-lg-4 mt-1 d-none d-lg-block">
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label pe-2">Panjang LPK</label>
@@ -111,7 +111,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-lg-4 mt-1">
+                    <div class="col-12 col-lg-4 mt-1 d-none d-lg-block">
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2 fw-bold text-muted"
@@ -130,7 +130,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-lg-8 mt-1">
+                    <div class="col-12 col-lg-8 mt-1 d-none d-lg-block">
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label"></label>
@@ -143,58 +143,101 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-lg-4 mt-1">
-                        <div class="form-group">
-                            <div class="input-group">
-                                <label class="control-label col-5 pe-2">Nomor Mesin</label>
-                                <input type="text" placeholder=" ... "
-                                    class="form-control @error('machineno') is-invalid @enderror"
-                                    wire:model.change="machineno"
-                                    x-on:keydown.tab="$event.preventDefault(); $refs.employeeno.focus();"
-                                    x-ref="machineInput" />
-                                @error('machineno')
-                                    <span class="invalid-feedback">{{ $message }}</span>
-                                @enderror
+                    <!-- Nomor Mesin -->
+                    <div class="d-lg-none">
+                        <!-- Nomor Mesin Mobile -->
+                        <div class="col-12 mt-1">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <label class="control-label col-5">Nomor Mesin</label>
+                                    <input type="text" placeholder=" ... "
+                                        class="form-control @error('machineno') is-invalid @enderror"
+                                        wire:model.change="machineno"
+                                        x-on:keydown.tab="$event.preventDefault(); document.querySelector('[x-ref=employeeno]').focus();" />
+                                    @error('machineno')
+                                        <span class="invalid-feedback">{{ $message }}</span>
+                                    @enderror
+                                    <input type="text" placeholder="-" class="form-control readonly bg-light"
+                                        readonly="readonly" wire:model="machinename" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Petugas Mobile -->
+                        <div class="col-12 mt-1">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <label class="control-label col-5">Petugas</label>
+                                    <input type="text" placeholder=" ... "
+                                        class="form-control @error('employeeno') is-invalid @enderror"
+                                        wire:model.change="employeeno"
+                                        x-ref="employeeno"
+                                        x-on:keydown.tab="$event.preventDefault(); document.querySelector('[x-ref=nomor_barcode]').focus();" />
+                                    @error('employeeno')
+                                        <span class="invalid-feedback">{{ $message }}</span>
+                                    @enderror
+                                    <input type="text" placeholder="-"
+                                        class="form-control readonly bg-light @error('empname') is-invalid @enderror"
+                                        readonly="readonly" wire:model="empname" />
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-lg-8 mt-1">
-                        <div class="form-group">
-                            <div class="input-group">
-                                <label class="control-label"></label>
-                                <input type="text" placeholder="-" class="form-control readonly bg-light"
-                                    readonly="readonly" wire:model="machinename" />
-                                @error('machinename')
-                                    <span class="invalid-feedback">{{ $message }}</span>
-                                @enderror
+
+                    <!-- DESKTOP: Hidden di mobile, tampil di desktop -->
+                    <div class="d-none d-lg-block">
+                        <div class="row">
+                            <!-- Nomor Mesin Desktop -->
+                            <div class="col-12 col-lg-4 mt-1">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <label class="control-label col-5 pe-2">Nomor Mesin</label>
+                                        <input type="text" placeholder=" ... "
+                                            class="form-control @error('machineno') is-invalid @enderror"
+                                            wire:model.change="machineno"
+                                            x-ref="machineInput"
+                                            x-on:keydown.tab="$event.preventDefault(); $refs.employeeno.focus();" />
+                                        @error('machineno')
+                                            <span class="invalid-feedback">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-lg-4 mt-1">
-                        <div class="form-group">
-                            <div class="input-group">
-                                <label class="control-label col-5 pe-2">Petugas</label>
-                                <input type="text" placeholder=" ... "
-                                    class="form-control @error('employeeno') is-invalid @enderror"
-                                    wire:model.change="employeeno"
-                                    x-on:keydown.tab="$event.preventDefault(); $refs.nomor_barcode.focus();"
-                                    x-ref="employeeno" />
-                                @error('employeeno')
-                                    <span class="invalid-feedback">{{ $message }}</span>
-                                @enderror
+                            <div class="col-12 col-lg-8 mt-1">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <label class="control-label"></label>
+                                        <input type="text" placeholder="-" class="form-control readonly bg-light"
+                                            readonly="readonly" wire:model="machinename" />
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-lg-8 mt-1">
-                        <div class="form-group">
-                            <div class="input-group">
-                                <label class="control-label"></label>
-                                <input type="text" placeholder="-"
-                                    class="form-control readonly bg-light @error('empname') is-invalid @enderror"
-                                    readonly="readonly" wire:model="empname" />
-                                @error('empname')
-                                    <span class="invalid-feedback">{{ $message }}</span>
-                                @enderror
+
+                            <!-- Petugas Desktop -->
+                            <div class="col-12 col-lg-4 mt-1">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <label class="control-label col-5 pe-2">Petugas</label>
+                                        <input type="text" placeholder=" ... "
+                                            class="form-control @error('employeeno') is-invalid @enderror"
+                                            wire:model.change="employeeno"
+                                            x-ref="employeeno"
+                                            x-on:keydown.tab="$event.preventDefault(); $refs.nomor_barcode.focus();" />
+                                        @error('employeeno')
+                                            <span class="invalid-feedback">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-8 mt-1">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <label class="control-label"></label>
+                                        <input type="text" placeholder="-"
+                                            class="form-control readonly bg-light @error('empname') is-invalid @enderror"
+                                            readonly="readonly" wire:model="empname" />
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -216,7 +259,7 @@
                     </div>
                     <div class="w-100"></div>
                     {{-- Dimensi Infure --}}
-                    <div class="col-12 col-lg-4 mt-1">
+                    <div class="col-12 col-lg-4 mt-1 d-none d-lg-block">
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5">Dimensi Infure</label>
@@ -232,7 +275,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-lg-8 mt-1">
+                    <div class="col-12 col-lg-8 mt-1 d-none d-lg-block">
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-3">Meter Gulung</label>
@@ -282,7 +325,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-lg-5 mt-1">
+                    <div class="col-12 col-lg-5 mt-1 d-none d-lg-block">
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-6">Total Panjang Produksi</label>
@@ -298,7 +341,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-lg-3 mt-1">
+                    <div class="col-12 col-lg-3 mt-1 d-none d-lg-block">
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-3">Selisih</label>
@@ -336,7 +379,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-lg-5 mt-1">
+                    <div class="col-12 col-lg-5 mt-1 d-none d-lg-block">
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-6">Berat Standard</label>
@@ -352,7 +395,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-lg-3 mt-1">
+                    <div class="col-12 col-lg-3 mt-1 d-none d-lg-block">
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-3">
@@ -377,16 +420,53 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Jam Produksi</label>
-                                <input class="form-control @error('work_hour') is-invalid @enderror"
+
+                                <!-- Mobile: Separate hour and minute selects -->
+                                <div class="d-flex gap-1 flex-fill d-lg-none" x-data="{
+                                    workHour: @entangle('work_hour').live,
+                                    get hourValue() {
+                                        return this.workHour ? this.workHour.split(':')[0] : '00';
+                                    },
+                                    get minuteValue() {
+                                        return this.workHour ? this.workHour.split(':')[1] : '00';
+                                    },
+                                    updateTime(hour, minute) {
+                                        this.workHour = hour + ':' + minute;
+                                    }
+                                }">
+                                    <select class="form-control @error('work_hour') is-invalid @enderror"
+                                        :value="hourValue"
+                                        @change="updateTime($event.target.value, minuteValue)">
+                                        @for($i = 0; $i < 24; $i++)
+                                            <option value="{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}">
+                                                {{ str_pad($i, 2, '0', STR_PAD_LEFT) }}
+                                            </option>
+                                        @endfor
+                                    </select>
+                                    <span class="align-self-center">:</span>
+                                    <select class="form-control @error('work_hour') is-invalid @enderror"
+                                        :value="minuteValue"
+                                        @change="updateTime(hourValue, $event.target.value)">
+                                        @for($i = 0; $i < 60; $i++)
+                                            <option value="{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}">
+                                                {{ str_pad($i, 2, '0', STR_PAD_LEFT) }}
+                                            </option>
+                                        @endfor
+                                    </select>
+                                </div>
+
+                                <!-- Desktop: Time input -->
+                                <input class="form-control d-none d-lg-block @error('work_hour') is-invalid @enderror"
                                     wire:model.change="work_hour" type="time" placeholder="HH:mm"
                                     x-ref="work_hour" title="Format waktu harus HH:mm">
+
                                 @error('work_hour')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-lg-4 mt-1">
+                    <div class="col-12 col-lg-4 mt-1 d-none d-lg-block">
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-4">Shift Kerja</label>
@@ -439,7 +519,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-lg-4 mt-1">
+                    <div class="col-12 col-lg-4 mt-1 d-none d-lg-block">
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2">Nomor Gentan</label>
