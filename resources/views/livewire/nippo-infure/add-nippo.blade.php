@@ -47,28 +47,49 @@
                                         Nomor LPK
                                     </a>
                                 </label>
-                                <div x-data="{ lpk_no: @entangle('lpk_no').live, status: true }" x-init="$watch('lpk_no', value => {
-                                    // Format dengan dash otomatis
-                                    if (value.length === 6 && !value.includes('-') && status) {
-                                        lpk_no = value + '-';
-                                    }
-                                    if (value.length < 6) {
-                                        status = true;
-                                    }
-                                    if (value.length === 7) {
-                                        status = false;
-                                    }
-                                    if (value.length > 10) {
-                                        lpk_no = value.substring(0, 10);
-                                    }
+                                <div x-data="{ lpk_no: @entangle('lpk_no').live, status: true }"
+                                    x-init="
+                                        $nextTick(() => $refs.lpkInput.focus());
 
-                                    // Panggil function ketika 10 karakter
-                                    if (value.length === 10) {
-                                        $wire.processLpkNo(value);
-                                    }
-                                })">
+                                        Livewire.on('lpk-processed', () => {
+                                            setTimeout(() => {
+                                                let machineInput = document.querySelector('[x-ref=machineInput]');
+                                                if (machineInput) {
+                                                    machineInput.focus();
+                                                    machineInput.select();
+                                                }
+                                            }, 100);
+                                        });
+
+                                        $watch('lpk_no', value => {
+                                            // Hapus semua dash dulu
+                                            let cleanValue = value.replace(/-/g, '');
+
+                                            // Auto tambah dash setelah 6 digit
+                                            if (cleanValue.length >= 6) {
+                                                lpk_no = cleanValue.substring(0, 6) + '-' + cleanValue.substring(6, 9);
+                                                status = false;
+                                            } else {
+                                                lpk_no = cleanValue;
+                                                status = true;
+                                            }
+
+                                            // Limit maksimal 10 karakter (termasuk dash)
+                                            if (lpk_no.length > 10) {
+                                                lpk_no = lpk_no.substring(0, 10);
+                                            }
+
+                                            // Panggil function ketika 10 karakter
+                                            if (lpk_no.length === 10) {
+                                                $wire.processLpkNo(lpk_no);
+                                            }
+                                        });
+                                    "
+                                    @keydown.window="if($event.key === 'F2') $refs.lpkInput.focus()">
                                     <input class="form-control @error('lpk_no') is-invalid @enderror"
-                                        style="padding:0.44rem" type="text" placeholder="000000-000" x-model="lpk_no"
+                                        style="padding:0.44rem" type="text" placeholder="000000-000"
+                                        x-model="lpk_no"
+                                        x-ref="lpkInput"
                                         maxlength="10"
                                         x-on:keydown.tab="$event.preventDefault(); $refs.machineInput.focus();" />
                                 </div>
@@ -111,7 +132,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-lg-4 mt-1 d-none d-lg-block">
+                    <div class="col-12 col-lg-4 mt-1">
                         <div class="form-group">
                             <div class="input-group">
                                 <label class="control-label col-5 pe-2 fw-bold text-muted"
@@ -130,6 +151,26 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="col-6 col-lg-4 d-lg-none">
+                        <div class="form-group">
+                            <label class="form-label mb-1">
+                                <small class="text-muted">Total / Selisih</small>
+                            </label>
+                            <div class="input-group">
+                                <input type="text" placeholder="0"
+                                    class="form-control readonly bg-light @error('total_assembly_line') is-invalid @enderror"
+                                    readonly="readonly" value="{{ number_format($total_assembly_line) }}" />
+                                <span class="input-group-text">
+                                    /
+                                </span>
+                                <input type="text" placeholder="0"
+                                    class="form-control readonly bg-light @error('selisih') is-invalid @enderror"
+                                    readonly="readonly" wire:model="selisih" />
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="col-12 col-lg-8 mt-1 d-none d-lg-block">
                         <div class="form-group">
                             <div class="input-group">

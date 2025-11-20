@@ -590,6 +590,8 @@ class AddNippoController extends Component
                     return;
                 } else {
                     $this->updateLpkData();
+
+                    $this->dispatch('lpk-processed');
                 }
             }
         } catch (\Exception $e) {
