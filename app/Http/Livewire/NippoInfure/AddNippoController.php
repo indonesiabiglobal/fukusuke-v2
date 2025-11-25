@@ -731,8 +731,6 @@ class AddNippoController extends Component
         }
     }
 
-// Method updatedNomorBarcode bisa dihapus atau dibiarkan sebagai backup
-
     // public function updatedMachineno($machineno)
     // {
     //     $this->machineno = $machineno;
