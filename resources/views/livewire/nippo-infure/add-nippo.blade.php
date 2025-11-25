@@ -154,7 +154,8 @@
                                     style="text-decoration: underline;">
                                     <a href="#" data-bs-toggle="modal" wire:click="showModalNoOrder"
                                         class="text-muted">
-                                        Nomor Order
+                                        <span class="d-none d-lg-inline">Nomor Order</span>
+                                        <span class="d-lg-none">Nama Produk</span>
                                     </a>
                                 </label>
                                 <input type="text" placeholder="-"
@@ -166,7 +167,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="col-6 col-lg-4 d-lg-none">
                         <div class="form-group">
                             <label class="form-label mb-1">
@@ -199,7 +199,7 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Nomor Mesin -->
+                    <!-- MOBILE VERSION -->
                     <div class="d-lg-none">
                         <!-- Nomor Mesin Mobile -->
                         <div class="col-12 mt-1">
@@ -208,7 +208,9 @@
                                     <label class="control-label col-5">Nomor Mesin</label>
                                     <input type="text" placeholder=" ... "
                                         class="form-control @error('machineno') is-invalid @enderror"
-                                        wire:model.change="machineno"
+                                        wire:model.defer="machineno"
+                                        x-on:blur="$wire.validateMachine()"
+                                        x-on:keydown.enter="$wire.validateMachine(); $event.preventDefault(); document.querySelector('[x-ref=employeeno]').focus();"
                                         x-on:keydown.tab="$event.preventDefault(); document.querySelector('[x-ref=employeeno]').focus();" />
                                     @error('machineno')
                                         <span class="invalid-feedback">{{ $message }}</span>
@@ -226,8 +228,10 @@
                                     <label class="control-label col-5">Petugas</label>
                                     <input type="text" placeholder=" ... "
                                         class="form-control @error('employeeno') is-invalid @enderror"
-                                        wire:model.change="employeeno"
+                                        wire:model.defer="employeeno"
                                         x-ref="employeeno"
+                                        x-on:blur="$wire.validateEmployee()"
+                                        x-on:keydown.enter="$wire.validateEmployee(); $event.preventDefault(); document.querySelector('[x-ref=nomor_barcode]').focus();"
                                         x-on:keydown.tab="$event.preventDefault(); document.querySelector('[x-ref=nomor_barcode]').focus();" />
                                     @error('employeeno')
                                         <span class="invalid-feedback">{{ $message }}</span>
@@ -240,7 +244,7 @@
                         </div>
                     </div>
 
-                    <!-- DESKTOP: Hidden di mobile, tampil di desktop -->
+                    <!-- DESKTOP VERSION - Tetap pakai wire:model.change -->
                     <div class="d-none d-lg-block">
                         <div class="row">
                             <!-- Nomor Mesin Desktop -->
@@ -250,8 +254,10 @@
                                         <label class="control-label col-5 pe-2">Nomor Mesin</label>
                                         <input type="text" placeholder=" ... "
                                             class="form-control @error('machineno') is-invalid @enderror"
-                                            wire:model.change="machineno"
+                                            wire:model.defer="machineno"
                                             x-ref="machineInput"
+                                            x-on:blur="$wire.validateMachine()"
+                                            x-on:keydown.enter="$wire.validateMachine(); $event.preventDefault(); $refs.employeeno.focus();"
                                             x-on:keydown.tab="$event.preventDefault(); $refs.employeeno.focus();" />
                                         @error('machineno')
                                             <span class="invalid-feedback">{{ $message }}</span>
@@ -276,8 +282,10 @@
                                         <label class="control-label col-5 pe-2">Petugas</label>
                                         <input type="text" placeholder=" ... "
                                             class="form-control @error('employeeno') is-invalid @enderror"
-                                            wire:model.change="employeeno"
+                                            wire:model.defer="employeeno"
                                             x-ref="employeeno"
+                                            x-on:blur="$wire.validateEmployee()"
+                                            x-on:keydown.enter="$wire.validateEmployee(); $event.preventDefault(); $refs.nomor_barcode.focus();"
                                             x-on:keydown.tab="$event.preventDefault(); $refs.nomor_barcode.focus();" />
                                         @error('employeeno')
                                             <span class="invalid-feedback">{{ $message }}</span>
@@ -298,21 +306,41 @@
                         </div>
                     </div>
                     {{-- Nomor Barcode --}}
-                    <div class="col-12 col-lg-4 mt-1">
-                        <div class="form-group">
-                            <div class="input-group">
-                                <label class="control-label col-5 pe-2">Nomor Barcode</label>
-                                <input type="text"
-                                    class="form-control @error('nomor_barcode') is-invalid @enderror"
-                                    wire:model.change="nomor_barcode"
-                                    x-on:keydown.tab="$event.preventDefault(); $refs.panjang_produksi.focus();"
-                                    x-ref="nomor_barcode" required />
-                                @error('nomor_barcode')
-                                    <span class="invalid-feedback">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
+<div class="col-12 col-lg-4 mt-1">
+    <div class="form-group">
+        <div class="input-group">
+            <label class="control-label col-5 pe-2">Nomor Barcode</label>
+            <div x-data="{
+                nomor_barcode: @entangle('nomor_barcode').live,
+                handleInput(value) {
+                    // Hapus semua karakter non-alphanumeric
+                    let cleanValue = value.replace(/[^a-zA-Z0-9]/g, '');
+
+                    // Update value
+                    this.nomor_barcode = cleanValue.toUpperCase();
+
+                    // Auto-validate jika sudah mencapai panjang tertentu (sesuaikan dengan format barcode Anda)
+                    // Contoh: jika barcode 13 digit
+                    if (cleanValue.length >= 10) {
+                        $wire.validateBarcode();
+                    }
+                }
+            }" class="flex-fill">
+                <input type="text"
+                    class="form-control @error('nomor_barcode') is-invalid @enderror"
+                    placeholder="Scan Barcode"
+                    x-model="nomor_barcode"
+                    x-on:input="handleInput($event.target.value)"
+                    x-on:keydown.tab="$event.preventDefault(); $refs.panjang_produksi.focus();"
+                    x-ref="nomor_barcode"
+                    required />
+            </div>
+            @error('nomor_barcode')
+                <span class="invalid-feedback">{{ $message }}</span>
+            @enderror
+        </div>
+    </div>
+</div>
                     <div class="w-100"></div>
                     {{-- Dimensi Infure --}}
                     <div class="col-12 col-lg-4 mt-1 d-none d-lg-block">
@@ -1874,6 +1902,16 @@
 
         $wire.on('closeModalDeleteLossInfure', (id) => {
             $('#modal-delete-loss-infure-' + id).modal('hide');
+        });
+    </script>
+    <script>
+        document.addEventListener('livewire:initialized', () => {
+            Livewire.on('barcode-validated', () => {
+                // Auto focus ke panjang produksi setelah barcode valid
+                setTimeout(() => {
+                    document.querySelector('[x-ref="panjang_produksi"]')?.focus();
+                }, 100);
+            });
         });
     </script>
 @endscript

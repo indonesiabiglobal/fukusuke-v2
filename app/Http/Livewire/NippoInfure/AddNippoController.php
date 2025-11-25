@@ -684,12 +684,12 @@ class AddNippoController extends Component
         }
     }
 
-    public function updatedMachineno($machineno)
+    public function validateMachine()
     {
-        $this->machineno = $machineno;
-
         if (isset($this->machineno) && $this->machineno != '') {
-            $machine = MsMachine::where('machineno', 'ilike', '%' . $this->machineno . '%')->whereIn('department_id', [10, 12, 15, 2, 4, 10])->first();
+            $machine = MsMachine::where('machineno', 'ilike', '%' . $this->machineno . '%')
+                ->whereIn('department_id', [10, 12, 15, 2, 4, 10])
+                ->first();
 
             if ($machine == null) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Machine ' . $this->machineno . ' Tidak Terdaftar']);
@@ -702,10 +702,8 @@ class AddNippoController extends Component
         }
     }
 
-    public function updatedEmployeeno($employeeno)
+    public function validateEmployee()
     {
-        $this->employeeno = $employeeno;
-
         if (isset($this->employeeno) && $this->employeeno != '') {
             $msemployee = MsEmployee::where('employeeno', 'ilike', '%' . $this->employeeno . '%')->first();
 
@@ -719,6 +717,57 @@ class AddNippoController extends Component
             }
         }
     }
+
+    public function validateBarcode()
+    {
+        if (isset($this->nomor_barcode) && $this->nomor_barcode != '' && $this->tdorderlpk != null) {
+            if ($this->tdorderlpk->codebarcode != $this->nomor_barcode) {
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Barcode ' . $this->nomor_barcode . ' Tidak Sesuai']);
+                $this->nomor_barcode = '';
+            } else {
+                // Barcode valid, auto focus ke input berikutnya
+                $this->dispatch('barcode-validated');
+            }
+        }
+    }
+
+// Method updatedNomorBarcode bisa dihapus atau dibiarkan sebagai backup
+
+    // public function updatedMachineno($machineno)
+    // {
+    //     $this->machineno = $machineno;
+
+    //     if (isset($this->machineno) && $this->machineno != '') {
+    //         $machine = MsMachine::where('machineno', 'ilike', '%' . $this->machineno . '%')->whereIn('department_id', [10, 12, 15, 2, 4, 10])->first();
+
+    //         if ($machine == null) {
+    //             $this->dispatch('notification', ['type' => 'warning', 'message' => 'Machine ' . $this->machineno . ' Tidak Terdaftar']);
+    //             $this->machineno = '';
+    //             $this->machinename = '';
+    //         } else {
+    //             $this->machineno = $machine->machineno;
+    //             $this->machinename = $machine->machinename;
+    //         }
+    //     }
+    // }
+
+    // public function updatedEmployeeno($employeeno)
+    // {
+    //     $this->employeeno = $employeeno;
+
+    //     if (isset($this->employeeno) && $this->employeeno != '') {
+    //         $msemployee = MsEmployee::where('employeeno', 'ilike', '%' . $this->employeeno . '%')->first();
+
+    //         if ($msemployee == null) {
+    //             $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
+    //             $this->employeeno = '';
+    //             $this->empname = '';
+    //         } else {
+    //             $this->employeeno = $msemployee->employeeno;
+    //             $this->empname = $msemployee->empname;
+    //         }
+    //     }
+    // }
 
     public function updatedPanjangProduksi($panjang_produksi)
     {
