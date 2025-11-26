@@ -146,7 +146,7 @@ class EditNippoController extends Component
 
         $this->orderId = $request->query('orderId');
         $this->production_no = $data->production_no;
-        $this->production_date = Carbon::parse($data->production_date)->format('d/m/Y');
+        $this->production_date = Carbon::parse($data->production_date)->format('Y-m-d');
         $this->created_on = Carbon::parse($data->created_on)->format('d/m/Y') . ' - Nomor: ' . $data->seq_no;
         $this->lpk_no = $data->lpk_no;
         $this->lpk_date = Carbon::parse($data->lpk_date)->format('d/M/Y');
@@ -194,6 +194,53 @@ class EditNippoController extends Component
             ->join('mslossinfure as msi', 'msi.id', '=', 'tal.loss_infure_id')
             ->where('tal.product_assembly_id', $this->orderId)
             ->get();
+    }
+
+    public function validateMachine()
+    {
+        if (isset($this->machineno) && $this->machineno != '') {
+            $machine = MsMachine::where('machineno', 'ilike', '%' . $this->machineno . '%')
+                ->whereIn('department_id', [10, 12, 15, 2, 4, 10])
+                ->first();
+
+            if ($machine == null) {
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Machine ' . $this->machineno . ' Tidak Terdaftar']);
+                $this->machineno = '';
+                $this->machinename = '';
+            } else {
+                $this->machineno = $machine->machineno;
+                $this->machinename = $machine->machinename;
+            }
+        }
+    }
+
+    // Tambahkan method validateEmployee
+    public function validateEmployee()
+    {
+        if (isset($this->employeeno) && $this->employeeno != '') {
+            $msemployee = MsEmployee::where('employeeno', 'ilike', '%' . $this->employeeno . '%')->first();
+
+            if ($msemployee == null) {
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
+                $this->employeeno = '';
+                $this->empname = '';
+            } else {
+                $this->employeeno = $msemployee->employeeno;
+                $this->empname = $msemployee->empname;
+            }
+        }
+    }
+
+    public function updatedNomorBarcode($nomor_barcode)
+    {
+        $this->nomor_barcode = $nomor_barcode;
+
+        if (isset($this->nomor_barcode) && $this->nomor_barcode != '') {
+            if ($this->codebarcode != $this->nomor_barcode) {
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Barcode ' . $this->nomor_barcode . ' Tidak Sesuai']);
+                $this->nomor_barcode = '';
+            }
+        }
     }
 
     public function showModalNoOrder()
@@ -632,22 +679,22 @@ class EditNippoController extends Component
             }
         }
 
-        if (isset($this->machineno) && $this->machineno != '') {
-            $machine = MsMachine::where('machineno', 'ilike', '%' . $this->machineno . '%')->whereIn('department_id', [10, 12, 15, 2, 4, 10])->first();
+        // if (isset($this->machineno) && $this->machineno != '') {
+        //     $machine = MsMachine::where('machineno', 'ilike', '%' . $this->machineno . '%')->whereIn('department_id', [10, 12, 15, 2, 4, 10])->first();
 
-            if ($machine == null) {
-                $this->dispatch('notification', ['type' => 'error', 'message' => 'Machine ' . $this->machineno . ' Tidak Terdaftar']);
-                $this->machineno = '';
-                $this->machinename = '';
-            } else {
-                $this->machineno = $machine->machineno;
-                $this->machinename = $machine->machinename;
-            }
-        }
+        //     if ($machine == null) {
+        //         $this->dispatch('notification', ['type' => 'error', 'message' => 'Machine ' . $this->machineno . ' Tidak Terdaftar']);
+        //         $this->machineno = '';
+        //         $this->machinename = '';
+        //     } else {
+        //         $this->machineno = $machine->machineno;
+        //         $this->machinename = $machine->machinename;
+        //     }
+        // }
 
         if (isset($this->work_hour) && $this->work_hour != '') {
             if (
-                Carbon::createFromFormat('d/m/Y', $this->production_date)->isSameDay(Carbon::now())
+                Carbon::createFromFormat('Y-m-d', $this->production_date)->isSameDay(Carbon::now())
                 && Carbon::parse($this->work_hour)->format('H:i') > Carbon::now()->format('H:i')
             ) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Jam Kerja Tidak Boleh Melebihi Jam Sekarang']);
@@ -679,18 +726,18 @@ class EditNippoController extends Component
             $this->work_shift = $workingShift->id;
         }
 
-        if (isset($this->employeeno) && $this->employeeno != '' && strlen($this->employeeno) >= 3) {
-            $msemployee = MsEmployee::where('employeeno', 'ilike', '%' . $this->employeeno . '%')->first();
+        // if (isset($this->employeeno) && $this->employeeno != '' && strlen($this->employeeno) >= 3) {
+        //     $msemployee = MsEmployee::where('employeeno', 'ilike', '%' . $this->employeeno . '%')->first();
 
-            if ($msemployee == null) {
-                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
-                $this->employeeno = '';
-                $this->empname = '';
-            } else {
-                $this->employeeno = $msemployee->employeeno;
-                $this->empname = $msemployee->empname;
-            }
-        }
+        //     if ($msemployee == null) {
+        //         $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
+        //         $this->employeeno = '';
+        //         $this->empname = '';
+        //     } else {
+        //         $this->employeeno = $msemployee->employeeno;
+        //         $this->empname = $msemployee->empname;
+        //     }
+        // }
 
         if (isset($this->panjang_produksi) && $this->panjang_produksi != '') {
             $total_assembly_line = (int)$this->total_assembly_line_old + (int)str_replace(',', '', $this->panjang_produksi);
@@ -709,11 +756,11 @@ class EditNippoController extends Component
             }
         }
 
-        if (isset($this->nomor_barcode) && $this->nomor_barcode != '') {
-            if ($this->codebarcode != $this->nomor_barcode) {
-                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Barcode ' . $this->nomor_barcode . ' Tidak Terdaftar']);
-            }
-        }
+        // if (isset($this->nomor_barcode) && $this->nomor_barcode != '') {
+        //     if ($this->codebarcode != $this->nomor_barcode) {
+        //         $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Barcode ' . $this->nomor_barcode . ' Tidak Terdaftar']);
+        //     }
+        // }
 
         return view('livewire.nippo-infure.edit-nippo')->extends('layouts.master');
     }
