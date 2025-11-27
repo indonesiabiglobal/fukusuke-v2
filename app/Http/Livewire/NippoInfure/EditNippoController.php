@@ -231,10 +231,8 @@ class EditNippoController extends Component
         }
     }
 
-    public function updatedNomorBarcode($nomor_barcode)
+    public function validateBarcode()
     {
-        $this->nomor_barcode = $nomor_barcode;
-
         if (isset($this->nomor_barcode) && $this->nomor_barcode != '') {
             if ($this->codebarcode != $this->nomor_barcode) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Barcode ' . $this->nomor_barcode . ' Tidak Sesuai']);
@@ -242,6 +240,18 @@ class EditNippoController extends Component
             }
         }
     }
+
+    // public function updatedNomorBarcode($nomor_barcode)
+    // {
+    //     $this->nomor_barcode = $nomor_barcode;
+
+    //     if (isset($this->nomor_barcode) && $this->nomor_barcode != '') {
+    //         if ($this->codebarcode != $this->nomor_barcode) {
+    //             $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Barcode ' . $this->nomor_barcode . ' Tidak Sesuai']);
+    //             $this->nomor_barcode = '';
+    //         }
+    //     }
+    // }
 
     public function showModalNoOrder()
     {

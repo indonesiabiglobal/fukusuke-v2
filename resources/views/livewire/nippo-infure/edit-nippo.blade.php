@@ -268,6 +268,8 @@
                                         placeholder="Scan Barcode"
                                         x-model="nomor_barcode"
                                         x-on:input="handleInput($event.target.value)"
+                                        x-on:blur="if(nomor_barcode) $wire.validateBarcode()"
+                                        x-on:keydown.enter="if(nomor_barcode) { $wire.validateBarcode(); $event.preventDefault(); $refs.panjang_produksi.focus(); }"
                                         x-on:keydown.tab="$event.preventDefault(); $refs.panjang_produksi.focus();"
                                         x-ref="nomor_barcode"
                                         required />
@@ -278,6 +280,7 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="w-100"></div>
                     <div class="col-12 col-lg-4 mt-1 d-none d-lg-block">
                         <div class="form-group">

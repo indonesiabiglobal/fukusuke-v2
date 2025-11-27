@@ -805,17 +805,17 @@ class AddNippoController extends Component
         }
     }
 
-    public function updatedNomorBarcode($nomor_barcode)
-    {
-        $this->nomor_barcode = $nomor_barcode;
+    // public function updatedNomorBarcode($nomor_barcode)
+    // {
+    //     $this->nomor_barcode = $nomor_barcode;
 
-        if (isset($this->nomor_barcode) && $this->nomor_barcode != '' && $this->tdorderlpk != null) {
-            if ($this->tdorderlpk->codebarcode != $this->nomor_barcode) {
-                $this->nomor_barcode = '';
-                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Barcode ' . $this->nomor_barcode . ' Tidak Sesuai']);
-            }
-        }
-    }
+    //     if (isset($this->nomor_barcode) && $this->nomor_barcode != '' && $this->tdorderlpk != null) {
+    //         if ($this->tdorderlpk->codebarcode != $this->nomor_barcode) {
+    //             $this->nomor_barcode = '';
+    //             $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Barcode ' . $this->nomor_barcode . ' Tidak Sesuai']);
+    //         }
+    //     }
+    // }
 
     public function updatedBeratProduksi($berat_produksi)
     {

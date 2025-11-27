@@ -306,41 +306,37 @@
                         </div>
                     </div>
                     {{-- Nomor Barcode --}}
-<div class="col-12 col-lg-4 mt-1">
-    <div class="form-group">
-        <div class="input-group">
-            <label class="control-label col-5 pe-2">Nomor Barcode</label>
-            <div x-data="{
-                nomor_barcode: @entangle('nomor_barcode').live,
-                handleInput(value) {
-                    // Hapus semua karakter non-alphanumeric
-                    let cleanValue = value.replace(/[^a-zA-Z0-9]/g, '');
+                    <div class="col-12 col-lg-4 mt-1">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <label class="control-label col-5 pe-2">Nomor Barcode</label>
+                                <div x-data="{
+                                    nomor_barcode: @entangle('nomor_barcode'),
+                                    handleInput(value) {
+                                        // Hapus semua karakter non-alphanumeric
+                                        let cleanValue = value.replace(/[^a-zA-Z0-9]/g, '');
 
-                    // Update value
-                    this.nomor_barcode = cleanValue.toUpperCase();
-
-                    // Auto-validate jika sudah mencapai panjang tertentu (sesuaikan dengan format barcode Anda)
-                    // Contoh: jika barcode 13 digit
-                    if (cleanValue.length >= 10) {
-                        $wire.validateBarcode();
-                    }
-                }
-            }" class="flex-fill">
-                <input type="text"
-                    class="form-control @error('nomor_barcode') is-invalid @enderror"
-                    placeholder="Scan Barcode"
-                    x-model="nomor_barcode"
-                    x-on:input="handleInput($event.target.value)"
-                    x-on:keydown.tab="$event.preventDefault(); $refs.panjang_produksi.focus();"
-                    x-ref="nomor_barcode"
-                    required />
-            </div>
-            @error('nomor_barcode')
-                <span class="invalid-feedback">{{ $message }}</span>
-            @enderror
-        </div>
-    </div>
-</div>
+                                        // Update value dan convert ke uppercase
+                                        this.nomor_barcode = cleanValue.toUpperCase();
+                                    }
+                                }" class="flex-fill">
+                                    <input type="text"
+                                        class="form-control @error('nomor_barcode') is-invalid @enderror"
+                                        placeholder="Scan Barcode"
+                                        x-model="nomor_barcode"
+                                        x-on:input="handleInput($event.target.value)"
+                                        x-on:blur="if(nomor_barcode) $wire.validateBarcode()"
+                                        x-on:keydown.enter="if(nomor_barcode) { $wire.validateBarcode(); $event.preventDefault(); $refs.panjang_produksi.focus(); }"
+                                        x-on:keydown.tab="$event.preventDefault(); $refs.panjang_produksi.focus();"
+                                        x-ref="nomor_barcode"
+                                        required />
+                                </div>
+                                @error('nomor_barcode')
+                                    <span class="invalid-feedback">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
                     <div class="w-100"></div>
                     {{-- Dimensi Infure --}}
                     <div class="col-12 col-lg-4 mt-1 d-none d-lg-block">
