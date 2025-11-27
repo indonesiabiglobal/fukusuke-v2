@@ -299,7 +299,14 @@ class AddNippoController extends Component
                 ->where('msproduct.code', $this->code)
                 ->first();
 
-            $workHourFormatted = Carbon::parse($this->work_hour)->format('H:i:s');
+            if (!empty($this->work_hour)) {
+                $workHourFormatted = strlen($this->work_hour) === 5
+                    ? $this->work_hour . ':00'
+                    : $this->work_hour;
+            } else {
+                $workHourFormatted = '00:00:00';
+            }
+
             $workingShift = DB::select("
             SELECT *
                 FROM msworkingshift
@@ -354,7 +361,7 @@ class AddNippoController extends Component
             $product->machine_id = $machine->id;
             $product->employee_id = $employe->id;
             $product->work_shift = $this->work_shift;
-            $product->work_hour = $this->work_hour;
+            $product->work_hour = $workHourFormatted;
             $product->lpk_id = $lpkid->id;
             $product->seq_no = $seqno;
             if ($this->gentan_no == 0) {
@@ -638,19 +645,34 @@ class AddNippoController extends Component
         }
     }
 
-    public function updatedWorkHour($work_hour)
-    {
-        $this->work_hour = $work_hour;
+    // public function updatedWorkHour($work_hour)
+    // {
+    //     $this->work_hour = $work_hour;
 
-        if (isset($this->work_hour) && $this->work_hour != '') {
-            if (
-                Carbon::createFromFormat('d/m/Y', $this->production_date)->isSameDay(Carbon::now())
-                && Carbon::parse($this->work_hour)->format('H:i') > Carbon::now()->format('H:i')
-            ) {
-                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Jam Kerja Tidak Boleh Melebihi Jam Sekarang']);
-                $this->work_hour = Carbon::now()->format('H:i');
+    //     if (isset($this->work_hour) && $this->work_hour != '') {
+    //         if (
+    //             Carbon::createFromFormat('d/m/Y', $this->production_date)->isSameDay(Carbon::now())
+    //             && Carbon::parse($this->work_hour)->format('H:i') > Carbon::now()->format('H:i')
+    //         ) {
+    //             $this->dispatch('notification', ['type' => 'warning', 'message' => 'Jam Kerja Tidak Boleh Melebihi Jam Sekarang']);
+    //             $this->work_hour = Carbon::now()->format('H:i');
+    //         }
+    //         $this->workShift();
+    //     }
+    // }
+
+    public function updatedWorkHour($value)
+    {
+        try {
+            // Pastikan format time yang benar (H:i atau H:i:s)
+            if (!empty($value)) {
+                // Parse dan format ulang untuk memastikan format konsisten
+                $time = Carbon::createFromFormat('H:i', $value);
+                $this->work_hour = $time->format('H:i:s');
             }
-            $this->workShift();
+        } catch (\Exception $e) {
+            // Jika parsing gagal, set ke null atau nilai default
+            $this->work_hour = null;
         }
     }
 
