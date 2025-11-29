@@ -51,7 +51,7 @@
                                     </a>
                                 </label>
                                 <div x-data="{ lpk_no: @entangle('lpk_no').live, status: true }"
-                                    x-init="$nextTick(() => $refs.lpkInput.focus())">
+                                    x-init="$nextTick(() => $refs.lpkInput.focus())"> <!-- ⭐ TAMBAHKAN x-init ini -->
                                     <input class="form-control @error('lpk_no') is-invalid @enderror"
                                         style="padding:0.44rem" type="text" placeholder="000000-000"
                                         x-model="lpk_no"
@@ -86,21 +86,19 @@
                     </div>
 
                     <!-- Polling HANYA untuk mobile/tablet -->
-                    <div wire:poll.500ms="checkLpkProcessed" class="d-lg-none" style="display:none;"></div>
+                    {{-- <div wire:poll.500ms="checkLpkProcessed" class="d-lg-none" style="display:none;"></div> --}}
 
-                    <!-- Script untuk focus - PISAHKAN desktop dan mobile -->
                     <script>
                         document.addEventListener('livewire:initialized', () => {
-                            window.lastLpkProcessed = false;
-
-                            Livewire.on('focus-machine', () => {
+                            // ⭐ GANTI dengan event listener yang lebih reliable
+                            Livewire.on('lpk-processed', () => {
                                 // Detect device
-                                let isMobile = window.innerWidth < 992; // Bootstrap lg breakpoint
+                                let isMobile = window.innerWidth < 992;
 
-                                if (isMobile) {
-                                    // Mobile: use polling result
-                                    setTimeout(() => {
-                                        let input = document.querySelector('input[wire\\:model\\.change="machineno"]');
+                                setTimeout(() => {
+                                    if (isMobile) {
+                                        // Mobile: cari input dengan wire:model.defer
+                                        let input = document.querySelector('input[wire\\:model\\.defer="machineno"]');
                                         if (input) {
                                             input.scrollIntoView({ block: 'center' });
                                             setTimeout(() => {
@@ -108,9 +106,14 @@
                                                 input.click();
                                             }, 300);
                                         }
-                                    }, 200);
-                                }
-                                // Desktop: tidak perlu, sudah handle dengan Tab
+                                    } else {
+                                        // Desktop: gunakan x-ref
+                                        let input = document.querySelector('[x-ref="machineInput"]');
+                                        if (input) {
+                                            input.focus();
+                                        }
+                                    }
+                                }, 200);
                             });
                         });
                     </script>
@@ -1898,6 +1901,11 @@
 
         $wire.on('closeModalDeleteLossInfure', (id) => {
             $('#modal-delete-loss-infure-' + id).modal('hide');
+        });
+
+        $wire.on('redirectToPrint', (produk_asemblyid) => {
+            var printUrl = '{{ route('report-gentan') }}?produk_asemblyid=' + produk_asemblyid;
+            window.open(printUrl, '_blank');
         });
     </script>
     <script>

@@ -434,6 +434,9 @@ class AddNippoController extends Component
                 'total_assembly_line' => $totalAssembly[0]->c1,
             ]);
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
+
+            $this->dispatch('redirectToPrint', $product->id);
+
             return redirect()->route('nippo-infure');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -601,15 +604,16 @@ class AddNippoController extends Component
                     ->first();
 
                 if ($this->tdorderlpk == null) {
-        $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor LPK ' . $this->lpk_no . ' Tidak Terdaftar']);
-        $this->resetLpkNo();
-        return;
-    } else {
-        $this->updateLpkData();
+                    $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor LPK ' . $this->lpk_no . ' Tidak Terdaftar']);
+                    $this->resetLpkNo();
+                    return;
+                } else {
+                    $this->updateLpkData();
 
-        // Set flag
-        $this->lpkProcessed = true;
-    }
+                    // Set flag
+                    $this->lpkProcessed = true;
+                    $this->dispatch('lpk-processed');
+                }
             }
         } catch (\Exception $e) {
             $this->addError('lpk_no', 'Terjadi kesalahan: ' . $e->getMessage());
