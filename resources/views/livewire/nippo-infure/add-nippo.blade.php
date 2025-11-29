@@ -1905,7 +1905,14 @@
 
         $wire.on('redirectToPrint', (produk_asemblyid) => {
             var printUrl = '{{ route('report-gentan') }}?produk_asemblyid=' + produk_asemblyid;
-            window.open(printUrl, '_blank');
+
+            // Buka window baru untuk print
+            var printWindow = window.open(printUrl, '_blank', 'width=800,height=600');
+
+            // Focus ke window print (penting untuk trigger print dialog)
+            if (printWindow) {
+                printWindow.focus();
+            }
         });
     </script>
     <script>
