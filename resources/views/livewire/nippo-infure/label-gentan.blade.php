@@ -84,7 +84,7 @@
 		<hr />
 		<div class="form-group">
 			<div class="input-group">
-				{{-- Tambah button thermal --}}
+				{{-- Button Thermal --}}
 				<button type="button"
 					class="btn btn-success btn-print me-2"
 					onclick="handleThermalPrint()"
@@ -92,12 +92,20 @@
 					<i class="ri-printer-line"></i> Print Thermal
 				</button>
 
-				{{-- Button asli tetap --}}
+				{{-- Button Normal --}}
 				<button type="button"
 					class="btn btn-outline-secondary btn-print"
 					wire:click="printNormal"
 					{{ !$statusPrint ? 'disabled' : '' }}>
 					<i class="ri-printer-line"></i> Print Normal
+				</button>
+
+				{{-- Button Scan UUID (untuk troubleshooting di HP) --}}
+				<button type="button"
+					class="btn btn-warning btn-sm ms-2"
+					onclick="scanPrinterUUID()"
+					style="font-size: 0.75rem;">
+					🔍 Scan UUID
 				</button>
 
 				<div style="float:right" class="text-danger">
@@ -119,12 +127,13 @@
 </script>
 @endscript
 
-{{-- Thermal Module - Tambahkan di AKHIR --}}
+{{-- Thermal Module dengan Error Handling Lengkap --}}
 <script>
 (function() {
     if (window.thermalPrinterLoaded) return;
     window.thermalPrinterLoaded = true;
 
+    // UUID Configuration - bisa diupdate setelah scan
     window.THERMAL_CONFIG = {
         serviceUUID: '000018f0-0000-1000-8000-00805f9b34fb',
         characteristicUUID: '00002af1-0000-1000-8000-00805f9b34fb',
@@ -133,6 +142,7 @@
     window.connectedDevice = null;
     window.printerCharacteristic = null;
 
+    // Generate ESC/POS Commands
     window.generateEscPosCommands = function(data) {
         const ESC = '\x1B';
         const GS = '\x1D';
@@ -163,15 +173,68 @@
         return cmd;
     };
 
+    // Scan Printer UUID (untuk troubleshooting)
+    window.scanPrinterUUID = async function() {
+        try {
+            console.log('🔍 Scanning printer...');
+
+            const device = await navigator.bluetooth.requestDevice({
+                acceptAllDevices: true,
+                optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb']
+            });
+
+            console.log('✅ Device:', device.name);
+            const server = await device.gatt.connect();
+            const services = await server.getPrimaryServices();
+
+            let info = '📱 Printer: ' + device.name + '\n\n';
+
+            for (const service of services) {
+                info += '🔷 Service UUID:\n' + service.uuid + '\n\n';
+
+                try {
+                    const characteristics = await service.getCharacteristics();
+                    for (const char of characteristics) {
+                        info += '  📝 Characteristic UUID:\n  ' + char.uuid + '\n';
+                        info += '  Properties: ' + JSON.stringify(char.properties) + '\n\n';
+                    }
+                } catch (e) {
+                    info += '  ⚠️ Cannot read characteristics\n\n';
+                }
+            }
+
+            alert(info + '\n📋 Info disalin! Kirim ke developer untuk update UUID.');
+            console.log(info);
+
+            // Copy to clipboard
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(info);
+            }
+
+            device.gatt.disconnect();
+
+        } catch (error) {
+            console.error('❌ Scan error:', error);
+            alert('❌ Gagal scan printer:\n' + error.message);
+        }
+    };
+
+    // Connect to Thermal Printer
     window.connectThermalPrinter = async function() {
+        console.log('🔍 Mencari printer...');
+
         const device = await navigator.bluetooth.requestDevice({
             filters: [
                 { services: [window.THERMAL_CONFIG.serviceUUID] },
                 { name: 'BlueTooth Printer' },
                 { namePrefix: 'BT' },
+                { namePrefix: 'RPP' },
+                { namePrefix: 'MTP' },
             ],
             optionalServices: [window.THERMAL_CONFIG.serviceUUID]
         });
+
+        console.log('✅ Connected:', device.name);
 
         const server = await device.gatt.connect();
         const service = await server.getPrimaryService(window.THERMAL_CONFIG.serviceUUID);
@@ -179,9 +242,14 @@
 
         window.connectedDevice = device;
         window.printerCharacteristic = characteristic;
+
+        console.log('✅ Ready to print!');
     };
 
+    // Print to Thermal Printer
     window.printToThermalPrinter = async function(data) {
+        console.log('🖨️ Printing...', data);
+
         const commands = window.generateEscPosCommands(data);
         const encoder = new TextEncoder();
         const bytes = encoder.encode(commands);
@@ -190,12 +258,16 @@
             await window.connectThermalPrinter();
         }
 
+        console.log('📤 Sending', bytes.length, 'bytes...');
+
         const chunkSize = 512;
         for (let i = 0; i < bytes.length; i += chunkSize) {
             const chunk = bytes.slice(i, i + chunkSize);
             await window.printerCharacteristic.writeValue(chunk);
             await new Promise(r => setTimeout(r, 100));
         }
+
+        console.log('✅ Print complete!');
 
         if (typeof Toastify !== 'undefined') {
             Toastify({
@@ -210,41 +282,69 @@
 
     // Handler untuk button thermal
     window.handleThermalPrint = async function() {
+        // Check browser support
         if (!('bluetooth' in navigator)) {
-            alert('❌ Browser tidak support Bluetooth');
+            alert('❌ Browser ini tidak support Bluetooth.\n\nGunakan Chrome atau Edge.');
             return;
         }
 
-        // Ambil data dari Livewire component
-        const component = window.Livewire.find(document.querySelector('[wire\\:id]').getAttribute('wire:id'));
+        // Check HTTPS
+        if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+            alert('❌ Thermal print hanya bisa di HTTPS atau localhost.\n\nGunakan Print Normal.');
+            return;
+        }
 
-        const printData = {
-            lpk_no: component.get('lpk_no'),
-            gentan_no: component.get('gentan_no'),
-            code: component.get('code'),
-            product_name: component.get('product_name'),
-            panjang_produksi: component.get('product_panjang'),
-            berat_produksi: component.get('berat_produksi'),
-            berat_standard: component.get('berat_standard'),
-            lpk_date: component.get('lpk_date'),
-            qty_lpk: component.get('qty_lpk'),
-            timestamp: new Date().toLocaleString('id-ID'),
-        };
-
+        // Get data dari Livewire
         try {
+            const component = window.Livewire.find(document.querySelector('[wire\\:id]').getAttribute('wire:id'));
+
+            const printData = {
+                lpk_no: component.get('lpk_no'),
+                gentan_no: component.get('gentan_no'),
+                code: component.get('code'),
+                product_name: component.get('product_name'),
+                panjang_produksi: component.get('product_panjang'),
+                berat_produksi: component.get('berat_produksi'),
+                berat_standard: component.get('berat_standard'),
+                lpk_date: component.get('lpk_date'),
+                qty_lpk: component.get('qty_lpk'),
+                timestamp: new Date().toLocaleString('id-ID'),
+            };
+
+            console.log('📋 Print data:', printData);
+
             await window.printToThermalPrinter(printData);
+
         } catch (error) {
-            console.error('Print error:', error);
-            if (confirm('Print thermal gagal. Print normal?')) {
+            console.error('❌ Print error:', error);
+
+            let errorMsg = 'Print thermal gagal.\n\n';
+
+            if (error.name === 'NotFoundError') {
+                errorMsg += '⚠️ Printer tidak ditemukan.\nPastikan printer sudah ON dan Bluetooth aktif.\n\n';
+                errorMsg += '💡 Tips:\n';
+                errorMsg += '1. Nyalakan printer\n';
+                errorMsg += '2. Aktifkan Bluetooth HP\n';
+                errorMsg += '3. Klik "Scan UUID" untuk cek UUID printer\n\n';
+            } else if (error.name === 'NetworkError') {
+                errorMsg += '⚠️ Koneksi gagal.\nPrinter mungkin tidak compatible.\n\n';
+            } else {
+                errorMsg += '⚠️ ' + error.message + '\n\n';
+            }
+
+            if (confirm(errorMsg + 'Print normal (PDF)?')) {
                 component.call('printNormal');
             }
         }
     };
 
+    // Cleanup
     window.addEventListener('beforeunload', () => {
         if (window.connectedDevice?.gatt?.connected) {
             window.connectedDevice.gatt.disconnect();
         }
     });
+
+    console.log('✅ Thermal module loaded');
 })();
 </script>
