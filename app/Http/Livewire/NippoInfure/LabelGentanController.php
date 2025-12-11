@@ -22,6 +22,17 @@ class LabelGentanController extends Component
     public $produk_asemblyid;
     public $statusPrint = false;
 
+    // Tambahkan properties baru untuk data lengkap
+    public $code_alias;
+    public $production_date;
+    public $work_hour;
+    public $work_shift;
+    public $machineno;
+    public $selisih;
+    public $nomor_han;
+    public $nik;
+    public $empname;
+
     public function print()
     {
         // Generate data untuk thermal printer
@@ -50,7 +61,7 @@ class LabelGentanController extends Component
         ];
     }
 
-        public function printNormal()
+    public function printNormal()
     {
         $this->dispatch('redirectToPrint', $this->produk_asemblyid);
         $this->statusPrint = false;
@@ -73,6 +84,17 @@ class LabelGentanController extends Component
         $this->berat_produksi = '';
         $this->berat_standard = '';
         $this->gentan_no = '';
+
+        // Reset data tambahan
+        $this->code_alias = '';
+        $this->production_date = '';
+        $this->work_hour = '';
+        $this->work_shift = '';
+        $this->machineno = '';
+        $this->selisih = '';
+        $this->nomor_han = '';
+        $this->nik = '';
+        $this->empname = '';
     }
 
     public function render()
@@ -102,8 +124,6 @@ class LabelGentanController extends Component
                 $this->lpk_no = $data->lpk_no;
                 $this->code = $data->code;
                 $this->product_name = $data->product_name;
-                // $this->product_panjang = $data->product_panjang;
-                // $this->qty_gentan = $data->qty_gentan;
                 $this->product_panjanggulung = $data->product_panjanggulung;
                 $this->qty_lpk = $data->qty_lpk;
                 $this->lpk_date = Carbon::parse($data->lpk_date)->format('d/M/Y');
@@ -111,40 +131,66 @@ class LabelGentanController extends Component
         }
 
         if (isset($this->gentan_no) && $this->gentan_no != '') {
+            // QUERY LENGKAP - Sama seperti di report-gentan.blade.php
             $data2 = DB::table('tdproduct_assembly as tpa')
-                ->leftjoin('tdorderlpk as tod', 'tpa.lpk_id', '=', 'tod.id')
-                ->leftjoin('msproduct as mp', 'mp.id', '=', 'tod.product_id')
+                ->join('tdorderlpk as tod', 'tpa.lpk_id', '=', 'tod.id')
+                ->join('msproduct as mp', 'mp.id', '=', 'tod.product_id')
+                ->leftJoin('msworkingshift as msw', 'msw.id', '=', 'tpa.work_shift')
+                ->join('msmachine as msm', 'msm.id', '=', 'tpa.machine_id')
+                ->join('msemployee as mse', 'mse.id', '=', 'tpa.employee_id')
                 ->select(
                     'tod.lpk_no',
                     'mp.code',
+                    'mp.code_alias',
+                    'mp.product_type_code',
                     'mp.name as product_name',
                     'tod.product_panjang',
                     'tod.qty_gentan',
                     'tod.product_panjanggulung',
                     'tod.qty_lpk',
                     'tod.lpk_date',
+                    'tod.total_assembly_line',
+                    'tod.panjang_lpk',
                     'tpa.panjang_produksi',
                     'tpa.berat_produksi',
                     'tpa.berat_standard',
                     'tpa.id as produk_asembly_id',
                     'tpa.gentan_no',
-                    'tod.reprint_no as reprint_no',
-
+                    'tpa.production_date',
+                    'tpa.work_hour',
+                    'tpa.work_shift',
+                    'tpa.nomor_han',
+                    'msm.machineno',
+                    'mse.employeeno as nik',
+                    'mse.empname',
+                    DB::raw('(tod.total_assembly_line - tod.panjang_lpk) as selisih')
                 )
                 ->where('tod.lpk_no', $this->lpk_no)
                 ->where('tpa.gentan_no', $this->gentan_no)
-                ->get();
+                ->first(); // Gunakan first() karena harusnya 1 record
 
-            if ($data2->isEmpty()) {
+            if (!$data2) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Gentan ' . $this->gentan_no . ' Tidak Terdaftar']);
                 $this->resetGentanNo();
                 $this->statusPrint = false;
             } else {
-                $firstItem = $data2->first();
-                $this->produk_asemblyid = $firstItem->produk_asembly_id;
-                $this->product_panjang = $firstItem->panjang_produksi;
-                $this->berat_produksi = $firstItem->berat_produksi;
-                $this->berat_standard = $firstItem->berat_standard;
+                // Assign semua data
+                $this->produk_asemblyid = $data2->produk_asembly_id;
+                $this->product_panjang = $data2->panjang_produksi;
+                $this->berat_produksi = $data2->berat_produksi;
+                $this->berat_standard = $data2->berat_standard;
+
+                // Data tambahan untuk thermal print
+                $this->code_alias = $data2->code_alias;
+                $this->production_date = Carbon::parse($data2->production_date)->format('d-m-Y');
+                $this->work_hour = $data2->work_hour;
+                $this->work_shift = $data2->work_shift;
+                $this->machineno = $data2->machineno;
+                $this->selisih = $data2->selisih;
+                $this->nomor_han = $data2->nomor_han;
+                $this->nik = $data2->nik;
+                $this->empname = $data2->empname;
+
                 $this->statusPrint = true;
             }
         }

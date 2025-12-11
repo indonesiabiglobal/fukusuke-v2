@@ -114,8 +114,7 @@
 	</div>
 	<div class="col-lg-2"></div>
 </div>
-
-{{-- Script asli TETAP --}}
+{{-- Script Normal Print - TETAP --}}
 @script
 <script>
 	$wire.on('redirectToPrint', (produk_asemblyid) => {
@@ -125,218 +124,283 @@
 </script>
 @endscript
 
-{{-- Thermal Module - Versi Paling Simple & Compatible --}}
+{{-- Thermal Module - DENGAN BARCODE --}}
 <script>
 (function() {
-    if (window.thermalPrinterLoaded) return;
-    window.thermalPrinterLoaded = true;
+    if (typeof window === 'undefined' || typeof navigator === 'undefined') {
+        console.error('Critical: Window/Navigator not available');
+        return;
+    }
 
-    // Multiple UUID configs (coba satu per satu jika gagal)
-    window.THERMAL_UUID_CONFIGS = [
-        {
-            name: 'Standard Thermal',
-            serviceUUID: '000018f0-0000-1000-8000-00805f9b34fb',
-            characteristicUUID: '00002af1-0000-1000-8000-00805f9b34fb',
-        },
-        {
-            name: 'Generic Serial',
-            serviceUUID: '0000fff0-0000-1000-8000-00805f9b34fb',
-            characteristicUUID: '0000fff1-0000-1000-8000-00805f9b34fb',
-        },
-        {
-            name: 'Generic Printer',
-            serviceUUID: '000018f0-0000-1000-8000-00805f9b34fb',
-            characteristicUUID: '00002af0-0000-1000-8000-00805f9b34fb',
-        }
-    ];
+    if (window.thermalPrinterLoaded) {
+        console.log('✅ Thermal module already loaded');
+        return;
+    }
 
-    window.connectedDevice = null;
-    window.printerCharacteristic = null;
-    window.currentConfigIndex = 0;
+    try {
+        window.thermalPrinterLoaded = true;
 
-    // Generate ESC/POS Commands
-    window.generateEscPosCommands = function(data) {
-        const ESC = '\x1B';
-        const GS = '\x1D';
-        let cmd = '';
+        const hasBluetoothAPI = 'bluetooth' in navigator;
 
-        cmd += ESC + '@'; // Initialize
-        cmd += ESC + 'a' + String.fromCharCode(1); // Center
-        cmd += GS + '!' + String.fromCharCode(0x11); // Double size
-        cmd += 'LABEL GENTAN\n';
-        cmd += GS + '!' + String.fromCharCode(0); // Normal size
-        cmd += ESC + 'a' + String.fromCharCode(0); // Left align
-        cmd += '================================\n';
-        cmd += 'LPK No      : ' + (data.lpk_no || '-') + '\n';
-        cmd += 'Gentan No   : ' + (data.gentan_no || '-') + '\n';
-        cmd += 'No Order    : ' + (data.code || '-') + '\n';
-        cmd += '--------------------------------\n';
-        cmd += 'Produk      : ' + (data.product_name || '-') + '\n';
-        cmd += '--------------------------------\n';
-        cmd += 'Panjang     : ' + (data.panjang_produksi || '0') + ' m\n';
-        cmd += 'Berat       : ' + (data.berat_produksi || '0') + ' kg\n';
-        cmd += 'Berat Std   : ' + (data.berat_standard || '0') + ' kg\n';
-        cmd += '--------------------------------\n';
-        cmd += 'Tgl LPK     : ' + (data.lpk_date || '-') + '\n';
-        cmd += 'Qty LPK     : ' + (data.qty_lpk || '0') + '\n';
-        cmd += '================================\n\n\n';
-        cmd += GS + 'V' + String.fromCharCode(66) + String.fromCharCode(0); // Cut paper
-
-        return cmd;
-    };
-
-    // Try connect with different UUID configs
-    window.connectThermalPrinter = async function() {
-        const config = window.THERMAL_UUID_CONFIGS[window.currentConfigIndex];
-        console.log('🔍 Trying config:', config.name);
-
-        try {
-            const device = await navigator.bluetooth.requestDevice({
-                filters: [
-                    { services: [config.serviceUUID] }
-                ],
-                optionalServices: [config.serviceUUID]
-            });
-
-            console.log('✅ Device found:', device.name);
-
-            const server = await device.gatt.connect();
-            console.log('✅ GATT connected');
-
-            const service = await server.getPrimaryService(config.serviceUUID);
-            console.log('✅ Service obtained');
-
-            const characteristic = await service.getCharacteristic(config.characteristicUUID);
-            console.log('✅ Characteristic obtained');
-
-            window.connectedDevice = device;
-            window.printerCharacteristic = characteristic;
-
-            return true;
-
-        } catch (error) {
-            console.warn('❌ Config failed:', config.name, error.message);
-
-            // Try next config
-            window.currentConfigIndex++;
-            if (window.currentConfigIndex < window.THERMAL_UUID_CONFIGS.length) {
-                console.log('🔄 Trying next config...');
-                return await window.connectThermalPrinter();
-            }
-
-            throw error; // All configs failed
-        }
-    };
-
-    // Print function
-    window.printToThermalPrinter = async function(data) {
-        console.log('🖨️ Printing...');
-
-        const commands = window.generateEscPosCommands(data);
-        const encoder = new TextEncoder();
-        const bytes = encoder.encode(commands);
-
-        if (!window.printerCharacteristic) {
-            window.currentConfigIndex = 0; // Reset config index
-            await window.connectThermalPrinter();
-        }
-
-        console.log('📤 Sending', bytes.length, 'bytes');
-
-        // Send in chunks
-        const chunkSize = 512;
-        for (let i = 0; i < bytes.length; i += chunkSize) {
-            const chunk = bytes.slice(i, i + chunkSize);
-            await window.printerCharacteristic.writeValue(chunk);
-            await new Promise(r => setTimeout(r, 100));
-        }
-
-        console.log('✅ Print complete!');
-
-        if (typeof Toastify !== 'undefined') {
-            Toastify({
-                text: "✅ Label berhasil dicetak!",
-                duration: 3000,
-                gravity: "top",
-                position: "right",
-                backgroundColor: "#10b981",
-            }).showToast();
-        }
-    };
-
-    // Main print handler
-    window.handleThermalPrint = async function() {
-        // Check bluetooth support
-        if (!('bluetooth' in navigator)) {
-            alert('❌ Browser tidak support Bluetooth.\n\n' +
-                  'Gunakan Chrome atau Edge.\n\n' +
-                  'Atau gunakan Print Normal.');
+        if (!hasBluetoothAPI) {
+            console.warn('⚠️ Bluetooth API not available');
+            window.handleThermalPrint = function() {
+                alert('Thermal print tidak tersedia di aplikasi ini.\n\nGunakan Print Normal.');
+            };
             return;
         }
 
-        // Get data from Livewire
-        try {
-            const component = window.Livewire.find(document.querySelector('[wire\\:id]').getAttribute('wire:id'));
+        window.THERMAL_UUID_CONFIGS = [
+            {
+                name: 'Standard Thermal',
+                serviceUUID: '000018f0-0000-1000-8000-00805f9b34fb',
+                characteristicUUID: '00002af1-0000-1000-8000-00805f9b34fb',
+            },
+            {
+                name: 'Generic Serial',
+                serviceUUID: '0000fff0-0000-1000-8000-00805f9b34fb',
+                characteristicUUID: '0000fff1-0000-1000-8000-00805f9b34fb',
+            },
+        ];
 
-            const printData = {
-                lpk_no: component.get('lpk_no'),
-                gentan_no: component.get('gentan_no'),
-                code: component.get('code'),
-                product_name: component.get('product_name'),
-                panjang_produksi: component.get('product_panjang'),
-                berat_produksi: component.get('berat_produksi'),
-                berat_standard: component.get('berat_standard'),
-                lpk_date: component.get('lpk_date'),
-                qty_lpk: component.get('qty_lpk'),
-                timestamp: new Date().toLocaleString('id-ID'),
-            };
+        window.connectedDevice = null;
+        window.printerCharacteristic = null;
+        window.currentConfigIndex = 0;
 
-            await window.printToThermalPrinter(printData);
+        // Generate ESC/POS dengan BARCODE
+        // Generate ESC/POS dengan QR CODE (bukan barcode)
+window.generateEscPosCommands = function(data) {
+    const ESC = '\x1B';
+    const GS = '\x1D';
+    let cmd = '';
 
-        } catch (error) {
-            console.error('❌ Print error:', error);
+    cmd += ESC + '@'; // Initialize
 
-            let errorMsg = '';
+    // ========== GENTAN NO (BESAR) ==========
+    cmd += ESC + 'a' + String.fromCharCode(0); // Left align
+    cmd += GS + '!' + String.fromCharCode(0x33); // Triple size
+    cmd += (data.gentan_no || '-') + '\n';
+    cmd += GS + '!' + String.fromCharCode(0); // Normal
+    cmd += '\n';
 
-            if (error.name === 'NotFoundError') {
-                errorMsg = '❌ Printer tidak ditemukan\n\n' +
-                          '📋 Checklist:\n' +
-                          '✓ Printer sudah ON?\n' +
-                          '✓ Bluetooth HP aktif?\n' +
-                          '✓ Printer sudah di-pair di Settings?\n\n' +
-                          'Gunakan Print Normal?';
-            } else if (error.name === 'NetworkError' || error.message.includes('connection')) {
-                errorMsg = '❌ Koneksi ke printer gagal\n\n' +
-                          '💡 Solusi:\n' +
-                          '1. Unpair printer di Settings → Bluetooth\n' +
-                          '2. Pair ulang printer\n' +
-                          '3. Coba Print Thermal lagi\n\n' +
-                          'Atau gunakan Print Normal?';
-            } else if (error.name === 'SecurityError') {
-                errorMsg = '❌ Bluetooth diblokir\n\n' +
-                          '💡 Solusi:\n' +
-                          '1. Buka Settings Chrome\n' +
-                          '2. Site Settings → Bluetooth\n' +
-                          '3. Allow untuk situs ini\n\n' +
-                          'Atau gunakan Print Normal?';
-            } else {
-                errorMsg = '❌ Print gagal: ' + error.message + '\n\n' +
-                          'Gunakan Print Normal?';
+    // ========== QR CODE ==========
+    cmd += ESC + 'a' + String.fromCharCode(1); // Center align
+
+    const qrData = data.lpk_no || '251030-070';
+
+    // Set QR Code model (Model 2)
+    cmd += GS + '(k' + String.fromCharCode(4) + String.fromCharCode(0) +
+           String.fromCharCode(49) + String.fromCharCode(65) +
+           String.fromCharCode(50) + String.fromCharCode(0);
+
+    // Set QR Code module size (1-16, default 3)
+    // Size 5 = medium, 8 = large
+    cmd += GS + '(k' + String.fromCharCode(3) + String.fromCharCode(0) +
+           String.fromCharCode(49) + String.fromCharCode(67) +
+           String.fromCharCode(6); // Size 6
+
+    // Set QR Code error correction level (L=48, M=49, Q=50, H=51)
+    // L = 7% recovery, M = 15%, Q = 25%, H = 30%
+    cmd += GS + '(k' + String.fromCharCode(3) + String.fromCharCode(0) +
+           String.fromCharCode(49) + String.fromCharCode(69) +
+           String.fromCharCode(49); // M level (15%)
+
+    // Store data in QR Code
+    const qrLen = qrData.length + 3;
+    const pL = qrLen % 256;
+    const pH = Math.floor(qrLen / 256);
+    cmd += GS + '(k' + String.fromCharCode(pL) + String.fromCharCode(pH) +
+           String.fromCharCode(49) + String.fromCharCode(80) +
+           String.fromCharCode(48) + qrData;
+
+    // Print QR Code
+    cmd += GS + '(k' + String.fromCharCode(3) + String.fromCharCode(0) +
+           String.fromCharCode(49) + String.fromCharCode(81) +
+           String.fromCharCode(48);
+
+    cmd += '\n\n';
+
+    // ========== SEPARATOR ==========
+    cmd += ESC + 'a' + String.fromCharCode(0); // Left align
+    cmd += '================================\n';
+
+    // ========== LPK NO (TEXT BESAR) ==========
+    cmd += ESC + 'a' + String.fromCharCode(1); // Center
+    cmd += GS + '!' + String.fromCharCode(0x11); // Double size
+    cmd += (data.lpk_no || '-') + '\n';
+    cmd += GS + '!' + String.fromCharCode(0); // Normal
+
+    cmd += ESC + 'a' + String.fromCharCode(0); // Left
+    cmd += '================================\n';
+
+    // ========== NAMA PRODUK ==========
+    cmd += ESC + 'a' + String.fromCharCode(1); // Center
+    cmd += (data.product_name || '-') + '\n';
+    cmd += ESC + 'a' + String.fromCharCode(0); // Left
+    cmd += '--------------------------------\n';
+
+    // ========== NO ORDER & KODE ==========
+    cmd += 'No. Order   : ' + (data.code || '-') + '\n';
+    cmd += 'Kode        : ' + (data.code_alias || '-') + '\n';
+    cmd += '--------------------------------\n';
+
+    // ========== TANGGAL PRODUKSI ==========
+    cmd += 'Tgl Prod    : ' + (data.production_date || '-') + '\n';
+    cmd += 'Jam         : ' + (data.work_hour || '-') + '\n';
+    cmd += 'Shift       : ' + (data.work_shift || '-') + '\n';
+    cmd += 'Mesin       : ' + (data.machineno || '-') + '\n';
+    cmd += '--------------------------------\n';
+
+    // ========== BERAT & PANJANG ==========
+    cmd += 'Berat       : ' + (data.berat_produksi || '0') + '\n';
+    cmd += 'Panjang     : ' + (data.panjang_produksi || '0') + '\n';
+    cmd += 'Lebih       : ' + (data.selisih || '0') + '\n';
+    cmd += 'No Han      : ' + (data.nomor_han || '-') + '\n';
+    cmd += '--------------------------------\n';
+
+    // ========== NIK & NAMA ==========
+    cmd += 'NIK         : ' + (data.nik || '-') + '\n';
+    cmd += 'Nama        : ' + (data.empname || '-') + '\n';
+    cmd += '================================\n\n\n';
+
+    // Cut paper
+    cmd += GS + 'V' + String.fromCharCode(66) + String.fromCharCode(0);
+
+    return cmd;
+};
+
+        // Connect
+        window.connectThermalPrinter = async function() {
+            const config = window.THERMAL_UUID_CONFIGS[window.currentConfigIndex];
+            console.log('🔍 Trying:', config.name);
+
+            try {
+                const device = await navigator.bluetooth.requestDevice({
+                    filters: [{ services: [config.serviceUUID] }],
+                    optionalServices: [config.serviceUUID]
+                });
+
+                const server = await device.gatt.connect();
+                const service = await server.getPrimaryService(config.serviceUUID);
+                const characteristic = await service.getCharacteristic(config.characteristicUUID);
+
+                window.connectedDevice = device;
+                window.printerCharacteristic = characteristic;
+
+                console.log('✅ Connected:', device.name);
+                return true;
+
+            } catch (error) {
+                console.warn('❌ Failed:', config.name);
+                window.currentConfigIndex++;
+
+                if (window.currentConfigIndex < window.THERMAL_UUID_CONFIGS.length) {
+                    return await window.connectThermalPrinter();
+                }
+                throw error;
+            }
+        };
+
+        // Print
+        window.printToThermalPrinter = async function(data) {
+            console.log('🖨️ Printing...');
+
+            const commands = window.generateEscPosCommands(data);
+            const encoder = new TextEncoder();
+            const bytes = encoder.encode(commands);
+
+            if (!window.printerCharacteristic) {
+                window.currentConfigIndex = 0;
+                await window.connectThermalPrinter();
             }
 
-            if (confirm(errorMsg)) {
-                component.call('printNormal');
+            const chunkSize = 512;
+            for (let i = 0; i < bytes.length; i += chunkSize) {
+                const chunk = bytes.slice(i, i + chunkSize);
+                await window.printerCharacteristic.writeValue(chunk);
+                await new Promise(r => setTimeout(r, 100));
             }
-        }
-    };
 
-    // Cleanup on page unload
-    window.addEventListener('beforeunload', () => {
-        if (window.connectedDevice?.gatt?.connected) {
-            window.connectedDevice.gatt.disconnect();
-        }
-    });
+            console.log('✅ Print complete!');
 
-    console.log('✅ Thermal module loaded with', window.THERMAL_UUID_CONFIGS.length, 'configs');
+            if (typeof Toastify !== 'undefined') {
+                Toastify({
+                    text: "✅ Label berhasil dicetak!",
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "#10b981",
+                }).showToast();
+            }
+        };
+
+        // Main handler
+        window.handleThermalPrint = async function() {
+            if (!('bluetooth' in navigator)) {
+                alert('❌ Browser tidak support Bluetooth.\n\nGunakan Print Normal.');
+                return;
+            }
+
+            try {
+                const component = window.Livewire.find(
+                    document.querySelector('[wire\\:id]').getAttribute('wire:id')
+                );
+
+                const printData = {
+                    gentan_no: component.get('gentan_no'),
+                    lpk_no: component.get('lpk_no'),
+                    product_name: component.get('product_name'),
+                    code: component.get('code'),
+                    code_alias: component.get('code_alias'),
+                    production_date: component.get('production_date'),
+                    work_hour: component.get('work_hour'),
+                    work_shift: component.get('work_shift'),
+                    machineno: component.get('machineno'),
+                    berat_produksi: component.get('berat_produksi'),
+                    panjang_produksi: component.get('product_panjang'),
+                    selisih: component.get('selisih'),
+                    nomor_han: component.get('nomor_han'),
+                    nik: component.get('nik'),
+                    empname: component.get('empname'),
+                };
+
+                console.log('📋 Print data:', printData);
+
+                await window.printToThermalPrinter(printData);
+
+            } catch (error) {
+                console.error('❌ Error:', error);
+
+                let errorMsg = '❌ Printer tidak ditemukan.\n\nGunakan Print Normal?';
+
+                if (error.name === 'NotFoundError') {
+                    errorMsg = '❌ Printer tidak ditemukan\n\n' +
+                              '✓ Printer ON?\n' +
+                              '✓ Bluetooth aktif?\n' +
+                              '✓ Sudah di-pair?\n\n' +
+                              'Gunakan Print Normal?';
+                }
+
+                if (confirm(errorMsg)) {
+                    component.call('printNormal');
+                }
+            }
+        };
+
+        // Cleanup
+        window.addEventListener('beforeunload', () => {
+            if (window.connectedDevice?.gatt?.connected) {
+                window.connectedDevice.gatt.disconnect();
+            }
+        });
+
+        console.log('✅ Thermal module loaded');
+
+    } catch (error) {
+        console.error('❌ Init failed:', error);
+        window.handleThermalPrint = function() {
+            alert('Thermal print error. Gunakan Print Normal.');
+        };
+    }
 })();
 </script>
