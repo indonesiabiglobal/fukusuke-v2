@@ -24,7 +24,34 @@ class LabelGentanController extends Component
 
     public function print()
     {
-        // $statusPrint = $this->statusPrint;
+        // Generate data untuk thermal printer
+        $printData = $this->generateThermalPrintData();
+
+        // Dispatch event untuk print via Bluetooth
+        $this->dispatch('printThermalLabel', $printData);
+
+        $this->statusPrint = false;
+    }
+
+    private function generateThermalPrintData()
+    {
+        return [
+            'type' => 'label_gentan',
+            'lpk_no' => $this->lpk_no,
+            'gentan_no' => $this->gentan_no,
+            'code' => $this->code,
+            'product_name' => $this->product_name,
+            'panjang_produksi' => number_format($this->product_panjang, 0, ',', '.'),
+            'berat_produksi' => $this->berat_produksi,
+            'berat_standard' => $this->berat_standard,
+            'lpk_date' => $this->lpk_date,
+            'qty_lpk' => number_format($this->qty_lpk, 0, ',', '.'),
+            'timestamp' => Carbon::now()->format('d/m/Y H:i:s'),
+        ];
+    }
+
+        public function printNormal()
+    {
         $this->dispatch('redirectToPrint', $this->produk_asemblyid);
         $this->statusPrint = false;
     }

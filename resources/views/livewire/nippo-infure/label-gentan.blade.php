@@ -91,20 +91,248 @@
 		<hr />
 		<div class="form-group">
 			<div class="input-group">
-				<button type="button" class="btn btn-success btn-print" wire:click="print"  {{ !$statusPrint ? 'disabled' : '' }}>
-					<i class="ri-printer-line"></i> Print
+				<!-- Thermal Printer Button (Primary) -->
+				<button type="button"
+					class="btn btn-success btn-print me-2"
+					wire:click="print"
+					{{ !$statusPrint ? 'disabled' : '' }}>
+					<i class="ri-printer-line"></i> Print Thermal
 				</button>
-				<div style="float:right" class="text-danger">Paper: A4-Portrait or Thermal </div>
+
+				<!-- Fallback Normal Print Button -->
+				<button type="button"
+					class="btn btn-outline-secondary btn-print"
+					wire:click="printNormal"
+					{{ !$statusPrint ? 'disabled' : '' }}>
+					<i class="ri-printer-line"></i> Print Normal
+				</button>
+
+				<div style="float:right" class="text-danger">
+					Thermal Printer (58mm/80mm) atau A4-Portrait
+				</div>
 			</div>
 		</div>
 	</div>
 	<div class="col-lg-2"></div>
 </div>
 @script
-	<script>
-		$wire.on('redirectToPrint', (produk_asemblyid) => {
-			var printUrl = '{{ route('report-gentan') }}?produk_asemblyid=' + produk_asemblyid
-			window.open(printUrl, '_blank');
-		});
-	</script>
+<script>
+// ============================================
+// THERMAL PRINTER - BLUETOOTH AUTO PRINT
+// ============================================
+
+// Konfigurasi Thermal Printer
+const THERMAL_CONFIG = {
+    // UUID standar untuk thermal printer (ESC/POS compatible)
+    serviceUUID: '000018f0-0000-1000-8000-00805f9b34fb',
+    characteristicUUID: '00002af1-0000-1000-8000-00805f9b34fb',
+
+    // Alternatif UUID (jika printer Anda berbeda)
+    // serviceUUID: '49535343-fe7d-4ae5-8fa9-9fafd205e455',
+    // characteristicUUID: '49535343-8841-43f4-a8d4-ecbe34729bb3',
+};
+
+// Menyimpan koneksi printer
+let connectedDevice = null;
+let printerCharacteristic = null;
+
+// ============================================
+// GENERATE ESC/POS COMMANDS
+// ============================================
+function generateEscPosCommands(data) {
+    const ESC = '\x1B';
+    const GS = '\x1D';
+
+    let commands = '';
+
+    // Initialize printer
+    commands += ESC + '@';
+
+    // Header - Bold & Center
+    commands += ESC + 'a' + '\x01'; // Center align
+    commands += GS + '!' + '\x11';   // Double size
+    commands += 'LABEL GENTAN\n';
+    commands += GS + '!' + '\x00';   // Normal size
+
+    // Separator
+    commands += ESC + 'a' + '\x00'; // Left align
+    commands += '================================\n';
+
+    // Content
+    commands += 'LPK No      : ' + data.lpk_no + '\n';
+    commands += 'Gentan No   : ' + data.gentan_no + '\n';
+    commands += 'No Order    : ' + data.code + '\n';
+    commands += '--------------------------------\n';
+    commands += 'Produk      : ' + data.product_name + '\n';
+    commands += '--------------------------------\n';
+    commands += 'Panjang     : ' + data.panjang_produksi + ' m\n';
+    commands += 'Berat       : ' + data.berat_produksi + ' kg\n';
+    commands += 'Berat Std   : ' + data.berat_standard + ' kg\n';
+    commands += '--------------------------------\n';
+    commands += 'Tgl LPK     : ' + data.lpk_date + '\n';
+    commands += 'Qty LPK     : ' + data.qty_lpk + '\n';
+    commands += '--------------------------------\n';
+    commands += 'Printed     : ' + data.timestamp + '\n';
+    commands += '================================\n';
+
+    // Feed & Cut
+    commands += '\n\n\n';
+    commands += GS + 'V' + '\x42' + '\x00'; // Cut paper (partial cut)
+
+    return commands;
+}
+
+// ============================================
+// BLUETOOTH CONNECTION
+// ============================================
+async function connectThermalPrinter() {
+    try {
+        console.log('🔍 Mencari thermal printer...');
+
+        // Request Bluetooth device
+        const device = await navigator.bluetooth.requestDevice({
+            filters: [
+                { services: [THERMAL_CONFIG.serviceUUID] },
+                { name: 'BlueTooth Printer' },
+                { namePrefix: 'BT' },
+            ],
+            optionalServices: [THERMAL_CONFIG.serviceUUID]
+        });
+
+        console.log('✅ Printer ditemukan:', device.name);
+
+        // Connect to GATT Server
+        const server = await device.gatt.connect();
+        console.log('🔗 Terhubung ke GATT server');
+
+        // Get Service
+        const service = await server.getPrimaryService(THERMAL_CONFIG.serviceUUID);
+        console.log('📡 Service ditemukan');
+
+        // Get Characteristic
+        const characteristic = await service.getCharacteristic(THERMAL_CONFIG.characteristicUUID);
+        console.log('✅ Characteristic ready');
+
+        // Save connection
+        connectedDevice = device;
+        printerCharacteristic = characteristic;
+
+        return { device, characteristic };
+
+    } catch (error) {
+        console.error('❌ Bluetooth error:', error);
+        throw error;
+    }
+}
+
+// ============================================
+// PRINT FUNCTION
+// ============================================
+async function printToThermalPrinter(data) {
+    try {
+        // Generate ESC/POS commands
+        const escPosCommands = generateEscPosCommands(data);
+
+        // Convert to bytes
+        const encoder = new TextEncoder();
+        const bytes = encoder.encode(escPosCommands);
+
+        // Cek apakah sudah terkoneksi
+        if (!printerCharacteristic) {
+            console.log('🔄 Belum terkoneksi, connecting...');
+            const connection = await connectThermalPrinter();
+            printerCharacteristic = connection.characteristic;
+        }
+
+        // Kirim data ke printer (split jika terlalu besar)
+        const chunkSize = 512; // Max bytes per transmission
+        for (let i = 0; i < bytes.length; i += chunkSize) {
+            const chunk = bytes.slice(i, i + chunkSize);
+            await printerCharacteristic.writeValue(chunk);
+
+            // Delay kecil antar chunk
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+
+        console.log('✅ Print berhasil!');
+
+        // Notifikasi sukses
+        window.dispatchEvent(new CustomEvent('notification', {
+            detail: [{
+                type: 'success',
+                message: 'Label berhasil dicetak!'
+            }]
+        }));
+
+        return true;
+
+    } catch (error) {
+        console.error('❌ Print error:', error);
+
+        // Reset connection jika error
+        connectedDevice = null;
+        printerCharacteristic = null;
+
+        // Notifikasi error
+        window.dispatchEvent(new CustomEvent('notification', {
+            detail: [{
+                type: 'error',
+                message: 'Gagal mencetak: ' + error.message
+            }]
+        }));
+
+        return false;
+    }
+}
+
+// ============================================
+// LIVEWIRE EVENT LISTENER
+// ============================================
+document.addEventListener('livewire:initialized', () => {
+    // Listen untuk event print dari Livewire
+    Livewire.on('printThermalLabel', async (printData) => {
+        console.log('📝 Data print diterima:', printData);
+
+        // Cek support Bluetooth
+        if (!('bluetooth' in navigator)) {
+            alert('Browser Anda tidak support Web Bluetooth API.\nGunakan Chrome/Edge di Android atau Chrome di Desktop.');
+            return;
+        }
+
+        // Auto print
+        try {
+            await printToThermalPrinter(printData[0]); // Livewire kirim array
+        } catch (error) {
+            console.error('Print gagal:', error);
+
+            // Fallback: tanya user mau coba lagi atau print normal
+            if (confirm('Print thermal gagal. Coba lagi?\n\nKlik Cancel untuk print normal.')) {
+                await printToThermalPrinter(printData[0]);
+            } else {
+                // Fallback ke print normal
+                $wire.printNormal();
+            }
+        }
+    });
+});
+
+// ============================================
+// FALLBACK PRINT NORMAL
+// ============================================
+$wire.on('redirectToPrint', (produk_asemblyid) => {
+    var printUrl = '{{ route('report-gentan') }}?produk_asemblyid=' + produk_asemblyid;
+    window.open(printUrl, '_blank');
+});
+
+// ============================================
+// DISCONNECT ON PAGE UNLOAD
+// ============================================
+window.addEventListener('beforeunload', () => {
+    if (connectedDevice && connectedDevice.gatt.connected) {
+        connectedDevice.gatt.disconnect();
+        console.log('🔌 Printer disconnected');
+    }
+});
+</script>
 @endscript
+
