@@ -125,6 +125,7 @@
 @endscript
 
 {{-- Thermal Module - DENGAN BARCODE --}}
+{{-- Thermal Module - AUTO RECONNECT tanpa pilih device lagi --}}
 <script>
 (function() {
     if (typeof window === 'undefined' || typeof navigator === 'undefined') {
@@ -166,113 +167,167 @@
         window.connectedDevice = null;
         window.printerCharacteristic = null;
         window.currentConfigIndex = 0;
+        window.savedDeviceId = null; // Simpan device ID
 
-        // Generate ESC/POS dengan BARCODE
-        // Generate ESC/POS dengan QR CODE (bukan barcode)
-window.generateEscPosCommands = function(data) {
-    const ESC = '\x1B';
-    const GS = '\x1D';
-    let cmd = '';
+        // Generate ESC/POS dengan QR CODE
+        window.generateEscPosCommands = function(data) {
+            const ESC = '\x1B';
+            const GS = '\x1D';
+            let cmd = '';
 
-    cmd += ESC + '@'; // Initialize
+            cmd += ESC + '@'; // Initialize
 
-    // ========== GENTAN NO (BESAR) ==========
-    cmd += ESC + 'a' + String.fromCharCode(0); // Left align
-    cmd += GS + '!' + String.fromCharCode(0x33); // Triple size
-    cmd += (data.gentan_no || '-') + '\n';
-    cmd += GS + '!' + String.fromCharCode(0); // Normal
-    cmd += '\n';
+            // ========== GENTAN NO (BESAR) ==========
+            cmd += ESC + 'a' + String.fromCharCode(0); // Left align
+            cmd += GS + '!' + String.fromCharCode(0x33); // Triple size
+            cmd += (data.gentan_no || '-') + '\n';
+            cmd += GS + '!' + String.fromCharCode(0); // Normal
+            cmd += '\n';
 
-    // ========== QR CODE ==========
-    cmd += ESC + 'a' + String.fromCharCode(1); // Center align
+            // ========== QR CODE ==========
+            cmd += ESC + 'a' + String.fromCharCode(1); // Center align
 
-    const qrData = data.lpk_no || '251030-070';
+            const qrData = data.lpk_no || '251030-070';
 
-    // Set QR Code model (Model 2)
-    cmd += GS + '(k' + String.fromCharCode(4) + String.fromCharCode(0) +
-           String.fromCharCode(49) + String.fromCharCode(65) +
-           String.fromCharCode(50) + String.fromCharCode(0);
+            // Set QR Code model (Model 2)
+            cmd += GS + '(k' + String.fromCharCode(4) + String.fromCharCode(0) +
+                   String.fromCharCode(49) + String.fromCharCode(65) +
+                   String.fromCharCode(50) + String.fromCharCode(0);
 
-    // Set QR Code module size (1-16, default 3)
-    // Size 5 = medium, 8 = large
-    cmd += GS + '(k' + String.fromCharCode(3) + String.fromCharCode(0) +
-           String.fromCharCode(49) + String.fromCharCode(67) +
-           String.fromCharCode(6); // Size 6
+            // Set QR Code size
+            cmd += GS + '(k' + String.fromCharCode(3) + String.fromCharCode(0) +
+                   String.fromCharCode(49) + String.fromCharCode(67) +
+                   String.fromCharCode(6); // Size 6
 
-    // Set QR Code error correction level (L=48, M=49, Q=50, H=51)
-    // L = 7% recovery, M = 15%, Q = 25%, H = 30%
-    cmd += GS + '(k' + String.fromCharCode(3) + String.fromCharCode(0) +
-           String.fromCharCode(49) + String.fromCharCode(69) +
-           String.fromCharCode(49); // M level (15%)
+            // Set QR Code error correction
+            cmd += GS + '(k' + String.fromCharCode(3) + String.fromCharCode(0) +
+                   String.fromCharCode(49) + String.fromCharCode(69) +
+                   String.fromCharCode(49); // M level
 
-    // Store data in QR Code
-    const qrLen = qrData.length + 3;
-    const pL = qrLen % 256;
-    const pH = Math.floor(qrLen / 256);
-    cmd += GS + '(k' + String.fromCharCode(pL) + String.fromCharCode(pH) +
-           String.fromCharCode(49) + String.fromCharCode(80) +
-           String.fromCharCode(48) + qrData;
+            // Store data
+            const qrLen = qrData.length + 3;
+            const pL = qrLen % 256;
+            const pH = Math.floor(qrLen / 256);
+            cmd += GS + '(k' + String.fromCharCode(pL) + String.fromCharCode(pH) +
+                   String.fromCharCode(49) + String.fromCharCode(80) +
+                   String.fromCharCode(48) + qrData;
 
-    // Print QR Code
-    cmd += GS + '(k' + String.fromCharCode(3) + String.fromCharCode(0) +
-           String.fromCharCode(49) + String.fromCharCode(81) +
-           String.fromCharCode(48);
+            // Print QR Code
+            cmd += GS + '(k' + String.fromCharCode(3) + String.fromCharCode(0) +
+                   String.fromCharCode(49) + String.fromCharCode(81) +
+                   String.fromCharCode(48);
 
-    cmd += '\n\n';
+            cmd += '\n\n';
 
-    // ========== SEPARATOR ==========
-    cmd += ESC + 'a' + String.fromCharCode(0); // Left align
-    cmd += '================================\n';
+            // ========== SEPARATOR ==========
+            cmd += ESC + 'a' + String.fromCharCode(0); // Left align
+            cmd += '================================\n';
 
-    // ========== LPK NO (TEXT BESAR) ==========
-    cmd += ESC + 'a' + String.fromCharCode(1); // Center
-    cmd += GS + '!' + String.fromCharCode(0x11); // Double size
-    cmd += (data.lpk_no || '-') + '\n';
-    cmd += GS + '!' + String.fromCharCode(0); // Normal
+            // ========== LPK NO (TEXT BESAR) ==========
+            cmd += ESC + 'a' + String.fromCharCode(1); // Center
+            cmd += GS + '!' + String.fromCharCode(0x11); // Double size
+            cmd += (data.lpk_no || '-') + '\n';
+            cmd += GS + '!' + String.fromCharCode(0); // Normal
 
-    cmd += ESC + 'a' + String.fromCharCode(0); // Left
-    cmd += '================================\n';
+            cmd += ESC + 'a' + String.fromCharCode(0); // Left
+            cmd += '================================\n';
 
-    // ========== NAMA PRODUK ==========
-    cmd += ESC + 'a' + String.fromCharCode(1); // Center
-    cmd += (data.product_name || '-') + '\n';
-    cmd += ESC + 'a' + String.fromCharCode(0); // Left
-    cmd += '--------------------------------\n';
+            // ========== NAMA PRODUK ==========
+            cmd += ESC + 'a' + String.fromCharCode(1); // Center
+            cmd += (data.product_name || '-') + '\n';
+            cmd += ESC + 'a' + String.fromCharCode(0); // Left
+            cmd += '--------------------------------\n';
 
-    // ========== NO ORDER & KODE ==========
-    cmd += 'No. Order   : ' + (data.code || '-') + '\n';
-    cmd += 'Kode        : ' + (data.code_alias || '-') + '\n';
-    cmd += '--------------------------------\n';
+            // ========== NO ORDER & KODE ==========
+            cmd += 'No. Order   : ' + (data.code || '-') + '\n';
+            cmd += 'Kode        : ' + (data.code_alias || '-') + '\n';
+            cmd += '--------------------------------\n';
 
-    // ========== TANGGAL PRODUKSI ==========
-    cmd += 'Tgl Prod    : ' + (data.production_date || '-') + '\n';
-    cmd += 'Jam         : ' + (data.work_hour || '-') + '\n';
-    cmd += 'Shift       : ' + (data.work_shift || '-') + '\n';
-    cmd += 'Mesin       : ' + (data.machineno || '-') + '\n';
-    cmd += '--------------------------------\n';
+            // ========== TANGGAL PRODUKSI ==========
+            cmd += 'Tgl Prod    : ' + (data.production_date || '-') + '\n';
+            cmd += 'Jam         : ' + (data.work_hour || '-') + '\n';
+            cmd += 'Shift       : ' + (data.work_shift || '-') + '\n';
+            cmd += 'Mesin       : ' + (data.machineno || '-') + '\n';
+            cmd += '--------------------------------\n';
 
-    // ========== BERAT & PANJANG ==========
-    cmd += 'Berat       : ' + (data.berat_produksi || '0') + '\n';
-    cmd += 'Panjang     : ' + (data.panjang_produksi || '0') + '\n';
-    cmd += 'Lebih       : ' + (data.selisih || '0') + '\n';
-    cmd += 'No Han      : ' + (data.nomor_han || '-') + '\n';
-    cmd += '--------------------------------\n';
+            // ========== BERAT & PANJANG ==========
+            cmd += 'Berat       : ' + (data.berat_produksi || '0') + '\n';
+            cmd += 'Panjang     : ' + (data.panjang_produksi || '0') + '\n';
+            cmd += 'Lebih       : ' + (data.selisih || '0') + '\n';
+            cmd += 'No Han      : ' + (data.nomor_han || '-') + '\n';
+            cmd += '--------------------------------\n';
 
-    // ========== NIK & NAMA ==========
-    cmd += 'NIK         : ' + (data.nik || '-') + '\n';
-    cmd += 'Nama        : ' + (data.empname || '-') + '\n';
-    cmd += '================================\n\n\n';
+            // ========== NIK & NAMA ==========
+            cmd += 'NIK         : ' + (data.nik || '-') + '\n';
+            cmd += 'Nama        : ' + (data.empname || '-') + '\n';
+            cmd += '================================\n\n\n';
 
-    // Cut paper
-    cmd += GS + 'V' + String.fromCharCode(66) + String.fromCharCode(0);
+            // Cut paper
+            cmd += GS + 'V' + String.fromCharCode(66) + String.fromCharCode(0);
 
-    return cmd;
-};
+            return cmd;
+        };
 
-        // Connect
+        // Try to reconnect to saved device
+        window.reconnectSavedDevice = async function() {
+            if (!window.savedDeviceId) {
+                console.log('📍 No saved device');
+                return false;
+            }
+
+            try {
+                console.log('🔄 Trying to reconnect to saved device...');
+
+                // Get previously paired devices
+                const devices = await navigator.bluetooth.getDevices();
+                const savedDevice = devices.find(d => d.id === window.savedDeviceId);
+
+                if (!savedDevice) {
+                    console.log('❌ Saved device not found');
+                    window.savedDeviceId = null;
+                    localStorage.removeItem('thermal_printer_id');
+                    return false;
+                }
+
+                // Check if already connected
+                if (savedDevice.gatt.connected) {
+                    console.log('✅ Already connected!');
+                    window.connectedDevice = savedDevice;
+
+                    // Get characteristic
+                    const config = window.THERMAL_UUID_CONFIGS[window.currentConfigIndex];
+                    const service = await savedDevice.gatt.getPrimaryService(config.serviceUUID);
+                    const characteristic = await service.getCharacteristic(config.characteristicUUID);
+                    window.printerCharacteristic = characteristic;
+
+                    return true;
+                }
+
+                // Reconnect
+                const server = await savedDevice.gatt.connect();
+                console.log('✅ Reconnected to:', savedDevice.name);
+
+                const config = window.THERMAL_UUID_CONFIGS[window.currentConfigIndex];
+                const service = await server.getPrimaryService(config.serviceUUID);
+                const characteristic = await service.getCharacteristic(config.characteristicUUID);
+
+                window.connectedDevice = savedDevice;
+                window.printerCharacteristic = characteristic;
+
+                return true;
+
+            } catch (error) {
+                console.warn('❌ Reconnect failed:', error.message);
+                window.savedDeviceId = null;
+                localStorage.removeItem('thermal_printer_id');
+                return false;
+            }
+        };
+
+        // Connect to new device
         window.connectThermalPrinter = async function() {
             const config = window.THERMAL_UUID_CONFIGS[window.currentConfigIndex];
-            console.log('🔍 Trying:', config.name);
+            console.log('🔍 Selecting new device:', config.name);
 
             try {
                 const device = await navigator.bluetooth.requestDevice({
@@ -287,11 +342,15 @@ window.generateEscPosCommands = function(data) {
                 window.connectedDevice = device;
                 window.printerCharacteristic = characteristic;
 
-                console.log('✅ Connected:', device.name);
+                // Save device ID
+                window.savedDeviceId = device.id;
+                localStorage.setItem('thermal_printer_id', device.id);
+
+                console.log('✅ New device connected:', device.name);
                 return true;
 
             } catch (error) {
-                console.warn('❌ Failed:', config.name);
+                console.warn('❌ Connection failed:', config.name);
                 window.currentConfigIndex++;
 
                 if (window.currentConfigIndex < window.THERMAL_UUID_CONFIGS.length) {
@@ -301,7 +360,7 @@ window.generateEscPosCommands = function(data) {
             }
         };
 
-        // Print
+        // Print function
         window.printToThermalPrinter = async function(data) {
             console.log('🖨️ Printing...');
 
@@ -309,9 +368,14 @@ window.generateEscPosCommands = function(data) {
             const encoder = new TextEncoder();
             const bytes = encoder.encode(commands);
 
+            // Try reconnect first, if fails then ask for new device
             if (!window.printerCharacteristic) {
-                window.currentConfigIndex = 0;
-                await window.connectThermalPrinter();
+                const reconnected = await window.reconnectSavedDevice();
+
+                if (!reconnected) {
+                    window.currentConfigIndex = 0;
+                    await window.connectThermalPrinter();
+                }
             }
 
             const chunkSize = 512;
@@ -342,6 +406,11 @@ window.generateEscPosCommands = function(data) {
             }
 
             try {
+                // Load saved device ID
+                if (!window.savedDeviceId) {
+                    window.savedDeviceId = localStorage.getItem('thermal_printer_id');
+                }
+
                 const component = window.Livewire.find(
                     document.querySelector('[wire\\:id]').getAttribute('wire:id')
                 );
@@ -387,14 +456,16 @@ window.generateEscPosCommands = function(data) {
             }
         };
 
-        // Cleanup
+        // Load saved device ID on page load
+        window.savedDeviceId = localStorage.getItem('thermal_printer_id');
+
+        // Cleanup on disconnect
         window.addEventListener('beforeunload', () => {
-            if (window.connectedDevice?.gatt?.connected) {
-                window.connectedDevice.gatt.disconnect();
-            }
+            // Don't disconnect - keep for next session
+            // Device will auto-reconnect next time
         });
 
-        console.log('✅ Thermal module loaded');
+        console.log('✅ Thermal module loaded with auto-reconnect');
 
     } catch (error) {
         console.error('❌ Init failed:', error);
