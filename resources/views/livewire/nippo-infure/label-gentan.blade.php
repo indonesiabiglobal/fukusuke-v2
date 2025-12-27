@@ -214,63 +214,46 @@ window.toggleDebugLog = function() {
             const GS = '\x1D';
             let cmd = '';
 
+            // Initialize printer
             cmd += ESC + '@';
 
-            // GENTAN NO
-            cmd += ESC + 'a' + String.fromCharCode(0);
-            cmd += GS + '!' + String.fromCharCode(0x33);
+            // ========== GENTAN NO (BESAR) ==========
+            cmd += GS + '!' + String.fromCharCode(0x11); // Double size
             cmd += (data.gentan_no || '-') + '\n';
-            cmd += GS + '!' + String.fromCharCode(0);
+            cmd += GS + '!' + String.fromCharCode(0); // Reset
             cmd += '\n';
 
-            // QR CODE
-            cmd += ESC + 'a' + String.fromCharCode(1);
-            const qrData = data.lpk_no || '000000-000';
-            cmd += GS + '(k' + String.fromCharCode(4, 0, 49, 65, 50, 0);
-            cmd += GS + '(k' + String.fromCharCode(3, 0, 49, 67, 6);
-            cmd += GS + '(k' + String.fromCharCode(3, 0, 49, 69, 49);
-            const qrLen = qrData.length + 3;
-            const pL = qrLen % 256;
-            const pH = Math.floor(qrLen / 256);
-            cmd += GS + '(k' + String.fromCharCode(pL, pH, 49, 80, 48) + qrData;
-            cmd += GS + '(k' + String.fromCharCode(3, 0, 49, 81, 48);
-            cmd += '\n\n';
+            // ========== QR CODE - SKIP DULU UNTUK TEST ==========
+            // (QR code bisa jadi masalah)
 
-            cmd += ESC + 'a' + String.fromCharCode(0);
+            // ========== LPK NO ==========
             cmd += '================================\n';
-
-            cmd += ESC + 'a' + String.fromCharCode(1);
-            cmd += GS + '!' + String.fromCharCode(0x11);
             cmd += (data.lpk_no || '-') + '\n';
-            cmd += GS + '!' + String.fromCharCode(0);
-            cmd += ESC + 'a' + String.fromCharCode(0);
             cmd += '================================\n';
 
-            cmd += ESC + 'a' + String.fromCharCode(1);
+            // ========== NAMA PRODUK ==========
             cmd += (data.product_name || '-') + '\n';
-            cmd += ESC + 'a' + String.fromCharCode(0);
             cmd += '--------------------------------\n';
 
+            // ========== DETAIL - PLAIN TEXT ==========
             cmd += 'No. Order   : ' + (data.code || '-') + '\n';
             cmd += 'Kode        : ' + (data.code_alias || '-') + '\n';
-            cmd += '--------------------------------\n';
-
             cmd += 'Tgl Prod    : ' + (data.production_date || '-') + '\n';
             cmd += 'Jam         : ' + (data.work_hour || '-') + '\n';
             cmd += 'Shift       : ' + (data.work_shift || '-') + '\n';
             cmd += 'Mesin       : ' + (data.machineno || '-') + '\n';
             cmd += '--------------------------------\n';
-
             cmd += 'Berat       : ' + (data.berat_produksi || '0') + '\n';
             cmd += 'Panjang     : ' + (data.panjang_produksi || '0') + '\n';
             cmd += 'Lebih       : ' + (data.selisih || '0') + '\n';
             cmd += 'No Han      : ' + (data.nomor_han || '-') + '\n';
             cmd += '--------------------------------\n';
-
             cmd += 'NIK         : ' + (data.nik || '-') + '\n';
             cmd += 'Nama        : ' + (data.empname || '-') + '\n';
-            cmd += '================================\n\n\n';
+            cmd += '================================\n';
+            cmd += '\n\n\n';
 
+            // Cut paper
             cmd += GS + 'V' + String.fromCharCode(66, 0);
 
             return cmd;
