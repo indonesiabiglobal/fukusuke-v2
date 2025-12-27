@@ -113,6 +113,12 @@
 					<i class="ri-printer-line"></i> Print Normal
 				</button>
 
+                <button type="button"
+    class="btn btn-info btn-sm me-2 mb-2"
+    onclick="scanPrinterUUID()">
+    🔬 Scan UUID Epson
+</button>
+
 				<div class="w-100"></div>
 				<small class="text-info">
 					💡 Support: Printer Panda & Epson TM-P20II<br>
@@ -343,69 +349,83 @@ window.toggleDebugLog = function() {
         };
 
         // Connect
-        window.connectThermalPrinter = async function() {
-            const config = window.THERMAL_UUID_CONFIGS[window.currentConfigIndex];
-            window.debugLog('🔍 Config #' + (window.currentConfigIndex + 1) + ': ' + config.name, 'info');
-            window.debugLog('Service: ' + config.serviceUUID, 'info');
+        window.connectThermalPrinter = async function(manualConfig = null) {
+    const config = manualConfig || window.THERMAL_UUID_CONFIGS[window.currentConfigIndex];
+    window.debugLog('🔍 Trying: ' + config.name, 'info');
+    window.debugLog('Service: ' + config.serviceUUID, 'info');
 
+    try {
+        let device;
+
+        // LANGSUNG acceptAllDevices - lebih aman
+        window.debugLog('Scanning all devices...', 'info');
+        device = await navigator.bluetooth.requestDevice({
+            acceptAllDevices: true,
+            optionalServices: [
+                config.serviceUUID,
+                '49535343-fe7d-4ae5-8fa9-9fafd205e455',
+                '00001101-0000-1000-8000-00805f9b34fb',
+                '0000ffe0-0000-1000-8000-00805f9b34fb',
+                '000018f0-0000-1000-8000-00805f9b34fb',
+                '0000fff0-0000-1000-8000-00805f9b34fb',
+            ]
+        });
+
+        if (!device) {
+            throw new Error('No device selected');
+        }
+
+        window.debugLog('✅ Selected: ' + device.name, 'success');
+
+        const server = await device.gatt.connect();
+        window.debugLog('✅ GATT connected', 'success');
+
+        // COBA SEMUA UUID - TIDAK PAKAI LOOP
+        let service = null;
+        let characteristic = null;
+
+        // Try semua UUID satu per satu
+        const allUUIDs = window.THERMAL_UUID_CONFIGS.map(c => ({
+            service: c.serviceUUID,
+            char: c.characteristicUUID
+        }));
+
+        for (let uuid of allUUIDs) {
             try {
-                let device;
+                window.debugLog('Trying service: ' + uuid.service, 'info');
+                service = await server.getPrimaryService(uuid.service);
+                window.debugLog('✅ Service found!', 'success');
 
-                try {
-                    window.debugLog('Trying filtered request...', 'info');
-                    device = await navigator.bluetooth.requestDevice({
-                        filters: [{ services: [config.serviceUUID] }],
-                        optionalServices: [config.serviceUUID]
-                    });
-                } catch (filterError) {
-                    window.debugLog('Filter failed: ' + filterError.message, 'warn');
-                    window.debugLog('Trying acceptAllDevices...', 'info');
+                characteristic = await service.getCharacteristic(uuid.char);
+                window.debugLog('✅ Characteristic found!', 'success');
 
-                    device = await navigator.bluetooth.requestDevice({
-                        acceptAllDevices: true,
-                        optionalServices: [
-                            '49535343-fe7d-4ae5-8fa9-9fafd205e455',
-                            '00001101-0000-1000-8000-00805f9b34fb',
-                            '0000ffe0-0000-1000-8000-00805f9b34fb',
-                            '000018f0-0000-1000-8000-00805f9b34fb',
-                            '0000fff0-0000-1000-8000-00805f9b34fb',
-                        ]
-                    });
-                }
-
-                window.debugLog('✅ Selected: ' + device.name, 'success');
-
-                const server = await device.gatt.connect();
-                window.debugLog('✅ GATT connected', 'success');
-
-                const service = await server.getPrimaryService(config.serviceUUID);
-                window.debugLog('✅ Service OK', 'success');
-
-                const characteristic = await service.getCharacteristic(config.characteristicUUID);
-                window.debugLog('✅ Characteristic OK', 'success');
-
-                window.connectedDevice = device;
-                window.printerCharacteristic = characteristic;
-                window.savedDeviceId = device.id;
-                localStorage.setItem('thermal_printer_id', device.id);
-
-                window.debugLog('🎉 Printer ready!', 'success');
-                return true;
-
-            } catch (error) {
-                window.debugLog('❌ Config #' + (window.currentConfigIndex + 1) + ' failed: ' + error.name, 'error');
-                window.debugLog('Error: ' + error.message, 'error');
-
-                window.currentConfigIndex++;
-
-                if (window.currentConfigIndex < window.THERMAL_UUID_CONFIGS.length) {
-                    window.debugLog('🔄 Trying next config...', 'warn');
-                    return await window.connectThermalPrinter();
-                }
-
-                throw error;
+                // Berhasil!
+                break;
+            } catch (e) {
+                window.debugLog('UUID failed: ' + e.message, 'warn');
+                continue;
             }
-        };
+        }
+
+        if (!service || !characteristic) {
+            throw new Error('No compatible service/characteristic found');
+        }
+
+        window.connectedDevice = device;
+        window.printerCharacteristic = characteristic;
+        window.savedDeviceId = device.id;
+        localStorage.setItem('thermal_printer_id', device.id);
+
+        window.debugLog('🎉 Printer ready: ' + device.name, 'success');
+        return true;
+
+    } catch (error) {
+        window.debugLog('❌ Connection failed: ' + error.name, 'error');
+        window.debugLog('Error: ' + error.message, 'error');
+        throw error;
+    }
+};
+
 
         // Print
         window.printToThermalPrinter = async function(data) {
@@ -455,61 +475,122 @@ window.toggleDebugLog = function() {
 
         // Main handler
         window.handleThermalPrint = async function() {
-            window.debugLog('=== PRINT REQUEST ===', 'info');
+    window.debugLog('=== PRINT REQUEST ===', 'info');
 
-            if (!('bluetooth' in navigator)) {
-                window.debugLog('❌ Bluetooth API tidak ada!', 'error');
-                alert('❌ Browser tidak support Bluetooth\n\nPakai Chrome/Edge');
-                return;
-            }
+    if (!('bluetooth' in navigator)) {
+        window.debugLog('❌ Bluetooth API tidak ada!', 'error');
+        alert('❌ Browser tidak support Bluetooth\n\nPakai Chrome/Edge');
+        return;
+    }
+
+    try {
+        if (!window.savedDeviceId) {
+            window.savedDeviceId = localStorage.getItem('thermal_printer_id');
+            window.debugLog('Loaded saved ID: ' + (window.savedDeviceId || 'none'), 'info');
+        }
+
+        const component = window.Livewire.find(
+            document.querySelector('[wire\\:id]').getAttribute('wire:id')
+        );
+
+        const printData = {
+            gentan_no: component.get('gentan_no'),
+            lpk_no: component.get('lpk_no'),
+            product_name: component.get('product_name'),
+            code: component.get('code'),
+            code_alias: component.get('code_alias'),
+            production_date: component.get('production_date'),
+            work_hour: component.get('work_hour'),
+            work_shift: component.get('work_shift'),
+            machineno: component.get('machineno'),
+            berat_produksi: component.get('berat_produksi'),
+            panjang_produksi: component.get('product_panjang'),
+            selisih: component.get('selisih'),
+            nomor_han: component.get('nomor_han'),
+            nik: component.get('nik'),
+            empname: component.get('empname'),
+        };
+
+        window.debugLog('Data OK: ' + printData.lpk_no, 'success');
+
+        // PRINT LANGSUNG - TANPA RECONNECT LOOP
+        if (!window.printerCharacteristic) {
+            window.debugLog('No printer, connecting...', 'warn');
+            await window.connectThermalPrinter();
+        }
+
+        await window.printToThermalPrinter(printData);
+
+    } catch (error) {
+        window.debugLog('❌ FATAL ERROR: ' + error.name, 'error');
+        window.debugLog('Message: ' + error.message, 'error');
+
+        let errorMsg = '❌ Error: ' + error.name + '\n\n';
+
+        if (error.name === 'NetworkError') {
+            errorMsg += '🔧 Printer tidak kompatibel dengan UUID\n\n';
+            errorMsg += '💡 Coba:\n';
+            errorMsg += '1. Restart printer\n';
+            errorMsg += '2. Unpair & pair ulang Bluetooth\n';
+            errorMsg += '3. Atau gunakan Print Normal\n\n';
+        } else {
+            errorMsg += error.message + '\n\n';
+        }
+
+        errorMsg += 'Gunakan Print Normal?';
+
+        if (confirm(errorMsg)) {
+            component.call('printNormal');
+        }
+    }
+};
+
+window.scanPrinterUUID = async function() {
+    window.debugLog('=== SCANNING PRINTER ===', 'info');
+
+    try {
+        const device = await navigator.bluetooth.requestDevice({
+            acceptAllDevices: true,
+            optionalServices: [
+                '49535343-fe7d-4ae5-8fa9-9fafd205e455',
+                '00001101-0000-1000-8000-00805f9b34fb',
+                '0000ffe0-0000-1000-8000-00805f9b34fb',
+                '000018f0-0000-1000-8000-00805f9b34fb',
+                '0000fff0-0000-1000-8000-00805f9b34fb',
+            ]
+        });
+
+        window.debugLog('Device: ' + device.name, 'success');
+        window.debugLog('ID: ' + device.id, 'info');
+
+        const server = await device.gatt.connect();
+        window.debugLog('✅ Connected!', 'success');
+
+        const services = await server.getPrimaryServices();
+        window.debugLog('Found ' + services.length + ' services', 'success');
+
+        for (let service of services) {
+            window.debugLog('===================', 'info');
+            window.debugLog('Service: ' + service.uuid, 'warn');
 
             try {
-                if (!window.savedDeviceId) {
-                    window.savedDeviceId = localStorage.getItem('thermal_printer_id');
-                    window.debugLog('Loaded saved ID: ' + (window.savedDeviceId || 'none'), 'info');
+                const chars = await service.getCharacteristics();
+                for (let char of chars) {
+                    window.debugLog('  Char: ' + char.uuid, 'success');
+                    window.debugLog('  Props: ' + JSON.stringify(char.properties), 'info');
                 }
-
-                const component = window.Livewire.find(
-                    document.querySelector('[wire\\:id]').getAttribute('wire:id')
-                );
-
-                const printData = {
-                    gentan_no: component.get('gentan_no'),
-                    lpk_no: component.get('lpk_no'),
-                    product_name: component.get('product_name'),
-                    code: component.get('code'),
-                    code_alias: component.get('code_alias'),
-                    production_date: component.get('production_date'),
-                    work_hour: component.get('work_hour'),
-                    work_shift: component.get('work_shift'),
-                    machineno: component.get('machineno'),
-                    berat_produksi: component.get('berat_produksi'),
-                    panjang_produksi: component.get('product_panjang'),
-                    selisih: component.get('selisih'),
-                    nomor_han: component.get('nomor_han'),
-                    nik: component.get('nik'),
-                    empname: component.get('empname'),
-                };
-
-                window.debugLog('Data OK: ' + printData.lpk_no, 'success');
-
-                await window.printToThermalPrinter(printData);
-
-            } catch (error) {
-                window.debugLog('❌ FATAL ERROR: ' + error.name, 'error');
-                window.debugLog('Message: ' + error.message, 'error');
-                window.debugLog('Stack: ' + error.stack, 'error');
-
-                let errorMsg = '❌ Error: ' + error.name + '\n\n';
-                errorMsg += error.message + '\n\n';
-                errorMsg += 'Lihat Debug Log untuk detail\n\n';
-                errorMsg += 'Gunakan Print Normal?';
-
-                if (confirm(errorMsg)) {
-                    component.call('printNormal');
-                }
+            } catch (e) {
+                window.debugLog('  Error: ' + e.message, 'error');
             }
-        };
+        }
+
+        alert('✅ Scan selesai!\n\nCek Debug Log untuk UUID yang benar');
+
+    } catch (error) {
+        window.debugLog('❌ Scan error: ' + error.message, 'error');
+        alert('Error: ' + error.message);
+    }
+};
 
         window.savedDeviceId = localStorage.getItem('thermal_printer_id');
 
