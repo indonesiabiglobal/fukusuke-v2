@@ -102,7 +102,7 @@
 					class="btn btn-success btn-print me-2 mb-2"
 					onclick="handleThermalPrint()"
 					{{ !$statusPrint ? 'disabled' : '' }}>
-					<i class="ri-printer-line"></i> Print Thermal 1.3
+					<i class="ri-printer-line"></i> Print Thermal 1.4
 				</button>
 
 				{{-- Button Normal --}}
@@ -215,29 +215,30 @@ window.toggleDebugLog = function() {
             let cmd = '';
 
             // Initialize
-            cmd += ESC + '@'; // Reset
-            cmd += ESC + 'R' + String.fromCharCode(0); // Character set USA
+            cmd += ESC + '@';
+            cmd += ESC + 'R' + String.fromCharCode(0);
 
-            // ========== GENTAN NO (TRIPLE SIZE) ==========
-            cmd += GS + '!' + String.fromCharCode(0x33); // Width x3, Height x3
+            // ========== GENTAN NO (TRIPLE) ==========
+            cmd += GS + '!' + String.fromCharCode(0x33);
             cmd += String(data.gentan_no || '0') + '\n';
-            cmd += GS + '!' + String.fromCharCode(0); // Reset
+            cmd += GS + '!' + String.fromCharCode(0);
             cmd += '\n';
 
-            // ========== LPK NO (DOUBLE SIZE) ==========
+            // ========== LPK NO (DOUBLE) ==========
             cmd += '================================\n';
-            cmd += GS + '!' + String.fromCharCode(0x11); // Width x2, Height x2
+            cmd += GS + '!' + String.fromCharCode(0x11);
             cmd += String(data.lpk_no || '-') + '\n';
-            cmd += GS + '!' + String.fromCharCode(0); // Reset
+            cmd += GS + '!' + String.fromCharCode(0);
             cmd += '================================\n';
 
-            // ========== PRODUCT NAME (BOLD) ==========
-            cmd += ESC + 'E' + String.fromCharCode(1); // Bold ON
+            // ========== PRODUCT NAME (DOUBLE) ==========
+            cmd += GS + '!' + String.fromCharCode(0x11);
             cmd += String(data.product_name || '-') + '\n';
-            cmd += ESC + 'E' + String.fromCharCode(0); // Bold OFF
+            cmd += GS + '!' + String.fromCharCode(0);
             cmd += '--------------------------------\n';
 
-            // ========== DETAIL (NORMAL SIZE) ==========
+            // ========== DETAIL (DOUBLE SIZE SEMUA) ==========
+            cmd += GS + '!' + String.fromCharCode(0x11); // Font 2x
             cmd += 'No. Order   : ' + String(data.code || '-') + '\n';
             cmd += 'Kode        : ' + String(data.code_alias || '-') + '\n';
             cmd += 'Tgl Prod    : ' + String(data.production_date || '-') + '\n';
@@ -245,24 +246,17 @@ window.toggleDebugLog = function() {
             cmd += 'Shift       : ' + String(data.work_shift || '-') + '\n';
             cmd += 'Mesin       : ' + String(data.machineno || '-') + '\n';
             cmd += '--------------------------------\n';
-
-            // ========== BERAT & PANJANG (BOLD) ==========
-            cmd += ESC + 'E' + String.fromCharCode(1); // Bold ON
             cmd += 'Berat       : ' + String(data.berat_produksi || '0') + '\n';
             cmd += 'Panjang     : ' + String(data.panjang_produksi || '0') + '\n';
-            cmd += ESC + 'E' + String.fromCharCode(0); // Bold OFF
-
             cmd += 'Lebih       : ' + String(data.selisih || '0') + '\n';
             cmd += 'No Han      : ' + String(data.nomor_han || '-') + '\n';
             cmd += '--------------------------------\n';
-
-            // ========== NIK & NAMA ==========
             cmd += 'NIK         : ' + String(data.nik || '-') + '\n';
             cmd += 'Nama        : ' + String(data.empname || '-') + '\n';
+            cmd += GS + '!' + String.fromCharCode(0); // Reset
             cmd += '================================\n';
             cmd += '\n\n\n';
 
-            // Cut
             cmd += GS + 'V' + String.fromCharCode(0);
 
             return cmd;
