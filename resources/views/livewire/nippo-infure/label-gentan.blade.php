@@ -152,17 +152,34 @@
         }
 
         window.THERMAL_UUID_CONFIGS = [
-            {
-                name: 'Standard Thermal',
-                serviceUUID: '000018f0-0000-1000-8000-00805f9b34fb',
-                characteristicUUID: '00002af1-0000-1000-8000-00805f9b34fb',
-            },
-            {
-                name: 'Generic Serial',
-                serviceUUID: '0000fff0-0000-1000-8000-00805f9b34fb',
-                characteristicUUID: '0000fff1-0000-1000-8000-00805f9b34fb',
-            },
-        ];
+    // ===== EPSON TM-P20II - TAMBAHKAN INI =====
+    {
+        name: 'Epson TM-P20II (Config 1)',
+        serviceUUID: '49535343-fe7d-4ae5-8fa9-9fafd205e455',
+        characteristicUUID: '49535343-1e4d-4bd9-ba61-23c647249616',
+    },
+    {
+        name: 'Epson TM-P20II (Config 2)',
+        serviceUUID: '00001101-0000-1000-8000-00805f9b34fb',
+        characteristicUUID: '00002a19-0000-1000-8000-00805f9b34fb',
+    },
+    {
+        name: 'Epson TM Series',
+        serviceUUID: '0000ffe0-0000-1000-8000-00805f9b34fb',
+        characteristicUUID: '0000ffe1-0000-1000-8000-00805f9b34fb',
+    },
+    // ===== PANDA PRINTER - YANG LAMA TETAP =====
+    {
+        name: 'Panda Thermal',
+        serviceUUID: '000018f0-0000-1000-8000-00805f9b34fb',
+        characteristicUUID: '00002af1-0000-1000-8000-00805f9b34fb',
+    },
+    {
+        name: 'Generic Serial',
+        serviceUUID: '0000fff0-0000-1000-8000-00805f9b34fb',
+        characteristicUUID: '0000fff1-0000-1000-8000-00805f9b34fb',
+    },
+];
 
         window.connectedDevice = null;
         window.printerCharacteristic = null;
