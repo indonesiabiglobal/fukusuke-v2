@@ -22,7 +22,7 @@ class LabelGentanController extends Component
     public $produk_asemblyid;
     public $statusPrint = false;
 
-    // Tambahkan properties baru untuk data lengkap
+    // ===== TAMBAHKAN SEMUA INI =====
     public $code_alias;
     public $production_date;
     public $work_hour;
@@ -99,6 +99,7 @@ class LabelGentanController extends Component
 
     public function render()
     {
+        // ===== CEK LPK =====
         if (isset($this->lpk_no) && $this->lpk_no != '' && strlen($this->lpk_no) == 10) {
             $data = DB::table('tdorderlpk as tod')
                 ->join('msproduct as mp', 'mp.id', '=', 'tod.product_id')
@@ -110,8 +111,7 @@ class LabelGentanController extends Component
                     'tod.qty_gentan',
                     'tod.product_panjanggulung',
                     'tod.qty_lpk',
-                    'tod.lpk_date',
-                    'tod.reprint_no as reprint_no'
+                    'tod.lpk_date'
                 )
                 ->where('lpk_no', $this->lpk_no)
                 ->first();
@@ -131,8 +131,8 @@ class LabelGentanController extends Component
             }
         }
 
+        // ===== CEK GENTAN - QUERY LENGKAP =====
         if (isset($this->gentan_no) && $this->gentan_no != '') {
-            // ===== QUERY LENGKAP - SAMA SEPERTI report-gentan.blade.php =====
             $data2 = DB::table('tdproduct_assembly as tpa')
                 ->join('tdorderlpk as tod', 'tpa.lpk_id', '=', 'tod.id')
                 ->join('msproduct as mp', 'mp.id', '=', 'tod.product_id')
@@ -177,8 +177,10 @@ class LabelGentanController extends Component
                 $this->berat_produksi = $data2->berat_produksi;
                 $this->berat_standard = $data2->berat_standard;
 
-                // ===== DATA TAMBAHAN UNTUK THERMAL PRINT =====
+                // ===== YANG INI PENTING - ASSIGN SEMUA! =====
+                $this->code = $data2->code;
                 $this->code_alias = $data2->code_alias;
+                $this->product_name = $data2->product_name;
                 $this->production_date = Carbon::parse($data2->production_date)->format('d-m-Y');
                 $this->work_hour = $data2->work_hour;
                 $this->work_shift = $data2->work_shift;
