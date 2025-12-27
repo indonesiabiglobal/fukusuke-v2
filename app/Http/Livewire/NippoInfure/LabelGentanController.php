@@ -115,6 +115,7 @@ class LabelGentanController extends Component
                 )
                 ->where('lpk_no', $this->lpk_no)
                 ->first();
+
             if ($data == null) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor LPK ' . $this->lpk_no . ' Tidak Terdaftar']);
                 $this->resetLpkNo();
@@ -131,7 +132,7 @@ class LabelGentanController extends Component
         }
 
         if (isset($this->gentan_no) && $this->gentan_no != '') {
-            // QUERY LENGKAP - Sama seperti di report-gentan.blade.php
+            // ===== QUERY LENGKAP - SAMA SEPERTI report-gentan.blade.php =====
             $data2 = DB::table('tdproduct_assembly as tpa')
                 ->join('tdorderlpk as tod', 'tpa.lpk_id', '=', 'tod.id')
                 ->join('msproduct as mp', 'mp.id', '=', 'tod.product_id')
@@ -145,10 +146,6 @@ class LabelGentanController extends Component
                     'mp.product_type_code',
                     'mp.name as product_name',
                     'tod.product_panjang',
-                    'tod.qty_gentan',
-                    'tod.product_panjanggulung',
-                    'tod.qty_lpk',
-                    'tod.lpk_date',
                     'tod.total_assembly_line',
                     'tod.panjang_lpk',
                     'tpa.panjang_produksi',
@@ -167,20 +164,20 @@ class LabelGentanController extends Component
                 )
                 ->where('tod.lpk_no', $this->lpk_no)
                 ->where('tpa.gentan_no', $this->gentan_no)
-                ->first(); // Gunakan first() karena harusnya 1 record
+                ->first();
 
             if (!$data2) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Nomor Gentan ' . $this->gentan_no . ' Tidak Terdaftar']);
                 $this->resetGentanNo();
                 $this->statusPrint = false;
             } else {
-                // Assign semua data
+                // ===== ASSIGN SEMUA DATA =====
                 $this->produk_asemblyid = $data2->produk_asembly_id;
                 $this->product_panjang = $data2->panjang_produksi;
                 $this->berat_produksi = $data2->berat_produksi;
                 $this->berat_standard = $data2->berat_standard;
 
-                // Data tambahan untuk thermal print
+                // ===== DATA TAMBAHAN UNTUK THERMAL PRINT =====
                 $this->code_alias = $data2->code_alias;
                 $this->production_date = Carbon::parse($data2->production_date)->format('d-m-Y');
                 $this->work_hour = $data2->work_hour;
