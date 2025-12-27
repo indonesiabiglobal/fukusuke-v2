@@ -240,62 +240,61 @@ window.toggleDebugLog = function() {
             const GS = '\x1D';
             let cmd = '';
 
-            cmd += ESC + '@';
-            cmd += ESC + 'a' + String.fromCharCode(0);
-            cmd += GS + '!' + String.fromCharCode(0x33);
-            cmd += (data.gentan_no || '-') + '\n';
-            cmd += GS + '!' + String.fromCharCode(0);
-            cmd += '\n';
+            cmd += ESC + '@'; // Initialize
 
-            // QR CODE
-            cmd += ESC + 'a' + String.fromCharCode(1);
-            const qrData = data.lpk_no || '251030-070';
-            cmd += GS + '(k' + String.fromCharCode(4, 0, 49, 65, 50, 0);
-            cmd += GS + '(k' + String.fromCharCode(3, 0, 49, 67, 6);
-            cmd += GS + '(k' + String.fromCharCode(3, 0, 49, 69, 49);
-            const qrLen = qrData.length + 3;
-            const pL = qrLen % 256;
-            const pH = Math.floor(qrLen / 256);
-            cmd += GS + '(k' + String.fromCharCode(pL, pH, 49, 80, 48) + qrData;
-            cmd += GS + '(k' + String.fromCharCode(3, 0, 49, 81, 48);
+            // ========== GENTAN NO (BESAR) ==========
+            cmd += ESC + 'a' + String.fromCharCode(0); // Left align
+            cmd += GS + '!' + String.fromCharCode(0x33); // Triple size
+            cmd += (data.gentan_no || '-') + '\n';
+            cmd += GS + '!' + String.fromCharCode(0); // Normal
             cmd += '\n\n';
 
-            cmd += ESC + 'a' + String.fromCharCode(0);
+            // ========== SKIP QR CODE DULU - UNTUK TEST ==========
+
+            // ========== LPK NO ==========
             cmd += '================================\n';
-            cmd += ESC + 'a' + String.fromCharCode(1);
-            cmd += GS + '!' + String.fromCharCode(0x11);
+            cmd += ESC + 'a' + String.fromCharCode(1); // Center
+            cmd += GS + '!' + String.fromCharCode(0x11); // Double size
             cmd += (data.lpk_no || '-') + '\n';
-            cmd += GS + '!' + String.fromCharCode(0);
-            cmd += ESC + 'a' + String.fromCharCode(0);
+            cmd += GS + '!' + String.fromCharCode(0); // Normal
+            cmd += ESC + 'a' + String.fromCharCode(0); // Left
             cmd += '================================\n';
 
-            cmd += ESC + 'a' + String.fromCharCode(1);
+            // ========== NAMA PRODUK ==========
+            cmd += ESC + 'a' + String.fromCharCode(1); // Center
             cmd += (data.product_name || '-') + '\n';
-            cmd += ESC + 'a' + String.fromCharCode(0);
+            cmd += ESC + 'a' + String.fromCharCode(0); // Left
             cmd += '--------------------------------\n';
 
+            // ========== NO ORDER & KODE ==========
             cmd += 'No. Order   : ' + (data.code || '-') + '\n';
             cmd += 'Kode        : ' + (data.code_alias || '-') + '\n';
             cmd += '--------------------------------\n';
+
+            // ========== TANGGAL PRODUKSI ==========
             cmd += 'Tgl Prod    : ' + (data.production_date || '-') + '\n';
             cmd += 'Jam         : ' + (data.work_hour || '-') + '\n';
             cmd += 'Shift       : ' + (data.work_shift || '-') + '\n';
             cmd += 'Mesin       : ' + (data.machineno || '-') + '\n';
             cmd += '--------------------------------\n';
+
+            // ========== BERAT & PANJANG ==========
             cmd += 'Berat       : ' + (data.berat_produksi || '0') + '\n';
             cmd += 'Panjang     : ' + (data.panjang_produksi || '0') + '\n';
             cmd += 'Lebih       : ' + (data.selisih || '0') + '\n';
             cmd += 'No Han      : ' + (data.nomor_han || '-') + '\n';
             cmd += '--------------------------------\n';
+
+            // ========== NIK & NAMA ==========
             cmd += 'NIK         : ' + (data.nik || '-') + '\n';
             cmd += 'Nama        : ' + (data.empname || '-') + '\n';
             cmd += '================================\n\n\n';
 
+            // Cut paper
             cmd += GS + 'V' + String.fromCharCode(66, 0);
 
             return cmd;
         };
-
         // Reconnect
         window.reconnectSavedDevice = async function() {
             if (!window.savedDeviceId) {
@@ -475,75 +474,92 @@ window.toggleDebugLog = function() {
 
         // Main handler
         window.handleThermalPrint = async function() {
-    window.debugLog('=== PRINT REQUEST ===', 'info');
+            window.debugLog('=== PRINT REQUEST ===', 'info');
 
-    if (!('bluetooth' in navigator)) {
-        window.debugLog('❌ Bluetooth API tidak ada!', 'error');
-        alert('❌ Browser tidak support Bluetooth\n\nPakai Chrome/Edge');
-        return;
-    }
+            if (!('bluetooth' in navigator)) {
+                window.debugLog('❌ Bluetooth API tidak ada!', 'error');
+                alert('❌ Browser tidak support Bluetooth\n\nPakai Chrome/Edge');
+                return;
+            }
 
-    try {
-        if (!window.savedDeviceId) {
-            window.savedDeviceId = localStorage.getItem('thermal_printer_id');
-            window.debugLog('Loaded saved ID: ' + (window.savedDeviceId || 'none'), 'info');
-        }
+            try {
+                if (!window.savedDeviceId) {
+                    window.savedDeviceId = localStorage.getItem('thermal_printer_id');
+                    window.debugLog('Loaded saved ID: ' + (window.savedDeviceId || 'none'), 'info');
+                }
 
-        const component = window.Livewire.find(
-            document.querySelector('[wire\\:id]').getAttribute('wire:id')
-        );
+                const component = window.Livewire.find(
+                    document.querySelector('[wire\\:id]').getAttribute('wire:id')
+                );
 
-        const printData = {
-            gentan_no: component.get('gentan_no'),
-            lpk_no: component.get('lpk_no'),
-            product_name: component.get('product_name'),
-            code: component.get('code'),
-            code_alias: component.get('code_alias'),
-            production_date: component.get('production_date'),
-            work_hour: component.get('work_hour'),
-            work_shift: component.get('work_shift'),
-            machineno: component.get('machineno'),
-            berat_produksi: component.get('berat_produksi'),
-            panjang_produksi: component.get('product_panjang'),
-            selisih: component.get('selisih'),
-            nomor_han: component.get('nomor_han'),
-            nik: component.get('nik'),
-            empname: component.get('empname'),
+                const printData = {
+                    gentan_no: component.get('gentan_no'),
+                    lpk_no: component.get('lpk_no'),
+                    product_name: component.get('product_name'),
+                    code: component.get('code'),
+                    code_alias: component.get('code_alias'),
+                    production_date: component.get('production_date'),
+                    work_hour: component.get('work_hour'),
+                    work_shift: component.get('work_shift'),
+                    machineno: component.get('machineno'),
+                    berat_produksi: component.get('berat_produksi'),
+                    panjang_produksi: component.get('product_panjang'),
+                    selisih: component.get('selisih'),
+                    nomor_han: component.get('nomor_han'),
+                    nik: component.get('nik'),
+                    empname: component.get('empname'),
+                };
+
+                // ===== TAMBAHKAN DEBUG LOG UNTUK CEK DATA =====
+                window.debugLog('=== PRINT DATA ===', 'warn');
+                window.debugLog('gentan_no: ' + printData.gentan_no, 'info');
+                window.debugLog('lpk_no: ' + printData.lpk_no, 'info');
+                window.debugLog('product_name: ' + printData.product_name, 'info');
+                window.debugLog('code: ' + printData.code, 'info');
+                window.debugLog('code_alias: ' + printData.code_alias, 'info');
+                window.debugLog('production_date: ' + printData.production_date, 'info');
+                window.debugLog('work_hour: ' + printData.work_hour, 'info');
+                window.debugLog('work_shift: ' + printData.work_shift, 'info');
+                window.debugLog('machineno: ' + printData.machineno, 'info');
+                window.debugLog('berat_produksi: ' + printData.berat_produksi, 'info');
+                window.debugLog('panjang_produksi: ' + printData.panjang_produksi, 'info');
+                window.debugLog('selisih: ' + printData.selisih, 'info');
+                window.debugLog('nomor_han: ' + printData.nomor_han, 'info');
+                window.debugLog('nik: ' + printData.nik, 'info');
+                window.debugLog('empname: ' + printData.empname, 'info');
+                window.debugLog('==================', 'warn');
+
+                // PRINT LANGSUNG - TANPA RECONNECT LOOP
+                if (!window.printerCharacteristic) {
+                    window.debugLog('No printer, connecting...', 'warn');
+                    await window.connectThermalPrinter();
+                }
+
+                await window.printToThermalPrinter(printData);
+
+            } catch (error) {
+                window.debugLog('❌ FATAL ERROR: ' + error.name, 'error');
+                window.debugLog('Message: ' + error.message, 'error');
+
+                let errorMsg = '❌ Error: ' + error.name + '\n\n';
+
+                if (error.name === 'NetworkError') {
+                    errorMsg += '🔧 Printer tidak kompatibel dengan UUID\n\n';
+                    errorMsg += '💡 Coba:\n';
+                    errorMsg += '1. Restart printer\n';
+                    errorMsg += '2. Unpair & pair ulang Bluetooth\n';
+                    errorMsg += '3. Atau gunakan Print Normal\n\n';
+                } else {
+                    errorMsg += error.message + '\n\n';
+                }
+
+                errorMsg += 'Gunakan Print Normal?';
+
+                if (confirm(errorMsg)) {
+                    component.call('printNormal');
+                }
+            }
         };
-
-        window.debugLog('Data OK: ' + printData.lpk_no, 'success');
-
-        // PRINT LANGSUNG - TANPA RECONNECT LOOP
-        if (!window.printerCharacteristic) {
-            window.debugLog('No printer, connecting...', 'warn');
-            await window.connectThermalPrinter();
-        }
-
-        await window.printToThermalPrinter(printData);
-
-    } catch (error) {
-        window.debugLog('❌ FATAL ERROR: ' + error.name, 'error');
-        window.debugLog('Message: ' + error.message, 'error');
-
-        let errorMsg = '❌ Error: ' + error.name + '\n\n';
-
-        if (error.name === 'NetworkError') {
-            errorMsg += '🔧 Printer tidak kompatibel dengan UUID\n\n';
-            errorMsg += '💡 Coba:\n';
-            errorMsg += '1. Restart printer\n';
-            errorMsg += '2. Unpair & pair ulang Bluetooth\n';
-            errorMsg += '3. Atau gunakan Print Normal\n\n';
-        } else {
-            errorMsg += error.message + '\n\n';
-        }
-
-        errorMsg += 'Gunakan Print Normal?';
-
-        if (confirm(errorMsg)) {
-            component.call('printNormal');
-        }
-    }
-};
 
 window.scanPrinterUUID = async function() {
     window.debugLog('=== SCANNING PRINTER ===', 'info');
