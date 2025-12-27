@@ -101,13 +101,8 @@
 				</button>
 
 				<div class="w-100"></div>
-				<small class="text-danger">
-					💡 <strong>Thermal Print di HP:</strong><br>
-					1. Nyalakan printer bluetooth<br>
-					2. Pair di Settings → Bluetooth<br>
-					3. Klik "Print Thermal"<br>
-					<br>
-					⚠️ Jika gagal, gunakan <strong>Print Normal</strong>
+				<small class="text-info">
+					💡 Support: Printer Panda & Epson TM-P20II
 				</small>
 			</div>
 		</div>
