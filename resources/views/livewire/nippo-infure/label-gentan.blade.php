@@ -102,7 +102,7 @@
 					class="btn btn-success btn-print me-2 mb-2"
 					onclick="handleThermalPrint()"
 					{{ !$statusPrint ? 'disabled' : '' }}>
-					<i class="ri-printer-line"></i> Print Thermal 1.2
+					<i class="ri-printer-line"></i> Print Thermal 1.3
 				</button>
 
 				{{-- Button Normal --}}
@@ -210,27 +210,34 @@ window.toggleDebugLog = function() {
 
         // Generate ESC/POS commands
         window.generateEscPosCommands = function(data) {
+            const ESC = '\x1B';
+            const GS = '\x1D';
             let cmd = '';
 
-            // Initialize printer
-            cmd += '\x1B\x40'; // ESC @
+            // Initialize
+            cmd += ESC + '@'; // Reset
+            cmd += ESC + 'R' + String.fromCharCode(0); // Character set USA
 
-            // Set international character set (USA)
-            cmd += '\x1B\x52\x00'; // ESC R 0
+            // ========== GENTAN NO (TRIPLE SIZE) ==========
+            cmd += GS + '!' + String.fromCharCode(0x33); // Width x3, Height x3
+            cmd += String(data.gentan_no || '0') + '\n';
+            cmd += GS + '!' + String.fromCharCode(0); // Reset
+            cmd += '\n';
 
-            // GENTAN NO
-            cmd += String(data.gentan_no || '0') + '\n\n';
-
-            // LPK NO
+            // ========== LPK NO (DOUBLE SIZE) ==========
             cmd += '================================\n';
+            cmd += GS + '!' + String.fromCharCode(0x11); // Width x2, Height x2
             cmd += String(data.lpk_no || '-') + '\n';
+            cmd += GS + '!' + String.fromCharCode(0); // Reset
             cmd += '================================\n';
 
-            // PRODUCT NAME
+            // ========== PRODUCT NAME (BOLD) ==========
+            cmd += ESC + 'E' + String.fromCharCode(1); // Bold ON
             cmd += String(data.product_name || '-') + '\n';
+            cmd += ESC + 'E' + String.fromCharCode(0); // Bold OFF
             cmd += '--------------------------------\n';
 
-            // DETAIL - CONVERT SEMUA KE STRING
+            // ========== DETAIL (NORMAL SIZE) ==========
             cmd += 'No. Order   : ' + String(data.code || '-') + '\n';
             cmd += 'Kode        : ' + String(data.code_alias || '-') + '\n';
             cmd += 'Tgl Prod    : ' + String(data.production_date || '-') + '\n';
@@ -238,18 +245,25 @@ window.toggleDebugLog = function() {
             cmd += 'Shift       : ' + String(data.work_shift || '-') + '\n';
             cmd += 'Mesin       : ' + String(data.machineno || '-') + '\n';
             cmd += '--------------------------------\n';
+
+            // ========== BERAT & PANJANG (BOLD) ==========
+            cmd += ESC + 'E' + String.fromCharCode(1); // Bold ON
             cmd += 'Berat       : ' + String(data.berat_produksi || '0') + '\n';
             cmd += 'Panjang     : ' + String(data.panjang_produksi || '0') + '\n';
+            cmd += ESC + 'E' + String.fromCharCode(0); // Bold OFF
+
             cmd += 'Lebih       : ' + String(data.selisih || '0') + '\n';
             cmd += 'No Han      : ' + String(data.nomor_han || '-') + '\n';
             cmd += '--------------------------------\n';
+
+            // ========== NIK & NAMA ==========
             cmd += 'NIK         : ' + String(data.nik || '-') + '\n';
             cmd += 'Nama        : ' + String(data.empname || '-') + '\n';
             cmd += '================================\n';
             cmd += '\n\n\n';
 
-            // Cut paper
-            cmd += '\x1D\x56\x00'; // GS V 0 (full cut)
+            // Cut
+            cmd += GS + 'V' + String.fromCharCode(0);
 
             return cmd;
         };
