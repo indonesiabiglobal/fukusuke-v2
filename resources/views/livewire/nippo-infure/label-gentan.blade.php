@@ -89,7 +89,7 @@
 					class="btn btn-success btn-print me-2 mb-2"
 					onclick="handleThermalPrint()"
 					{{ !$statusPrint ? 'disabled' : '' }}>
-					<i class="ri-printer-line"></i> Print Thermal
+					<i class="ri-printer-line"></i> Print Thermal 2
 				</button>
 
 				{{-- Button Normal --}}
@@ -342,40 +342,73 @@
         };
 
         // Connect to new device
-        window.connectThermalPrinter = async function() {
-            const config = window.THERMAL_UUID_CONFIGS[window.currentConfigIndex];
-            console.log('🔍 Selecting new device:', config.name);
+        // Connect to new device
+window.connectThermalPrinter = async function() {
+    const config = window.THERMAL_UUID_CONFIGS[window.currentConfigIndex];
+    console.log('🔍 Trying config:', config.name);
 
-            try {
-                const device = await navigator.bluetooth.requestDevice({
-                    filters: [{ services: [config.serviceUUID] }],
-                    optionalServices: [config.serviceUUID]
-                });
+    try {
+        let device;
 
-                const server = await device.gatt.connect();
-                const service = await server.getPrimaryService(config.serviceUUID);
-                const characteristic = await service.getCharacteristic(config.characteristicUUID);
+        // ===== CARA 1: Coba dengan filter UUID =====
+        try {
+            device = await navigator.bluetooth.requestDevice({
+                filters: [{ services: [config.serviceUUID] }],
+                optionalServices: [config.serviceUUID]
+            });
+        } catch (filterError) {
+            console.log('⚠️ Filter gagal, coba acceptAllDevices...');
 
-                window.connectedDevice = device;
-                window.printerCharacteristic = characteristic;
+            // ===== CARA 2: Scan semua device (fallback) =====
+            device = await navigator.bluetooth.requestDevice({
+                acceptAllDevices: true,
+                optionalServices: [
+                    config.serviceUUID,
+                    // Tambahkan semua UUID yang mungkin
+                    '49535343-fe7d-4ae5-8fa9-9fafd205e455',
+                    '00001101-0000-1000-8000-00805f9b34fb',
+                    '0000ffe0-0000-1000-8000-00805f9b34fb',
+                    '000018f0-0000-1000-8000-00805f9b34fb',
+                    '0000fff0-0000-1000-8000-00805f9b34fb',
+                ]
+            });
+        }
 
-                // Save device ID
-                window.savedDeviceId = device.id;
-                localStorage.setItem('thermal_printer_id', device.id);
+        console.log('✅ Device selected:', device.name);
 
-                console.log('✅ New device connected:', device.name);
-                return true;
+        const server = await device.gatt.connect();
+        console.log('✅ Connected to server');
 
-            } catch (error) {
-                console.warn('❌ Connection failed:', config.name);
-                window.currentConfigIndex++;
+        const service = await server.getPrimaryService(config.serviceUUID);
+        console.log('✅ Service found:', config.serviceUUID);
 
-                if (window.currentConfigIndex < window.THERMAL_UUID_CONFIGS.length) {
-                    return await window.connectThermalPrinter();
-                }
-                throw error;
-            }
-        };
+        const characteristic = await service.getCharacteristic(config.characteristicUUID);
+        console.log('✅ Characteristic found:', config.characteristicUUID);
+
+        window.connectedDevice = device;
+        window.printerCharacteristic = characteristic;
+
+        // Save device ID
+        window.savedDeviceId = device.id;
+        localStorage.setItem('thermal_printer_id', device.id);
+
+        console.log('✅ Printer ready:', device.name);
+        return true;
+
+    } catch (error) {
+        console.warn('❌ Config failed:', config.name, '-', error.message);
+
+        // Try next config
+        window.currentConfigIndex++;
+
+        if (window.currentConfigIndex < window.THERMAL_UUID_CONFIGS.length) {
+            console.log('🔄 Trying next config...');
+            return await window.connectThermalPrinter();
+        }
+
+        throw error;
+    }
+};
 
         // Print function
         window.printToThermalPrinter = async function(data) {
