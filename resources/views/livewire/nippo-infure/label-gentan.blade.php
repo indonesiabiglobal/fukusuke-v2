@@ -102,7 +102,7 @@
 					class="btn btn-success btn-print me-2 mb-2"
 					onclick="handleThermalPrint()"
 					{{ !$statusPrint ? 'disabled' : '' }}>
-					<i class="ri-printer-line"></i> Print Thermal 1.4
+					<i class="ri-printer-line"></i> Print Thermal 1.5
 				</button>
 
 				{{-- Button Normal --}}
@@ -204,9 +204,11 @@ window.toggleDebugLog = function() {
             },
         ];
 
+        // ===== INITIALIZE VARIABLES =====
         window.connectedDevice = null;
         window.printerCharacteristic = null;
         window.savedDeviceId = null;
+        window.savedConfigIndex = 0;
 
         // Generate ESC/POS commands
         window.generateEscPosCommands = function(data) {
@@ -214,31 +216,26 @@ window.toggleDebugLog = function() {
             const GS = '\x1D';
             let cmd = '';
 
-            // Initialize
             cmd += ESC + '@';
             cmd += ESC + 'R' + String.fromCharCode(0);
 
-            // ========== GENTAN NO (TRIPLE) ==========
             cmd += GS + '!' + String.fromCharCode(0x33);
             cmd += String(data.gentan_no || '0') + '\n';
             cmd += GS + '!' + String.fromCharCode(0);
             cmd += '\n';
 
-            // ========== LPK NO (DOUBLE) ==========
             cmd += '================================\n';
             cmd += GS + '!' + String.fromCharCode(0x11);
             cmd += String(data.lpk_no || '-') + '\n';
             cmd += GS + '!' + String.fromCharCode(0);
             cmd += '================================\n';
 
-            // ========== PRODUCT NAME (DOUBLE) ==========
             cmd += GS + '!' + String.fromCharCode(0x11);
             cmd += String(data.product_name || '-') + '\n';
             cmd += GS + '!' + String.fromCharCode(0);
             cmd += '--------------------------------\n';
 
-            // ========== DETAIL (DOUBLE SIZE SEMUA) ==========
-            cmd += GS + '!' + String.fromCharCode(0x11); // Font 2x
+            cmd += GS + '!' + String.fromCharCode(0x11);
             cmd += 'No. Order   : ' + String(data.code || '-') + '\n';
             cmd += 'Kode        : ' + String(data.code_alias || '-') + '\n';
             cmd += 'Tgl Prod    : ' + String(data.production_date || '-') + '\n';
@@ -253,7 +250,7 @@ window.toggleDebugLog = function() {
             cmd += '--------------------------------\n';
             cmd += 'NIK         : ' + String(data.nik || '-') + '\n';
             cmd += 'Nama        : ' + String(data.empname || '-') + '\n';
-            cmd += GS + '!' + String.fromCharCode(0); // Reset
+            cmd += GS + '!' + String.fromCharCode(0);
             cmd += '================================\n';
             cmd += '\n\n\n';
 
@@ -262,40 +259,64 @@ window.toggleDebugLog = function() {
             return cmd;
         };
 
-
         // Reconnect
         window.reconnectSavedDevice = async function() {
-            if (!window.savedDeviceId) return false;
+            if (!window.savedDeviceId) {
+                window.debugLog('📍 No saved device', 'info');
+                return false;
+            }
 
             try {
+                window.debugLog('🔄 Reconnecting to saved device...', 'info');
+
                 const devices = await navigator.bluetooth.getDevices();
                 const savedDevice = devices.find(d => d.id === window.savedDeviceId);
 
                 if (!savedDevice) {
+                    window.debugLog('❌ Saved device not found in paired devices', 'warn');
                     window.savedDeviceId = null;
                     localStorage.removeItem('thermal_printer_id');
+                    localStorage.removeItem('thermal_config_index');
                     return false;
                 }
 
+                window.debugLog('Found device: ' + savedDevice.name, 'success');
+
                 if (savedDevice.gatt.connected) {
+                    window.debugLog('Already connected!', 'success');
                     window.connectedDevice = savedDevice;
+
                     const service = await savedDevice.gatt.getPrimaryService('49535343-fe7d-4ae5-8fa9-9fafd205e455');
                     const characteristic = await service.getCharacteristic('49535343-1e4d-4bd9-ba61-23c647249616');
                     window.printerCharacteristic = characteristic;
+
                     return true;
                 }
 
+                window.debugLog('Connecting to GATT...', 'info');
                 const server = await savedDevice.gatt.connect();
+
+                window.debugLog('Getting service...', 'info');
                 const service = await server.getPrimaryService('49535343-fe7d-4ae5-8fa9-9fafd205e455');
+
+                window.debugLog('Getting characteristic...', 'info');
                 const characteristic = await service.getCharacteristic('49535343-1e4d-4bd9-ba61-23c647249616');
 
                 window.connectedDevice = savedDevice;
                 window.printerCharacteristic = characteristic;
+
+                window.debugLog('✅ Reconnected successfully!', 'success');
                 return true;
 
             } catch (error) {
+                window.debugLog('❌ Reconnect failed: ' + error.message, 'error');
+
                 window.savedDeviceId = null;
+                window.printerCharacteristic = null;
+                window.connectedDevice = null;
                 localStorage.removeItem('thermal_printer_id');
+                localStorage.removeItem('thermal_config_index');
+
                 return false;
             }
         };
@@ -314,52 +335,53 @@ window.toggleDebugLog = function() {
             window.connectedDevice = device;
             window.printerCharacteristic = characteristic;
             window.savedDeviceId = device.id;
+            window.savedConfigIndex = 0;
+
             localStorage.setItem('thermal_printer_id', device.id);
+            localStorage.setItem('thermal_config_index', '0');
+
+            window.debugLog('✅ Printer tersimpan: ' + device.name, 'success');
 
             return true;
         };
 
-        // Print function - DENGAN DELAY LEBIH LAMA
+        // Print
         window.printToThermalPrinter = async function(data) {
             window.debugLog('Generating commands...', 'info');
             const commands = window.generateEscPosCommands(data);
 
             window.debugLog('Command length: ' + commands.length + ' chars', 'info');
 
-            // PENTING: Convert ke bytes dengan UTF-8
             const encoder = new TextEncoder();
             const bytes = encoder.encode(commands);
 
             window.debugLog('Bytes length: ' + bytes.length, 'info');
 
-            if (!window.printerCharacteristic) {
-                window.debugLog('No connection, connecting...', 'warn');
+            if (!window.printerCharacteristic || !window.connectedDevice) {
+                window.debugLog('No connection, trying to reconnect...', 'warn');
+
                 const reconnected = await window.reconnectSavedDevice();
+
                 if (!reconnected) {
+                    window.debugLog('Reconnect failed, asking for new device...', 'warn');
                     await window.connectThermalPrinter();
                 }
+            } else {
+                window.debugLog('Using existing connection', 'success');
             }
 
-            // KIRIM DENGAN CHUNK KECIL & DELAY LEBIH LAMA
-            const chunkSize = 128; // KURANGI dari 512 ke 128
+            const chunkSize = 128;
             const totalChunks = Math.ceil(bytes.length / chunkSize);
 
             window.debugLog('Sending ' + totalChunks + ' chunks...', 'info');
 
             for (let i = 0; i < bytes.length; i += chunkSize) {
                 const chunk = bytes.slice(i, i + chunkSize);
-                const chunkNum = Math.floor(i / chunkSize) + 1;
-
                 await window.printerCharacteristic.writeValue(chunk);
-                window.debugLog('Chunk ' + chunkNum + '/' + totalChunks + ' sent', 'success');
-
-                // DELAY LEBIH LAMA - 200ms
                 await new Promise(r => setTimeout(r, 200));
             }
 
             window.debugLog('All data sent!', 'success');
-
-            // Wait for printer to finish
             await new Promise(r => setTimeout(r, 1000));
 
             if (typeof Toastify !== 'undefined') {
@@ -373,9 +395,8 @@ window.toggleDebugLog = function() {
             }
         };
 
-        // Main handler - DENGAN DEBUG LENGKAP
+        // Main handler
         window.handleThermalPrint = async function() {
-            // Auto show debug
             document.getElementById('debugLog').style.display = 'block';
 
             window.debugLog('=== MEMULAI PRINT ===', 'warn');
@@ -387,10 +408,6 @@ window.toggleDebugLog = function() {
             }
 
             try {
-                if (!window.savedDeviceId) {
-                    window.savedDeviceId = localStorage.getItem('thermal_printer_id');
-                }
-
                 const component = window.Livewire.find(
                     document.querySelector('[wire\\:id]').getAttribute('wire:id')
                 );
@@ -415,7 +432,6 @@ window.toggleDebugLog = function() {
                     empname: component.get('empname'),
                 };
 
-                // DEBUG SEMUA DATA
                 window.debugLog('=== DATA YANG AKAN DICETAK ===', 'warn');
                 window.debugLog('gentan_no: ' + (printData.gentan_no || 'KOSONG'), printData.gentan_no ? 'success' : 'error');
                 window.debugLog('lpk_no: ' + (printData.lpk_no || 'KOSONG'), printData.lpk_no ? 'success' : 'error');
@@ -448,7 +464,15 @@ window.toggleDebugLog = function() {
             }
         };
 
+        // ===== LOAD SAVED DEVICE - CUMA SEKALI DI SINI =====
         window.savedDeviceId = localStorage.getItem('thermal_printer_id');
+        window.savedConfigIndex = parseInt(localStorage.getItem('thermal_config_index') || '0');
+
+        if (window.savedDeviceId) {
+            console.log('✅ Found saved printer:', window.savedDeviceId);
+        } else {
+            console.log('📍 No saved printer');
+        }
 
         console.log('✅ Thermal module loaded');
 
