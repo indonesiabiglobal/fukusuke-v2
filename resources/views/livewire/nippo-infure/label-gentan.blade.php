@@ -102,7 +102,7 @@
 					class="btn btn-success btn-print me-2 mb-2"
 					onclick="handleThermalPrint()"
 					{{ !$statusPrint ? 'disabled' : '' }}>
-					<i class="ri-printer-line"></i> Print Thermal 1.1
+					<i class="ri-printer-line"></i> Print Thermal 1.2
 				</button>
 
 				{{-- Button Normal --}}
@@ -210,46 +210,49 @@ window.toggleDebugLog = function() {
 
         // Generate ESC/POS commands
         window.generateEscPosCommands = function(data) {
-    let cmd = '';
+            let cmd = '';
 
-    // Initialize
-    cmd += '\x1B\x40';
+            // Initialize printer
+            cmd += '\x1B\x40'; // ESC @
 
-    // GENTAN NO
-    cmd += data.gentan_no + '\n\n';
+            // Set international character set (USA)
+            cmd += '\x1B\x52\x00'; // ESC R 0
 
-    // LPK NO
-    cmd += '================================\n';
-    cmd += data.lpk_no + '\n';
-    cmd += '================================\n';
+            // GENTAN NO
+            cmd += String(data.gentan_no || '0') + '\n\n';
 
-    // PRODUCT NAME
-    cmd += data.product_name + '\n';
-    cmd += '--------------------------------\n';
+            // LPK NO
+            cmd += '================================\n';
+            cmd += String(data.lpk_no || '-') + '\n';
+            cmd += '================================\n';
 
-    // SEMUA DATA - PLAIN TEXT
-    cmd += 'No. Order   : ' + data.code + '\n';
-    cmd += 'Kode        : ' + data.code_alias + '\n';
-    cmd += 'Tgl Prod    : ' + data.production_date + '\n';
-    cmd += 'Jam         : ' + data.work_hour + '\n';
-    cmd += 'Shift       : ' + data.work_shift + '\n';
-    cmd += 'Mesin       : ' + data.machineno + '\n';
-    cmd += '--------------------------------\n';
-    cmd += 'Berat       : ' + data.berat_produksi + '\n';
-    cmd += 'Panjang     : ' + data.panjang_produksi + '\n';
-    cmd += 'Lebih       : ' + data.selisih + '\n';
-    cmd += 'No Han      : ' + data.nomor_han + '\n';
-    cmd += '--------------------------------\n';
-    cmd += 'NIK         : ' + data.nik + '\n';
-    cmd += 'Nama        : ' + data.empname + '\n';
-    cmd += '================================\n';
-    cmd += '\n\n\n';
+            // PRODUCT NAME
+            cmd += String(data.product_name || '-') + '\n';
+            cmd += '--------------------------------\n';
 
-    // Cut
-    cmd += '\x1D\x56\x42\x00';
+            // DETAIL - CONVERT SEMUA KE STRING
+            cmd += 'No. Order   : ' + String(data.code || '-') + '\n';
+            cmd += 'Kode        : ' + String(data.code_alias || '-') + '\n';
+            cmd += 'Tgl Prod    : ' + String(data.production_date || '-') + '\n';
+            cmd += 'Jam         : ' + String(data.work_hour || '-') + '\n';
+            cmd += 'Shift       : ' + String(data.work_shift || '-') + '\n';
+            cmd += 'Mesin       : ' + String(data.machineno || '-') + '\n';
+            cmd += '--------------------------------\n';
+            cmd += 'Berat       : ' + String(data.berat_produksi || '0') + '\n';
+            cmd += 'Panjang     : ' + String(data.panjang_produksi || '0') + '\n';
+            cmd += 'Lebih       : ' + String(data.selisih || '0') + '\n';
+            cmd += 'No Han      : ' + String(data.nomor_han || '-') + '\n';
+            cmd += '--------------------------------\n';
+            cmd += 'NIK         : ' + String(data.nik || '-') + '\n';
+            cmd += 'Nama        : ' + String(data.empname || '-') + '\n';
+            cmd += '================================\n';
+            cmd += '\n\n\n';
 
-    return cmd;
-};
+            // Cut paper
+            cmd += '\x1D\x56\x00'; // GS V 0 (full cut)
+
+            return cmd;
+        };
 
 
         // Reconnect
@@ -308,25 +311,48 @@ window.toggleDebugLog = function() {
             return true;
         };
 
-        // Print
+        // Print function - DENGAN DELAY LEBIH LAMA
         window.printToThermalPrinter = async function(data) {
+            window.debugLog('Generating commands...', 'info');
             const commands = window.generateEscPosCommands(data);
+
+            window.debugLog('Command length: ' + commands.length + ' chars', 'info');
+
+            // PENTING: Convert ke bytes dengan UTF-8
             const encoder = new TextEncoder();
             const bytes = encoder.encode(commands);
 
+            window.debugLog('Bytes length: ' + bytes.length, 'info');
+
             if (!window.printerCharacteristic) {
+                window.debugLog('No connection, connecting...', 'warn');
                 const reconnected = await window.reconnectSavedDevice();
                 if (!reconnected) {
                     await window.connectThermalPrinter();
                 }
             }
 
-            const chunkSize = 512;
+            // KIRIM DENGAN CHUNK KECIL & DELAY LEBIH LAMA
+            const chunkSize = 128; // KURANGI dari 512 ke 128
+            const totalChunks = Math.ceil(bytes.length / chunkSize);
+
+            window.debugLog('Sending ' + totalChunks + ' chunks...', 'info');
+
             for (let i = 0; i < bytes.length; i += chunkSize) {
                 const chunk = bytes.slice(i, i + chunkSize);
+                const chunkNum = Math.floor(i / chunkSize) + 1;
+
                 await window.printerCharacteristic.writeValue(chunk);
-                await new Promise(r => setTimeout(r, 100));
+                window.debugLog('Chunk ' + chunkNum + '/' + totalChunks + ' sent', 'success');
+
+                // DELAY LEBIH LAMA - 200ms
+                await new Promise(r => setTimeout(r, 200));
             }
+
+            window.debugLog('All data sent!', 'success');
+
+            // Wait for printer to finish
+            await new Promise(r => setTimeout(r, 1000));
 
             if (typeof Toastify !== 'undefined') {
                 Toastify({
