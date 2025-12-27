@@ -8,6 +8,7 @@ use Carbon\Carbon;
 
 class LabelGentanController extends Component
 {
+    // ===== PROPERTIES LENGKAP =====
     public $lpk_no;
     public $code;
     public $product_name;
@@ -22,7 +23,7 @@ class LabelGentanController extends Component
     public $produk_asemblyid;
     public $statusPrint = false;
 
-    // ===== TAMBAHKAN SEMUA INI =====
+    // DATA TAMBAHAN
     public $code_alias;
     public $production_date;
     public $work_hour;
@@ -32,34 +33,6 @@ class LabelGentanController extends Component
     public $nomor_han;
     public $nik;
     public $empname;
-
-    public function print()
-    {
-        // Generate data untuk thermal printer
-        $printData = $this->generateThermalPrintData();
-
-        // Dispatch event untuk print via Bluetooth
-        $this->dispatch('printThermalLabel', $printData);
-
-        $this->statusPrint = false;
-    }
-
-    private function generateThermalPrintData()
-    {
-        return [
-            'type' => 'label_gentan',
-            'lpk_no' => $this->lpk_no,
-            'gentan_no' => $this->gentan_no,
-            'code' => $this->code,
-            'product_name' => $this->product_name,
-            'panjang_produksi' => number_format($this->product_panjang, 0, ',', '.'),
-            'berat_produksi' => $this->berat_produksi,
-            'berat_standard' => $this->berat_standard,
-            'lpk_date' => $this->lpk_date,
-            'qty_lpk' => number_format($this->qty_lpk, 0, ',', '.'),
-            'timestamp' => Carbon::now()->format('d/m/Y H:i:s'),
-        ];
-    }
 
     public function printNormal()
     {
@@ -177,7 +150,7 @@ class LabelGentanController extends Component
                 $this->berat_produksi = $data2->berat_produksi;
                 $this->berat_standard = $data2->berat_standard;
 
-                // ===== YANG INI PENTING - ASSIGN SEMUA! =====
+                // ===== DATA UNTUK THERMAL PRINT =====
                 $this->code = $data2->code;
                 $this->code_alias = $data2->code_alias;
                 $this->product_name = $data2->product_name;
