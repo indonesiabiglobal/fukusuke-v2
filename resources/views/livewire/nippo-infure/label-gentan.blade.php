@@ -102,7 +102,7 @@
 					class="btn btn-success btn-print me-2 mb-2"
 					onclick="handleThermalPrint()"
 					{{ !$statusPrint ? 'disabled' : '' }}>
-					<i class="ri-printer-line"></i> Print Thermal
+					<i class="ri-printer-line"></i> Print Thermal 1.1
 				</button>
 
 				{{-- Button Normal --}}
@@ -210,54 +210,47 @@ window.toggleDebugLog = function() {
 
         // Generate ESC/POS commands
         window.generateEscPosCommands = function(data) {
-            const ESC = '\x1B';
-            const GS = '\x1D';
-            let cmd = '';
+    let cmd = '';
 
-            // Initialize printer
-            cmd += ESC + '@';
+    // Initialize
+    cmd += '\x1B\x40';
 
-            // ========== GENTAN NO (BESAR) ==========
-            cmd += GS + '!' + String.fromCharCode(0x11); // Double size
-            cmd += (data.gentan_no || '-') + '\n';
-            cmd += GS + '!' + String.fromCharCode(0); // Reset
-            cmd += '\n';
+    // GENTAN NO
+    cmd += data.gentan_no + '\n\n';
 
-            // ========== QR CODE - SKIP DULU UNTUK TEST ==========
-            // (QR code bisa jadi masalah)
+    // LPK NO
+    cmd += '================================\n';
+    cmd += data.lpk_no + '\n';
+    cmd += '================================\n';
 
-            // ========== LPK NO ==========
-            cmd += '================================\n';
-            cmd += (data.lpk_no || '-') + '\n';
-            cmd += '================================\n';
+    // PRODUCT NAME
+    cmd += data.product_name + '\n';
+    cmd += '--------------------------------\n';
 
-            // ========== NAMA PRODUK ==========
-            cmd += (data.product_name || '-') + '\n';
-            cmd += '--------------------------------\n';
+    // SEMUA DATA - PLAIN TEXT
+    cmd += 'No. Order   : ' + data.code + '\n';
+    cmd += 'Kode        : ' + data.code_alias + '\n';
+    cmd += 'Tgl Prod    : ' + data.production_date + '\n';
+    cmd += 'Jam         : ' + data.work_hour + '\n';
+    cmd += 'Shift       : ' + data.work_shift + '\n';
+    cmd += 'Mesin       : ' + data.machineno + '\n';
+    cmd += '--------------------------------\n';
+    cmd += 'Berat       : ' + data.berat_produksi + '\n';
+    cmd += 'Panjang     : ' + data.panjang_produksi + '\n';
+    cmd += 'Lebih       : ' + data.selisih + '\n';
+    cmd += 'No Han      : ' + data.nomor_han + '\n';
+    cmd += '--------------------------------\n';
+    cmd += 'NIK         : ' + data.nik + '\n';
+    cmd += 'Nama        : ' + data.empname + '\n';
+    cmd += '================================\n';
+    cmd += '\n\n\n';
 
-            // ========== DETAIL - PLAIN TEXT ==========
-            cmd += 'No. Order   : ' + (data.code || '-') + '\n';
-            cmd += 'Kode        : ' + (data.code_alias || '-') + '\n';
-            cmd += 'Tgl Prod    : ' + (data.production_date || '-') + '\n';
-            cmd += 'Jam         : ' + (data.work_hour || '-') + '\n';
-            cmd += 'Shift       : ' + (data.work_shift || '-') + '\n';
-            cmd += 'Mesin       : ' + (data.machineno || '-') + '\n';
-            cmd += '--------------------------------\n';
-            cmd += 'Berat       : ' + (data.berat_produksi || '0') + '\n';
-            cmd += 'Panjang     : ' + (data.panjang_produksi || '0') + '\n';
-            cmd += 'Lebih       : ' + (data.selisih || '0') + '\n';
-            cmd += 'No Han      : ' + (data.nomor_han || '-') + '\n';
-            cmd += '--------------------------------\n';
-            cmd += 'NIK         : ' + (data.nik || '-') + '\n';
-            cmd += 'Nama        : ' + (data.empname || '-') + '\n';
-            cmd += '================================\n';
-            cmd += '\n\n\n';
+    // Cut
+    cmd += '\x1D\x56\x42\x00';
 
-            // Cut paper
-            cmd += GS + 'V' + String.fromCharCode(66, 0);
+    return cmd;
+};
 
-            return cmd;
-        };
 
         // Reconnect
         window.reconnectSavedDevice = async function() {
