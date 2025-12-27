@@ -83,10 +83,10 @@
 		</div>
 		<hr />
 
-        <div id="debugLog" style="display:none; background:#000; color:#0f0; padding:10px; margin-bottom:10px; font-family:monospace; font-size:11px; max-height:200px; overflow-y:auto; border-radius:5px;">
+        {{-- <div id="debugLog" style="display:none; background:#000; color:#0f0; padding:10px; margin-bottom:10px; font-family:monospace; font-size:11px; max-height:200px; overflow-y:auto; border-radius:5px;">
 			<strong style="color:#ff0;">DEBUG LOG:</strong><br>
 			<div id="logContent"></div>
-		</div>
+		</div> --}}
 
 		<div class="form-group">
 			<div class="input-group flex-wrap">
