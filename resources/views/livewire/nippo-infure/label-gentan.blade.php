@@ -102,7 +102,7 @@
 					class="btn btn-success btn-print me-2 mb-2"
 					onclick="handleThermalPrint()"
 					{{ !$statusPrint ? 'disabled' : '' }}>
-					<i class="ri-printer-line"></i> Print Thermal 1.6
+					<i class="ri-printer-line"></i> Print Thermal 1.7
 				</button>
 
 				{{-- Button Normal --}}
@@ -217,29 +217,61 @@ window.toggleDebugLog = function() {
             let cmd = '';
 
             // Initialize
-            cmd += ESC + '@'; // Reset
-            cmd += ESC + 'R' + String.fromCharCode(0); // Character set USA
+            cmd += ESC + '@';
+            cmd += ESC + 'R' + String.fromCharCode(0);
 
-            // ========== GENTAN NO (TRIPLE SIZE) ==========
-            cmd += GS + '!' + String.fromCharCode(0x33); // Width x3, Height x3
+            // ========== GENTAN NO (TRIPLE SIZE) - KIRI ==========
+            cmd += ESC + 'a' + String.fromCharCode(0); // Left align
+            cmd += GS + '!' + String.fromCharCode(0x33);
             cmd += String(data.gentan_no || '0') + '\n';
-            cmd += GS + '!' + String.fromCharCode(0); // Reset
+            cmd += GS + '!' + String.fromCharCode(0);
             cmd += '\n';
+
+            // ========== QR CODE (LPK NO) - CENTER ==========
+            cmd += ESC + 'a' + String.fromCharCode(1); // Center align
+
+            const qrData = String(data.lpk_no || '000000-000');
+
+            // QR Code Model 2
+            cmd += GS + '(k' + String.fromCharCode(4, 0, 49, 65, 50, 0);
+
+            // QR Code Size (6 = medium)
+            cmd += GS + '(k' + String.fromCharCode(3, 0, 49, 67, 6);
+
+            // QR Code Error Correction (M level)
+            cmd += GS + '(k' + String.fromCharCode(3, 0, 49, 69, 49);
+
+            // Store QR data
+            const qrLen = qrData.length + 3;
+            const pL = qrLen % 256;
+            const pH = Math.floor(qrLen / 256);
+            cmd += GS + '(k' + String.fromCharCode(pL, pH, 49, 80, 48) + qrData;
+
+            // Print QR Code
+            cmd += GS + '(k' + String.fromCharCode(3, 0, 49, 81, 48);
+
+            cmd += '\n\n';
+            cmd += ESC + 'a' + String.fromCharCode(0); // Back to left align
 
             // ========== LPK NO (DOUBLE SIZE) ==========
             cmd += '================================\n';
-            cmd += GS + '!' + String.fromCharCode(0x11); // Width x2, Height x2
+            cmd += ESC + 'a' + String.fromCharCode(1); // Center
+            cmd += GS + '!' + String.fromCharCode(0x11);
             cmd += String(data.lpk_no || '-') + '\n';
-            cmd += GS + '!' + String.fromCharCode(0); // Reset
+            cmd += GS + '!' + String.fromCharCode(0);
+            cmd += ESC + 'a' + String.fromCharCode(0); // Left
             cmd += '================================\n';
 
-            // ========== PRODUCT NAME (BOLD) ==========
-            cmd += ESC + 'E' + String.fromCharCode(1); // Bold ON
+            // ========== PRODUCT NAME (DOUBLE) ==========
+            cmd += ESC + 'a' + String.fromCharCode(1); // Center
+            cmd += GS + '!' + String.fromCharCode(0x11);
             cmd += String(data.product_name || '-') + '\n';
-            cmd += ESC + 'E' + String.fromCharCode(0); // Bold OFF
+            cmd += GS + '!' + String.fromCharCode(0);
+            cmd += ESC + 'a' + String.fromCharCode(0); // Left
             cmd += '--------------------------------\n';
 
-            // ========== DETAIL (NORMAL SIZE) ==========
+            // ========== DETAIL (DOUBLE SIZE) ==========
+            cmd += GS + '!' + String.fromCharCode(0x11);
             cmd += 'No. Order   : ' + String(data.code || '-') + '\n';
             cmd += 'Kode        : ' + String(data.code_alias || '-') + '\n';
             cmd += 'Tgl Prod    : ' + String(data.production_date || '-') + '\n';
@@ -247,20 +279,14 @@ window.toggleDebugLog = function() {
             cmd += 'Shift       : ' + String(data.work_shift || '-') + '\n';
             cmd += 'Mesin       : ' + String(data.machineno || '-') + '\n';
             cmd += '--------------------------------\n';
-
-            // ========== BERAT & PANJANG (BOLD) ==========
-            cmd += ESC + 'E' + String.fromCharCode(1); // Bold ON
             cmd += 'Berat       : ' + String(data.berat_produksi || '0') + '\n';
             cmd += 'Panjang     : ' + String(data.panjang_produksi || '0') + '\n';
-            cmd += ESC + 'E' + String.fromCharCode(0); // Bold OFF
-
             cmd += 'Lebih       : ' + String(data.selisih || '0') + '\n';
             cmd += 'No Han      : ' + String(data.nomor_han || '-') + '\n';
             cmd += '--------------------------------\n';
-
-            // ========== NIK & NAMA ==========
             cmd += 'NIK         : ' + String(data.nik || '-') + '\n';
             cmd += 'Nama        : ' + String(data.empname || '-') + '\n';
+            cmd += GS + '!' + String.fromCharCode(0);
             cmd += '================================\n';
             cmd += '\n\n\n';
 
@@ -271,6 +297,67 @@ window.toggleDebugLog = function() {
         };
 
         // Reconnect
+        // window.reconnectSavedDevice = async function() {
+        //     if (!window.savedDeviceId) {
+        //         window.debugLog('📍 No saved device', 'info');
+        //         return false;
+        //     }
+
+        //     try {
+        //         window.debugLog('🔄 Reconnecting to saved device...', 'info');
+
+        //         const devices = await navigator.bluetooth.getDevices();
+        //         const savedDevice = devices.find(d => d.id === window.savedDeviceId);
+
+        //         if (!savedDevice) {
+        //             window.debugLog('❌ Saved device not found in paired devices', 'warn');
+        //             window.savedDeviceId = null;
+        //             localStorage.removeItem('thermal_printer_id');
+        //             localStorage.removeItem('thermal_config_index');
+        //             return false;
+        //         }
+
+        //         window.debugLog('Found device: ' + savedDevice.name, 'success');
+
+        //         if (savedDevice.gatt.connected) {
+        //             window.debugLog('Already connected!', 'success');
+        //             window.connectedDevice = savedDevice;
+
+        //             const service = await savedDevice.gatt.getPrimaryService('49535343-fe7d-4ae5-8fa9-9fafd205e455');
+        //             const characteristic = await service.getCharacteristic('49535343-1e4d-4bd9-ba61-23c647249616');
+        //             window.printerCharacteristic = characteristic;
+
+        //             return true;
+        //         }
+
+        //         window.debugLog('Connecting to GATT...', 'info');
+        //         const server = await savedDevice.gatt.connect();
+
+        //         window.debugLog('Getting service...', 'info');
+        //         const service = await server.getPrimaryService('49535343-fe7d-4ae5-8fa9-9fafd205e455');
+
+        //         window.debugLog('Getting characteristic...', 'info');
+        //         const characteristic = await service.getCharacteristic('49535343-1e4d-4bd9-ba61-23c647249616');
+
+        //         window.connectedDevice = savedDevice;
+        //         window.printerCharacteristic = characteristic;
+
+        //         window.debugLog('✅ Reconnected successfully!', 'success');
+        //         return true;
+
+        //     } catch (error) {
+        //         window.debugLog('❌ Reconnect failed: ' + error.message, 'error');
+
+        //         window.savedDeviceId = null;
+        //         window.printerCharacteristic = null;
+        //         window.connectedDevice = null;
+        //         localStorage.removeItem('thermal_printer_id');
+        //         localStorage.removeItem('thermal_config_index');
+
+        //         return false;
+        //     }
+        // };
+
         window.reconnectSavedDevice = async function() {
             if (!window.savedDeviceId) {
                 window.debugLog('📍 No saved device', 'info');
@@ -280,20 +367,28 @@ window.toggleDebugLog = function() {
             try {
                 window.debugLog('🔄 Reconnecting to saved device...', 'info');
 
-                const devices = await navigator.bluetooth.getDevices();
+                // ===== COBA GETDEVICES DULU =====
+                let devices = [];
+                try {
+                    devices = await navigator.bluetooth.getDevices();
+                } catch (e) {
+                    window.debugLog('⚠️ getDevices() not supported', 'warn');
+                }
+
                 const savedDevice = devices.find(d => d.id === window.savedDeviceId);
 
                 if (!savedDevice) {
-                    window.debugLog('❌ Saved device not found in paired devices', 'warn');
-                    window.savedDeviceId = null;
-                    localStorage.removeItem('thermal_printer_id');
-                    localStorage.removeItem('thermal_config_index');
+                    window.debugLog('❌ Device not found, need manual selection', 'warn');
+
+                    // ===== FALLBACK: REQUEST DEVICE LAGI =====
+                    // Tapi ini butuh user gesture, jadi kita trigger dari handleThermalPrint
                     return false;
                 }
 
                 window.debugLog('Found device: ' + savedDevice.name, 'success');
 
-                if (savedDevice.gatt.connected) {
+                // Check if already connected
+                if (savedDevice.gatt && savedDevice.gatt.connected) {
                     window.debugLog('Already connected!', 'success');
                     window.connectedDevice = savedDevice;
 
@@ -304,6 +399,7 @@ window.toggleDebugLog = function() {
                     return true;
                 }
 
+                // Reconnect GATT
                 window.debugLog('Connecting to GATT...', 'info');
                 const server = await savedDevice.gatt.connect();
 
@@ -322,11 +418,9 @@ window.toggleDebugLog = function() {
             } catch (error) {
                 window.debugLog('❌ Reconnect failed: ' + error.message, 'error');
 
-                window.savedDeviceId = null;
+                // JANGAN CLEAR savedDeviceId - BIAR BISA COBA LAGI
                 window.printerCharacteristic = null;
                 window.connectedDevice = null;
-                localStorage.removeItem('thermal_printer_id');
-                localStorage.removeItem('thermal_config_index');
 
                 return false;
             }
