@@ -1,4 +1,5 @@
-<div class="row">
+<div>
+    <div class="row">
     <div class="col-12">
         <div id="mobileDebugLog" style="display:none; background:#000; color:#0f0; padding:15px; margin:10px 0; font-family:monospace; font-size:12px; max-height:300px; overflow-y:auto; border-radius:5px; position:sticky; top:0; z-index:1000;">
             <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
@@ -1840,6 +1841,7 @@
             </div>
         </div>
     </form>
+</div>
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
