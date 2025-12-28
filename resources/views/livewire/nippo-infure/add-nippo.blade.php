@@ -747,7 +747,7 @@
                             <button type="button" class="btn btn-success ms-auto" wire:click="saveInfure"
                                 wire:loading.attr="disabled">
                                 <span wire:loading.remove wire:target="saveInfure">
-                                    <i class="ri-save-3-line"></i> Save
+                                    <i class="ri-save-3-line"></i> Save 1.1
                                 </span>
                                 <div wire:loading wire:target="saveInfure">
                                     <span class="d-flex align-items-center">

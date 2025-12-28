@@ -86,6 +86,7 @@ use App\Http\Livewire\MasterTabel\Machine\MachinePartDetailController;
 use App\Http\Livewire\MasterTabel\MasalahKenpin\MasalahKenpinInfureController;
 use App\Http\Livewire\MasterTabel\MasalahKenpin\MasalahKenpinSeitaiController;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /*
 |--------------------------------------------------------------------------
@@ -125,33 +126,54 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/add-nippo', AddNippoController::class)->name('add-nippo');
     // Route untuk fetch print data
     Route::get('/get-print-data/{produk_asemblyid}', function($produk_asemblyid) {
-        $data = DB::table('tdproduct_assembly as tpa')
-            ->join('tdorderlpk as tod', 'tpa.lpk_id', '=', 'tod.id')
-            ->join('msproduct as mp', 'mp.id', '=', 'tod.product_id')
-            ->leftJoin('msworkingshift as msw', 'msw.id', '=', 'tpa.work_shift')
-            ->join('msmachine as msm', 'msm.id', '=', 'tpa.machine_id')
-            ->join('msemployee as mse', 'mse.id', '=', 'tpa.employee_id')
-            ->select([
-                'tpa.gentan_no',
-                'tod.lpk_no',
-                'mp.name as product_name',
-                'mp.code',
-                'mp.code_alias',
-                DB::raw("to_char(tpa.production_date, 'DD-MM-YYYY') as production_date"),
-                DB::raw("to_char(tpa.work_hour, 'HH24:MI') as work_hour"),
-                'msw.id as work_shift',
-                'msm.machineno',
-                'tpa.berat_produksi',
-                'tpa.panjang_produksi',
-                'tpa.selisih',
-                'tpa.nomor_han',
-                'mse.employeeno as nik',
-                'mse.empname'
-            ])
-            ->where('tpa.id', $produk_asemblyid)
-            ->first();
+        try {
+            Log::info('Fetching print data for ID: ' . $produk_asemblyid);
 
-        return response()->json($data);
+            $data = DB::table('tdproduct_assembly as tpa')
+                ->join('tdorderlpk as tod', 'tpa.lpk_id', '=', 'tod.id')
+                ->join('msproduct as mp', 'mp.id', '=', 'tod.product_id')
+                ->leftJoin('msworkingshift as msw', 'msw.id', '=', 'tpa.work_shift')
+                ->join('msmachine as msm', 'msm.id', '=', 'tpa.machine_id')
+                ->join('msemployee as mse', 'mse.id', '=', 'tpa.employee_id')
+                ->select([
+                    DB::raw("COALESCE(tpa.gentan_no, 0) as gentan_no"),
+                    DB::raw("COALESCE(tod.lpk_no, '-') as lpk_no"),
+                    DB::raw("COALESCE(mp.name, '-') as product_name"),
+                    DB::raw("COALESCE(mp.code, '-') as code"),
+                    DB::raw("COALESCE(mp.code_alias, '-') as code_alias"),
+                    DB::raw("to_char(tpa.production_date, 'DD-MM-YYYY') as production_date"),
+                    DB::raw("to_char(tpa.work_hour, 'HH24:MI') as work_hour"),
+                    DB::raw("COALESCE(msw.id::text, '0') as work_shift"),
+                    DB::raw("COALESCE(msm.machineno, '-') as machineno"),
+                    DB::raw("COALESCE(tpa.berat_produksi, 0) as berat_produksi"),
+                    DB::raw("COALESCE(tpa.panjang_produksi, 0) as panjang_produksi"),
+                    // SELISIH - hitung dari LPK
+                    DB::raw("COALESCE(tod.total_assembly_line - tod.panjang_lpk, 0) as selisih"),
+                    DB::raw("COALESCE(tpa.nomor_han, '-') as nomor_han"),
+                    DB::raw("COALESCE(mse.employeeno, '-') as nik"),
+                    DB::raw("COALESCE(mse.empname, '-') as empname")
+                ])
+                ->where('tpa.id', $produk_asemblyid)
+                ->first();
+
+            if (!$data) {
+                Log::error('Data not found for ID: ' . $produk_asemblyid);
+                return response()->json(['error' => 'Data not found'], 404);
+            }
+
+            Log::info('Print data fetched successfully', (array)$data);
+
+            return response()->json($data);
+
+        } catch (\Exception $e) {
+            Log::error('Get print data error: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+
+            return response()->json([
+                'error' => $e->getMessage(),
+                'trace' => config('app.debug') ? $e->getTraceAsString() : null
+            ], 500);
+        }
     })->name('get-print-data');
 
     Route::get('/loss-infure', LossInfureController::class)->name('loss-infure');
