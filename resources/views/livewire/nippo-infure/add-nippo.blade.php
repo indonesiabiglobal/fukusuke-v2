@@ -1926,3 +1926,264 @@
         });
     </script>
 @endscript
+{{-- THERMAL PRINT MODULE - COPY DARI LABEL-GENTAN --}}
+<script>
+// ===== THERMAL PRINTER MODULE =====
+(function() {
+    if (typeof window === 'undefined' || typeof navigator === 'undefined') {
+        console.error('Critical: Window/Navigator not available');
+        return;
+    }
+
+    if (window.thermalPrinterLoaded) {
+        console.log('✅ Thermal module already loaded');
+        return;
+    }
+
+    try {
+        window.thermalPrinterLoaded = true;
+
+        const hasBluetoothAPI = 'bluetooth' in navigator;
+
+        if (!hasBluetoothAPI) {
+            console.warn('⚠️ Bluetooth API not available');
+            return;
+        }
+
+        // UUID EPSON TM-P20II
+        window.THERMAL_UUID_CONFIGS = [{
+            name: 'Epson TM-P20II',
+            serviceUUID: '49535343-fe7d-4ae5-8fa9-9fafd205e455',
+            characteristicUUID: '49535343-1e4d-4bd9-ba61-23c647249616',
+        }];
+
+        window.connectedDevice = null;
+        window.printerCharacteristic = null;
+        window.savedDeviceId = null;
+        window.savedConfigIndex = 0;
+
+        // Generate ESC/POS - SAMA DENGAN LABEL-GENTAN
+        window.generateEscPosCommands = function(data) {
+            const ESC = '\x1B';
+            const GS = '\x1D';
+            let cmd = '';
+
+            cmd += ESC + '@';
+            cmd += ESC + 'R' + String.fromCharCode(0);
+
+            // GENTAN NO (DOUBLE SIZE) - CENTER
+            cmd += ESC + 'a' + String.fromCharCode(1);
+            cmd += GS + '!' + String.fromCharCode(0x11);
+            cmd += String(data.gentan_no || '0') + '\n';
+            cmd += GS + '!' + String.fromCharCode(0);
+            cmd += '\n';
+
+            // QR CODE (LPK NO) - CENTER
+            const qrData = String(data.lpk_no || '000000-000');
+            cmd += GS + '(k' + String.fromCharCode(4, 0, 49, 65, 50, 0);
+            cmd += GS + '(k' + String.fromCharCode(3, 0, 49, 67, 6);
+            cmd += GS + '(k' + String.fromCharCode(3, 0, 49, 69, 49);
+
+            const qrLen = qrData.length + 3;
+            const pL = qrLen % 256;
+            const pH = Math.floor(qrLen / 256);
+            cmd += GS + '(k' + String.fromCharCode(pL, pH, 49, 80, 48) + qrData;
+            cmd += GS + '(k' + String.fromCharCode(3, 0, 49, 81, 48);
+
+            cmd += '\n\n';
+            cmd += ESC + 'a' + String.fromCharCode(0);
+
+            // LPK NO (DOUBLE SIZE)
+            cmd += '================================\n';
+            cmd += ESC + 'a' + String.fromCharCode(1);
+            cmd += GS + '!' + String.fromCharCode(0x11);
+            cmd += String(data.lpk_no || '-') + '\n';
+            cmd += GS + '!' + String.fromCharCode(0);
+            cmd += ESC + 'a' + String.fromCharCode(0);
+            cmd += '================================\n';
+
+            // PRODUCT NAME (BOLD)
+            cmd += ESC + 'E' + String.fromCharCode(1);
+            cmd += String(data.product_name || '-') + '\n';
+            cmd += ESC + 'E' + String.fromCharCode(0);
+            cmd += '--------------------------------\n';
+
+            // DETAIL (NORMAL SIZE)
+            cmd += 'No. Order   : ' + String(data.code || '-') + '\n';
+            cmd += 'Kode        : ' + String(data.code_alias || '-') + '\n';
+            cmd += 'Tgl Prod    : ' + String(data.production_date || '-') + '\n';
+            cmd += 'Jam         : ' + String(data.work_hour || '-') + '\n';
+            cmd += 'Shift       : ' + String(data.work_shift || '-') + '\n';
+            cmd += 'Mesin       : ' + String(data.machineno || '-') + '\n';
+            cmd += '--------------------------------\n';
+
+            // BERAT & PANJANG (BOLD)
+            cmd += ESC + 'E' + String.fromCharCode(1);
+            cmd += 'Berat       : ' + String(data.berat_produksi || '0') + '\n';
+            cmd += 'Panjang     : ' + String(data.panjang_produksi || '0') + '\n';
+            cmd += ESC + 'E' + String.fromCharCode(0);
+
+            cmd += 'Lebih       : ' + String(data.selisih || '0') + '\n';
+            cmd += 'No Han      : ' + String(data.nomor_han || '-') + '\n';
+            cmd += '--------------------------------\n';
+
+            // NIK & NAMA
+            cmd += 'NIK         : ' + String(data.nik || '-') + '\n';
+            cmd += 'Nama        : ' + String(data.empname || '-') + '\n';
+            cmd += '================================\n';
+            cmd += '\n\n\n';
+
+            // Cut
+            cmd += GS + 'V' + String.fromCharCode(0);
+
+            return cmd;
+        };
+
+        // Reconnect
+        window.reconnectSavedDevice = async function() {
+            if (!window.savedDeviceId) return false;
+
+            try {
+                let devices = [];
+                try {
+                    devices = await navigator.bluetooth.getDevices();
+                } catch (e) {
+                    console.log('getDevices() not supported');
+                }
+
+                const savedDevice = devices.find(d => d.id === window.savedDeviceId);
+                if (!savedDevice) return false;
+
+                if (savedDevice.gatt && savedDevice.gatt.connected) {
+                    window.connectedDevice = savedDevice;
+                    const service = await savedDevice.gatt.getPrimaryService('49535343-fe7d-4ae5-8fa9-9fafd205e455');
+                    const characteristic = await service.getCharacteristic('49535343-1e4d-4bd9-ba61-23c647249616');
+                    window.printerCharacteristic = characteristic;
+                    return true;
+                }
+
+                const server = await savedDevice.gatt.connect();
+                const service = await server.getPrimaryService('49535343-fe7d-4ae5-8fa9-9fafd205e455');
+                const characteristic = await service.getCharacteristic('49535343-1e4d-4bd9-ba61-23c647249616');
+
+                window.connectedDevice = savedDevice;
+                window.printerCharacteristic = characteristic;
+                return true;
+
+            } catch (error) {
+                window.printerCharacteristic = null;
+                window.connectedDevice = null;
+                return false;
+            }
+        };
+
+        // Connect
+        window.connectThermalPrinter = async function() {
+            const device = await navigator.bluetooth.requestDevice({
+                acceptAllDevices: true,
+                optionalServices: ['49535343-fe7d-4ae5-8fa9-9fafd205e455']
+            });
+
+            const server = await device.gatt.connect();
+            const service = await server.getPrimaryService('49535343-fe7d-4ae5-8fa9-9fafd205e455');
+            const characteristic = await service.getCharacteristic('49535343-1e4d-4bd9-ba61-23c647249616');
+
+            window.connectedDevice = device;
+            window.printerCharacteristic = characteristic;
+            window.savedDeviceId = device.id;
+            window.savedConfigIndex = 0;
+
+            localStorage.setItem('thermal_printer_id', device.id);
+            localStorage.setItem('thermal_config_index', '0');
+
+            console.log('✅ Printer tersimpan:', device.name);
+            return true;
+        };
+
+        // Print
+        window.printToThermalPrinter = async function(data) {
+            const commands = window.generateEscPosCommands(data);
+            const encoder = new TextEncoder();
+            const bytes = encoder.encode(commands);
+
+            if (!window.printerCharacteristic || !window.connectedDevice) {
+                const reconnected = await window.reconnectSavedDevice();
+                if (!reconnected) {
+                    await window.connectThermalPrinter();
+                }
+            }
+
+            const chunkSize = 128;
+            for (let i = 0; i < bytes.length; i += chunkSize) {
+                const chunk = bytes.slice(i, i + chunkSize);
+                await window.printerCharacteristic.writeValue(chunk);
+                await new Promise(r => setTimeout(r, 200));
+            }
+
+            await new Promise(r => setTimeout(r, 1000));
+
+            if (typeof Toastify !== 'undefined') {
+                Toastify({
+                    text: "✅ Label berhasil dicetak!",
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "#10b981",
+                }).showToast();
+            }
+        };
+
+        // Load saved device
+        window.savedDeviceId = localStorage.getItem('thermal_printer_id');
+        window.savedConfigIndex = parseInt(localStorage.getItem('thermal_config_index') || '0');
+
+        console.log('✅ Thermal module loaded for add-nippo');
+
+    } catch (error) {
+        console.error('❌ Init failed:', error);
+    }
+})();
+
+// ===== LISTEN EVENT DARI LIVEWIRE =====
+document.addEventListener('livewire:initialized', () => {
+    Livewire.on('auto-print-gentan', async (event) => {
+        console.log('🖨️ Auto print triggered:', event);
+
+        const produk_asemblyid = event.produk_asemblyid || event[0]?.produk_asemblyid;
+
+        if (!produk_asemblyid) {
+            console.error('No produk_asemblyid provided');
+            return;
+        }
+
+        try {
+            // Fetch data dari server
+            const response = await fetch(`/get-print-data/${produk_asemblyid}`);
+            const printData = await response.json();
+
+            // Print ke thermal printer
+            await window.printToThermalPrinter(printData);
+
+            console.log('✅ Auto print completed');
+
+            // Redirect setelah print
+            setTimeout(() => {
+                window.location.href = '{{ route("nippo-infure") }}';
+            }, 2000);
+
+        } catch (error) {
+            console.error('❌ Auto print error:', error);
+
+            // Fallback: buka Print Normal
+            // if (confirm('❌ Print error\n\nGunakan Print Normal?')) {
+            //     const printUrl = '{{ route("report-gentan") }}?produk_asemblyid=' + produk_asemblyid;
+            //     window.open(printUrl, '_blank');
+
+            //     setTimeout(() => {
+            //         window.location.href = '{{ route("nippo-infure") }}';
+            //     }, 1000);
+            // }
+        }
+    });
+});
+</script>

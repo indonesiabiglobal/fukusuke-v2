@@ -435,9 +435,13 @@ class AddNippoController extends Component
             ]);
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
 
-            $this->dispatch('redirectToPrint', $product->id);
+            // $this->dispatch('redirectToPrint', $product->id);
 
-            return redirect()->route('nippo-infure');
+            $this->dispatch('auto-print-gentan', [
+                'produk_asemblyid' => $product->id
+            ]);
+
+            // return redirect()->route('nippo-infure');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to save order: ' . $e->getMessage());

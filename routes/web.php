@@ -85,6 +85,7 @@ use App\Http\Livewire\MasterTabel\Machine\MachinePartController;
 use App\Http\Livewire\MasterTabel\Machine\MachinePartDetailController;
 use App\Http\Livewire\MasterTabel\MasalahKenpin\MasalahKenpinInfureController;
 use App\Http\Livewire\MasterTabel\MasalahKenpin\MasalahKenpinSeitaiController;
+use Illuminate\Support\Facades\DB;
 
 /*
 |--------------------------------------------------------------------------
@@ -122,6 +123,36 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/nippo-infure', NippoInfureController::class)->name('nippo-infure');
     Route::get('/edit-nippo/', EditNippoController::class)->name('edit-nippo');
     Route::get('/add-nippo', AddNippoController::class)->name('add-nippo');
+    // Route untuk fetch print data
+    Route::get('/get-print-data/{produk_asemblyid}', function($produk_asemblyid) {
+        $data = DB::table('tdproduct_assembly as tpa')
+            ->join('tdorderlpk as tod', 'tpa.lpk_id', '=', 'tod.id')
+            ->join('msproduct as mp', 'mp.id', '=', 'tod.product_id')
+            ->leftJoin('msworkingshift as msw', 'msw.id', '=', 'tpa.work_shift')
+            ->join('msmachine as msm', 'msm.id', '=', 'tpa.machine_id')
+            ->join('msemployee as mse', 'mse.id', '=', 'tpa.employee_id')
+            ->select([
+                'tpa.gentan_no',
+                'tod.lpk_no',
+                'mp.name as product_name',
+                'mp.code',
+                'mp.code_alias',
+                DB::raw("to_char(tpa.production_date, 'DD-MM-YYYY') as production_date"),
+                DB::raw("to_char(tpa.work_hour, 'HH24:MI') as work_hour"),
+                'msw.id as work_shift',
+                'msm.machineno',
+                'tpa.berat_produksi',
+                'tpa.panjang_produksi',
+                'tpa.selisih',
+                'tpa.nomor_han',
+                'mse.employeeno as nik',
+                'mse.empname'
+            ])
+            ->where('tpa.id', $produk_asemblyid)
+            ->first();
+
+        return response()->json($data);
+    })->name('get-print-data');
 
     Route::get('/loss-infure', LossInfureController::class)->name('loss-infure');
 
