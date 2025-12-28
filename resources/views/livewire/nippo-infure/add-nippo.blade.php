@@ -1,4 +1,16 @@
 <div class="row">
+    <div class="col-12">
+        <div id="mobileDebugLog" style="display:none; background:#000; color:#0f0; padding:15px; margin:10px 0; font-family:monospace; font-size:12px; max-height:300px; overflow-y:auto; border-radius:5px; position:sticky; top:0; z-index:1000;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                <strong style="color:#ff0;">🔍 DEBUG LOG</strong>
+                <button onclick="clearDebugLog()" style="background:#f00; color:#fff; border:none; padding:5px 10px; border-radius:3px;">Clear</button>
+            </div>
+            <div id="mobileLogContent"></div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
     <form wire:submit.prevent="save">
         <div class="row mt-2">
             <div class="col-12">
@@ -1927,16 +1939,72 @@
     </script>
 @endscript
 {{-- THERMAL PRINT MODULE - COPY DARI LABEL-GENTAN --}}
+OKE! Kita pakai DEBUG LOG di HP! 📱
+
+SOLUSI - Tampilkan Error di Layar HP:
+Update add-nippo.blade.php - Tambahkan Debug Panel:
+blade{{-- TAMBAHKAN DEBUG PANEL DI ATAS FORM --}}
+<div class="row">
+    <div class="col-12">
+        <div id="mobileDebugLog" style="display:none; background:#000; color:#0f0; padding:15px; margin:10px 0; font-family:monospace; font-size:12px; max-height:300px; overflow-y:auto; border-radius:5px; position:sticky; top:0; z-index:1000;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                <strong style="color:#ff0;">🔍 DEBUG LOG</strong>
+                <button onclick="clearDebugLog()" style="background:#f00; color:#fff; border:none; padding:5px 10px; border-radius:3px;">Clear</button>
+            </div>
+            <div id="mobileLogContent"></div>
+        </div>
+    </div>
+</div>
+
+{{-- FORM ASLI - TETAP SAMA --}}
+<div class="row">
+    <form wire:submit.prevent="save">
+        {{-- ... form content tetap sama ... --}}
+    </form>
+</div>
+
+{{-- THERMAL PRINT MODULE - UPDATE DENGAN DEBUG --}}
 <script>
+// ===== MOBILE DEBUG LOGGER =====
+window.mobileDebug = function(msg, type = 'info') {
+    const logDiv = document.getElementById('mobileLogContent');
+    const debugPanel = document.getElementById('mobileDebugLog');
+
+    if (!logDiv || !debugPanel) return;
+
+    // Auto show debug panel
+    debugPanel.style.display = 'block';
+
+    const colors = {
+        'info': '#0ff',
+        'success': '#0f0',
+        'error': '#f00',
+        'warn': '#ff0'
+    };
+
+    const timestamp = new Date().toLocaleTimeString();
+    const color = colors[type] || '#fff';
+
+    logDiv.innerHTML += `<div style="color:${color}; margin:5px 0; padding:5px; border-left:3px solid ${color};">[${timestamp}] ${msg}</div>`;
+    logDiv.scrollTop = logDiv.scrollHeight;
+
+    console.log(msg);
+};
+
+window.clearDebugLog = function() {
+    const logDiv = document.getElementById('mobileLogContent');
+    if (logDiv) logDiv.innerHTML = '';
+};
+
 // ===== THERMAL PRINTER MODULE =====
 (function() {
     if (typeof window === 'undefined' || typeof navigator === 'undefined') {
-        console.error('Critical: Window/Navigator not available');
+        window.mobileDebug('❌ Window/Navigator not available', 'error');
         return;
     }
 
     if (window.thermalPrinterLoaded) {
-        console.log('✅ Thermal module already loaded');
+        window.mobileDebug('✅ Thermal module already loaded', 'success');
         return;
     }
 
@@ -1946,9 +2014,11 @@
         const hasBluetoothAPI = 'bluetooth' in navigator;
 
         if (!hasBluetoothAPI) {
-            console.warn('⚠️ Bluetooth API not available');
+            window.mobileDebug('⚠️ Bluetooth API not available', 'warn');
             return;
         }
+
+        window.mobileDebug('✅ Bluetooth API available', 'success');
 
         // UUID EPSON TM-P20II
         window.THERMAL_UUID_CONFIGS = [{
@@ -1962,7 +2032,7 @@
         window.savedDeviceId = null;
         window.savedConfigIndex = 0;
 
-        // Generate ESC/POS - SAMA DENGAN LABEL-GENTAN
+        // Generate ESC/POS
         window.generateEscPosCommands = function(data) {
             const ESC = '\x1B';
             const GS = '\x1D';
@@ -2041,24 +2111,35 @@
 
         // Reconnect
         window.reconnectSavedDevice = async function() {
-            if (!window.savedDeviceId) return false;
+            if (!window.savedDeviceId) {
+                window.mobileDebug('📍 No saved device', 'info');
+                return false;
+            }
 
             try {
+                window.mobileDebug('🔄 Reconnecting...', 'info');
+
                 let devices = [];
                 try {
                     devices = await navigator.bluetooth.getDevices();
                 } catch (e) {
-                    console.log('getDevices() not supported');
+                    window.mobileDebug('⚠️ getDevices() not supported', 'warn');
                 }
 
                 const savedDevice = devices.find(d => d.id === window.savedDeviceId);
-                if (!savedDevice) return false;
+                if (!savedDevice) {
+                    window.mobileDebug('❌ Saved device not found', 'error');
+                    return false;
+                }
+
+                window.mobileDebug('Found device: ' + savedDevice.name, 'success');
 
                 if (savedDevice.gatt && savedDevice.gatt.connected) {
                     window.connectedDevice = savedDevice;
                     const service = await savedDevice.gatt.getPrimaryService('49535343-fe7d-4ae5-8fa9-9fafd205e455');
                     const characteristic = await service.getCharacteristic('49535343-1e4d-4bd9-ba61-23c647249616');
                     window.printerCharacteristic = characteristic;
+                    window.mobileDebug('✅ Already connected!', 'success');
                     return true;
                 }
 
@@ -2068,9 +2149,11 @@
 
                 window.connectedDevice = savedDevice;
                 window.printerCharacteristic = characteristic;
+                window.mobileDebug('✅ Reconnected!', 'success');
                 return true;
 
             } catch (error) {
+                window.mobileDebug('❌ Reconnect error: ' + error.message, 'error');
                 window.printerCharacteristic = null;
                 window.connectedDevice = null;
                 return false;
@@ -2079,10 +2162,14 @@
 
         // Connect
         window.connectThermalPrinter = async function() {
+            window.mobileDebug('🔍 Requesting printer...', 'info');
+
             const device = await navigator.bluetooth.requestDevice({
                 acceptAllDevices: true,
                 optionalServices: ['49535343-fe7d-4ae5-8fa9-9fafd205e455']
             });
+
+            window.mobileDebug('Connecting to: ' + device.name, 'info');
 
             const server = await device.gatt.connect();
             const service = await server.getPrimaryService('49535343-fe7d-4ae5-8fa9-9fafd205e455');
@@ -2096,30 +2183,44 @@
             localStorage.setItem('thermal_printer_id', device.id);
             localStorage.setItem('thermal_config_index', '0');
 
-            console.log('✅ Printer tersimpan:', device.name);
+            window.mobileDebug('✅ Printer saved: ' + device.name, 'success');
             return true;
         };
 
         // Print
         window.printToThermalPrinter = async function(data) {
+            window.mobileDebug('📝 Generating commands...', 'info');
             const commands = window.generateEscPosCommands(data);
+
+            window.mobileDebug('Command length: ' + commands.length, 'info');
+
             const encoder = new TextEncoder();
             const bytes = encoder.encode(commands);
 
+            window.mobileDebug('Bytes: ' + bytes.length, 'info');
+
             if (!window.printerCharacteristic || !window.connectedDevice) {
+                window.mobileDebug('No connection, reconnecting...', 'warn');
+
                 const reconnected = await window.reconnectSavedDevice();
                 if (!reconnected) {
+                    window.mobileDebug('Requesting new device...', 'warn');
                     await window.connectThermalPrinter();
                 }
             }
 
             const chunkSize = 128;
+            const totalChunks = Math.ceil(bytes.length / chunkSize);
+
+            window.mobileDebug('Sending ' + totalChunks + ' chunks...', 'info');
+
             for (let i = 0; i < bytes.length; i += chunkSize) {
                 const chunk = bytes.slice(i, i + chunkSize);
                 await window.printerCharacteristic.writeValue(chunk);
                 await new Promise(r => setTimeout(r, 200));
             }
 
+            window.mobileDebug('✅ All data sent!', 'success');
             await new Promise(r => setTimeout(r, 1000));
 
             if (typeof Toastify !== 'undefined') {
@@ -2137,52 +2238,82 @@
         window.savedDeviceId = localStorage.getItem('thermal_printer_id');
         window.savedConfigIndex = parseInt(localStorage.getItem('thermal_config_index') || '0');
 
-        console.log('✅ Thermal module loaded for add-nippo');
+        if (window.savedDeviceId) {
+            window.mobileDebug('✅ Found saved printer: ' + window.savedDeviceId, 'success');
+        }
+
+        window.mobileDebug('✅ Thermal module loaded', 'success');
 
     } catch (error) {
-        console.error('❌ Init failed:', error);
+        window.mobileDebug('❌ Init error: ' + error.message, 'error');
     }
 })();
 
 // ===== LISTEN EVENT DARI LIVEWIRE =====
 document.addEventListener('livewire:initialized', () => {
+    window.mobileDebug('🎧 Livewire initialized', 'success');
+
     Livewire.on('auto-print-gentan', async (event) => {
-        console.log('🖨️ Auto print triggered:', event);
+        window.mobileDebug('=== AUTO PRINT START ===', 'warn');
+        window.mobileDebug('Event received: ' + JSON.stringify(event), 'info');
 
         const produk_asemblyid = event.produk_asemblyid || event[0]?.produk_asemblyid;
 
+        window.mobileDebug('Product ID: ' + produk_asemblyid, 'info');
+
         if (!produk_asemblyid) {
-            console.error('No produk_asemblyid provided');
+            window.mobileDebug('❌ No product ID!', 'error');
             return;
         }
 
         try {
-            // Fetch data dari server
-            const response = await fetch(`/get-print-data/${produk_asemblyid}`);
-            const printData = await response.json();
+            // Fetch data
+            window.mobileDebug('📡 Fetching data...', 'info');
+            const url = `/get-print-data/${produk_asemblyid}`;
+            window.mobileDebug('URL: ' + url, 'info');
 
-            // Print ke thermal printer
+            const response = await fetch(url);
+            window.mobileDebug('Response status: ' + response.status, 'info');
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                window.mobileDebug('❌ Fetch failed: ' + errorText, 'error');
+                throw new Error('Fetch error: ' + response.status);
+            }
+
+            const printData = await response.json();
+            window.mobileDebug('✅ Data received', 'success');
+            window.mobileDebug('Data: ' + JSON.stringify(printData).substring(0, 100) + '...', 'info');
+
+            if (printData.error) {
+                window.mobileDebug('❌ Server error: ' + printData.error, 'error');
+                throw new Error(printData.error);
+            }
+
+            // Print
+            window.mobileDebug('🖨️ Sending to printer...', 'info');
             await window.printToThermalPrinter(printData);
 
-            console.log('✅ Auto print completed');
+            window.mobileDebug('✅ PRINT SUCCESS!', 'success');
 
-            // Redirect setelah print
+            // Redirect
             setTimeout(() => {
+                window.mobileDebug('↩️ Redirecting...', 'info');
                 window.location.href = '{{ route("nippo-infure") }}';
             }, 2000);
 
         } catch (error) {
-            console.error('❌ Auto print error:', error);
+            window.mobileDebug('❌ ERROR: ' + error.message, 'error');
+            window.mobileDebug('Stack: ' + error.stack, 'error');
 
-            // Fallback: buka Print Normal
-            // if (confirm('❌ Print error\n\nGunakan Print Normal?')) {
-            //     const printUrl = '{{ route("report-gentan") }}?produk_asemblyid=' + produk_asemblyid;
-            //     window.open(printUrl, '_blank');
+            if (confirm('❌ Print gagal: ' + error.message + '\n\nGunakan Print Normal?')) {
+                const printUrl = '{{ route("report-gentan") }}?produk_asemblyid=' + produk_asemblyid;
+                window.open(printUrl, '_blank');
 
-            //     setTimeout(() => {
-            //         window.location.href = '{{ route("nippo-infure") }}';
-            //     }, 1000);
-            // }
+                setTimeout(() => {
+                    window.location.href = '{{ route("nippo-infure") }}';
+                }, 1000);
+            }
         }
     });
 });
