@@ -663,7 +663,7 @@
                         </button>
                         <button type="button" wire:click="save" class="btn btn-success" wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="save">
-                                <i class="ri-save-3-line"></i> Save 1.6
+                                <i class="ri-save-3-line"></i> Save 1.7
                             </span>
                             <div wire:loading wire:target="save">
                                 <span class="d-flex align-items-center">
