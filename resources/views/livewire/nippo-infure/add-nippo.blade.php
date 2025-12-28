@@ -663,7 +663,7 @@
                         </button>
                         <button type="button" wire:click="save" class="btn btn-success" wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="save">
-                                <i class="ri-save-3-line"></i> Save 1.2
+                                <i class="ri-save-3-line"></i> Save 1.3
                             </span>
                             <div wire:loading wire:target="save">
                                 <span class="d-flex align-items-center">
@@ -1976,6 +1976,7 @@ window.clearDebugLog = function() {
 };
 
 // ===== THERMAL PRINTER MODULE =====
+// ===== THERMAL PRINTER MODULE - UPDATED AUTO-RECONNECT =====
 (function() {
     if (typeof window === 'undefined' || typeof navigator === 'undefined') {
         window.mobileDebug('❌ Window/Navigator not available', 'error');
@@ -2011,7 +2012,7 @@ window.clearDebugLog = function() {
         window.savedDeviceId = null;
         window.savedConfigIndex = 0;
 
-        // Generate ESC/POS
+        // Generate ESC/POS (TETAP SAMA)
         window.generateEscPosCommands = function(data) {
             const ESC = '\x1B';
             const GS = '\x1D';
@@ -2088,47 +2089,63 @@ window.clearDebugLog = function() {
             return cmd;
         };
 
-        // Reconnect
+        // ===== UPDATED RECONNECT - CARI BERDASARKAN NAMA =====
         window.reconnectSavedDevice = async function() {
-            if (!window.savedDeviceId) {
-                window.mobileDebug('📍 No saved device', 'info');
-                return false;
-            }
-
             try {
-                window.mobileDebug('🔄 Reconnecting...', 'info');
+                window.mobileDebug('🔄 Checking paired devices...', 'info');
 
                 let devices = [];
                 try {
                     devices = await navigator.bluetooth.getDevices();
                 } catch (e) {
                     window.mobileDebug('⚠️ getDevices() not supported', 'warn');
-                }
-
-                const savedDevice = devices.find(d => d.id === window.savedDeviceId);
-                if (!savedDevice) {
-                    window.mobileDebug('❌ Saved device not found', 'error');
                     return false;
                 }
 
-                window.mobileDebug('Found device: ' + savedDevice.name, 'success');
+                window.mobileDebug('Found ' + devices.length + ' paired devices', 'info');
 
-                if (savedDevice.gatt && savedDevice.gatt.connected) {
-                    window.connectedDevice = savedDevice;
-                    const service = await savedDevice.gatt.getPrimaryService('49535343-fe7d-4ae5-8fa9-9fafd205e455');
+                // CARI TM-P20II berdasarkan NAMA, bukan ID
+                const epsonPrinter = devices.find(d =>
+                    d.name && d.name.includes('TM-P20II')
+                );
+
+                if (!epsonPrinter) {
+                    window.mobileDebug('❌ TM-P20II not found in paired devices', 'error');
+                    return false;
+                }
+
+                window.mobileDebug('✅ Found: ' + epsonPrinter.name, 'success');
+
+                // Check if already connected
+                if (epsonPrinter.gatt && epsonPrinter.gatt.connected) {
+                    window.mobileDebug('Already connected!', 'success');
+                    window.connectedDevice = epsonPrinter;
+                    const service = await epsonPrinter.gatt.getPrimaryService('49535343-fe7d-4ae5-8fa9-9fafd205e455');
                     const characteristic = await service.getCharacteristic('49535343-1e4d-4bd9-ba61-23c647249616');
                     window.printerCharacteristic = characteristic;
-                    window.mobileDebug('✅ Already connected!', 'success');
+
+                    // Save ID for next time
+                    localStorage.setItem('thermal_printer_id', epsonPrinter.id);
+                    window.savedDeviceId = epsonPrinter.id;
+
                     return true;
                 }
 
-                const server = await savedDevice.gatt.connect();
+                // Reconnect
+                window.mobileDebug('Reconnecting to ' + epsonPrinter.name + '...', 'info');
+                const server = await epsonPrinter.gatt.connect();
                 const service = await server.getPrimaryService('49535343-fe7d-4ae5-8fa9-9fafd205e455');
                 const characteristic = await service.getCharacteristic('49535343-1e4d-4bd9-ba61-23c647249616');
 
-                window.connectedDevice = savedDevice;
+                window.connectedDevice = epsonPrinter;
                 window.printerCharacteristic = characteristic;
-                window.mobileDebug('✅ Reconnected!', 'success');
+                window.savedDeviceId = epsonPrinter.id;
+
+                // Save to localStorage
+                localStorage.setItem('thermal_printer_id', epsonPrinter.id);
+                localStorage.setItem('thermal_config_index', '0');
+
+                window.mobileDebug('✅ Reconnected successfully!', 'success');
                 return true;
 
             } catch (error) {
@@ -2139,7 +2156,7 @@ window.clearDebugLog = function() {
             }
         };
 
-        // Connect
+        // Connect (TETAP SAMA)
         window.connectThermalPrinter = async function() {
             window.mobileDebug('🔍 Requesting printer...', 'info');
 
@@ -2166,7 +2183,7 @@ window.clearDebugLog = function() {
             return true;
         };
 
-        // Print
+        // Print (TETAP SAMA)
         window.printToThermalPrinter = async function(data) {
             window.mobileDebug('📝 Generating commands...', 'info');
             const commands = window.generateEscPosCommands(data);
@@ -2218,7 +2235,7 @@ window.clearDebugLog = function() {
         window.savedConfigIndex = parseInt(localStorage.getItem('thermal_config_index') || '0');
 
         if (window.savedDeviceId) {
-            window.mobileDebug('✅ Found saved printer: ' + window.savedDeviceId, 'success');
+            window.mobileDebug('✅ Found saved printer ID: ' + window.savedDeviceId, 'success');
         }
 
         window.mobileDebug('✅ Thermal module loaded', 'success');
