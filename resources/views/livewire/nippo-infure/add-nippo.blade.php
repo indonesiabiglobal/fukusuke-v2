@@ -663,7 +663,7 @@
                         </button>
                         <button type="button" wire:click="save" class="btn btn-success" wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="save">
-                                <i class="ri-save-3-line"></i> Save 1.5
+                                <i class="ri-save-3-line"></i> Save 1.6
                             </span>
                             <div wire:loading wire:target="save">
                                 <span class="d-flex align-items-center">
@@ -1941,9 +1941,8 @@
         });
     </script>
 @endscript
-
 <script>
-// Event listener untuk auto-print (thermal module sudah di global)
+// Event listener untuk auto-print
 document.addEventListener('livewire:initialized', () => {
     Livewire.on('gentan-saved', async (event) => {
         const produk_asemblyid = event.produk_asemblyid || event[0]?.produk_asemblyid;
@@ -1954,22 +1953,39 @@ document.addEventListener('livewire:initialized', () => {
         }
 
         try {
-            // Cek printer ready
-            if (!window.thermalPrinter.isReady) {
-                console.log('Printer not ready, requesting...');
+            // ✅ CEK PRINTER READY (QUERY REAL-TIME, BUKAN FLAG)
+            console.log('🔍 Checking printer status...');
+            const printerReady = await window.checkPrinterReady();
+
+            if (!printerReady) {
+                console.log('⚠️ Printer not ready, requesting pairing...');
                 await window.connectThermalPrinter();
                 await new Promise(r => setTimeout(r, 500));
             }
 
             // Fetch data
+            console.log('📡 Fetching print data...');
             const response = await fetch(`/get-print-data/${produk_asemblyid}`);
-            if (!response.ok) throw new Error('Fetch failed');
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Fetch error:', errorText.substring(0, 100));
+                throw new Error('Fetch failed');
+            }
 
             const printData = await response.json();
-            if (printData.error) throw new Error(printData.error);
+
+            if (printData.error) {
+                throw new Error(printData.error);
+            }
+
+            console.log('✅ Data received');
 
             // Print
+            console.log('🖨️ Printing...');
             await window.printToThermalPrinter(printData);
+
+            console.log('✅ Print success!');
 
             // Redirect
             setTimeout(() => {
@@ -1977,7 +1993,7 @@ document.addEventListener('livewire:initialized', () => {
             }, 2000);
 
         } catch (error) {
-            console.error('Print error:', error);
+            console.error('❌ Print error:', error);
 
             if (confirm(`Print gagal: ${error.message}\n\nGunakan Print Normal?`)) {
                 window.open(`{{ route("report-gentan") }}?produk_asemblyid=${produk_asemblyid}`, '_blank');

@@ -1,6 +1,4 @@
-// ===== GLOBAL THERMAL PRINTER MODULE =====
-// File ini di-load SEKALI di layout master dan persist across pages
-
+// ===== GLOBAL THERMAL PRINTER MODULE - FIXED =====
 (function () {
     "use strict";
 
@@ -11,7 +9,6 @@
 
     window.thermalPrinterGlobalLoaded = true;
 
-    // Check Bluetooth availability
     if (!("bluetooth" in navigator)) {
         console.warn("⚠️ Bluetooth API not available");
         return;
@@ -31,7 +28,63 @@
     window.thermalPrinter = {
         device: null,
         characteristic: null,
-        isReady: false,
+    };
+
+    // ===== CEK APAKAH PRINTER READY (TANPA FLAG) =====
+    window.checkPrinterReady = async function () {
+        try {
+            // Cek apakah ada paired devices
+            const devices = await navigator.bluetooth.getDevices();
+            const epsonPrinter = devices.find(
+                (d) => d.name && d.name.includes("TM-P20II")
+            );
+
+            if (!epsonPrinter) {
+                console.log("⚠️ TM-P20II not paired");
+                return false;
+            }
+
+            // Cek apakah connected
+            if (epsonPrinter.gatt && epsonPrinter.gatt.connected) {
+                console.log("✅ Printer already connected");
+
+                // Update reference
+                window.thermalPrinter.device = epsonPrinter;
+
+                try {
+                    const service = await epsonPrinter.gatt.getPrimaryService(
+                        "49535343-fe7d-4ae5-8fa9-9fafd205e455"
+                    );
+                    const characteristic = await service.getCharacteristic(
+                        "49535343-1e4d-4bd9-ba61-23c647249616"
+                    );
+                    window.thermalPrinter.characteristic = characteristic;
+                    return true;
+                } catch (err) {
+                    console.error("Service/Characteristic error:", err);
+                    return false;
+                }
+            }
+
+            // Jika paired tapi disconnected, reconnect
+            console.log("🔄 Reconnecting to", epsonPrinter.name);
+            const server = await epsonPrinter.gatt.connect();
+            const service = await server.getPrimaryService(
+                "49535343-fe7d-4ae5-8fa9-9fafd205e455"
+            );
+            const characteristic = await service.getCharacteristic(
+                "49535343-1e4d-4bd9-ba61-23c647249616"
+            );
+
+            window.thermalPrinter.device = epsonPrinter;
+            window.thermalPrinter.characteristic = characteristic;
+
+            console.log("✅ Reconnected successfully");
+            return true;
+        } catch (error) {
+            console.error("❌ Check printer error:", error.message);
+            return false;
+        }
     };
 
     // Generate ESC/POS Commands
@@ -111,54 +164,7 @@
         return cmd;
     };
 
-    // Auto Init Printer
-    window.initThermalPrinter = async function () {
-        try {
-            console.log("🔄 Checking for paired printer...");
-
-            const devices = await navigator.bluetooth.getDevices();
-            console.log(`Found ${devices.length} paired device(s)`);
-
-            const epsonPrinter = devices.find(
-                (d) => d.name && d.name.includes("TM-P20II")
-            );
-
-            if (!epsonPrinter) {
-                console.warn("⚠️ TM-P20II not paired");
-                return false;
-            }
-
-            console.log("✅ Found:", epsonPrinter.name);
-
-            let server;
-            if (epsonPrinter.gatt && epsonPrinter.gatt.connected) {
-                console.log("Already connected");
-                server = epsonPrinter.gatt;
-            } else {
-                console.log("Connecting...");
-                server = await epsonPrinter.gatt.connect();
-            }
-
-            const service = await server.getPrimaryService(
-                "49535343-fe7d-4ae5-8fa9-9fafd205e455"
-            );
-            const characteristic = await service.getCharacteristic(
-                "49535343-1e4d-4bd9-ba61-23c647249616"
-            );
-
-            window.thermalPrinter.device = epsonPrinter;
-            window.thermalPrinter.characteristic = characteristic;
-            window.thermalPrinter.isReady = true;
-
-            console.log("✅ Printer READY!");
-            return true;
-        } catch (error) {
-            console.error("❌ Init error:", error.message);
-            return false;
-        }
-    };
-
-    // Manual Connect
+    // Manual Connect (FIRST TIME ONLY)
     window.connectThermalPrinter = async function () {
         console.log("🔍 Requesting printer...");
 
@@ -179,7 +185,6 @@
 
         window.thermalPrinter.device = device;
         window.thermalPrinter.characteristic = characteristic;
-        window.thermalPrinter.isReady = true;
 
         console.log("✅ Printer connected:", device.name);
         return true;
@@ -193,7 +198,7 @@
         const encoder = new TextEncoder();
         const bytes = encoder.encode(commands);
 
-        if (!window.thermalPrinter.isReady) {
+        if (!window.thermalPrinter.characteristic) {
             throw new Error("Printer not connected");
         }
 
@@ -221,11 +226,6 @@
             }).showToast();
         }
     };
-
-    // Auto-init on load
-    setTimeout(() => {
-        window.initThermalPrinter();
-    }, 1000);
 
     console.log("✅ Global thermal printer module loaded");
 })();
