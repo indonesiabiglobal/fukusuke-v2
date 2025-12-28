@@ -58,7 +58,7 @@
     {{-- toastr --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
+    <script src="{{ asset('js/thermal-printer-global.js') }}"></script>
 
     @livewireScripts
     {{-- @powerGridScripts --}}
@@ -136,34 +136,34 @@
     </script>
     <script src="{{ asset('/sw.js') }}"></script>
     <script>
-    if ("serviceWorker" in navigator) {
-        // Clear old service workers first
-        navigator.serviceWorker.getRegistrations().then(function(registrations) {
-            registrations.forEach(function(registration) {
-                registration.unregister();
-            });
-        }).then(function() {
-            // Register new service worker
-            return navigator.serviceWorker.register("/sw.js", {
-                scope: '/'
-            });
-        }).then(function(registration) {
-            console.log("Service worker registered:", registration.scope);
-
-            // Update on refresh
-            registration.addEventListener('updatefound', () => {
-                const newWorker = registration.installing;
-                newWorker.addEventListener('statechange', () => {
-                    if (newWorker.state === 'activated') {
-                        console.log('New service worker activated');
-                    }
+        if ("serviceWorker" in navigator) {
+            // Clear old service workers first
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                registrations.forEach(function(registration) {
+                    registration.unregister();
                 });
+            }).then(function() {
+                // Register new service worker
+                return navigator.serviceWorker.register("/sw.js", {
+                    scope: '/'
+                });
+            }).then(function(registration) {
+                console.log("Service worker registered:", registration.scope);
+
+                // Update on refresh
+                registration.addEventListener('updatefound', () => {
+                    const newWorker = registration.installing;
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'activated') {
+                            console.log('New service worker activated');
+                        }
+                    });
+                });
+            }).catch(function(error) {
+                console.error("Service worker registration failed:", error);
             });
-        }).catch(function(error) {
-            console.error("Service worker registration failed:", error);
-        });
-    }
-</script>
+        }
+    </script>
 
     <script>
         // format number

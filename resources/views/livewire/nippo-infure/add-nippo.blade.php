@@ -663,7 +663,7 @@
                         </button>
                         <button type="button" wire:click="save" class="btn btn-success" wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="save">
-                                <i class="ri-save-3-line"></i> Save 1.4
+                                <i class="ri-save-3-line"></i> Save 1.5
                             </span>
                             <div wire:loading wire:target="save">
                                 <span class="d-flex align-items-center">
@@ -1942,337 +1942,34 @@
     </script>
 @endscript
 
-{{-- THERMAL PRINT MODULE - UPDATE DENGAN DEBUG --}}
 <script>
-// ===== MOBILE DEBUG LOGGER =====
-window.mobileDebug = function(msg, type = 'info') {
-    const logDiv = document.getElementById('mobileLogContent');
-    const debugPanel = document.getElementById('mobileDebugLog');
-
-    if (!logDiv || !debugPanel) return;
-
-    debugPanel.style.display = 'block';
-
-    const colors = {
-        'info': '#0ff',
-        'success': '#0f0',
-        'error': '#f00',
-        'warn': '#ff0'
-    };
-
-    const timestamp = new Date().toLocaleTimeString();
-    const color = colors[type] || '#fff';
-
-    logDiv.innerHTML += `<div style="color:${color}; margin:5px 0; padding:5px; border-left:3px solid ${color};">[${timestamp}] ${msg}</div>`;
-    logDiv.scrollTop = logDiv.scrollHeight;
-
-    console.log(msg);
-};
-
-window.clearDebugLog = function() {
-    const logDiv = document.getElementById('mobileLogContent');
-    if (logDiv) logDiv.innerHTML = '';
-};
-
-// ===== THERMAL PRINTER MODULE =====
-(function() {
-    if (typeof window === 'undefined' || typeof navigator === 'undefined') {
-        window.mobileDebug('❌ Window/Navigator not available', 'error');
-        return;
-    }
-
-    if (window.thermalPrinterLoaded) {
-        window.mobileDebug('✅ Thermal module already loaded', 'success');
-        return;
-    }
-
-    try {
-        window.thermalPrinterLoaded = true;
-
-        const hasBluetoothAPI = 'bluetooth' in navigator;
-
-        if (!hasBluetoothAPI) {
-            window.mobileDebug('⚠️ Bluetooth API not available', 'warn');
-            return;
-        }
-
-        window.mobileDebug('✅ Bluetooth API available', 'success');
-
-        // UUID EPSON TM-P20II
-        window.THERMAL_UUID_CONFIGS = [{
-            name: 'Epson TM-P20II',
-            serviceUUID: '49535343-fe7d-4ae5-8fa9-9fafd205e455',
-            characteristicUUID: '49535343-1e4d-4bd9-ba61-23c647249616',
-        }];
-
-        window.connectedDevice = null;
-        window.printerCharacteristic = null;
-        window.printerReady = false; // ✅ FLAG BARU
-
-        // Generate ESC/POS
-        window.generateEscPosCommands = function(data) {
-            const ESC = '\x1B';
-            const GS = '\x1D';
-            let cmd = '';
-
-            cmd += ESC + '@';
-            cmd += ESC + 'R' + String.fromCharCode(0);
-
-            // GENTAN NO (DOUBLE SIZE) - CENTER
-            cmd += ESC + 'a' + String.fromCharCode(1);
-            cmd += GS + '!' + String.fromCharCode(0x11);
-            cmd += String(data.gentan_no || '0') + '\n';
-            cmd += GS + '!' + String.fromCharCode(0);
-            cmd += '\n';
-
-            // QR CODE (LPK NO) - CENTER
-            const qrData = String(data.lpk_no || '000000-000');
-            cmd += GS + '(k' + String.fromCharCode(4, 0, 49, 65, 50, 0);
-            cmd += GS + '(k' + String.fromCharCode(3, 0, 49, 67, 6);
-            cmd += GS + '(k' + String.fromCharCode(3, 0, 49, 69, 49);
-
-            const qrLen = qrData.length + 3;
-            const pL = qrLen % 256;
-            const pH = Math.floor(qrLen / 256);
-            cmd += GS + '(k' + String.fromCharCode(pL, pH, 49, 80, 48) + qrData;
-            cmd += GS + '(k' + String.fromCharCode(3, 0, 49, 81, 48);
-
-            cmd += '\n\n';
-            cmd += ESC + 'a' + String.fromCharCode(0);
-
-            // LPK NO (DOUBLE SIZE)
-            cmd += '================================\n';
-            cmd += ESC + 'a' + String.fromCharCode(1);
-            cmd += GS + '!' + String.fromCharCode(0x11);
-            cmd += String(data.lpk_no || '-') + '\n';
-            cmd += GS + '!' + String.fromCharCode(0);
-            cmd += ESC + 'a' + String.fromCharCode(0);
-            cmd += '================================\n';
-
-            // PRODUCT NAME (BOLD)
-            cmd += ESC + 'E' + String.fromCharCode(1);
-            cmd += String(data.product_name || '-') + '\n';
-            cmd += ESC + 'E' + String.fromCharCode(0);
-            cmd += '--------------------------------\n';
-
-            // DETAIL (NORMAL SIZE)
-            cmd += 'No. Order   : ' + String(data.code || '-') + '\n';
-            cmd += 'Kode        : ' + String(data.code_alias || '-') + '\n';
-            cmd += 'Tgl Prod    : ' + String(data.production_date || '-') + '\n';
-            cmd += 'Jam         : ' + String(data.work_hour || '-') + '\n';
-            cmd += 'Shift       : ' + String(data.work_shift || '-') + '\n';
-            cmd += 'Mesin       : ' + String(data.machineno || '-') + '\n';
-            cmd += '--------------------------------\n';
-
-            // BERAT & PANJANG (BOLD)
-            cmd += ESC + 'E' + String.fromCharCode(1);
-            cmd += 'Berat       : ' + String(data.berat_produksi || '0') + '\n';
-            cmd += 'Panjang     : ' + String(data.panjang_produksi || '0') + '\n';
-            cmd += ESC + 'E' + String.fromCharCode(0);
-
-            cmd += 'Lebih       : ' + String(data.selisih || '0') + '\n';
-            cmd += 'No Han      : ' + String(data.nomor_han || '-') + '\n';
-            cmd += '--------------------------------\n';
-
-            // NIK & NAMA
-            cmd += 'NIK         : ' + String(data.nik || '-') + '\n';
-            cmd += 'Nama        : ' + String(data.empname || '-') + '\n';
-            cmd += '================================\n';
-            cmd += '\n\n\n';
-
-            // Cut
-            cmd += GS + 'V' + String.fromCharCode(0);
-
-            return cmd;
-        };
-
-        // ===== AUTO INIT PRINTER SAAT PAGE LOAD =====
-        window.initPrinterOnLoad = async function() {
-            try {
-                window.mobileDebug('🔄 Auto-checking printer...', 'info');
-
-                let devices = [];
-                try {
-                    devices = await navigator.bluetooth.getDevices();
-                } catch (e) {
-                    window.mobileDebug('⚠️ getDevices() failed: ' + e.message, 'warn');
-                    return false;
-                }
-
-                window.mobileDebug('Found ' + devices.length + ' paired device(s)', 'info');
-
-                // Cari TM-P20II
-                const epsonPrinter = devices.find(d =>
-                    d.name && d.name.includes('TM-P20II')
-                );
-
-                if (!epsonPrinter) {
-                    window.mobileDebug('⚠️ TM-P20II not paired yet', 'warn');
-                    return false;
-                }
-
-                window.mobileDebug('✅ Found: ' + epsonPrinter.name, 'success');
-
-                // Try connect
-                try {
-                    let server;
-                    if (epsonPrinter.gatt && epsonPrinter.gatt.connected) {
-                        window.mobileDebug('Already connected!', 'success');
-                        server = epsonPrinter.gatt;
-                    } else {
-                        window.mobileDebug('Connecting...', 'info');
-                        server = await epsonPrinter.gatt.connect();
-                    }
-
-                    const service = await server.getPrimaryService('49535343-fe7d-4ae5-8fa9-9fafd205e455');
-                    const characteristic = await service.getCharacteristic('49535343-1e4d-4bd9-ba61-23c647249616');
-
-                    window.connectedDevice = epsonPrinter;
-                    window.printerCharacteristic = characteristic;
-                    window.printerReady = true; // ✅ TANDAI READY
-
-                    localStorage.setItem('thermal_printer_name', epsonPrinter.name);
-
-                    window.mobileDebug('✅ Printer READY!', 'success');
-                    return true;
-
-                } catch (err) {
-                    window.mobileDebug('❌ Connection failed: ' + err.message, 'error');
-                    return false;
-                }
-
-            } catch (error) {
-                window.mobileDebug('❌ Init error: ' + error.message, 'error');
-                return false;
-            }
-        };
-
-        // ===== MANUAL CONNECT (UNTUK FIRST TIME) =====
-        window.connectThermalPrinter = async function() {
-            window.mobileDebug('🔍 Requesting printer...', 'info');
-
-            const device = await navigator.bluetooth.requestDevice({
-                acceptAllDevices: true,
-                optionalServices: ['49535343-fe7d-4ae5-8fa9-9fafd205e455']
-            });
-
-            window.mobileDebug('Connecting to: ' + device.name, 'info');
-
-            const server = await device.gatt.connect();
-            const service = await server.getPrimaryService('49535343-fe7d-4ae5-8fa9-9fafd205e455');
-            const characteristic = await service.getCharacteristic('49535343-1e4d-4bd9-ba61-23c647249616');
-
-            window.connectedDevice = device;
-            window.printerCharacteristic = characteristic;
-            window.printerReady = true; // ✅ TANDAI READY
-
-            localStorage.setItem('thermal_printer_name', device.name);
-
-            window.mobileDebug('✅ Printer saved: ' + device.name, 'success');
-            return true;
-        };
-
-        // Print
-        window.printToThermalPrinter = async function(data) {
-            window.mobileDebug('📝 Generating commands...', 'info');
-            const commands = window.generateEscPosCommands(data);
-            const encoder = new TextEncoder();
-            const bytes = encoder.encode(commands);
-
-            window.mobileDebug('Bytes: ' + bytes.length, 'info');
-
-            // ✅ CEK PRINTER READY
-            if (!window.printerReady || !window.printerCharacteristic) {
-                window.mobileDebug('❌ Printer not ready!', 'error');
-                throw new Error('Printer not connected');
-            }
-
-            const chunkSize = 128;
-            const totalChunks = Math.ceil(bytes.length / chunkSize);
-
-            window.mobileDebug('Sending ' + totalChunks + ' chunks...', 'info');
-
-            for (let i = 0; i < bytes.length; i += chunkSize) {
-                const chunk = bytes.slice(i, i + chunkSize);
-                await window.printerCharacteristic.writeValue(chunk);
-                await new Promise(r => setTimeout(r, 200));
-            }
-
-            window.mobileDebug('✅ Print complete!', 'success');
-            await new Promise(r => setTimeout(r, 1000));
-
-            if (typeof Toastify !== 'undefined') {
-                Toastify({
-                    text: "✅ Label berhasil dicetak!",
-                    duration: 3000,
-                    gravity: "top",
-                    position: "right",
-                    backgroundColor: "#10b981",
-                }).showToast();
-            }
-        };
-
-        window.mobileDebug('✅ Thermal module loaded', 'success');
-
-        // ✅ AUTO INIT SAAT PAGE LOAD (TANPA USER CLICK)
-        setTimeout(() => {
-            window.initPrinterOnLoad();
-        }, 1000);
-
-    } catch (error) {
-        window.mobileDebug('❌ Init error: ' + error.message, 'error');
-    }
-})();
-
-// ===== LISTEN EVENT DARI LIVEWIRE =====
+// Event listener untuk auto-print (thermal module sudah di global)
 document.addEventListener('livewire:initialized', () => {
-    window.mobileDebug('🎧 Livewire initialized', 'success');
-
     Livewire.on('gentan-saved', async (event) => {
-        window.mobileDebug('=== GENTAN SAVED ===', 'warn');
-
         const produk_asemblyid = event.produk_asemblyid || event[0]?.produk_asemblyid;
-        window.mobileDebug('Product ID: ' + produk_asemblyid, 'info');
 
         if (!produk_asemblyid) {
-            window.mobileDebug('❌ No product ID!', 'error');
+            console.error('No product ID');
             return;
         }
 
         try {
-            // ✅ CEK PRINTER READY DULU
-            if (!window.printerReady) {
-                window.mobileDebug('⚠️ Printer not ready, requesting...', 'warn');
-
-                // Minta user pilih printer (FIRST TIME ONLY)
+            // Cek printer ready
+            if (!window.thermalPrinter.isReady) {
+                console.log('Printer not ready, requesting...');
                 await window.connectThermalPrinter();
-
-                // Tunggu sebentar biar connect stabil
                 await new Promise(r => setTimeout(r, 500));
             }
 
             // Fetch data
-            window.mobileDebug('📡 Fetching print data...', 'info');
             const response = await fetch(`/get-print-data/${produk_asemblyid}`);
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                window.mobileDebug('❌ Fetch failed: ' + errorText.substring(0, 100), 'error');
-                throw new Error('Fetch error: ' + response.status);
-            }
+            if (!response.ok) throw new Error('Fetch failed');
 
             const printData = await response.json();
-            window.mobileDebug('✅ Data received', 'success');
-
-            if (printData.error) {
-                throw new Error(printData.error);
-            }
+            if (printData.error) throw new Error(printData.error);
 
             // Print
-            window.mobileDebug('🖨️ Printing...', 'info');
             await window.printToThermalPrinter(printData);
-
-            window.mobileDebug('✅ ALL DONE!', 'success');
 
             // Redirect
             setTimeout(() => {
@@ -2280,21 +1977,15 @@ document.addEventListener('livewire:initialized', () => {
             }, 2000);
 
         } catch (error) {
-            window.mobileDebug('❌ ERROR: ' + error.message, 'error');
+            console.error('Print error:', error);
 
-            if (confirm('❌ Print gagal: ' + error.message + '\n\nGunakan Print Normal?')) {
-                const printUrl = '{{ route("report-gentan") }}?produk_asemblyid=' + produk_asemblyid;
-                window.open(printUrl, '_blank');
-
-                setTimeout(() => {
-                    window.location.href = '{{ route("nippo-infure") }}';
-                }, 1000);
-            } else {
-                // Tetap redirect meski gagal print
-                setTimeout(() => {
-                    window.location.href = '{{ route("nippo-infure") }}';
-                }, 1000);
+            if (confirm(`Print gagal: ${error.message}\n\nGunakan Print Normal?`)) {
+                window.open(`{{ route("report-gentan") }}?produk_asemblyid=${produk_asemblyid}`, '_blank');
             }
+
+            setTimeout(() => {
+                window.location.href = '{{ route("nippo-infure") }}';
+            }, 1000);
         }
     });
 });
