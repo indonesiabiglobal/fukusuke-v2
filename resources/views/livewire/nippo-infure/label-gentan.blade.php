@@ -83,10 +83,10 @@
 		</div>
 		<hr />
 
-        <div id="debugLog" style="display:none; background:#000; color:#0f0; padding:10px; margin-bottom:10px; font-family:monospace; font-size:11px; max-height:200px; overflow-y:auto; border-radius:5px;">
+        {{-- <div id="debugLog" style="display:none; background:#000; color:#0f0; padding:10px; margin-bottom:10px; font-family:monospace; font-size:11px; max-height:200px; overflow-y:auto; border-radius:5px;">
 			<strong style="color:#ff0;">DEBUG LOG:</strong><br>
 			<div id="logContent"></div>
-		</div>
+		</div> --}}
 
 		<div class="form-group">
 			<div class="input-group flex-wrap">
@@ -590,8 +590,80 @@ window.toggleDebugLog = function() {
         };
 
         // Main handler
+        // window.handleThermalPrint = async function() {
+        //     document.getElementById('debugLog').style.display = 'block';
+
+        //     window.debugLog('=== MEMULAI PRINT ===', 'warn');
+
+        //     if (!('bluetooth' in navigator)) {
+        //         window.debugLog('❌ Bluetooth tidak tersedia!', 'error');
+        //         alert('❌ Browser tidak support Bluetooth');
+        //         return;
+        //     }
+
+        //     try {
+        //         const component = window.Livewire.find(
+        //             document.querySelector('[wire\\:id]').getAttribute('wire:id')
+        //         );
+
+        //         window.debugLog('Component found', 'success');
+
+        //         const printData = {
+        //             gentan_no: component.get('gentan_no'),
+        //             lpk_no: component.get('lpk_no'),
+        //             product_name: component.get('product_name'),
+        //             code: component.get('code'),
+        //             code_alias: component.get('code_alias'),
+        //             production_date: component.get('production_date'),
+        //             work_hour: component.get('work_hour'),
+        //             work_shift: component.get('work_shift'),
+        //             machineno: component.get('machineno'),
+        //             berat_produksi: component.get('berat_produksi'),
+        //             panjang_produksi: component.get('product_panjang'),
+        //             selisih: component.get('selisih'),
+        //             nomor_han: component.get('nomor_han'),
+        //             nik: component.get('nik'),
+        //             empname: component.get('empname'),
+        //         };
+
+        //         window.debugLog('=== DATA YANG AKAN DICETAK ===', 'warn');
+        //         window.debugLog('gentan_no: ' + (printData.gentan_no || 'KOSONG'), printData.gentan_no ? 'success' : 'error');
+        //         window.debugLog('lpk_no: ' + (printData.lpk_no || 'KOSONG'), printData.lpk_no ? 'success' : 'error');
+        //         window.debugLog('product_name: ' + (printData.product_name || 'KOSONG'), printData.product_name ? 'success' : 'error');
+        //         window.debugLog('code: ' + (printData.code || 'KOSONG'), printData.code ? 'success' : 'error');
+        //         window.debugLog('code_alias: ' + (printData.code_alias || 'KOSONG'), printData.code_alias ? 'success' : 'error');
+        //         window.debugLog('production_date: ' + (printData.production_date || 'KOSONG'), printData.production_date ? 'success' : 'error');
+        //         window.debugLog('work_hour: ' + (printData.work_hour || 'KOSONG'), printData.work_hour ? 'success' : 'error');
+        //         window.debugLog('work_shift: ' + (printData.work_shift || 'KOSONG'), printData.work_shift ? 'success' : 'error');
+        //         window.debugLog('machineno: ' + (printData.machineno || 'KOSONG'), printData.machineno ? 'success' : 'error');
+        //         window.debugLog('berat_produksi: ' + (printData.berat_produksi || 'KOSONG'), printData.berat_produksi ? 'success' : 'error');
+        //         window.debugLog('panjang_produksi: ' + (printData.panjang_produksi || 'KOSONG'), printData.panjang_produksi ? 'success' : 'error');
+        //         window.debugLog('selisih: ' + (printData.selisih || 'KOSONG'), printData.selisih ? 'success' : 'error');
+        //         window.debugLog('nomor_han: ' + (printData.nomor_han || 'KOSONG'), printData.nomor_han ? 'success' : 'error');
+        //         window.debugLog('nik: ' + (printData.nik || 'KOSONG'), printData.nik ? 'success' : 'error');
+        //         window.debugLog('empname: ' + (printData.empname || 'KOSONG'), printData.empname ? 'success' : 'error');
+        //         window.debugLog('==============================', 'warn');
+
+        //         window.debugLog('🖨️ Mulai print...', 'info');
+        //         await window.printToThermalPrinter(printData);
+        //         window.debugLog('✅ Print selesai!', 'success');
+
+        //     } catch (error) {
+        //         window.debugLog('❌ ERROR: ' + error.message, 'error');
+        //         console.error(error);
+
+        //         if (confirm('❌ Print error\n\nGunakan Print Normal?')) {
+        //             component.call('printNormal');
+        //         }
+        //     }
+        // };
+
         window.handleThermalPrint = async function() {
-            document.getElementById('debugLog').style.display = 'block';
+            // ===== CEK DULU SEBELUM AKSES =====
+            const debugDiv = document.getElementById('debugLog');
+            if (debugDiv) {
+                debugDiv.style.display = 'block';
+            }
 
             window.debugLog('=== MEMULAI PRINT ===', 'warn');
 
