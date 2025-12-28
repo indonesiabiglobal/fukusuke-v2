@@ -127,8 +127,6 @@ Route::group(['middleware' => 'auth'], function () {
     // Route untuk fetch print data
     Route::get('/get-print-data/{produk_asemblyid}', function($produk_asemblyid) {
         try {
-            Log::info('Fetching print data for ID: ' . $produk_asemblyid);
-
             $data = DB::table('tdproduct_assembly as tpa')
                 ->join('tdorderlpk as tod', 'tpa.lpk_id', '=', 'tod.id')
                 ->join('msproduct as mp', 'mp.id', '=', 'tod.product_id')
@@ -142,12 +140,11 @@ Route::group(['middleware' => 'auth'], function () {
                     DB::raw("COALESCE(mp.code, '-') as code"),
                     DB::raw("COALESCE(mp.code_alias, '-') as code_alias"),
                     DB::raw("to_char(tpa.production_date, 'DD-MM-YYYY') as production_date"),
-                    DB::raw("to_char(tpa.work_hour, 'HH24:MI') as work_hour"),
+                    DB::raw("COALESCE(tpa.work_hour, '00:00') as work_hour"),
                     DB::raw("COALESCE(msw.id::text, '0') as work_shift"),
                     DB::raw("COALESCE(msm.machineno, '-') as machineno"),
                     DB::raw("COALESCE(tpa.berat_produksi, 0) as berat_produksi"),
                     DB::raw("COALESCE(tpa.panjang_produksi, 0) as panjang_produksi"),
-                    // SELISIH - hitung dari LPK
                     DB::raw("COALESCE(tod.total_assembly_line - tod.panjang_lpk, 0) as selisih"),
                     DB::raw("COALESCE(tpa.nomor_han, '-') as nomor_han"),
                     DB::raw("COALESCE(mse.employeeno, '-') as nik"),
@@ -161,17 +158,15 @@ Route::group(['middleware' => 'auth'], function () {
                 return response()->json(['error' => 'Data not found'], 404);
             }
 
-            Log::info('Print data fetched successfully', (array)$data);
-
+            Log::info('Print data fetched successfully');
             return response()->json($data);
 
         } catch (\Exception $e) {
             Log::error('Get print data error: ' . $e->getMessage());
-            Log::error('Stack trace: ' . $e->getTraceAsString());
 
             return response()->json([
                 'error' => $e->getMessage(),
-                'trace' => config('app.debug') ? $e->getTraceAsString() : null
+                'line' => $e->getLine()
             ], 500);
         }
     })->name('get-print-data');

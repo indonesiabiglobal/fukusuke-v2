@@ -663,7 +663,7 @@
                         </button>
                         <button type="button" wire:click="save" class="btn btn-success" wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="save">
-                                <i class="ri-save-3-line"></i> Save
+                                <i class="ri-save-3-line"></i> Save 1.2
                             </span>
                             <div wire:loading wire:target="save">
                                 <span class="d-flex align-items-center">
@@ -747,7 +747,7 @@
                             <button type="button" class="btn btn-success ms-auto" wire:click="saveInfure"
                                 wire:loading.attr="disabled">
                                 <span wire:loading.remove wire:target="saveInfure">
-                                    <i class="ri-save-3-line"></i> Save 1.1
+                                    <i class="ri-save-3-line"></i> Save
                                 </span>
                                 <div wire:loading wire:target="saveInfure">
                                     <span class="d-flex align-items-center">
