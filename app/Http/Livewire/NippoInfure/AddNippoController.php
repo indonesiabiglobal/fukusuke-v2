@@ -433,13 +433,24 @@ class AddNippoController extends Component
             TdOrderLpk::where('id', $lpkid->id)->update([
                 'total_assembly_line' => $totalAssembly[0]->c1,
             ]);
+
+            session(['last_saved_gentan_id' => $product->id]);
+
+            // ✅ Notifikasi
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
 
-            // $this->dispatch('redirectToPrint', $product->id);
-
-            $this->dispatch('auto-print-gentan', [
+            // ✅ DISPATCH EVENT (nama harus sama dengan listener di blade)
+            $this->dispatch('gentan-saved', [
                 'produk_asemblyid' => $product->id
             ]);
+
+            // $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
+
+            // // $this->dispatch('redirectToPrint', $product->id);
+
+            // $this->dispatch('auto-print-gentan', [
+            //     'produk_asemblyid' => $product->id
+            // ]);
 
             // return redirect()->route('nippo-infure');
         } catch (\Exception $e) {

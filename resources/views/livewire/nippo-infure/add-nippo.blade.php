@@ -663,7 +663,7 @@
                         </button>
                         <button type="button" wire:click="save" class="btn btn-success" wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="save">
-                                <i class="ri-save-3-line"></i> Save 1.3
+                                <i class="ri-save-3-line"></i> Save 1.4
                             </span>
                             <div wire:loading wire:target="save">
                                 <span class="d-flex align-items-center">
@@ -1951,7 +1951,6 @@ window.mobileDebug = function(msg, type = 'info') {
 
     if (!logDiv || !debugPanel) return;
 
-    // Auto show debug panel
     debugPanel.style.display = 'block';
 
     const colors = {
@@ -1976,7 +1975,6 @@ window.clearDebugLog = function() {
 };
 
 // ===== THERMAL PRINTER MODULE =====
-// ===== THERMAL PRINTER MODULE - UPDATED AUTO-RECONNECT =====
 (function() {
     if (typeof window === 'undefined' || typeof navigator === 'undefined') {
         window.mobileDebug('❌ Window/Navigator not available', 'error');
@@ -2009,10 +2007,9 @@ window.clearDebugLog = function() {
 
         window.connectedDevice = null;
         window.printerCharacteristic = null;
-        window.savedDeviceId = null;
-        window.savedConfigIndex = 0;
+        window.printerReady = false; // ✅ FLAG BARU
 
-        // Generate ESC/POS (TETAP SAMA)
+        // Generate ESC/POS
         window.generateEscPosCommands = function(data) {
             const ESC = '\x1B';
             const GS = '\x1D';
@@ -2089,74 +2086,68 @@ window.clearDebugLog = function() {
             return cmd;
         };
 
-        // ===== UPDATED RECONNECT - CARI BERDASARKAN NAMA =====
-        window.reconnectSavedDevice = async function() {
+        // ===== AUTO INIT PRINTER SAAT PAGE LOAD =====
+        window.initPrinterOnLoad = async function() {
             try {
-                window.mobileDebug('🔄 Checking paired devices...', 'info');
+                window.mobileDebug('🔄 Auto-checking printer...', 'info');
 
                 let devices = [];
                 try {
                     devices = await navigator.bluetooth.getDevices();
                 } catch (e) {
-                    window.mobileDebug('⚠️ getDevices() not supported', 'warn');
+                    window.mobileDebug('⚠️ getDevices() failed: ' + e.message, 'warn');
                     return false;
                 }
 
-                window.mobileDebug('Found ' + devices.length + ' paired devices', 'info');
+                window.mobileDebug('Found ' + devices.length + ' paired device(s)', 'info');
 
-                // CARI TM-P20II berdasarkan NAMA, bukan ID
+                // Cari TM-P20II
                 const epsonPrinter = devices.find(d =>
                     d.name && d.name.includes('TM-P20II')
                 );
 
                 if (!epsonPrinter) {
-                    window.mobileDebug('❌ TM-P20II not found in paired devices', 'error');
+                    window.mobileDebug('⚠️ TM-P20II not paired yet', 'warn');
                     return false;
                 }
 
                 window.mobileDebug('✅ Found: ' + epsonPrinter.name, 'success');
 
-                // Check if already connected
-                if (epsonPrinter.gatt && epsonPrinter.gatt.connected) {
-                    window.mobileDebug('Already connected!', 'success');
-                    window.connectedDevice = epsonPrinter;
-                    const service = await epsonPrinter.gatt.getPrimaryService('49535343-fe7d-4ae5-8fa9-9fafd205e455');
+                // Try connect
+                try {
+                    let server;
+                    if (epsonPrinter.gatt && epsonPrinter.gatt.connected) {
+                        window.mobileDebug('Already connected!', 'success');
+                        server = epsonPrinter.gatt;
+                    } else {
+                        window.mobileDebug('Connecting...', 'info');
+                        server = await epsonPrinter.gatt.connect();
+                    }
+
+                    const service = await server.getPrimaryService('49535343-fe7d-4ae5-8fa9-9fafd205e455');
                     const characteristic = await service.getCharacteristic('49535343-1e4d-4bd9-ba61-23c647249616');
+
+                    window.connectedDevice = epsonPrinter;
                     window.printerCharacteristic = characteristic;
+                    window.printerReady = true; // ✅ TANDAI READY
 
-                    // Save ID for next time
-                    localStorage.setItem('thermal_printer_id', epsonPrinter.id);
-                    window.savedDeviceId = epsonPrinter.id;
+                    localStorage.setItem('thermal_printer_name', epsonPrinter.name);
 
+                    window.mobileDebug('✅ Printer READY!', 'success');
                     return true;
+
+                } catch (err) {
+                    window.mobileDebug('❌ Connection failed: ' + err.message, 'error');
+                    return false;
                 }
 
-                // Reconnect
-                window.mobileDebug('Reconnecting to ' + epsonPrinter.name + '...', 'info');
-                const server = await epsonPrinter.gatt.connect();
-                const service = await server.getPrimaryService('49535343-fe7d-4ae5-8fa9-9fafd205e455');
-                const characteristic = await service.getCharacteristic('49535343-1e4d-4bd9-ba61-23c647249616');
-
-                window.connectedDevice = epsonPrinter;
-                window.printerCharacteristic = characteristic;
-                window.savedDeviceId = epsonPrinter.id;
-
-                // Save to localStorage
-                localStorage.setItem('thermal_printer_id', epsonPrinter.id);
-                localStorage.setItem('thermal_config_index', '0');
-
-                window.mobileDebug('✅ Reconnected successfully!', 'success');
-                return true;
-
             } catch (error) {
-                window.mobileDebug('❌ Reconnect error: ' + error.message, 'error');
-                window.printerCharacteristic = null;
-                window.connectedDevice = null;
+                window.mobileDebug('❌ Init error: ' + error.message, 'error');
                 return false;
             }
         };
 
-        // Connect (TETAP SAMA)
+        // ===== MANUAL CONNECT (UNTUK FIRST TIME) =====
         window.connectThermalPrinter = async function() {
             window.mobileDebug('🔍 Requesting printer...', 'info');
 
@@ -2173,36 +2164,27 @@ window.clearDebugLog = function() {
 
             window.connectedDevice = device;
             window.printerCharacteristic = characteristic;
-            window.savedDeviceId = device.id;
-            window.savedConfigIndex = 0;
+            window.printerReady = true; // ✅ TANDAI READY
 
-            localStorage.setItem('thermal_printer_id', device.id);
-            localStorage.setItem('thermal_config_index', '0');
+            localStorage.setItem('thermal_printer_name', device.name);
 
             window.mobileDebug('✅ Printer saved: ' + device.name, 'success');
             return true;
         };
 
-        // Print (TETAP SAMA)
+        // Print
         window.printToThermalPrinter = async function(data) {
             window.mobileDebug('📝 Generating commands...', 'info');
             const commands = window.generateEscPosCommands(data);
-
-            window.mobileDebug('Command length: ' + commands.length, 'info');
-
             const encoder = new TextEncoder();
             const bytes = encoder.encode(commands);
 
             window.mobileDebug('Bytes: ' + bytes.length, 'info');
 
-            if (!window.printerCharacteristic || !window.connectedDevice) {
-                window.mobileDebug('No connection, reconnecting...', 'warn');
-
-                const reconnected = await window.reconnectSavedDevice();
-                if (!reconnected) {
-                    window.mobileDebug('Requesting new device...', 'warn');
-                    await window.connectThermalPrinter();
-                }
+            // ✅ CEK PRINTER READY
+            if (!window.printerReady || !window.printerCharacteristic) {
+                window.mobileDebug('❌ Printer not ready!', 'error');
+                throw new Error('Printer not connected');
             }
 
             const chunkSize = 128;
@@ -2216,7 +2198,7 @@ window.clearDebugLog = function() {
                 await new Promise(r => setTimeout(r, 200));
             }
 
-            window.mobileDebug('✅ All data sent!', 'success');
+            window.mobileDebug('✅ Print complete!', 'success');
             await new Promise(r => setTimeout(r, 1000));
 
             if (typeof Toastify !== 'undefined') {
@@ -2230,15 +2212,12 @@ window.clearDebugLog = function() {
             }
         };
 
-        // Load saved device
-        window.savedDeviceId = localStorage.getItem('thermal_printer_id');
-        window.savedConfigIndex = parseInt(localStorage.getItem('thermal_config_index') || '0');
-
-        if (window.savedDeviceId) {
-            window.mobileDebug('✅ Found saved printer ID: ' + window.savedDeviceId, 'success');
-        }
-
         window.mobileDebug('✅ Thermal module loaded', 'success');
+
+        // ✅ AUTO INIT SAAT PAGE LOAD (TANPA USER CLICK)
+        setTimeout(() => {
+            window.initPrinterOnLoad();
+        }, 1000);
 
     } catch (error) {
         window.mobileDebug('❌ Init error: ' + error.message, 'error');
@@ -2249,12 +2228,10 @@ window.clearDebugLog = function() {
 document.addEventListener('livewire:initialized', () => {
     window.mobileDebug('🎧 Livewire initialized', 'success');
 
-    Livewire.on('auto-print-gentan', async (event) => {
-        window.mobileDebug('=== AUTO PRINT START ===', 'warn');
-        window.mobileDebug('Event received: ' + JSON.stringify(event), 'info');
+    Livewire.on('gentan-saved', async (event) => {
+        window.mobileDebug('=== GENTAN SAVED ===', 'warn');
 
         const produk_asemblyid = event.produk_asemblyid || event[0]?.produk_asemblyid;
-
         window.mobileDebug('Product ID: ' + produk_asemblyid, 'info');
 
         if (!produk_asemblyid) {
@@ -2263,49 +2240,57 @@ document.addEventListener('livewire:initialized', () => {
         }
 
         try {
-            // Fetch data
-            window.mobileDebug('📡 Fetching data...', 'info');
-            const url = `/get-print-data/${produk_asemblyid}`;
-            window.mobileDebug('URL: ' + url, 'info');
+            // ✅ CEK PRINTER READY DULU
+            if (!window.printerReady) {
+                window.mobileDebug('⚠️ Printer not ready, requesting...', 'warn');
 
-            const response = await fetch(url);
-            window.mobileDebug('Response status: ' + response.status, 'info');
+                // Minta user pilih printer (FIRST TIME ONLY)
+                await window.connectThermalPrinter();
+
+                // Tunggu sebentar biar connect stabil
+                await new Promise(r => setTimeout(r, 500));
+            }
+
+            // Fetch data
+            window.mobileDebug('📡 Fetching print data...', 'info');
+            const response = await fetch(`/get-print-data/${produk_asemblyid}`);
 
             if (!response.ok) {
                 const errorText = await response.text();
-                window.mobileDebug('❌ Fetch failed: ' + errorText, 'error');
+                window.mobileDebug('❌ Fetch failed: ' + errorText.substring(0, 100), 'error');
                 throw new Error('Fetch error: ' + response.status);
             }
 
             const printData = await response.json();
             window.mobileDebug('✅ Data received', 'success');
-            window.mobileDebug('Data: ' + JSON.stringify(printData).substring(0, 100) + '...', 'info');
 
             if (printData.error) {
-                window.mobileDebug('❌ Server error: ' + printData.error, 'error');
                 throw new Error(printData.error);
             }
 
             // Print
-            window.mobileDebug('🖨️ Sending to printer...', 'info');
+            window.mobileDebug('🖨️ Printing...', 'info');
             await window.printToThermalPrinter(printData);
 
-            window.mobileDebug('✅ PRINT SUCCESS!', 'success');
+            window.mobileDebug('✅ ALL DONE!', 'success');
 
             // Redirect
             setTimeout(() => {
-                window.mobileDebug('↩️ Redirecting...', 'info');
                 window.location.href = '{{ route("nippo-infure") }}';
             }, 2000);
 
         } catch (error) {
             window.mobileDebug('❌ ERROR: ' + error.message, 'error');
-            window.mobileDebug('Stack: ' + error.stack, 'error');
 
             if (confirm('❌ Print gagal: ' + error.message + '\n\nGunakan Print Normal?')) {
                 const printUrl = '{{ route("report-gentan") }}?produk_asemblyid=' + produk_asemblyid;
                 window.open(printUrl, '_blank');
 
+                setTimeout(() => {
+                    window.location.href = '{{ route("nippo-infure") }}';
+                }, 1000);
+            } else {
+                // Tetap redirect meski gagal print
                 setTimeout(() => {
                     window.location.href = '{{ route("nippo-infure") }}';
                 }, 1000);
