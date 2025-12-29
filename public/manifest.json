@@ -10,12 +10,12 @@
     "theme_color": "#6777ef",
     "icons": [
         {
-            "src": "/logo.png",
+            "src": "https://fukusuke-kogyo-sys.co.id/build/images/fukusuke.png",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "/logo.png",
+            "src": "https://fukusuke-kogyo-sys.co.id/build/images/fukusuke.png",
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "any maskable"
