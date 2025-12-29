@@ -83,30 +83,30 @@
 		</div>
 		<hr />
 
-        <div id="debugLog" style="display:none; background:#000; color:#0f0; padding:10px; margin-bottom:10px; font-family:monospace; font-size:11px; max-height:200px; overflow-y:auto; border-radius:5px;">
+        {{-- <div id="debugLog" style="display:none; background:#000; color:#0f0; padding:10px; margin-bottom:10px; font-family:monospace; font-size:11px; max-height:200px; overflow-y:auto; border-radius:5px;">
 			<strong style="color:#ff0;">DEBUG LOG:</strong><br>
 			<div id="logContent"></div>
-		</div>
+		</div> --}}
 
 		<div class="form-group">
 			<div class="input-group flex-wrap">
 				{{-- Button Debug --}}
-				<button type="button"
+				{{-- <button type="button"
 					class="btn btn-warning btn-sm me-2 mb-2"
 					onclick="toggleDebugLog()">
 					🔍 Toggle Debug
-				</button>
+				</button> --}}
 
 				{{-- Button Thermal --}}
 				<button type="button"
 					class="btn btn-success btn-print me-2 mb-2"
 					onclick="handleThermalPrint()"
 					{{ !$statusPrint ? 'disabled' : '' }}>
-					<i class="ri-printer-line"></i> Print 1.1
+					<i class="ri-printer-line"></i> Print
 				</button>
 
 				{{-- Button Normal --}}
-				<button type="button"
+				{{-- <button type="button"
 					class="btn btn-outline-secondary btn-print mb-2"
 					wire:click="printNormal"
 					{{ !$statusPrint ? 'disabled' : '' }}>
@@ -117,7 +117,7 @@
                     class="btn btn-info btn-sm me-2 mb-2"
                     onclick="scanPrinterUUID()">
                     🔬 Scan UUID Epson
-                </button>
+                </button> --}}
 
 				<div class="w-100"></div>
 				<small class="text-info">
