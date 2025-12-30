@@ -130,72 +130,91 @@
         const GS = "\x1D";
         let cmd = "";
 
+        // Initialize
         cmd += ESC + "@";
         cmd += ESC + "R" + String.fromCharCode(0);
 
-        // GENTAN NO (DOUBLE SIZE) - CENTER
-        cmd += ESC + "a" + String.fromCharCode(1);
-        cmd += GS + "!" + String.fromCharCode(0x11);
+        // ========== GENTAN NO (TRIPLE SIZE) - CENTER ==========
+        cmd += ESC + "a" + String.fromCharCode(1); // Center align
+        cmd += GS + "!" + String.fromCharCode(0x33); // Triple size (Width x3, Height x3)
         cmd += String(data.gentan_no || "0") + "\n";
-        cmd += GS + "!" + String.fromCharCode(0);
+        cmd += GS + "!" + String.fromCharCode(0); // Reset size
         cmd += "\n";
 
-        // QR CODE (LPK NO) - CENTER
+        // ========== QR CODE (LPK NO) - CENTER ==========
         const qrData = String(data.lpk_no || "000000-000");
+
+        // QR Code Model 2
         cmd += GS + "(k" + String.fromCharCode(4, 0, 49, 65, 50, 0);
-        cmd += GS + "(k" + String.fromCharCode(3, 0, 49, 67, 6);
+
+        // QR Code Size (8 = large, sesuai foto)
+        cmd += GS + "(k" + String.fromCharCode(3, 0, 49, 67, 8);
+
+        // QR Code Error Correction (M level)
         cmd += GS + "(k" + String.fromCharCode(3, 0, 49, 69, 49);
 
+        // Store QR data
         const qrLen = qrData.length + 3;
         const pL = qrLen % 256;
         const pH = Math.floor(qrLen / 256);
         cmd += GS + "(k" + String.fromCharCode(pL, pH, 49, 80, 48) + qrData;
+
+        // Print QR Code
         cmd += GS + "(k" + String.fromCharCode(3, 0, 49, 81, 48);
 
-        cmd += "\n\n";
-        cmd += ESC + "a" + String.fromCharCode(0);
+        cmd += "--------------------------------\n";
 
-        // LPK NO (DOUBLE SIZE)
-        cmd += "================================\n";
-        cmd += ESC + "a" + String.fromCharCode(1);
-        cmd += GS + "!" + String.fromCharCode(0x11);
+        // ========== LPK NO (DOUBLE SIZE) - CENTER ==========
+        cmd += GS + "!" + String.fromCharCode(0x11); // Double size
         cmd += String(data.lpk_no || "-") + "\n";
-        cmd += GS + "!" + String.fromCharCode(0);
+        cmd += GS + "!" + String.fromCharCode(0); // Reset
+        cmd += "--------------------------------\n";
+
+        // Back to left align
         cmd += ESC + "a" + String.fromCharCode(0);
-        cmd += "================================\n";
 
-        // PRODUCT NAME (BOLD)
-        cmd += ESC + "E" + String.fromCharCode(1);
+        // ========== PRODUCT NAME (BOLD) ==========
+        cmd += ESC + "E" + String.fromCharCode(1); // Bold ON
         cmd += String(data.product_name || "-") + "\n";
-        cmd += ESC + "E" + String.fromCharCode(0);
+        cmd += ESC + "E" + String.fromCharCode(0); // Bold OFF
+
+        // Garis pemisah
         cmd += "--------------------------------\n";
 
-        // DETAIL
-        cmd += "No. Order   : " + String(data.code || "-") + "\n";
-        cmd += "Kode        : " + String(data.code_alias || "-") + "\n";
-        cmd += "Tgl Prod    : " + String(data.production_date || "-") + "\n";
-        cmd += "Jam         : " + String(data.work_hour || "-") + "\n";
-        cmd += "Shift       : " + String(data.work_shift || "-") + "\n";
-        cmd += "Mesin       : " + String(data.machineno || "-") + "\n";
+        // ========== DETAIL INFO ==========
+        cmd += "No. Order  : " + String(data.code || "-") + "\n";
+        cmd += "Kode       : " + String(data.code_alias || "-") + "\n";
+        cmd += "Tgl Prod   : " + String(data.production_date || "-") + "\n";
+        cmd += "Jam        : " + String(data.work_hour || "-") + "\n";
+        cmd += "Shift      : " + String(data.work_shift || "-") + "\n";
+        cmd += "Mesin      : " + String(data.machineno || "-") + "\n";
+
         cmd += "--------------------------------\n";
 
-        // BERAT & PANJANG (BOLD)
-        cmd += ESC + "E" + String.fromCharCode(1);
-        cmd += "Berat       : " + String(data.berat_produksi || "0") + "\n";
-        cmd += "Panjang     : " + String(data.panjang_produksi || "0") + "\n";
-        cmd += ESC + "E" + String.fromCharCode(0);
+        // ========== BERAT & PANJANG ==========
+        cmd += "Berat      : " + String(data.berat_produksi || "0") + " kg\n";
+        cmd += "Panjang    : " + String(data.panjang_produksi || "0") + " m\n";
 
-        cmd += "Lebih       : " + String(data.selisih || "0") + "\n";
-        cmd += "No Han      : " + String(data.nomor_han || "-") + "\n";
+        // Selisih (Lebih/Kurang)
+        const selisih = parseFloat(data.selisih || 0);
+        if (selisih >= 0) {
+            cmd += "Lebih      : " + String(data.selisih || "0") + " m\n";
+        } else {
+            cmd += "Kurang     : " + String(Math.abs(selisih)) + " m\n";
+        }
+
+        cmd += "No Han     : " + String(data.nomor_han || "-") + "\n";
+
         cmd += "--------------------------------\n";
 
-        // NIK & NAMA
-        cmd += "NIK         : " + String(data.nik || "-") + "\n";
-        cmd += "Nama        : " + String(data.empname || "-") + "\n";
-        cmd += "================================\n";
+        // ========== NIK & NAMA ==========
+        cmd += "NIK        : " + String(data.nik || "-") + "\n";
+        cmd += "Nama       : " + String(data.empname || "-") + "\n";
+
+        cmd += "--------------------------------\n";
         cmd += "\n\n\n";
 
-        // Cut
+        // Cut paper
         cmd += GS + "V" + String.fromCharCode(0);
 
         return cmd;

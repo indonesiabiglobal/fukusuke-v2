@@ -102,7 +102,7 @@
 					class="btn btn-success btn-print me-2 mb-2"
 					onclick="handleThermalPrint()"
 					{{ !$statusPrint ? 'disabled' : '' }}>
-					<i class="ri-printer-line"></i> Print 1.3
+					<i class="ri-printer-line"></i> Print 1.4
 				</button>
 
 				{{-- Button Normal --}}
