@@ -83,30 +83,30 @@
 		</div>
 		<hr />
 
-        {{-- <div id="debugLog" style="display:none; background:#000; color:#0f0; padding:10px; margin-bottom:10px; font-family:monospace; font-size:11px; max-height:200px; overflow-y:auto; border-radius:5px;">
+        <div id="debugLog" style="display:none; background:#000; color:#0f0; padding:10px; margin-bottom:10px; font-family:monospace; font-size:11px; max-height:200px; overflow-y:auto; border-radius:5px;">
 			<strong style="color:#ff0;">DEBUG LOG:</strong><br>
 			<div id="logContent"></div>
-		</div> --}}
+		</div>
 
 		<div class="form-group">
 			<div class="input-group flex-wrap">
 				{{-- Button Debug --}}
-				{{-- <button type="button"
+				<button type="button"
 					class="btn btn-warning btn-sm me-2 mb-2"
 					onclick="toggleDebugLog()">
 					🔍 Toggle Debug
-				</button> --}}
+				</button>
 
 				{{-- Button Thermal --}}
 				<button type="button"
 					class="btn btn-success btn-print me-2 mb-2"
 					onclick="handleThermalPrint()"
 					{{ !$statusPrint ? 'disabled' : '' }}>
-					<i class="ri-printer-line"></i> Print 1.1
+					<i class="ri-printer-line"></i> Print 1.2
 				</button>
 
 				{{-- Button Normal --}}
-				{{-- <button type="button"
+				<button type="button"
 					class="btn btn-outline-secondary btn-print mb-2"
 					wire:click="printNormal"
 					{{ !$statusPrint ? 'disabled' : '' }}>
@@ -117,7 +117,7 @@
                     class="btn btn-info btn-sm me-2 mb-2"
                     onclick="scanPrinterUUID()">
                     🔬 Scan UUID Epson
-                </button> --}}
+                </button>
 
 				<div class="w-100"></div>
 				<small class="text-info">
@@ -139,12 +139,15 @@
 </script>
 @endscript
 
-{{-- Thermal Module - UPDATED UNTUK GLOBAL SCRIPT --}}
+{{-- Thermal Module - DENGAN DEBUG LENGKAP --}}
 <script>
 // ===== DEBUG LOGGER =====
 window.debugLog = function(msg, type = 'info') {
     const logDiv = document.getElementById('logContent');
-    if (!logDiv) return;
+    if (!logDiv) {
+        alert('Debug log div not found!');
+        return;
+    }
 
     const colors = {
         'info': '#0ff',
@@ -158,8 +161,6 @@ window.debugLog = function(msg, type = 'info') {
 
     logDiv.innerHTML += `<span style="color:${color}">[${timestamp}] ${msg}</span><br>`;
     logDiv.scrollTop = logDiv.scrollHeight;
-
-    console.log(msg);
 };
 
 window.toggleDebugLog = function() {
@@ -169,28 +170,46 @@ window.toggleDebugLog = function() {
     }
 };
 
-// ===== MAIN PRINT HANDLER =====
+// ===== MAIN PRINT HANDLER - DENGAN DEBUG MAKSIMAL =====
 window.handleThermalPrint = async function() {
     const debugDiv = document.getElementById('debugLog');
     if (debugDiv) {
         debugDiv.style.display = 'block';
+        debugDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     window.debugLog('=== MEMULAI PRINT ===', 'warn');
 
+    // CEK BLUETOOTH API
     if (!('bluetooth' in navigator)) {
         window.debugLog('❌ Bluetooth tidak tersedia!', 'error');
         alert('❌ Browser tidak support Bluetooth');
         return;
     }
+    window.debugLog('✅ Bluetooth API tersedia', 'success');
 
     try {
-        // Get Livewire component
-        const component = window.Livewire.find(
-            document.querySelector('[wire\\:id]').getAttribute('wire:id')
-        );
+        // CEK GLOBAL SCRIPT
+        if (typeof window.checkPrinterReady === 'undefined') {
+            window.debugLog('❌ Global script belum load!', 'error');
+            alert('❌ Error: Global script belum load. Refresh halaman.');
+            return;
+        }
+        window.debugLog('✅ Global script loaded', 'success');
 
-        window.debugLog('Component found', 'success');
+        // Get Livewire component
+        const wireElement = document.querySelector('[wire\\:id]');
+        if (!wireElement) {
+            window.debugLog('❌ Livewire element tidak ditemukan!', 'error');
+            throw new Error('Livewire element not found');
+        }
+
+        const component = window.Livewire.find(wireElement.getAttribute('wire:id'));
+        if (!component) {
+            window.debugLog('❌ Livewire component tidak ditemukan!', 'error');
+            throw new Error('Livewire component not found');
+        }
+        window.debugLog('✅ Component found', 'success');
 
         // Collect print data
         const printData = {
@@ -211,32 +230,68 @@ window.handleThermalPrint = async function() {
             empname: component.get('empname'),
         };
 
-        window.debugLog('=== DATA YANG AKAN DICETAK ===', 'warn');
+        window.debugLog('=== DATA PRINT ===', 'warn');
         window.debugLog('gentan_no: ' + (printData.gentan_no || 'KOSONG'), printData.gentan_no ? 'success' : 'error');
         window.debugLog('lpk_no: ' + (printData.lpk_no || 'KOSONG'), printData.lpk_no ? 'success' : 'error');
         window.debugLog('product_name: ' + (printData.product_name || 'KOSONG'), printData.product_name ? 'success' : 'error');
-        window.debugLog('==============================', 'warn');
 
-        // ✅ CEK PRINTER READY (PAKAI FUNCTION DARI GLOBAL SCRIPT)
-        window.debugLog('🔍 Checking printer status...', 'info');
+        // CEK LOCALSTORAGE
+        window.debugLog('=== LOCALSTORAGE ===', 'warn');
+        const savedId = localStorage.getItem('thermal_printer_id');
+        const savedName = localStorage.getItem('thermal_printer_name');
+        window.debugLog('printer_id: ' + (savedId || 'KOSONG'), savedId ? 'info' : 'error');
+        window.debugLog('printer_name: ' + (savedName || 'KOSONG'), savedName ? 'info' : 'error');
+
+        // CEK PRINTER READY
+        window.debugLog('=== CEK PRINTER ===', 'warn');
+        window.debugLog('🔍 Memanggil checkPrinterReady()...', 'info');
+
         const printerReady = await window.checkPrinterReady();
 
+        window.debugLog('Hasil: ' + (printerReady ? 'READY' : 'NOT READY'), printerReady ? 'success' : 'error');
+
         if (!printerReady) {
-            window.debugLog('⚠️ Printer not ready, requesting pairing...', 'warn');
+            window.debugLog('⚠️ Printer belum ready, minta pairing...', 'warn');
             await window.connectThermalPrinter();
+            window.debugLog('✅ Pairing selesai', 'success');
+
+            // Cek localStorage lagi setelah pairing
+            const newSavedId = localStorage.getItem('thermal_printer_id');
+            const newSavedName = localStorage.getItem('thermal_printer_name');
+            window.debugLog('Setelah pairing - ID: ' + (newSavedId || 'GAGAL SAVE'), newSavedId ? 'success' : 'error');
+            window.debugLog('Setelah pairing - Name: ' + (newSavedName || 'GAGAL SAVE'), newSavedName ? 'success' : 'error');
+
             await new Promise(r => setTimeout(r, 500));
         }
 
-        // Print
-        window.debugLog('🖨️ Mulai print...', 'info');
+        // CEK CHARACTERISTIC
+        window.debugLog('=== CEK CHARACTERISTIC ===', 'warn');
+        if (window.thermalPrinter && window.thermalPrinter.characteristic) {
+            window.debugLog('✅ Characteristic OK', 'success');
+        } else {
+            window.debugLog('❌ Characteristic NULL atau undefined', 'error');
+            throw new Error('Printer characteristic not available');
+        }
+
+        // PRINT
+        window.debugLog('=== MULAI PRINT ===', 'warn');
+        window.debugLog('🖨️ Mengirim data ke printer...', 'info');
+
         await window.printToThermalPrinter(printData);
-        window.debugLog('✅ Print selesai!', 'success');
+
+        window.debugLog('✅ PRINT SELESAI!', 'success');
+        window.debugLog('===========================', 'warn');
+
+        // Success message
+        alert('✅ Print berhasil!');
 
     } catch (error) {
         window.debugLog('❌ ERROR: ' + error.message, 'error');
-        console.error(error);
+        if (error.stack) {
+            window.debugLog('Stack: ' + error.stack.substring(0, 200), 'error');
+        }
 
-        if (confirm('❌ Print error\n\nGunakan Print Normal?')) {
+        if (confirm('❌ Print gagal: ' + error.message + '\n\nGunakan Print Normal?')) {
             const component = window.Livewire.find(
                 document.querySelector('[wire\\:id]').getAttribute('wire:id')
             );
