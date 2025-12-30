@@ -139,15 +139,12 @@
 </script>
 @endscript
 
-{{-- Thermal Module - DENGAN DEBUG LENGKAP --}}
+{{-- Thermal Module - UPDATED UNTUK GLOBAL SCRIPT --}}
 <script>
 // ===== DEBUG LOGGER =====
 window.debugLog = function(msg, type = 'info') {
     const logDiv = document.getElementById('logContent');
-    if (!logDiv) {
-        alert('Debug log div not found!');
-        return;
-    }
+    if (!logDiv) return;
 
     const colors = {
         'info': '#0ff',
@@ -161,6 +158,8 @@ window.debugLog = function(msg, type = 'info') {
 
     logDiv.innerHTML += `<span style="color:${color}">[${timestamp}] ${msg}</span><br>`;
     logDiv.scrollTop = logDiv.scrollHeight;
+
+    console.log(msg);
 };
 
 window.toggleDebugLog = function() {
@@ -170,46 +169,28 @@ window.toggleDebugLog = function() {
     }
 };
 
-// ===== MAIN PRINT HANDLER - DENGAN DEBUG MAKSIMAL =====
+// ===== MAIN PRINT HANDLER =====
 window.handleThermalPrint = async function() {
     const debugDiv = document.getElementById('debugLog');
     if (debugDiv) {
         debugDiv.style.display = 'block';
-        debugDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     window.debugLog('=== MEMULAI PRINT ===', 'warn');
 
-    // CEK BLUETOOTH API
     if (!('bluetooth' in navigator)) {
         window.debugLog('❌ Bluetooth tidak tersedia!', 'error');
         alert('❌ Browser tidak support Bluetooth');
         return;
     }
-    window.debugLog('✅ Bluetooth API tersedia', 'success');
 
     try {
-        // CEK GLOBAL SCRIPT
-        if (typeof window.checkPrinterReady === 'undefined') {
-            window.debugLog('❌ Global script belum load!', 'error');
-            alert('❌ Error: Global script belum load. Refresh halaman.');
-            return;
-        }
-        window.debugLog('✅ Global script loaded', 'success');
-
         // Get Livewire component
-        const wireElement = document.querySelector('[wire\\:id]');
-        if (!wireElement) {
-            window.debugLog('❌ Livewire element tidak ditemukan!', 'error');
-            throw new Error('Livewire element not found');
-        }
+        const component = window.Livewire.find(
+            document.querySelector('[wire\\:id]').getAttribute('wire:id')
+        );
 
-        const component = window.Livewire.find(wireElement.getAttribute('wire:id'));
-        if (!component) {
-            window.debugLog('❌ Livewire component tidak ditemukan!', 'error');
-            throw new Error('Livewire component not found');
-        }
-        window.debugLog('✅ Component found', 'success');
+        window.debugLog('Component found', 'success');
 
         // Collect print data
         const printData = {
@@ -230,73 +211,100 @@ window.handleThermalPrint = async function() {
             empname: component.get('empname'),
         };
 
-        window.debugLog('=== DATA PRINT ===', 'warn');
+        window.debugLog('=== DATA YANG AKAN DICETAK ===', 'warn');
         window.debugLog('gentan_no: ' + (printData.gentan_no || 'KOSONG'), printData.gentan_no ? 'success' : 'error');
         window.debugLog('lpk_no: ' + (printData.lpk_no || 'KOSONG'), printData.lpk_no ? 'success' : 'error');
         window.debugLog('product_name: ' + (printData.product_name || 'KOSONG'), printData.product_name ? 'success' : 'error');
+        window.debugLog('==============================', 'warn');
 
-        // CEK LOCALSTORAGE
-        window.debugLog('=== LOCALSTORAGE ===', 'warn');
-        const savedId = localStorage.getItem('thermal_printer_id');
-        const savedName = localStorage.getItem('thermal_printer_name');
-        window.debugLog('printer_id: ' + (savedId || 'KOSONG'), savedId ? 'info' : 'error');
-        window.debugLog('printer_name: ' + (savedName || 'KOSONG'), savedName ? 'info' : 'error');
-
-        // CEK PRINTER READY
-        window.debugLog('=== CEK PRINTER ===', 'warn');
-        window.debugLog('🔍 Memanggil checkPrinterReady()...', 'info');
-
+        // ✅ CEK PRINTER READY (PAKAI FUNCTION DARI GLOBAL SCRIPT)
+        window.debugLog('🔍 Checking printer status...', 'info');
         const printerReady = await window.checkPrinterReady();
 
-        window.debugLog('Hasil: ' + (printerReady ? 'READY' : 'NOT READY'), printerReady ? 'success' : 'error');
-
         if (!printerReady) {
-            window.debugLog('⚠️ Printer belum ready, minta pairing...', 'warn');
+            window.debugLog('⚠️ Printer not ready, requesting pairing...', 'warn');
             await window.connectThermalPrinter();
-            window.debugLog('✅ Pairing selesai', 'success');
-
-            // Cek localStorage lagi setelah pairing
-            const newSavedId = localStorage.getItem('thermal_printer_id');
-            const newSavedName = localStorage.getItem('thermal_printer_name');
-            window.debugLog('Setelah pairing - ID: ' + (newSavedId || 'GAGAL SAVE'), newSavedId ? 'success' : 'error');
-            window.debugLog('Setelah pairing - Name: ' + (newSavedName || 'GAGAL SAVE'), newSavedName ? 'success' : 'error');
-
             await new Promise(r => setTimeout(r, 500));
         }
 
-        // CEK CHARACTERISTIC
-        window.debugLog('=== CEK CHARACTERISTIC ===', 'warn');
-        if (window.thermalPrinter && window.thermalPrinter.characteristic) {
-            window.debugLog('✅ Characteristic OK', 'success');
-        } else {
-            window.debugLog('❌ Characteristic NULL atau undefined', 'error');
-            throw new Error('Printer characteristic not available');
-        }
-
-        // PRINT
-        window.debugLog('=== MULAI PRINT ===', 'warn');
-        window.debugLog('🖨️ Mengirim data ke printer...', 'info');
-
+        // Print
+        window.debugLog('🖨️ Mulai print...', 'info');
         await window.printToThermalPrinter(printData);
-
-        window.debugLog('✅ PRINT SELESAI!', 'success');
-        window.debugLog('===========================', 'warn');
-
-        // Success message
-        alert('✅ Print berhasil!');
+        window.debugLog('✅ Print selesai!', 'success');
 
     } catch (error) {
         window.debugLog('❌ ERROR: ' + error.message, 'error');
-        if (error.stack) {
-            window.debugLog('Stack: ' + error.stack.substring(0, 200), 'error');
-        }
+        console.error(error);
 
-        if (confirm('❌ Print gagal: ' + error.message + '\n\nGunakan Print Normal?')) {
+        if (confirm('❌ Print error\n\nGunakan Print Normal?')) {
             const component = window.Livewire.find(
                 document.querySelector('[wire\\:id]').getAttribute('wire:id')
             );
             component.call('printNormal');
         }
+    }
+};
+
+// ===== SCAN PRINTER UUID =====
+window.scanPrinterUUID = async function() {
+    const debugDiv = document.getElementById('debugLog');
+    if (debugDiv) {
+        debugDiv.style.display = 'block';
+        document.getElementById('logContent').innerHTML = '';
+    }
+
+    window.debugLog('=== SCANNING PRINTER ===', 'warn');
+
+    try {
+        window.debugLog('🔍 Requesting device...', 'info');
+
+        const device = await navigator.bluetooth.requestDevice({
+            acceptAllDevices: true,
+            optionalServices: []
+        });
+
+        window.debugLog('✅ Device: ' + device.name, 'success');
+        window.debugLog('ID: ' + device.id, 'info');
+
+        window.debugLog('🔌 Connecting...', 'info');
+        const server = await device.gatt.connect();
+
+        window.debugLog('🔍 Getting services...', 'info');
+        const services = await server.getPrimaryServices();
+
+        window.debugLog('Found ' + services.length + ' services', 'success');
+
+        for (let i = 0; i < services.length; i++) {
+            const service = services[i];
+            window.debugLog('--- Service ' + (i+1) + ' ---', 'warn');
+            window.debugLog('UUID: ' + service.uuid, 'success');
+
+            try {
+                const chars = await service.getCharacteristics();
+                window.debugLog('Chars: ' + chars.length, 'info');
+
+                for (let j = 0; j < chars.length; j++) {
+                    const char = chars[j];
+                    window.debugLog('  Char: ' + char.uuid, 'success');
+
+                    const props = [];
+                    if (char.properties.write) props.push('WRITE');
+                    if (char.properties.writeWithoutResponse) props.push('WRITE_NO_RESP');
+                    if (char.properties.read) props.push('READ');
+                    if (char.properties.notify) props.push('NOTIFY');
+
+                    window.debugLog('  Props: ' + props.join(', '), 'info');
+                }
+            } catch (err) {
+                window.debugLog('  Error: ' + err.message, 'error');
+            }
+        }
+
+        window.debugLog('=== SCAN DONE ===', 'warn');
+        device.gatt.disconnect();
+
+    } catch (error) {
+        window.debugLog('❌ ERROR: ' + error.message, 'error');
     }
 };
 </script>

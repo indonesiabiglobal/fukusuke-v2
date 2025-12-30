@@ -30,7 +30,7 @@
         characteristic: null,
     };
 
-    // ===== CEK PRINTER READY - DENGAN FALLBACK =====
+    // ===== CEK PRINTER READY - SUPPORT TM-P20 & TM-P20II =====
     window.checkPrinterReady = async function () {
         try {
             console.log("🔍 Checking printer status...");
@@ -40,34 +40,35 @@
                 console.warn("⚠️ getDevices() not supported, using cache");
 
                 // Fallback: Cek localStorage
-                const savedDeviceId =
-                    localStorage.getItem("thermal_printer_id");
                 const savedDeviceName = localStorage.getItem(
                     "thermal_printer_name"
                 );
 
-                if (!savedDeviceId || !savedDeviceName) {
+                if (!savedDeviceName) {
                     console.log("📍 No saved printer in cache");
                     return false;
                 }
 
                 console.log("✅ Found cached printer:", savedDeviceName);
-
-                // Anggap printer ready jika ada di cache
-                // Actual connection akan dicoba saat print
                 return true;
             }
 
             // ===== JIKA GETDEVICES SUPPORT =====
             const devices = await navigator.bluetooth.getDevices();
+
+            // ✅ CARI TM-P20II ATAU TM-P20 (TANPA II)
             const epsonPrinter = devices.find(
-                (d) => d.name && d.name.includes("TM-P20II")
+                (d) =>
+                    d.name &&
+                    (d.name.includes("TM-P20II") || d.name.includes("TM-P20"))
             );
 
             if (!epsonPrinter) {
-                console.log("⚠️ TM-P20II not paired");
+                console.log("⚠️ Epson TM-P20/TM-P20II not paired");
                 return false;
             }
+
+            console.log("✅ Found:", epsonPrinter.name);
 
             // Cek apakah connected
             if (epsonPrinter.gatt && epsonPrinter.gatt.connected) {
