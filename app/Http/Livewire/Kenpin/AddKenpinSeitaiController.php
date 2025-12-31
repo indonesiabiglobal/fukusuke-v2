@@ -9,8 +9,6 @@ use App\Models\TdKenpin;
 use App\Models\TdKenpinGoodsDetail;
 use App\Models\MsMachinePartDetail;
 use App\Models\MsMasalahKenpin;
-use App\Models\TdKenpinAssembly;
-use App\Models\TdKenpinGoodsDetailBox;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;

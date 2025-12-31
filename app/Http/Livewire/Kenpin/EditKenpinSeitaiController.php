@@ -15,8 +15,6 @@ use App\Models\TdKenpinGoodsDetail;
 use App\Models\TdProductGoods;
 use App\Models\MsMachinePartDetail;
 use App\Models\MsMasalahKenpin;
-use App\Models\TdKenpinAssembly;
-use App\Models\TdKenpinGoodsDetailBox;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
