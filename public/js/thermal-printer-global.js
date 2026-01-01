@@ -251,7 +251,8 @@
     };
 
     // Print Function - DENGAN AUTO RECONNECT
-    window.printToThermalPrinter = async function (data) {
+    // Print Function - DENGAN AUTO RECONNECT & COPIES
+    window.printToThermalPrinter = async function (data, copies = 1) {
         console.log("📝 Generating print commands...");
 
         const commands = window.generateEscPosCommands(data);
@@ -268,7 +269,6 @@
                 throw new Error("No saved printer, please pair first");
             }
 
-            // Request device lagi (akan langsung connect ke saved device)
             console.log("Reconnecting to saved printer...");
             await window.connectThermalPrinter();
         }
@@ -280,20 +280,29 @@
         const chunkSize = 128;
         const totalChunks = Math.ceil(bytes.length / chunkSize);
 
-        console.log(`Sending ${totalChunks} chunks...`);
+        // ===== LOOP UNTUK COPIES =====
+        for (let copy = 1; copy <= copies; copy++) {
+            console.log(`📄 Printing copy ${copy}/${copies}...`);
 
-        for (let i = 0; i < bytes.length; i += chunkSize) {
-            const chunk = bytes.slice(i, i + chunkSize);
-            await window.thermalPrinter.characteristic.writeValue(chunk);
-            await new Promise((r) => setTimeout(r, 200));
+            for (let i = 0; i < bytes.length; i += chunkSize) {
+                const chunk = bytes.slice(i, i + chunkSize);
+                await window.thermalPrinter.characteristic.writeValue(chunk);
+                await new Promise((r) => setTimeout(r, 200));
+            }
+
+            console.log(`✅ Copy ${copy} complete!`);
+
+            // Delay antar copy (biar tidak overlap)
+            if (copy < copies) {
+                await new Promise((r) => setTimeout(r, 1500));
+            }
         }
 
-        console.log("✅ Print complete!");
         await new Promise((r) => setTimeout(r, 1000));
 
         if (typeof Toastify !== "undefined") {
             Toastify({
-                text: "✅ Label berhasil dicetak!",
+                text: `✅ ${copies} label berhasil dicetak!`,
                 duration: 3000,
                 gravity: "top",
                 position: "right",

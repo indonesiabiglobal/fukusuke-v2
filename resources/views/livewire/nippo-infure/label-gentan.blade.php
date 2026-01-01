@@ -185,14 +185,12 @@ window.handleThermalPrint = async function() {
     }
 
     try {
-        // Get Livewire component
         const component = window.Livewire.find(
             document.querySelector('[wire\\:id]').getAttribute('wire:id')
         );
 
         window.debugLog('Component found', 'success');
 
-        // Collect print data
         const printData = {
             gentan_no: component.get('gentan_no'),
             lpk_no: component.get('lpk_no'),
@@ -211,13 +209,6 @@ window.handleThermalPrint = async function() {
             empname: component.get('empname'),
         };
 
-        window.debugLog('=== DATA YANG AKAN DICETAK ===', 'warn');
-        window.debugLog('gentan_no: ' + (printData.gentan_no || 'KOSONG'), printData.gentan_no ? 'success' : 'error');
-        window.debugLog('lpk_no: ' + (printData.lpk_no || 'KOSONG'), printData.lpk_no ? 'success' : 'error');
-        window.debugLog('product_name: ' + (printData.product_name || 'KOSONG'), printData.product_name ? 'success' : 'error');
-        window.debugLog('==============================', 'warn');
-
-        // ✅ CEK PRINTER READY (PAKAI FUNCTION DARI GLOBAL SCRIPT)
         window.debugLog('🔍 Checking printer status...', 'info');
         const printerReady = await window.checkPrinterReady();
 
@@ -227,9 +218,9 @@ window.handleThermalPrint = async function() {
             await new Promise(r => setTimeout(r, 500));
         }
 
-        // Print
-        window.debugLog('🖨️ Mulai print...', 'info');
-        await window.printToThermalPrinter(printData);
+        // ✅ PRINT 2X (COPIES)
+        window.debugLog('🖨️ Mulai print 2x...', 'info');
+        await window.printToThermalPrinter(printData, 2); // 👈 PARAMETER KEDUA = JUMLAH COPY
         window.debugLog('✅ Print selesai!', 'success');
 
     } catch (error) {
