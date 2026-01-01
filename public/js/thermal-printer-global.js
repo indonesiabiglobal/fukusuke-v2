@@ -162,36 +162,49 @@
         // Print QR Code
         cmd += GS + "(k" + String.fromCharCode(3, 0, 49, 81, 48);
 
-        cmd += "--------------------------------\n";
+        cmd += "------------------------------------------\n";
 
-        // ========== LPK NO (DOUBLE SIZE) - CENTER ==========
+        // ========== LPK NO (DOUBLE SIZE + BOLD + CENTER) ==========
+        cmd += ESC + "E" + String.fromCharCode(1); // Bold ON
         cmd += GS + "!" + String.fromCharCode(0x11); // Double size
         cmd += String(data.lpk_no || "-") + "\n";
-        cmd += GS + "!" + String.fromCharCode(0); // Reset
-        cmd += "--------------------------------\n";
-
-        // Back to left align
-        cmd += ESC + "a" + String.fromCharCode(0);
-
-        // ========== PRODUCT NAME (BOLD) ==========
-        cmd += ESC + "E" + String.fromCharCode(1); // Bold ON
-        cmd += String(data.product_name || "-") + "\n";
+        cmd += GS + "!" + String.fromCharCode(0); // Reset size
         cmd += ESC + "E" + String.fromCharCode(0); // Bold OFF
+        cmd += "------------------------------------------\n";
+
+        cmd += ESC + "a" + String.fromCharCode(0); // Back to left
+
+        // ========== PRODUCT NAME (MEDIUM - TALL ONLY) ==========
+        cmd += ESC + "a" + String.fromCharCode(1); // Center align
+        cmd += GS + "!" + String.fromCharCode(0x01); // Tall (1x2)
+        cmd += String(data.product_name || "-") + "\n";
+        cmd += GS + "!" + String.fromCharCode(0); // Reset
+        cmd += ESC + "a" + String.fromCharCode(0); // Back to left
 
         // Garis pemisah
-        cmd += "--------------------------------\n";
+        cmd += "------------------------------------------\n";
 
-        // ========== DETAIL INFO ==========
+        // ========== DETAIL INFO (WIDE FONT - SEDIKIT LEBIH BESAR) ==========
+        cmd += GS + "!" + String.fromCharCode(0x10); // Wide only
+
         cmd += "No. Order  : " + String(data.code || "-") + "\n";
         cmd += "Kode       : " + String(data.code_alias || "-") + "\n";
+
+        cmd += GS + "!" + String.fromCharCode(0); // ← Reset DULU sebelum garis
+        cmd += "------------------------------------------\n"; // ← Garis normal
+        cmd += GS + "!" + String.fromCharCode(0x10); // ← Wide lagi untuk text berikutnya
+
         cmd += "Tgl Prod   : " + String(data.production_date || "-") + "\n";
         cmd += "Jam        : " + String(data.work_hour || "-") + "\n";
         cmd += "Shift      : " + String(data.work_shift || "-") + "\n";
         cmd += "Mesin      : " + String(data.machineno || "-") + "\n";
 
-        cmd += "--------------------------------\n";
+        cmd += GS + "!" + String.fromCharCode(0); // Reset size
+        cmd += "------------------------------------------\n";
 
-        // ========== BERAT & PANJANG ==========
+        // ========== BERAT & PANJANG (WIDE FONT) ==========
+        cmd += GS + "!" + String.fromCharCode(0x10); // Wide only
+
         cmd += "Berat      : " + String(data.berat_produksi || "0") + " kg\n";
         cmd += "Panjang    : " + String(data.panjang_produksi || "0") + " m\n";
 
@@ -205,13 +218,17 @@
 
         cmd += "No Han     : " + String(data.nomor_han || "-") + "\n";
 
-        cmd += "--------------------------------\n";
+        cmd += GS + "!" + String.fromCharCode(0); // Reset size
+        cmd += "------------------------------------------\n";
 
-        // ========== NIK & NAMA ==========
+        // ========== NIK & NAMA (WIDE FONT) ==========
+        cmd += GS + "!" + String.fromCharCode(0x10); // Wide only
+
         cmd += "NIK        : " + String(data.nik || "-") + "\n";
         cmd += "Nama       : " + String(data.empname || "-") + "\n";
 
-        cmd += "--------------------------------\n";
+        cmd += GS + "!" + String.fromCharCode(0); // Reset size
+        cmd += "------------------------------------------\n";
         cmd += "\n\n\n";
 
         // Cut paper

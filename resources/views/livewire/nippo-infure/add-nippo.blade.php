@@ -1,17 +1,5 @@
 <div>
     <div class="row">
-        <div class="col-12">
-            <div id="mobileDebugLog" style="display:none; background:#000; color:#0f0; padding:15px; margin:10px 0; font-family:monospace; font-size:12px; max-height:300px; overflow-y:auto; border-radius:5px; position:sticky; top:0; z-index:1000;">
-                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                    <strong style="color:#ff0;">🔍 DEBUG LOG</strong>
-                    <button onclick="clearDebugLog()" style="background:#f00; color:#fff; border:none; padding:5px 10px; border-radius:3px;">Clear</button>
-                </div>
-                <div id="mobileLogContent"></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
         <form wire:submit.prevent="save">
             <div class="row mt-2">
                 <div class="col-12">
@@ -1942,7 +1930,7 @@
     </script>
 @endscript
 <script>
-// Event listener untuk auto-print
+// Event listener untuk auto-print DENGAN 2X COPIES
 document.addEventListener('livewire:initialized', () => {
     Livewire.on('gentan-saved', async (event) => {
         const produk_asemblyid = event.produk_asemblyid || event[0]?.produk_asemblyid;
@@ -1953,7 +1941,7 @@ document.addEventListener('livewire:initialized', () => {
         }
 
         try {
-            // ✅ CEK PRINTER READY (QUERY REAL-TIME, BUKAN FLAG)
+            // ✅ CEK PRINTER READY
             console.log('🔍 Checking printer status...');
             const printerReady = await window.checkPrinterReady();
 
@@ -1981,9 +1969,9 @@ document.addEventListener('livewire:initialized', () => {
 
             console.log('✅ Data received');
 
-            // Print
-            console.log('🖨️ Printing...');
-            await window.printToThermalPrinter(printData);
+            // ✅ PRINT 2X (PARAMETER KEDUA = 2)
+            console.log('🖨️ Printing 2 copies...');
+            await window.printToThermalPrinter(printData, 2); // 👈 INI YANG PENTING!
 
             console.log('✅ Print success!');
 
