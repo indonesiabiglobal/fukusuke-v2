@@ -126,11 +126,11 @@
                     🔬 Scan UUID Epson
                 </button> --}}
 
-				<div class="w-100"></div>
+				{{-- <div class="w-100"></div>
 				<small class="text-info">
 					💡 Support: Printer Panda & Epson TM-P20II<br>
 					🔍 Klik "Toggle Debug" untuk lihat error
-				</small>
+				</small> --}}
 			</div>
 		</div>
 	</div>
