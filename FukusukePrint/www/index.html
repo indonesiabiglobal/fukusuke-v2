@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Fukusuke Print Test</title>
+
+        <style>
+            body {
+                font-family: Arial;
+                padding: 20px;
+            }
+            button {
+                width: 100%;
+                padding: 15px;
+                margin: 10px 0;
+                font-size: 18px;
+            }
+            .success {
+                background: #4caf50;
+                color: white;
+                border: none;
+            }
+            .info {
+                background: #2196f3;
+                color: white;
+                border: none;
+            }
+            #log {
+                background: #000;
+                color: #0f0;
+                padding: 10px;
+                margin-top: 15px;
+                font-family: monospace;
+                font-size: 12px;
+                max-height: 300px;
+                overflow-y: auto;
+            }
+        </style>
+    </head>
+
+    <body>
+        <h1>🖨️ Fukusuke Print Test</h1>
+        <p id="status">Initializing...</p>
+
+        <button class="info" onclick="testBluetooth()">
+            1️⃣ Test Bluetooth
+        </button>
+        <button class="info" onclick="listPrinters()">2️⃣ List Printers</button>
+        <button class="success" onclick="testPrint()">3️⃣ Test Print</button>
+
+        <div id="log"></div>
+
+        <script src="cordova.js"></script>
+        <script src="js/thermal-printer-cordova.js"></script>
+
+        <script>
+            let selectedPrinterAddress = null;
+
+            function log(msg) {
+                const logDiv = document.getElementById("log");
+                logDiv.innerHTML += msg + "<br>";
+                logDiv.scrollTop = logDiv.scrollHeight;
+                console.log(msg);
+            }
+
+            /* =============================
+               ANDROID 12+ PERMISSION
+            ============================== */
+            function requestBtPermission() {
+                if (!cordova.plugins || !cordova.plugins.permissions) {
+                    log("⚠️ Permission plugin not available");
+                    return;
+                }
+
+                const p = cordova.plugins.permissions;
+
+                const permissions = [
+                    p.BLUETOOTH_CONNECT,
+                    p.BLUETOOTH_SCAN,
+                    p.ACCESS_FINE_LOCATION,
+                ];
+
+                p.requestPermissions(
+                    permissions,
+                    function (status) {
+                        if (status.hasPermission) {
+                            log("✅ Bluetooth permissions GRANTED");
+                        } else {
+                            log("❌ Bluetooth permissions DENIED");
+                        }
+                    },
+                    function (err) {
+                        log("❌ Permission error: " + err);
+                    }
+                );
+            }
+
+            /* =============================
+               DEVICE READY
+            ============================== */
+            document.addEventListener(
+                "deviceready",
+                function () {
+                    document.getElementById("status").textContent =
+                        "✅ Device Ready";
+
+                    log("✅ Cordova deviceready");
+                    log(
+                        "bluetoothSerial: " +
+                            (typeof bluetoothSerial !== "undefined"
+                                ? "YES"
+                                : "NO")
+                    );
+
+                    requestBtPermission();
+                },
+                false
+            );
+
+            /* =============================
+               TEST BLUETOOTH
+            ============================== */
+            function testBluetooth() {
+                log("=== Testing Bluetooth ===");
+
+                if (typeof bluetoothSerial === "undefined") {
+                    log("❌ bluetoothSerial NOT FOUND");
+                    return;
+                }
+
+                bluetoothSerial.isEnabled(
+                    function () {
+                        log("✅ Bluetooth is ENABLED");
+                    },
+                    function () {
+                        log("⚠️ Bluetooth is DISABLED");
+                        bluetoothSerial.enable(
+                            () => log("✅ Bluetooth enabled"),
+                            (e) => log("❌ Enable failed: " + e)
+                        );
+                    }
+                );
+            }
+
+            /* =============================
+               LIST & SELECT PRINTER
+            ============================== */
+            function listPrinters() {
+                log("=== Listing Printers ===");
+
+                bluetoothSerial.list(
+                    function (devices) {
+                        if (!devices.length) {
+                            log("❌ No paired devices found");
+                            return;
+                        }
+
+                        devices.forEach((d, i) => {
+                            log(
+                                `${i + 1}. ${d.name || "Unknown"} (${
+                                    d.address
+                                })`
+                            );
+                        });
+
+                        // AUTO SELECT FIRST DEVICE (TM-P20)
+                        selectedPrinterAddress = devices[0].address;
+                        log(
+                            "✅ Selected printer: " +
+                                devices[0].name +
+                                " (" +
+                                devices[0].address +
+                                ")"
+                        );
+                    },
+                    function (err) {
+                        log("❌ List error: " + err);
+                    }
+                );
+            }
+
+            /* =============================
+               TEST PRINT
+            ============================== */
+            function testPrint() {
+                log("=== Test Print ===");
+
+                if (!selectedPrinterAddress) {
+                    log("❌ Printer not selected");
+                    return;
+                }
+
+                bluetoothSerial.connect(
+                    selectedPrinterAddress,
+                    function () {
+                        log("✅ Connected to printer");
+
+                        const text =
+                            "\n" +
+                            "FUKUSUKE TEST PRINT\n" +
+                            "----------------------\n" +
+                            "TM-P20\n" +
+                            "2026-01-02\n\n\n";
+
+                        bluetoothSerial.write(
+                            text,
+                            function () {
+                                log("✅ Print SUCCESS");
+                                bluetoothSerial.disconnect();
+                            },
+                            function (err) {
+                                log("❌ Write error: " + err);
+                            }
+                        );
+                    },
+                    function (err) {
+                        log("❌ Connect error: " + err);
+                    }
+                );
+            }
+        </script>
+    </body>
+</html>

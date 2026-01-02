@@ -19,7 +19,11 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => [
+        'http://localhost:*',
+        'https://fukusuke-kogyo-sys.co.id',
+        'file://*',  // ← Tambah ini (untuk Cordova)
+    ],
 
     'allowed_origins_patterns' => [],
 
