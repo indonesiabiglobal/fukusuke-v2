@@ -314,17 +314,17 @@
         // ========== DETAIL INFO (WIDE FONT - SEDIKIT LEBIH BESAR) ==========
         textCmd += GS + "!" + String.fromCharCode(0x10); // Wide only
 
-        textCmd += "No. Order  : " + String(data.code || "-") + "\n";
-        textCmd += "Kode       : " + String(data.code_alias || "-") + "\n";
+        textCmd += "No. Order: " + String(data.code || "-") + "\n";
+        textCmd += "Kode     : " + String(data.code_alias || "-") + "\n";
 
         textCmd += GS + "!" + String.fromCharCode(0); // ← Reset DULU sebelum garis
         textCmd += "------------------------------------------\n"; // ← Garis normal
         textCmd += GS + "!" + String.fromCharCode(0x10); // ← Wide lagi untuk text berikutnya
 
-        textCmd += "Tgl Prod   : " + String(data.production_date || "-") + "\n";
-        textCmd += "Jam        : " + String(data.work_hour || "-") + "\n";
-        textCmd += "Shift      : " + String(data.work_shift || "-") + "\n";
-        textCmd += "Mesin      : " + String(data.machineno || "-") + "\n";
+        textCmd += "Tgl Prod : " + String(data.production_date || "-") + "\n";
+        textCmd += "Jam      : " + String(data.work_hour || "-") + "\n";
+        textCmd += "Shift    : " + String(data.work_shift || "-") + "\n";
+        textCmd += "Mesin    : " + String(data.machineno || "-") + "\n";
 
         textCmd += GS + "!" + String.fromCharCode(0); // Reset size
         textCmd += "------------------------------------------\n";
@@ -332,18 +332,18 @@
         // ========== BERAT & PANJANG (WIDE FONT) ==========
         textCmd += GS + "!" + String.fromCharCode(0x10); // Wide only
 
-        textCmd += "Berat      : " + String(data.berat_produksi || "0") + " kg\n";
-        textCmd += "Panjang    : " + String(data.panjang_produksi || "0") + " m\n";
+        textCmd += "Berat    : " + String(data.berat_produksi || "0") + " kg\n";
+        textCmd += "Panjang  : " + String(data.panjang_produksi || "0") + " m\n";
 
         // Selisih (Lebih/Kurang)
         const selisih = parseFloat(data.selisih || 0);
         if (selisih >= 0) {
-            textCmd += "Lebih      : " + String(data.selisih || "0") + " m\n";
+            textCmd += "Lebih    : " + String(data.selisih || "0") + " m\n";
         } else {
-            textCmd += "Kurang     : " + String(Math.abs(selisih)) + " m\n";
+            textCmd += "Kurang   : " + String(Math.abs(selisih)) + " m\n";
         }
 
-        textCmd += "No Han     : " + String(data.nomor_han || "-") + "\n";
+        textCmd += "No Han   : " + String(data.nomor_han || "-") + "\n";
 
         textCmd += GS + "!" + String.fromCharCode(0); // Reset size
         textCmd += "------------------------------------------\n";
@@ -351,8 +351,8 @@
         // ========== NIK & NAMA (WIDE FONT) ==========
         textCmd += GS + "!" + String.fromCharCode(0x10); // Wide only
 
-        textCmd += "NIK        : " + String(data.nik || "-") + "\n";
-        textCmd += "Nama       : " + String(data.empname || "-") + "\n";
+        textCmd += "NIK      : " + String(data.nik || "-") + "\n";
+        textCmd += "Nama     : " + String(data.empname || "-") + "\n";
 
         textCmd += GS + "!" + String.fromCharCode(0); // Reset size
         textCmd += "------------------------------------------\n";
@@ -379,21 +379,38 @@
         }
     };
 
-    // Connect to saved printer
+    // Connect to saved printer (or pairing baru)
     window.connectThermalPrinter = async function () {
-        const savedDeviceId = localStorage.getItem("thermal_printer_id");
         const savedDeviceName = localStorage.getItem("thermal_printer_name");
 
-        if (!savedDeviceName) {
-            throw new Error("No saved printer found");
+        let device;
+
+        if (savedDeviceName) {
+            // Jika sudah ada savedDevice, pakai nama tersebut
+            console.log("Connecting to saved printer:", savedDeviceName);
+
+            try {
+                device = await navigator.bluetooth.requestDevice({
+                    filters: [{ name: savedDeviceName }],
+                    optionalServices: ["49535343-fe7d-4ae5-8fa9-9fafd205e455"],
+                });
+            } catch (err) {
+                console.warn("Failed to connect to saved printer, showing all devices...");
+                // Jika gagal, fallback ke pairing baru
+                device = await navigator.bluetooth.requestDevice({
+                    acceptAllDevices: true,
+                    optionalServices: ["49535343-fe7d-4ae5-8fa9-9fafd205e455"],
+                });
+            }
+        } else {
+            // Jika belum ada savedDevice, tampilkan semua device untuk pairing
+            console.log("No saved printer, requesting pairing...");
+
+            device = await navigator.bluetooth.requestDevice({
+                acceptAllDevices: true,
+                optionalServices: ["49535343-fe7d-4ae5-8fa9-9fafd205e455"],
+            });
         }
-
-        console.log("Connecting to saved printer:", savedDeviceName);
-
-        const device = await navigator.bluetooth.requestDevice({
-            filters: [{ name: savedDeviceName }],
-            optionalServices: ["49535343-fe7d-4ae5-8fa9-9fafd205e455"],
-        });
 
         const server = await device.gatt.connect();
         const service = await server.getPrimaryService(
@@ -405,6 +422,10 @@
 
         window.thermalPrinter.device = device;
         window.thermalPrinter.characteristic = characteristic;
+
+        // Simpan ke localStorage untuk next time
+        localStorage.setItem("thermal_printer_id", device.id);
+        localStorage.setItem("thermal_printer_name", device.name);
 
         console.log("✅ Printer connected & saved:", device.name);
         return true;

@@ -435,6 +435,7 @@
                         <!-- item-->
                         <a class="dropdown-item" href="pages-profile"><i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span class="align-middle">{{ Auth::user()->username }}</span></a>
                         <a class="dropdown-item" href="/new-password"><i class="mdi mdi-cog-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Change Password</span></a>
+                        <a class="dropdown-item" href="#!" onclick="clearSavedPrinter(event)"><i class="mdi mdi-printer-off text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Clear Saved Printer</span></a>
                         {{-- <a class="dropdown-item" href="#!"><i class="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Messages</span></a> --}}
                         {{-- <a class="dropdown-item" href="#!"><i class="mdi mdi-calendar-check-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Taskboard</span></a> --}}
                         {{-- <a class="dropdown-item" href="pages-faqs"><i class="mdi mdi-lifebuoy text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Help</span></a> --}}
@@ -556,3 +557,59 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
+<script>
+// Clear saved thermal printer from localStorage
+function clearSavedPrinter(event) {
+    event.preventDefault();
+
+    const savedPrinterName = localStorage.getItem('thermal_printer_name');
+
+    if (!savedPrinterName) {
+        if (typeof Toastify !== 'undefined') {
+            Toastify({
+                text: '⚠️ No saved printer found',
+                duration: 3000,
+                gravity: 'top',
+                position: 'right',
+                backgroundColor: '#ffc107',
+            }).showToast();
+        } else {
+            alert('⚠️ No saved printer found');
+        }
+        return;
+    }
+
+    if (confirm(`Clear saved printer "${savedPrinterName}"?\n\nYou will need to pair again on next print.`)) {
+        localStorage.removeItem('thermal_printer_id');
+        localStorage.removeItem('thermal_printer_name');
+
+        // Disconnect if currently connected
+        if (window.thermalPrinter && window.thermalPrinter.device) {
+            try {
+                if (window.thermalPrinter.device.gatt.connected) {
+                    window.thermalPrinter.device.gatt.disconnect();
+                }
+            } catch (err) {
+                console.warn('Disconnect error:', err);
+            }
+            window.thermalPrinter.device = null;
+            window.thermalPrinter.characteristic = null;
+        }
+
+        if (typeof Toastify !== 'undefined') {
+            Toastify({
+                text: '✅ Saved printer cleared successfully!',
+                duration: 3000,
+                gravity: 'top',
+                position: 'right',
+                backgroundColor: '#10b981',
+            }).showToast();
+        } else {
+            alert('✅ Saved printer cleared!');
+        }
+
+        console.log('✅ Printer cache cleared');
+    }
+}
+</script>
