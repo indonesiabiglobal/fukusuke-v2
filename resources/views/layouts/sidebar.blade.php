@@ -162,7 +162,8 @@
                                     <a href="seitai-jam-kerja" class="nav-link" data-key="t-starter"> Seitai </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="checklist-jam-kerja" class="nav-link" data-key="t-starter"> Check List </a>
+                                    <a href="checklist-jam-kerja" class="nav-link" data-key="t-starter"> Check List
+                                    </a>
                                 </li>
                             </ul>
                         </div>
@@ -301,7 +302,8 @@
                                                     Bagian Mesin </a>
                                             </li>
                                             <li class="nav-item">
-                                                <a href="detail-bagian-mesin" class="nav-link" data-key="t-simple-page">
+                                                <a href="detail-bagian-mesin" class="nav-link"
+                                                    data-key="t-simple-page">
                                                     Detail Bagian Mesin
                                                 </a>
                                             </li>
@@ -428,6 +430,16 @@
                         </div>
                     </li>
                 @endif
+
+
+                <li class="nav-item">
+                    <a href="javascript:void(0);" onclick="checkAndUpdateApp()" class="nav-link"
+                        data-key="t-app-update">
+                        <i class="ri-refresh-line"></i> Update Aplikasi
+                        <span id="update-badge"
+                            style="display: none; background: #ff4444; color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px; margin-left: 5px;">New</span>
+                    </a>
+                </li>
 
                 @if (in_array('Admin', $userRoles))
                     <li class="nav-item d-none">

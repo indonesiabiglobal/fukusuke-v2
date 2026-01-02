@@ -157,12 +157,14 @@
     <script>
         let deferredUpdate = null;
         let updateAvailable = false;
+        let swRegistration = null;
 
         if ("serviceWorker" in navigator) {
             navigator.serviceWorker.register("/sw.js", {
                 scope: '/'
             }).then(function(registration) {
                 console.log("Service worker registered:", registration.scope);
+                swRegistration = registration;
 
                 // Check for updates periodically (setiap 1 menit)
                 setInterval(() => {
@@ -181,15 +183,20 @@
                             deferredUpdate = newWorker;
                             updateAvailable = true;
                             showUpdateNotification();
+                            showUpdateBadge(); // Tampilkan badge di sidebar
                         }
                     });
                 });
 
                 // Handle controller change (setelah skipWaiting)
+                // TIDAK AUTO RELOAD - User harus klik button update
                 navigator.serviceWorker.addEventListener('controllerchange', () => {
                     if (updateAvailable) {
-                        console.log('Reloading aplikasi...');
-                        window.location.reload();
+                        console.log('Update siap, menunggu user reload...');
+                        // Tampilkan pesan bahwa update siap
+                        if (typeof toastr !== 'undefined') {
+                            toastr.success('Update berhasil! Silakan klik tombol Update Aplikasi untuk reload.');
+                        }
                     }
                 });
 
@@ -212,16 +219,72 @@
             }
         }
 
+        function showUpdateBadge() {
+            // Tampilkan badge di menu sidebar
+            const updateBadge = document.getElementById('update-badge');
+            if (updateBadge) {
+                updateBadge.style.display = 'inline-block';
+            }
+        }
+
+        function hideUpdateBadge() {
+            const updateBadge = document.getElementById('update-badge');
+            if (updateBadge) {
+                updateBadge.style.display = 'none';
+            }
+        }
+
+        // Fungsi untuk update manual dari sidebar
+        function checkAndUpdateApp() {
+            if (updateAvailable && deferredUpdate) {
+                // Sudah ada update yang pending
+                if (confirm('Update aplikasi tersedia. Update sekarang?\n\nNOTE: Pastikan data sudah tersimpan.')) {
+                    applyUpdate();
+                }
+            } else {
+                // Check update manual
+                if (typeof toastr !== 'undefined') {
+                    toastr.info('Memeriksa update...');
+                }
+
+                if (swRegistration) {
+                    swRegistration.update().then(() => {
+                        setTimeout(() => {
+                            if (!updateAvailable) {
+                                if (typeof toastr !== 'undefined') {
+                                    toastr.success('Aplikasi sudah versi terbaru!');
+                                }
+                            }
+                        }, 2000);
+                    });
+                }
+            }
+        }
+
         function updatePWA() {
+            if (deferredUpdate) {
+                if (confirm('Aplikasi akan diupdate dan reload.\n\nPastikan data sudah tersimpan!')) {
+                    applyUpdate();
+                }
+            }
+        }
+
+        function applyUpdate() {
             if (deferredUpdate) {
                 // Kirim message ke service worker untuk skipWaiting
                 deferredUpdate.postMessage({ type: 'SKIP_WAITING' });
                 dismissUpdateNotification();
+                hideUpdateBadge();
 
-                // Tampilkan loading atau notifikasi
+                // Tampilkan loading
                 if (typeof toastr !== 'undefined') {
                     toastr.info('Mengupdate aplikasi...');
                 }
+
+                // Reload setelah 1 detik
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
             }
         }
     </script>
