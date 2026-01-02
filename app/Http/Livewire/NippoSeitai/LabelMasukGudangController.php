@@ -239,7 +239,7 @@ class LabelMasukGudangController extends Component
             $spreadsheet->getActiveSheet()->mergeCells($columnTitleOperatorStart . $rowNomorLotStart . ':' . $columnTitleOperatorEnd . $rowNomorLotStart);
             $spreadsheet->getActiveSheet()->setCellValue($columnTitleOperatorStart . $rowNomorLotStart, $data[$nomorLotIndex]->namapetugas ?? '');
             phpspreadsheet::styleFont($spreadsheet, $columnTitleOperatorStart . $rowNomorLotStart, false, 14, 'Times New Roman');
-            phpspreadsheet::textAlignCenter($spreadsheet, $columnTitleOperatorStart . $rowNomorLotStart);
+            // phpspreadsheet::textAlignCenter($spreadsheet, $columnTitleOperatorStart . $rowNomorLotStart);
 
             // shift value
             $spreadsheet->getActiveSheet()->mergeCells($columnTitleShiftStart . $rowNomorLotStart . ':' . $columnTitleShiftEnd . $rowNomorLotStart);
@@ -312,7 +312,7 @@ class LabelMasukGudangController extends Component
         $columnNomorProdukStart = 'AB';
         $spreadsheet->getActiveSheet()->mergeCells($columnNomorProdukStart . $rowTitleNomorProdukStart . ':' . $endColumn . $rowTitleNomorProdukEnd);
         $spreadsheet->getActiveSheet()->setCellValue($columnNomorProdukStart . $rowTitleNomorProdukStart, $data[0]->nocode);
-        phpspreadsheet::styleFont($spreadsheet, $columnNomorProdukStart . $rowTitleNomorProdukStart, false, 40, 'Times New Roman');
+        phpspreadsheet::styleFont($spreadsheet, $columnNomorProdukStart . $rowTitleNomorProdukStart, false, 48, 'Times New Roman');
         phpspreadsheet::textAlignLeft($spreadsheet, $columnNomorProdukStart . $rowTitleNomorProdukStart);
         phpspreadsheet::addOutlineBorder($spreadsheet, $columnTitleNomorProdukStart . $rowTitleNomorProdukStart . ':' . $endColumn . $rowTitleNomorProdukEnd);
 
