@@ -375,7 +375,7 @@ class LabelMasukGudangController extends Component
         $rowTinggiValueStart = 18;
         $rowTinggiValueEnd = 19;
         $spreadsheet->getActiveSheet()->mergeCells($columnTinggiValueStart . $rowTinggiValueStart . ':' . $columnTinggiValueEnd . $rowTinggiValueEnd);
-        $spreadsheet->getActiveSheet()->setCellValue($columnTinggiValueStart . $rowTinggiValueStart, round($tinggi));
+        $spreadsheet->getActiveSheet()->setCellValue($columnTinggiValueStart . $rowTinggiValueStart, floor($tinggi));
         phpspreadsheet::styleFont($spreadsheet, $columnTinggiValueStart . $rowTinggiValueStart, false, 30, 'Times New Roman');
         phpspreadsheet::textAlignCenter($spreadsheet, $columnTinggiValueStart . $rowTinggiValueStart);
         phpspreadsheet::addOutlineBorder($spreadsheet, $columnTinggiValueStart . $rowTinggiValueStart . ':' . $columnTinggiValueEnd . $rowTinggiValueEnd);
