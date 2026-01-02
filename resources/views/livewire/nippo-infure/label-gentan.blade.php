@@ -120,7 +120,7 @@
 					<i class="ri-printer-line"></i> Print Normal
 				</button> --}}
 
-                <button type="button"
+                {{-- <button type="button"
                     class="btn btn-info btn-sm me-2 mb-2"
                     onclick="scanPrinterUUID()">
                     🔬 Scan UUID Epson
@@ -130,7 +130,7 @@
 				<small class="text-info">
 					💡 Support: Printer Panda & Epson TM-P20II<br>
 					🔍 Klik "Toggle Debug" untuk lihat error
-				</small>
+				</small> --}}
 			</div>
 		</div>
 	</div>
