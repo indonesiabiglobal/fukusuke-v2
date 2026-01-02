@@ -618,7 +618,8 @@
                             </button>
                         @endif
                         @if (!$statusSeitai)
-                            <button type="button" class="btn btn-success btn-print" wire:click="print">
+                            <button type="button" class="btn btn-success btn-print"
+                                onclick="handleThermalPrintEdit({{ $orderId }})">
                                 <i class="bx bx-printer"></i> Print
                             </button>
                         @endif
@@ -1856,6 +1857,57 @@
             bootstrap.Modal.getInstance(document.getElementById(modalId)).hide();
         });
     });
+</script>
+{{-- Tambahkan setelah script formatNumber, sebelum penutup --}}
+<script>
+// ===== THERMAL PRINT UNTUK EDIT NIPPO =====
+window.handleThermalPrintEdit = async function(orderId) {
+    console.log('🖨️ Printing Edit Nippo ID:', orderId);
+
+    try {
+        // ✅ CEK PRINTER READY
+        console.log('🔍 Checking printer status...');
+        const printerReady = await window.checkPrinterReady();
+
+        if (!printerReady) {
+            console.log('⚠️ Printer not ready, requesting pairing...');
+            await window.connectThermalPrinter();
+            await new Promise(r => setTimeout(r, 500));
+        }
+
+        // Fetch data
+        console.log('📡 Fetching print data...');
+        const response = await fetch(`/get-print-data/${orderId}`);
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Fetch error:', errorText.substring(0, 100));
+            throw new Error('Fetch failed');
+        }
+
+        const printData = await response.json();
+
+        if (printData.error) {
+            throw new Error(printData.error);
+        }
+
+        console.log('✅ Data received');
+
+        // ✅ PRINT 2X
+        console.log('🖨️ Printing 2 copies...');
+        await window.printToThermalPrinter(printData, 2);
+
+        console.log('✅ Print success!');
+        // alert('✅ Print berhasil (2 copy)');
+
+    } catch (error) {
+        console.error('❌ Print error:', error);
+
+        if (confirm(`Print gagal: ${error.message}\n\nGunakan Print Normal?`)) {
+            window.open(`{{ route("report-gentan") }}?produk_asemblyid=${orderId}`, '_blank');
+        }
+    }
+};
 </script>
 @script
     <script>

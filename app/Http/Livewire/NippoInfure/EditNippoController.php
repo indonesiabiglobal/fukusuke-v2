@@ -654,10 +654,10 @@ class EditNippoController extends Component
         }
     }
 
-    public function print()
-    {
-        $this->dispatch('redirectToPrint', $this->orderId);
-    }
+    // public function print()
+    // {
+    //     $this->dispatch('redirectToPrint', $this->orderId);
+    // }
 
     public function render()
     {
