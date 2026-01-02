@@ -189,14 +189,11 @@
                 });
 
                 // Handle controller change (setelah skipWaiting)
-                // TIDAK AUTO RELOAD - User harus klik button update
+                // Auto reload setelah service worker baru aktif
                 navigator.serviceWorker.addEventListener('controllerchange', () => {
                     if (updateAvailable) {
-                        console.log('Update siap, menunggu user reload...');
-                        // Tampilkan pesan bahwa update siap
-                        if (typeof toastr !== 'undefined') {
-                            toastr.success('Update berhasil! Silakan klik tombol Update Aplikasi untuk reload.');
-                        }
+                        console.log('Service worker baru aktif, reload aplikasi...');
+                        window.location.reload();
                     }
                 });
 
@@ -281,10 +278,7 @@
                     toastr.info('Mengupdate aplikasi...');
                 }
 
-                // Reload setelah 1 detik
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1000);
+                // controllerchange event akan trigger reload otomatis
             }
         }
     </script>

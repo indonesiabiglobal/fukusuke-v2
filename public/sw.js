@@ -1,4 +1,4 @@
-const CACHE_NAME = "fukusuke-v1.0.1"; // Update version ini setiap ada perubahan
+const CACHE_NAME = "fukusuke-v1.0.2"; // Update version ini setiap ada perubahan
 const filesToCache = ["/", "/offline.html"];
 
 // Install event

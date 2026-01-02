@@ -49,6 +49,8 @@ jobs:
           port: ${{ secrets.REMOTE_PORT_3 }}
           script: |
             cd /opt/fukusuke-v2
+            echo "${{ secrets.REMOTE_PASSWORD_3 }}" | sudo -S git restore public/sw.js
+            echo "${{ secrets.REMOTE_PASSWORD_3 }}" | sudo -S git restore public/js/thermal-printer-global.js
             echo "${{ secrets.REMOTE_PASSWORD_3 }}" | sudo -S git pull origin main
             echo "${{ secrets.REMOTE_PASSWORD_3 }}" | sudo -S chmod -R 775 /opt/fukusuke-v2/public
             echo "${{ secrets.REMOTE_PASSWORD_3 }}" | sudo -S chmod -R 775 /opt/fukusuke-v2/bootstrap/cache
