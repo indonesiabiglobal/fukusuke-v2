@@ -340,7 +340,7 @@
         if (selisih >= 0) {
             textCmd += "Lebih    : " + String(data.selisih || "0") + " m\n";
         } else {
-            textCmd += "Kurang   : " + String(Math.abs(selisih)) + " m\n";
+            textCmd += "Kurang   : -" + String(Math.abs(selisih)) + " m\n";
         }
 
         textCmd += "No Han   : " + String(data.nomor_han || "-") + "\n";
