@@ -158,6 +158,7 @@
         let deferredUpdate = null;
         let updateAvailable = false;
         let swRegistration = null;
+        let updateReady = false; // Flag untuk track update sudah ready
 
         if ("serviceWorker" in navigator) {
             navigator.serviceWorker.register("/sw.js", {
@@ -189,11 +190,12 @@
                 });
 
                 // Handle controller change (setelah skipWaiting)
-                // Auto reload setelah service worker baru aktif
+                // Set flag bahwa update ready, tapi JANGAN auto reload
                 navigator.serviceWorker.addEventListener('controllerchange', () => {
                     if (updateAvailable) {
-                        console.log('Service worker baru aktif, reload aplikasi...');
-                        window.location.reload();
+                        console.log('Service worker baru aktif, siap reload...');
+                        updateReady = true;
+                        // TIDAK AUTO RELOAD - menunggu user action
                     }
                 });
 
@@ -268,17 +270,28 @@
 
         function applyUpdate() {
             if (deferredUpdate) {
-                // Kirim message ke service worker untuk skipWaiting
-                deferredUpdate.postMessage({ type: 'SKIP_WAITING' });
-                dismissUpdateNotification();
-                hideUpdateBadge();
-
                 // Tampilkan loading
                 if (typeof toastr !== 'undefined') {
                     toastr.info('Mengupdate aplikasi...');
                 }
 
-                // controllerchange event akan trigger reload otomatis
+                dismissUpdateNotification();
+                hideUpdateBadge();
+
+                // Jika update sudah ready (controllerchange sudah triggered), langsung reload
+                if (updateReady) {
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 500);
+                } else {
+                    // Kirim message ke service worker untuk skipWaiting
+                    deferredUpdate.postMessage({ type: 'SKIP_WAITING' });
+
+                    // Tunggu sebentar untuk controllerchange, lalu reload
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                }
             }
         }
     </script>
