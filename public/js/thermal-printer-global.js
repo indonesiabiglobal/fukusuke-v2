@@ -124,129 +124,276 @@
         }
     };
 
+    // ===== GENERATE BITMAP IMAGE (GENTAN NO + QR CODE SIDE BY SIDE) =====
+    window.generateSideBySideBitmap = async function(gentanNo, lpkNo) {
+        return new Promise((resolve) => {
+            // Import QRCode library dinamis jika belum ada
+            if (typeof QRCode === 'undefined') {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js';
+                script.onload = () => generateImage();
+                document.head.appendChild(script);
+            } else {
+                generateImage();
+            }
+
+            function generateImage() {
+                // Canvas setup - lebar thermal printer 58mm = ~384px, 80mm = ~576px
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                // Gunakan lebar 384px untuk thermal 58mm (paling umum)
+                canvas.width = 384;
+                canvas.height = 150; // Height untuk gentan + QR yang lebih besar
+
+                // Background putih
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // ===== GENTAN NO DI KIRI =====
+                ctx.fillStyle = '#000000';
+                ctx.font = 'bold 64px Arial'; // Font lebih besar untuk gentan
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'middle';
+
+                // Draw gentan no di posisi kiri
+                ctx.fillText(gentanNo, 10, 75);
+
+                // ===== QR CODE DI KANAN =====
+                // Generate QR code ke canvas temporary
+                QRCode.toCanvas(lpkNo, {
+                    errorCorrectionLevel: 'M',
+                    width: 130, // QR size 130x130px (lebih besar)
+                    margin: 0,
+                    color: {
+                        dark: '#000000',
+                        light: '#FFFFFF'
+                    }
+                }, (err, qrCanvas) => {
+                    if (err) {
+                        console.error('QR generation error:', err);
+                        resolve(null);
+                        return;
+                    }
+
+                    // Draw QR code di sebelah kanan gentan no
+                    // Posisi: canvas.width - 140 (QR width + margin)
+                    ctx.drawImage(qrCanvas, canvas.width - 140, 10, 130, 130);
+
+                    // Convert canvas to bitmap data
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    resolve({
+                        canvas: canvas,
+                        imageData: imageData,
+                        width: canvas.width,
+                        height: canvas.height
+                    });
+                });
+            }
+        });
+    };
+
+    // ===== CONVERT IMAGEDATA TO ESC/POS RASTER COMMAND =====
+    window.imageDataToRaster = function(imageData, width, height) {
+        // Convert to monochrome bitmap
+        const pixels = imageData.data;
+        const bytesPerLine = Math.ceil(width / 8);
+        const bitmap = [];
+
+        for (let y = 0; y < height; y++) {
+            const line = [];
+            for (let x = 0; x < width; x++) {
+                const idx = (y * width + x) * 4;
+                const r = pixels[idx];
+                const g = pixels[idx + 1];
+                const b = pixels[idx + 2];
+
+                // Convert to grayscale and threshold
+                const gray = (r + g + b) / 3;
+                const bit = gray < 128 ? 1 : 0; // Black pixel = 1
+
+                const byteIdx = Math.floor(x / 8);
+                const bitIdx = 7 - (x % 8);
+
+                if (!line[byteIdx]) line[byteIdx] = 0;
+                line[byteIdx] |= (bit << bitIdx);
+            }
+            bitmap.push(line);
+        }
+
+        // ESC/POS raster command: GS v 0 m xL xH yL yH d1...dk
+        // Build as Uint8Array directly (NOT string!)
+        const headerSize = 8;
+        const dataSize = height * bytesPerLine;
+        const totalSize = headerSize + dataSize;
+        const cmd = new Uint8Array(totalSize);
+
+        let pos = 0;
+
+        // GS v 0
+        cmd[pos++] = 0x1D; // GS
+        cmd[pos++] = 0x76; // v
+        cmd[pos++] = 0x30; // 0
+        cmd[pos++] = 0x00; // m (normal mode)
+
+        // Width in bytes (little endian)
+        cmd[pos++] = bytesPerLine & 0xFF;
+        cmd[pos++] = (bytesPerLine >> 8) & 0xFF;
+
+        // Height in dots (little endian)
+        cmd[pos++] = height & 0xFF;
+        cmd[pos++] = (height >> 8) & 0xFF;
+
+        // Bitmap data
+        for (let y = 0; y < height; y++) {
+            for (let x = 0; x < bytesPerLine; x++) {
+                cmd[pos++] = bitmap[y][x] || 0;
+            }
+        }
+
+        return cmd; // Return Uint8Array, NOT string
+    };
+
     // Generate ESC/POS Commands
-    window.generateEscPosCommands = function (data) {
+    window.generateEscPosCommands = async function (data) {
         const ESC = "\x1B";
         const GS = "\x1D";
-        let cmd = "";
+
+        // Build text commands as string
+        let textCmd = "";
 
         // Initialize
-        cmd += ESC + "@";
-        cmd += ESC + "R" + String.fromCharCode(0);
+        textCmd += ESC + "@";
+        textCmd += ESC + "R" + String.fromCharCode(0);
 
-        // ========== GENTAN NO (TRIPLE SIZE) - CENTER ==========
-        cmd += ESC + "a" + String.fromCharCode(1); // Center align
-        cmd += GS + "!" + String.fromCharCode(0x33); // Triple size (Width x3, Height x3)
-        cmd += String(data.gentan_no || "0") + "\n";
-        cmd += GS + "!" + String.fromCharCode(0); // Reset size
-        cmd += "\n";
-
-        // ========== QR CODE (LPK NO) - CENTER ==========
+        const gentanNo = String(data.gentan_no || "0");
         const qrData = String(data.lpk_no || "000000-000");
 
-        // QR Code Model 2
-        cmd += GS + "(k" + String.fromCharCode(4, 0, 49, 65, 50, 0);
+        // Generate bitmap (async) - returns Uint8Array
+        const bitmap = await window.generateSideBySideBitmap(gentanNo, qrData);
 
-        // QR Code Size (8 = large, sesuai foto)
-        cmd += GS + "(k" + String.fromCharCode(3, 0, 49, 67, 8);
+        let rasterBytes = null;
+        if (bitmap) {
+            // Get raster command as Uint8Array
+            rasterBytes = window.imageDataToRaster(
+                bitmap.imageData,
+                bitmap.width,
+                bitmap.height
+            );
+        } else {
+            // Fallback ke text mode jika bitmap gagal
+            textCmd += ESC + "a" + String.fromCharCode(1); // Center
+            textCmd += GS + "!" + String.fromCharCode(0x11); // Double size
+            textCmd += "G:" + gentanNo + "\n";
+            textCmd += GS + "!" + String.fromCharCode(0);
+        }
 
-        // QR Code Error Correction (M level)
-        cmd += GS + "(k" + String.fromCharCode(3, 0, 49, 69, 49);
-
-        // Store QR data
-        const qrLen = qrData.length + 3;
-        const pL = qrLen % 256;
-        const pH = Math.floor(qrLen / 256);
-        cmd += GS + "(k" + String.fromCharCode(pL, pH, 49, 80, 48) + qrData;
-
-        // Print QR Code
-        cmd += GS + "(k" + String.fromCharCode(3, 0, 49, 81, 48);
-
-        cmd += "------------------------------------------\n";
+        textCmd += "\n";
+        textCmd += "------------------------------------------\n";
 
         // ========== LPK NO (DOUBLE SIZE + BOLD + CENTER) ==========
-        cmd += ESC + "E" + String.fromCharCode(1); // Bold ON
-        cmd += GS + "!" + String.fromCharCode(0x11); // Double size
-        cmd += String(data.lpk_no || "-") + "\n";
-        cmd += GS + "!" + String.fromCharCode(0); // Reset size
-        cmd += ESC + "E" + String.fromCharCode(0); // Bold OFF
-        cmd += "------------------------------------------\n";
-
-        cmd += ESC + "a" + String.fromCharCode(0); // Back to left
+        textCmd += ESC + "a" + String.fromCharCode(1); // Center align
+        textCmd += ESC + "E" + String.fromCharCode(1); // Bold ON
+        textCmd += GS + "!" + String.fromCharCode(0x11); // Double size
+        textCmd += String(data.lpk_no || "-") + "\n";
+        textCmd += GS + "!" + String.fromCharCode(0); // Reset size
+        textCmd += ESC + "E" + String.fromCharCode(0); // Bold OFF
+        textCmd += ESC + "a" + String.fromCharCode(0); // Back to left
+        textCmd += "------------------------------------------\n";
 
         // ========== PRODUCT NAME (MEDIUM - TALL ONLY) ==========
-        cmd += ESC + "a" + String.fromCharCode(1); // Center align
-        cmd += GS + "!" + String.fromCharCode(0x01); // Tall (1x2)
-        cmd += String(data.product_name || "-") + "\n";
-        cmd += GS + "!" + String.fromCharCode(0); // Reset
-        cmd += ESC + "a" + String.fromCharCode(0); // Back to left
+        textCmd += ESC + "a" + String.fromCharCode(1); // Center align
+        textCmd += GS + "!" + String.fromCharCode(0x01); // Tall (1x2)
+        textCmd += String(data.product_name || "-") + "\n";
+        textCmd += GS + "!" + String.fromCharCode(0); // Reset
+        textCmd += ESC + "a" + String.fromCharCode(0); // Back to left
 
         // Garis pemisah
-        cmd += "------------------------------------------\n";
+        textCmd += "------------------------------------------\n";
 
         // ========== DETAIL INFO (WIDE FONT - SEDIKIT LEBIH BESAR) ==========
-        cmd += GS + "!" + String.fromCharCode(0x10); // Wide only
+        textCmd += GS + "!" + String.fromCharCode(0x10); // Wide only
 
-        cmd += "No. Order  : " + String(data.code || "-") + "\n";
-        cmd += "Kode       : " + String(data.code_alias || "-") + "\n";
+        textCmd += "No. Order  : " + String(data.code || "-") + "\n";
+        textCmd += "Kode       : " + String(data.code_alias || "-") + "\n";
 
-        cmd += GS + "!" + String.fromCharCode(0); // ← Reset DULU sebelum garis
-        cmd += "------------------------------------------\n"; // ← Garis normal
-        cmd += GS + "!" + String.fromCharCode(0x10); // ← Wide lagi untuk text berikutnya
+        textCmd += GS + "!" + String.fromCharCode(0); // ← Reset DULU sebelum garis
+        textCmd += "------------------------------------------\n"; // ← Garis normal
+        textCmd += GS + "!" + String.fromCharCode(0x10); // ← Wide lagi untuk text berikutnya
 
-        cmd += "Tgl Prod   : " + String(data.production_date || "-") + "\n";
-        cmd += "Jam        : " + String(data.work_hour || "-") + "\n";
-        cmd += "Shift      : " + String(data.work_shift || "-") + "\n";
-        cmd += "Mesin      : " + String(data.machineno || "-") + "\n";
+        textCmd += "Tgl Prod   : " + String(data.production_date || "-") + "\n";
+        textCmd += "Jam        : " + String(data.work_hour || "-") + "\n";
+        textCmd += "Shift      : " + String(data.work_shift || "-") + "\n";
+        textCmd += "Mesin      : " + String(data.machineno || "-") + "\n";
 
-        cmd += GS + "!" + String.fromCharCode(0); // Reset size
-        cmd += "------------------------------------------\n";
+        textCmd += GS + "!" + String.fromCharCode(0); // Reset size
+        textCmd += "------------------------------------------\n";
 
         // ========== BERAT & PANJANG (WIDE FONT) ==========
-        cmd += GS + "!" + String.fromCharCode(0x10); // Wide only
+        textCmd += GS + "!" + String.fromCharCode(0x10); // Wide only
 
-        cmd += "Berat      : " + String(data.berat_produksi || "0") + " kg\n";
-        cmd += "Panjang    : " + String(data.panjang_produksi || "0") + " m\n";
+        textCmd += "Berat      : " + String(data.berat_produksi || "0") + " kg\n";
+        textCmd += "Panjang    : " + String(data.panjang_produksi || "0") + " m\n";
 
         // Selisih (Lebih/Kurang)
         const selisih = parseFloat(data.selisih || 0);
         if (selisih >= 0) {
-            cmd += "Lebih      : " + String(data.selisih || "0") + " m\n";
+            textCmd += "Lebih      : " + String(data.selisih || "0") + " m\n";
         } else {
-            cmd += "Kurang     : " + String(Math.abs(selisih)) + " m\n";
+            textCmd += "Kurang     : " + String(Math.abs(selisih)) + " m\n";
         }
 
-        cmd += "No Han     : " + String(data.nomor_han || "-") + "\n";
+        textCmd += "No Han     : " + String(data.nomor_han || "-") + "\n";
 
-        cmd += GS + "!" + String.fromCharCode(0); // Reset size
-        cmd += "------------------------------------------\n";
+        textCmd += GS + "!" + String.fromCharCode(0); // Reset size
+        textCmd += "------------------------------------------\n";
 
         // ========== NIK & NAMA (WIDE FONT) ==========
-        cmd += GS + "!" + String.fromCharCode(0x10); // Wide only
+        textCmd += GS + "!" + String.fromCharCode(0x10); // Wide only
 
-        cmd += "NIK        : " + String(data.nik || "-") + "\n";
-        cmd += "Nama       : " + String(data.empname || "-") + "\n";
+        textCmd += "NIK        : " + String(data.nik || "-") + "\n";
+        textCmd += "Nama       : " + String(data.empname || "-") + "\n";
 
-        cmd += GS + "!" + String.fromCharCode(0); // Reset size
-        cmd += "------------------------------------------\n";
-        cmd += "\n\n\n";
+        textCmd += GS + "!" + String.fromCharCode(0); // Reset size
+        textCmd += "------------------------------------------\n";
+        textCmd += "\n\n\n";
 
         // Cut paper
-        cmd += GS + "V" + String.fromCharCode(0);
+        textCmd += GS + "V" + String.fromCharCode(0);
 
-        return cmd;
+        // ===== COMBINE TEXT + RASTER BINARY DATA =====
+        // Convert text commands to Uint8Array
+        const encoder = new TextEncoder();
+        const textBytes = encoder.encode(textCmd);
+
+        // Combine: [text commands] + [raster bitmap] + [rest of text]
+        if (rasterBytes) {
+            // Create combined array
+            const combined = new Uint8Array(rasterBytes.length + textBytes.length);
+            combined.set(rasterBytes, 0); // Raster first
+            combined.set(textBytes, rasterBytes.length); // Text after
+            return combined;
+        } else {
+            // No raster, just return text
+            return textBytes;
+        }
     };
 
-    // Manual Connect (FIRST TIME ONLY)
+    // Connect to saved printer
     window.connectThermalPrinter = async function () {
-        console.log("🔍 Requesting printer...");
+        const savedDeviceId = localStorage.getItem("thermal_printer_id");
+        const savedDeviceName = localStorage.getItem("thermal_printer_name");
+
+        if (!savedDeviceName) {
+            throw new Error("No saved printer found");
+        }
+
+        console.log("Connecting to saved printer:", savedDeviceName);
 
         const device = await navigator.bluetooth.requestDevice({
-            acceptAllDevices: true,
+            filters: [{ name: savedDeviceName }],
             optionalServices: ["49535343-fe7d-4ae5-8fa9-9fafd205e455"],
         });
-
-        console.log("Connecting to:", device.name);
 
         const server = await device.gatt.connect();
         const service = await server.getPrimaryService(
@@ -259,22 +406,16 @@
         window.thermalPrinter.device = device;
         window.thermalPrinter.characteristic = characteristic;
 
-        // ===== SAVE TO LOCALSTORAGE =====
-        localStorage.setItem("thermal_printer_id", device.id);
-        localStorage.setItem("thermal_printer_name", device.name);
-
         console.log("✅ Printer connected & saved:", device.name);
         return true;
     };
 
-    // Print Function - DENGAN AUTO RECONNECT
     // Print Function - DENGAN AUTO RECONNECT & COPIES
     window.printToThermalPrinter = async function (data, copies = 1) {
         console.log("📝 Generating print commands...");
 
-        const commands = window.generateEscPosCommands(data);
-        const encoder = new TextEncoder();
-        const bytes = encoder.encode(commands);
+        // Generate commands (async, returns Uint8Array directly)
+        const bytes = await window.generateEscPosCommands(data);
 
         // ===== AUTO RECONNECT JIKA BELUM CONNECT =====
         if (!window.thermalPrinter.characteristic) {
@@ -295,7 +436,6 @@
         }
 
         const chunkSize = 128;
-        const totalChunks = Math.ceil(bytes.length / chunkSize);
 
         // ===== LOOP UNTUK COPIES =====
         for (let copy = 1; copy <= copies; copy++) {

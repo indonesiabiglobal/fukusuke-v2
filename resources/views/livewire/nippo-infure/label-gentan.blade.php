@@ -88,7 +88,7 @@
 			<div id="logContent"></div>
 		</div> --}}
 
-		<div class="form-group">
+		<div class="form-group" x-data="{ isPrinting: false }">
 			<div class="input-group flex-wrap">
 				{{-- Button Debug --}}
 				{{-- <button type="button"
@@ -101,8 +101,15 @@
 				<button type="button"
 					class="btn btn-success btn-print me-2 mb-2"
 					onclick="handleThermalPrint()"
-					{{ !$statusPrint ? 'disabled' : '' }}>
-					<i class="ri-printer-line"></i> Print
+					:disabled="isPrinting || {{ !$statusPrint ? 'true' : 'false' }}"
+					x-bind:class="{ 'disabled': isPrinting }">
+					<span x-show="!isPrinting">
+						<i class="ri-printer-line"></i> Print
+					</span>
+					<span x-show="isPrinting">
+						<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+						Printing...
+					</span>
 				</button>
 
 				{{-- Button Normal --}}
@@ -171,6 +178,14 @@ window.toggleDebugLog = function() {
 
 // ===== MAIN PRINT HANDLER =====
 window.handleThermalPrint = async function() {
+    // Get Alpine component untuk state management
+    const buttonContainer = document.querySelector('[x-data*="isPrinting"]');
+    const alpineComponent = buttonContainer ? Alpine.$data(buttonContainer) : null;
+
+    if (alpineComponent) {
+        alpineComponent.isPrinting = true;
+    }
+
     const debugDiv = document.getElementById('debugLog');
     if (debugDiv) {
         debugDiv.style.display = 'block';
@@ -181,6 +196,9 @@ window.handleThermalPrint = async function() {
     if (!('bluetooth' in navigator)) {
         window.debugLog('❌ Bluetooth tidak tersedia!', 'error');
         alert('❌ Browser tidak support Bluetooth');
+        if (alpineComponent) {
+            alpineComponent.isPrinting = false;
+        }
         return;
     }
 
@@ -222,7 +240,6 @@ window.handleThermalPrint = async function() {
         window.debugLog('🖨️ Mulai print 2x...', 'info');
         await window.printToThermalPrinter(printData, 2); // 👈 PARAMETER KEDUA = JUMLAH COPY
         window.debugLog('✅ Print selesai!', 'success');
-
     } catch (error) {
         window.debugLog('❌ ERROR: ' + error.message, 'error');
         console.error(error);
@@ -233,6 +250,14 @@ window.handleThermalPrint = async function() {
             );
             component.call('printNormal');
         }
+    }
+    finally {
+            // Reset loading state
+            const buttonContainer = document.querySelector('[x-data*="isPrinting"]');
+            const alpineComponent = buttonContainer ? Alpine.$data(buttonContainer) : null;
+            if (alpineComponent) {
+                alpineComponent.isPrinting = false;
+            }
     }
 };
 
