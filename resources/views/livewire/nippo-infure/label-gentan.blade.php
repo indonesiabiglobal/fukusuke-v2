@@ -124,13 +124,13 @@
                     class="btn btn-info btn-sm me-2 mb-2"
                     onclick="scanPrinterUUID()">
                     🔬 Scan UUID Epson
-                </button>
+                </button> --}}
 
 				<div class="w-100"></div>
 				<small class="text-info">
 					💡 Support: Printer Panda & Epson TM-P20II<br>
 					🔍 Klik "Toggle Debug" untuk lihat error
-				</small> --}}
+				</small>
 			</div>
 		</div>
 	</div>
