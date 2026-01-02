@@ -91,11 +91,11 @@
 		<div class="form-group" x-data="{ isPrinting: false }">
 			<div class="input-group flex-wrap">
 				{{-- Button Debug --}}
-				<button type="button"
+				{{-- <button type="button"
 					class="btn btn-warning btn-sm me-2 mb-2"
 					onclick="toggleDebugLog()">
 					🔍 Toggle Debug
-				</button>
+				</button> --}}
 
 				{{-- Button Thermal --}}
 				<button type="button"
@@ -113,12 +113,12 @@
 				</button>
 
 				{{-- Button Normal --}}
-				<button type="button"
+				{{-- <button type="button"
 					class="btn btn-outline-secondary btn-print mb-2"
 					wire:click="printNormal"
 					{{ !$statusPrint ? 'disabled' : '' }}>
 					<i class="ri-printer-line"></i> Print Normal
-				</button>
+				</button> --}}
 
                 <button type="button"
                     class="btn btn-info btn-sm me-2 mb-2"
