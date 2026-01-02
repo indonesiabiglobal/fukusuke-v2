@@ -259,8 +259,8 @@ class AddSeitaiController extends Component
 
         if ($validatedData) {
             $this->code_loss = '';
-            $this->berat_loss = '';
-            $this->frekuensi = '';
+            $this->berat_loss = 0;
+            $this->frekuensi = 0;
             $this->dispatch('showModalLoss');
         }
     }
@@ -474,8 +474,8 @@ class AddSeitaiController extends Component
     {
         $this->code_loss = '';
         $this->namaloss = '';
-        $this->berat_loss = '';
-        $this->frekuensi = '';
+        $this->berat_loss = 0;
+        $this->frekuensi = 0;
     }
 
     public function nextIdLoss()
@@ -485,6 +485,23 @@ class AddSeitaiController extends Component
 
     public function saveLoss()
     {
+        try {
+            // validate
+            $this->validate([
+                'code_loss' => 'required',
+                'berat_loss' => 'required|numeric',
+                'frekuensi' => 'required',
+            ], [
+                'code_loss.required' => 'Kode Loss harus diisi',
+                'berat_loss.required' => 'Berat Loss harus diisi',
+                'berat_loss.numeric' => 'Berat Loss harus berupa angka',
+                'frekuensi.required' => 'Frekuensi harus diisi',
+            ]);
+        } catch (\Exception $e) {
+            $this->dispatch('notification', ['type' => 'warning', 'message' => 'Data Tidak Valid: ' . $e->getMessage()]);
+            return;
+        }
+
         $lpkid = TdOrderLpk::where('lpk_no', $this->lpk_no)->first();
         $loss = MsLossSeitai::where('code', $this->code_loss)
             ->first();
