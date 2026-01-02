@@ -91,11 +91,11 @@
 		<div class="form-group" x-data="{ isPrinting: false }">
 			<div class="input-group flex-wrap">
 				{{-- Button Debug --}}
-				<button type="button"
+				{{-- <button type="button"
 					class="btn btn-warning btn-sm me-2 mb-2"
 					onclick="toggleDebugLog()">
 					🔍 Toggle Debug
-				</button>
+				</button> --}}
 
 				{{-- Button Thermal --}}
 				<button type="button"
@@ -113,28 +113,24 @@
 				</button>
 
 				{{-- Button Normal --}}
-				<button type="button"
+				{{-- <button type="button"
 					class="btn btn-outline-secondary btn-print mb-2"
 					wire:click="printNormal"
 					{{ !$statusPrint ? 'disabled' : '' }}>
 					<i class="ri-printer-line"></i> Print Normal
-				</button>
+				</button> --}}
 
-                <button type="button"
+                {{-- <button type="button"
                     class="btn btn-info btn-sm me-2 mb-2"
                     onclick="scanPrinterUUID()">
                     🔬 Scan UUID Epson
-                </button>
-
-                <button type="button" class="btn btn-primary btn-sm me-2 mb-2" onclick="testCordova()">
-                    🧪 Test Cordova
-                </button>
+                </button> --}}
 
 				<div class="w-100"></div>
 				<small class="text-info">
 					💡 Support: Printer Panda & Epson TM-P20II<br>
 					🔍 Klik "Toggle Debug" untuk lihat error
-				</small>
+				</small> --}}
 			</div>
 		</div>
 	</div>

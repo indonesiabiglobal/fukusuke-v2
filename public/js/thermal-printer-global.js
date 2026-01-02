@@ -254,6 +254,49 @@
         return cmd; // Return Uint8Array, NOT string
     };
 
+    // ===== WORD WRAP HELPER FUNCTION =====
+    window.wrapText = function(text, maxWidth) {
+        if (!text || text.length <= maxWidth) {
+            return [text || ""];
+        }
+
+        const words = text.split(' ');
+        const lines = [];
+        let currentLine = '';
+
+        for (const word of words) {
+            // Jika kata sendiri lebih panjang dari maxWidth, potong paksa
+            if (word.length > maxWidth) {
+                if (currentLine) {
+                    lines.push(currentLine.trim());
+                    currentLine = '';
+                }
+                // Potong kata panjang per maxWidth karakter
+                for (let i = 0; i < word.length; i += maxWidth) {
+                    lines.push(word.substring(i, i + maxWidth));
+                }
+                continue;
+            }
+
+            const testLine = currentLine ? currentLine + ' ' + word : word;
+
+            if (testLine.length <= maxWidth) {
+                currentLine = testLine;
+            } else {
+                if (currentLine) {
+                    lines.push(currentLine.trim());
+                }
+                currentLine = word;
+            }
+        }
+
+        if (currentLine) {
+            lines.push(currentLine.trim());
+        }
+
+        return lines.length > 0 ? lines : [""];
+    };
+
     // Generate ESC/POS Commands
     window.generateEscPosCommands = async function (data) {
         const ESC = "\x1B";
@@ -288,7 +331,6 @@
             textCmd += GS + "!" + String.fromCharCode(0);
         }
 
-        textCmd += "\n";
         textCmd += "------------------------------------------\n";
 
         // ========== LPK NO (DOUBLE SIZE + BOLD + CENTER) ==========
@@ -301,21 +343,35 @@
         textCmd += ESC + "a" + String.fromCharCode(0); // Back to left
         textCmd += "------------------------------------------\n";
 
-        // ========== PRODUCT NAME (MEDIUM - TALL ONLY) ==========
+        // ========== PRODUCT NAME (MEDIUM - TALL ONLY) WITH WORD WRAP ==========
         textCmd += ESC + "a" + String.fromCharCode(1); // Center align
-        textCmd += GS + "!" + String.fromCharCode(0x01); // Tall (1x2)
-        textCmd += String(data.product_name || "-") + "\n";
+        textCmd += GS + "!" + String.fromCharCode(0x10);
+
+        // Wrap product name (max 16 chars per line for tall font)
+        const productLines = window.wrapText(String(data.product_name || "-"), 16);
+        productLines.forEach(line => {
+            textCmd += line + "\n";
+        });
+
         textCmd += GS + "!" + String.fromCharCode(0); // Reset
         textCmd += ESC + "a" + String.fromCharCode(0); // Back to left
 
         // Garis pemisah
         textCmd += "------------------------------------------\n";
 
-        // ========== DETAIL INFO (WIDE FONT - SEDIKIT LEBIH BESAR) ==========
+        // ========== DETAIL INFO (WIDE FONT - SEDIKIT LEBIH BESAR) WITH WORD WRAP ==========
         textCmd += GS + "!" + String.fromCharCode(0x10); // Wide only
 
         textCmd += "No. Order: " + String(data.code || "-") + "\n";
-        textCmd += "Kode     : " + String(data.code_alias || "-") + "\n";
+
+        // Wrap code_alias jika panjang (max 16 chars for wide font)
+        const codeAliasLines = window.wrapText(String(data.code_alias || "-"), 16);
+        textCmd += "Kode     : " + codeAliasLines[0] + "\n";
+        if (codeAliasLines.length > 1) {
+            for (let i = 1; i < codeAliasLines.length; i++) {
+                textCmd += "           " + codeAliasLines[i] + "\n"; // Indent untuk line berikutnya
+            }
+        }
 
         textCmd += GS + "!" + String.fromCharCode(0); // ← Reset DULU sebelum garis
         textCmd += "------------------------------------------\n"; // ← Garis normal
@@ -340,7 +396,7 @@
         if (selisih >= 0) {
             textCmd += "Lebih    : " + String(data.selisih || "0") + " m\n";
         } else {
-            textCmd += "Kurang   : " + String(Math.abs(selisih)) + " m\n";
+            textCmd += "Kurang   : -" + String(Math.abs(selisih)) + " m\n";
         }
 
         textCmd += "No Han   : " + String(data.nomor_han || "-") + "\n";
@@ -348,11 +404,19 @@
         textCmd += GS + "!" + String.fromCharCode(0); // Reset size
         textCmd += "------------------------------------------\n";
 
-        // ========== NIK & NAMA (WIDE FONT) ==========
+        // ========== NIK & NAMA (WIDE FONT) WITH WORD WRAP ==========
         textCmd += GS + "!" + String.fromCharCode(0x10); // Wide only
 
         textCmd += "NIK      : " + String(data.nik || "-") + "\n";
-        textCmd += "Nama     : " + String(data.empname || "-") + "\n";
+
+        // Wrap employee name jika panjang (max 16 chars for wide font)
+        const empNameLines = window.wrapText(String(data.empname || "-"), 10);
+        textCmd += "Nama     : " + empNameLines[0] + "\n";
+        if (empNameLines.length > 1) {
+            for (let i = 1; i < empNameLines.length; i++) {
+                textCmd += "           " + empNameLines[i] + "\n"; // Indent untuk line berikutnya
+            }
+        }
 
         textCmd += GS + "!" + String.fromCharCode(0); // Reset size
         textCmd += "------------------------------------------\n";

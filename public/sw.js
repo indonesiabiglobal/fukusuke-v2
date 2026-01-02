@@ -1,15 +1,22 @@
-const CACHE_NAME = "fukusuke-v1";
+const CACHE_NAME = "fukusuke-v1.0.6"; // Update version ini setiap ada perubahan
 const filesToCache = ["/", "/offline.html"];
 
 // Install event
 self.addEventListener("install", function (event) {
-    console.log("Service Worker installing...");
+    console.log("Service Worker installing...", CACHE_NAME);
     event.waitUntil(
         caches
             .open(CACHE_NAME)
             .then((cache) => cache.addAll(filesToCache))
             .then(() => self.skipWaiting())
     );
+});
+
+// Message event untuk handle update
+self.addEventListener("message", (event) => {
+    if (event.data && event.data.type === "SKIP_WAITING") {
+        self.skipWaiting();
+    }
 });
 
 // Activate event
