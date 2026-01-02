@@ -1,0 +1,102 @@
+/* PWA Update Notification Styles */
+#pwa-update-notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px 25px;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    z-index: 9999;
+    display: none;
+    min-width: 320px;
+    max-width: 400px;
+    animation: slideInUp 0.5s ease-out;
+}
+
+@keyframes slideInUp {
+    from {
+        transform: translateY(100px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+#pwa-update-notification.show {
+    display: block;
+}
+
+#pwa-update-notification .notification-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+#pwa-update-notification .notification-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+#pwa-update-notification .notification-icon {
+    font-size: 24px;
+}
+
+#pwa-update-notification .notification-body {
+    font-size: 14px;
+    line-height: 1.5;
+    opacity: 0.95;
+}
+
+#pwa-update-notification .notification-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+#pwa-update-notification button {
+    flex: 1;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#pwa-update-notification .btn-update {
+    background: white;
+    color: #667eea;
+}
+
+#pwa-update-notification .btn-update:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
+}
+
+#pwa-update-notification .btn-dismiss {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+#pwa-update-notification .btn-dismiss:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    #pwa-update-notification {
+        bottom: 10px;
+        right: 10px;
+        left: 10px;
+        min-width: auto;
+        max-width: none;
+    }
+}

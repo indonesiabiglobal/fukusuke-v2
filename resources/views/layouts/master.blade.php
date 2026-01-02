@@ -8,6 +8,7 @@
     <meta name="theme-color" content="#6777ef" />
     <link rel="apple-touch-icon" href="{{ asset('logo.png') }}">
     <link rel="manifest" href="{{ asset('/manifest.json') }}">
+    <link rel="stylesheet" href="{{ asset('css/pwa-update-notification.css') }}">
     <title> Fukusuke Kogyo Indonesia </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
@@ -26,9 +27,27 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
     {{-- @powerGridStyles --}}
 
+    {{-- Vite Assets --}}
+    {{-- @vite(['resources/js/app.js']) --}}
 </head>
 
 <body>
+    <!-- PWA Update Notification -->
+    <div id="pwa-update-notification">
+        <div class="notification-content">
+            <div class="notification-header">
+                <span class="notification-icon">🔄</span>
+                <span>Update Tersedia</span>
+            </div>
+            <div class="notification-body">
+                Versi baru aplikasi tersedia. Update sekarang untuk mendapatkan fitur terbaru dan perbaikan bug.
+            </div>
+            <div class="notification-actions">
+                <button class="btn-update" onclick="updatePWA()">Update Sekarang</button>
+                <button class="btn-dismiss" onclick="dismissUpdateNotification()">Nanti Saja</button>
+            </div>
+        </div>
+    </div>
     <!-- Begin page -->
     <div id="layout-wrapper">
         @include('layouts.topbar')
@@ -136,32 +155,74 @@
     </script>
     <script src="{{ asset('/sw.js') }}"></script>
     <script>
+        let deferredUpdate = null;
+        let updateAvailable = false;
+
         if ("serviceWorker" in navigator) {
-            // Clear old service workers first
-            navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                registrations.forEach(function(registration) {
-                    registration.unregister();
-                });
-            }).then(function() {
-                // Register new service worker
-                return navigator.serviceWorker.register("/sw.js", {
-                    scope: '/'
-                });
+            navigator.serviceWorker.register("/sw.js", {
+                scope: '/'
             }).then(function(registration) {
                 console.log("Service worker registered:", registration.scope);
 
-                // Update on refresh
+                // Check for updates periodically (setiap 1 menit)
+                setInterval(() => {
+                    registration.update();
+                }, 60000);
+
+                // Deteksi update yang tersedia
                 registration.addEventListener('updatefound', () => {
                     const newWorker = registration.installing;
+                    console.log('Update ditemukan, installing...');
+
                     newWorker.addEventListener('statechange', () => {
-                        if (newWorker.state === 'activated') {
-                            console.log('New service worker activated');
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            // Ada service worker baru yang siap
+                            console.log('Update tersedia!');
+                            deferredUpdate = newWorker;
+                            updateAvailable = true;
+                            showUpdateNotification();
                         }
                     });
                 });
+
+                // Handle controller change (setelah skipWaiting)
+                navigator.serviceWorker.addEventListener('controllerchange', () => {
+                    if (updateAvailable) {
+                        console.log('Reloading aplikasi...');
+                        window.location.reload();
+                    }
+                });
+
             }).catch(function(error) {
                 console.error("Service worker registration failed:", error);
             });
+        }
+
+        function showUpdateNotification() {
+            const notification = document.getElementById('pwa-update-notification');
+            if (notification) {
+                notification.classList.add('show');
+            }
+        }
+
+        function dismissUpdateNotification() {
+            const notification = document.getElementById('pwa-update-notification');
+            if (notification) {
+                notification.classList.remove('show');
+            }
+        }
+
+        function updatePWA() {
+            if (deferredUpdate) {
+                // Kirim message ke service worker untuk skipWaiting
+                deferredUpdate.postMessage({ type: 'SKIP_WAITING' });
+                dismissUpdateNotification();
+
+                // Tampilkan loading atau notifikasi
+                if (typeof toastr !== 'undefined') {
+                    toastr.info('Mengupdate aplikasi...');
+                }
+            }
         }
     </script>
 
