@@ -431,11 +431,10 @@
                     </li>
                 @endif
 
-
                 <li class="nav-item">
                     <a href="javascript:void(0);" onclick="checkAndUpdateApp()" class="nav-link"
                         data-key="t-app-update">
-                        <i class="ri-refresh-line"></i> Update Aplikasi
+                        <i class="ri-refresh-line"></i> <span data-key="t-app-update">Update Aplikasi</span>
                         <span id="update-badge"
                             style="display: none; background: #ff4444; color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px; margin-left: 5px;">New</span>
                     </a>
