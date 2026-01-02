@@ -367,8 +367,8 @@ class EditSeitaiController extends Component
 
         if ($validatedData) {
             $this->code_loss = '';
-            $this->berat_loss = '';
-            $this->frekuensi = '';
+            $this->berat_loss = 0;
+            $this->frekuensi = 0;
             $this->dispatch('showModalLoss');
         }
     }
@@ -453,7 +453,6 @@ class EditSeitaiController extends Component
 
             // update total berat loss on tdproduct_goods
             $newTotal = $this->jumlahBeratLoss - $oldBerat + $this->berat_loss;
-            dd($newTotal);
             TdProductGoods::where('id', $this->tdpgId)->update([
                 'seitai_berat_loss' => $newTotal
             ]);
