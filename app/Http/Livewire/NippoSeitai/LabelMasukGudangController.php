@@ -120,7 +120,7 @@ class LabelMasukGudangController extends Component
         $columnTanggalValueStart = 'M';
         $columnTanggalValueEnd = 'S';
         $spreadsheet->getActiveSheet()->mergeCells($columnTanggalValueStart . $rowTextGudang . ':' . $columnTanggalValueEnd . $rowTextGudang);
-        $spreadsheet->getActiveSheet()->setCellValue($columnTanggalValueStart . $rowTextGudang, Carbon::parse($data[0]->production_date)->format('d-m-Y'));
+        $spreadsheet->getActiveSheet()->setCellValue($columnTanggalValueStart . $rowTextGudang, Carbon::now()->format('d-m-Y'));
         phpspreadsheet::styleFont($spreadsheet, $columnTanggalValueStart . $rowTextGudang, false, 14, 'Tahoma');
         phpspreadsheet::addOutlineBorder($spreadsheet, $columnTanggalStart . $rowTextGudang . ':' . $columnTanggalValueEnd . $rowTextGudang);
 
