@@ -436,6 +436,22 @@
         let kadouJikanFrekuensiTrouble = [];
 
         function createKadouJikanFrekuensiTroubleChart() {
+            // compute sensible max for cases axis so single-digit data doesn't scale to large ticks
+            let maxCases = 0;
+            if (Array.isArray(kadouJikanFrekuensiTrouble) && kadouJikanFrekuensiTrouble.length) {
+                maxCases = Math.max(...kadouJikanFrekuensiTrouble.map(item => parseFloat(item.frekuensi_trouble) || 0));
+            }
+            const casesAxisConfig = {
+                labels: { format: '{value}', style: {} },
+                title: { text: '(Kasus)', align: 'high', offset: 0, rotation: 0, y: -20, style: {} },
+                // place cases on the left
+                opposite: false
+            };
+            if (maxCases > 0) {
+                casesAxisConfig.max = Math.ceil(maxCases * 1.2);
+                if (maxCases <= 10) casesAxisConfig.tickInterval = 1;
+            }
+
             Highcharts.chart('kadouJikanFrekuensiTrouble', {
                 chart: {
                     zooming: {
@@ -459,42 +475,20 @@
                     crosshair: true,
                     labels: {
                         step: 1,
-                        autoRotation: false,
+                        autoRotation: [-45, -90],
+                        autoRotationLimit: 80,
                         style: {
                             fontSize: '8px'
                         }
                     }
                 }],
-                yAxis: [{
-                    labels: {
-                        format: '{value}',
-                        style: {}
-                    },
-                    title: {
-                        text: '(Kasus)',
-                        align: 'high',
-                        offset: 0,
-                        rotation: 0,
-                        y: -20,
-                        style: {}
-                    },
+                // Swap: first axis = cases (right), second = percentage (left)
+                yAxis: [casesAxisConfig, {
+                    // Percentage axis — show on right
+                    labels: { format: '{value}%', style: {} },
+                    title: { text: '(%)', align: 'high', offset: 0, rotation: 0, y: -20, style: {} },
+                    max: 100,
                     opposite: true
-
-                }, {
-                    gridLineWidth: 0,
-                    title: {
-                        text: '(%)',
-                        align: 'high',
-                        offset: 0,
-                        rotation: 0,
-                        y: -20,
-                        style: {}
-                    },
-                    labels: {
-                        format: '{value}%',
-                        style: {}
-                    },
-                    max: 100
                 }],
                 tooltip: {
                     shared: true
@@ -512,19 +506,22 @@
                         fontSize: '10px',
                     }
                 },
+                // Map series to correct axes: cases -> yAxis[0] (right, column), percentage -> yAxis[1] (left, line)
                 series: [{
-                    name: 'Kadou Jikan (%)',
+                    name: 'Frekuensi Trouble',
                     type: 'column',
-                    yAxis: 1,
-                    data: kadouJikanFrekuensiTrouble.map(item => parseFloat(item.kadou_jikan) || 0),
-                    tooltip: {
-                        valueSuffix: ' %'
-                    },
+                    // cases axis (left)
+                    yAxis: 0,
+                    data: kadouJikanFrekuensiTrouble.map(item => item.frekuensi_trouble || 0),
+                    tooltip: { valueSuffix: ' (cases)' },
                     color: '#29A3FF',
                 }, {
-                    name: 'Frekuensi Trouble',
+                    name: 'Kadou Jikan (%)',
                     type: 'spline',
-                    data: kadouJikanFrekuensiTrouble.map(item => item.frekuensi_trouble || 0),
+                    // percentage axis (right)
+                    yAxis: 1,
+                    data: kadouJikanFrekuensiTrouble.map(item => parseFloat(item.kadou_jikan) || 0),
+                    tooltip: { valueSuffix: ' %' },
                     color: '#ff9900',
                 }],
                 responsive: {
@@ -541,6 +538,14 @@
                                 x: 0,
                                 y: 0
                             },
+                            xAxis: [{
+                                labels: {
+                                    rotation: -45,
+                                    style: {
+                                        fontSize: '7px'
+                                    }
+                                }
+                            }],
                             yAxis: [{
                                 labels: {
                                     align: 'right',
@@ -584,7 +589,8 @@
                     crosshair: true,
                     labels: {
                         step: 1,
-                        autoRotation: false,
+                        autoRotation: [-45, -90],
+                        autoRotationLimit: 80,
                         style: {
                             fontSize: '8px',
                         }
@@ -669,6 +675,14 @@
                                 x: 0,
                                 y: 0
                             },
+                            xAxis: [{
+                                labels: {
+                                    rotation: -45,
+                                    style: {
+                                        fontSize: '7px'
+                                    }
+                                }
+                            }],
                             yAxis: [{
                                 labels: {
                                     align: 'right',
@@ -713,7 +727,8 @@
                     categories: LossPerMachineDaily.map(item => item.machineno),
                     labels: {
                         step: 1,
-                        autoRotation: false,
+                        autoRotation: [-45, -90],
+                        autoRotationLimit: 80,
                         style: {
                             fontSize: '8px'
                         }
@@ -759,6 +774,14 @@
                                 x: 0,
                                 y: 0
                             },
+                            xAxis: {
+                                labels: {
+                                    rotation: -45,
+                                    style: {
+                                        fontSize: '7px'
+                                    }
+                                }
+                            },
                             yAxis: [{
                                 labels: {
                                     align: 'left',
@@ -795,7 +818,8 @@
                     categories: LossPerKasusDaily.map(item => item.loss_name),
                     labels: {
                         step: 1,
-                        autoRotation: false,
+                        autoRotation: [-45, -90],
+                        autoRotationLimit: 80,
                         style: {
                             fontSize: '8px'
                         }
@@ -839,6 +863,14 @@
                                 align: 'center',
                                 x: 0,
                                 y: 0
+                            },
+                            xAxis: {
+                                labels: {
+                                    rotation: -45,
+                                    style: {
+                                        fontSize: '7px'
+                                    }
+                                }
                             },
                             yAxis: [{
                                 labels: {
@@ -1063,10 +1095,10 @@
          * Monthly
          */
 
-        const formatNumber = num => {
+        const formatNumber = (num, digit = 2) => {
             return parseFloat(num || 0).toLocaleString('id-ID', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
+                minimumFractionDigits: digit,
+                maximumFractionDigits: digit
             });
         };
         let totalProduksiPerBulan = [];
@@ -1092,8 +1124,8 @@
             totalProduksiPerBulan.forEach((data, idx) => {
                 if (idx >= 3) return; // Hanya 3 periode
 
-                const target = parseFloat(data.target_produksi || 0);
-                const aktual = parseFloat(data.total_produksi || 0);
+                const target = Math.round(data.target_produksi || 0);
+                const aktual = Math.round(data.total_produksi || 0);
                 const selisih = aktual - target;
 
                 totalTarget += target;
@@ -1103,10 +1135,10 @@
                 tbody.append(`
                     <tr>
                         <td class="fw-semibold fs-6">Periode ${period[idx]}</td>
-                        <td class="fw-semibold fs-6">${formatNumber(target)}</td>
-                        <td class="fw-semibold fs-6">${formatNumber(aktual)}</td>
+                        <td class="fw-semibold fs-6">${formatNumber(target, 0)}</td>
+                        <td class="fw-semibold fs-6">${formatNumber(aktual, 0)}</td>
                         <td class="fw-semibold fs-6 ${selisih < 0 ? 'text-danger' : 'text-success'}">
-                            ${formatNumber(selisih)}
+                            ${formatNumber(selisih, 0)}
                         </td>
                     </tr>
                 `);
@@ -1116,10 +1148,10 @@
             tbody.append(`
                 <tr>
                     <td class="fw-bold fs-6">Total</td>
-                    <td class="fw-bold fs-6">${formatNumber(totalTarget)}</td>
-                    <td class="fw-bold fs-6">${formatNumber(totalAktual)}</td>
+                    <td class="fw-bold fs-6">${formatNumber(totalTarget, 0)}</td>
+                    <td class="fw-bold fs-6">${formatNumber(totalAktual, 0)}</td>
                     <td class="fw-bold fs-6 ${totalSelisih < 0 ? 'text-danger' : 'text-success'}">
-                        ${formatNumber(totalSelisih)}
+                        ${formatNumber(totalSelisih, 0)}
                     </td>
                 </tr>
             `);
@@ -1150,7 +1182,7 @@
                         <td>${data.machineno}</td>
                         <td>${data.lpk_no}</td>
                         <td>${data.product_name}</td>
-                        <td>${formatNumber(sisa_meter)}</td>
+                        <td>${formatNumber(sisa_meter, 0)}</td>
                         <td>${data.jam}</td>
                         <td>${data.menit}</td>
                     </tr>
