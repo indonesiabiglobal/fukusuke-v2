@@ -405,7 +405,7 @@ class LabelMasukGudangController extends Component
         $rowJumlahBarisValueStart = 18;
         $rowJumlahBarisValueEnd = 19;
         $spreadsheet->getActiveSheet()->mergeCells($columnJumlahBarisValueStart . $rowJumlahBarisValueStart . ':' . $columnJumlahBarisValueEnd . $rowJumlahBarisValueEnd);
-        $spreadsheet->getActiveSheet()->setCellValue($columnJumlahBarisValueStart . $rowJumlahBarisValueStart, $data[0]->jmlbaris);
+        $spreadsheet->getActiveSheet()->setCellValue($columnJumlahBarisValueStart . $rowJumlahBarisValueStart, $jumlahBox < $data[0]->jmlbaris ? 0 : $data[0]->jmlbaris);
         phpspreadsheet::styleFont($spreadsheet, $columnJumlahBarisValueStart . $rowJumlahBarisValueStart, false, 30, 'Times New Roman');
         phpspreadsheet::textAlignCenter($spreadsheet, $columnJumlahBarisValueStart . $rowJumlahBarisValueStart);
         phpspreadsheet::addOutlineBorder($spreadsheet, $columnJumlahBarisStart . $rowJumlahBarisValueStart . ':' . $columnJumlahBarisValueEnd . $rowJumlahBarisValueEnd);

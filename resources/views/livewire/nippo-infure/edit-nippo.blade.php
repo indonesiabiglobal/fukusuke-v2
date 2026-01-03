@@ -149,8 +149,8 @@
                                         @if ($statusEditLoss) readonly="readonly" @endif
                                         wire:model.defer="machineno"
                                         x-on:blur="$wire.validateMachine()"
-                                        x-on:keydown.enter="$wire.validateMachine(); $event.preventDefault(); document.querySelector('[x-ref=employeeno]').focus();"
-                                        x-on:keydown.tab="$event.preventDefault(); document.querySelector('[x-ref=employeeno]').focus();" />
+                                        x-on:keydown.enter="$wire.validateMachine(); $event.preventDefault(); document.querySelector('[x-ref=employeeno]')?.focus();"
+                                        x-on:keydown.tab="$event.preventDefault(); document.querySelector('[x-ref=employeeno]')?.focus();" />
                                     @error('machineno')
                                         <span class="invalid-feedback">{{ $message }}</span>
                                     @enderror
@@ -171,8 +171,8 @@
                                         wire:model.defer="employeeno"
                                         x-ref="employeeno"
                                         x-on:blur="$wire.validateEmployee()"
-                                        x-on:keydown.enter="$wire.validateEmployee(); $event.preventDefault(); document.querySelector('[x-ref=nomor_barcode]').focus();"
-                                        x-on:keydown.tab="$event.preventDefault(); document.querySelector('[x-ref=nomor_barcode]').focus();" />
+                                        x-on:keydown.enter="$wire.validateEmployee(); $event.preventDefault(); document.querySelector('[x-ref=nomor_barcode]')?.focus();"
+                                        x-on:keydown.tab="$event.preventDefault(); document.querySelector('[x-ref=nomor_barcode]')?.focus();" />
                                     @error('employeeno')
                                         <span class="invalid-feedback">{{ $message }}</span>
                                     @enderror
@@ -227,8 +227,8 @@
                                             wire:model.defer="employeeno"
                                             x-ref="employeeno"
                                             x-on:blur="$wire.validateEmployee()"
-                                            x-on:keydown.enter="$wire.validateEmployee(); $event.preventDefault(); $refs.nomor_barcode.focus();"
-                                            x-on:keydown.tab="$event.preventDefault(); $refs.nomor_barcode.focus();" />
+                                            x-on:keydown.enter="$wire.validateEmployee(); $event.preventDefault(); $refs.nomor_barcode?.focus();"
+                                            x-on:keydown.tab="$event.preventDefault(); $refs.nomor_barcode?.focus();" />
                                         @error('employeeno')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror
@@ -618,10 +618,20 @@
                             </button>
                         @endif
                         @if (!$statusSeitai)
-                            <button type="button" class="btn btn-success btn-print"
-                                onclick="handleThermalPrintEdit({{ $orderId }})">
-                                <i class="bx bx-printer"></i> Print
-                            </button>
+                            <div x-data="{ isPrinting: false }">
+                                <button type="button" class="btn btn-success btn-print"
+                                    onclick="handleThermalPrintEdit({{ $orderId }})"
+                                    :disabled="isPrinting"
+                                    x-bind:class="{ 'disabled': isPrinting }">
+                                    <span x-show="!isPrinting">
+                                        <i class="bx bx-printer"></i> Print
+                                    </span>
+                                    <span x-show="isPrinting">
+                                        <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                                        Printing...
+                                    </span>
+                                </button>
+                            </div>
                         @endif
                     @endif
 
@@ -1864,6 +1874,14 @@
 window.handleThermalPrintEdit = async function(orderId) {
     console.log('🖨️ Printing Edit Nippo ID:', orderId);
 
+    // Get Alpine component untuk state management
+    const buttonContainer = document.querySelector('[x-data*="isPrinting"]');
+    const alpineComponent = buttonContainer ? Alpine.$data(buttonContainer) : null;
+
+    if (alpineComponent) {
+        alpineComponent.isPrinting = true;
+    }
+
     try {
         // ✅ CEK PRINTER READY
         console.log('🔍 Checking printer status...');
@@ -1906,32 +1924,18 @@ window.handleThermalPrintEdit = async function(orderId) {
         if (confirm(`Print gagal: ${error.message}\n\nGunakan Print Normal?`)) {
             window.open(`{{ route("report-gentan") }}?produk_asemblyid=${orderId}`, '_blank');
         }
+    } finally {
+        // Reset loading state
+        const buttonContainer = document.querySelector('[x-data*="isPrinting"]');
+        const alpineComponent = buttonContainer ? Alpine.$data(buttonContainer) : null;
+        if (alpineComponent) {
+            alpineComponent.isPrinting = false;
+        }
     }
 };
 </script>
 @script
     <script>
-        // format number
-        // window.formatNumber = function(value) {
-        //     console.log(value);
-
-        //     // Hapus koma jika ada
-        //     value = value.replace(/,/g, '');
-
-        //     // Hapus karakter yang bukan angka
-        //     value = value.replace(/[^0-9]/g, '');
-
-        //     // Hapus nol di depan angka
-        //     value = value.replace(/^0+/, '');
-
-        //     // Jika value adalah angka yang valid, format dengan pemisah ribuan
-        //     if (!isNaN(value) && value !== '') {
-        //         return Number(value).toLocaleString('en-US');
-        //     }
-
-        //     // Kembalikan value tanpa modifikasi jika tidak valid
-        //     return value;
-        // };
         window.formatNumber = function(value) {
             console.log(value);
 

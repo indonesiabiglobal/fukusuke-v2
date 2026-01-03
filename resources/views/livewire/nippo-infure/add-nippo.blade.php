@@ -214,8 +214,8 @@
                                             class="form-control @error('machineno') is-invalid @enderror"
                                             wire:model.defer="machineno"
                                             x-on:blur="$wire.validateMachine()"
-                                            x-on:keydown.enter="$wire.validateMachine(); $event.preventDefault(); document.querySelector('[x-ref=employeeno]').focus();"
-                                            x-on:keydown.tab="$event.preventDefault(); document.querySelector('[x-ref=employeeno]').focus();" />
+                                            x-on:keydown.enter="$wire.validateMachine(); $event.preventDefault(); document.querySelector('[x-ref=employeeno]')?.focus();"
+                                            x-on:keydown.tab="$event.preventDefault(); document.querySelector('[x-ref=employeeno]')?.focus();" />
                                         @error('machineno')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror
@@ -235,8 +235,8 @@
                                             wire:model.defer="employeeno"
                                             x-ref="employeeno"
                                             x-on:blur="$wire.validateEmployee()"
-                                            x-on:keydown.enter="$wire.validateEmployee(); $event.preventDefault(); document.querySelector('[x-ref=nomor_barcode]').focus();"
-                                            x-on:keydown.tab="$event.preventDefault(); document.querySelector('[x-ref=nomor_barcode]').focus();" />
+                                            x-on:keydown.enter="$wire.validateEmployee(); $event.preventDefault(); document.querySelector('[x-ref=nomor_barcode]')?.focus();"
+                                            x-on:keydown.tab="$event.preventDefault(); document.querySelector('[x-ref=nomor_barcode]')?.focus();" />
                                         @error('employeeno')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror
@@ -651,7 +651,7 @@
                         </button>
                         <button type="button" wire:click="save" class="btn btn-success" wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="save">
-                                <i class="ri-save-3-line"></i> Save 1.7
+                                <i class="ri-save-3-line"></i> Save
                             </span>
                             <div wire:loading wire:target="save">
                                 <span class="d-flex align-items-center">
@@ -1839,6 +1839,24 @@
         modalAdd.addEventListener('shown.bs.modal', function() {
             document.getElementById('inputKodeLoss').focus();
         });
+
+        // Create loading overlay dynamically and append to body
+        if (!document.getElementById('printLoadingOverlay')) {
+            const overlay = document.createElement('div');
+            overlay.id = 'printLoadingOverlay';
+            overlay.style.cssText = 'display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:999999; align-items:center; justify-content:center;';
+            overlay.innerHTML = `
+                <div style="background:#fff; padding:40px; border-radius:15px; text-align:center; min-width:320px; box-shadow:0 10px 40px rgba(0,0,0,0.5);">
+                    <div class="spinner-border text-success" role="status" style="width:4rem; height:4rem; border-width:0.5rem;">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <h3 class="mt-4 mb-2" style="color:#198754; font-weight:bold;">🖨️ Printing...</h3>
+                    <p class="text-muted mb-0" style="font-size:1rem;">Mohon tunggu, sedang mencetak label...</p>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            console.log('✅ Overlay created and appended to body');
+        }
     });
 
     document.addEventListener('livewire:initialized', () => {
@@ -1940,6 +1958,28 @@ document.addEventListener('livewire:initialized', () => {
             return;
         }
 
+        // Show loading overlay
+        let loadingOverlay = document.getElementById('printLoadingOverlay');
+
+        // Create if not exists
+        if (!loadingOverlay) {
+            loadingOverlay = document.createElement('div');
+            loadingOverlay.id = 'printLoadingOverlay';
+            loadingOverlay.style.cssText = 'display:flex; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:999999; align-items:center; justify-content:center;';
+            loadingOverlay.innerHTML = `
+                <div style="background:#fff; padding:40px; border-radius:15px; text-align:center; min-width:320px; box-shadow:0 10px 40px rgba(0,0,0,0.5);">
+                    <div class="spinner-border text-success" role="status" style="width:4rem; height:4rem; border-width:0.5rem;">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <h3 class="mt-4 mb-2" style="color:#198754; font-weight:bold;">🖨️ Printing...</h3>
+                    <p class="text-muted mb-0" style="font-size:1rem;">Mohon tunggu, sedang mencetak label...</p>
+                </div>
+            `;
+            document.body.appendChild(loadingOverlay);
+        } else {
+            loadingOverlay.style.display = 'flex';
+        }
+
         try {
             // ✅ CEK PRINTER READY
             console.log('🔍 Checking printer status...');
@@ -1990,6 +2030,15 @@ document.addEventListener('livewire:initialized', () => {
             setTimeout(() => {
                 window.location.href = '{{ route("nippo-infure") }}';
             }, 1000);
+        } finally {
+            // Hide loading overlay
+            const loadingOverlay = document.getElementById('printLoadingOverlay');
+            if (loadingOverlay) {
+                loadingOverlay.style.display = 'none';
+                console.log('✅ Loading overlay hidden');
+            } else {
+                console.warn('⚠️ Overlay not found when hiding');
+            }
         }
     });
 });

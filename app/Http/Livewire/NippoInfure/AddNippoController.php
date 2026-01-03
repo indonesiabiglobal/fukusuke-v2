@@ -57,6 +57,7 @@ class AddNippoController extends Component
     public $diameterlipat;
     public $berat_jenis;
     public $editing_id = null;
+    public $timbangan_id;
 
     // data master produk
     public $masterKatanuki;
