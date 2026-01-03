@@ -33,23 +33,24 @@ class LabelMasukGudangController extends Component
         $data = collect(
             DB::select("
             SELECT
-            tdpg.production_date AS production_date,
-            tdpg.nomor_palet AS nomor_palet,
+                tdpg.production_date AS production_date,
+                tdpg.nomor_palet AS nomor_palet,
                 tdpg.nomor_lot AS nomor_lot,
-                    tdpg.work_shift AS work_shift,
-                    tdpg.employee_id AS employee_id,
-                    me.empname as namapetugas,
-                    tdpg.product_id AS product_id,
-                    mp.code_alias as nocode,
-                    mp.name as namaproduk,
-                    mp.palet_jumlah_baris as tinggi,
-                    mp.palet_isi_baris as jmlbaris,
-                    tdpg.qty_produksi/cast(mp.case_box_count as  INTEGER) AS qty_produksi
-                FROM  tdProduct_Goods AS tdpg
-                left JOIN tdOrderLpk AS tdol ON tdpg.lpk_id = tdol.id
-                    left join msproduct as mp on mp.id=tdpg.product_id
-                    left join msemployee as me on me.id=tdpg.employee_id
-                WHERE tdpg.nomor_palet = (LTRIM(RTRIM('$this->nomor_palet')))
+                tdpg.work_shift AS work_shift,
+                tdpg.employee_id AS employee_id,
+                me.empname as namapetugas,
+                tdpg.product_id AS product_id,
+                mp.code_alias as nocode,
+                mp.name as namaproduk,
+                mp.palet_jumlah_baris as tinggi,
+                mp.palet_isi_baris as jmlbaris,
+                tdpg.qty_produksi/cast(mp.case_box_count as  INTEGER) AS qty_produksi
+            FROM  tdProduct_Goods AS tdpg
+            left JOIN tdOrderLpk AS tdol ON tdpg.lpk_id = tdol.id
+                left join msproduct as mp on mp.id=tdpg.product_id
+                left join msemployee as me on me.id=tdpg.employee_id
+            WHERE tdpg.nomor_palet = (LTRIM(RTRIM('$this->nomor_palet')))
+            ORDER BY tdpg.created_on ASC
             ")
         );
 
@@ -525,7 +526,8 @@ class LabelMasukGudangController extends Component
                 INNER JOIN msmachine AS msm ON msm.id = tdpg.machine_id
                 INNER JOIN msproduct AS msp ON msp.id = tdpg.product_id
             WHERE
-                tdpg.nomor_palet='$this->nomor_palet'");
+                tdpg.nomor_palet='$this->nomor_palet'
+            ORDER BY tdpg.created_on ASC");
 
             if ($this->data == null) {
                 $this->dispatch('notification', ['type' => 'error', 'message' => 'Palet ' . $this->nomor_palet . ' Tidak Terdaftar']);
