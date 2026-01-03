@@ -253,7 +253,7 @@
                     <div class="row g-0">
                         <div class="col-12 col-xl-6 p-1" style="max-height: 280px;">
                             <h4 class="card-title mb-2 flex-grow-1 fw-bold text-center">
-                                Total Produksi Pabrik C (Kg)
+                                Total Produksi <span id="factory-period"></span> (Kg)
                             </h4>
                             <table class="table table-bordered rounded-3 align-middle" id="totalProduksiPerBulan">
                                 <thead>
@@ -407,6 +407,11 @@
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
 
+
+    <script>
+        // expose listFactory to JavaScript: keyed by id for easy lookup
+        const listFactory = @json($listFactory->keyBy('id'));
+    </script>
 
     <script>
         function fetchData(url, data, method = 'POST') {
@@ -1516,6 +1521,10 @@
                         '<tr><td colspan="3" class="text-center p-4">Error loading data</td></tr>');
                 })
                 .always(checkAllComplete);
+
+                // Set factory period text
+                const factoryPeriodText = data.factory ? ` - ${listFactory[data.factory]['name']}` : '';
+                $('#factory-period').text(factoryPeriodText);
         }
 
         $(document).ready(function() {
