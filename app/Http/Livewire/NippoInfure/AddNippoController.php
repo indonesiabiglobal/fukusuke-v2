@@ -473,8 +473,8 @@ class AddNippoController extends Component
             $this->loss_infure_id = '';
             $this->loss_infure_code = '';
             $this->name_infure = '';
-            $this->berat_loss = '';
-            $this->frekuensi = '';
+            $this->berat_loss = 0;
+            $this->frekuensi = 1;
 
             $this->dispatch('showModal');
         }
@@ -940,7 +940,7 @@ class AddNippoController extends Component
         $this->loss_infure_id = null;
         $this->loss_infure_code = '';
         $this->name_infure = '';
-        $this->berat_loss = '';
-        $this->frekuensi = '';
+        $this->berat_loss = 0;
+        $this->frekuensi = 1;
     }
 }

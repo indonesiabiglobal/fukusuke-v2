@@ -368,7 +368,7 @@ class EditSeitaiController extends Component
         if ($validatedData) {
             $this->code_loss = '';
             $this->berat_loss = 0;
-            $this->frekuensi = 0;
+            $this->frekuensi = 1;
             $this->dispatch('showModalLoss');
         }
     }
@@ -524,8 +524,8 @@ class EditSeitaiController extends Component
         $this->loss_seitai_id = '';
         $this->code_loss = '';
         $this->namaloss = '';
-        $this->berat_loss = '';
-        $this->frekuensi = '';
+        $this->berat_loss = 0;
+        $this->frekuensi = 1;
     }
 
     public function saveLoss()
