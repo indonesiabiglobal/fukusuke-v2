@@ -192,12 +192,6 @@ class CheckListInfureController extends Component
 
         $columnHeaderEnd = chr(ord($columnHeaderEnd) - 1);
 
-        // style header
-        phpspreadsheet::addFullBorder($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
-        phpspreadsheet::styleFont($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart, true, 9, 'Calibri');
-        phpspreadsheet::textAlignCenter($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
-
-
         // filter print nippo
         $filterSearchTerm = '';
         $filterStatus = '';
@@ -358,7 +352,7 @@ class CheckListInfureController extends Component
                     'seq_no' => $item->seq_no,
                     'tglproduksi' => $item->tglproduksi,
                     'shift' => $item->shift,
-                    'jam' => $item->jam,
+                    'jam' => Carbon::parse($item->jam)->format('H:i'),
                     'nik' => $item->nik,
                     'nama_petugas' => $item->namapetugas,
                     'dept_petugas' => $item->deptpetugas,
@@ -541,6 +535,10 @@ class CheckListInfureController extends Component
         $rowFooterStart = $rowItem + 2;
         phpspreadsheet::styleFont($spreadsheet, 'A' . $rowFooterStart . ':A' . ($rowFooterStart + 1), false, 9, 'Calibri');
 
+        // style header
+        phpspreadsheet::addFullBorder($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
+        phpspreadsheet::styleFont($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart, true, 9, 'Calibri');
+        phpspreadsheet::textAlignCenter($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
 
         // mengatur lebar kolom
         $spreadsheet->getActiveSheet()->getColumnDimension('F')->setAutoSize(true);

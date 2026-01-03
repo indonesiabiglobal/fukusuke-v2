@@ -21,11 +21,11 @@ class phpspreadsheet
         $spreadsheet->getActiveSheet()->getStyle($range)->applyFromArray([
             'borders' => [
                 'top' => [
-                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_DOTTED,
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR,
                     'color' => ['argb' => $color],
                 ],
                 'bottom' => [
-                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_DOTTED,
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR,
                     'color' => ['argb' => $color],
                 ],
                 'left' => [
@@ -41,7 +41,72 @@ class phpspreadsheet
                     'color' => ['argb' => $color],
                 ],
                 'horizontal' => [
-                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_DOTTED,
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR,
+                    'color' => ['argb' => $color],
+                ],
+            ],
+        ]);
+    }
+
+
+    public static function addHeaderBorder($spreadsheet, $range, $borderStyle = \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_MEDIUM, $color = 'FF000000')
+    {
+        $spreadsheet->getActiveSheet()->getStyle($range)->applyFromArray([
+            'borders' => [
+                'top' => [
+                    'borderStyle' => $borderStyle,
+                    'color' => ['argb' => $color],
+                ],
+                'bottom' => [
+                    'borderStyle' => $borderStyle,
+                    'color' => ['argb' => $color],
+                ],
+                'left' => [
+                    'borderStyle' => $borderStyle,
+                    'color' => ['argb' => $color],
+                ],
+                'right' => [
+                    'borderStyle' => $borderStyle,
+                    'color' => ['argb' => $color],
+                ],
+                'vertical' => [
+                    'borderStyle' => $borderStyle,
+                    'color' => ['argb' => $color],
+                ],
+                'horizontal' => [
+                    'borderStyle' => $borderStyle,
+                    'color' => ['argb' => $color],
+                ],
+            ],
+        ]);
+    }
+
+    public static function addHorizontalVerticalBorder($spreadsheet, $range, $verticalStyle = \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_MEDIUM, $horizontalStyle = \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN, $color = 'FF000000')
+    {
+        $spreadsheet->getActiveSheet()->getStyle($range)->applyFromArray([
+            'borders' => [
+                'top' => [
+                    'borderStyle' => $horizontalStyle,
+                    'color' => ['argb' => $color],
+                ],
+                'bottom' => [
+                    'borderStyle' => $horizontalStyle,
+                    'color' => ['argb' => $color],
+                ],
+                'left' => [
+                    'borderStyle' => $verticalStyle,
+                    'color' => ['argb' => $color],
+                ],
+                'right' => [
+                    'borderStyle' => $verticalStyle,
+                    'color' => ['argb' => $color],
+                ],
+                'vertical' => [
+                    'borderStyle' => $verticalStyle,
+                    'color' => ['argb' => $color],
+                ],
+                'horizontal' => [
+                    'borderStyle' => $horizontalStyle,
                     'color' => ['argb' => $color],
                 ],
             ],
@@ -73,7 +138,7 @@ class phpspreadsheet
                     'color' => ['argb' => $color],
                 ],
                 'horizontal' => [
-                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_DOTTED,
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR,
                     'color' => ['argb' => $color],
                 ],
             ],
@@ -101,11 +166,11 @@ class phpspreadsheet
                     'color' => ['argb' => $color],
                 ],
                 'vertical' => [
-                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_DOTTED,
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR,
                     'color' => ['argb' => $color],
                 ],
                 'horizontal' => [
-                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_DOTTED,
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR,
                     'color' => ['argb' => $color],
                 ],
             ],
@@ -161,7 +226,7 @@ class phpspreadsheet
     }
 
     // border titik-titik
-    public static function addFullBorderDotted($spreadsheet, $range, $borderStyle = \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_DOTTED, $color = 'FF000000')
+    public static function addFullBorderDotted($spreadsheet, $range, $borderStyle = \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR, $color = 'FF000000')
     {
         $spreadsheet->getActiveSheet()->getStyle($range)->applyFromArray([
             'borders' => [
@@ -173,7 +238,7 @@ class phpspreadsheet
         ]);
     }
 
-    public static function addBottomBorderDotted($spreadsheet, $range, $borderStyle = \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_DOTTED, $color = 'FF000000')
+    public static function addBottomBorderDotted($spreadsheet, $range, $borderStyle = \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR, $color = 'FF000000')
     {
         $spreadsheet->getActiveSheet()->getStyle($range)->applyFromArray([
             'borders' => [
@@ -185,7 +250,7 @@ class phpspreadsheet
         ]);
     }
 
-    public static function addMiddleBorder($spreadsheet, $range, $borderStyle = \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_DOTTED, $color = 'FF000000')
+    public static function addMiddleBorder($spreadsheet, $range, $borderStyle = \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR, $color = 'FF000000')
     {
         $spreadsheet->getActiveSheet()->getStyle($range)->applyFromArray([
             'borders' => [
@@ -217,7 +282,7 @@ class phpspreadsheet
         ]);
     }
 
-    public static function addXHorizontalVerticalBorder($spreadsheet, $range, $borderStyle = \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_DOTTED, $color = 'FF000000')
+    public static function addXHorizontalVerticalBorder($spreadsheet, $range, $borderStyle = \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR, $color = 'FF000000')
     {
         $spreadsheet->getActiveSheet()->getStyle($range)->applyFromArray([
             'borders' => [
