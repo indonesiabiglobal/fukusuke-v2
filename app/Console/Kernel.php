@@ -12,53 +12,12 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // Auto-insert jam kerja for Infure department
-        // Run every 2 hours to catch shift changes
-        // $schedule->command('jamkerja:auto-insert --department=infure')
-        //         ->everyTwoHours()
-        //         ->withoutOverlapping()
-        //         ->runInBackground();
+        $departments = ['infure', 'seitai'];
+        $times = ['07:15', '15:15', '23:15'];
 
-        // Auto-insert jam kerja for Seitai department
-        // Run every 2 hours to catch shift changes
-        // $schedule->command('jamkerja:auto-insert --department=seitai')
-        //         ->everyTwoHours()
-        //         ->withoutOverlapping()
-        //         ->runInBackground();
-
-        // Alternative: Run at specific times that align with shift changes
-        // Uncomment and modify the times below based on your shift schedule
-
-        // Run at 7:15 AM (after morning shift starts)
-        $schedule->command('jamkerja:auto-insert --department=infure')
-                ->name('jamkerja-infure')
-                ->dailyAt('07:15')
-                ->withoutOverlapping();
-        $schedule->command('jamkerja:auto-insert --department=seitai')
-                ->name('jamkerja-seitai')
-                ->dailyAt('07:15')
-                ->withoutOverlapping();
-
-        // Run at 3:15 PM (after afternoon shift starts)
-        $schedule->command('jamkerja:auto-insert --department=infure')
-                ->name('jamkerja-infure')
-                ->dailyAt('15:15')
-                ->withoutOverlapping();
-        $schedule->command('jamkerja:auto-insert --department=seitai')
-                ->name('jamkerja-seitai')
-                ->dailyAt('15:15')
-                ->withoutOverlapping();
-
-
-        // Run at 11:15 PM (after night shift starts)
-        $schedule->command('jamkerja:auto-insert --department=infure')
-                ->name('jamkerja-infure')
-                ->dailyAt('23:15')
-                ->withoutOverlapping();
-        $schedule->command('jamkerja:auto-insert --department=seitai')
-                ->name('jamkerja-seitai')
-                ->dailyAt('23:15')
-                ->withoutOverlapping();
+        foreach ($departments as $department) {
+            $this->processDepartment($schedule, $department, $times);
+        }
     }
 
     /**
@@ -69,5 +28,20 @@ class Kernel extends ConsoleKernel
         $this->load(__DIR__.'/Commands');
 
         require base_path('routes/console.php');
+    }
+
+    private function processDepartment(Schedule $schedule, string $department, array $times = []): void
+    {
+        if (empty($times)) {
+            $times = [now()->format('H:i')];
+        }
+
+        foreach ($times as $time) {
+            $timeName = str_replace(':', '', $time);
+            $schedule->command("jamkerja:auto-insert --department={$department}")
+                ->name("jamkerja-{$department}-{$timeName}")
+                ->dailyAt($time)
+                ->withoutOverlapping();
+        }
     }
 }
