@@ -85,6 +85,7 @@ use App\Http\Livewire\MasterTabel\Machine\MachinePartController;
 use App\Http\Livewire\MasterTabel\Machine\MachinePartDetailController;
 use App\Http\Livewire\MasterTabel\MasalahKenpin\MasalahKenpinInfureController;
 use App\Http\Livewire\MasterTabel\MasalahKenpin\MasalahKenpinSeitaiController;
+use App\Http\Controllers\PrinterSettingsController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -107,7 +108,30 @@ Route::get('/logout', [App\Http\Controllers\HomeController::class, 'logout']);
 Route::get('index/{locale}', [App\Http\Controllers\HomeController::class, 'lang']);
 Route::get('phpinfo', [App\Http\Controllers\HomeController::class, 'phpinfo']);
 
+// Documentation Routes
+Route::get('/docs/{file}', function ($file) {
+    $filePath = base_path($file . '.md');
+
+    if (!file_exists($filePath)) {
+        abort(404, 'Documentation not found');
+    }
+
+    $content = file_get_contents($filePath);
+
+    // Parse markdown title
+    preg_match('/^#\s+(.+)$/m', $content, $matches);
+    $title = $matches[1] ?? 'Documentation';
+
+    return view('markdown-viewer', [
+        'content' => $content,
+        'title' => $title
+    ]);
+})->middleware('auth')->where('file', '.*');
+
 Route::group(['middleware' => 'auth'], function () {
+    // Printer Settings
+    Route::get('/printer-settings', [PrinterSettingsController::class, 'index'])->middleware('auth')->name('printer.settings');
+
     // Order LPK
     Route::get('/order-lpk', OrderLpkController::class)->name('order-lpk');
     Route::get('/edit-order', EditOrderController::class)->name('edit-order');
@@ -125,7 +149,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/edit-nippo/', EditNippoController::class)->name('edit-nippo');
     Route::get('/add-nippo', AddNippoController::class)->name('add-nippo');
     // Route untuk fetch print data
-    Route::get('/get-print-data/{produk_asemblyid}', function($produk_asemblyid) {
+    Route::get('/get-print-data/{produk_asemblyid}', function ($produk_asemblyid) {
         try {
             $data = DB::table('tdproduct_assembly as tpa')
                 ->join('tdorderlpk as tod', 'tpa.lpk_id', '=', 'tod.id')
@@ -160,7 +184,6 @@ Route::group(['middleware' => 'auth'], function () {
 
             Log::info('Print data fetched successfully');
             return response()->json($data);
-
         } catch (\Exception $e) {
             Log::error('Get print data error: ' . $e->getMessage());
 
@@ -315,7 +338,7 @@ Route::group(['middleware' => 'auth'], function () {
         $nomor_han = $request->query('nomor_han');
         $nik = $request->query('nik');
         $empname = $request->query('empname');
-        return view('livewire.nippo-infure.report-gentan', compact('produk_asemblyid','lpk_no', 'name', 'code', 'product_type_code', 'production_date', 'work_hour', 'work_shift', 'machineno', 'berat_produksi', 'nomor_han', 'nik', 'empname'));
+        return view('livewire.nippo-infure.report-gentan', compact('produk_asemblyid', 'lpk_no', 'name', 'code', 'product_type_code', 'production_date', 'work_hour', 'work_shift', 'machineno', 'berat_produksi', 'nomor_han', 'nik', 'empname'));
     })->name('report-gentan');
 
     Route::get('/report-nippo-infure', function (Request $request) {
@@ -352,34 +375,34 @@ Route::group(['middleware' => 'auth'], function () {
         $nomor_han = $request->query('nomor_han');
         $nik = $request->query('nik');
         $empname = $request->query('empname');
-        return view('livewire.nippo-infure.report-gentan', compact('produk_asemblyid','lpk_no', 'name', 'code', 'product_type_code', 'production_date', 'work_hour', 'work_shift', 'machineno', 'berat_produksi', 'nomor_han', 'nik', 'empname'));
+        return view('livewire.nippo-infure.report-gentan', compact('produk_asemblyid', 'lpk_no', 'name', 'code', 'product_type_code', 'production_date', 'work_hour', 'work_shift', 'machineno', 'berat_produksi', 'nomor_han', 'nik', 'empname'));
     })->name('report-gentan');
 
     Route::get('/test', function () {
         return view('widgets');
     });
 
-    Route::get('/', function() {
+    Route::get('/', function () {
         return redirect()->route('dashboard-infure');
     });
 
     // Route::controller(DashboardController::class)->group(function () {
-        // Route::get('/', 'index')->name('dashboard');
-        // Route::get('/', 'index')->name('dashboard');
-        // Route::get('/dashboard-ppic', 'ppic')->name('dashboard-ppic');
-        // Route::get('/dashboard-qc', 'qc')->name('dashboard-qc');
-        // // Infure
-        // Route::get('/kadou-jikan/infure', 'getkadouJikanInfure')->name('kadou-jikan-infure');
-        // Route::get('/hasil-produksi/infure', 'getHasilProduksiInfure')->name('hasil-produksi-infure');
-        // Route::get('/loss/infure', 'getLossInfure')->name('get-loss-infure');
-        // Route::get('/top-loss/infure', 'getTopLossInfure')->name('top-loss-infure');
-        // Route::get('/counter-trouble/infure', 'getCounterTroubleInfure')->name('counter-trouble-infure');
-        // // Seitai
-        // Route::get('/kadou-jikan/seitai', 'getkadouJikanSeitai')->name('kadou-jikan-seitai');
-        // Route::get('/hasil-produksi/seitai', 'getHasilProduksiSeitai')->name('hasil-produksi-seitai');
-        // Route::get('/loss/seitai', 'getLossSeitai')->name('get-loss-seitai');
-        // Route::get('/top-loss/seitai', 'getTopLossSeitai')->name('top-loss-seitai');
-        // Route::get('/counter-trouble/seitai', 'getCounterTroubleSeitai')->name('counter-trouble-seitai');
+    // Route::get('/', 'index')->name('dashboard');
+    // Route::get('/', 'index')->name('dashboard');
+    // Route::get('/dashboard-ppic', 'ppic')->name('dashboard-ppic');
+    // Route::get('/dashboard-qc', 'qc')->name('dashboard-qc');
+    // // Infure
+    // Route::get('/kadou-jikan/infure', 'getkadouJikanInfure')->name('kadou-jikan-infure');
+    // Route::get('/hasil-produksi/infure', 'getHasilProduksiInfure')->name('hasil-produksi-infure');
+    // Route::get('/loss/infure', 'getLossInfure')->name('get-loss-infure');
+    // Route::get('/top-loss/infure', 'getTopLossInfure')->name('top-loss-infure');
+    // Route::get('/counter-trouble/infure', 'getCounterTroubleInfure')->name('counter-trouble-infure');
+    // // Seitai
+    // Route::get('/kadou-jikan/seitai', 'getkadouJikanSeitai')->name('kadou-jikan-seitai');
+    // Route::get('/hasil-produksi/seitai', 'getHasilProduksiSeitai')->name('hasil-produksi-seitai');
+    // Route::get('/loss/seitai', 'getLossSeitai')->name('get-loss-seitai');
+    // Route::get('/top-loss/seitai', 'getTopLossSeitai')->name('top-loss-seitai');
+    // Route::get('/counter-trouble/seitai', 'getCounterTroubleSeitai')->name('counter-trouble-seitai');
     // });
 
     // Infure
@@ -420,6 +443,4 @@ Route::group(['middleware' => 'auth'], function () {
     });
 
     Route::get('{any}', [App\Http\Controllers\HomeController::class, 'index']);
-
-
 });

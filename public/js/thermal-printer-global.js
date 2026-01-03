@@ -1,20 +1,34 @@
 // ===== GLOBAL THERMAL PRINTER MODULE - WITH FALLBACK =====
+//
+// FITUR AUTO-RECONNECT:
+// - Printer yang sudah dipasangkan akan tersimpan di localStorage
+// - Saat connectThermalPrinter() dipanggil, akan otomatis mencoba reconnect tanpa dialog
+// - Jika auto-reconnect gagal, baru akan menampilkan dialog pairing
+//
+// FUNGSI TERSEDIA:
+// - window.checkPrinterReady() - Cek apakah printer sudah ready
+// - window.reconnectToSavedPrinter() - Auto-reconnect tanpa dialog (internal)
+// - window.connectThermalPrinter(forceDialog) - Connect dengan atau tanpa dialog
+// - window.forgetThermalPrinter() - Hapus printer tersimpan
+// - window.getSavedPrinterName() - Dapatkan nama printer tersimpan
+// - window.printToThermalPrinter(data, copies) - Print dengan auto-reconnect
+//
 (function () {
     "use strict";
 
+    // Check if already loaded (tapi tetap define fungsi untuk safety)
     if (window.thermalPrinterGlobalLoaded) {
-        console.log("✅ Thermal printer global already loaded");
-        return;
+        console.log("✅ Thermal printer global already loaded (re-export functions)");
+        // TIDAK return - biarkan fungsi terdefinisi ulang untuk safety
+    } else {
+        console.log("✅ Initializing global thermal printer module");
+        window.thermalPrinterGlobalLoaded = true;
     }
-
-    window.thermalPrinterGlobalLoaded = true;
 
     if (!("bluetooth" in navigator)) {
         console.warn("⚠️ Bluetooth API not available");
-        return;
+        // Masih define fallback functions
     }
-
-    console.log("✅ Initializing global thermal printer module");
 
     // UUID EPSON TM-P20II
     window.THERMAL_UUID_CONFIGS = [
@@ -28,6 +42,8 @@
     window.thermalPrinter = {
         device: null,
         characteristic: null,
+        // Keep reference to connected device for reconnection
+        lastConnectedDevice: null,
     };
 
     // ===== CEK PRINTER READY - SUPPORT TM-P20 & TM-P20II =====
@@ -75,6 +91,7 @@
                 console.log("✅ Printer already connected");
 
                 window.thermalPrinter.device = epsonPrinter;
+                window.thermalPrinter.lastConnectedDevice = epsonPrinter; // Cache
 
                 try {
                     const service = await epsonPrinter.gatt.getPrimaryService(
@@ -111,6 +128,7 @@
 
             window.thermalPrinter.device = epsonPrinter;
             window.thermalPrinter.characteristic = characteristic;
+            window.thermalPrinter.lastConnectedDevice = epsonPrinter; // Cache
 
             // Save to cache
             localStorage.setItem("thermal_printer_id", epsonPrinter.id);
@@ -443,13 +461,100 @@
         }
     };
 
-    // Connect to saved printer (or pairing baru)
-    window.connectThermalPrinter = async function () {
+    // ===== AUTO RECONNECT TO SAVED PRINTER (TANPA DIALOG) =====
+    window.reconnectToSavedPrinter = async function () {
+        try {
+            // Cek apakah ada printer tersimpan
+            const savedDeviceName = localStorage.getItem("thermal_printer_name");
+            if (!savedDeviceName) {
+                console.log("⚠️ No saved printer found");
+                return false;
+            }
+
+            console.log("🔄 Auto-reconnecting to:", savedDeviceName);
+
+            // ===== STRATEGI 1: Gunakan device yang masih di memory (paling cepat) =====
+            if (window.thermalPrinter.lastConnectedDevice) {
+                console.log("📱 Using cached device reference...");
+                try {
+                    const device = window.thermalPrinter.lastConnectedDevice;
+
+                    // Cek apakah device masih valid
+                    if (device.name === savedDeviceName) {
+                        console.log("📡 Connecting to cached device:", device.name);
+                        const server = await device.gatt.connect();
+                        const service = await server.getPrimaryService(
+                            "49535343-fe7d-4ae5-8fa9-9fafd205e455"
+                        );
+                        const characteristic = await service.getCharacteristic(
+                            "49535343-1e4d-4bd9-ba61-23c647249616"
+                        );
+
+                        window.thermalPrinter.device = device;
+                        window.thermalPrinter.characteristic = characteristic;
+
+                        console.log("✅ Auto-reconnected via cached device!");
+                        return true;
+                    }
+                } catch (err) {
+                    console.warn("⚠️ Cached device reconnect failed:", err.message);
+                    // Continue to strategy 2
+                }
+            }
+
+            // ===== STRATEGI 2: Gunakan getDevices() jika tersedia =====
+            if (typeof navigator.bluetooth.getDevices === "function") {
+                console.log("📱 Using getDevices() API...");
+
+                const devices = await navigator.bluetooth.getDevices();
+                const savedDevice = devices.find(
+                    (d) => d.name && d.name === savedDeviceName
+                );
+
+                if (savedDevice) {
+                    console.log("📡 Connecting via getDevices():", savedDevice.name);
+                    const server = await savedDevice.gatt.connect();
+                    const service = await server.getPrimaryService(
+                        "49535343-fe7d-4ae5-8fa9-9fafd205e455"
+                    );
+                    const characteristic = await service.getCharacteristic(
+                        "49535343-1e4d-4bd9-ba61-23c647249616"
+                    );
+
+                    window.thermalPrinter.device = savedDevice;
+                    window.thermalPrinter.characteristic = characteristic;
+                    window.thermalPrinter.lastConnectedDevice = savedDevice; // Cache for next time
+
+                    console.log("✅ Auto-reconnected via getDevices()!");
+                    return true;
+                }
+            }
+
+            // Jika semua strategi gagal
+            console.log("⚠️ Auto-reconnect not possible, need user interaction");
+            return false;
+        } catch (error) {
+            console.error("❌ Auto-reconnect failed:", error.message);
+            return false;
+        }
+    };
+
+    // Connect to saved printer (or pairing baru) - DENGAN DIALOG
+    window.connectThermalPrinter = async function (forceDialog = false) {
+        // Jika tidak force dialog, coba auto-reconnect dulu
+        if (!forceDialog) {
+            const reconnected = await window.reconnectToSavedPrinter();
+            if (reconnected) {
+                return true;
+            }
+            console.log("Auto-reconnect failed, showing pairing dialog...");
+        }
+
         const savedDeviceName = localStorage.getItem("thermal_printer_name");
 
         let device;
 
-        if (savedDeviceName) {
+        if (savedDeviceName && !forceDialog) {
             // Jika sudah ada savedDevice, pakai nama tersebut
             console.log("Connecting to saved printer:", savedDeviceName);
 
@@ -467,7 +572,7 @@
                 });
             }
         } else {
-            // Jika belum ada savedDevice, tampilkan semua device untuk pairing
+            // Jika belum ada savedDevice atau force dialog, tampilkan semua device untuk pairing
             console.log("No saved printer, requesting pairing...");
 
             device = await navigator.bluetooth.requestDevice({
@@ -486,6 +591,7 @@
 
         window.thermalPrinter.device = device;
         window.thermalPrinter.characteristic = characteristic;
+        window.thermalPrinter.lastConnectedDevice = device; // Cache device untuk reconnect
 
         // Simpan ke localStorage untuk next time
         localStorage.setItem("thermal_printer_id", device.id);
@@ -493,6 +599,21 @@
 
         console.log("✅ Printer connected & saved:", device.name);
         return true;
+    };
+
+    // ===== HAPUS PRINTER TERSIMPAN (UNTUK PAIRING ULANG) =====
+    window.forgetThermalPrinter = function () {
+        localStorage.removeItem("thermal_printer_id");
+        localStorage.removeItem("thermal_printer_name");
+        window.thermalPrinter.device = null;
+        window.thermalPrinter.characteristic = null;
+        window.thermalPrinter.lastConnectedDevice = null; // Clear cache
+        console.log("✅ Printer berhasil dihapus dari memory");
+    };
+
+    // ===== CEK NAMA PRINTER TERSIMPAN =====
+    window.getSavedPrinterName = function () {
+        return localStorage.getItem("thermal_printer_name") || null;
     };
 
     // Print Function - DENGAN AUTO RECONNECT & COPIES
@@ -506,18 +627,37 @@
         if (!window.thermalPrinter.characteristic) {
             console.log("⚠️ No characteristic, trying to connect...");
 
+            // Strategy 1: Coba auto-reconnect tanpa dialog (jika ada saved printer)
             const savedName = localStorage.getItem("thermal_printer_name");
 
-            if (!savedName) {
-                throw new Error("No saved printer, please pair first");
+            if (savedName) {
+                console.log("Attempting auto-reconnect to:", savedName);
+                const reconnected = await window.reconnectToSavedPrinter();
+
+                if (reconnected) {
+                    console.log("✅ Auto-reconnect successful, proceeding to print...");
+                }
             }
 
-            console.log("Reconnecting to saved printer...");
-            await window.connectThermalPrinter();
+            // Strategy 2: Jika auto-reconnect gagal atau tidak ada saved printer, tampilkan dialog
+            if (!window.thermalPrinter.characteristic) {
+                console.log("🔔 Showing pairing dialog...");
+
+                try {
+                    // Tampilkan dialog pairing (user interaction required)
+                    await window.connectThermalPrinter(true); // forceDialog = true
+                    console.log("✅ Printer connected via dialog, proceeding to print...");
+                } catch (err) {
+                    // User cancelled atau error saat pairing
+                    console.error("❌ Pairing cancelled or failed:", err.message);
+                    throw new Error("Printer pairing cancelled. Please try again.");
+                }
+            }
         }
 
+        // Final check
         if (!window.thermalPrinter.characteristic) {
-            throw new Error("Printer not connected");
+            throw new Error("Printer not connected after pairing attempt");
         }
 
         const chunkSize = 128;

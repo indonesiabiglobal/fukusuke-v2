@@ -435,7 +435,7 @@
                         <!-- item-->
                         <a class="dropdown-item" href="pages-profile"><i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span class="align-middle">{{ Auth::user()->username }}</span></a>
                         <a class="dropdown-item" href="/new-password"><i class="mdi mdi-cog-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Change Password</span></a>
-                        <a class="dropdown-item" href="#!" onclick="clearSavedPrinter(event)"><i class="mdi mdi-printer-off text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Clear Saved Printer</span></a>
+                        <a class="dropdown-item" href="{{ route('printer.settings') }}"><i class="mdi mdi-printer-settings text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Printer Settings</span></a>
                         {{-- <a class="dropdown-item" href="#!"><i class="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Messages</span></a> --}}
                         {{-- <a class="dropdown-item" href="#!"><i class="mdi mdi-calendar-check-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Taskboard</span></a> --}}
                         {{-- <a class="dropdown-item" href="pages-faqs"><i class="mdi mdi-lifebuoy text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Help</span></a> --}}
