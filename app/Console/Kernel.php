@@ -31,26 +31,32 @@ class Kernel extends ConsoleKernel
 
         // Run at 7:15 AM (after morning shift starts)
         $schedule->command('jamkerja:auto-insert --department=infure')
+                ->name('jamkerja-infure')
                 ->dailyAt('07:15')
                 ->withoutOverlapping();
         $schedule->command('jamkerja:auto-insert --department=seitai')
+                ->name('jamkerja-seitai')
                 ->dailyAt('07:15')
                 ->withoutOverlapping();
 
         // Run at 3:15 PM (after afternoon shift starts)
         $schedule->command('jamkerja:auto-insert --department=infure')
+                ->name('jamkerja-infure')
                 ->dailyAt('15:15')
                 ->withoutOverlapping();
         $schedule->command('jamkerja:auto-insert --department=seitai')
+                ->name('jamkerja-seitai')
                 ->dailyAt('15:15')
                 ->withoutOverlapping();
 
 
         // Run at 11:15 PM (after night shift starts)
         $schedule->command('jamkerja:auto-insert --department=infure')
+                ->name('jamkerja-infure')
                 ->dailyAt('23:15')
                 ->withoutOverlapping();
         $schedule->command('jamkerja:auto-insert --department=seitai')
+                ->name('jamkerja-seitai')
                 ->dailyAt('23:15')
                 ->withoutOverlapping();
     }
