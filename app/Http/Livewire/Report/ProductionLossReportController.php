@@ -304,9 +304,9 @@ class ProductionLossReportController extends Component
             $columnPersenLoss = $columnHeaderEndDate;
 
             // header keterangan
-            $spreadsheet->getActiveSheet()->setCellValue($columnProduksi . $rowHeaderDesc, 'Produksi');
+            $spreadsheet->getActiveSheet()->setCellValue($columnProduksi . $rowHeaderDesc, 'Produksi (Kg)');
             $spreadsheet->getActiveSheet()->getColumnDimension($columnProduksi)->setAutoSize(true);
-            $spreadsheet->getActiveSheet()->setCellValue($columnLoss . $rowHeaderDesc, 'Loss');
+            $spreadsheet->getActiveSheet()->setCellValue($columnLoss . $rowHeaderDesc, 'Loss (Kg)');
             $spreadsheet->getActiveSheet()->setCellValue($columnPersenLoss . $rowHeaderDesc, '%Loss');
             $this->textAlignCenter($spreadsheet, "{$columnProduksi}{$rowHeaderDesc}:{$columnPersenLoss}{$rowHeaderDesc}");
 
