@@ -1,7 +1,7 @@
-# 🚀 Release Notes v2.0
+# 🚀 Release Notes v1.1
 
 **Release Date:** January 3, 2026  
-**Version:** 2.0  
+**Version:** 1.1
 **Code Name:** Auto-Reconnect
 
 ---
@@ -91,7 +91,7 @@ User klik print
 → Print
 ```
 
-### After (v2.0):
+### After (v1.1):
 ```
 User klik print 
 → Cek printer tersimpan
@@ -347,7 +347,7 @@ Complete documentation available:
 
 ## 📝 Version History
 
-### v2.0 - January 3, 2026 (Current)
+### v1.1 - January 3, 2026 (Current)
 - ✅ Auto-reconnect feature
 - ✅ Smart fallback mechanism
 - ✅ Complete documentation
@@ -375,6 +375,6 @@ Same as project license (see main LICENSE file)
 
 ---
 
-**Release v2.0 - Ready for Production** ✅
+**Release v1.1 - Ready for Production** ✅
 
 **Last Updated:** January 3, 2026

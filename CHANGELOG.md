@@ -1,6 +1,6 @@
 # 📦 CHANGELOG - Bluetooth Printer Auto-Reconnect Feature
 
-**Version:** 2.0  
+**Version:** 1.1  
 **Date:** January 3, 2026  
 **Feature:** Auto-Reconnect to Saved Bluetooth Printer
 
@@ -349,7 +349,7 @@ Contact: Development Team
 
 **Implementation:** GitHub Copilot  
 **Date:** January 3, 2026  
-**Version:** 2.0  
+**Version:** 1.1  
 **Status:** ✅ Ready for Production
 
 ---
@@ -375,7 +375,7 @@ Contact: Development Team
 
 ## 📝 Version History
 
-### v2.0 (Current) - January 3, 2026
+### v1.1 (Current) - January 3, 2026
 - ✅ Auto-reconnect feature
 - ✅ Smart fallback mechanism
 - ✅ Complete documentation
