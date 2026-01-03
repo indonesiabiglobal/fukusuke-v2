@@ -456,7 +456,14 @@
                 },
                 xAxis: [{
                     categories: kadouJikanFrekuensiTrouble.map(item => item.machine_no),
-                    crosshair: true
+                    crosshair: true,
+                    labels: {
+                        step: 1,
+                        autoRotation: false,
+                        style: {
+                            fontSize: '8px'
+                        }
+                    }
                 }],
                 yAxis: [{
                     labels: {
@@ -574,7 +581,14 @@
                 },
                 xAxis: [{
                     categories: productionLossMachineDaily.map(item => item.machineno),
-                    crosshair: true
+                    crosshair: true,
+                    labels: {
+                        step: 1,
+                        autoRotation: false,
+                        style: {
+                            fontSize: '8px',
+                        }
+                    },
                 }],
                 yAxis: [{
                     labels: {
@@ -697,6 +711,13 @@
                 },
                 xAxis: {
                     categories: LossPerMachineDaily.map(item => item.machineno),
+                    labels: {
+                        step: 1,
+                        autoRotation: false,
+                        style: {
+                            fontSize: '8px'
+                        }
+                    }
                 },
                 yAxis: {
                     gridLineWidth: 1,
@@ -772,6 +793,13 @@
                 },
                 xAxis: {
                     categories: LossPerKasusDaily.map(item => item.loss_name),
+                    labels: {
+                        step: 1,
+                        autoRotation: false,
+                        style: {
+                            fontSize: '8px'
+                        }
+                    }
                 },
                 yAxis: {
                     gridLineWidth: 1,

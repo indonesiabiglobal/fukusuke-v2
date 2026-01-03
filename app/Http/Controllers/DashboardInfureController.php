@@ -56,7 +56,7 @@ class DashboardInfureController extends Controller
                 )
             WHERE mac.department_id = ?
             GROUP BY mac.id, mac.machineno
-            ORDER BY mac.id ASC
+            ORDER BY machineno ASC
         ";
 
         // Gabungkan semua parameter
