@@ -53,7 +53,7 @@ class LossKasusReportService
         $activeWorksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
 
         // Judul
-        $activeWorksheet->setCellValue('A1', 'DAFTAR KASUS PER MESIN & JENIS ' . strtoupper($nipon));
+        $activeWorksheet->setCellValue('A1', 'DAFTAR LOSS PER MESIN & JENIS ' . strtoupper($nipon));
         $activeWorksheet->setCellValue('A2', 'Periode : ' . $tglMasuk->format('d-M-Y H:i') . '  ~  ' . $tglKeluar->format('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'A1:A2', true, 11, 'Calibri');
