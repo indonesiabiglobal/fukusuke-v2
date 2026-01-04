@@ -388,6 +388,9 @@
     <script>
         // expose listFactory to JavaScript: keyed by id for easy lookup
         const listFactory = @json($listFactory->keyBy('id'));
+        // Get refresh interval from env (in minutes) with fallback to 5 minutes
+        const refreshIntervalMinutes = {{ env('REFRESH_DASHBOARD_MINUTES', 5) }};
+        const refreshIntervalMs = refreshIntervalMinutes * 60 * 1000; // Convert to milliseconds
     </script>
 
     <script>
@@ -1708,6 +1711,14 @@
                 loadInitialDailyData();
                 loadInitialMonthlyData();
             }, 500);
+
+            // Auto-refresh dashboard data based on REFRESH_DASHBOARD_MINUTES from env
+            setInterval(function() {
+                console.log('Auto-refreshing dashboard data...');
+                loadInitialDailyData();
+                loadInitialMonthlyData();
+            }, refreshIntervalMs);
+
             Highcharts.setOptions({
                 chart: {
                     style: {

@@ -52,12 +52,12 @@
                                 <li class="nav-item">
                                     <a href="dashboard-seitai" class="nav-link" data-key="d-seitai"> SEITAI </a>
                                 </li>
-                                <li class="nav-item">
+                                {{-- <li class="nav-item">
                                     <a href="dashboard-ppic" class="nav-link" data-key="d-ppic"> PPIC </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="dashboard-qc" class="nav-link" data-key="d-qc"> QC </a>
-                                </li>
+                                </li> --}}
                             </ul>
                         </div>
                     </li>
