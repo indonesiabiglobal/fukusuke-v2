@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\departmentHelper;
+use App\Helpers\LossSeitaiHelper;
+use App\Helpers\workingShiftHelper;
 use App\Models\MsDepartment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -11,270 +14,667 @@ use function PHPSTORM_META\map;
 
 class DashboardSeitaiController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        if (isset($request->filterDate)) {
-            $requestFilterDate = $request->filterDate;
-            $filterDate = explode(' to ', $request->filterDate);
-            $startDate = Carbon::parse($filterDate[0])->format('d-m-Y 00:00:00');
-            if (count($filterDate) == 1) {
-                $endDate = Carbon::parse($filterDate[0])->format('d-m-Y 23:59:59');
-            } else {
-                $endDate = Carbon::parse($filterDate[1])->format('d-m-Y 23:59:59');
-            }
-        } else {
-            $startDate = Carbon::now()->startOfMonth()->format('d-m-Y 00:00:00');
-            $endDate = Carbon::now()->format('d-m-Y 23:59:59');
-            $requestFilterDate = $startDate . ' to ' . $endDate;
-        }
-        $divisionCodeSeitai = MsDepartment::where('name', 'SEITAI')->first()->division_code;
-
-        // LOSS SEITAI
-        $lossSeitai = $this->getLossSeitai($startDate, $endDate, $divisionCodeSeitai);
-        $topLossSeitai = $this->getTopLossSeitai($startDate, $endDate, $divisionCodeSeitai);
-
-        if ($topLossSeitai != null) {
-            $higherLoss = $topLossSeitai[0]->berat_loss;
-            $higherLossName = $topLossSeitai[0]->loss_name;
-        } else {
-            $higherLoss = 0;
-            $higherLossName = null;
-        }
-
-        if ($lossSeitai['totalLossSeitai'] != 0) {
-            $higherLossPercentage = round(($higherLoss / $lossSeitai['totalLossSeitai']) * 100, 2);
-        } else {
-            $higherLossPercentage = 0;
-        }
-
-        $listMachineSeitai = $this->getListMachineSeitai($startDate, $endDate, $divisionCodeSeitai);
-        $kadouJikan = $this->getkadouJikanSeitai($startDate, $endDate, $divisionCodeSeitai);
-        $kadouJikanDepartment = array_reduce($listMachineSeitai['listDepartment'], function ($carry, $item) use ($kadouJikan) {
-            $totalPersenMesin = array_reduce($kadouJikan, function ($carry, $itemKadou) use ($item) {
-                if ($itemKadou->department_id == $item['department_id']) {
-                    $carry += $itemKadou->persenmesinkerja;
-                }
-                return $carry;
-            }, 0);
-
-            $countMesin = array_reduce($kadouJikan, function ($carry, $itemKadou) use ($item) {
-                if ($itemKadou->department_id == $item['department_id']) {
-                    $carry += 1;
-                }
-                return $carry;
-            }, 0);
-            $carry[$item['department_id']] = [
-                'departmentId' => $item['department_id'],
-                'departmentName' => $item['department_name'],
-                'persenMesinDepartment' => $totalPersenMesin / $countMesin
-            ];
-            return $carry;
-        }, []);
-
         $data = [
-            'filterDate' => $requestFilterDate,
-
-            // Seitai
-            'listMachineSeitai' => $listMachineSeitai,
-            'kadouJikanSeitaiMesin' => $kadouJikan,
-            'kadouJikanDepartment' => $kadouJikanDepartment,
-            'hasilProduksiSeitai' => $this->getHasilProduksiSeitai($startDate, $endDate),
-            'counterTroubleSeitai' => $this->getCounterTroubleSeitai($startDate, $endDate),
-            'lossSeitai' => $lossSeitai,
-            'topLossSeitai' => $topLossSeitai,
-            'higherLoss' => round($higherLoss, 2),
-            'higherLossPercentage' => $higherLossPercentage,
-            'higherLossName' => $higherLossName,
+            'period' => ['A', 'B', 'C'],
+            'listFactory' => departmentHelper::seitaiPabrikDepartment(),
+            'filterDateDaily' => Carbon::now()->format('d-m-Y'),
+            'filterDateMonthly' => Carbon::now()->format('Y-m'),
         ];
         return view('dashboard.seitai', $data);
     }
 
-    /*
-    SEITAI
-    */
-    public function getListMachineSeitai($startDate, $endDate, $divisionCodeSeitai)
+    public function getProduksiLossSeitai(Request $request, $monthly = false)
     {
+        if ($monthly) {
+            $startDate = Carbon::parse($request->filterDateMonthly)->startOfMonth()->format('d-m-Y 00:00:00');
+            $endDate = Carbon::parse($request->filterDateMonthly)->endOfMonth()->format('d-m-Y 23:59:59');
+        } else {
+            [$startDate, $endDate] = workingShiftHelper::dailtShift($request->filterDateDaily, Carbon::parse($request->filterDateDaily)->addDay()->format('d-m-Y'));
+        }
+        $lossClassIds = LossSeitaiHelper::lossClassIdDashboard();
+        $placeholders = implode(',', array_fill(0, count($lossClassIds), '?'));
 
-        $listMachineSeitai = DB::select('
-        SELECT
-            RIGHT( mac.machineno, 2 ) AS machineno,
-            dep."id" as department_id,
-            dep.division_code,
-            dep."name" as department_name
-        FROM
-            "msmachine" AS mac
-            INNER JOIN msdepartment AS dep ON mac.department_id = dep.ID
-        WHERE
-            mac.status = 1 AND division_code = ?
-        ORDER BY machineno ASC
+        $sql = "
+            SELECT
+                mac.id AS machine_id,
+                RIGHT(mac.machineno, 2) AS machineno,
+                ROUND(COALESCE(SUM(tpg.qty_produksi), 0)::numeric, 1) AS qty_produksi,
+                ROUND(COALESCE(SUM(tpg.qty_produksi) / 1000, 0)::numeric, 1) AS berat_produksi,
+                ROUND(COALESCE(SUM(tpgloss.berat_loss), 0)::numeric, 1) AS berat_loss
+            FROM msmachine mac
+            LEFT JOIN tdproduct_goods tpg
+                ON mac.id = tpg.machine_id
+                AND tpg.production_date BETWEEN ? AND ?
+            LEFT JOIN tdproduct_goods_loss tpgloss
+                ON tpg.id = tpgloss.product_goods_id
+                AND EXISTS (
+                    SELECT 1
+                    FROM mslossseitai msl
+                    WHERE msl.id = tpgloss.loss_seitai_id
+                    AND msl.loss_class_id IN ($placeholders)
+                )
+            WHERE mac.department_id = ?
+            GROUP BY mac.id, mac.machineno
+            ORDER BY machineno ASC
+        ";
 
-        ', [$divisionCodeSeitai]);
-        // ', array_merge([$startDate, $endDate, $division_code], $machineNo));
-        $listDepartment = array_reduce($listMachineSeitai, function ($carry, $item) {
-            $carry[$item->department_id] = [
-                'department_id' => $item->department_id,
-                'department_name' => $item->department_name
-            ];
-            return $carry;
-        }, []);
+        // Gabungkan semua parameter
+        $params = array_merge([$startDate, $endDate], $lossClassIds, [$request->factory]);
 
-        return [
-            'listMachineSeitai' => $listMachineSeitai,
-            'listDepartment' => $listDepartment
-        ];
-    }
-    public function getkadouJikanSeitai($startDate, $endDate, $divisionCodeSeitai)
-    {
-        $diffDay = Carbon::parse($endDate)->diffInDays(Carbon::parse($startDate)) + 1;
-        $minuteOfDay = 24 * 60;
+        $produksiLossDaily = collect(DB::select($sql, $params))->map(function ($item) {
+            $item->berat_loss_percentage = $item->berat_produksi > 0
+                ? round(($item->berat_loss / ($item->berat_produksi + $item->berat_loss)) * 100, 2)
+                : 0;
+            return $item;
+        });
 
-        $kadouJikanSeitaiMesin = DB::select('
-        SELECT y.* FROM (
-            SELECT x.*, ROUND(x.work_hour_on_mm / ? * 100, 2) AS persenmesinkerja
-            FROM (
-                SELECT
-                    RIGHT(mac.machineno, 2) AS machine_no,
-                    mac.machineno AS machineno,
-                    mac.machinename AS machine_name,
-                    dep.id AS department_id,
-                    dep.name AS department_name,
-                    dep.division_code,
-                    COALESCE(jam.work_hour_mm, 0) AS work_hour_mm,
-                    COALESCE(jam.work_hour_off_mm, 0) AS work_hour_off_mm,
-                    COALESCE(jam.work_hour_on_mm, 0) AS work_hour_on_mm
-                FROM
-                    msmachine AS mac
-                INNER JOIN
-                    msdepartment AS dep ON mac.department_id = dep.id
-                LEFT JOIN (
-                    SELECT
-                        jam_.machine_id,
-                        SUM(EXTRACT(HOUR FROM jam_.work_hour) * 60 + EXTRACT(MINUTE FROM jam_.work_hour)) AS work_hour_mm,
-                        SUM(EXTRACT(HOUR FROM jam_.off_hour) * 60 + EXTRACT(MINUTE FROM jam_.off_hour)) AS work_hour_off_mm,
-                        SUM(EXTRACT(HOUR FROM jam_.on_hour) * 60 + EXTRACT(MINUTE FROM jam_.on_hour)) AS work_hour_on_mm
-                    FROM
-                        tdjamkerjamesin AS jam_
-                    WHERE jam_.working_date BETWEEN
-                         ? AND ?
-                    GROUP BY
-                        jam_.machine_id
-                ) AS jam ON mac.id = jam.machine_id
-                WHERE
-                    mac.status = 1
-                    AND dep.division_code = ?
-            ) AS x )
-            as y
-                -- WHERE y.persenmesinkerja > 0
-            ORDER BY
-                y.machine_no
-        ', [$diffDay * $minuteOfDay,$startDate, $endDate, $divisionCodeSeitai]);
-
-        return $kadouJikanSeitaiMesin;
+        return $produksiLossDaily;
     }
 
-    public function getHasilProduksiSeitai($startDate, $endDate)
+    public function getTopLossByMachineSeitai(Request $request)
     {
-        $hasilProduksiSeitai = DB::select('
-            SELECT x.machine_no,x.machine_name,x.department_name,
-            max(x.totalpanjangproduksi) as max,min(x.totalpanjangproduksi) as min from (
-            SELECT pa.created_on, right(mac.machineno, 2) as machine_no,
-                mac.machineno as machine_name,
-                dep.name as department_name,
-                    sum(pa.panjang_produksi) as totalpanjangproduksi
-            from tdproduct_assembly as pa
-            left join msmachine as mac on mac.id=pa.machine_id
-            left join msdepartment as dep on mac.department_id = dep.id
-            where pa.created_on between ? and ?
-            GROUP BY pa.created_on, right(mac.machineno, 2),
-                mac.machineno,
-                dep.name
-            ) as x
-            GROUP BY	x.machine_no,x.machine_name,x.department_name
-        ', [
-            $startDate,
-            $endDate,
-        ]);
+        [$startDate, $endDate] = workingShiftHelper::dailtShift($request->filterDateDaily, Carbon::parse($request->filterDateDaily)->addDay()->format('d-m-Y'));
+        $lossClassIds = LossSeitaiHelper::lossClassIdDashboard();
 
-        return $hasilProduksiSeitai;
-    }
-
-    public function getLossSeitai($startDate, $endDate, $divisionCodeSeitai)
-    {
-        $lossSeitai = DB::select('
-            SELECT x.* from (
-                select
-                    ? as division_code,
-                    max(mslos.code) as loss_code,
-                    max(mslos.name) as loss_name,
-                    sum(det.berat_loss) as berat_loss
-                from tdproduct_goods as hdr
-                inner join tdproduct_goods_loss as det on hdr.id = det.product_goods_id
-                inner join mslossseitai as mslos on det.loss_seitai_id = mslos.id
-                where hdr.created_on between ? and ?
-                and mslos.id <> 1
-                group by det.loss_seitai_id
-                )as x order BY x.berat_loss DESC
-        ', [
-            $divisionCodeSeitai,
-            $startDate,
-            $endDate,
-        ]);
-
-        // menghitung berat loss dari loss seitai
-        $totalLossSeitai = array_sum(array_map(function ($item) {
-            return $item->berat_loss;
-        }, $lossSeitai));
-
-        return [
-            'lossSeitai' => $lossSeitai,
-            'totalLossSeitai' => $totalLossSeitai
-        ];
-    }
-
-    public function getTopLossSeitai($startDate, $endDate, $divisionCodeSeitai)
-    {
         $topLossSeitai = DB::select('
-            SELECT x.* from (
-                select
-                    ? as division_code,
-                    max(mslos.code) as loss_code,
-                    max(mslos.name) as loss_name,
-                    sum(det.berat_loss) as berat_loss
-                from tdproduct_goods as hdr
-                inner join tdproduct_goods_loss as det on hdr.id = det.product_goods_id
-                inner join mslossseitai as mslos on det.loss_seitai_id = mslos.id
-                where hdr.created_on between ? and ?
-                and mslos.id <> 1
-                group by det.loss_seitai_id
-                )as x order BY x.berat_loss DESC limit 3
+            SELECT
+                mac.id AS machine_id,
+                RIGHT(mac.machineno, 2) AS machineno,
+                ROUND(COALESCE(SUM(tpgloss.berat_loss), 0)::numeric, 1) as berat_loss
+            FROM msmachine mac
+            LEFT JOIN tdproduct_goods tpg
+                ON mac.id = tpg.machine_id
+                AND tpg.production_date between ? AND ?
+            LEFT JOIN tdproduct_goods_loss as tpgloss
+                ON tpg.id = tpgloss.product_goods_id
+                AND EXISTS (
+                    SELECT 1
+                    FROM mslossseitai msl
+                    WHERE msl.id = tpgloss.loss_seitai_id
+                    AND msl.loss_class_id IN (' . implode(',', $lossClassIds ) . ')
+                )
+            WHERE mac.department_id = ?
+            GROUP BY mac.id, mac.machineno
+            ORDER BY berat_loss DESC limit 5
         ', [
-            $divisionCodeSeitai,
             $startDate,
             $endDate,
+            $request->factory,
         ]);
 
         return $topLossSeitai;
     }
 
-    public function getCounterTroubleSeitai($startDate, $endDate)
+    public function getTopLossByKasusSeitai(Request $request)
     {
-        $counterTroubleSeitai = DB::select('
-            SELECT x.* from (
-                select
-                    max(mslos.code) as loss_code,
-                    max(mslos.name) as loss_name,
-                    count(mslos.code) as counterloss
-                from tdproduct_goods as hdr
-                inner join tdproduct_goods_loss as det on hdr.id = det.product_goods_id
-                inner join mslossseitai as mslos on det.loss_seitai_id = mslos.id
-                where hdr.created_on between ? and ?
-                group by det.loss_seitai_id
-                )as x order BY x.loss_name DESC
+        [$startDate, $endDate] = workingShiftHelper::dailtShift($request->filterDateDaily, Carbon::parse($request->filterDateDaily)->addDay()->format('d-m-Y'));
+        $lossClassIds = LossSeitaiHelper::lossClassIdDashboard();
+
+        $topLossKasus = DB::select('
+            SELECT
+                mslos.name as loss_name,
+                ROUND(SUM(tpaloss.berat_loss)::numeric, 1) as berat_loss
+            FROM mslossseitai mslos
+            INNER JOIN tdproduct_goods_loss as tpaloss on mslos.id = tpaloss.loss_seitai_id
+            INNER JOIN tdproduct_goods tpa
+            ON tpaloss.product_goods_id = tpa.id
+                AND tpa.production_date between ? AND ?
+            INNER JOIN msmachine mac ON tpa.machine_id = mac.id
+            WHERE mac.department_id = ?
+                AND mslos.loss_class_id IN (' . implode(',', $lossClassIds ) . ')
+            GROUP BY loss_name
+            ORDER BY berat_loss DESC limit 5
         ', [
             $startDate,
             $endDate,
+            $request->factory,
         ]);
 
-        return $counterTroubleSeitai;
+        return $topLossKasus;
+    }
+
+    public function getTopMesinMasalahLossDaily(Request $request)
+    {
+        [$startDate, $endDate] = workingShiftHelper::dailtShift($request->filterDateDaily, Carbon::parse($request->filterDateDaily)->addDay()->format('d-m-Y'));
+
+        $topLossKasus = DB::select('
+            SELECT
+                mac.id AS machine_id,
+                top_loss.loss_name,
+                RIGHT(mac.machineno, 2) AS machineno,
+                ROUND(COALESCE(SUM(tpaloss.berat_loss), 0)::numeric, 1) as berat_loss
+            FROM msmachine mac
+            INNER JOIN tdproduct_goods tpa ON mac.id = tpa.machine_id
+            INNER JOIN tdproduct_goods_loss tpaloss ON tpa.id = tpaloss.product_goods_id
+            INNER JOIN (
+                SELECT
+                    tpaloss.loss_seitai_id,
+                    mslos.name as loss_name,
+                    ROUND(SUM(tpaloss.berat_loss)::numeric, 1) as total_loss
+                FROM mslossseitai mslos
+                INNER JOIN tdproduct_goods_loss tpaloss ON mslos.id = tpaloss.loss_seitai_id
+                INNER JOIN tdproduct_goods tpa ON tpaloss.product_goods_id = tpa.id
+                INNER JOIN msmachine mac ON tpa.machine_id = mac.id
+                WHERE mac.department_id = ?
+                    AND tpa.production_date BETWEEN ? AND ?
+                    AND mslos.loss_class_id IN (' . implode(',', LossSeitaiHelper::lossClassIdDashboard()) . ')
+                GROUP BY tpaloss.loss_seitai_id, mslos.name
+                ORDER BY total_loss DESC
+                LIMIT 1
+            ) AS top_loss
+                ON tpaloss.loss_seitai_id = top_loss.loss_seitai_id
+            WHERE mac.department_id = ?
+                AND tpa.production_date BETWEEN ? AND ?
+            GROUP BY mac.id, mac.machineno, top_loss.loss_name
+            ORDER BY berat_loss DESC
+            LIMIT 3
+        ', [
+            $request->factory,
+            $startDate,
+            $endDate,
+            $request->factory,
+            $startDate,
+            $endDate
+        ]);
+
+        return $topLossKasus;
+    }
+
+    public function getKadouJikanFrekuensiTrouble(Request $request, $monthly = false)
+    {
+        if ($monthly) {
+            $startDate = Carbon::parse($request->filterDateMonthly)->startOfMonth()->format('d-m-Y 00:00:00');
+            $endDate = Carbon::parse($request->filterDateMonthly)->endOfMonth()->format('d-m-Y 23:59:59');
+        } else {
+            // Daily shift calculation
+            [$startDate, $endDate] = workingShiftHelper::dailtShift($request->filterDateDaily, Carbon::parse($request->filterDateDaily)->addDay()->format('d-m-Y'));
+        }
+
+        $query = "
+            SELECT
+                mac.id AS machine_id,
+                RIGHT(mac.machineno, 2) AS machine_no,
+                COALESCE(jam.work_hour_mm, 0) AS work_hour_mm,
+                COALESCE(jam.work_hour_on_mm, 0) AS work_hour_on_mm,
+                CASE
+                    WHEN COALESCE(jam.work_hour_mm, 0) = 0 THEN 0
+                    ELSE ROUND(COALESCE(jam.work_hour_on_mm, 0) / COALESCE(jam.work_hour_mm, 0) * 100, 2)
+                END as kadou_jikan,
+                COALESCE(jam.frekuensi_trouble, 0) AS frekuensi_trouble
+            FROM msmachine mac
+            LEFT JOIN (
+                SELECT
+                    machine_id,
+                    SUM(EXTRACT(hour FROM work_hour) * 60 + EXTRACT(minute FROM work_hour)) AS work_hour_mm,
+                    SUM(EXTRACT(hour FROM on_hour) * 60 + EXTRACT(minute FROM on_hour)) AS work_hour_on_mm,
+                    COUNT(tjkjmm.id) AS frekuensi_trouble
+                FROM tdjamkerjamesin
+                LEFT JOIN tdjamkerja_jammatimesin tjkjmm ON tjkjmm.jam_kerja_mesin_id = tdjamkerjamesin.id
+                WHERE working_date BETWEEN ? AND ?
+                GROUP BY machine_id
+            ) jam ON mac.id = jam.machine_id
+            WHERE mac.status = 1
+                AND mac.department_id = ?
+            ORDER BY RIGHT(mac.machineno, 2)
+        ";
+
+        $kadouJikanSeitaiMesin = DB::select($query, [
+            $startDate,
+            $endDate,
+            $request->factory
+        ]);
+
+        return $kadouJikanSeitaiMesin;
+    }
+
+    public function getRankingProblemMachineDaily(Request $request)
+    {
+        $produksiLoss = $this->getProduksiLossSeitai($request);
+        $kadouJikan = $this->getKadouJikanFrekuensiTrouble($request);
+
+        $rankingProduksi = collect($produksiLoss)->map(function ($item) {
+            return [
+                'machine_id' => $item->machine_id,
+                'machineno' => $item->machineno,
+                'qty_produksi' => $item->qty_produksi,
+            ];
+        })->sortBy('qty_produksi')
+            ->values()
+            ->map(function ($item, $index) {
+                return [
+                    'rank' => $index + 1,
+                    ...$item
+                ];
+            });
+
+        $rankingLoss = collect($produksiLoss)->map(function ($item) {
+            return [
+                'machine_id' => $item->machine_id,
+                'machineno' => $item->machineno,
+                'berat_loss' => $item->berat_loss,
+                'berat_loss_percentage' => $item->berat_loss_percentage,
+            ];
+        })->sortByDesc('berat_loss')
+            ->values()
+            ->map(function ($item, $index) {
+                return [
+                    'rank' => $index + 1,
+                    ...$item
+                ];
+            });
+
+        $rankingKadouJikan = collect($kadouJikan)->map(function ($item) {
+            return [
+                'machine_id' => $item->machine_id,
+                'machineno' => $item->machine_no,
+                'kadou_jikan' => $item->kadou_jikan,
+                'frekuensi_trouble' => $item->frekuensi_trouble,
+            ];
+        })->sortBy('kadou_jikan')->values()->map(function ($item, $index) {
+            return [
+                'rank' => $index + 1,
+                ...$item
+            ];
+        })->toArray();
+
+        $rankingAll = collect();
+        foreach ($rankingKadouJikan as $key => $item) {
+            $produksi = $rankingProduksi->firstWhere('machine_id', $item['machine_id']);
+            $loss = $rankingLoss->firstWhere('machine_id', $item['machine_id']);
+
+            if ($produksi['qty_produksi'] == 0 && $loss['berat_loss'] == 0 && $item['kadou_jikan'] == 0) {
+                continue; // skip if no production and no loss and no kadou jikan
+            }
+            $rankingAll[] = [
+                'sum_rank' => $produksi['rank'] + $loss['rank'] + $item['rank'],
+                'machine_id' => $item['machine_id'],
+                'machineno' => $item['machineno'],
+            ];
+        }
+        $rankingAll = $rankingAll->sortBy('sum_rank')->take(3)->values();
+
+        return $rankingAll;
+    }
+
+    /*
+    Monthly Dashboard
+    */
+    // get produksi per bulan
+    public function getTotalProductionMonthly(Request $request)
+    {
+        $filterDate = Carbon::parse($request->filterDateMonthly);
+        $startMonth = Carbon::parse($filterDate)->startOfMonth()->format('d-m-Y 00:00:00');
+        $firstPeriod = Carbon::parse($startMonth)->addDays(9)->format('d-m-Y 23:59:59');
+        $secondPeriod = Carbon::parse($firstPeriod)->addDays(10)->format('d-m-Y 23:59:59');
+        $endMonth = Carbon::parse($filterDate)->endOfMonth()->format('d-m-Y 23:59:59');
+
+        $totalProductionMonthly = collect(DB::select('
+            SELECT
+                ROUND(COALESCE(SUM(tpa.qty_produksi), 0)::numeric, 1) as target_produksi,
+                ROUND(COALESCE(SUM(tpa.qty_produksi), 0)::numeric, 1) as total_produksi,
+                ROUND(COALESCE(SUM(tpa.qty_produksi) / 1000, 0)::numeric, 1) as target_berat_produksi,
+                ROUND(COALESCE(SUM(tpa.qty_produksi) / 1000, 0)::numeric, 1) as total_berat_produksi,
+                CASE
+                    WHEN tpa.production_date BETWEEN :startMonth AND :firstPeriod THEN 1
+                    WHEN tpa.production_date BETWEEN :firstPeriodPlus AND :secondPeriod THEN 2
+                    WHEN tpa.production_date BETWEEN :secondPeriodPlus AND :endMonth THEN 3
+                END AS period_ke
+            FROM tdproduct_goods tpa
+            LEFT JOIN msmachine mac ON tpa.machine_id = mac.id
+            WHERE mac.department_id = :factory
+            AND tpa.production_date BETWEEN :startMonth AND :endMonth
+            GROUP BY period_ke
+            ORDER BY period_ke ASC
+        ', [
+            'factory'         => $request->factory,
+            'startMonth'      => $startMonth,
+            'firstPeriod'     => $firstPeriod,
+            'firstPeriodPlus' => Carbon::parse($firstPeriod)->addDay()->format('Y-m-d 00:00:00'),
+            'secondPeriod'    => $secondPeriod,
+            'secondPeriodPlus' => Carbon::parse($secondPeriod)->addDay()->format('Y-m-d 00:00:00'),
+            'endMonth'        => $endMonth,
+        ]));
+
+        return $totalProductionMonthly;
+    }
+
+    public function getPeringatanKatagae(Request $request)
+    {
+        $filterDate = Carbon::parse($request->filterDateMonthly);
+        $startMonth = Carbon::parse($filterDate)->startOfMonth()->format('d-m-Y 00:00:00');
+        $endMonth = Carbon::parse($filterDate)->endOfMonth()->format('d-m-Y 23:59:59');
+
+        $peringatanKatagaeMonthly = collect(DB::select('
+            SELECT
+                mac.id AS machine_id,
+                RIGHT(mac.machineno, 2) AS machineno,
+                tolpk.lpk_no,
+                msp.name AS product_name,
+                msp.unit_weight,
+                msp.productlength,
+                MAX(tolpk.panjang_lpk - tolpk.total_assembly_line) AS sisa_meter
+            FROM msmachine mac
+            INNER JOIN tdorderlpk tolpk ON mac.id = tolpk.machine_id
+            INNER JOIN tdorder tol ON tolpk.order_id = tol.id
+            INNER JOIN msproduct msp ON tol.product_id = msp.id
+            WHERE mac.department_id = :factory
+                AND tolpk.lpk_date BETWEEN :startMonth AND :endMonth
+                AND (tolpk.panjang_lpk - tolpk.total_assembly_line) > 0
+            GROUP BY mac.id, mac.machineno, tolpk.lpk_no, msp.name, msp.unit_weight, msp.productlength
+            ORDER BY sisa_meter DESC
+            LIMIT 5
+        ', [
+            'factory' => $request->factory,
+            'startMonth' => $startMonth,
+            'endMonth' => $endMonth,
+        ]))->map(function ($item) {
+            $berat = $item->unit_weight / $item->productlength * $item->sisa_meter;
+            return [
+                'machine_id' => $item->machine_id,
+                'machineno' => $item->machineno,
+                'lpk_no' => $item->lpk_no,
+                'product_name' => $item->product_name,
+                'unit_weight' => $item->unit_weight,
+                'productlength' => $item->productlength,
+                'sisa_meter' => $item->sisa_meter,
+                'berat' => $berat,
+                'jam' => floor($berat / 60),
+                'menit' => $berat % 60
+            ];
+        });
+
+        return $peringatanKatagaeMonthly;
+    }
+
+    // get loss per bulan
+    public function getLossMonthly(Request $request)
+    {
+        $filterDate = Carbon::parse($request->filterDateMonthly);
+        $startMonth = Carbon::parse($filterDate)->startOfMonth()->format('d-m-Y 00:00:00');
+        $firstPeriod = Carbon::parse($startMonth)->addDays(9)->format('d-m-Y 23:59:59');
+        $secondPeriod = Carbon::parse($firstPeriod)->addDays(10)->format('d-m-Y 23:59:59');
+        $endMonth = Carbon::parse($filterDate)->endOfMonth()->format('d-m-Y 23:59:59');
+
+        $produksiLossMonthly = collect(DB::select('
+            SELECT
+                mac.id AS machine_id,
+                RIGHT(mac.machineno, 2) AS machineno,
+                CASE
+                    WHEN tpa.production_date BETWEEN :startMonth AND :firstPeriod THEN 1
+                    WHEN tpa.production_date BETWEEN :firstPeriodPlus AND :secondPeriod THEN 2
+                    WHEN tpa.production_date BETWEEN :secondPeriodPlus AND :endMonth THEN 3
+                END AS period_ke,
+                ROUND(SUM(tpaloss.berat_loss)::numeric, 1) AS berat_loss
+            FROM msmachine mac
+            LEFT JOIN tdproduct_goods tpa ON mac.id = tpa.machine_id
+            LEFT JOIN tdproduct_goods_loss tpaloss ON tpa.id = tpaloss.product_goods_id
+            WHERE mac.department_id = :factory
+            AND tpa.production_date BETWEEN :startMonth AND :endMonth
+            GROUP BY mac.id, mac.machineno, period_ke
+            ORDER BY mac.machineno ASC, period_ke ASC
+        ', [
+            'factory'         => $request->factory,
+            'startMonth'      => $startMonth,
+            'firstPeriod'     => $firstPeriod,
+            'firstPeriodPlus' => Carbon::parse($firstPeriod)->addDay()->format('Y-m-d 00:00:00'),
+            'secondPeriod'    => $secondPeriod,
+            'secondPeriodPlus' => Carbon::parse($secondPeriod)->addDay()->format('Y-m-d 00:00:00'),
+            'endMonth'        => $endMonth,
+        ]))->groupBy('period_ke')->map(function ($items, $period) {
+            return $items->map(function ($item) use ($period) {
+                return [
+                    'machine_id' => $item->machine_id,
+                    'machineno' => $item->machineno,
+                    'berat_loss' => $item->berat_loss,
+                    'period_ke' => $period
+                ];
+            });
+        })->toArray();
+
+        return $produksiLossMonthly;
+    }
+
+    // get top 10 kasus loss per bulan berdasarkan periode
+    public function getTopLossByCaseMonthly(Request $request)
+    {
+        $filterDate = Carbon::parse($request->filterDateMonthly);
+        $startMonth = Carbon::parse($filterDate)->startOfMonth()->format('d-m-Y 00:00:00');
+        $firstPeriod = Carbon::parse($startMonth)->addDays(9)->format('d-m-Y 23:59:59');
+        $secondPeriod = Carbon::parse($firstPeriod)->addDays(10)->format('d-m-Y 23:59:59');
+        $endMonth = Carbon::parse($filterDate)->endOfMonth()->format('d-m-Y 23:59:59');
+        $lossClassIds = LossSeitaiHelper::lossClassIdDashboard();
+
+        $topLossCaseMonthly = collect(DB::select('
+            SELECT
+                mslos.id AS loss_id,
+                mslos.name AS loss_name,
+                CASE
+                    WHEN tpa.production_date BETWEEN :startMonth AND :firstPeriod THEN 1
+                    WHEN tpa.production_date BETWEEN :firstPeriodPlus AND :secondPeriod THEN 2
+                    WHEN tpa.production_date BETWEEN :secondPeriodPlus AND :endMonth THEN 3
+                END AS period_ke,
+                ROUND(SUM(tpaloss.berat_loss)::numeric, 1) AS berat_loss
+            FROM mslossseitai mslos
+            INNER JOIN tdproduct_goods_loss tpaloss ON mslos.id = tpaloss.loss_seitai_id
+            INNER JOIN tdproduct_goods tpa ON tpaloss.product_goods_id = tpa.id
+            INNER JOIN msmachine mac ON tpa.machine_id = mac.id
+            WHERE mac.department_id = :factory
+                AND tpa.production_date BETWEEN :startMonth AND :endMonth
+                AND mslos.loss_class_id IN (' . implode(',', $lossClassIds) . ')
+            GROUP BY mslos.id, mslos.name, period_ke
+            ORDER BY berat_loss DESC
+        ', [
+            'factory'         => $request->factory,
+            'startMonth'      => $startMonth,
+            'firstPeriod'     => $firstPeriod,
+            'firstPeriodPlus' => Carbon::parse($firstPeriod)->addDay()->format('Y-m-d 00:00:00'),
+            'secondPeriod'    => $secondPeriod,
+            'secondPeriodPlus' => Carbon::parse($secondPeriod)->addDay()->format('Y-m-d 00:00:00'),
+            'endMonth'        => $endMonth,
+        ]));
+
+        // Get total loss per Case across all periods to determine top 10
+        $totalLossPerCase = $topLossCaseMonthly->groupBy('loss_id')
+            ->map(function ($items) {
+                return [
+                    'loss_id' => $items->first()->loss_id,
+                    'loss_name' => $items->first()->loss_name,
+                    'total_berat_loss' => $items->sum('berat_loss')
+                ];
+            })
+            ->sortByDesc('total_berat_loss')
+            ->take(10)
+            ->pluck('loss_id')
+            ->toArray();
+
+        // Filter and group by period, only including top 10 Case
+        $result = $topLossCaseMonthly
+            ->filter(function ($item) use ($totalLossPerCase) {
+                return in_array($item->loss_id, $totalLossPerCase);
+            })
+            ->groupBy('period_ke')
+            ->map(function ($items, $period) {
+                return $items->map(function ($item) use ($period) {
+                    return [
+                        'loss_id' => $item->loss_id,
+                        'loss_name' => $item->loss_name,
+                        'berat_loss' => $item->berat_loss,
+                        'period_ke' => $period
+                    ];
+                })->values();
+            })
+            ->toArray();
+
+        return $result;
+    }
+
+    // get produksi per bulan
+    public function getProductionMonthly(Request $request)
+    {
+        $filterDate = Carbon::parse($request->filterDateMonthly);
+        $startMonth = Carbon::parse($filterDate)->startOfMonth()->format('d-m-Y 00:00:00');
+        $firstPeriod = Carbon::parse($startMonth)->addDays(9)->format('d-m-Y 23:59:59');
+        $secondPeriod = Carbon::parse($firstPeriod)->addDays(10)->format('d-m-Y 23:59:59');
+        $endMonth = Carbon::parse($filterDate)->endOfMonth()->format('d-m-Y 23:59:59');
+
+        $produksiLossMonthly = collect(DB::select('
+            SELECT
+                mac.id AS machine_id,
+                RIGHT(mac.machineno, 2) AS machineno,
+                CASE
+                    WHEN tpa.production_date BETWEEN :startMonth AND :firstPeriod THEN 1
+                    WHEN tpa.production_date BETWEEN :firstPeriodPlus AND :secondPeriod THEN 2
+                    WHEN tpa.production_date BETWEEN :secondPeriodPlus AND :endMonth THEN 3
+                END AS period_ke,
+                ROUND(SUM(tpa.qty_produksi)::numeric, 1) AS qty_produksi
+            FROM msmachine mac
+            LEFT JOIN tdproduct_goods tpa ON mac.id = tpa.machine_id
+            WHERE mac.department_id = :factory
+            AND tpa.production_date BETWEEN :startMonth AND :endMonth
+            GROUP BY mac.id, mac.machineno, period_ke
+            ORDER BY mac.id ASC, period_ke ASC
+        ', [
+            'factory'         => $request->factory,
+            'startMonth'      => $startMonth,
+            'firstPeriod'     => $firstPeriod,
+            'firstPeriodPlus' => Carbon::parse($firstPeriod)->addDay()->format('Y-m-d 00:00:00'),
+            'secondPeriod'    => $secondPeriod,
+            'secondPeriodPlus' => Carbon::parse($secondPeriod)->addDay()->format('Y-m-d 00:00:00'),
+            'endMonth'        => $endMonth,
+        ]))->groupBy('period_ke')->map(function ($items, $period) {
+            return $items->map(function ($item) use ($period) {
+                return [
+                    'machine_id' => $item->machine_id,
+                    'machineno' => $item->machineno,
+                    'qty_produksi' => $item->qty_produksi,
+                    'period_ke' => $period
+                ];
+            });
+        })->toArray();
+
+        return $produksiLossMonthly;
+    }
+
+    public function getRankingProblemMachineMonthly(Request $request)
+    {
+        $produksiLoss = $this->getProduksiLossSeitai($request, true);
+        $kadouJikan = $this->getKadouJikanFrekuensiTrouble($request, true);
+
+        $rankingProduksi = collect($produksiLoss)->map(function ($item) {
+            return [
+                'machine_id' => $item->machine_id,
+                'machineno' => $item->machineno,
+                'qty_produksi' => $item->qty_produksi,
+            ];
+        })->sortBy('qty_produksi')
+            ->values()
+            ->map(function ($item, $index) {
+                return [
+                    'rank' => $index + 1,
+                    ...$item
+                ];
+            });
+
+        $rankingLoss = collect($produksiLoss)->map(function ($item) {
+            return [
+                'machine_id' => $item->machine_id,
+                'machineno' => $item->machineno,
+                'berat_loss' => $item->berat_loss,
+                'berat_loss_percentage' => $item->berat_loss_percentage,
+            ];
+        })->sortByDesc('berat_loss')
+            ->values()
+            ->map(function ($item, $index) {
+                return [
+                    'rank' => $index + 1,
+                    ...$item
+                ];
+            });
+
+        $rankingKadouJikan = collect($kadouJikan)->map(function ($item) {
+            return [
+                'machine_id' => $item->machine_id,
+                'machineno' => $item->machine_no,
+                'kadou_jikan' => $item->kadou_jikan,
+                'frekuensi_trouble' => $item->frekuensi_trouble,
+            ];
+        })->sortBy('kadou_jikan')->values()->map(function ($item, $index) {
+            return [
+                'rank' => $index + 1,
+                ...$item
+            ];
+        })->toArray();
+
+        $rankingAll = collect();
+        foreach ($rankingKadouJikan as $key => $item) {
+            $produksi = $rankingProduksi->firstWhere('machine_id', $item['machine_id']);
+            $loss = $rankingLoss->firstWhere('machine_id', $item['machine_id']);
+
+            if ($produksi['qty_produksi'] == 0 && $loss['berat_loss'] == 0 && $item['kadou_jikan'] == 0) {
+                continue; // skip if no production and no loss and no kadou jikan
+            }
+            $rankingAll[] = [
+                'sum_rank' => $produksi['rank'] + $loss['rank'] + $item['rank'],
+                'produksi_rank' => $produksi['rank'],
+                'loss_rank' => $loss['rank'],
+                'kadou_jikan_rank' => $item['rank'],
+                'machine_id' => $item['machine_id'],
+                'machineno' => $item['machineno'],
+            ];
+        }
+        $rankingAll = $rankingAll->sortBy('sum_rank')->take(3)->values();
+
+        return $rankingAll;
+    }
+
+    public function getTopMesinMasalahLossMonthly(Request $request)
+    {
+        $filterDate = Carbon::parse($request->filterDateMonthly);
+        $startMonth = Carbon::parse($filterDate)->startOfMonth()->format('d-m-Y 00:00:00');
+        $endMonth = Carbon::parse($filterDate)->endOfMonth()->format('d-m-Y 23:59:59');
+
+        $topLossKasus = DB::select('
+            SELECT
+                mac.id AS machine_id,
+                top_loss.loss_name,
+                RIGHT(mac.machineno, 2) AS machineno,
+                ROUND(COALESCE(SUM(tpaloss.berat_loss), 0)::numeric, 1) as berat_loss
+            FROM msmachine mac
+            INNER JOIN tdproduct_goods tpa ON mac.id = tpa.machine_id
+            INNER JOIN tdproduct_goods_loss tpaloss ON tpa.id = tpaloss.product_goods_id
+            INNER JOIN (
+                SELECT
+                    tpaloss.loss_seitai_id,
+                    mslos.name as loss_name,
+                    ROUND(SUM(tpaloss.berat_loss)::numeric, 1) as total_loss
+                FROM mslossseitai mslos
+                INNER JOIN tdproduct_goods_loss tpaloss ON mslos.id = tpaloss.loss_seitai_id
+                INNER JOIN tdproduct_goods tpa ON tpaloss.product_goods_id = tpa.id
+                INNER JOIN msmachine mac ON tpa.machine_id = mac.id
+                WHERE mac.department_id = ?
+                    AND tpa.production_date BETWEEN ? AND ?
+                    AND mslos.loss_class_id IN (' . implode(',', LossSeitaiHelper::lossClassIdDashboard()) . ')
+                GROUP BY tpaloss.loss_seitai_id, mslos.name
+                ORDER BY total_loss DESC
+                LIMIT 1
+            ) AS top_loss
+                ON tpaloss.loss_seitai_id = top_loss.loss_seitai_id
+            WHERE mac.department_id = ?
+                AND tpa.production_date BETWEEN ? AND ?
+            GROUP BY mac.id, mac.machineno, top_loss.loss_name
+            ORDER BY berat_loss DESC
+            LIMIT 3
+        ', [
+            $request->factory,
+            $startMonth,
+            $endMonth,
+            $request->factory,
+            $startMonth,
+            $endMonth
+        ]);
+
+        return $topLossKasus;
     }
 }

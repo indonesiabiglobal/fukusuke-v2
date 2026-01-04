@@ -410,7 +410,7 @@ class DashboardInfureController extends Controller
             WHERE mac.department_id = :factory
             AND tpa.production_date BETWEEN :startMonth AND :endMonth
             GROUP BY mac.id, mac.machineno, period_ke
-            ORDER BY mac.id ASC, period_ke ASC
+            ORDER BY mac.machineno ASC, period_ke ASC
         ', [
             'factory'         => $request->factory,
             'startMonth'      => $startMonth,

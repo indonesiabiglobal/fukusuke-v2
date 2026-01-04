@@ -13,108 +13,6 @@
     <div class="col">
         <div class="h-100">
             <div class="row">
-                {{-- <div class="col-xl-4">
-                    <div class="row">
-                        <div class="col-xl-12 col-md-6">
-                            <div class="card card-animate">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between">
-                                        <div class="flex-grow-1">
-                                            <p class="text-uppercase fw-medium text-muted text-truncate fs-13">Total Earnings</p>
-                                            <h4 class="fs-22 fw-semibold mb-3">$<span class="counter-value" data-target="745.35">0</span></h4>
-                                            <div class="d-flex align-items-center gap-2">
-                                                <h5 class="text-success fs-12 mb-0">
-                                                    <i class="ri-arrow-right-up-line fs-13 align-middle"></i> +18.30 %
-                                                </h5>
-                                                <p class="text-muted mb-0">than last week</p>
-                                            </div>
-                                        </div>
-                                        <div class="avatar-sm flex-shrink-0">
-                                            <span class="avatar-title bg-success-subtle rounded fs-3">
-                                                <i class="bx bx-dollar-circle text-success"></i>
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="animation-effect-6 text-success opacity-25 fs-18">
-                                    <i class="bi bi-currency-dollar"></i>
-                                </div>
-                                <div class="animation-effect-4 text-success opacity-25 fs-18">
-                                    <i class="bi bi-currency-pound"></i>
-                                </div>
-                                <div class="animation-effect-3 text-success opacity-25 fs-18">
-                                    <i class="bi bi-currency-euro"></i>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-xl-12 col-md-6">
-                            <div class="card card-animate">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between">
-                                        <div class="avatar-sm flex-shrink-0">
-                                            <span class="avatar-title bg-info-subtle rounded fs-3">
-                                                <i class="bx bx-shopping-bag text-info"></i>
-                                            </span>
-                                        </div>
-                                        <div class="text-end flex-grow-1">
-                                            <p class="text-uppercase fw-medium text-muted text-truncate fs-13">Orders</p>
-                                            <h4 class="fs-22 fw-semibold mb-3"><span class="counter-value" data-target="698.36">0</span>k </h4>
-                                            <div class="d-flex align-items-center justify-content-end gap-2">
-                                                <h5 class="text-danger fs-12 mb-0">
-                                                    <i class="ri-arrow-right-down-line fs-13 align-middle"></i> -2.74 %
-                                                </h5>
-                                                <p class="text-muted mb-0">than last week</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="animation-effect-6 text-info opacity-25 left fs-18">
-                                    <i class="bi bi-handbag"></i>
-                                </div>
-                                <div class="animation-effect-4 text-info opacity-25 left fs-18">
-                                    <i class="bi bi-shop"></i>
-                                </div>
-                                <div class="animation-effect-3 text-info opacity-25 left fs-18">
-                                    <i class="bi bi-bag-check"></i>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-xl-12 col-md-6">
-                            <div class="card card-animate">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between">
-                                        <div class="flex-grow-1">
-                                            <p class="text-uppercase fw-medium text-muted text-truncate fs-13">Customers</p>
-                                            <h4 class="fs-22 fw-semibold mb-3"><span class="counter-value" data-target="183.35">0</span>M </h4>
-                                            <div class="d-flex align-items-center gap-2">
-                                                <h5 class="text-success fs-12 mb-0">
-                                                    <i class="ri-arrow-right-up-line fs-13 align-middle"></i> +29.08 %
-                                                </h5>
-                                                <p class="text-muted mb-0">than last week</p>
-                                            </div>
-                                        </div>
-                                        <div class="avatar-sm flex-shrink-0">
-                                            <span class="avatar-title bg-warning-subtle rounded fs-3">
-                                                <i class="bx bx-user-circle text-warning"></i>
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div><!-- end card body -->
-                                <div class="animation-effect-6 text-warning opacity-25 fs-18">
-                                    <i class="bi bi-person"></i>
-                                </div>
-                                <div class="animation-effect-4 text-warning opacity-25 fs-18">
-                                    <i class="bi bi-person-fill"></i>
-                                </div>
-                                <div class="animation-effect-3 text-warning opacity-25 fs-18">
-                                    <i class="bi bi-people"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div> --}}
                 <div class="col-xl-12">
                     <div class="card">
                         <div class="card-header border-0 align-items-center d-flex">
@@ -278,7 +176,7 @@
                 </div>
             </div><!-- end card body -->
         </div>
-    </div> 
+    </div>
 </div> <!-- end row-->
 
 @endsection

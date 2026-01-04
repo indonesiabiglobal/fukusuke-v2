@@ -24,6 +24,7 @@ use App\Http\Livewire\MasterTabel\BuyerController;
 use App\Http\Controllers\DashboardInfureController;
 use App\Http\Controllers\DashboardInfureControllerOld;
 use App\Http\Controllers\DashboardSeitaiController;
+use App\Http\Controllers\DashboardSeitaiControllerOld;
 use App\Http\Livewire\Kenpin\KenpinInfureController;
 use App\Http\Livewire\Kenpin\KenpinSeitaiController;
 use App\Http\Livewire\Kenpin\Report\ReportKenpinController;
@@ -386,25 +387,6 @@ Route::group(['middleware' => 'auth'], function () {
         return redirect()->route('dashboard-infure');
     });
 
-    // Route::controller(DashboardController::class)->group(function () {
-    // Route::get('/', 'index')->name('dashboard');
-    // Route::get('/', 'index')->name('dashboard');
-    // Route::get('/dashboard-ppic', 'ppic')->name('dashboard-ppic');
-    // Route::get('/dashboard-qc', 'qc')->name('dashboard-qc');
-    // // Infure
-    // Route::get('/kadou-jikan/infure', 'getkadouJikanInfure')->name('kadou-jikan-infure');
-    // Route::get('/hasil-produksi/infure', 'getHasilProduksiInfure')->name('hasil-produksi-infure');
-    // Route::get('/loss/infure', 'getLossInfure')->name('get-loss-infure');
-    // Route::get('/top-loss/infure', 'getTopLossInfure')->name('top-loss-infure');
-    // Route::get('/counter-trouble/infure', 'getCounterTroubleInfure')->name('counter-trouble-infure');
-    // // Seitai
-    // Route::get('/kadou-jikan/seitai', 'getkadouJikanSeitai')->name('kadou-jikan-seitai');
-    // Route::get('/hasil-produksi/seitai', 'getHasilProduksiSeitai')->name('hasil-produksi-seitai');
-    // Route::get('/loss/seitai', 'getLossSeitai')->name('get-loss-seitai');
-    // Route::get('/top-loss/seitai', 'getTopLossSeitai')->name('top-loss-seitai');
-    // Route::get('/counter-trouble/seitai', 'getCounterTroubleSeitai')->name('counter-trouble-seitai');
-    // });
-
     // Infure
     Route::controller(DashboardInfureControllerOld::class)->group(function () {
         Route::get('/dashboard-infure-old', 'index')->name('dashboard-infure-old');
@@ -432,14 +414,18 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/dashboard-infure/ranking-problem-machine-monthly', 'getRankingProblemMachineMonthly')->name('dashboard-infure-ranking-problem-machine-monthly');
     });
 
-    // Seitai
+    // Seitai - hanya route untuk view/page
     Route::controller(DashboardSeitaiController::class)->group(function () {
         Route::get('/dashboard-seitai', 'index')->name('dashboard-seitai');
-        Route::get('/dashboard-seitai/kadou-jikan', 'getkadouJikanSeitai')->name('dashboard-seitai-kadou-jikan-seitai');
-        Route::get('/dashboard-seitai/hasil-produksi', 'getHasilProduksiSeitai')->name('dashboard-seitai-hasil-produksi-seitai');
-        Route::get('/dashboard-seitai/loss/seitaigetLossSeitai')->name('dashboard-seitai-loss-seitai');
-        Route::get('/dashboard-seitai/top-loss', 'getTopLossSeitai')->name('dashboard-seitai-top-loss-seitai');
-        Route::get('/dashboard-seitai/counter-trouble', 'getCounterTroubleSeitai')->name('dashboard-seitai-counter-trouble-seitai');
+    });
+
+    Route::controller(DashboardSeitaiControllerOld::class)->group(function () {
+        Route::get('/dashboard-seitai-old', 'index')->name('dashboard-seitai');
+        Route::get('/dashboard-seitai-old/kadou-jikan', 'getkadouJikanSeitai')->name('dashboard-seitai-kadou-jikan-seitai');
+        Route::get('/dashboard-seitai-old/hasil-produksi', 'getHasilProduksiSeitai')->name('dashboard-seitai-hasil-produksi-seitai');
+        Route::get('/dashboard-seitai-old/loss/seitaigetLossSeitai')->name('dashboard-seitai-loss-seitai');
+        Route::get('/dashboard-seitai-old/top-loss', 'getTopLossSeitai')->name('dashboard-seitai-top-loss-seitai');
+        Route::get('/dashboard-seitai-old/counter-trouble', 'getCounterTroubleSeitai')->name('dashboard-seitai-counter-trouble-seitai');
     });
 
     Route::get('{any}', [App\Http\Controllers\HomeController::class, 'index']);

@@ -9,6 +9,10 @@ class LossInfureHelper
 {
     public static function lossClassIdDashboard()
     {
+        // Loss Class ID untuk dashboard Infure
+        // 3. Kualitas
+        // 4. Printing
+        // 5. Mesin
         return [3,4,5];
     }
 }
