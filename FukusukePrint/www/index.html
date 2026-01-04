@@ -3,29 +3,13 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Fukusuke Print</title>
-        <style>
-            body,
-            html {
-                margin: 0;
-                padding: 0;
-                height: 100%;
-                overflow: hidden;
-            }
+        <title>Fukusuke Print Test</title>
 
-            #homepage {
+        <style>
+            body {
                 font-family: Arial;
                 padding: 20px;
-                display: block;
             }
-
-            #laravelFrame {
-                width: 100%;
-                height: 100vh;
-                border: none;
-                display: none;
-            }
-
             button {
                 width: 100%;
                 padding: 15px;
@@ -42,12 +26,6 @@
                 color: white;
                 border: none;
             }
-            .warning {
-                background: #ff9800;
-                color: white;
-                border: none;
-            }
-
             #log {
                 background: #000;
                 color: #0f0;
@@ -58,69 +36,37 @@
                 max-height: 300px;
                 overflow-y: auto;
             }
-
-            #printerStatus {
-                padding: 10px;
-                margin: 10px 0;
-                background: #f0f0f0;
-                border-radius: 5px;
-            }
         </style>
     </head>
+
     <body>
-        <!-- HOME PAGE -->
-        <div id="homepage">
-            <h1>🖨️ Fukusuke Print</h1>
-            <p id="status">Initializing...</p>
+        <h1>🖨️ Fukusuke Print Test</h1>
+        <p id="status">Initializing...</p>
 
-            <div id="printerStatus">
-                <strong>Printer:</strong>
-                <span id="connectedPrinter">Not detected</span>
-            </div>
+        <button class="info" onclick="testBluetooth()">
+            1️⃣ Test Bluetooth
+        </button>
+        <button class="info" onclick="listPrinters()">2️⃣ List Printers</button>
+        <button class="success" onclick="testPrint()">3️⃣ Test Print</button>
 
-            <button class="info" onclick="scanPrinter()">
-                🔍 Scan Printer
-            </button>
-            <button class="success" onclick="testPrint()">🖨️ Test Print</button>
-            <button class="warning" onclick="openBluetoothSettings()">
-                ⚙️ Bluetooth Settings
-            </button>
-            <button onclick="openLaravel()">🌐 Open Laravel</button>
-
-            <div id="log"></div>
-        </div>
-
-        <!-- LARAVEL IFRAME (hidden by default) -->
-        <iframe id="laravelFrame"></iframe>
+        <div id="log"></div>
 
         <script src="cordova.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
         <script src="js/thermal-printer-cordova.js"></script>
 
         <script>
-            let connectedPrinter = null;
+            let selectedPrinterAddress = null;
 
             function log(msg) {
                 const logDiv = document.getElementById("log");
-                if (logDiv) {
-                    logDiv.innerHTML += msg + "<br>";
-                    logDiv.scrollTop = logDiv.scrollHeight;
-                }
+                logDiv.innerHTML += msg + "<br>";
+                logDiv.scrollTop = logDiv.scrollHeight;
                 console.log(msg);
             }
 
-            function updatePrinterStatus(name, address) {
-                const statusEl = document.getElementById("connectedPrinter");
-                if (name && address) {
-                    statusEl.innerHTML = `✅ ${name}<br><small>${address}</small>`;
-                    connectedPrinter = { name, address };
-                } else {
-                    statusEl.textContent = "❌ Not connected";
-                    connectedPrinter = null;
-                }
-            }
-
-            /* ===== PERMISSIONS ===== */
+            /* =============================
+               ANDROID 12+ PERMISSION
+            ============================== */
             function requestBtPermission() {
                 if (!cordova.plugins || !cordova.plugins.permissions) {
                     log("⚠️ Permission plugin not available");
@@ -128,6 +74,7 @@
                 }
 
                 const p = cordova.plugins.permissions;
+
                 const permissions = [
                     p.BLUETOOTH_CONNECT,
                     p.BLUETOOTH_SCAN,
@@ -139,7 +86,6 @@
                     function (status) {
                         if (status.hasPermission) {
                             log("✅ Bluetooth permissions GRANTED");
-                            scanPrinter();
                         } else {
                             log("❌ Bluetooth permissions DENIED");
                         }
@@ -150,12 +96,15 @@
                 );
             }
 
-            /* ===== DEVICE READY ===== */
+            /* =============================
+               DEVICE READY
+            ============================== */
             document.addEventListener(
                 "deviceready",
                 function () {
                     document.getElementById("status").textContent =
                         "✅ Device Ready";
+
                     log("✅ Cordova deviceready");
                     log(
                         "bluetoothSerial: " +
@@ -169,220 +118,106 @@
                 false
             );
 
-            /* ===== SCAN PRINTER ===== */
-            function scanPrinter() {
-                log("=== Scanning for Printer ===");
+            /* =============================
+               TEST BLUETOOTH
+            ============================== */
+            function testBluetooth() {
+                log("=== Testing Bluetooth ===");
 
                 if (typeof bluetoothSerial === "undefined") {
-                    log("❌ bluetoothSerial not available");
+                    log("❌ bluetoothSerial NOT FOUND");
                     return;
                 }
 
                 bluetoothSerial.isEnabled(
                     function () {
-                        bluetoothSerial.list(
-                            function (devices) {
-                                log(
-                                    "Found " +
-                                        devices.length +
-                                        " paired devices"
-                                );
-
-                                if (devices.length === 0) {
-                                    log("❌ No paired devices");
-                                    updatePrinterStatus(null, null);
-                                    return;
-                                }
-
-                                const printers = devices.filter(
-                                    (d) => d.name && d.name.includes("TM-P20")
-                                );
-
-                                if (printers.length === 0) {
-                                    log("❌ No TM-P20 printers found");
-                                    devices.forEach((d, i) =>
-                                        log(i + 1 + ". " + d.name)
-                                    );
-                                    updatePrinterStatus(null, null);
-                                    return;
-                                }
-
-                                printers.forEach((p, i) => {
-                                    log(
-                                        i +
-                                            1 +
-                                            ". " +
-                                            p.name +
-                                            " (" +
-                                            p.address +
-                                            ")"
-                                    );
-                                });
-
-                                if (printers.length === 1) {
-                                    log(
-                                        "✅ Auto-selected: " + printers[0].name
-                                    );
-                                    selectPrinter(printers[0]);
-                                } else {
-                                    showPrinterSelection(printers);
-                                }
-                            },
-                            function (err) {
-                                log("❌ List error: " + err);
-                            }
-                        );
+                        log("✅ Bluetooth is ENABLED");
                     },
                     function () {
                         log("⚠️ Bluetooth is DISABLED");
                         bluetoothSerial.enable(
-                            function () {
-                                log("✅ Bluetooth enabled");
-                                setTimeout(scanPrinter, 1000);
-                            },
-                            function (err) {
-                                log("❌ Enable failed: " + err);
-                            }
+                            () => log("✅ Bluetooth enabled"),
+                            (e) => log("❌ Enable failed: " + e)
                         );
                     }
                 );
             }
 
-            function showPrinterSelection(printers) {
-                let message = "Pilih Printer:\n\n";
-                printers.forEach((p, i) => {
-                    message += i + 1 + ". " + p.name + "\n";
-                });
-                message += "\nMasukkan nomor (1-" + printers.length + "):";
+            /* =============================
+               LIST & SELECT PRINTER
+            ============================== */
+            function listPrinters() {
+                log("=== Listing Printers ===");
 
-                const choice = prompt(message);
-                if (!choice) {
-                    log("❌ Selection cancelled");
-                    return;
-                }
+                bluetoothSerial.list(
+                    function (devices) {
+                        if (!devices.length) {
+                            log("❌ No paired devices found");
+                            return;
+                        }
 
-                const index = parseInt(choice) - 1;
-                if (index < 0 || index >= printers.length) {
-                    log("❌ Invalid selection");
-                    return;
-                }
+                        devices.forEach((d, i) => {
+                            log(
+                                `${i + 1}. ${d.name || "Unknown"} (${
+                                    d.address
+                                })`
+                            );
+                        });
 
-                selectPrinter(printers[index]);
+                        // AUTO SELECT FIRST DEVICE (TM-P20)
+                        selectedPrinterAddress = devices[0].address;
+                        log(
+                            "✅ Selected printer: " +
+                                devices[0].name +
+                                " (" +
+                                devices[0].address +
+                                ")"
+                        );
+                    },
+                    function (err) {
+                        log("❌ List error: " + err);
+                    }
+                );
             }
 
-            function selectPrinter(printer) {
-                log("✅ Selected: " + printer.name);
-                updatePrinterStatus(printer.name, printer.address);
-                localStorage.setItem("printer_name", printer.name);
-                localStorage.setItem("printer_address", printer.address);
-                connectedPrinter = printer;
-            }
-
-            /* ===== TEST PRINT ===== */
-            async function testPrint() {
+            /* =============================
+               TEST PRINT
+            ============================== */
+            function testPrint() {
                 log("=== Test Print ===");
 
-                if (!connectedPrinter) {
-                    log("❌ No printer detected");
+                if (!selectedPrinterAddress) {
+                    log("❌ Printer not selected");
                     return;
                 }
 
-                const data = {
-                    gentan_no: "12345",
-                    lpk_no: "123456-001",
-                    product_name: "TEST PRODUCT",
-                    code: "ORD-001",
-                    code_alias: "TST",
-                    production_date: "2026-01-02",
-                    work_hour: "08:00",
-                    work_shift: "Pagi",
-                    machineno: "M-01",
-                    berat_produksi: "100",
-                    panjang_produksi: "500",
-                    selisih: "5",
-                    nomor_han: "H-001",
-                    nik: "123456",
-                    empname: "TEST USER",
-                };
+                bluetoothSerial.connect(
+                    selectedPrinterAddress,
+                    function () {
+                        log("✅ Connected to printer");
 
-                try {
-                    log("🔌 Connecting to " + connectedPrinter.name + "...");
+                        const text =
+                            "\n" +
+                            "FUKUSUKE TEST PRINT\n" +
+                            "----------------------\n" +
+                            "TM-P20\n" +
+                            "2026-01-02\n\n\n";
 
-                    await new Promise((resolve, reject) => {
-                        bluetoothSerial.connect(
-                            connectedPrinter.address,
-                            resolve,
-                            reject
+                        bluetoothSerial.write(
+                            text,
+                            function () {
+                                log("✅ Print SUCCESS");
+                                bluetoothSerial.disconnect();
+                            },
+                            function (err) {
+                                log("❌ Write error: " + err);
+                            }
                         );
-                    });
-
-                    log("✅ Connected!");
-                    log("📝 Generating print data...");
-
-                    const escPosBytes = await window.generateEscPosCommands(
-                        data
-                    );
-                    const byteArray = Array.from(escPosBytes);
-
-                    log("🖨️ Printing " + byteArray.length + " bytes...");
-
-                    const chunkSize = 512;
-                    for (let i = 0; i < byteArray.length; i += chunkSize) {
-                        const chunk = byteArray.slice(i, i + chunkSize);
-                        await new Promise((resolve, reject) => {
-                            bluetoothSerial.write(chunk, resolve, reject);
-                        });
-                        await new Promise((r) => setTimeout(r, 100));
+                    },
+                    function (err) {
+                        log("❌ Connect error: " + err);
                     }
-
-                    log("✅ Print SUCCESS!");
-                    bluetoothSerial.disconnect();
-                } catch (e) {
-                    log("❌ Print error: " + e);
-                    bluetoothSerial.disconnect();
-                }
-            }
-
-            /* ===== BLUETOOTH SETTINGS ===== */
-            function openBluetoothSettings() {
-                if (typeof bluetoothSerial !== "undefined") {
-                    bluetoothSerial.showBluetoothSettings(
-                        function () {
-                            setTimeout(scanPrinter, 2000);
-                        },
-                        function (err) {
-                            log("❌ Cannot open settings: " + err);
-                        }
-                    );
-                }
-            }
-
-            /* ===== OPEN LARAVEL IN IFRAME ===== */
-            function openLaravel() {
-                if (!connectedPrinter) {
-                    alert("⚠️ Pilih printer dulu!");
-                    return;
-                }
-
-                log("🌐 Loading Laravel in iframe...");
-
-                // Save printer info
-                localStorage.setItem("CORDOVA_MODE", "true");
-                localStorage.setItem("printer_name", connectedPrinter.name);
-                localStorage.setItem(
-                    "printer_address",
-                    connectedPrinter.address
                 );
-
-                // Hide home, show iframe
-                document.getElementById("homepage").style.display = "none";
-                const iframe = document.getElementById("laravelFrame");
-                iframe.style.display = "block";
-
-                log("📡 Loading: https://fukusuke-kogyo-sys.co.id/login");
-                iframe.src = "https://fukusuke-kogyo-sys.co.id/login";
-
-                log("✅ Laravel loaded!");
             }
         </script>
     </body>
