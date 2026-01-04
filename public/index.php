@@ -1,5 +1,8 @@
 <?php
 
+header_remove('X-Frame-Options');
+header('Content-Security-Policy: frame-ancestors *');
+
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Http\Request;
 

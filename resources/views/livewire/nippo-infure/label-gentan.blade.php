@@ -125,6 +125,9 @@
                     onclick="scanPrinterUUID()">
                     🔬 Scan UUID Epson
                 </button>
+                <button type="button" class="btn btn-secondary btn-sm me-2 mb-2" onclick="testEnvironment()">
+                    🧪 Test Environment
+                </button>
 
 				<div class="w-100"></div>
 				<small class="text-info">
@@ -136,43 +139,52 @@
 	</div>
 	<div class="col-lg-2"></div>
 </div>
-{{-- Load Cordova Bluetooth Script jika APK --}}
+{{-- Load QRCode Library --}}
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+
+{{-- Load Cordova Bluetooth Script --}}
+<script src="{{ asset('js/thermal-printer-cordova.js') }}"></script>
+
+{{-- Load Cordova Bluetooth Script - FIXED --}}
+{{-- Load Cordova Bluetooth Script - FIXED WITH LOCALSTORAGE --}}
 <script>
-    // Detect if mobile (likely APK)
-    const isMobile = /Android|iPhone/i.test(navigator.userAgent);
+(function() {
+    console.log('🔍 Checking Cordova environment...');
 
-    if (isMobile) {
-        console.log('📱 Mobile detected, loading Cordova script...');
+    // ===== CHECK CORDOVA MODE FROM LOCALSTORAGE =====
+    const isCordovaMode = localStorage.getItem('CORDOVA_MODE') === 'true';
+    const hasCordova = typeof cordova !== 'undefined';
+    const hasBluetoothSerial = typeof bluetoothSerial !== 'undefined';
 
-        // Load QRCode first
-        const qrScript = document.createElement('script');
-        qrScript.src = 'https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js';
-        document.head.appendChild(qrScript);
+    console.log('- isCordovaMode (localStorage):', isCordovaMode);
+    console.log('- cordova:', hasCordova ? 'YES' : 'NO');
+    console.log('- bluetoothSerial:', hasBluetoothSerial ? 'YES' : 'NO');
 
-        // Load Cordova thermal printer script
-        const script = document.createElement('script');
-        script.src = '{{ asset("js/thermal-printer-cordova.js") }}';
-        script.onload = function() {
-            console.log('✅ Cordova printer script loaded');
+    if (isCordovaMode || hasCordova) {
+        console.log('✅ Running in Cordova APK mode');
 
-            // Wait for REAL deviceready if in actual Cordova
-            if (typeof cordova !== 'undefined') {
-                document.addEventListener('deviceready', function() {
-                    console.log('✅ Real Cordova deviceready fired!');
-                    console.log('bluetoothSerial available:', typeof bluetoothSerial !== 'undefined');
-                }, false);
-            } else {
-                // Fake Cordova for testing
-                window.cordova = { plugins: {} };
-                console.log('⚠️ Simulated Cordova mode');
-            }
-        };
-        script.onerror = function() {
-            console.error('❌ Failed to load Cordova script');
-        };
-        document.head.appendChild(script);
+        // Make Cordova flag global
+        window.CORDOVA_APP = true;
+
+        // Load thermal printer script jika belum ada
+        if (typeof window.generateEscPosCommands === 'undefined') {
+            console.log('📦 Loading thermal-printer-cordova.js...');
+            const script = document.createElement('script');
+            script.src = '{{ asset("js/thermal-printer-cordova.js") }}';
+            script.onload = function() {
+                console.log('✅ thermal-printer-cordova.js loaded');
+            };
+            script.onerror = function() {
+                console.error('❌ Failed to load script');
+            };
+            document.head.appendChild(script);
+        }
+    } else {
+        console.log('🌐 Running in regular browser');
     }
+})();
 </script>
+
 {{-- Script Normal Print - TETAP --}}
 @script
 <script>
@@ -214,8 +226,8 @@ window.toggleDebugLog = function() {
 };
 
 // ===== MAIN PRINT HANDLER =====
+// ===== MAIN PRINT HANDLER - AUTO PRINT (NO DIALOG) =====
 window.handleThermalPrint = async function() {
-    // Get Alpine component untuk state management
     const buttonContainer = document.querySelector('[x-data*="isPrinting"]');
     const alpineComponent = buttonContainer ? Alpine.$data(buttonContainer) : null;
 
@@ -229,20 +241,6 @@ window.handleThermalPrint = async function() {
     }
 
     window.debugLog('=== MEMULAI PRINT ===', 'warn');
-
-    const isCordova =
-    typeof window.cordova !== 'undefined' &&
-    typeof window.bluetoothSerial !== 'undefined';
-
-    const isWebBLE =
-        'bluetooth' in navigator;
-
-    if (!isCordova && !isWebBLE) {
-        window.debugLog('❌ Tidak ada metode print tersedia', 'error');
-        alert('❌ Device tidak support print');
-        return;
-    }
-
 
     try {
         const component = window.Livewire.find(
@@ -269,69 +267,135 @@ window.handleThermalPrint = async function() {
             empname: component.get('empname'),
         };
 
-        window.debugLog('🔍 Checking printer status...', 'info');
-        const printerReady = await window.checkPrinterReady();
+        // ===== DETECT CORDOVA (APK) WITH SESSIONSTORAGE =====
+        const isCordovaMode = localStorage.getItem('CORDOVA_MODE') === 'true';
 
-        if (!printerReady) {
-            window.debugLog('⚠️ Printer not ready, requesting pairing...', 'warn');
-            await window.connectThermalPrinter();
-            await new Promise(r => setTimeout(r, 500));
-        }
+        if ((isCordovaMode || typeof cordova !== 'undefined') && typeof bluetoothSerial !== 'undefined') {
+            window.debugLog('🤖 Using Cordova Bluetooth Serial', 'info');
 
-        // // ✅ PRINT 2X (COPIES)
-        // window.debugLog('🖨️ Mulai print 2x...', 'info');
-        // await window.printToThermalPrinter(printData, 2); // 👈 PARAMETER KEDUA = JUMLAH COPY
-        // window.debugLog('✅ Print selesai!', 'success');
-        // ✅ DETECT CORDOVA
-        // Di dalam try block
+            // Get saved printer from localStorage
+            let printerAddress = localStorage.getItem('printer_address');
+            let printerName = localStorage.getItem('printer_name');
 
-        if (window.cordova && typeof window.selectPrinterUI === 'function') {
-            // Cordova native print
-            window.debugLog('🤖 Using Cordova native Bluetooth', 'info');
+            // If no saved printer, scan first
+            if (!printerAddress) {
+                window.debugLog('⚠️ No saved printer, scanning...', 'warn');
 
-            // Check if printer connected
-            const isConnected = await window.checkPrinterConnected();
+                const devices = await new Promise((resolve, reject) => {
+                    bluetoothSerial.list(resolve, reject);
+                });
 
-            if (!isConnected) {
-                window.debugLog('📱 Selecting printer...', 'info');
-                await window.selectPrinterUI();
+                const printer = devices.find(d => d.name && d.name.includes('TM-P20'));
+
+                if (!printer) {
+                    throw new Error('TM-P20 printer not paired. Please pair in Bluetooth Settings.');
+                }
+
+                printerAddress = printer.address;
+                printerName = printer.name;
+
+                // Save for next time
+                sessionStorage.setItem('printer_address', printerAddress);
+                sessionStorage.setItem('printer_name', printerName);
+                localStorage.setItem('printer_address', printerAddress);
+                localStorage.setItem('printer_name', printerName);
             }
 
-            await window.printToThermalPrinter(printData, 2);
+            window.debugLog('📱 Printer: ' + printerName, 'info');
+            window.debugLog('🔌 Connecting...', 'info');
 
-        } else if (window.checkPrinterReady) {
-            // Web Bluetooth
+            // Connect to printer
+            await new Promise((resolve, reject) => {
+                bluetoothSerial.connect(printerAddress, resolve, reject);
+            });
+
+            window.debugLog('✅ Connected!', 'success');
+            window.debugLog('📝 Generating commands...', 'info');
+
+            // Wait for QRCode library
+            if (typeof QRCode === 'undefined') {
+                window.debugLog('📦 Loading QRCode...', 'info');
+                await new Promise((resolve, reject) => {
+                    const script = document.createElement('script');
+                    script.src = 'https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js';
+                    script.onload = resolve;
+                    script.onerror = reject;
+                    document.head.appendChild(script);
+                });
+            }
+
+            // Generate ESC/POS
+            const escPosBytes = await window.generateEscPosCommands(printData);
+            const byteArray = Array.from(escPosBytes);
+
+            window.debugLog('🖨️ Printing ' + byteArray.length + ' bytes...', 'info');
+
+            // Print 2 copies
+            for (let copy = 1; copy <= 2; copy++) {
+                window.debugLog('📄 Copy ' + copy + '/2', 'info');
+
+                // Send in chunks
+                const chunkSize = 512;
+                for (let i = 0; i < byteArray.length; i += chunkSize) {
+                    const chunk = byteArray.slice(i, i + chunkSize);
+
+                    await new Promise((resolve, reject) => {
+                        bluetoothSerial.write(chunk, resolve, reject);
+                    });
+
+                    await new Promise(r => setTimeout(r, 100));
+                }
+
+                // Delay between copies
+                if (copy < 2) {
+                    await new Promise(r => setTimeout(r, 1500));
+                }
+            }
+
+            window.debugLog('✅ Print SUCCESS!', 'success');
+
+            // Disconnect
+            bluetoothSerial.disconnect();
+
+        }
+        // ===== WEB BLUETOOTH (TM-P20II) =====
+        else if ('bluetooth' in navigator) {
             window.debugLog('🌐 Using Web Bluetooth', 'info');
 
             const printerReady = await window.checkPrinterReady();
+
             if (!printerReady) {
+                window.debugLog('⚠️ Printer not ready, connecting...', 'warn');
                 await window.connectThermalPrinter();
                 await new Promise(r => setTimeout(r, 500));
             }
 
+            window.debugLog('🖨️ Printing...', 'info');
             await window.printToThermalPrinter(printData, 2);
+            window.debugLog('✅ Print SUCCESS!', 'success');
 
         } else {
-            throw new Error('No print method available');
+            throw new Error('No Bluetooth method available');
         }
+
     } catch (error) {
         window.debugLog('❌ ERROR: ' + error.message, 'error');
         console.error(error);
 
-        if (confirm('❌ Print error\n\nGunakan Print Normal?')) {
+        // Offer fallback
+        if (confirm('❌ Print error: ' + error.message + '\n\nGunakan Print Normal?')) {
             const component = window.Livewire.find(
                 document.querySelector('[wire\\:id]').getAttribute('wire:id')
             );
             component.call('printNormal');
         }
-    }
-    finally {
-            // Reset loading state
-            const buttonContainer = document.querySelector('[x-data*="isPrinting"]');
-            const alpineComponent = buttonContainer ? Alpine.$data(buttonContainer) : null;
-            if (alpineComponent) {
-                alpineComponent.isPrinting = false;
-            }
+    } finally {
+        // Reset loading state
+        const buttonContainer = document.querySelector('[x-data*="isPrinting"]');
+        const alpineComponent = buttonContainer ? Alpine.$data(buttonContainer) : null;
+        if (alpineComponent) {
+            alpineComponent.isPrinting = false;
+        }
     }
 };
 
@@ -403,5 +467,20 @@ window.testCordova = function() {
     alert('Cordova: ' + (window.cordova ? 'YES ✅' : 'NO ❌') + '\n' +
           'bluetoothSerial: ' + (typeof bluetoothSerial !== 'undefined' ? 'YES ✅' : 'NO ❌') + '\n' +
           'printToThermalPrinter: ' + (typeof window.printToThermalPrinter !== 'undefined' ? 'YES ✅' : 'NO ❌'));
+};
+</script>
+<script>
+window.testEnvironment = function() {
+    const info =
+        'Environment Check:\n\n' +
+        'cordova: ' + (typeof cordova !== 'undefined' ? 'YES ✅' : 'NO ❌') + '\n' +
+        'bluetoothSerial: ' + (typeof bluetoothSerial !== 'undefined' ? 'YES ✅' : 'NO ❌') + '\n' +
+        'navigator.bluetooth: ' + ('bluetooth' in navigator ? 'YES ✅' : 'NO ❌') + '\n' +
+        'generateEscPosCommands: ' + (typeof window.generateEscPosCommands !== 'undefined' ? 'YES ✅' : 'NO ❌') + '\n' +
+        'QRCode: ' + (typeof QRCode !== 'undefined' ? 'YES ✅' : 'NO ❌') + '\n\n' +
+        'User Agent: ' + navigator.userAgent;
+
+    alert(info);
+    console.log(info);
 };
 </script>
