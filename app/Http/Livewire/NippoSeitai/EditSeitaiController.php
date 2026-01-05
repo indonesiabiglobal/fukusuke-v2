@@ -367,7 +367,7 @@ class EditSeitaiController extends Component
 
         if ($validatedData) {
             $this->code_loss = '';
-            $this->berat_loss = 0;
+            $this->berat_loss = '';
             $this->frekuensi = 1;
             $this->dispatch('showModalLoss');
         }
@@ -445,7 +445,7 @@ class EditSeitaiController extends Component
             $oldBerat = $data->berat_loss;
 
             $data->loss_seitai_id = $this->loss_seitai_id;
-            $data->berat_loss = $this->berat_loss;
+            $data->berat_loss = floatval($this->berat_loss);
             $data->frekuensi = $this->frekuensi;
             $data->updated_on = Carbon::now();
             $data->updated_by = auth()->user()->username;
@@ -524,7 +524,7 @@ class EditSeitaiController extends Component
         $this->loss_seitai_id = '';
         $this->code_loss = '';
         $this->namaloss = '';
-        $this->berat_loss = 0;
+        $this->berat_loss = '';
         $this->frekuensi = 1;
     }
 
@@ -534,18 +534,20 @@ class EditSeitaiController extends Component
             // validate
             $this->validate([
                 'code_loss' => 'required',
-                'berat_loss' => 'required|numeric',
+                // 'berat_loss' => 'required|numeric',
                 'frekuensi' => 'required',
             ], [
                 'code_loss.required' => 'Kode Loss harus diisi',
-                'berat_loss.required' => 'Berat Loss harus diisi',
-                'berat_loss.numeric' => 'Berat Loss harus berupa angka',
+                // 'berat_loss.required' => 'Berat Loss harus diisi',
+                // 'berat_loss.numeric' => 'Berat Loss harus berupa angka',
                 'frekuensi.required' => 'Frekuensi harus diisi',
             ]);
         } catch (\Exception $e) {
             $this->dispatch('notification', ['type' => 'warning', 'message' => 'Data Tidak Valid: ' . $e->getMessage()]);
             return;
         }
+
+        $this->berat_loss = $this->berat_loss == '' ? 0 : $this->berat_loss;
 
         $lpkid = TdOrderLpk::where('lpk_no', $this->lpk_no)->first();
         $loss = MsLossSeitai::where('code', $this->code_loss)

@@ -259,7 +259,7 @@ class AddSeitaiController extends Component
 
         if ($validatedData) {
             $this->code_loss = '';
-            $this->berat_loss = 0;
+            $this->berat_loss = '';
             $this->frekuensi = 1;
             $this->dispatch('showModalLoss');
         }
@@ -474,7 +474,7 @@ class AddSeitaiController extends Component
     {
         $this->code_loss = '';
         $this->namaloss = '';
-        $this->berat_loss = 0;
+        $this->berat_loss = '';
         $this->frekuensi = 1;
     }
 
@@ -489,18 +489,20 @@ class AddSeitaiController extends Component
             // validate
             $this->validate([
                 'code_loss' => 'required',
-                'berat_loss' => 'required|numeric',
+                // 'berat_loss' => 'required|numeric',
                 'frekuensi' => 'required',
             ], [
                 'code_loss.required' => 'Kode Loss harus diisi',
-                'berat_loss.required' => 'Berat Loss harus diisi',
-                'berat_loss.numeric' => 'Berat Loss harus berupa angka',
+                    'berat_loss.required' => 'Berat Loss harus diisi',
+                    'berat_loss.numeric' => 'Berat Loss harus berupa angka',
                 'frekuensi.required' => 'Frekuensi harus diisi',
             ]);
         } catch (\Exception $e) {
             $this->dispatch('notification', ['type' => 'warning', 'message' => 'Data Tidak Valid: ' . $e->getMessage()]);
             return;
         }
+
+        $this->berat_loss = $this->berat_loss == '' ? 0 : $this->berat_loss;
 
         $lpkid = TdOrderLpk::where('lpk_no', $this->lpk_no)->first();
         $loss = MsLossSeitai::where('code', $this->code_loss)
@@ -638,7 +640,7 @@ class AddSeitaiController extends Component
                 $this->detailsLoss[$index]['loss_seitai_id'] = $this->loss_seitai_id;
                 $this->detailsLoss[$index]['code_loss'] = $this->code_loss;
                 $this->detailsLoss[$index]['namaloss'] = $this->namaloss;
-                $this->detailsLoss[$index]['berat_loss'] = $this->berat_loss;
+                $this->detailsLoss[$index]['berat_loss'] = floatval($this->berat_loss);
                 $this->detailsLoss[$index]['frekuensi'] = $this->frekuensi;
             }
 
@@ -954,7 +956,7 @@ class AddSeitaiController extends Component
         $this->editing_id = null;
         $this->code_loss = null;
         $this->namaloss = '';
-        $this->berat_loss = 0;
+        $this->berat_loss = '';
         $this->frekuensi = 1;
         $this->start_box = null;
         $this->end_box = null;
