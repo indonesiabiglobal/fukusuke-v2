@@ -9,6 +9,7 @@ class Login extends Component
 {
     public $email;
     public $password;
+    public $userRoles = [];
 
     protected $rules = [
         'email' => 'required|string|email|max:255',
@@ -18,7 +19,13 @@ class Login extends Component
     public function mount()
     {
         if (auth()->user()) {
-            return redirect()->intended('/dashboard-infure');
+            $this->userRoles = auth()->user()->roles->pluck('code')->toArray();
+
+            if (in_array('ADMIN', $this->userRoles) || in_array('DASHBOARD-INFURE', $this->userRoles)) {
+                return redirect()->intended('/dashboard-infure');
+            } elseif (in_array('DASHBOARD-SEITAI', $this->userRoles)) {
+                return redirect()->intended('/dashboard-seitai');
+            }
         }
     }
 
@@ -33,7 +40,11 @@ class Login extends Component
         );
 
         if (Auth::attempt($user)) {
-            return redirect()->intended('/dashboard-infure');
+            if (in_array('ADMIN', auth()->user()->roles->pluck('code')->toArray()) || in_array('DASHBOARD-INFURE', auth()->user()->roles->pluck('code')->toArray())) {
+                return redirect()->intended('/dashboard-infure');
+            } elseif (in_array('DASHBOARD-SEITAI', auth()->user()->roles->pluck('code')->toArray())) {
+                return redirect()->intended('/dashboard-seitai');
+            }
         } else {
             $this->addError('email', trans('auth.failed'));
             return redirect()->back();

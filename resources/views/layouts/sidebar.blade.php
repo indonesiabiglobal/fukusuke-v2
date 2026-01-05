@@ -28,7 +28,7 @@
         // Get user roles with safe null checking
         $userRoles = [];
         if (auth()->check() && auth()->user()->roles) {
-            $userRoles = auth()->user()->roles->pluck('rolename')->toArray();
+            $userRoles = auth()->user()->roles->pluck('code')->toArray();
         }
     @endphp
 
@@ -38,7 +38,7 @@
             <div id="two-column-menu">
             </div>
             <ul class="navbar-nav" id="navbar-nav">
-                @if (in_array('Admin', $userRoles) || in_array('Admin', $userRoles))
+                @if (in_array('ADMIN', $userRoles) || in_array('DASHBOARD', $userRoles))
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#dashboard" data-bs-toggle="collapse" role="button"
                             aria-expanded="false" aria-controls="dashboard">
@@ -46,12 +46,17 @@
                         </a>
                         <div class="collapse menu-dropdown" id="dashboard">
                             <ul class="nav nav-sm flex-column">
-                                <li class="nav-item">
-                                    <a href="dashboard-infure" class="nav-link" data-key="d-infure"> INFURE </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="dashboard-seitai" class="nav-link" data-key="d-seitai"> SEITAI </a>
-                                </li>
+                                @if (in_array('ADMIN', $userRoles) || in_array('DASHBOARD-INFURE', $userRoles))
+                                    <li class="nav-item">
+                                        <a href="dashboard-infure" class="nav-link" data-key="d-infure"> INFURE </a>
+                                    </li>
+                                @endif
+
+                                @if (in_array('ADMIN', $userRoles) || in_array('DASHBOARD-SEITAI', $userRoles))
+                                    <li class="nav-item">
+                                        <a href="dashboard-seitai" class="nav-link" data-key="d-seitai"> SEITAI </a>
+                                    </li>
+                                @endif
                                 {{-- <li class="nav-item">
                                     <a href="dashboard-ppic" class="nav-link" data-key="d-ppic"> PPIC </a>
                                 </li>
@@ -65,7 +70,7 @@
 
 
                 {{-- <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">MENU</span></li> --}}
-                @if (in_array('Order', $userRoles) || in_array('Admin', $userRoles))
+                @if (in_array('ORDER', $userRoles) || in_array('ADMIN', $userRoles))
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#orderlpk" data-bs-toggle="collapse" role="button"
                             aria-expanded="false" aria-controls="orderlpk">
@@ -91,7 +96,7 @@
                     </li>
                 @endif
 
-                @if (in_array('NippoInfure', $userRoles) || in_array('Admin', $userRoles))
+                @if (in_array('NIPPO-INFURE', $userRoles) || in_array('ADMIN', $userRoles))
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#nippoinfure" data-bs-toggle="collapse" role="button"
                             aria-expanded="false" aria-controls="nippoinfure">
@@ -116,7 +121,7 @@
                     </li>
                 @endif
 
-                @if (in_array('NippoSeitai', $userRoles) || in_array('Admin', $userRoles))
+                @if (in_array('NIPPO-SEITAI', $userRoles) || in_array('ADMIN', $userRoles))
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#nipposeitai" data-bs-toggle="collapse" role="button"
                             aria-expanded="false" aria-controls="nipposeitai">
@@ -147,7 +152,7 @@
                     </li>
                 @endif
 
-                @if (in_array('JamKerja', $userRoles) || in_array('Admin', $userRoles))
+                @if (in_array('JAM-KERJA', $userRoles) || in_array('ADMIN', $userRoles))
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#jamkerja" data-bs-toggle="collapse" role="button"
                             aria-expanded="false" aria-controls="jamkerja">
@@ -155,12 +160,17 @@
                         </a>
                         <div class="collapse menu-dropdown" id="jamkerja">
                             <ul class="nav nav-sm flex-column">
-                                <li class="nav-item">
-                                    <a href="infure-jam-kerja" class="nav-link" data-key="t-starter"> Infure </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="seitai-jam-kerja" class="nav-link" data-key="t-starter"> Seitai </a>
-                                </li>
+                                @if (in_array('ADMIN', $userRoles) || in_array('JAM-KERJA-INFURE', $userRoles))
+                                    <li class="nav-item">
+                                        <a href="infure-jam-kerja" class="nav-link" data-key="t-starter"> Infure </a>
+                                    </li>
+                                @endif
+
+                                @if (in_array('ADMIN', $userRoles) || in_array('JAM-KERJA-SEITAI', $userRoles))
+                                    <li class="nav-item">
+                                        <a href="seitai-jam-kerja" class="nav-link" data-key="t-starter"> Seitai </a>
+                                    </li>
+                                @endif
                                 <li class="nav-item">
                                     <a href="checklist-jam-kerja" class="nav-link" data-key="t-starter"> Check List
                                     </a>
@@ -170,7 +180,7 @@
                     </li>
                 @endif
 
-                @if (in_array('Kenpin', $userRoles) || in_array('Admin', $userRoles))
+                @if (in_array('KENPIN', $userRoles) || in_array('ADMIN', $userRoles))
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#kenpin" data-bs-toggle="collapse" role="button"
                             aria-expanded="false" aria-controls="kenpin">
@@ -200,7 +210,7 @@
                     </li>
                 @endif
 
-                @if (in_array('Warehouse', $userRoles) || in_array('Admin', $userRoles))
+                @if (in_array('WAREHOUSE', $userRoles) || in_array('ADMIN', $userRoles))
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#warehouse" data-bs-toggle="collapse" role="button"
                             aria-expanded="false" aria-controls="warehouse">
@@ -221,7 +231,7 @@
                     </li>
                 @endif
 
-                @if (in_array('Admin', $userRoles))
+                @if (in_array('ADMIN', $userRoles))
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#report" data-bs-toggle="collapse" role="button"
                             aria-expanded="false" aria-controls="report">
@@ -245,7 +255,7 @@
                     </li>
                 @endif
 
-                @if (in_array('Master', $userRoles) || in_array('Admin', $userRoles))
+                @if (in_array('MASTER', $userRoles) || in_array('ADMIN', $userRoles))
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#mastertabel" data-bs-toggle="collapse" role="button"
                             aria-expanded="false" aria-controls="mastertabel">
@@ -414,7 +424,7 @@
                     </li>
                 @endif
 
-                @if (in_array('Admin', $userRoles))
+                @if (in_array('ADMIN', $userRoles))
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#administration" data-bs-toggle="collapse"
                             role="button" aria-expanded="false" aria-controls="administration">
@@ -440,7 +450,7 @@
                     </a>
                 </li>
 
-                @if (in_array('Admin', $userRoles))
+                @if (in_array('ADMIN', $userRoles))
                     <li class="nav-item d-none">
                         <a class="nav-link menu-link" href="#inventory" data-bs-toggle="collapse" role="button"
                             aria-expanded="false" aria-controls="inventory">

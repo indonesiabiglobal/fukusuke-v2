@@ -384,7 +384,12 @@ Route::group(['middleware' => 'auth'], function () {
     });
 
     Route::get('/', function () {
-        return redirect()->route('dashboard-infure');
+        $userRoles = auth()->user()->roles->pluck('code')->toArray();
+        if (in_array('DASHBOARD-INFURE', $userRoles)) {
+            return redirect()->route('dashboard-infure');
+        } elseif (in_array('DASHBOARD-SEITAI', $userRoles)) {
+            return redirect()->route('dashboard-seitai');
+        }
     });
 
     // Infure
@@ -419,14 +424,14 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/dashboard-seitai', 'index')->name('dashboard-seitai');
     });
 
-    Route::controller(DashboardSeitaiControllerOld::class)->group(function () {
-        Route::get('/dashboard-seitai-old', 'index')->name('dashboard-seitai');
-        Route::get('/dashboard-seitai-old/kadou-jikan', 'getkadouJikanSeitai')->name('dashboard-seitai-kadou-jikan-seitai');
-        Route::get('/dashboard-seitai-old/hasil-produksi', 'getHasilProduksiSeitai')->name('dashboard-seitai-hasil-produksi-seitai');
-        Route::get('/dashboard-seitai-old/loss/seitaigetLossSeitai')->name('dashboard-seitai-loss-seitai');
-        Route::get('/dashboard-seitai-old/top-loss', 'getTopLossSeitai')->name('dashboard-seitai-top-loss-seitai');
-        Route::get('/dashboard-seitai-old/counter-trouble', 'getCounterTroubleSeitai')->name('dashboard-seitai-counter-trouble-seitai');
-    });
+    // Route::controller(DashboardSeitaiControllerOld::class)->group(function () {
+    //     Route::get('/dashboard-seitai-old', 'index')->name('dashboard-seitai');
+    //     Route::get('/dashboard-seitai-old/kadou-jikan', 'getkadouJikanSeitai')->name('dashboard-seitai-kadou-jikan-seitai');
+    //     Route::get('/dashboard-seitai-old/hasil-produksi', 'getHasilProduksiSeitai')->name('dashboard-seitai-hasil-produksi-seitai');
+    //     Route::get('/dashboard-seitai-old/loss/seitaigetLossSeitai')->name('dashboard-seitai-loss-seitai');
+    //     Route::get('/dashboard-seitai-old/top-loss', 'getTopLossSeitai')->name('dashboard-seitai-top-loss-seitai');
+    //     Route::get('/dashboard-seitai-old/counter-trouble', 'getCounterTroubleSeitai')->name('dashboard-seitai-counter-trouble-seitai');
+    // });
 
     Route::get('{any}', [App\Http\Controllers\HomeController::class, 'index']);
 });
