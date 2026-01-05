@@ -387,7 +387,7 @@ class JamMatiReportService
             // total jam mati - menit
             $activeWorksheet->setCellValue($columnTotalMenitMati . $rowItem, $dataItem['off_overall_minutes'] < 60 ? $dataItem['off_overall_minutes'] : ($dataItem['off_overall_minutes'] % 60));
 
-            phpspreadsheet::addXHorizontalVerticalBorder($spreadsheet, $columnTotalJamMati . $rowItem . ':' . $columnTotalMenitMati . $rowItem, \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_DOTTED);
+            phpspreadsheet::addXHorizontalVerticalBorder($spreadsheet, $columnTotalJamMati . $rowItem . ':' . $columnTotalMenitMati . $rowItem, \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
 
             // total jam mati per mesin
             $columnTotalByMachine = [];
@@ -414,7 +414,7 @@ class JamMatiReportService
                     $columnHeaderEnd++;
                 }
 
-                phpspreadsheet::addXHorizontalVerticalBorder($spreadsheet, $columnHeaderStartMachine . $rowItem . ':' . Coordinate::stringFromColumnIndex($columnHeaderEnd) . $rowItem, \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_DOTTED);
+                phpspreadsheet::addXHorizontalVerticalBorder($spreadsheet, $columnHeaderStartMachine . $rowItem . ':' . Coordinate::stringFromColumnIndex($columnHeaderEnd) . $rowItem, \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
             }
             $rowItem++;
         }

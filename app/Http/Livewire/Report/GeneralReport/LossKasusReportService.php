@@ -127,7 +127,7 @@ class LossKasusReportService
 
         // style header
         phpspreadsheet::addFullBorder($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $headerTotalLossColIndex . '5');
-        phpspreadsheet::addVerticalBorder($spreadsheet, $startColLoss . $rowHeaderStart + 2 . ':' . $columnHeaderLossEnd . $rowHeaderStart + 2, \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_DOTTED);
+        phpspreadsheet::addVerticalBorder($spreadsheet, $startColLoss . $rowHeaderStart + 2 . ':' . $columnHeaderLossEnd . $rowHeaderStart + 2, \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
         phpspreadsheet::styleFont($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $headerTotalLossColIndex . $rowHeaderEnd, true, 9, 'Calibri');
         phpspreadsheet::textAlignCenter($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $headerTotalLossColIndex . $rowHeaderEnd);
         phpspreadsheet::textRotateUp($spreadsheet, $startColLoss . $rowHeaderEnd . ':' . $headerTotalLossColIndex . $rowHeaderEnd);
@@ -479,7 +479,7 @@ class LossKasusReportService
 
         // style header
         phpspreadsheet::addFullBorder($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $headerTotalLossColIndex . '5');
-        phpspreadsheet::addVerticalBorder($spreadsheet, $startColLoss . $rowHeaderStart + 2 . ':' . $columnHeaderLossEnd . $rowHeaderStart + 2, \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_DOTTED);
+        phpspreadsheet::addVerticalBorder($spreadsheet, $startColLoss . $rowHeaderStart + 2 . ':' . $columnHeaderLossEnd . $rowHeaderStart + 2, \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
         phpspreadsheet::styleFont($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $headerTotalLossColIndex . $rowHeaderEnd, true, 9, 'Calibri');
         phpspreadsheet::textAlignCenter($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $headerTotalLossColIndex . $rowHeaderEnd);
         phpspreadsheet::textRotateUp($spreadsheet, $startColLoss . $rowHeaderEnd . ':' . $headerTotalLossColIndex . $rowHeaderEnd);

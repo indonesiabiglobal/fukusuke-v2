@@ -1149,7 +1149,7 @@ class CheckListSeitaiController extends Component
                     'color' => ['argb' => '000000'],
                 ],
                 'bottom' => [
-                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_DOTTED,
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR,
                     'color' => ['argb' => '000000'],
                 ],
             ],
@@ -1254,7 +1254,7 @@ class CheckListSeitaiController extends Component
         $activeWorksheet->setCellValue('U13', 'lbr');
         phpspreadsheet::textAlignCenter($spreadsheet, 'P13:T13');
         phpspreadsheet::styleFont($spreadsheet, 'P13:V13', false, 14, 'Tahoma');
-        phpspreadsheet::addBottomBorder($spreadsheet, 'P13:V13', \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_DOTTED);
+        phpspreadsheet::addBottomBorder($spreadsheet, 'P13:V13', \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
 
         // Box quantity
         $activeWorksheet->mergeCells('P14:T15');
@@ -1275,7 +1275,7 @@ class CheckListSeitaiController extends Component
         $activeWorksheet->setCellValue('B17', $employeeInfo);
         phpspreadsheet::textAlignCenter($spreadsheet, 'B17:V17');
         phpspreadsheet::styleFont($spreadsheet, 'B17:V17', false, 14, 'Tahoma');
-        phpspreadsheet::addTopBorder($spreadsheet, 'B17:V17', \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_DOTTED);
+        phpspreadsheet::addTopBorder($spreadsheet, 'B17:V17', \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
         phpspreadsheet::addBottomBorder($spreadsheet, 'B17:V17', \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
 
         // Column widths
