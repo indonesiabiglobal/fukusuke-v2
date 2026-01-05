@@ -725,12 +725,15 @@
                                 <div class="form-group">
                                     <label>Line Gentan </label>
                                     <div class="input-group col-md-9 col-xs-8">
-                                        <select class="form-select" wire:model.defer="gentan_line"
-                                            x-ref="gentan_line">
-                                            <option value="">Pilih Line</option>
-                                            <option value="A">A</option>
-                                            <option value="B">B</option>
-                                        </select>
+                                        <input id="inputLineGentan" class="form-control text-uppercase" type="text"
+                                            wire:model.live.debounce.300ms="gentan_line" placeholder="A atau B"
+                                            x-ref="gentan_line"
+                                            x-on:input="
+                                                $event.target.value = $event.target.value.toUpperCase();
+                                                if ($event.target.value !== 'A' && $event.target.value !== 'B') {
+                                                    $event.target.value = '';
+                                                }
+                                            " />
                                         @error('gentan_line')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror
