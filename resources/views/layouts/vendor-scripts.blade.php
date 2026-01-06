@@ -20,14 +20,15 @@
 <script src="{{ URL::asset('build/libs/dropzone/dropzone-min.js') }}"></script>
 <script src="{{ URL::asset('build/js/pages/form-file-upload.init.js') }}"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@3.5.1/select2.min.js"></script>
+{{-- Select2 --}}
+{{-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@3.5.1/select2.min.js"></script> --}}
 {{-- Datatable --}}
-<script src="https://cdn.datatables.net/v/bs5/jq-3.7.0/dt-2.1.4/datatables.min.js"></script>
+{{-- <script src="https://cdn.datatables.net/v/bs5/jq-3.7.0/dt-2.1.4/datatables.min.js"></script> --}}
 
 {{-- Select2 --}}
-{{-- <script src="{{ URL::asset('build/libs/select2/js/select2.min.js') }}"></script>
-<script src="{{ URL::asset('build/libs/select2/js/select2-3.5.1.min.js') }}"></script> --}}
+<script src="{{ URL::asset('build/libs/select2/js/select2.min.js') }}"></script>
+<script src="{{ URL::asset('build/libs/select2/js/select2-3.5.1.min.js') }}"></script>
 {{-- Datatable --}}
-{{-- <script src="{{ URL::asset('build/libs/datatables/js/datatables.min.js') }}"></script> --}}
+<script src="{{ URL::asset('build/libs/datatables/js/datatables.min.js') }}"></script>
 @yield('script')
