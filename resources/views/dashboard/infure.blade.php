@@ -543,9 +543,9 @@
                             },
                             xAxis: [{
                                 labels: {
-                                    rotation: -45,
+                                    rotation: -90,
                                     style: {
-                                        fontSize: '7px'
+                                        fontSize: '12px'
                                     }
                                 }
                             }],
@@ -680,9 +680,9 @@
                             },
                             xAxis: [{
                                 labels: {
-                                    rotation: -45,
+                                    rotation: -90,
                                     style: {
-                                        fontSize: '7px'
+                                        fontSize: '12px'
                                     }
                                 }
                             }],
@@ -779,9 +779,9 @@
                             },
                             xAxis: {
                                 labels: {
-                                    rotation: -45,
+                                    rotation: -60,
                                     style: {
-                                        fontSize: '7px'
+                                        fontSize: '12px'
                                     }
                                 }
                             },
@@ -871,7 +871,7 @@
                                 labels: {
                                     rotation: -45,
                                     style: {
-                                        fontSize: '7px'
+                                        fontSize: '12px'
                                     }
                                 }
                             },
