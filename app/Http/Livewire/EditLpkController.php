@@ -29,6 +29,7 @@ class EditLpkController extends Component
     public $machineno;
     public $machinename;
     public $qty_lpk;
+    public $qty_lpk_old;
     public $qty_gentan;
     public $qty_gentan_old;
     public $qty_gulung;
@@ -138,8 +139,11 @@ class EditLpkController extends Component
         $this->machineno = $order->machineno;
         $this->machinename = $order->machinename;
         $this->qty_lpk = $order->qty_lpk;
+        $this->qty_lpk_old = $this->qty_lpk;
         $this->qty_gentan = $order->qty_gentan;
+        $this->qty_gentan_old = $order->qty_gentan;
         $this->qty_gulung = $order->qty_gulung;
+        $this->qty_gulung_old = $this->qty_gulung;
         $this->panjang_lpk = $order->panjang_lpk;
         $this->processdate = $order->tglproses;
         $this->order_date = Carbon::parse($order->order_date)->format('Y-m-d');
@@ -153,6 +157,7 @@ class EditLpkController extends Component
         $this->reprint_no = $order->reprint_no;
         // $this->warnalpkid['value'] = $order->warnalpkid;
         $this->status_lpk = $order->status_lpk;
+        $this->panjang_total = (int) str_replace(',', '', $this->qty_lpk) * ((int) str_replace(',', '', $this->productlength) / 1000);
     }
 
     public function updatedFile()
@@ -344,7 +349,7 @@ class EditLpkController extends Component
             }
         }
 
-        if (isset($this->qty_gentan) && $this->qty_gentan != $this->qty_gentan_old) {
+        if (isset($this->qty_gentan) && (int) str_replace(',', '', $this->qty_gentan) != (int) str_replace(',', '', $this->qty_gentan_old)) {
             if ($this->qty_gentan == 0 || $this->qty_gentan == '') {
                 $this->qty_gentan = 0;
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'jumlah Gentan tidak boleh kosong']);
@@ -362,12 +367,12 @@ class EditLpkController extends Component
 
                 $this->selisihkurang = (int)str_replace(',', '', $this->panjang_lpk) - (int)str_replace(',', '', $this->panjang_total);
             }
-        } else if (isset($this->qty_gulung) && $this->qty_gulung != $this->qty_gulung_old) {
+        } else if (isset($this->qty_gulung) && (int) str_replace(',', '', $this->qty_gulung) != (int) str_replace(',', '', $this->qty_gulung_old)) {
             $this->qty_gulung_old = $this->qty_gulung;
 
             $this->panjang_lpk = (int) str_replace(',', '', $this->qty_gentan) * (int) str_replace(',', '', $this->qty_gulung);
             $this->selisihkurang = (int)str_replace(',', '', $this->panjang_lpk) - (int)str_replace(',', '', $this->panjang_total);
-        } else if (isset($this->qty_lpk) && $this->qty_lpk != '') {
+        } else if (isset($this->qty_lpk) && $this->qty_lpk !=  $this->qty_lpk_old) {
             $this->panjang_total = (int) str_replace(',', '', $this->qty_lpk) * ((int) str_replace(',', '', $this->productlength) / 1000);
 
             $qty_gentan = (int) str_replace(',', '', $this->panjang_total) / (int) str_replace(',', '', $this->defaultgulung);
@@ -389,19 +394,12 @@ class EditLpkController extends Component
         }
 
         // merubah format angka
-        $this->panjang_total = formatAngka::ribuan($this->panjang_total);
+        $this->panjang_total = formatAngka::ribuan((int) str_replace(',', '', $this->qty_lpk));
         $this->qty_lpk = formatAngka::ribuan((int) str_replace(',', '', $this->qty_lpk));
         $this->qty_gulung = formatAngka::ribuan((int) str_replace(',', '', $this->qty_gulung));
         $this->panjang_lpk = formatAngka::ribuan($this->panjang_lpk);
         $this->defaultgulung = formatAngka::ribuan($this->defaultgulung);
         $this->selisihkurang = formatAngka::ribuan($this->selisihkurang);
-
-        // if (isset($this->qty_gentan) && isset($this->qty_gulung)) {
-        //     $this->panjang_lpk = (int)str_replace(',', '', $this->qty_gentan) * (int)str_replace(',', '', (int)$this->qty_gulung);
-        // }
-        // if (isset($this->panjang_lpk) && isset($this->total_assembly_line)) {
-        //     $this->selisihkurang = (int)str_replace(',', '', $this->total_assembly_line) - (int)str_replace(',', '', $this->panjang_lpk);
-        // }
 
         return view('livewire.order-lpk.edit-lpk')->extends('layouts.master');
     }
