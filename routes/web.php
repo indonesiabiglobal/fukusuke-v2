@@ -385,7 +385,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/', function () {
         $userRoles = auth()->user()->roles->pluck('code')->toArray();
-        if (in_array('DASHBOARD-INFURE', $userRoles)) {
+        if (in_array('DASHBOARD-INFURE', $userRoles) || in_array('ADMIN', $userRoles)) {
             return redirect()->route('dashboard-infure');
         } elseif (in_array('DASHBOARD-SEITAI', $userRoles)) {
             return redirect()->route('dashboard-seitai');

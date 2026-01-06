@@ -334,16 +334,6 @@ class AddLpkController extends Component
             $this->selisihkurang = (int)str_replace(',', '', $this->panjang_total) - (int)str_replace(',', '', $this->panjang_lpk);
         }
 
-        // $this->panjang_total = formatAngka::ribuan($this->panjang_total);
-        // $this->defaultgulung = formatAngka::ribuan($this->defaultgulung);
-
-        // if (isset($this->qty_gentan) && isset($this->qty_gulung)) {
-        //     $this->panjang_lpk = (int)str_replace(',', '', $this->qty_gentan) * (int)str_replace(',', '', (int)$this->qty_gulung);
-        // }
-        // if (isset($this->panjang_lpk) && isset($this->panjang_total)) {
-        //     $this->selisihkurang = (int)str_replace(',', '', $this->panjang_total) - (int)str_replace(',', '', $this->panjang_lpk);
-        // }
-
         return view('livewire.order-lpk.add-lpk')->extends('layouts.master');
     }
 }
