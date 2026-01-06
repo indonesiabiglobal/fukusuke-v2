@@ -520,9 +520,9 @@
                             },
                             xAxis: [{
                                 labels: {
-                                    rotation: -45,
+                                    rotation: -90,
                                     style: {
-                                        fontSize: '7px'
+                                        fontSize: '11px'
                                     }
                                 }
                             }],
@@ -564,14 +564,6 @@
                         fontFamily: 'Public Sans'
                     },
                 },
-                // subtitle: {
-                //     text: '*satuan lembar = juta',
-                //     style: {
-                //         fontSize: '9px',
-                //         fontStyle: 'italic',
-                //         color: '#333'
-                //     }
-                // },
                 xAxis: [{
                     categories: productionLossMachineDaily.map(item => item.machineno),
                     crosshair: true,
@@ -665,9 +657,9 @@
                             },
                             xAxis: [{
                                 labels: {
-                                    rotation: -45,
+                                    rotation: -90,
                                     style: {
-                                        fontSize: '7px'
+                                        fontSize: '11px'
                                     }
                                 }
                             }],
@@ -766,7 +758,7 @@
                                 labels: {
                                     rotation: -45,
                                     style: {
-                                        fontSize: '7px'
+                                        fontSize: '16px'
                                     }
                                 }
                             },
@@ -854,9 +846,9 @@
                             },
                             xAxis: {
                                 labels: {
-                                    rotation: -45,
+                                    rotation: -65,
                                     style: {
-                                        fontSize: '7px'
+                                        fontSize: '14px'
                                     }
                                 }
                             },
@@ -1369,9 +1361,9 @@
                             },
                             xAxis: {
                                 labels: {
-                                    rotation: -90,
+                                    rotation: -65,
                                     style: {
-                                        fontSize: '7px'
+                                        fontSize: '12px'
                                     }
                                 }
                             },
