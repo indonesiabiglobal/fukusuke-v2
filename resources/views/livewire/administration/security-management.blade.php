@@ -101,7 +101,7 @@
                 <li>
                     <label style="cursor: pointer;">
                         <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="4"
-                            checked> Job Title
+                            checked> Roles
                     </label>
                 </li>
                 <li>
@@ -119,7 +119,7 @@
                     <th>User Name</th>
                     <th>Email</th>
                     <th>Employee Name</th>
-                    <th>Job Title</th>
+                    <th>Roles</th>
                     <th>Status</th>
                 </tr>
             </thead>
@@ -142,9 +142,13 @@
                         <td>{{ $item->username }}</td>
                         <td>{{ $item->email }}</td>
                         <td>{{ $item->empname }}</td>
-                        <td>{{ $item->job }}</td>
                         <td>
-                            @if($item->status == 'Active')
+                            @foreach($item->roles as $role)
+                                <span class="badge bg-info me-1 mb-1">{{ $role->role_name }}</span>
+                            @endforeach
+                        </td>
+                        <td>
+                            @if($item->status)
                                 <span class="badge bg-success">Active</span>
                             @else
                                 <span class="badge bg-danger">Inactive</span>

@@ -3,8 +3,7 @@
 namespace App\Http\Livewire\Administration;
 
 use App\Models\User;
-use App\Models\UserRoles;
-use App\Models\UserAccessRole;
+use App\Models\Role;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -18,8 +17,7 @@ class AddUserController extends Component
     public $empname;
     public $password;
     public $password_confirmation;
-    public $roleid;
-    public $rolemode = 'readwrite';
+    public $selectedRoles = [];
     public $status = 1;
     public $empid;
     public $code;
@@ -29,7 +27,7 @@ class AddUserController extends Component
 
     public function mount()
     {
-        $this->userroles = UserRoles::where('status', 1)->get();
+        $this->userroles = Role::where('status', 1)->get();
     }
 
     public function rules()
@@ -39,7 +37,8 @@ class AddUserController extends Component
             'email' => 'required|email|unique:users,email',
             'empname' => 'required|min:3',
             'password' => 'required|min:6|confirmed',
-            'roleid' => 'required|exists:userroles,id',
+            'selectedRoles' => 'required|array|min:1',
+            'selectedRoles.*' => 'exists:roles,id',
             'status' => 'required|in:0,1',
         ];
     }
@@ -58,8 +57,8 @@ class AddUserController extends Component
             'password.required' => 'Password wajib diisi',
             'password.min' => 'Password minimal 6 karakter',
             'password.confirmed' => 'Konfirmasi password tidak cocok',
-            'roleid.required' => 'Role wajib dipilih',
-            'roleid.exists' => 'Role tidak valid',
+            'selectedRoles.required' => 'Minimal pilih 1 role',
+            'selectedRoles.*.exists' => 'Role tidak valid',
             'status.required' => 'Status wajib dipilih',
         ];
     }
@@ -75,7 +74,7 @@ class AddUserController extends Component
             Log::info('Creating user', [
                 'username' => $this->username,
                 'email' => $this->email,
-                'roleid' => $this->roleid,
+                'selected_roles' => $this->selectedRoles,
             ]);
 
             // Create user
@@ -94,14 +93,10 @@ class AddUserController extends Component
 
             Log::info('User created successfully', ['user_id' => $user->id]);
 
-            // Create user access role
-            UserAccessRole::create([
-                'userid' => $user->id,
-                'roleid' => $this->roleid,
-                'rolemode' => $this->rolemode,
-            ]);
+            // Sync multiple roles to user
+            $user->roles()->sync($this->selectedRoles);
 
-            Log::info('User access role created', ['user_id' => $user->id, 'role_id' => $this->roleid]);
+            Log::info('User roles synced', ['user_id' => $user->id, 'roles' => $this->selectedRoles]);
 
             DB::commit();
 

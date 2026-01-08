@@ -3,8 +3,7 @@
 namespace App\Http\Livewire\Administration;
 
 use App\Models\User;
-use App\Models\UserRoles;
-use App\Models\UserAccessRole;
+use App\Models\Role;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -18,8 +17,7 @@ class EditUserController extends Component
     public $empname;
     public $password;
     public $password_confirmation;
-    public $roleid;
-    public $rolemode = 'readwrite';
+    public $selectedRoles = [];
     public $status;
     public $empid;
     public $code;
@@ -35,7 +33,8 @@ class EditUserController extends Component
             'email' => 'required|email|unique:users,email,' . $this->userId,
             'empname' => 'required|min:3',
             'password' => 'nullable|min:6|confirmed',
-            'roleid' => 'required|exists:userroles,id',
+            'selectedRoles' => 'required|array|min:1',
+            'selectedRoles.*' => 'exists:roles,id',
             'status' => 'required|in:0,1',
         ];
     }
@@ -51,8 +50,8 @@ class EditUserController extends Component
         'empname.min' => 'Nama karyawan minimal 3 karakter',
         'password.min' => 'Password minimal 6 karakter',
         'password.confirmed' => 'Konfirmasi password tidak cocok',
-        'roleid.required' => 'Role wajib dipilih',
-        'roleid.exists' => 'Role tidak valid',
+        'selectedRoles.required' => 'Minimal pilih 1 role',
+        'selectedRoles.*.exists' => 'Role tidak valid',
         'status.required' => 'Status wajib dipilih',
     ];
 
@@ -64,7 +63,7 @@ class EditUserController extends Component
             return redirect()->route('security-management');
         }
 
-        $this->user = User::with('accessRoles')->find($this->userId);
+        $this->user = User::with('roles')->find($this->userId);
 
         if (!$this->user) {
             session()->flash('error', 'User tidak ditemukan');
@@ -80,14 +79,10 @@ class EditUserController extends Component
         $this->territory_ix = $this->user->territory_ix;
         $this->status = $this->user->status;
 
-        // Load role data
-        $accessRole = $this->user->accessRoles->first();
-        if ($accessRole) {
-            $this->roleid = $accessRole->roleid;
-            $this->rolemode = $accessRole->rolemode;
-        }
+        // Load selected roles
+        $this->selectedRoles = $this->user->roles->pluck('id')->toArray();
 
-        $this->userroles = UserRoles::where('status', 1)->get();
+        $this->userroles = Role::where('status', 1)->get();
     }
 
     public function update()
@@ -117,14 +112,8 @@ class EditUserController extends Component
 
             $this->user->update($updateData);
 
-            // Update or create user access role
-            UserAccessRole::updateOrCreate(
-                ['userid' => $this->userId],
-                [
-                    'roleid' => $this->roleid,
-                    'rolemode' => $this->rolemode,
-                ]
-            );
+            // Sync multiple roles to user
+            $this->user->roles()->sync($this->selectedRoles);
 
             DB::commit();
 

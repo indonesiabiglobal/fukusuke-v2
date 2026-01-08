@@ -299,6 +299,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/security-management', SecurityManagementController::class)->name('security-management');
     Route::get('/add-user', AddUserController::class)->name('add-user');
     Route::get('/edit-user', EditUserController::class)->name('edit-user');
+    Route::get('/role-management', \App\Http\Livewire\Administration\RoleManagementController::class)->name('role-management');
 
     Route::get('/pemasukan-barang', PemasukanBarangController::class)->name('pemasukan-barang');
     Route::get('/pengeluaran-barang', PengeluaranBarangController::class)->name('pengeluaran-barang');
@@ -384,11 +385,11 @@ Route::group(['middleware' => 'auth'], function () {
     });
 
     Route::get('/', function () {
-        $userRoles = auth()->user()->roles->pluck('code')->toArray();
-        if (in_array('DASHBOARD-INFURE', $userRoles) || in_array('ADMIN', $userRoles)) {
-            return redirect()->route('dashboard-infure');
-        } elseif (in_array('DASHBOARD-SEITAI', $userRoles)) {
-            return redirect()->route('dashboard-seitai');
+        $userAccess = auth()->user()->roles->flatMap->access->pluck('code')->unique()->toArray();
+        if (in_array('DASHBOARD-SEITAI', $userAccess)) {
+            return redirect()->intended('/dashboard-seitai');
+        } else {
+            return redirect()->intended('/dashboard-infure');
         }
     });
 

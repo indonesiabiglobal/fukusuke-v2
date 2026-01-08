@@ -40,10 +40,11 @@ class Login extends Component
         );
 
         if (Auth::attempt($user)) {
-            if (in_array('ADMIN', auth()->user()->roles->pluck('code')->toArray()) || in_array('DASHBOARD-INFURE', auth()->user()->roles->pluck('code')->toArray())) {
-                return redirect()->intended('/dashboard-infure');
-            } elseif (in_array('DASHBOARD-SEITAI', auth()->user()->roles->pluck('code')->toArray())) {
+            $userAccess = auth()->user()->roles->flatMap->access->pluck('code')->unique()->toArray();
+            if (in_array('DASHBOARD-SEITAI', $userAccess)) {
                 return redirect()->intended('/dashboard-seitai');
+            } else {
+                return redirect()->intended('/dashboard-infure');
             }
         } else {
             $this->addError('email', trans('auth.failed'));

@@ -9,17 +9,12 @@ class UserRoles extends Model
 {
     use HasFactory;
 
-    protected $table = 'userroles';
+    protected $table = 'user_roles';
 
     protected $fillable = [
-        'rolename',
-        'description',
+        'user_id',
+        'role_id',
         'status',
-        'trial523'
-    ];
-
-    protected $casts = [
-        'status' => 'integer',
     ];
 
     public $timestamps = false;
@@ -31,8 +26,8 @@ class UserRoles extends Model
     }
 
     // Relationship dengan useraccess_role
-    public function accessRoles()
+    public function roles()
     {
-        return $this->hasMany(UserAccessRole::class, 'roleid', 'id');
+        return $this->hasMany(Role::class, 'roleid', 'id');
     }
 }

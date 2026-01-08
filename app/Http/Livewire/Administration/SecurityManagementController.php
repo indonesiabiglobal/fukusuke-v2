@@ -27,7 +27,7 @@ class SecurityManagementController extends Component
 
     public function mount()
     {
-        $this->userrole = UserRoles::where('status', 1)->get();
+        $this->userrole = User::where('status', 1)->get();
     }
 
     public function search()
@@ -79,34 +79,19 @@ class SecurityManagementController extends Component
 
     public function render()
     {
-        $query = DB::table('users')
-            ->select(
-                'users.id',
-                'users.username',
-                'users.email',
-                'users.empname',
-                'userroles.description as job',
-                DB::raw("CASE WHEN users.status = 0 THEN 'Inactive' ELSE 'Active' END AS status")
-            )
-            ->join('useraccess_role AS uar', 'users.id', '=', 'uar.userid')
-            ->join('userroles', 'uar.roleid', '=', 'userroles.id');
-
-        // Filter by role
-        if (isset($this->idRole) && $this->idRole != "" && $this->idRole != "undefined") {
-            $query->where('uar.roleid', $this->idRole);
-        }
+        $query = User::with('roles');
 
         // Filter by status
         if (isset($this->status) && $this->status != "" && $this->status != "undefined") {
-            $query->where('users.status', $this->status);
+            $query->where('status', $this->status);
         }
 
         // Filter by search term
         if (isset($this->searchTerm) && $this->searchTerm != "") {
             $query->where(function($q) {
-                $q->where('users.username', 'like', '%' . $this->searchTerm . '%')
-                  ->orWhere('users.empname', 'like', '%' . $this->searchTerm . '%')
-                  ->orWhere('users.email', 'like', '%' . $this->searchTerm . '%');
+                $q->where('username', 'like', '%' . $this->searchTerm . '%')
+                  ->orWhere('empname', 'like', '%' . $this->searchTerm . '%')
+                  ->orWhere('email', 'like', '%' . $this->searchTerm . '%');
             });
         }
 

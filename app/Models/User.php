@@ -51,15 +51,8 @@ class User extends Authenticatable
         'status' => 'integer',
     ];
 
-    // Relationship dengan useraccess_role
-    public function accessRoles()
-    {
-        return $this->hasMany(UserAccessRole::class, 'userid', 'id');
-    }
-
-    // Relationship dengan userroles melalui useraccess_role
     public function roles()
     {
-        return $this->belongsToMany(UserRoles::class, 'useraccess_role', 'userid', 'roleid');
+        return $this->belongsToMany(Role::class, 'user_roles', 'user_id', 'role_id');
     }
 }
