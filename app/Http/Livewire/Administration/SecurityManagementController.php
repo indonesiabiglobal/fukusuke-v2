@@ -51,9 +51,6 @@ class SecurityManagementController extends Component
         try {
             DB::beginTransaction();
 
-            // Hapus relasi di useraccess_role
-            UserAccessRole::where('userid', $this->deleteId)->delete();
-
             // Hapus user
             User::find($this->deleteId)->delete();
 
