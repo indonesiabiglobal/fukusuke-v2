@@ -277,7 +277,7 @@ class CheckListInfureController extends Component
                         $filterSeqNo
                         $filterStatus
                         $filterSearchTerm
-                    ORDER BY nomesin ASC, tglproduksi ASC, jam ASC
+                    ORDER BY nomesin ASC, tglproduksi ASC, jam, tdpal.created_on ASC
                     ",
             );
         } else if ($jenisReport == 'Loss') {

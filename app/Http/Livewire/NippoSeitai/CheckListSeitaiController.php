@@ -275,10 +275,12 @@ class CheckListSeitaiController extends Component
                         tpgl.product_goods_id,
                         msls.code,
                         msls.NAME AS namaloss,
-                        tpgl.berat_loss
+                        tpgl.berat_loss,
+                        tpgl.created_on
                     FROM
                         tdproduct_goods_loss AS tpgl
-                        INNER JOIN mslossseitai AS msls ON msls.ID = tpgl.loss_seitai_id
+                    INNER JOIN mslossseitai AS msls ON msls.ID = tpgl.loss_seitai_id
+                    ORDER BY tpgl.created_on ASC
                     ) SELECT
                     tdpg.ID as id_tdpg,
                     tdpg.production_no AS production_no,
