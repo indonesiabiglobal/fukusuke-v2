@@ -176,13 +176,15 @@ class CheckListSeitaiController extends Component
                     ),
                     lossgoods AS (
                     SELECT
+                        tpgl.id,
                         tpgl.product_goods_id,
                         msls.code,
                         msls.NAME AS namaloss,
                         tpgl.berat_loss
                     FROM
                         tdproduct_goods_loss AS tpgl
-                        INNER JOIN mslossseitai AS msls ON msls.ID = tpgl.loss_seitai_id
+                    INNER JOIN mslossseitai AS msls ON msls.ID = tpgl.loss_seitai_id
+                    ORDER BY tpgl.id ASC
                     ) SELECT
                     tdpg.ID as id_tdpg,
                     tdpg.production_no AS production_no,
@@ -209,6 +211,7 @@ class CheckListSeitaiController extends Component
                     tdpg.nomor_palet AS nomor_palet,
                     tdpg.nomor_lot AS nomor_lot,
                     tdpg.seq_no AS noproses,
+                    lossgoods.id as id_tpfl,
                     lossgoods.code as losscode,
                     lossgoods.namaloss as lossname,
                     lossgoods.berat_loss,
@@ -272,16 +275,17 @@ class CheckListSeitaiController extends Component
                     ),
                     lossgoods AS (
                     SELECT
+                        tpgl.id,
                         tpgl.product_goods_id,
                         msls.code,
                         msls.NAME AS namaloss,
-                        tpgl.berat_loss,
-                        tpgl.created_on
+                        tpgl.berat_loss
                     FROM
                         tdproduct_goods_loss AS tpgl
                     INNER JOIN mslossseitai AS msls ON msls.ID = tpgl.loss_seitai_id
-                    ORDER BY tpgl.created_on ASC
-                    ) SELECT
+                    ORDER BY tpgl.id ASC
+                    )
+                SELECT
                     tdpg.ID as id_tdpg,
                     tdpg.production_no AS production_no,
                     tdpg.production_date AS tglproduksi,
@@ -310,6 +314,7 @@ class CheckListSeitaiController extends Component
                     lossgoods.code as losscode,
                     lossgoods.namaloss as lossname,
                     lossgoods.berat_loss,
+                    lossgoods.id as id_tpfl,
                     goodasy.gentannomor,
                     goodasy.gentannomorline,
                     goodasy.panjang_produksi,
