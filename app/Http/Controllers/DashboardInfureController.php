@@ -40,7 +40,6 @@ class DashboardInfureController extends Controller
         } else {
             [$startDate, $endDate] = workingShiftHelper::dailtShift($request->filterDateDaily, Carbon::parse($request->filterDateDaily)->addDay()->format('d-m-Y'));
         }
-        dd($startDate, $endDate);
         $lossClassIds = LossInfureHelper::lossClassIdDashboard();
         $placeholders = implode(',', array_fill(0, count($lossClassIds), '?'));
 
