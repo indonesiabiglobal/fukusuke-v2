@@ -16,10 +16,17 @@ class DashboardSeitaiController extends Controller
 {
     public function index()
     {
+        $now = Carbon::now();
+        if ($now->between(Carbon::parse($now->format('Y-m-d 00:00:00')), Carbon::parse($now->format('Y-m-d 15:00:00')))) {
+            $filterDateDaily = Carbon::now()->subDay()->format('d-m-Y');
+        } else {
+            $filterDateDaily = Carbon::now()->format('d-m-Y');
+        }
+
         $data = [
             'period' => ['A', 'B', 'C'],
             'listFactory' => departmentHelper::seitaiPabrikDepartment(),
-            'filterDateDaily' => Carbon::now()->format('d-m-Y'),
+            'filterDateDaily' => $filterDateDaily,
             'filterDateMonthly' => Carbon::now()->format('Y-m'),
         ];
         return view('dashboard.seitai', $data);
@@ -33,6 +40,7 @@ class DashboardSeitaiController extends Controller
         } else {
             [$startDate, $endDate] = workingShiftHelper::dailtShift($request->filterDateDaily, Carbon::parse($request->filterDateDaily)->addDay()->format('d-m-Y'));
         }
+
         $lossClassIds = LossSeitaiHelper::lossClassIdDashboard();
         $placeholders = implode(',', array_fill(0, count($lossClassIds), '?'));
 

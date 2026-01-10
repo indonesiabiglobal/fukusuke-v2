@@ -16,10 +16,17 @@ class DashboardInfureController extends Controller
 {
     public function index(Request $request)
     {
+        $now = Carbon::now();
+        if ($now->between(Carbon::parse($now->format('Y-m-d 00:00:00')), Carbon::parse($now->format('Y-m-d 15:00:00')))) {
+            $filterDateDaily = Carbon::now()->subDay()->format('d-m-Y');
+        } else {
+            $filterDateDaily = Carbon::now()->format('d-m-Y');
+        }
+
         $data = [
             'period' => ['A', 'B', 'C'],
             'listFactory' => departmentHelper::infurePabrikDepartment(),
-            'filterDateDaily' => Carbon::now()->format('d-m-Y'),
+            'filterDateDaily' => $filterDateDaily,
             'filterDateMonthly' => Carbon::now()->format('Y-m'),
         ];
         return view('dashboard.infure', $data);
@@ -33,6 +40,7 @@ class DashboardInfureController extends Controller
         } else {
             [$startDate, $endDate] = workingShiftHelper::dailtShift($request->filterDateDaily, Carbon::parse($request->filterDateDaily)->addDay()->format('d-m-Y'));
         }
+        dd($startDate, $endDate);
         $lossClassIds = LossInfureHelper::lossClassIdDashboard();
         $placeholders = implode(',', array_fill(0, count($lossClassIds), '?'));
 
