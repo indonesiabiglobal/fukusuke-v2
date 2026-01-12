@@ -388,6 +388,7 @@ class CheckListInfureController extends Component
         $columnNoHan = 'M';
         $columnBeratStandard = 'O';
         $columnBeratProduksi = 'P';
+        $columnBeratLoss = 'R';
         foreach ($dataMap as $key => $dataItem) {
             $columnItemEnd = $columnItemStart;
 
@@ -484,6 +485,7 @@ class CheckListInfureController extends Component
         phpspreadsheet::textAlignCenter($spreadsheet, $columnNoGentan . $rowItemStart . ':' . $columnNoHan . $rowItem);
         phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItemStart . ':' . $columnItemEnd . $rowItem, false, 8, 'Calibri');
         phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnBeratStandard . $rowItemStart . ':' . $columnBeratProduksi . $rowItem, 1);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnBeratLoss . $rowItemStart . ':' . $columnBeratLoss . $rowItem, 1);
 
         $rowItem++;
 
