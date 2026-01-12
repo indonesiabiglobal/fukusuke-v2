@@ -57,7 +57,8 @@
                                     <input class="form-control @error('lpk_no') is-invalid @enderror"
                                         style="padding:0.44rem" type="text" placeholder="000000-000" x-model="lpk_no"
                                         maxlength="10"
-                                        x-on:keydown.tab="$event.preventDefault(); $refs.machineInput.focus();" />
+                                        x-on:keydown.tab="$event.preventDefault(); $refs.machineInput.focus();"
+                                        x-on:keydown.enter="$event.preventDefault(); $refs.machineInput.focus();" />
                                 </div>
                                 @error('lpk_no')
                                     <span class="invalid-feedback">{{ $message }}</span>
@@ -117,6 +118,7 @@
                                 <input type="text" placeholder=" ... " class="form-control col-12 col-md-8 col-lg-7"
                                     wire:model.change="machineno"
                                     x-on:keydown.tab="$event.preventDefault(); $refs.employeeno.focus();"
+                                    x-on:keydown.enter="$event.preventDefault(); $refs.employeeno.focus();"
                                     x-ref="machineInput" />
                             </div>
                         </div>
@@ -137,6 +139,7 @@
                                 <input type="text" placeholder=" ... "
                                     class="form-control col-12 col-md-8 col-lg-7" wire:model.change="employeeno"
                                     x-on:keydown.tab="$event.preventDefault(); $refs.qty_produksi.focus();"
+                                    x-on:keydown.enter="$event.preventDefault(); $refs.qty_produksi.focus();"
                                     x-ref="employeeno" />
                             </div>
                         </div>
@@ -159,6 +162,7 @@
                                     wire:model.change="qty_produksi"
                                     oninput="this.value = window.formatNumber(this.value)"
                                     x-on:keydown.tab="$event.preventDefault(); document.querySelector('#start_box').focus();"
+                                    x-on:keydown.enter="$event.preventDefault(); document.querySelector('#start_box').focus();"
                                     x-ref="qty_produksi" />
                                 <span class="input-group-text">
                                     lbr
@@ -198,10 +202,14 @@
                                 <div class="col-12 col-md-10">
                                     <div class="d-flex align-items-center ms-md-5">
                                         <input type="number" placeholder="Awal" class="form-control me-2"
-                                            style="max-width:160px;" wire:model.change="start_box" id="start_box" />
+                                            style="max-width:160px;" wire:model.change="start_box" id="start_box"
+                                            x-on:keydown.tab="$event.preventDefault(); document.querySelector('#end_box').focus();"
+                                            x-on:keydown.enter="$event.preventDefault(); document.querySelector('#end_box').focus();" />
                                         <div class="mx-2">sampai</div>
                                         <input type="number" placeholder="Akhir" class="form-control ms-2"
-                                            style="max-width:160px;" wire:model.change="end_box" />
+                                            x-on:keydown.tab="$event.preventDefault(); document.querySelector('#nomor_palet').focus();"
+                                            x-on:keydown.enter="$event.preventDefault(); document.querySelector('#nomor_palet').focus();"
+                                            style="max-width:160px;" wire:model.change="end_box" id="end_box" />
                                     </div>
                                 </div>
                             </div>
@@ -226,7 +234,8 @@
                             @php
                                 $diffBox = $jumlah_box - $jumlah_box_product;
                                 $diffBoxLabel = $diffBox > 0 ? '+' . $diffBox : (string) $diffBox;
-                                $diffLembar = (int) str_replace(',', '', $qty_produksi) - ($jumlah_box_product * $caseBoxCount);
+                                $diffLembar =
+                                    (int) str_replace(',', '', $qty_produksi) - $jumlah_box_product * $caseBoxCount;
                                 $diffLembarLabel = $diffLembar > 0 ? '+' . $diffLembar : (string) $diffLembar;
                             @endphp
 
@@ -237,17 +246,22 @@
                                     </div>
                                     <div>
                                         <div class="fw-bold mb-1">Cek Hasil Produksi — Ketidaksesuaian Ditemukan</div>
-                                        <div>Jumlah Lembar per Box: <span class="fw-bold">{{ $caseBoxCount }}</span></div>
-                                        <div>Jumlah Box terinput: <span class="fw-bold">{{ $jumlah_box }}</span></div>
-                                        <div>Jumlah Box sesuai produk (harusnya): <span class="fw-bold">{{ $jumlah_box_product }}</span></div>
+                                        <div>Jumlah Lembar per Box: <span class="fw-bold">{{ $caseBoxCount }}</span>
+                                        </div>
+                                        <div>Jumlah Box terinput: <span class="fw-bold">{{ $jumlah_box }}</span>
+                                        </div>
+                                        <div>Jumlah Box sesuai produk (harusnya): <span
+                                                class="fw-bold">{{ $jumlah_box_product }}</span></div>
                                         <div>Selisih Box: <span class="fw-bold">{{ $diffBoxLabel }}</span> box</div>
-                                        <div>Selisih Lembar: <span class="fw-bold">{{ $diffLembarLabel }}</span> lembar</div>
+                                        <div>Selisih Lembar: <span class="fw-bold">{{ $diffLembarLabel }}</span> lembar
+                                        </div>
                                         <small class="text-muted d-block mt-2">
                                             Tindakan yang disarankan:
                                             <ul class="mb-0 mt-1">
                                                 <li>Periksa input Nomor Box (Awal/Akhir) dan jumlah produksi.</li>
                                                 <li>Verifikasi data LPK / Nomor Order terkait.</li>
-                                                <li>Jika data sudah benar, koreksi jumlah box atau jumlah produksi sebelum menyimpan.</li>
+                                                <li>Jika data sudah benar, koreksi jumlah box atau jumlah produksi
+                                                    sebelum menyimpan.</li>
                                             </ul>
                                         </small>
                                     </div>
@@ -258,7 +272,8 @@
                                         <i class="ri-check-line"></i>
                                     </div>
                                     <div>
-                                        <strong>OK:</strong> Jumlah Box sesuai produk — <span class="fw-bold">{{ $jumlah_box }}</span> box.
+                                        <strong>OK:</strong> Jumlah Box sesuai produk — <span
+                                            class="fw-bold">{{ $jumlah_box }}</span> box.
                                     </div>
                                 </div>
                             @endif
@@ -290,7 +305,8 @@
                                     <input class="form-control @error('nomor_palet') is-invalid @enderror"
                                         style="padding:0.44rem" type="text" placeholder="A0000-000000"
                                         id="nomor_palet" x-model="nomor_palet" maxlength="12"
-                                        x-on:keydown.tab="$event.preventDefault(); $refs.nomor_lot.focus();" />
+                                        x-on:keydown.tab="$event.preventDefault(); $refs.nomor_lot.focus();"
+                                        x-on:keydown.enter="$event.preventDefault(); $refs.nomor_lot.focus();" />
                                 </div>
                                 @error('nomor_palet')
                                     <span class="invalid-feedback">{{ $message }}</span>
@@ -306,6 +322,7 @@
                                     class="form-control @error('nomor_lot') is-invalid @enderror"
                                     wire:model="nomor_lot"
                                     x-on:keydown.tab="$event.preventDefault(); $refs.infure_berat_loss.focus();"
+                                    x-on:keydown.enter="$event.preventDefault(); $refs.infure_berat_loss.focus();"
                                     x-ref="nomor_lot" />
                                 <input type="text" class="form-control readonly bg-light" readonly="readonly" />
                                 @error('nomor_lot')
@@ -322,6 +339,7 @@
                                     class="form-control @error('infure_berat_loss') is-invalid @enderror"
                                     wire:model.change="infure_berat_loss"
                                     x-on:keydown.tab="$event.preventDefault(); $refs.employeenoinfure.focus();"
+                                    x-on:keydown.enter="$event.preventDefault(); $refs.employeenoinfure.focus();"
                                     x-ref="infure_berat_loss" />
                                 <span class="input-group-text">
                                     kg
@@ -339,6 +357,7 @@
                                 <input type="text" placeholder="..." class="form-control"
                                     wire:model.change="employeenoinfure"
                                     x-on:keydown.tab="$event.preventDefault(); $refs.work_hour.focus();"
+                                    x-on:keydown.enter="$event.preventDefault(); $refs.work_hour.focus();"
                                     x-ref="employeenoinfure" />
                                 <input type="text" placeholder="-" class="form-control readonly bg-light"
                                     readonly="readonly" wire:model="empnameinfure" />
@@ -741,7 +760,8 @@
                                     <div class="input-group col-md-9 col-xs-8">
                                         <input id="inputKodeGentan" class="form-control" type="number"
                                             wire:model.change="gentan_no" placeholder="..."
-                                            x-on:keydown.tab="$event.preventDefault(); $refs.gentan_line.focus();" />
+                                            x-on:keydown.tab="$event.preventDefault(); $refs.gentan_line.focus();"
+                                            x-on:keydown.enter="$event.preventDefault(); $refs.gentan_line.focus();" />
                                         @error('gentan_no')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror
@@ -779,9 +799,9 @@
                                 <div class="form-group">
                                     <label>Line Gentan </label>
                                     <div class="input-group col-md-9 col-xs-8">
-                                        <input id="inputLineGentan" class="form-control text-uppercase" type="text"
-                                            wire:model.live.debounce.300ms="gentan_line" placeholder="A atau B"
-                                            x-ref="gentan_line"
+                                        <input id="inputLineGentan" class="form-control text-uppercase"
+                                            type="text" wire:model.live.debounce.300ms="gentan_line"
+                                            placeholder="A atau B" x-ref="gentan_line"
                                             x-on:input="
                                                 $event.target.value = $event.target.value.toUpperCase();
                                                 if ($event.target.value !== 'A' && $event.target.value !== 'B') {
@@ -837,7 +857,8 @@
                                     <div class="input-group col-md-9 col-xs-8">
                                         <input id="inputKodeLoss" class="form-control" type="text"
                                             wire:model.change="code_loss" placeholder="..."
-                                            x-on:keydown.tab="$event.preventDefault(); $refs.berat_loss.focus();" />
+                                            x-on:keydown.tab="$event.preventDefault(); $refs.berat_loss.focus();"
+                                            x-on:keydown.enter="$event.preventDefault(); $refs.berat_loss.focus();" />
                                         @error('code_loss')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror
@@ -993,6 +1014,7 @@
                                     <input type="text" wire:model.change="gentan_no" id="edit-gentan_no"
                                         class="form-control" placeholder="No Gentan"
                                         x-on:keydown.tab="$event.preventDefault(); $refs.gentan_line_edit.focus();">
+                                    x-on:keydown.enter="$event.preventDefault(); $refs.gentan_line_edit.focus();">
                                     @error('gentan_no')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
@@ -1304,13 +1326,15 @@
                                                 A
                                             </span>
                                             <input required type="text" class="form-control col-12 col-lg-8"
-                                                value="{{ $product->gazette_dimension_a ?? '' }}" placeholder="0" />
+                                                value="{{ $product->gazette_dimension_a ?? '' }}"
+                                                placeholder="0" />
 
                                             <span class="input-group-text">
                                                 B
                                             </span>
                                             <input required type="text" class="form-control col-12 col-lg-8"
-                                                value="{{ $product->gazette_dimension_b ?? '' }}" placeholder="0" />
+                                                value="{{ $product->gazette_dimension_b ?? '' }}"
+                                                placeholder="0" />
                                         </div>
                                     </div>
                                     <div class="form-group mt-1">
@@ -1320,13 +1344,15 @@
                                                 C
                                             </span>
                                             <input required type="text" class="form-control col-12 col-lg-8"
-                                                value="{{ $product->gazette_dimension_c ?? '' }}" placeholder="0" />
+                                                value="{{ $product->gazette_dimension_c ?? '' }}"
+                                                placeholder="0" />
 
                                             <span class="input-group-text">
                                                 D
                                             </span>
                                             <input required type="text" class="form-control col-12 col-lg-8"
-                                                value="{{ $product->gazette_dimension_d ?? '' }}" placeholder="0" />
+                                                value="{{ $product->gazette_dimension_d ?? '' }}"
+                                                placeholder="0" />
                                         </div>
                                     </div>
                                 </div>
