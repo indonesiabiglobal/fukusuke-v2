@@ -248,7 +248,7 @@ class CheckListSeitaiController extends Component
                     $filterProduct
                     $filterStatus
                     $filterSearchTerm
-                ORDER BY mm.machineno, $fieldDate, tdpg.work_shift, tdpg.seq_no
+                ORDER BY mm.machineno, $fieldDate, tdpg.work_shift, tdpg.seq_no, lossgoods.id ASC
                 ");
         } else {
             $data = DB::select("

@@ -196,6 +196,7 @@ class EditSeitaiController extends Component
                 'tgl.berat_loss'
             )
             ->where('tgl.product_goods_id', $request->query('orderId'))
+            ->orderBy('tgl.id', 'ASC')
             ->get();
         $this->jumlahBeratLoss = $this->detailsLoss->sum('berat_loss');
 
@@ -928,6 +929,7 @@ class EditSeitaiController extends Component
                         'tgl.berat_loss'
                     )
                     ->where('tgl.product_goods_id', $this->tdpgId)
+                    ->orderBy('tgl.id', 'ASC')
                     ->get();
                 $this->jumlahBeratLoss = $this->detailsLoss->sum('berat_loss');
             }
