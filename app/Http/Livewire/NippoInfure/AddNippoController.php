@@ -134,12 +134,12 @@ class AddNippoController extends Component
     }
 
     public function checkLpkProcessed()
-{
-    if ($this->lpkProcessed) {
-        $this->lpkProcessed = false; // Reset
-        $this->dispatch('focus-machine');
+    {
+        if ($this->lpkProcessed) {
+            $this->lpkProcessed = false; // Reset
+            $this->dispatch('focus-machine');
+        }
     }
-}
 
     public function showModalLPK()
     {
@@ -242,6 +242,7 @@ class AddNippoController extends Component
             'employeeno' => 'required',
             'panjang_produksi' => 'required|max:25000',
             'berat_produksi' => 'required|max:900',
+            "berat_standard" => 'required',
             'work_hour' => 'required',
             'nomor_barcode' => 'required',
         ];
@@ -259,6 +260,7 @@ class AddNippoController extends Component
             'panjang_produksi.max' => 'Panjang Produksi maksimal 25000',
             'berat_produksi.required' => 'Berat Produksi harus diisi',
             'berat_produksi.max' => 'Berat Produksi maksimal 900',
+            'berat_standard.required' => 'Berat Standard harus ada',
             'work_hour.required' => 'Jam Kerja harus diisi',
             'nomor_barcode.required' => 'Nomor Barcode harus diisi',
         ];
@@ -352,9 +354,9 @@ class AddNippoController extends Component
             $today = Carbon::now();
             $createdOn = Carbon::createFromFormat('d/m/Y H:i:s', $this->created_on);
 
-             $productionDate = Carbon::createFromFormat('Y-m-d', $this->production_date)
-            ->setTimeFromTimeString($this->work_hour)
-            ->format('Y-m-d H:i:s');
+            $productionDate = Carbon::createFromFormat('Y-m-d', $this->production_date)
+                ->setTimeFromTimeString($this->work_hour)
+                ->format('Y-m-d H:i:s');
 
             $product = new TdProductAssembly();
             $product->production_no = $today->format('dmy') . '-' . $seqno;
@@ -444,16 +446,6 @@ class AddNippoController extends Component
             $this->dispatch('gentan-saved', [
                 'produk_asemblyid' => $product->id
             ]);
-
-            // $this->dispatch('notification', ['type' => 'success', 'message' => 'Order saved successfully.']);
-
-            // // $this->dispatch('redirectToPrint', $product->id);
-
-            // $this->dispatch('auto-print-gentan', [
-            //     'produk_asemblyid' => $product->id
-            // ]);
-
-            // return redirect()->route('nippo-infure');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to save order: ' . $e->getMessage());
@@ -665,30 +657,20 @@ class AddNippoController extends Component
         }
     }
 
-    // public function updatedWorkHour($work_hour)
-    // {
-    //     $this->work_hour = $work_hour;
-
-    //     if (isset($this->work_hour) && $this->work_hour != '') {
-    //         if (
-    //             Carbon::createFromFormat('d/m/Y', $this->production_date)->isSameDay(Carbon::now())
-    //             && Carbon::parse($this->work_hour)->format('H:i') > Carbon::now()->format('H:i')
-    //         ) {
-    //             $this->dispatch('notification', ['type' => 'warning', 'message' => 'Jam Kerja Tidak Boleh Melebihi Jam Sekarang']);
-    //             $this->work_hour = Carbon::now()->format('H:i');
-    //         }
-    //         $this->workShift();
-    //     }
-    // }
-
     public function updatedWorkHour($value)
     {
         try {
-            // Pastikan format time yang benar (H:i atau H:i:s)
+            $time = Carbon::createFromFormat('H:i', $value);
+            $this->work_hour = $time->format('H:i:s');
             if (!empty($value)) {
-                // Parse dan format ulang untuk memastikan format konsisten
-                $time = Carbon::createFromFormat('H:i', $value);
-                $this->work_hour = $time->format('H:i:s');
+                if (
+                    Carbon::parse($this->production_date)->isSameDay(Carbon::now())
+                    && Carbon::parse($this->work_hour)->format('H:i') > Carbon::now()->format('H:i')
+                ) {
+                    $this->dispatch('notification', ['type' => 'warning', 'message' => 'Jam Kerja Tidak Boleh Melebihi Jam Sekarang']);
+                    $this->work_hour = Carbon::now()->format('H:i');
+                }
+                $this->workShift();
             }
         } catch (\Exception $e) {
             // Jika parsing gagal, set ke null atau nilai default
@@ -818,9 +800,7 @@ class AddNippoController extends Component
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Panjang Produksi harus berupa angka']);
                 $this->panjang_produksi = '';
             }
-        }
 
-        if (isset($this->panjang_produksi) && $this->panjang_produksi != '') {
             $total_assembly_line = (int)$this->total_assembly_line + (int)str_replace(',', '', $this->panjang_produksi);
             $this->total_assembly_line = $total_assembly_line;
 
