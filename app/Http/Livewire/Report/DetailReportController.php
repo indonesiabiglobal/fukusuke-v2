@@ -11,7 +11,10 @@ use App\Helpers\phpspreadsheet;
 use Illuminate\Support\Facades\DB;
 use App\Exports\DetailReportExport;
 use App\Exports\InfureReportExport;
+use App\Helpers\departmentHelper;
+use App\Helpers\MachineHelper;
 use App\Http\Livewire\Report\DetailReportInfureController;
+use Exception;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -44,13 +47,12 @@ class DetailReportController extends Component
         $this->workingShiftHour = MsWorkingShift::select('work_hour_from', 'work_hour_till')->active()->orderBy('work_hour_from', 'ASC')->get();
         $this->jamAwal = $this->workingShiftHour[0]->work_hour_from;
         $this->jamAkhir = $this->workingShiftHour[count($this->workingShiftHour) - 1]->work_hour_till;
-        $this->machine = MsMachine::get();
-        $this->department = MsDepartment::get();
+        $this->department = departmentHelper::infurePabrikDepartment();
+        $this->machine = MachineHelper::getInfureMachine();
     }
 
     public function export()
     {
-
         $rules = [
             'tglAwal' => 'required',
             'tglAkhir' => 'required',
@@ -89,45 +91,36 @@ class DetailReportController extends Component
         $tglAkhir = Carbon::parse($this->tglAkhir . ' ' . $this->jamAkhir);
 
         if ($this->nippo == 'Infure') {
-            // $response = $this->reportInfure($tglAwal, $tglAkhir);
-            // if ($response['status'] == 'success') {
-            //     return response()->download($response['filename']);
-            // } else if ($response['status'] == 'error') {
-            //     $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
-            //     return;
-            // }
-
             $report = new DetailReportInfureController();
-            $result = $report->generateReport(
-                $tglAwal,
-                $tglAkhir,
-                [
-                    'lpk_no' => $this->lpk_no,
-                    'machine_id' => $this->machineId,
-                    'nippo' => $this->nippo,
-                    'nomorOrder' => $this->nomorOrder,
-                    'departmentId' => $this->departmentId,
-                    'nomorHan' => $this->nomorHan,
-                ]
-            );
+            try {
+                $result = $report->generateReport(
+                    $tglAwal,
+                    $tglAkhir,
+                    [
+                        'lpk_no' => $this->lpk_no,
+                        'machineId' => $this->machineId,
+                        'nippo' => $this->nippo,
+                        'nomorOrder' => $this->nomorOrder,
+                        'departmentId' => $this->departmentId,
+                        'nomorHan' => $this->nomorHan,
+                    ]
+                );
 
-            return response()->download($result['filename'])->deleteFileAfterSend(true);
+                return response()->download($result['filename'])->deleteFileAfterSend(true);
+            } catch (Exception $e) {
+                $this->dispatch('notification', ['type' => 'error', 'message' => 'Terjadi kesalahan saat generate report: ' . $e->getMessage()]);
+                return;
+            }
         } else if ($this->nippo == 'Seitai') {
-            // $response = $this->reportSeitai($tglAwal, $tglAkhir);
-            // if ($response['status'] == 'success') {
-            //     return response()->download($response['filename']);
-            // } else if ($response['status'] == 'error') {
-            //     $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
-            //     return;
-            // }
-
             $report = new DetailReportSeitaiController();
+
+            try {
             $result = $report->generateReport(
                 $tglAwal,
                 $tglAkhir,
                 [
                     'lpk_no' => $this->lpk_no,
-                    'machine_id' => $this->machineId,
+                    'machineId' => $this->machineId,
                     'nippo' => $this->nippo,
                     'nomorOrder' => $this->nomorOrder,
                     'departmentId' => $this->departmentId,
@@ -137,6 +130,10 @@ class DetailReportController extends Component
             );
 
             return response()->download($result['filename'])->deleteFileAfterSend(true);
+            } catch (Exception $e) {
+                $this->dispatch('notification', ['type' => 'error', 'message' => 'Terjadi kesalahan saat generate report: ' . $e->getMessage()]);
+                return;
+            }
         }
     }
 
@@ -907,7 +904,27 @@ class DetailReportController extends Component
         return $response;
     }
 
+    public function updatedNippo($value)
+    {
+        $this->machineId = null;
+        $this->departmentId = null;
 
+        if ($value == 'Infure') {
+            $this->department = departmentHelper::infurePabrikDepartment();
+            $this->machine = MachineHelper::getInfureMachine();
+        } else if ($value == 'Seitai') {
+            $this->department = departmentHelper::seitaiPabrikDepartment();
+            $this->machine = MachineHelper::getSeitaiMachine();
+        }
+    }
+
+    public function updatedDepartmentId($value)
+    {
+        $this->machineId = null;
+        if ($value) {
+            $this->machine = MachineHelper::getMachineByDepartment($value);
+        }
+    }
 
     public function render()
     {

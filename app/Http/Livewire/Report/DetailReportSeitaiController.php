@@ -23,10 +23,7 @@ class DetailReportSeitaiController
         $data = $this->getOptimizedData($tglAwal, $tglAkhir, $filters);
 
         if (empty($data)) {
-            return [
-                'status' => 'error',
-                'message' => "Data pada periode tanggal atau pembeli tersebut tidak ditemukan"
-            ];
+            throw new \Exception("Data dengan filter tersebut tidak ditemukan");
         }
 
         // Proses data sekali jalan untuk mengurangi loop
@@ -91,10 +88,10 @@ class DetailReportSeitaiController
         $filterDate = "tdpg.created_on BETWEEN '$tglAwal' AND '$tglAkhir'";
         $filterNoLPK = isset($filters['lpk_no']) ? " AND (tdol.lpk_no = '{$filters['lpk_no']}')" : '';
         $nomorOrder = isset($filters['nomorOrder']) ? " AND (msp.code = '{$filters['nomorOrder']}')" : '';
-        $filters['departmentId'] = isset($filters['departmentId']) ? (is_array($filters['departmentId']) ? $filters['departmentId']['value'] : $filters['departmentId']) : '';
-        $filterDepartment = $filters['departmentId'] ? " AND (msd.department_id = '{$filters['departmentId']}')" : '';
-        $filters['machineId'] = isset($filters['machineId']) ? (is_array($filters['machineId']) ? $filters['machineId']['value'] : $filters['machineId']) : '';
-        $filterMachine = $filters['machineId'] ? " AND (tdpa.machine_id = '{$filters['machineId']}')" : '';
+        $filters['departmentId'] = isset($filters['departmentId']) ? $filters['departmentId'] : '';
+        $filterDepartment = $filters['departmentId'] ? " AND (msd.id = '{$filters['departmentId']}')" : '';
+        $filters['machineId'] = isset($filters['machineId']) ? $filters['machineId'] : '';
+        $filterMachine = $filters['machineId'] ? " AND (tdpg.machine_id = '{$filters['machineId']}')" : '';
         $filterNomorPalet = $filters['nomorPalet'] ? " AND (tdpg.nomor_palet = '{$filters['nomorPalet']}')" : '';
         $filterNomorLot = $filters['nomorLot'] ? " AND (tdpg.nomor_lot = '{$filters['nomorLot']}')" : '';
 
@@ -102,6 +99,7 @@ class DetailReportSeitaiController
             "
                 WITH goodasy AS (
                 SELECT
+                    tpga.id,
                     tpga.product_goods_id,
                     tdpa.gentan_no || '-' || tpga.gentan_line AS gentannomorline,
                     tdpa.gentan_no AS gentannomor,
@@ -121,10 +119,11 @@ class DetailReportSeitaiController
                     INNER JOIN tdproduct_goods AS tdpg ON tdpg.ID = tpga.product_goods_id
                     INNER JOIN msmachine AS msm ON msm.ID = tdpa.machine_id
                     INNER JOIN msemployee AS mse ON mse.ID = tdpa.employee_id
-                    INNER JOIN msDepartment AS msd ON msd.ID = mse.department_id
+                    INNER JOIN msDepartment AS msd ON msd.ID = msm.department_id
                 ),
                 lossgoods AS (
                 SELECT
+                    tpgl.id,
                     tpgl.product_goods_id,
                     msls.code,
                     msls.NAME AS namaloss,
@@ -150,9 +149,11 @@ class DetailReportSeitaiController
                 tdpg.nomor_palet AS nomor_palet,
                 tdpg.nomor_lot AS nomor_lot,
                 tdpg.qty_produksi AS qty_produksi,
+                lossgoods.id as loss_id,
                 lossgoods.code as loss_code_loss,
                 lossgoods.namaloss AS loss_name_loss,
                 lossgoods.berat_loss AS berat_loss_loss,
+                goodasy.id AS gentan_id_asy,
                 goodasy.gentannomorline AS gentan_no_line_asy,
                 goodasy.gentannomor AS gentan_no_asy,
                 goodasy.panjang_produksi AS panjang_produksi_asy,
@@ -172,7 +173,7 @@ class DetailReportSeitaiController
                 INNER JOIN tdOrderLpk AS tdol ON tdpg.lpk_id = tdol.
                 ID INNER JOIN msmachine AS msm ON msm.ID = tdpg.machine_id
                 INNER JOIN msemployee AS mse ON mse.ID = tdpg.employee_id
-                INNER JOIN msDepartment AS msd ON msd.ID = mse.department_id
+                INNER JOIN msDepartment AS msd ON msd.ID = msm.department_id
                 INNER JOIN msProduct AS msp ON msp.ID = tdpg.product_id
             WHERE
                 $filterDate
@@ -213,23 +214,24 @@ class DetailReportSeitaiController
             // Organize production dates
             if (!isset($processed['productionDates'][$productCode][$date])) {
                 $processed['productionDates'][$productCode][$date] = $this->formatBaseData($row);
+                $processed['totals']['qty_produksi'] += $row->qty_produksi ?? 0;
             }
 
             // Organize losses
-            if ($row->loss_code_loss) {
-                $processed['losses'][$productCode][$date][$row->loss_code_loss] = [
+            if (!isset($processed['losses'][$productCode][$date][$row->loss_id]) && $row->loss_id) {
+                $processed['losses'][$productCode][$date][$row->loss_id] = [
                     'name' => $row->loss_name_loss,
                     'weight' => $row->berat_loss_loss
                 ];
+                $processed['totals']['berat_loss'] += $row->berat_loss_loss ?? 0;
             }
 
             // Organize gentan data
-            if ($row->gentan_no_asy) {
-                $processed['gentan'][$productCode][$date][$row->gentan_no_asy] = $this->formatGentanData($row);
+            if (!isset($processed['gentan'][$productCode][$date][$row->gentan_id_asy]) && $row->gentan_id_asy) {
+                $processed['gentan'][$productCode][$date][$row->gentan_id_asy] = $this->formatGentanData($row);
+                $processed['totals']['panjang_produksi'] += $row->panjang_produksi_asy ?? 0;
+                $processed['totals']['infure_berat_loss'] += $row->infure_berat_loss ?? 0;
             }
-
-            // Update totals
-            $this->updateTotals($processed['totals'], $row);
         }
 
         return $processed;
@@ -290,7 +292,7 @@ class DetailReportSeitaiController
         $this->worksheet->setCellValue('A1', 'DETAIL PRODUKSI SEITAI');
         $this->worksheet->setCellValue('A2', 'Periode: ' . Carbon::parse($tglAwal)->translatedFormat('d-M-Y H:i') .
             '  ~  ' . Carbon::parse($tglAkhir)->translatedFormat('d-M-Y H:i') .
-            ' - Mesin: ' . ($filters['machine_id'] == '' ? 'Semua Mesin' : $filters['machine_id']));
+            ' - Mesin: ' . ($filters['machineId'] == '' ? 'Semua Mesin' : $filters['machineId']));
 
         // Set column headers dengan format yang dioptimasi
         $this->setColumnHeaders();
@@ -380,7 +382,7 @@ class DetailReportSeitaiController
                     $maxRow = max($maxRow, $rowGentan);
                 }
                 // Apply styles for the entire data block
-                $this->applyDataBlockStyles($rowItemStart, $maxRow);
+                $this->applyDataBlockStyles($rowItemStart, $maxRow - 1);
 
                 $currentRow = $maxRow + 1;
             }
@@ -439,13 +441,16 @@ class DetailReportSeitaiController
     private function applyDataBlockStyles($startRow, $endRow)
     {
         // Apply font and alignment for the entire block
-        $this->cacheStyle("A{$startRow}:V{$startRow}", [
+        $this->cacheStyle("A{$startRow}:J{$startRow}", [
             'borders' => ['allBorders' => ['borderStyle' => 'thin']]
         ]);
 
-        $startRow++;
         $this->cacheStyle("K{$startRow}:V{$endRow}", [
-            'borders' => ['allBorders' => ['borderStyle' => 'thin']]
+            'borders' => [
+                'horizontal' => ['borderStyle' => 'hair'],
+                'vertical' => ['borderStyle' => 'thin'],
+                'outline' => ['borderStyle' => 'thin']
+            ]
         ]);
     }
 
@@ -501,14 +506,11 @@ class DetailReportSeitaiController
         $this->cacheStyle("J{$row}:V{$row}", [
             'numberFormat' => ['formatCode' => '#,##0']
         ]);
-    }
 
-    private function updateTotals(&$totals, $row)
-    {
-        $totals['qty_produksi'] += $row->qty_produksi ?? 0;
-        $totals['berat_loss'] += $row->berat_loss_loss ?? 0;
-        $totals['panjang_produksi'] += $row->panjang_produksi_asy ?? 0;
-        $totals['infure_berat_loss'] += $row->infure_berat_loss ?? 0;
+        // L dengan koma 1
+        $this->cacheStyle("L{$row}", [
+            'numberFormat' => ['formatCode' => '#,##0.0']
+        ]);
     }
 
     private function cacheStyle($range, $style)

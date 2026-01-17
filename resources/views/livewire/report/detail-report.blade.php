@@ -86,9 +86,9 @@
                         <label for="product" class="form-label text-muted">Departemen</label>
                     </div>
                     <div class="col-12 col-lg-9">
-                        <div class="mb-1" wire:ignore>
-                            <select class="form-control" wire:model.defer="departmentId" data-choices
-                                data-choices-sorting-false data-choices-removeItem data-choices-search-field-label>
+                        <div class="mb-1">
+                            <select class="form-control select2-department py-2 px-3" wire:model="departmentId" wire:loading.attr="disabled"
+                                wire:loading.class="bg-light">
                                 <option value="">- All -</option>
                                 @foreach ($department as $item)
                                     <option value="{{ $item->id }}">{{ $item->name }}</option>
@@ -105,12 +105,12 @@
                         <label for="product" class="form-label text-muted">Mesin</label>
                     </div>
                     <div class="col-12 col-lg-9">
-                        <div class="mb-1" wire:ignore>
-                            <select class="form-control" wire:model.defer="machineId" data-choices
-                                data-choices-sorting-false data-choices-removeItem data-choices-search-field-label>
+                        <div class="mb-1">
+                            <select class="form-control select2-machine py-2 px-3" wire:model="machineId" wire:loading.attr="disabled"
+                                wire:loading.class="bg-light">
                                 <option value="">- All -</option>
                                 @foreach ($machine as $item)
-                                    <option value="{{ $item->id }}">{{ $item->machinename }}</option>
+                                    <option value="{{ $item->id }}">{{ $item->machineno }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -164,3 +164,62 @@
         </form>
     </div>
 </div>
+
+@script
+    <script type="text/javascript">
+        document.addEventListener('livewire:initialized', function() {
+            function selectMachine() {
+                // Destroy instance Select2 yang ada
+                if ($('.select2-machine').hasClass("select2-hidden-accessible")) {
+                    $('.select2-machine').select2('destroy');
+                }
+
+                $('.select2-machine').select2({
+                    theme: 'bootstrap-5',
+                }).on('change', function(e) {
+                    var data = $(this).val();
+                    @this.set('machineId', data);
+                });
+            }
+
+            selectMachine();
+
+            // Hook untuk Livewire v3
+            Livewire.hook('morph', ({
+                el,
+                component
+            }) => {
+                setTimeout(() => {
+                    selectMachine();
+                }, 100);
+            });
+
+
+            function selectDepartment() {
+                // Destroy instance Select2 yang ada
+                if ($('.select2-department').hasClass("select2-hidden-accessible")) {
+                    $('.select2-department').select2('destroy');
+                }
+
+                $('.select2-department').select2({
+                    theme: 'bootstrap-5',
+                }).on('change', function(e) {
+                    var data = $(this).val();
+                    @this.set('departmentId', data);
+                });
+            }
+
+            selectDepartment();
+
+            // Hook untuk Livewire v3
+            Livewire.hook('morph', ({
+                el,
+                component
+            }) => {
+                setTimeout(() => {
+                    selectDepartment();
+                }, 100);
+            });
+        });
+    </script>
+@endscript

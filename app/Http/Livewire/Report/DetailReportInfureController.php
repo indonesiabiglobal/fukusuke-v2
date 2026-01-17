@@ -23,10 +23,7 @@ class DetailReportInfureController
         $data = $this->getOptimizedData($tglAwal, $tglAkhir, $filters);
 
         if (empty($data)) {
-            return [
-                'status' => 'error',
-                'message' => "Data pada periode tanggal atau pembeli tersebut tidak ditemukan"
-            ];
+            throw new \Exception("Data dengan filter tersebut tidak ditemukan");
         }
 
         // Proses data sekali jalan untuk mengurangi loop
@@ -89,9 +86,9 @@ class DetailReportInfureController
         $filterDate = "tdpa.production_date BETWEEN '$tglAwal' AND '$tglAkhir'";
         $filterNoLPK = isset($filters['lpk_no']) ? " AND (tdol.lpk_no = '{$filters['lpk_no']}')" : '';
         $nomorOrder = isset($filters['nomorOrder']) ? " AND (msp.code = '{$filters['nomorOrder']}')" : '';
-        $filters['departmentId'] = isset($filters['departmentId']) ? (is_array($filters['departmentId']) ? $filters['departmentId']['value'] : $filters['departmentId']) : '';
+        $filters['departmentId'] = isset($filters['departmentId']) ?  $filters['departmentId'] : '';
         $filterDepartment = $filters['departmentId'] ? " AND (msd.id = '{$filters['departmentId']}')" : '';
-        $filters['machineId'] = isset($filters['machineId']) ? (is_array($filters['machineId']) ? $filters['machineId']['value'] : $filters['machineId']) : '';
+        $filters['machineId'] = isset($filters['machineId']) ?  $filters['machineId'] : '';
         $filterMachine = $filters['machineId'] ? " AND (tdpa.machine_id = '{$filters['machineId']}')" : '';
         $filterNomorHan = isset($filters['nomorHan']) ? " AND (tdpa.nomor_han = '{$filters['nomorHan']}')" : '';
 
@@ -126,7 +123,7 @@ class DetailReportInfureController
                     INNER JOIN msEmployee AS mse ON mse.ID = tdpa.employee_id
                     INNER JOIN msMachine AS msm ON msm.ID = tdpa.machine_id
                     INNER JOIN msProduct AS msp ON msp.ID = tdpa.product_id
-                    INNER JOIN msDepartment AS msd ON msd.ID = mse.department_id
+                    INNER JOIN msDepartment AS msd ON msd.ID = msm.department_id
                     LEFT JOIN tdProduct_Assembly_Loss AS tdpal ON tdpal.product_assembly_id = tdpa.
                     ID LEFT JOIN msLossInfure AS msli ON msli.ID = tdpal.loss_infure_id
                 WHERE
@@ -137,7 +134,7 @@ class DetailReportInfureController
                     $filterMachine
                     $filterNomorHan
                 ORDER BY tdpa.production_date ASC",
-        );;
+        );
     }
 
     private function preprocessData($data)
@@ -157,7 +154,6 @@ class DetailReportInfureController
             if (!isset($processed['products'][$row->product_id])) {
                 $processed['products'][$row->product_id] = [
                     'name' => $row->produkcode . ' - ' . $row->namaproduk,
-                    'dates' => []
                 ];
             }
 
@@ -167,6 +163,10 @@ class DetailReportInfureController
                     'base' => $this->formatBaseData($row),
                     'loss' => []
                 ];
+
+                // Update totals
+                $processed['totals']['panjang'] += $row->panjang_produksi;
+                $processed['totals']['berat'] += $row->berat_produksi;
             }
 
             if ($row->losscode) {
@@ -174,12 +174,8 @@ class DetailReportInfureController
                     'name' => $row->lossname,
                     'weight' => $row->berat_loss
                 ];
+                $processed['totals']['loss'] += $row->berat_loss ?? 0;
             }
-
-            // Update totals
-            $processed['totals']['panjang'] += $row->panjang_produksi;
-            $processed['totals']['berat'] += $row->berat_produksi;
-            $processed['totals']['loss'] += $row->berat_loss ?? 0;
         }
 
         return $processed;
@@ -226,7 +222,7 @@ class DetailReportInfureController
         $this->worksheet->setCellValue('A1', 'DETAIL PRODUKSI INFURE');
         $this->worksheet->setCellValue('A2', 'Periode: ' . Carbon::parse($tglAwal)->translatedFormat('d-M-Y H:i') .
             '  ~  ' . Carbon::parse($tglAkhir)->translatedFormat('d-M-Y H:i') .
-            ' - Mesin: ' . ($filters['machine_id'] == '' ? 'Semua Mesin' : $filters['machine_id']));
+            ' - Mesin: ' . ($filters['machineId'] == '' ? 'Semua Mesin' : $filters['machineId']));
 
         // Set column headers dengan format yang dioptimasi
         $this->setColumnHeaders();
@@ -339,9 +335,9 @@ class DetailReportInfureController
                             $this->worksheet->setCellValue('N' . $currentRow, $loss['weight']);
                             $currentRow++;
                         }
-                        if (count($details['loss']) > 1) {
-                            $this->applyLossDataBlockStyles($rowItemStart, $currentRow);
-                        }
+                        $this->applyLossDataBlockStyles($rowItemStart, $currentRow - 1);
+                    } else {
+                        $this->applyLossDataBlockStyles($rowItemStart, $currentRow);
                     }
                     $currentRow++;
                     $this->applyDataBlockStyles($rowItemStart);
@@ -350,22 +346,25 @@ class DetailReportInfureController
             $this->applyProductBlockStyles($startRow, $currentRow);
         }
 
-        $this->currentRow = $currentRow; // Simpan posisi baris terakhir untuk grand total
+        $this->currentRow = $currentRow + 1; // Simpan posisi baris terakhir untuk grand total
     }
 
     private function applyDataBlockStyles($startRow)
     {
         // Apply font and alignment for the entire block
-        $this->cacheStyle("A{$startRow}:N{$startRow}", [
+        $this->cacheStyle("A{$startRow}:L{$startRow}", [
             'borders' => ['allBorders' => ['borderStyle' => 'thin']]
         ]);
     }
 
     private function applyLossDataBlockStyles($startRow, $endRow)
     {
-        $startRow++;
         $this->cacheStyle("M{$startRow}:N{$endRow}", [
-            'borders' => ['allBorders' => ['borderStyle' => 'thin']]
+            'borders' => [
+                'horizontal' => ['borderStyle' => 'hair'],
+                'vertical' => ['borderStyle' => 'thin'],
+                'outline' => ['borderStyle' => 'thin']
+            ]
         ]);
     }
 
@@ -375,7 +374,7 @@ class DetailReportInfureController
             'font' => ['size' => 8, 'name' => 'Calibri'],
         ]);
         $this->cacheStyle("A{$startRow}:F{$endRow}", [
-            'alignment' => ['horizontal' => 'center'],
+            'alignment' => ['horizontal' => 'left'],
         ]);
     }
 
