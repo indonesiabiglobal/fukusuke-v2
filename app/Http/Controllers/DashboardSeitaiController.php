@@ -35,8 +35,8 @@ class DashboardSeitaiController extends Controller
     public function getProduksiLossSeitai(Request $request, $monthly = false)
     {
         if ($monthly) {
-            $startDate = Carbon::parse($request->filterDateMonthly)->startOfMonth()->format('d-m-Y 00:00:00');
-            $endDate = Carbon::parse($request->filterDateMonthly)->endOfMonth()->format('d-m-Y 23:59:59');
+            $startDate = Carbon::parse($request->filterDateMonthly)->startOfMonth()->format('d-m-Y 07:01:00');
+            $endDate = Carbon::parse($request->filterDateMonthly)->endOfMonth()->addDay()->format('d-m-Y 07:00:00');
         } else {
             [$startDate, $endDate] = workingShiftHelper::dailtShift($request->filterDateDaily, Carbon::parse($request->filterDateDaily)->addDay()->format('d-m-Y'));
         }
@@ -49,7 +49,7 @@ class DashboardSeitaiController extends Controller
                 mac.id AS machine_id,
                 RIGHT(mac.machineno, 2) AS machineno,
                 ROUND(COALESCE(SUM(tpg.qty_produksi), 0)::numeric, 1) AS qty_produksi,
-                ROUND(COALESCE(SUM(tpg.qty_produksi) / 1000, 0)::numeric, 1) AS berat_produksi,
+                ROUND(COALESCE(SUM(tpg.qty_produksi * prd.unit_weight * 0.001), 0)::numeric, 1) AS berat_produksi,
                 ROUND(COALESCE(SUM(tpgloss.berat_loss), 0)::numeric, 1) AS berat_loss
             FROM msmachine mac
             LEFT JOIN tdproduct_goods tpg
@@ -63,6 +63,7 @@ class DashboardSeitaiController extends Controller
                     WHERE msl.id = tpgloss.loss_seitai_id
                     AND msl.loss_class_id IN ($placeholders)
                 )
+            LEFT JOIN msproduct prd ON tpg.product_id = prd.id
             WHERE mac.department_id = ?
             GROUP BY mac.id, mac.machineno
             ORDER BY machineno ASC
@@ -73,7 +74,7 @@ class DashboardSeitaiController extends Controller
 
         $produksiLossDaily = collect(DB::select($sql, $params))->map(function ($item) {
             $item->berat_loss_percentage = $item->berat_produksi > 0
-                ? round(($item->berat_loss / ($item->berat_produksi + $item->berat_loss)) * 100, 2)
+                ? round(($item->berat_loss / $item->berat_produksi) * 100, 2)
                 : 0;
             return $item;
         });
@@ -101,7 +102,7 @@ class DashboardSeitaiController extends Controller
                     SELECT 1
                     FROM mslossseitai msl
                     WHERE msl.id = tpgloss.loss_seitai_id
-                    AND msl.loss_class_id IN (' . implode(',', $lossClassIds ) . ')
+                    AND msl.loss_class_id IN (' . implode(',', $lossClassIds) . ')
                 )
             WHERE mac.department_id = ?
             GROUP BY mac.id, mac.machineno
@@ -131,7 +132,7 @@ class DashboardSeitaiController extends Controller
                 AND tpa.production_date between ? AND ?
             INNER JOIN msmachine mac ON tpa.machine_id = mac.id
             WHERE mac.department_id = ?
-                AND mslos.loss_class_id IN (' . implode(',', $lossClassIds ) . ')
+                AND mslos.loss_class_id IN (' . implode(',', $lossClassIds) . ')
             GROUP BY loss_name
             ORDER BY berat_loss DESC limit 5
         ', [
@@ -193,8 +194,8 @@ class DashboardSeitaiController extends Controller
     public function getKadouJikanFrekuensiTrouble(Request $request, $monthly = false)
     {
         if ($monthly) {
-            $startDate = Carbon::parse($request->filterDateMonthly)->startOfMonth()->format('d-m-Y 00:00:00');
-            $endDate = Carbon::parse($request->filterDateMonthly)->endOfMonth()->format('d-m-Y 23:59:59');
+            $startDate = Carbon::parse($request->filterDateMonthly)->startOfMonth()->format('d-m-Y 07:01:00');
+            $endDate = Carbon::parse($request->filterDateMonthly)->endOfMonth()->addDay()->format('d-m-Y 07:00:00');
         } else {
             // Daily shift calculation
             [$startDate, $endDate] = workingShiftHelper::dailtShift($request->filterDateDaily, Carbon::parse($request->filterDateDaily)->addDay()->format('d-m-Y'));
@@ -313,35 +314,36 @@ class DashboardSeitaiController extends Controller
     public function getTotalProductionMonthly(Request $request)
     {
         $filterDate = Carbon::parse($request->filterDateMonthly);
-        $startMonth = Carbon::parse($filterDate)->startOfMonth()->format('d-m-Y 00:00:00');
-        $firstPeriod = Carbon::parse($startMonth)->addDays(9)->format('d-m-Y 23:59:59');
-        $secondPeriod = Carbon::parse($firstPeriod)->addDays(10)->format('d-m-Y 23:59:59');
-        $endMonth = Carbon::parse($filterDate)->endOfMonth()->format('d-m-Y 23:59:59');
+        $startMonth = Carbon::parse($filterDate)->startOfMonth()->format('d-m-Y 07:01:00');
+        $firstPeriod = Carbon::parse($startMonth)->addDays(10)->format('d-m-Y 07:00:00');
+        $secondPeriod = Carbon::parse($firstPeriod)->addDays(10)->format('d-m-Y 07:00:00');
+        $endMonth = Carbon::parse($filterDate)->endOfMonth()->addDay()->format('d-m-Y 07:00:00');
 
         $totalProductionMonthly = collect(DB::select('
             SELECT
-                ROUND(COALESCE(SUM(tpa.qty_produksi), 0)::numeric, 1) as target_produksi,
-                ROUND(COALESCE(SUM(tpa.qty_produksi), 0)::numeric, 1) as total_produksi,
-                ROUND(COALESCE(SUM(tpa.qty_produksi) / 1000, 0)::numeric, 1) as target_berat_produksi,
-                ROUND(COALESCE(SUM(tpa.qty_produksi) / 1000, 0)::numeric, 1) as total_berat_produksi,
+                ROUND(COALESCE(SUM(tpg.qty_produksi), 0)::numeric, 1) as target_produksi,
+                ROUND(COALESCE(SUM(tpg.qty_produksi), 0)::numeric, 1) as total_produksi,
+                ROUND(COALESCE(SUM(tpg.qty_produksi * prd.unit_weight * 0.001), 0)::numeric, 1) as target_berat_produksi,
+                ROUND(COALESCE(SUM(tpg.qty_produksi * prd.unit_weight * 0.001), 0)::numeric, 1) as total_berat_produksi,
                 CASE
-                    WHEN tpa.production_date BETWEEN :startMonth AND :firstPeriod THEN 1
-                    WHEN tpa.production_date BETWEEN :firstPeriodPlus AND :secondPeriod THEN 2
-                    WHEN tpa.production_date BETWEEN :secondPeriodPlus AND :endMonth THEN 3
+                    WHEN tpg.production_date BETWEEN :startMonth AND :firstPeriod THEN 1
+                    WHEN tpg.production_date BETWEEN :firstPeriodPlus AND :secondPeriod THEN 2
+                    WHEN tpg.production_date BETWEEN :secondPeriodPlus AND :endMonth THEN 3
                 END AS period_ke
-            FROM tdproduct_goods tpa
-            LEFT JOIN msmachine mac ON tpa.machine_id = mac.id
+            FROM tdproduct_goods tpg
+            LEFT JOIN msmachine mac ON tpg.machine_id = mac.id
+            LEFT JOIN msproduct prd ON tpg.product_id = prd.id
             WHERE mac.department_id = :factory
-            AND tpa.production_date BETWEEN :startMonth AND :endMonth
+            AND tpg.production_date BETWEEN :startMonth AND :endMonth
             GROUP BY period_ke
             ORDER BY period_ke ASC
         ', [
             'factory'         => $request->factory,
             'startMonth'      => $startMonth,
             'firstPeriod'     => $firstPeriod,
-            'firstPeriodPlus' => Carbon::parse($firstPeriod)->addDay()->format('Y-m-d 00:00:00'),
+            'firstPeriodPlus' => Carbon::parse($firstPeriod)->format('Y-m-d 07:00:00'),
             'secondPeriod'    => $secondPeriod,
-            'secondPeriodPlus' => Carbon::parse($secondPeriod)->addDay()->format('Y-m-d 00:00:00'),
+            'secondPeriodPlus' => Carbon::parse($secondPeriod)->format('Y-m-d 07:00:00'),
             'endMonth'        => $endMonth,
         ]));
 
@@ -351,8 +353,8 @@ class DashboardSeitaiController extends Controller
     public function getPeringatanKatagae(Request $request)
     {
         $filterDate = Carbon::parse($request->filterDateMonthly);
-        $startMonth = Carbon::parse($filterDate)->startOfMonth()->format('d-m-Y 00:00:00');
-        $endMonth = Carbon::parse($filterDate)->endOfMonth()->format('d-m-Y 23:59:59');
+        $startMonth = Carbon::parse($filterDate)->startOfMonth()->format('d-m-Y 07:01:00');
+        $endMonth = Carbon::parse($filterDate)->endOfMonth()->addDay()->format('d-m-Y 07:00:00');
 
         $peringatanKatagaeMonthly = collect(DB::select('
             SELECT
@@ -400,42 +402,47 @@ class DashboardSeitaiController extends Controller
     public function getLossMonthly(Request $request)
     {
         $filterDate = Carbon::parse($request->filterDateMonthly);
-        $startMonth = Carbon::parse($filterDate)->startOfMonth()->format('d-m-Y 00:00:00');
-        $firstPeriod = Carbon::parse($startMonth)->addDays(9)->format('d-m-Y 23:59:59');
-        $secondPeriod = Carbon::parse($firstPeriod)->addDays(10)->format('d-m-Y 23:59:59');
-        $endMonth = Carbon::parse($filterDate)->endOfMonth()->format('d-m-Y 23:59:59');
+        $startMonth = Carbon::parse($filterDate)->startOfMonth()->format('d-m-Y 07:01:00');
+        $firstPeriod = Carbon::parse($startMonth)->addDays(10)->format('d-m-Y 07:00:00');
+        $secondPeriod = Carbon::parse($firstPeriod)->addDays(10)->format('d-m-Y 07:00:00');
+        $endMonth = Carbon::parse($filterDate)->endOfMonth()->addDay()->format('d-m-Y 07:00:00');
 
         $produksiLossMonthly = collect(DB::select('
             SELECT
                 mac.id AS machine_id,
                 RIGHT(mac.machineno, 2) AS machineno,
                 CASE
-                    WHEN tpa.production_date BETWEEN :startMonth AND :firstPeriod THEN 1
-                    WHEN tpa.production_date BETWEEN :firstPeriodPlus AND :secondPeriod THEN 2
-                    WHEN tpa.production_date BETWEEN :secondPeriodPlus AND :endMonth THEN 3
+                    WHEN tpg.production_date BETWEEN :startMonth AND :firstPeriod THEN 1
+                    WHEN tpg.production_date BETWEEN :firstPeriodPlus AND :secondPeriod THEN 2
+                    WHEN tpg.production_date BETWEEN :secondPeriodPlus AND :endMonth THEN 3
                 END AS period_ke,
-                ROUND(SUM(tpaloss.berat_loss)::numeric, 1) AS berat_loss
+                ROUND(SUM(tpgloss.berat_loss)::numeric, 1) AS berat_loss,
+                ROUND(COALESCE(SUM(tpg.qty_produksi * prd.unit_weight * 0.001), 0)::numeric, 1) AS berat_produksi
             FROM msmachine mac
-            LEFT JOIN tdproduct_goods tpa ON mac.id = tpa.machine_id
-            LEFT JOIN tdproduct_goods_loss tpaloss ON tpa.id = tpaloss.product_goods_id
+            LEFT JOIN tdproduct_goods tpg ON mac.id = tpg.machine_id
+            LEFT JOIN tdproduct_goods_loss tpgloss ON tpg.id = tpgloss.product_goods_id
+            LEFT JOIN msproduct prd ON tpg.product_id = prd.id
             WHERE mac.department_id = :factory
-            AND tpa.production_date BETWEEN :startMonth AND :endMonth
+            AND tpg.production_date BETWEEN :startMonth AND :endMonth
             GROUP BY mac.id, mac.machineno, period_ke
             ORDER BY mac.machineno ASC, period_ke ASC
         ', [
             'factory'         => $request->factory,
             'startMonth'      => $startMonth,
             'firstPeriod'     => $firstPeriod,
-            'firstPeriodPlus' => Carbon::parse($firstPeriod)->addDay()->format('Y-m-d 00:00:00'),
+            'firstPeriodPlus' => Carbon::parse($firstPeriod)->format('Y-m-d 07:00:00'),
             'secondPeriod'    => $secondPeriod,
-            'secondPeriodPlus' => Carbon::parse($secondPeriod)->addDay()->format('Y-m-d 00:00:00'),
+            'secondPeriodPlus' => Carbon::parse($secondPeriod)->format('Y-m-d 07:00:00'),
             'endMonth'        => $endMonth,
         ]))->groupBy('period_ke')->map(function ($items, $period) {
+            // dd($items);
             return $items->map(function ($item) use ($period) {
                 return [
                     'machine_id' => $item->machine_id,
                     'machineno' => $item->machineno,
-                    'berat_loss' => $item->berat_loss,
+                    'berat_loss' => $item->berat_produksi > 0
+                        ? round(($item->berat_loss / $item->berat_produksi) * 100, 2)
+                        : 0,
                     'period_ke' => $period
                 ];
             });
@@ -448,10 +455,10 @@ class DashboardSeitaiController extends Controller
     public function getTopLossByCaseMonthly(Request $request)
     {
         $filterDate = Carbon::parse($request->filterDateMonthly);
-        $startMonth = Carbon::parse($filterDate)->startOfMonth()->format('d-m-Y 00:00:00');
-        $firstPeriod = Carbon::parse($startMonth)->addDays(9)->format('d-m-Y 23:59:59');
-        $secondPeriod = Carbon::parse($firstPeriod)->addDays(10)->format('d-m-Y 23:59:59');
-        $endMonth = Carbon::parse($filterDate)->endOfMonth()->format('d-m-Y 23:59:59');
+        $startMonth = Carbon::parse($filterDate)->startOfMonth()->format('d-m-Y 07:01:00');
+        $firstPeriod = Carbon::parse($startMonth)->addDays(10)->format('d-m-Y 07:00:00');
+        $secondPeriod = Carbon::parse($firstPeriod)->addDays(10)->format('d-m-Y 07:00:00');
+        $endMonth = Carbon::parse($filterDate)->endOfMonth()->addDay()->format('d-m-Y 07:00:00');
         $lossClassIds = LossSeitaiHelper::lossClassIdDashboard();
 
         $topLossCaseMonthly = collect(DB::select('
@@ -477,9 +484,9 @@ class DashboardSeitaiController extends Controller
             'factory'         => $request->factory,
             'startMonth'      => $startMonth,
             'firstPeriod'     => $firstPeriod,
-            'firstPeriodPlus' => Carbon::parse($firstPeriod)->addDay()->format('Y-m-d 00:00:00'),
+            'firstPeriodPlus' => Carbon::parse($firstPeriod)->format('Y-m-d 07:00:00'),
             'secondPeriod'    => $secondPeriod,
-            'secondPeriodPlus' => Carbon::parse($secondPeriod)->addDay()->format('Y-m-d 00:00:00'),
+            'secondPeriodPlus' => Carbon::parse($secondPeriod)->format('Y-m-d 07:00:00'),
             'endMonth'        => $endMonth,
         ]));
 
@@ -522,10 +529,10 @@ class DashboardSeitaiController extends Controller
     public function getProductionMonthly(Request $request)
     {
         $filterDate = Carbon::parse($request->filterDateMonthly);
-        $startMonth = Carbon::parse($filterDate)->startOfMonth()->format('d-m-Y 00:00:00');
-        $firstPeriod = Carbon::parse($startMonth)->addDays(9)->format('d-m-Y 23:59:59');
-        $secondPeriod = Carbon::parse($firstPeriod)->addDays(10)->format('d-m-Y 23:59:59');
-        $endMonth = Carbon::parse($filterDate)->endOfMonth()->format('d-m-Y 23:59:59');
+        $startMonth = Carbon::parse($filterDate)->startOfMonth()->format('d-m-Y 07:01:00');
+        $firstPeriod = Carbon::parse($startMonth)->addDays(10)->format('d-m-Y 07:00:00');
+        $secondPeriod = Carbon::parse($firstPeriod)->addDays(10)->format('d-m-Y 07:00:00');
+        $endMonth = Carbon::parse($filterDate)->endOfMonth()->addDay()->format('d-m-Y 07:00:00');
 
         $produksiLossMonthly = collect(DB::select('
             SELECT
@@ -547,9 +554,9 @@ class DashboardSeitaiController extends Controller
             'factory'         => $request->factory,
             'startMonth'      => $startMonth,
             'firstPeriod'     => $firstPeriod,
-            'firstPeriodPlus' => Carbon::parse($firstPeriod)->addDay()->format('Y-m-d 00:00:00'),
+            'firstPeriodPlus' => Carbon::parse($firstPeriod)->format('Y-m-d 07:00:00'),
             'secondPeriod'    => $secondPeriod,
-            'secondPeriodPlus' => Carbon::parse($secondPeriod)->addDay()->format('Y-m-d 00:00:00'),
+            'secondPeriodPlus' => Carbon::parse($secondPeriod)->format('Y-m-d 07:00:00'),
             'endMonth'        => $endMonth,
         ]))->groupBy('period_ke')->map(function ($items, $period) {
             return $items->map(function ($item) use ($period) {
@@ -640,8 +647,8 @@ class DashboardSeitaiController extends Controller
     public function getTopMesinMasalahLossMonthly(Request $request)
     {
         $filterDate = Carbon::parse($request->filterDateMonthly);
-        $startMonth = Carbon::parse($filterDate)->startOfMonth()->format('d-m-Y 00:00:00');
-        $endMonth = Carbon::parse($filterDate)->endOfMonth()->format('d-m-Y 23:59:59');
+        $startMonth = Carbon::parse($filterDate)->startOfMonth()->format('d-m-Y 07:01:00');
+        $endMonth = Carbon::parse($filterDate)->endOfMonth()->addDay()->format('d-m-Y 07:00:00');
 
         $topLossKasus = DB::select('
             SELECT

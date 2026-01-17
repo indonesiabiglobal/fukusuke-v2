@@ -445,8 +445,18 @@
                 maxCases = Math.max(...kadouJikanFrekuensiTrouble.map(item => parseFloat(item.frekuensi_trouble) || 0));
             }
             const casesAxisConfig = {
-                labels: { format: '{value}', style: {} },
-                title: { text: '(Kasus)', align: 'high', offset: 0, rotation: 0, y: -20, style: {} },
+                labels: {
+                    format: '{value}',
+                    style: {}
+                },
+                title: {
+                    text: '(Kasus)',
+                    align: 'high',
+                    offset: 0,
+                    rotation: 0,
+                    y: -20,
+                    style: {}
+                },
                 // place cases on the left
                 opposite: false
             };
@@ -488,8 +498,18 @@
                 // Swap: first axis = cases (right), second = percentage (left)
                 yAxis: [casesAxisConfig, {
                     // Percentage axis — show on right
-                    labels: { format: '{value}%', style: {} },
-                    title: { text: '(%)', align: 'high', offset: 0, rotation: 0, y: -20, style: {} },
+                    labels: {
+                        format: '{value}%',
+                        style: {}
+                    },
+                    title: {
+                        text: '(%)',
+                        align: 'high',
+                        offset: 0,
+                        rotation: 0,
+                        y: -20,
+                        style: {}
+                    },
                     max: 100,
                     opposite: true
                 }],
@@ -516,7 +536,9 @@
                     // cases axis (left)
                     yAxis: 0,
                     data: kadouJikanFrekuensiTrouble.map(item => item.frekuensi_trouble || 0),
-                    tooltip: { valueSuffix: ' (cases)' },
+                    tooltip: {
+                        valueSuffix: ' (cases)'
+                    },
                     color: '#29A3FF',
                 }, {
                     name: 'Kadou Jikan (%)',
@@ -524,7 +546,9 @@
                     // percentage axis (right)
                     yAxis: 1,
                     data: kadouJikanFrekuensiTrouble.map(item => parseFloat(item.kadou_jikan) || 0),
-                    tooltip: { valueSuffix: ' %' },
+                    tooltip: {
+                        valueSuffix: ' %'
+                    },
                     color: '#ff9900',
                 }],
                 responsive: {
@@ -1244,11 +1268,11 @@
                 }, {
                     name: 'Periode B',
                     color: '#ff9900',
-                    data: lossPerBulan[2].map(item => parseFloat(item.berat_loss) || 0)
+                    data: lossPerBulan[2] ? lossPerBulan[2].map(item => parseFloat(item.berat_loss) || 0) : []
                 }, {
                     name: 'Periode C',
                     color: '#ffbd53',
-                    data: lossPerBulan[3].map(item => parseFloat(item.berat_loss) || 0)
+                    data: lossPerBulan[3] ? lossPerBulan[3].map(item => parseFloat(item.berat_loss) || 0) : []
                 }],
                 responsive: {
                     rules: [{
@@ -1314,12 +1338,12 @@
                 },
                 series: [{
                     name: 'Periode C',
-                    data: produksiPerBulan[3].map((item) => parseFloat(item.berat_produksi) || 0),
+                    data: produksiPerBulan[3] ? produksiPerBulan[3].map((item) => parseFloat(item.berat_produksi) || 0) : [],
                     stack: 'produksi',
                     color: '#93D1FF'
                 }, {
                     name: 'Periode B',
-                    data: produksiPerBulan[2].map((item) => parseFloat(item.berat_produksi) || 0),
+                    data: produksiPerBulan[2] ? produksiPerBulan[2].map((item) => parseFloat(item.berat_produksi) || 0) : [],
                     stack: 'produksi',
                     color: '#29A3FF'
                 }, {
@@ -1458,7 +1482,7 @@
             setButtonMonthlyLoading(true);
 
             let completedRequests = 0;
-            const totalRequests = 6;
+            const totalRequests = 5;
 
             const checkAllComplete = () => {
                 completedRequests++;
@@ -1472,10 +1496,9 @@
                 '<div class="text-center p-4">Loading initial data...</div>');
 
             // placeholder loading table
-            $('#totalProduksiPerBulan tbody, #rankingProblemMachineMonthlyTable tbody, #mesinMasalahLossMonthlyTable tbody').html(
-                '<tr><td colspan="3" class="text-center p-4">Loading initial data...</td></tr>');
-            $('#table-peringatan-katagae tbody').html(
-                '<tr><td colspan="6" class="text-center p-4">Loading initial data...</td></tr>');
+            $('#totalProduksiPerBulan tbody, #rankingProblemMachineMonthlyTable tbody, #mesinMasalahLossMonthlyTable tbody')
+                .html(
+                    '<tr><td colspan="3" class="text-center p-4">Loading initial data...</td></tr>');
 
             // total produksi per bulan
             fetchData('{{ route('dashboard-infure-total-produksi-per-bulan') }}', data, method)
@@ -1492,25 +1515,6 @@
                 .catch(() => {
                     $('#totalProduksiPerBulan tbody').html(
                         '<tr><td colspan="4" class="text-center p-4 text-danger">Error loading data</td></tr>'
-                    );
-                })
-                .always(checkAllComplete);
-
-            // produksi per bulan
-            fetchData('{{ route('dashboard-infure-peringatan-katagae') }}', data, method)
-                .then(res => {
-                    peringatanKatagae = res || [];
-                    if (peringatanKatagae.length != 0) {
-                        loadPeringatanKatagaeTable();
-                    } else {
-                        $('#table-peringatan-katagae tbody').html(
-                            '<tr><td colspan="6" class="text-center p-4">Tidak ada data untuk ditampilkan</td></tr>'
-                        );
-                    }
-                })
-                .catch(() => {
-                    $('#table-peringatan-katagae tbody').html(
-                        '<tr><td colspan="6" class="text-center p-4 text-danger">Error loading data</td></tr>'
                     );
                 })
                 .always(checkAllComplete);
@@ -1585,16 +1589,45 @@
                 })
                 .always(checkAllComplete);
 
-                // Set factory period text
-                const factoryPeriodText = data.factory ? ` - ${listFactory[data.factory]['name']}` : '';
-                $('#factory-period').text(factoryPeriodText);
+            // Set factory period text
+            const factoryPeriodText = data.factory ? ` - ${listFactory[data.factory]['name']}` : '';
+            $('#factory-period').text(factoryPeriodText);
+        }
+
+        // Fungsi khusus untuk fetch peringatan katagae
+        function fetchPeringatanKatagae() {
+            const form = $('#form-dashboard-monthly');
+            const data = {
+                filterDateMonthly: form.find('input[name="filterDateMonthly"]').val(),
+                factory: $('#factory').val(),
+            };
+
+            $('#table-peringatan-katagae tbody').html(
+                '<tr><td colspan="6" class="text-center p-4">Loading initial data...</td></tr>');
+
+            fetchData('{{ route('dashboard-infure-peringatan-katagae') }}', data, 'GET')
+                .then(res => {
+                    peringatanKatagae = res || [];
+                    if (peringatanKatagae.length != 0) {
+                        loadPeringatanKatagaeTable();
+                    } else {
+                        $('#table-peringatan-katagae tbody').html(
+                            '<tr><td colspan="6" class="text-center p-4">Tidak ada data untuk ditampilkan</td></tr>'
+                        );
+                    }
+                })
+                .catch(() => {
+                    $('#table-peringatan-katagae tbody').html(
+                        '<tr><td colspan="6" class="text-center p-4 text-danger">Error loading data</td></tr>'
+                    );
+                })
         }
 
         $(document).ready(function() {
-
             setTimeout(function() {
                 loadInitialDailyData();
                 loadInitialMonthlyData();
+                fetchPeringatanKatagae();
             }, 500);
 
             // Auto-refresh dashboard data based on REFRESH_DASHBOARD_MINUTES from env
@@ -1602,7 +1635,15 @@
                 console.log('Auto-refreshing dashboard data...');
                 loadInitialDailyData();
                 loadInitialMonthlyData();
+                fetchPeringatanKatagae();
             }, refreshIntervalMs);
+
+            // Interval khusus untuk peringatan katagae (setiap 1 menit)
+            setInterval(function() {
+                const form = $('#form-dashboard-monthly');
+                if (form.length === 0) return;
+                fetchPeringatanKatagae();
+            }, 60000); // 1 menit
 
             Highcharts.setOptions({
                 chart: {

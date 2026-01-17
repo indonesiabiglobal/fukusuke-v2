@@ -1217,9 +1217,9 @@
                 },
                 xAxis: {
                     categories: lossPerBulan[1].map(item => item.machineno),
-                    title: {
-                        text: 'Loss',
-                    },
+                    // title: {
+                    //     text: 'Loss',
+                    // },
                 },
                 legend: {
                     layout: 'vertical',
@@ -1240,11 +1240,11 @@
                 }, {
                     name: 'Periode B',
                     color: '#ff9900',
-                    data: lossPerBulan[2].map(item => parseFloat(item.berat_loss) || 0)
+                    data: lossPerBulan[2] ? lossPerBulan[2].map(item => parseFloat(item.berat_loss) || 0) : []
                 }, {
                     name: 'Periode C',
                     color: '#ffbd53',
-                    data: lossPerBulan[3].map(item => parseFloat(item.berat_loss) || 0)
+                    data: lossPerBulan[3] ? lossPerBulan[3].map(item => parseFloat(item.berat_loss) || 0) : []
                 }],
                 responsive: {
                     rules: [{
@@ -1420,17 +1420,17 @@
                 },
                 series: [{
                     name: 'Periode C',
-                    data: produksiPerBulan[3].map((item) => parseFloat(item.qty_produksi) || 0),
+                    data: produksiPerBulan[3] ? produksiPerBulan[3].map((item) => parseFloat(item.qty_produksi) || 0) : [],
                     stack: 'produksi',
                     color: '#93D1FF'
                 }, {
                     name: 'Periode B',
-                    data: produksiPerBulan[2].map((item) => parseFloat(item.qty_produksi) || 0),
+                    data: produksiPerBulan[2] ? produksiPerBulan[2].map((item) => parseFloat(item.qty_produksi) || 0) : [],
                     stack: 'produksi',
                     color: '#29A3FF'
                 }, {
                     name: 'Periode A',
-                    data: produksiPerBulan[1].map((item) => parseFloat(item.qty_produksi) || 0),
+                    data: produksiPerBulan[1] ? produksiPerBulan[1].map((item) => parseFloat(item.qty_produksi) || 0) : [],
                     stack: 'produksi',
                     color: '#0070C0'
                 }],
