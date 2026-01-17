@@ -1895,7 +1895,7 @@ window.handleThermalPrintEdit = async function(orderId) {
 
         // Fetch data
         console.log('📡 Fetching print data...');
-        const response = await fetch(`/get-print-data/${orderId}`);
+        const response = await fetch(`/get-print-data/${orderId}?t=${Date.now()}`);
 
         if (!response.ok) {
             const errorText = await response.text();
