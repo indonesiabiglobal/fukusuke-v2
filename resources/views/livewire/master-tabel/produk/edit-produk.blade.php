@@ -677,16 +677,15 @@
                     <div class="form-group">
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-6">Klarifikasi Seal</label>
-                            <div class="col-12 col-lg-6" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
-                                    class="form-select @error('seal_classification_id') is-invalid @enderror"
-                                    wire:model.live="seal_classification_id">
+                            <div class="col-12 col-lg-6">
+                                <select class="form-select @error('seal_classification_id') is-invalid @enderror select2-klasifikasi-seal"
+                                    wire:model="seal_classification_id">
                                     <option value="">
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterKlasifikasiSeal as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ $seal_classification_id['value'] != null ? ($item->id == $seal_classification_id['value'] ? 'selected' : '') : '' }}>
+                                            {{ $seal_classification_id != null ? ($item->id == $seal_classification_id ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -695,7 +694,7 @@
                                     </option>
                                 </select>
                             </div>
-                            @if (($seal_classification_id['value'] ?? '') === 'lainnya')
+                            @if (($seal_classification_id ?? '') === 'lainnya')
                                 <input required type="text" class="form-control mt-2"
                                     wire:model="custom_seal_classification_id"
                                     placeholder="Masukkan klasifikasi seal lainnya" />
@@ -1188,6 +1187,21 @@
             }
             selectKodeLayer();
 
+            function selectKlasifikasiSeal() {
+                // Destroy instance Select2 yang ada
+                if ($('.select2-klasifikasi-seal').hasClass("select2-hidden-accessible")) {
+                    $('.select2-klasifikasi-seal').select2('destroy');
+                }
+
+                $('.select2-klasifikasi-seal').select2({
+                    theme: 'bootstrap-5',
+                }).on('change', function(e) {
+                    var data = $(this).val();
+                    @this.set('seal_classification_id', data);
+                });
+            }
+            selectKlasifikasiSeal();
+
             // Hook untuk Livewire v3
             Livewire.hook('morph', ({
                 el,
@@ -1199,6 +1213,7 @@
                     selectKodeBox();
                     selectKodeInner();
                     selectKodeLayer();
+                    selectKlasifikasiSeal();
                 }, 100);
             });
         });
