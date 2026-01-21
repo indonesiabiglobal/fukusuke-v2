@@ -2,8 +2,8 @@
     "private": true,
     "scripts": {
         "clean": "node ./node_modules/rimraf/dist/esm/bin.mjs public/build",
-        "dev": "vite",
-        "build": "npm run clean && vite build",
+        "dev": "node ./node_modules/vite/bin/vite.js",
+        "build": "npm run clean && node ./node_modules/vite/bin/vite.js build",
         "build-rtl": "rtlcss public/build/css/app.min.css & rtlcss public/build/css/bootstrap.min.css"
     },
     "devDependencies": {
