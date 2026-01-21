@@ -4,6 +4,7 @@
 /public/hot
 /public/storage
 /public/katanuki
+/public/katanuki/*
 /public/asset/report
 /storage/*.key
 /vendor
