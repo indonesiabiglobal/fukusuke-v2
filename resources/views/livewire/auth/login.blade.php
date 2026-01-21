@@ -71,7 +71,7 @@
                             </div>
                         @endif
                         <div class="p-2 mt-3">
-                            <form method="POST" wire:submit="submit">
+                            <form wire:submit="submit">
                                 @csrf
 
                                 <div class="mb-3">
