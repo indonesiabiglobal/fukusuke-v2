@@ -30,6 +30,7 @@ export default vite.defineConfig({
                     'resources/scss/icons.scss',
                     'resources/scss/app.scss',
                     'resources/scss/custom.scss',
+                    'resources/js/app.js',
                 ],
                 refresh: true
             }
@@ -58,6 +59,6 @@ export default vite.defineConfig({
                 },
             ]
         }),
-        
+
     ],
 });
