@@ -62,6 +62,7 @@ class DashboardInfureController extends Controller
                     AND msl.loss_class_id IN ($placeholders)
                 )
             WHERE mac.department_id = ?
+                AND mac.status = 1
             GROUP BY mac.id, mac.machineno
             ORDER BY machineno ASC
         ";
@@ -102,6 +103,7 @@ class DashboardInfureController extends Controller
                     AND msl.loss_class_id IN (' . implode(',', $lossClassIds ) . ')
                 )
             WHERE mac.department_id = ?
+                AND mac.status = 1
             GROUP BY mac.id, mac.machineno
             ORDER BY berat_loss DESC limit 5
         ', [
@@ -130,6 +132,7 @@ class DashboardInfureController extends Controller
             INNER JOIN msmachine mac ON tpa.machine_id = mac.id
             WHERE mac.department_id = ?
                 AND mslos.loss_class_id IN (' . implode(',', $lossClassIds ) . ')
+                AND mac.status = 1
             GROUP BY loss_name
             ORDER BY berat_loss DESC limit 5
         ', [
@@ -164,6 +167,7 @@ class DashboardInfureController extends Controller
                 INNER JOIN tdproduct_assembly tpa ON tpaloss.product_assembly_id = tpa.id
                 INNER JOIN msmachine mac ON tpa.machine_id = mac.id
                 WHERE mac.department_id = ?
+                    AND mac.status = 1
                     AND tpa.production_date BETWEEN ? AND ?
                     AND mslos.loss_class_id IN (' . implode(',', LossInfureHelper::lossClassIdDashboard()) . ')
                 GROUP BY tpaloss.loss_infure_id, mslos.name
@@ -173,6 +177,7 @@ class DashboardInfureController extends Controller
                 ON tpaloss.loss_infure_id = top_loss.loss_infure_id
             WHERE mac.department_id = ?
                 AND tpa.production_date BETWEEN ? AND ?
+                AND mac.status = 1
             GROUP BY mac.id, mac.machineno, top_loss.loss_name
             ORDER BY berat_loss DESC
             LIMIT 3
@@ -328,7 +333,8 @@ class DashboardInfureController extends Controller
             FROM tdproduct_assembly tpa
             LEFT JOIN msmachine mac ON tpa.machine_id = mac.id
             WHERE mac.department_id = :factory
-            AND tpa.production_date BETWEEN :startMonth AND :endMonth
+                AND tpa.production_date BETWEEN :startMonth AND :endMonth
+                AND mac.status = 1
             GROUP BY period_ke
             ORDER BY period_ke ASC
         ', [
@@ -367,6 +373,7 @@ class DashboardInfureController extends Controller
             WHERE mac.department_id = :factory
                 AND tolpk.lpk_date BETWEEN :startMonth AND :endMonth
                 AND (tolpk.panjang_lpk - tolpk.total_assembly_line) > 0
+                AND mac.status = 1
             GROUP BY mac.id, mac.machineno, tolpk.lpk_no, msp.name, msp.unit_weight, msp.productlength
             ORDER BY sisa_meter DESC
             LIMIT 5
@@ -418,7 +425,8 @@ class DashboardInfureController extends Controller
             LEFT JOIN tdproduct_assembly tpa ON mac.id = tpa.machine_id
             LEFT JOIN tdproduct_assembly_loss tpaloss ON tpa.id = tpaloss.product_assembly_id
             WHERE mac.department_id = :factory
-            AND tpa.production_date BETWEEN :startMonth AND :endMonth
+                AND tpa.production_date BETWEEN :startMonth AND :endMonth
+                AND mac.status = 1
             GROUP BY mac.id, mac.machineno, period_ke
             ORDER BY mac.machineno ASC, period_ke ASC
         ', [
@@ -467,7 +475,8 @@ class DashboardInfureController extends Controller
             FROM msmachine mac
             LEFT JOIN tdproduct_assembly tpa ON mac.id = tpa.machine_id
             WHERE mac.department_id = :factory
-            AND tpa.production_date BETWEEN :startMonth AND :endMonth
+                AND tpa.production_date BETWEEN :startMonth AND :endMonth
+                AND mac.status = 1
             GROUP BY mac.id, mac.machineno, period_ke
             ORDER BY mac.id ASC, period_ke ASC
         ', [
@@ -598,6 +607,7 @@ class DashboardInfureController extends Controller
                 ON tpaloss.loss_infure_id = top_loss.loss_infure_id
             WHERE mac.department_id = ?
                 AND tpa.production_date BETWEEN ? AND ?
+                AND mac.status = 1
             GROUP BY mac.id, mac.machineno, top_loss.loss_name
             ORDER BY berat_loss DESC
             LIMIT 3
