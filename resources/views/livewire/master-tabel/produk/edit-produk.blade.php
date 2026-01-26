@@ -696,14 +696,14 @@
                             </div>
                             @if (($seal_classification_id ?? '') === 'lainnya')
                                 <input required type="text" class="form-control mt-2"
-                                    wire:model="custom_seal_classification_id"
+                                    wire:model="custom_seal_classification"
                                     placeholder="Masukkan klasifikasi seal lainnya" />
                             @endif
 
                             @error('seal_classification_id')
                                 <span class="invalid-feedback">{{ $message }}</span>
                             @enderror
-                            @error('custom_seal_classification_id')
+                            @error('custom_seal_classification')
                                 <span class="invalid-feedback">{{ $message }}</span>
                             @enderror
                         </div>
