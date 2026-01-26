@@ -13,12 +13,12 @@
 
 <!-- dashboard init -->
 <script src="{{ URL::asset('build/libs/list.js/list.min.js') }}"></script>
-<script src="{{ URL::asset('build/js/pages/dashboard-ecommerce.init.js') }}"></script>
+{{-- <script src="{{ URL::asset('build/js/pages/dashboard-ecommerce.init.js') }}"></script> --}}
 <script src="{{ URL::asset('build/js/app.js') }}"></script>
 
 {{-- Upload file --}}
 <script src="{{ URL::asset('build/libs/dropzone/dropzone-min.js') }}"></script>
-<script src="{{ URL::asset('build/js/pages/form-file-upload.init.js') }}"></script>
+{{-- <script src="{{ URL::asset('build/js/pages/form-file-upload.init.js') }}"></script> --}}
 
 {{-- Select2 --}}
 {{-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>

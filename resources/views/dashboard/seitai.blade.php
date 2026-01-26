@@ -376,7 +376,7 @@
 
     <!-- dashboard init -->
     <script src="{{ URL::asset('build/libs/list.js/list.min.js') }}"></script>
-    <script src="{{ URL::asset('build/js/pages/dashboard-ecommerce.init.js') }}"></script>
+    {{-- <script src="{{ URL::asset('build/js/pages/dashboard-ecommerce.init.js') }}"></script> --}}
 
     {{-- <script src="https://img.themesbrand.com/velzon/apexchart-js/stock-prices.js"></script> --}}
     <script src="{{ URL::asset('build/libs/jsvectormap/maps/us-merc-en.js') }}"></script>

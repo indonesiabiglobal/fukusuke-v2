@@ -72,6 +72,6 @@ File Upload
 @endsection
 @section('script')
 <script src="{{ URL::asset('build/libs/dropzone/dropzone-min.js') }}"></script>
-<script src="{{ URL::asset('build/js/pages/form-file-upload.init.js') }}"></script>
+{{-- <script src="{{ URL::asset('build/js/pages/form-file-upload.init.js') }}"></script> --}}
 <script src="{{ URL::asset('build/js/app.js') }}"></script>
 @endsection
