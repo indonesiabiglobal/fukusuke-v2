@@ -335,7 +335,7 @@
                         <td> {{ number_format($item->panjang_lpk, 0, ',', ',') }} </td>
                         <td> {{ number_format($item->panjang_produksi, 0, ',', ',') }} </td>
                         <td>
-                            {{ fmod($item->berat_produksi, 1) == 0 ? number_format($item->berat_produksi, 0, ',', '.') : number_format($item->berat_produksi, 2, ',', '.') }}
+                            {{ number_format($item->berat_produksi, 2, ',', '.') }}
                         </td>
                         <td> {{ $item->gentan_no }} </td>
                         <td> {{ number_format($item->berat_standard, 0, ',', ',') }} </td>

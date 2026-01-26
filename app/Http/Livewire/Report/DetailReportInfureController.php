@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Report;
 
+use App\Models\MsMachine;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Carbon\Carbon;
@@ -95,6 +96,7 @@ class DetailReportInfureController
         return DB::select(
             "
                 SELECT
+                    tdpa.id AS production_id,
                     tdpa.production_date AS tglproduksi,
                     tdpa.work_shift AS shift,
                     tdpa.work_hour AS jam,
@@ -157,7 +159,7 @@ class DetailReportInfureController
                 ];
             }
 
-            $dateKey = $row->tglproduksi;
+            $dateKey = $row->production_id;
             if (!isset($processed['workHours'][$row->product_id][$dateKey][$row->jam])) {
                 $processed['workHours'][$row->product_id][$dateKey][$row->jam] = [
                     'base' => $this->formatBaseData($row),
@@ -216,13 +218,14 @@ class DetailReportInfureController
 
     private function writeHeaders($tglAwal, $tglAkhir, $filters)
     {
+        $machine = MsMachine::where('id', $filters['machineId'])->first();
         // Cache operasi style untuk diterapkan sekali di akhir
         $this->cacheStyle('A1:A2', ['font' => ['bold' => true, 'size' => 11, 'name' => 'Calibri']]);
 
         $this->worksheet->setCellValue('A1', 'DETAIL PRODUKSI INFURE');
         $this->worksheet->setCellValue('A2', 'Periode: ' . Carbon::parse($tglAwal)->translatedFormat('d-M-Y H:i') .
             '  ~  ' . Carbon::parse($tglAkhir)->translatedFormat('d-M-Y H:i') .
-            ' - Mesin: ' . ($filters['machineId'] == '' ? 'Semua Mesin' : $filters['machineId']));
+            ' - Mesin: ' . ($filters['machineId'] == '' ? 'Semua Mesin' : $machine->machineno));
 
         // Set column headers dengan format yang dioptimasi
         $this->setColumnHeaders();
@@ -307,7 +310,7 @@ class DetailReportInfureController
             $startRow = $currentRow;
 
             // Tulis detail untuk setiap produk
-            foreach ($data['workHours'][$productId] as $date => $hours) {
+            foreach ($data['workHours'][$productId] as $data => $hours) {
                 foreach ($hours as $hour => $details) {
                     $rowItemStart = $currentRow;
                     $baseData = $details['base'];

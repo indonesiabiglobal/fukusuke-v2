@@ -2,6 +2,8 @@
 
 namespace App\Http\Livewire\Report;
 
+use App\Http\Livewire\MasterTabel\Machine\Machine;
+use App\Models\MsMachine;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Carbon\Carbon;
@@ -132,6 +134,7 @@ class DetailReportSeitaiController
                     tdproduct_goods_loss AS tpgl
                     INNER JOIN mslossseitai AS msls ON msls.ID = tpgl.loss_seitai_id
                 ) SELECT
+                tdpg.id AS production_id,
                 tdpg.production_no AS production_no,
                 tdpg.production_date AS production_date,
                 msp.code AS produk_code,
@@ -191,7 +194,7 @@ class DetailReportSeitaiController
     {
         $processed = [
             'products' => [],
-            'productionDates' => [],
+            'productionIds' => [],
             'losses' => [],
             'gentan' => [],
             'totals' => [
@@ -204,7 +207,8 @@ class DetailReportSeitaiController
 
         foreach ($data as $row) {
             $productCode = $row->produk_code;
-            $date = $row->production_date;
+            // $date = $row->production_date;
+            $productionId = $row->production_id;
 
             // Organize products
             if (!isset($processed['products'][$productCode])) {
@@ -212,14 +216,14 @@ class DetailReportSeitaiController
             }
 
             // Organize production dates
-            if (!isset($processed['productionDates'][$productCode][$date])) {
-                $processed['productionDates'][$productCode][$date] = $this->formatBaseData($row);
+            if (!isset($processed['productionIds'][$productCode][$productionId])) {
+                $processed['productionIds'][$productCode][$productionId] = $this->formatBaseData($row);
                 $processed['totals']['qty_produksi'] += $row->qty_produksi ?? 0;
             }
 
             // Organize losses
-            if (!isset($processed['losses'][$productCode][$date][$row->loss_id]) && $row->loss_id) {
-                $processed['losses'][$productCode][$date][$row->loss_id] = [
+            if (!isset($processed['losses'][$productCode][$productionId][$row->loss_id]) && $row->loss_id) {
+                $processed['losses'][$productCode][$productionId][$row->loss_id] = [
                     'name' => $row->loss_name_loss,
                     'weight' => $row->berat_loss_loss
                 ];
@@ -227,8 +231,8 @@ class DetailReportSeitaiController
             }
 
             // Organize gentan data
-            if (!isset($processed['gentan'][$productCode][$date][$row->gentan_id_asy]) && $row->gentan_id_asy) {
-                $processed['gentan'][$productCode][$date][$row->gentan_id_asy] = $this->formatGentanData($row);
+            if (!isset($processed['gentan'][$productCode][$productionId][$row->gentan_id_asy]) && $row->gentan_id_asy) {
+                $processed['gentan'][$productCode][$productionId][$row->gentan_id_asy] = $this->formatGentanData($row);
                 $processed['totals']['panjang_produksi'] += $row->panjang_produksi_asy ?? 0;
                 $processed['totals']['infure_berat_loss'] += $row->infure_berat_loss ?? 0;
             }
@@ -286,13 +290,14 @@ class DetailReportSeitaiController
 
     private function writeHeaders($tglAwal, $tglAkhir, $filters)
     {
+        $machine = MsMachine::where('id', $filters['machineId'])->first();
         // Cache operasi style untuk diterapkan sekali di akhir
         $this->cacheStyle('A1:A2', ['font' => ['bold' => true, 'size' => 11, 'name' => 'Calibri']]);
 
         $this->worksheet->setCellValue('A1', 'DETAIL PRODUKSI SEITAI');
         $this->worksheet->setCellValue('A2', 'Periode: ' . Carbon::parse($tglAwal)->translatedFormat('d-M-Y H:i') .
             '  ~  ' . Carbon::parse($tglAkhir)->translatedFormat('d-M-Y H:i') .
-            ' - Mesin: ' . ($filters['machineId'] == '' ? 'Semua Mesin' : $filters['machineId']));
+            ' - Mesin: ' . ($filters['machineId'] == '' ? 'Semua Mesin' : $machine->machineno));
 
         // Set column headers dengan format yang dioptimasi
         $this->setColumnHeaders();
@@ -354,18 +359,18 @@ class DetailReportSeitaiController
             $currentRow++;
             $startRow = $currentRow;
 
-            foreach ($data['productionDates'][$productCode] as $date => $baseData) {
+            foreach ($data['productionIds'][$productCode] as $productionId => $baseData) {
                 $rowItemStart = $currentRow;
                 $maxRow = $currentRow;
-                $productionDate = Carbon::parse($date)->translatedFormat('d-M-Y');
+                $productionDate = Carbon::parse($baseData['production_date'])->translatedFormat('d-M-Y');
 
                 // Write base data
                 $this->writeBaseData($currentRow, $baseData, $productionDate);
 
                 // Write loss data if exists
                 $rowLoss = $currentRow;
-                if (isset($data['losses'][$productCode][$date])) {
-                    foreach ($data['losses'][$productCode][$date] as $lossCode => $lossData) {
+                if (isset($data['losses'][$productCode][$productionId])) {
+                    foreach ($data['losses'][$productCode][$productionId] as $lossCode => $lossData) {
                         $this->writeLossData($rowLoss, $lossData);
                         $rowLoss++;
                     }
@@ -374,8 +379,8 @@ class DetailReportSeitaiController
 
                 // Write gentan data if exists
                 $rowGentan = $currentRow;
-                if (isset($data['gentan'][$productCode][$date])) {
-                    foreach ($data['gentan'][$productCode][$date] as $gentanNo => $gentanData) {
+                if (isset($data['gentan'][$productCode][$productionId])) {
+                    foreach ($data['gentan'][$productCode][$productionId] as $gentanNo => $gentanData) {
                         $this->writeGentanData($rowGentan, $gentanData);
                         $rowGentan++;
                     }
@@ -526,6 +531,7 @@ class DetailReportSeitaiController
 
         // Set auto width untuk semua kolom yang digunakan
         $this->worksheet->getStyle('A3:V3')->getAlignment()->setWrapText(true);
+        $this->worksheet->getStyle('K')->getAlignment()->setWrapText(true);
     }
 
     private function saveReport($nippo)
