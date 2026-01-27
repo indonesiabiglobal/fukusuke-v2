@@ -101,12 +101,93 @@ class LabelMasukGudangController extends Component
         phpSpreadsheet::styleFont($spreadsheet, $columnTitleNomorPaletValueStart . $rowTitleCard, false, 40, 'Times New Roman');
         phpspreadsheet::textAlignLeft($spreadsheet, $columnTitleNomorPaletValueStart . $rowTitleCard);
 
-        // No Rak
+        // No Rak: outline per kolom dan sisipkan gambar kotak-rak.png di tiap sel sesuai
+        $spreadsheet->getActiveSheet()->setCellValue('AF' . ($rowTitleCard - 1), 'Alamat Rak');
+
+        $imagePath = public_path('asset/image/kotak-rak.png');
+
+        // AF
         phpspreadsheet::addOutlineBorder($spreadsheet, 'AF' . $rowTitleCard . ':' . 'AF' . $rowTitleCard);
+        if (file_exists($imagePath)) {
+            $drawingAF = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
+            $drawingAF->setName('Kotak Rak AF');
+            $drawingAF->setPath($imagePath);
+            $drawingAF->setCoordinates('AF' . $rowTitleCard);
+            $drawingAF->setHeight(63);
+            $drawingAF->setOffsetX(7);
+            $drawingAF->setOffsetY(2);
+            $drawingAF->setWorksheet($spreadsheet->getActiveSheet());
+        }
+
+        // AG
         phpspreadsheet::addOutlineBorder($spreadsheet, 'AG' . $rowTitleCard . ':' . 'AG' . $rowTitleCard);
+        if (file_exists($imagePath)) {
+            $drawingAG = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
+            $drawingAG->setName('Kotak Rak AG');
+            $drawingAG->setPath($imagePath);
+            $drawingAG->setCoordinates('AG' . $rowTitleCard);
+            $drawingAG->setHeight(63);
+            $drawingAG->setOffsetX(7);
+            $drawingAG->setOffsetY(2);
+            $drawingAG->setWorksheet($spreadsheet->getActiveSheet());
+        }
+
+        // AH:AI (gambar di AH)
         phpspreadsheet::addOutlineBorder($spreadsheet, 'AH' . $rowTitleCard . ':' . 'AI' . $rowTitleCard);
+        if (file_exists($imagePath)) {
+            $drawingAH = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
+            $drawingAH->setName('Kotak Rak AH');
+            $drawingAH->setPath($imagePath);
+            $drawingAH->setCoordinates('AH' . $rowTitleCard);
+            $drawingAH->setHeight(63);
+            $drawingAH->setOffsetX(7);
+            $drawingAH->setOffsetY(2);
+            $drawingAH->setWorksheet($spreadsheet->getActiveSheet());
+
+            $drawingAI = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
+            $drawingAI->setName('Kotak Rak AI');
+            $drawingAI->setPath($imagePath);
+            $drawingAI->setCoordinates('AI' . $rowTitleCard);
+            $drawingAI->setHeight(63);
+            $drawingAI->setOffsetX(7);
+            $drawingAI->setOffsetY(2);
+            $drawingAI->setWorksheet($spreadsheet->getActiveSheet());
+        }
+
+        // AJ:AK (gambar di AJ)
         phpspreadsheet::addOutlineBorder($spreadsheet, 'AJ' . $rowTitleCard . ':' . 'AK' . $rowTitleCard);
+        if (file_exists($imagePath)) {
+            $drawingAJ = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
+            $drawingAJ->setName('Kotak Rak AJ');
+            $drawingAJ->setPath($imagePath);
+            $drawingAJ->setCoordinates('AJ' . $rowTitleCard);
+            $drawingAJ->setHeight(63);
+            $drawingAJ->setOffsetX(7);
+            $drawingAJ->setOffsetY(2);
+            $drawingAJ->setWorksheet($spreadsheet->getActiveSheet());
+
+            $drawingAK = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
+            $drawingAK->setName('Kotak Rak AK');
+            $drawingAK->setPath($imagePath);
+            $drawingAK->setCoordinates('AK' . $rowTitleCard);
+            $drawingAK->setHeight(63);
+            $drawingAK->setOffsetX(7);
+            $drawingAK->setOffsetY(2);
+            $drawingAK->setWorksheet($spreadsheet->getActiveSheet());
+        }
+
+        // AL
         phpspreadsheet::addOutlineBorder($spreadsheet, 'AL' . $rowTitleCard . ':' . 'AL' . $rowTitleCard);
+        if (file_exists($imagePath)) {
+            $drawingAL = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
+            $drawingAL->setName('Kotak Rak AL');
+            $drawingAL->setPath($imagePath);
+            $drawingAL->setCoordinates('AL' . $rowTitleCard);
+            $drawingAL->setHeight(63);
+            $drawingAL->setOffsetX(7);
+            $drawingAL->setOffsetY(2);
+            $drawingAL->setWorksheet($spreadsheet->getActiveSheet());
+        }
 
         /* Gudang */
         // Text Gudang
@@ -479,10 +560,11 @@ class LabelMasukGudangController extends Component
         // border pengecekan
         phpspreadsheet::addOutlineBorder($spreadsheet, $columnPengecekanStart . $rowPengecekanStart . ':' . $columnPengecekanEnd . $rowPengecekanEnd);
 
-        // checkboxes petugas setai
+        // checkboxes petugas setai (kotak titik-titik)
         $columnPetugasSeitai = 'W';
         $rowPetugasSeitai = 23;
-        phpspreadsheet::addOutlineBorder($spreadsheet, $columnPetugasSeitai . $rowPetugasSeitai);
+        phpspreadsheet::addFullBorderDotted($spreadsheet, $columnPetugasSeitai . $rowPetugasSeitai);
+        phpspreadsheet::fillWithDots($spreadsheet, $columnPetugasSeitai . $rowPetugasSeitai, '.', 6, 1, 10);
 
         // title petugas seitai
         $columnTitlePetugasSeitaiStart = 'X';
@@ -493,10 +575,11 @@ class LabelMasukGudangController extends Component
         phpspreadsheet::styleFont($spreadsheet, $columnTitlePetugasSeitaiStart . $rowTitlePetugasSeitai, false, 12, 'Tahoma');
         phpspreadsheet::textAlignLeft($spreadsheet, $columnTitlePetugasSeitaiStart . $rowTitlePetugasSeitai);
 
-        // checkboxes sebelum suffing
+        // checkboxes sebelum suffing (kotak titik-titik)
         $columnSebelumSuffing = 'AE';
         $rowSebelumSuffing = 23;
-        phpspreadsheet::addOutlineBorder($spreadsheet, $columnSebelumSuffing . $rowSebelumSuffing);
+        phpspreadsheet::addFullBorderDotted($spreadsheet, $columnSebelumSuffing . $rowSebelumSuffing);
+        phpspreadsheet::fillWithDots($spreadsheet, $columnSebelumSuffing . $rowSebelumSuffing, '.', 6, 1, 10);
 
         // title sebelum suffing
         $columnTitleSebelumSuffingStart = 'AF';
@@ -510,11 +593,12 @@ class LabelMasukGudangController extends Component
         // membuat border untuk seluruh cell
         phpspreadsheet::addOutlineBorder($spreadsheet, $startColumn . '2:' . $endColumn . '25');
         $startColumn = 'A';
-        while ($startColumn !== 'AF') {
+        while ($startColumn !== 'AE') {
             $spreadsheet->getActiveSheet()->getColumnDimension($startColumn)->setWidth(25, 'px');
 
             $startColumn++;
         }
+        $spreadsheet->getActiveSheet()->getColumnDimension('AE')->setWidth(30, 'px');
         $spreadsheet->getActiveSheet()->getColumnDimension('AF')->setWidth(50, 'px');
         $spreadsheet->getActiveSheet()->getColumnDimension('AG')->setWidth(50, 'px');
         $spreadsheet->getActiveSheet()->getColumnDimension('AH')->setWidth(50, 'px');
