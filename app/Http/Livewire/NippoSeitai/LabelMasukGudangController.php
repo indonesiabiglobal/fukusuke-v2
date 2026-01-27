@@ -38,6 +38,8 @@ class LabelMasukGudangController extends Component
                 tdpg.nomor_lot AS nomor_lot,
                 tdpg.work_shift AS work_shift,
                 tdpg.employee_id AS employee_id,
+                tdpg.start_box AS start_box,
+                tdpg.end_box AS end_box,
                 me.empname as namapetugas,
                 tdpg.product_id AS product_id,
                 mp.code_alias as nocode,
@@ -93,11 +95,18 @@ class LabelMasukGudangController extends Component
         // set title nomor palet value
         $nomerPalet = explode('-', $data[0]->nomor_palet);
         $columnTitleNomorPaletValueStart = 'Y';
-        $endColumn = 'AK';
-        $spreadsheet->getActiveSheet()->mergeCells($columnTitleNomorPaletValueStart . $rowTitleCard . ':' . $endColumn . $rowTitleCard);
+        $endColumn = 'AL';
+        $spreadsheet->getActiveSheet()->mergeCells($columnTitleNomorPaletValueStart . $rowTitleCard . ':' . 'AE' . $rowTitleCard);
         $spreadsheet->getActiveSheet()->setCellValue($columnTitleNomorPaletValueStart . $rowTitleCard, $nomerPalet[1]);
         phpSpreadsheet::styleFont($spreadsheet, $columnTitleNomorPaletValueStart . $rowTitleCard, false, 40, 'Times New Roman');
         phpspreadsheet::textAlignLeft($spreadsheet, $columnTitleNomorPaletValueStart . $rowTitleCard);
+
+        // No Rak
+        phpspreadsheet::addOutlineBorder($spreadsheet, 'AF' . $rowTitleCard . ':' . 'AF' . $rowTitleCard);
+        phpspreadsheet::addOutlineBorder($spreadsheet, 'AG' . $rowTitleCard . ':' . 'AG' . $rowTitleCard);
+        phpspreadsheet::addOutlineBorder($spreadsheet, 'AH' . $rowTitleCard . ':' . 'AI' . $rowTitleCard);
+        phpspreadsheet::addOutlineBorder($spreadsheet, 'AJ' . $rowTitleCard . ':' . 'AK' . $rowTitleCard);
+        phpspreadsheet::addOutlineBorder($spreadsheet, 'AL' . $rowTitleCard . ':' . 'AL' . $rowTitleCard);
 
         /* Gudang */
         // Text Gudang
@@ -170,93 +179,101 @@ class LabelMasukGudangController extends Component
         $spreadsheet->getActiveSheet()->setCellValue($columnTitleNomorPaletStart . $rowTextGudang, $nomerPalet[0]);
         phpspreadsheet::addOutlineBorder($spreadsheet, $columnTitleNomorPaletStart . $rowTextGudang . ':' . $endColumn . $rowPetugasValueEnd);
         phpspreadsheet::styleFont($spreadsheet, $columnTitleNomorPaletStart . $rowTextGudang, false, 72, 'Times New Roman');
-        phpspreadsheet::textAlignCenter($spreadsheet, $columnTitleNomorPaletStart . $rowTextGudang);
+        // phpspreadsheet::textAlignCenter($spreadsheet, $columnTitleNomorPaletStart . $rowTextGudang);
 
         // title nomer lot
-        $columnTitleNomorLotEnd = 'G';
+        $columnTitleNomorLotEnd = 'E';
         $rowTitleNomorLotStart = 8;
         $rowTitleNomorLotEnd = 9;
         $spreadsheet->getActiveSheet()->mergeCells($startColumn . $rowTitleNomorLotStart . ':' . $columnTitleNomorLotEnd . $rowTitleNomorLotEnd);
         $spreadsheet->getActiveSheet()->setCellValue($startColumn . $rowTitleNomorLotStart, 'Nomor Lot');
-        phpspreadsheet::styleFont($spreadsheet, $startColumn . $rowTitleNomorLotStart, false, 14, 'Tahoma');
-        phpspreadsheet::textAlignCenter($spreadsheet, $startColumn . $rowTitleNomorLotStart);
+        // phpspreadsheet::textAlignCenter($spreadsheet, $startColumn . $rowTitleNomorLotStart);
+
+        // No Box
+        $columnNoBoxStart = 'F';
+        $columnNoBoxEnd = 'I';
+        $spreadsheet->getActiveSheet()->mergeCells($columnNoBoxStart . $rowTitleNomorLotStart . ':' . $columnNoBoxEnd . $rowTitleNomorLotStart);
+        $spreadsheet->getActiveSheet()->setCellValue($columnNoBoxStart . $rowTitleNomorLotStart, 'No Box');
+
+        // No box dari
+        $columnNoBoxDariStart = 'F';
+        $columnNoBoxDariEnd = 'G';
+        $spreadsheet->getActiveSheet()->mergeCells($columnNoBoxDariStart . $rowTitleNomorLotEnd . ':' . $columnNoBoxDariEnd . $rowTitleNomorLotEnd);
+        $spreadsheet->getActiveSheet()->setCellValue($columnNoBoxDariStart . $rowTitleNomorLotEnd, 'Dari');
+
+        // No box sampai
+        $columnNoBoxSampaiStart = 'H';
+        $columnNoBoxSampaiEnd = 'I';
+        $spreadsheet->getActiveSheet()->mergeCells($columnNoBoxSampaiStart . $rowTitleNomorLotEnd . ':' . $columnNoBoxSampaiEnd . $rowTitleNomorLotEnd);
+        $spreadsheet->getActiveSheet()->setCellValue($columnNoBoxSampaiStart . $rowTitleNomorLotEnd, 'Sampai');
 
         // title jumlah box
-        $columnTitleJumlahBoxStart = 'H';
-        $columnTitleJumlahBoxEnd = 'J';
+        $columnTitleJumlahBoxStart = 'J';
+        $columnTitleJumlahBoxEnd = 'L';
         $spreadsheet->getActiveSheet()->mergeCells($columnTitleJumlahBoxStart . $rowTitleNomorLotStart . ':' . $columnTitleJumlahBoxEnd . $rowTitleNomorLotEnd);
         $spreadsheet->getActiveSheet()->setCellValue($columnTitleJumlahBoxStart . $rowTitleNomorLotStart, 'Jumlah Box');
-        phpspreadsheet::styleFont($spreadsheet, $columnTitleJumlahBoxStart . $rowTitleNomorLotStart, false, 14, 'Tahoma');
-        phpspreadsheet::textAlignCenter($spreadsheet, $columnTitleJumlahBoxStart . $rowTitleNomorLotStart);
 
         // title jumlah revisi
-        $columnTitleJumlahRevisiStart = 'K';
-        $columnTitleJumlahRevisiEnd = 'M';
+        $columnTitleJumlahRevisiStart = 'M';
+        $columnTitleJumlahRevisiEnd = 'O';
         $spreadsheet->getActiveSheet()->mergeCells($columnTitleJumlahRevisiStart . $rowTitleNomorLotStart . ':' . $columnTitleJumlahRevisiEnd . $rowTitleNomorLotEnd);
         $spreadsheet->getActiveSheet()->setCellValue($columnTitleJumlahRevisiStart . $rowTitleNomorLotStart, 'Jumlah Revisi');
-        phpspreadsheet::styleFont($spreadsheet, $columnTitleJumlahRevisiStart . $rowTitleNomorLotStart, false, 14, 'Tahoma');
-        phpspreadsheet::textAlignCenter($spreadsheet, $columnTitleJumlahRevisiStart . $rowTitleNomorLotStart);
 
         // title operator
-        $columnTitleOperatorStart = 'N';
+        $columnTitleOperatorStart = 'P';
         $columnTitleOperatorEnd = 'S';
         $spreadsheet->getActiveSheet()->mergeCells($columnTitleOperatorStart . $rowTitleNomorLotStart . ':' . $columnTitleOperatorEnd . $rowTitleNomorLotEnd);
         $spreadsheet->getActiveSheet()->setCellValue($columnTitleOperatorStart . $rowTitleNomorLotStart, 'Operator');
-        phpspreadsheet::styleFont($spreadsheet, $columnTitleOperatorStart . $rowTitleNomorLotStart, false, 14, 'Tahoma');
-        phpspreadsheet::textAlignCenter($spreadsheet, $columnTitleOperatorStart . $rowTitleNomorLotStart);
 
         // title shift
         $columnTitleShiftStart = 'T';
         $columnTitleShiftEnd = 'U';
         $spreadsheet->getActiveSheet()->mergeCells($columnTitleShiftStart . $rowTitleNomorLotStart . ':' . $columnTitleShiftEnd . $rowTitleNomorLotEnd);
         $spreadsheet->getActiveSheet()->setCellValue($columnTitleShiftStart . $rowTitleNomorLotStart, 'Shift');
-        phpspreadsheet::styleFont($spreadsheet, $columnTitleShiftStart . $rowTitleNomorLotStart, false, 14, 'Tahoma');
-        phpspreadsheet::textAlignCenter($spreadsheet, $columnTitleShiftStart . $rowTitleNomorLotStart);
+        phpspreadsheet::styleFont($spreadsheet, $startColumn . $rowTitleNomorLotStart . ':' . $columnTitleShiftEnd . $rowTitleNomorLotEnd, false, 11, 'Tahoma');
+        phpspreadsheet::textAlignCenter($spreadsheet, $startColumn . $rowTitleNomorLotStart . ':' . $columnTitleShiftEnd . $rowTitleNomorLotEnd);
 
         // border untuk title
         phpspreadsheet::addFullBorder($spreadsheet, $startColumn . '8' . ':' . $columnTitleShiftEnd . '9');
         $spreadsheet->getActiveSheet()->getStyle($startColumn . '8' . ':' . $columnTitleShiftEnd . '9')->getAlignment()->setWrapText(true);
 
         // value
-        $rowNomorLotStart = 10;
+        $rowNomorLot = 10;
         $maxIndexNomorLot = 10;
         for ($nomorLotIndex = 0; $nomorLotIndex < $maxIndexNomorLot; $nomorLotIndex++) {
             // nomor lot value
-            $spreadsheet->getActiveSheet()->mergeCells($startColumn . $rowNomorLotStart . ':' . $columnTitleNomorLotEnd . $rowNomorLotStart);
-            $spreadsheet->getActiveSheet()->setCellValue($startColumn . $rowNomorLotStart, $data[$nomorLotIndex]->nomor_lot ?? '');
-            phpspreadsheet::styleFont($spreadsheet, $startColumn . $rowNomorLotStart, false, 14, 'Times New Roman');
-            phpspreadsheet::textAlignCenter($spreadsheet, $startColumn . $rowNomorLotStart);
+            $spreadsheet->getActiveSheet()->mergeCells($startColumn . $rowNomorLot . ':' . $columnTitleNomorLotEnd . $rowNomorLot);
+            $spreadsheet->getActiveSheet()->setCellValue($startColumn . $rowNomorLot, $data[$nomorLotIndex]->nomor_lot ?? '');
+
+            // no box dari value
+            $spreadsheet->getActiveSheet()->mergeCells($columnNoBoxDariStart . $rowNomorLot . ':' . $columnNoBoxDariEnd . $rowNomorLot);
+            $spreadsheet->getActiveSheet()->setCellValue($columnNoBoxDariStart . $rowNomorLot, $data[$nomorLotIndex]->start_box ?? '');
+
+            // no box sampai value
+            $spreadsheet->getActiveSheet()->mergeCells($columnNoBoxSampaiStart . $rowNomorLot . ':' . $columnNoBoxSampaiEnd . $rowNomorLot);
+            $spreadsheet->getActiveSheet()->setCellValue($columnNoBoxSampaiStart . $rowNomorLot, $data[$nomorLotIndex]->end_box ?? '');
 
             // jumlah box value
-            $spreadsheet->getActiveSheet()->mergeCells($columnTitleJumlahBoxStart . $rowNomorLotStart . ':' . $columnTitleJumlahBoxEnd . $rowNomorLotStart);
-            $spreadsheet->getActiveSheet()->setCellValue($columnTitleJumlahBoxStart . $rowNomorLotStart, $data[$nomorLotIndex]->qty_produksi ?? '');
-            phpspreadsheet::styleFont($spreadsheet, $columnTitleJumlahBoxStart . $rowNomorLotStart, false, 14, 'Times New Roman');
-            phpspreadsheet::textAlignCenter($spreadsheet, $columnTitleJumlahBoxStart . $rowNomorLotStart);
+            $spreadsheet->getActiveSheet()->mergeCells($columnTitleJumlahBoxStart . $rowNomorLot . ':' . $columnTitleJumlahBoxEnd . $rowNomorLot);
+            $spreadsheet->getActiveSheet()->setCellValue($columnTitleJumlahBoxStart . $rowNomorLot, $data[$nomorLotIndex]->qty_produksi ?? '');
 
             // jumlah revisi value
-            $spreadsheet->getActiveSheet()->mergeCells($columnTitleJumlahRevisiStart . $rowNomorLotStart . ':' . $columnTitleJumlahRevisiEnd . $rowNomorLotStart);
+            $spreadsheet->getActiveSheet()->mergeCells($columnTitleJumlahRevisiStart . $rowNomorLot . ':' . $columnTitleJumlahRevisiEnd . $rowNomorLot);
 
             // operator value
-            $spreadsheet->getActiveSheet()->mergeCells($columnTitleOperatorStart . $rowNomorLotStart . ':' . $columnTitleOperatorEnd . $rowNomorLotStart);
-            $spreadsheet->getActiveSheet()->setCellValue($columnTitleOperatorStart . $rowNomorLotStart, $data[$nomorLotIndex]->namapetugas ?? '');
-            phpspreadsheet::styleFont($spreadsheet, $columnTitleOperatorStart . $rowNomorLotStart, false, 14, 'Times New Roman');
-            // phpspreadsheet::textAlignCenter($spreadsheet, $columnTitleOperatorStart . $rowNomorLotStart);
+            $spreadsheet->getActiveSheet()->mergeCells($columnTitleOperatorStart . $rowNomorLot . ':' . $columnTitleOperatorEnd . $rowNomorLot);
+            $spreadsheet->getActiveSheet()->setCellValue($columnTitleOperatorStart . $rowNomorLot, $data[$nomorLotIndex]->namapetugas ?? '');
 
             // shift value
-            $spreadsheet->getActiveSheet()->mergeCells($columnTitleShiftStart . $rowNomorLotStart . ':' . $columnTitleShiftEnd . $rowNomorLotStart);
-            $spreadsheet->getActiveSheet()->setCellValue($columnTitleShiftStart . $rowNomorLotStart, $data[$nomorLotIndex]->work_shift ?? '');
-            phpspreadsheet::styleFont($spreadsheet, $columnTitleShiftStart . $rowNomorLotStart, false, 14, 'Times New Roman');
-            phpspreadsheet::textAlignCenter($spreadsheet, $columnTitleShiftStart . $rowNomorLotStart);
+            $spreadsheet->getActiveSheet()->mergeCells($columnTitleShiftStart . $rowNomorLot . ':' . $columnTitleShiftEnd . $rowNomorLot);
+            $spreadsheet->getActiveSheet()->setCellValue($columnTitleShiftStart . $rowNomorLot, $data[$nomorLotIndex]->work_shift ?? '');
+            phpspreadsheet::styleFont($spreadsheet, $startColumn . $rowNomorLot . ':' . $columnTitleShiftEnd . $rowNomorLot, false, 11, 'Times New Roman');
+            phpspreadsheet::textAlignCenter($spreadsheet, $startColumn . $rowNomorLot . ':' . $columnTitleShiftEnd . $rowNomorLot);
 
-            $rowNomorLotStart++;
+            $rowNomorLot++;
         }
         // border untuk value
-        phpspreadsheet::addFullBorderDotted($spreadsheet, $startColumn . '10' . ':' . $columnTitleShiftEnd . '19');
-
-        phpspreadsheet::addOutlineBorder($spreadsheet, $startColumn . '10' . ':' . $startColumn . '19');
-        phpspreadsheet::addOutlineBorder($spreadsheet, $columnTitleJumlahBoxStart . '10' . ':' . $columnTitleJumlahBoxEnd . '19');
-        phpspreadsheet::addOutlineBorder($spreadsheet, $columnTitleOperatorStart . '10' . ':' . $columnTitleOperatorEnd . '19');
-        phpspreadsheet::addOutlineBorder($spreadsheet, $columnTitleShiftStart . '10' . ':' . $columnTitleShiftEnd . '19');
+        phpspreadsheet::addBorderDottedMiddleHorizontal($spreadsheet, $startColumn . '10' . ':' . $columnTitleCardEnd . '19');
 
         // catatan
         $columnCatatanStart = 'B';
@@ -319,7 +336,7 @@ class LabelMasukGudangController extends Component
 
         // title nama produk
         $columnTitleNamaProdukStart = 'V';
-        $columnTitleNamaProdukEnd = 'AK';
+        $columnTitleNamaProdukEnd = 'AL';
         $rowTitleNamaProdukStart = 10;
         $spreadsheet->getActiveSheet()->mergeCells($columnTitleNamaProdukStart . $rowTitleNamaProdukStart . ':' . $columnTitleNamaProdukEnd . $rowTitleNamaProdukStart);
         $spreadsheet->getActiveSheet()->setCellValue($columnTitleNamaProdukStart . $rowTitleNamaProdukStart, 'Nama Produk');
@@ -328,7 +345,7 @@ class LabelMasukGudangController extends Component
 
         // value nama produk
         $columnNamaProdukStart = 'V';
-        $columnNamaProdukEnd = 'AK';
+        $columnNamaProdukEnd = 'AL';
         $rowNamaProdukStart = 11;
         $rowNamaProdukEnd = 13;
         $spreadsheet->getActiveSheet()->mergeCells($columnNamaProdukStart . $rowNamaProdukStart . ':' . $columnNamaProdukEnd . $rowNamaProdukEnd);
@@ -341,7 +358,7 @@ class LabelMasukGudangController extends Component
 
         // jumlah kotak (box)
         $columnJumlahKotakStart = 'V';
-        $columnJumlahKotakEnd = 'AK';
+        $columnJumlahKotakEnd = 'AL';
         $rowJumlahKotakStart = 14;
         $spreadsheet->getActiveSheet()->mergeCells($columnJumlahKotakStart . $rowJumlahKotakStart . ':' . $columnJumlahKotakEnd . $rowJumlahKotakStart);
         $spreadsheet->getActiveSheet()->setCellValue($columnJumlahKotakStart . $rowJumlahKotakStart, 'Jumlah Kotak (Box)');
@@ -351,7 +368,7 @@ class LabelMasukGudangController extends Component
         // value jumlah kotak (box)
         $jumlahBox = $data->sum('qty_produksi');
         $columnJumlahKotakValueStart = 'V';
-        $columnJumlahKotakValueEnd = 'AK';
+        $columnJumlahKotakValueEnd = 'AL';
         $rowJumlahKotakValueStart = 15;
         $rowJumlahKotakValueEnd = 16;
         $spreadsheet->getActiveSheet()->mergeCells($columnJumlahKotakValueStart . $rowJumlahKotakValueStart . ':' . $columnJumlahKotakValueEnd . $rowJumlahKotakValueEnd);
@@ -444,14 +461,14 @@ class LabelMasukGudangController extends Component
 
         // border perhitungan
         $columnPerhitunganStart = 'V';
-        $columnPerhitunganEnd = 'AK';
+        $columnPerhitunganEnd = 'AL';
         $rowPerhitunganStart = 17;
         $rowPerhitunganEnd = 20;
         phpspreadsheet::addOutlineBorder($spreadsheet, $columnPerhitunganStart . $rowPerhitunganStart . ':' . $columnPerhitunganEnd . $rowPerhitunganEnd);
 
         // title pengecekan
         $columnPengecekanStart = 'V';
-        $columnPengecekanEnd = 'AK';
+        $columnPengecekanEnd = 'AL';
         $rowPengecekanStart = 21;
         $rowPengecekanEnd = 25;
         $spreadsheet->getActiveSheet()->mergeCells($columnPengecekanStart . $rowPengecekanStart . ':' . $columnPengecekanEnd . $rowPengecekanStart);
@@ -483,7 +500,7 @@ class LabelMasukGudangController extends Component
 
         // title sebelum suffing
         $columnTitleSebelumSuffingStart = 'AF';
-        $columnTitleSebelumSuffingEnd = 'AK';
+        $columnTitleSebelumSuffingEnd = 'AL';
         $rowTitleSebelumSuffing = 23;
         $spreadsheet->getActiveSheet()->mergeCells($columnTitleSebelumSuffingStart . $rowTitleSebelumSuffing . ':' . $columnTitleSebelumSuffingEnd . $rowTitleSebelumSuffing);
         $spreadsheet->getActiveSheet()->setCellValue($columnTitleSebelumSuffingStart . $rowTitleSebelumSuffing, 'Sebelum Suffing');
@@ -493,11 +510,18 @@ class LabelMasukGudangController extends Component
         // membuat border untuk seluruh cell
         phpspreadsheet::addOutlineBorder($spreadsheet, $startColumn . '2:' . $endColumn . '25');
         $startColumn = 'A';
-        while ($startColumn !== $endColumn) {
+        while ($startColumn !== 'AF') {
             $spreadsheet->getActiveSheet()->getColumnDimension($startColumn)->setWidth(25, 'px');
 
             $startColumn++;
         }
+        $spreadsheet->getActiveSheet()->getColumnDimension('AF')->setWidth(50, 'px');
+        $spreadsheet->getActiveSheet()->getColumnDimension('AG')->setWidth(50, 'px');
+        $spreadsheet->getActiveSheet()->getColumnDimension('AH')->setWidth(50, 'px');
+        $spreadsheet->getActiveSheet()->getColumnDimension('AI')->setWidth(50, 'px');
+        $spreadsheet->getActiveSheet()->getColumnDimension('AJ')->setWidth(50, 'px');
+        $spreadsheet->getActiveSheet()->getColumnDimension('AK')->setWidth(50, 'px');
+        $spreadsheet->getActiveSheet()->getColumnDimension('AL')->setWidth(50, 'px');
 
         // baris 8 -25 untuk height dibuat 26px
         for ($rowHeightIndex = 8; $rowHeightIndex <= 25; $rowHeightIndex++) {
