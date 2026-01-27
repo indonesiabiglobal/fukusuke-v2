@@ -87,6 +87,7 @@ use App\Http\Livewire\MasterTabel\Machine\MachinePartDetailController;
 use App\Http\Livewire\MasterTabel\MasalahKenpin\MasalahKenpinInfureController;
 use App\Http\Livewire\MasterTabel\MasalahKenpin\MasalahKenpinSeitaiController;
 use App\Http\Controllers\PrinterSettingsController;
+use App\Http\Livewire\Warehouse\LabelMasukGudangReport\LabelMasukGudangReportController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -242,6 +243,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/general-report', GeneralReportController::class)->name('general-report');
     Route::get('/detail-report', DetailReportController::class)->name('detail-report');
     Route::get('/production-loss-report', ProductionLossReportController::class)->name('production-loss-report');
+    Route::get('/label-masuk-gudang-report', LabelMasukGudangReportController::class)->name('label-masuk-gudang-report');
 
     // Buyer
     Route::get('/buyer', BuyerController::class)->name('buyer');

@@ -210,6 +210,9 @@
                                     <a href="pengembalian-palet" class="nav-link" data-key="t-starter"> Pengembalian
                                         Palet </a>
                                 </li>
+                                <li class="nav-item">
+                                    <a href="label-masuk-gudang-report" class="nav-link" data-key="t-starter"> Label Masuk Gudang Report </a>
+                                </li>
                             </ul>
                         </div>
                     </li>
