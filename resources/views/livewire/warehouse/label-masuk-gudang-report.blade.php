@@ -1,6 +1,8 @@
 <div class="row">
-    <div class="col-lg-2"></div>
-    <div class="col-lg-6">
+    <div class="col-12">
+        <h1 class="text-center mb-4">Label Masuk Gudang Report</h1>
+    </div>
+    <div class="col-6 justify-content-center mx-auto">
         <form wire:submit.prevent="export">
             {{-- Filter tanggal awal --}}
             <div class="form-group">
@@ -78,7 +80,6 @@
 
 @script
     <script type="text/javascript">
-        document.addEventListener('livewire:initialized', function() {
-        });
+        document.addEventListener('livewire:initialized', function() {});
     </script>
 @endscript
