@@ -113,9 +113,9 @@ class LabelMasukGudangController extends Component
             $drawingAF->setName('Kotak Rak AF');
             $drawingAF->setPath($imagePath);
             $drawingAF->setCoordinates('AF' . $rowTitleCard);
-            $drawingAF->setHeight(63);
-            $drawingAF->setOffsetX(7);
-            $drawingAF->setOffsetY(2);
+            $drawingAF->setHeight(60);
+            $drawingAF->setOffsetX(2);
+            $drawingAF->setOffsetY(4);
             $drawingAF->setWorksheet($spreadsheet->getActiveSheet());
         }
 
@@ -126,9 +126,9 @@ class LabelMasukGudangController extends Component
             $drawingAG->setName('Kotak Rak AG');
             $drawingAG->setPath($imagePath);
             $drawingAG->setCoordinates('AG' . $rowTitleCard);
-            $drawingAG->setHeight(63);
-            $drawingAG->setOffsetX(7);
-            $drawingAG->setOffsetY(2);
+            $drawingAG->setHeight(60);
+            $drawingAG->setOffsetX(2);
+            $drawingAG->setOffsetY(4);
             $drawingAG->setWorksheet($spreadsheet->getActiveSheet());
         }
 
@@ -139,18 +139,18 @@ class LabelMasukGudangController extends Component
             $drawingAH->setName('Kotak Rak AH');
             $drawingAH->setPath($imagePath);
             $drawingAH->setCoordinates('AH' . $rowTitleCard);
-            $drawingAH->setHeight(63);
-            $drawingAH->setOffsetX(7);
-            $drawingAH->setOffsetY(2);
+            $drawingAH->setHeight(60);
+            $drawingAH->setOffsetX(2);
+            $drawingAH->setOffsetY(4);
             $drawingAH->setWorksheet($spreadsheet->getActiveSheet());
 
             $drawingAI = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
             $drawingAI->setName('Kotak Rak AI');
             $drawingAI->setPath($imagePath);
             $drawingAI->setCoordinates('AI' . $rowTitleCard);
-            $drawingAI->setHeight(63);
-            $drawingAI->setOffsetX(7);
-            $drawingAI->setOffsetY(2);
+            $drawingAI->setHeight(60);
+            $drawingAI->setOffsetX(2);
+            $drawingAI->setOffsetY(4);
             $drawingAI->setWorksheet($spreadsheet->getActiveSheet());
         }
 
@@ -161,18 +161,18 @@ class LabelMasukGudangController extends Component
             $drawingAJ->setName('Kotak Rak AJ');
             $drawingAJ->setPath($imagePath);
             $drawingAJ->setCoordinates('AJ' . $rowTitleCard);
-            $drawingAJ->setHeight(63);
-            $drawingAJ->setOffsetX(7);
-            $drawingAJ->setOffsetY(2);
+            $drawingAJ->setHeight(60);
+            $drawingAJ->setOffsetX(2);
+            $drawingAJ->setOffsetY(4);
             $drawingAJ->setWorksheet($spreadsheet->getActiveSheet());
 
             $drawingAK = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
             $drawingAK->setName('Kotak Rak AK');
             $drawingAK->setPath($imagePath);
             $drawingAK->setCoordinates('AK' . $rowTitleCard);
-            $drawingAK->setHeight(63);
-            $drawingAK->setOffsetX(7);
-            $drawingAK->setOffsetY(2);
+            $drawingAK->setHeight(60);
+            $drawingAK->setOffsetX(2);
+            $drawingAK->setOffsetY(4);
             $drawingAK->setWorksheet($spreadsheet->getActiveSheet());
         }
 
@@ -183,9 +183,9 @@ class LabelMasukGudangController extends Component
             $drawingAL->setName('Kotak Rak AL');
             $drawingAL->setPath($imagePath);
             $drawingAL->setCoordinates('AL' . $rowTitleCard);
-            $drawingAL->setHeight(63);
-            $drawingAL->setOffsetX(7);
-            $drawingAL->setOffsetY(2);
+            $drawingAL->setHeight(60);
+            $drawingAL->setOffsetX(2);
+            $drawingAL->setOffsetY(4);
             $drawingAL->setWorksheet($spreadsheet->getActiveSheet());
         }
 
@@ -225,8 +225,6 @@ class LabelMasukGudangController extends Component
         $rowPetugasValueStart = 5;
         $rowPetugasValueEnd = 6;
         $spreadsheet->getActiveSheet()->mergeCells($startColumn . $rowPetugasValueStart . ':' . $columnTextGudangEnd . $rowPetugasValueEnd);
-        // $spreadsheet->getActiveSheet()->setCellValue($startColumn . $rowPetugasValueStart, $data[0]->namapetugas);
-        // phpspreadsheet::styleFont($spreadsheet, $startColumn . $rowPetugasValueStart, false, 14, 'Tahoma');
         phpspreadsheet::addOutlineBorder($spreadsheet, $startColumn . $rowPetugas . ':' . $columnTextGudangEnd . $rowPetugasValueEnd);
 
         // Assisten Leader
@@ -238,8 +236,6 @@ class LabelMasukGudangController extends Component
 
         // Assisten Value
         $spreadsheet->getActiveSheet()->mergeCells($columnTanggalStart . $rowPetugasValueStart . ':' . $columnAssitenEnd . $rowPetugasValueEnd);
-        // $spreadsheet->getActiveSheet()->setCellValue($startColumn . $rowPetugasValueStart, $data[0]->namapetugas);
-        // phpspreadsheet::styleFont($spreadsheet, $startColumn . $rowPetugasValueStart, false, 11, 'Tahoma');
         phpspreadsheet::addOutlineBorder($spreadsheet, $columnTanggalStart . $rowPetugas . ':' . $columnAssitenEnd . $rowPetugasValueEnd);
 
         // Gudang
@@ -251,8 +247,6 @@ class LabelMasukGudangController extends Component
 
         // Gudang Value
         $spreadsheet->getActiveSheet()->mergeCells($columnStartGudang . $rowPetugasValueStart . ':' . $columnTanggalValueEnd . $rowPetugasValueEnd);
-        // $spreadsheet->getActiveSheet()->setCellValue($startColumn . $rowPetugasValueStart, $data[0]->namapetugas);
-        // phpspreadsheet::styleFont($spreadsheet, $startColumn . $rowPetugasValueStart, false, 11, 'Tahoma');
         phpspreadsheet::addOutlineBorder($spreadsheet, $columnStartGudang . $rowPetugas . ':' . $columnTanggalValueEnd . $rowPetugasValueEnd);
 
         // Nomor palet
@@ -260,7 +254,7 @@ class LabelMasukGudangController extends Component
         $spreadsheet->getActiveSheet()->setCellValue($columnTitleNomorPaletStart . $rowTextGudang, $nomerPalet[0]);
         phpspreadsheet::addOutlineBorder($spreadsheet, $columnTitleNomorPaletStart . $rowTextGudang . ':' . $endColumn . $rowPetugasValueEnd);
         phpspreadsheet::styleFont($spreadsheet, $columnTitleNomorPaletStart . $rowTextGudang, false, 72, 'Times New Roman');
-        // phpspreadsheet::textAlignCenter($spreadsheet, $columnTitleNomorPaletStart . $rowTextGudang);
+        phpspreadsheet::textAlignCenter($spreadsheet, $columnTitleNomorPaletStart . $rowTextGudang);
 
         // title nomer lot
         $columnTitleNomorLotEnd = 'E';
@@ -268,7 +262,6 @@ class LabelMasukGudangController extends Component
         $rowTitleNomorLotEnd = 9;
         $spreadsheet->getActiveSheet()->mergeCells($startColumn . $rowTitleNomorLotStart . ':' . $columnTitleNomorLotEnd . $rowTitleNomorLotEnd);
         $spreadsheet->getActiveSheet()->setCellValue($startColumn . $rowTitleNomorLotStart, 'Nomor Lot');
-        // phpspreadsheet::textAlignCenter($spreadsheet, $startColumn . $rowTitleNomorLotStart);
 
         // No Box
         $columnNoBoxStart = 'F';
@@ -354,7 +347,7 @@ class LabelMasukGudangController extends Component
             $rowNomorLot++;
         }
         // border untuk value
-        phpspreadsheet::addBorderDottedMiddleHorizontal($spreadsheet, $startColumn . '10' . ':' . $columnTitleCardEnd . '19');
+        phpspreadsheet::addBorderDottedMiddleHorizontal($spreadsheet, $startColumn . '10' . ':' . $columnTitleOperatorEnd . '19');
 
         // catatan
         $columnCatatanStart = 'B';
@@ -597,13 +590,13 @@ class LabelMasukGudangController extends Component
             $startColumn++;
         }
         $spreadsheet->getActiveSheet()->getColumnDimension('AE')->setWidth(30, 'px');
-        $spreadsheet->getActiveSheet()->getColumnDimension('AF')->setWidth(50, 'px');
-        $spreadsheet->getActiveSheet()->getColumnDimension('AG')->setWidth(50, 'px');
-        $spreadsheet->getActiveSheet()->getColumnDimension('AH')->setWidth(50, 'px');
-        $spreadsheet->getActiveSheet()->getColumnDimension('AI')->setWidth(50, 'px');
-        $spreadsheet->getActiveSheet()->getColumnDimension('AJ')->setWidth(50, 'px');
-        $spreadsheet->getActiveSheet()->getColumnDimension('AK')->setWidth(50, 'px');
-        $spreadsheet->getActiveSheet()->getColumnDimension('AL')->setWidth(50, 'px');
+        $spreadsheet->getActiveSheet()->getColumnDimension('AF')->setWidth(40, 'px');
+        $spreadsheet->getActiveSheet()->getColumnDimension('AG')->setWidth(40, 'px');
+        $spreadsheet->getActiveSheet()->getColumnDimension('AH')->setWidth(40, 'px');
+        $spreadsheet->getActiveSheet()->getColumnDimension('AI')->setWidth(40, 'px');
+        $spreadsheet->getActiveSheet()->getColumnDimension('AJ')->setWidth(40, 'px');
+        $spreadsheet->getActiveSheet()->getColumnDimension('AK')->setWidth(40, 'px');
+        $spreadsheet->getActiveSheet()->getColumnDimension('AL')->setWidth(40, 'px');
 
         // baris 8 -25 untuk height dibuat 26px
         for ($rowHeightIndex = 8; $rowHeightIndex <= 25; $rowHeightIndex++) {

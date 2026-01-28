@@ -4,7 +4,7 @@ namespace App\Http\Livewire\Warehouse\LabelMasukGudangReport;
 
 use App\Models\MsMachine;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Writer\Csv;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
@@ -224,7 +224,6 @@ class LabelMasukGudangReportExport
 
         $this->worksheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
 
-
         // Cache header styles
         $this->cacheStyle('B4:AN4', [
             'font' => ['bold' => true, 'size' => 8, 'name' => 'Arial'],
@@ -256,8 +255,9 @@ class LabelMasukGudangReportExport
 
     private function saveReport()
     {
-        $filename = 'Label-Masuk-Gudang-Report.xlsx';
-        $writer = new Xlsx($this->spreadsheet);
+        $filename = 'Label-Masuk-Gudang-Report.csv';
+        $writer = new Csv($this->spreadsheet);
+        $writer->setDelimiter(';'); // Menggunakan titik koma sebagai delimiter untuk kompatibilitas Excel Indonesia
         $writer->save($filename);
 
         return [
