@@ -85,7 +85,7 @@ class LabelMasukGudangReportExport
     private function getOptimizedData($tglAwal, $tglAkhir)
     {
         // Gunakan query builder untuk performa lebih baik
-        $filterDate = "tdpg.production_date BETWEEN '$tglAwal' AND '$tglAkhir'";
+        $filterDate = "tkmg.printed_on BETWEEN '$tglAwal' AND '$tglAkhir'";
 
         return DB::select(
             "
@@ -106,12 +106,18 @@ class LabelMasukGudangReportExport
                 mp.palet_jumlah_baris as tinggi,
                 mp.palet_isi_baris as jmlbaris,
                 tdpg.qty_produksi/cast(mp.case_box_count as  INTEGER) AS qty_produksi
-            FROM  tdProduct_Goods AS tdpg
-            left JOIN tdOrderLpk AS tdol ON tdpg.lpk_id = tdol.id
-                left join msproduct as mp on mp.id=tdpg.product_id
-                left join msemployee as me on me.id=tdpg.employee_id
+            FROM  tr_kartu_masuk_gudang AS tkmg
+                INNER JOIN tdProduct_Goods AS tdpg ON tkmg.nomor_palet = tdpg.nomor_palet
+                LEFT JOIN tdOrderLpk AS tdol ON tdpg.lpk_id = tdol.id
+                LEFT join msproduct as mp on mp.id=tdpg.product_id
+                LEFT join msemployee as me on me.id=tdpg.employee_id
             WHERE
                 $filterDate
+                AND tkmg.revisi = (
+                    SELECT MAX(revisi)
+                    FROM tr_kartu_masuk_gudang AS sub_tkmg
+                    WHERE sub_tkmg.nomor_palet = tkmg.nomor_palet
+                )
             ORDER BY tdpg.created_on ASC",
         );
     }
@@ -121,8 +127,13 @@ class LabelMasukGudangReportExport
         $processed = [
             'palet' => [],
         ];
+        $isiPalet = [];
 
         foreach ($data as $row) {
+            if (!isset($isiPalet[$row->nomor_palet])) {
+                $isiPalet[$row->nomor_palet] = 0;
+            }
+            $isiPalet[$row->nomor_palet] = $isiPalet[$row->nomor_palet] + $row->qty_produksi;
             // Struktur data untuk akses lebih cepat
             if (!isset($processed['palet'][$row->nomor_palet])) {
                 $parts = explode('-', (string) $row->nomor_palet, 2);
@@ -133,8 +144,10 @@ class LabelMasukGudangReportExport
                     'no_label' => isset($parts[1]) ? trim($parts[1]) : '',
                     'no_produk' => $row->nocode,
                     'nama_produk' => $row->namaproduk,
-                    'isi_palet' => $row->tinggi * $row->jmlbaris,
                 ];
+            } else {
+                // Pastikan isi_palet diupdate jika sudah ada
+                $processed['palet'][$row->nomor_palet]['isi_palet'] = $isiPalet[$row->nomor_palet];
             }
 
             if (!isset($processed['palet'][$row->nomor_palet]['nomor_lot'][$row->nomor_lot])) {

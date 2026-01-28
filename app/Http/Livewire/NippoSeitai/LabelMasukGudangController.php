@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\NippoSeitai;
 
 use App\Helpers\phpspreadsheet;
+use App\Models\TdKartuMasukGudang;
 use Carbon\Carbon;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
@@ -30,6 +31,10 @@ class LabelMasukGudangController extends Component
 
     public function export()
     {
+        $nomer_dok = '';
+        $maxRevisi = TdKartuMasukGudang::where('nomor_palet', $this->nomor_palet)->max('revisi');
+        $revisi = $maxRevisi ? $maxRevisi + 1 : 1;
+
         $data = collect(
             DB::select("
             SELECT
@@ -370,7 +375,7 @@ class LabelMasukGudangController extends Component
         $columnDokumentasiValueStart = 'E';
         $columnDokumentasiValueEnd = 'J';
         $spreadsheet->getActiveSheet()->mergeCells($columnDokumentasiValueStart . $rowDokumentasi . ':' . $columnDokumentasiValueEnd . $rowDokumentasi);
-        $spreadsheet->getActiveSheet()->setCellValue($columnDokumentasiValueStart . $rowDokumentasi, 'FKI/I/frm/GU/0015');
+        $spreadsheet->getActiveSheet()->setCellValue($columnDokumentasiValueStart . $rowDokumentasi, $nomer_dok);
         phpspreadsheet::styleFont($spreadsheet, $columnDokumentasiValueStart . $rowDokumentasi, false, 12, 'Times New Roman');
         phpspreadsheet::addOutlineBorder($spreadsheet, $columnDokumentasiStart . $rowDokumentasi . ':' . $columnDokumentasiValueEnd . $rowDokumentasi);
 
@@ -386,7 +391,7 @@ class LabelMasukGudangController extends Component
         $columnRevisiValueStart = 'E';
         $columnRevisiValueEnd = 'J';
         $spreadsheet->getActiveSheet()->mergeCells($columnRevisiValueStart . $rowRevisi . ':' . $columnRevisiValueEnd . $rowRevisi);
-        $spreadsheet->getActiveSheet()->setCellValue($columnRevisiValueStart . $rowRevisi, '01');
+        $spreadsheet->getActiveSheet()->setCellValue($columnRevisiValueStart . $rowRevisi, $revisi);
         phpspreadsheet::styleFont($spreadsheet, $columnRevisiValueStart . $rowRevisi, false, 12, 'Times New Roman');
         phpspreadsheet::addOutlineBorder($spreadsheet, $columnRevisiStart . $rowRevisi . ':' . $columnRevisiValueEnd . $rowRevisi);
 
@@ -602,6 +607,14 @@ class LabelMasukGudangController extends Component
         for ($rowHeightIndex = 8; $rowHeightIndex <= 25; $rowHeightIndex++) {
             $spreadsheet->getActiveSheet()->getRowDimension($rowHeightIndex)->setRowHeight(30, 'px');
         }
+
+        // Simpan data print
+        TdKartuMasukGudang::create([
+            'nomor_palet' => $this->nomor_palet,
+            'revisi' => $revisi,
+            'nomer_dok' => $nomer_dok,
+            'printed_on' => Carbon::now(),
+        ]);
 
         $writer = new Xlsx($spreadsheet);
         $writer->save('asset/report/Label-Gudang-' . $this->nomor_palet . '.xlsx');
