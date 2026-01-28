@@ -144,14 +144,15 @@ class LabelMasukGudangReportExport
                     'no_label' => isset($parts[1]) ? trim($parts[1]) : '',
                     'no_produk' => $row->nocode,
                     'nama_produk' => $row->namaproduk,
+                    'isi_palet' => $isiPalet[$row->nomor_palet]
                 ];
             } else {
                 // Pastikan isi_palet diupdate jika sudah ada
                 $processed['palet'][$row->nomor_palet]['isi_palet'] = $isiPalet[$row->nomor_palet];
             }
 
-            if (!isset($processed['palet'][$row->nomor_palet]['nomor_lot'][$row->nomor_lot])) {
-                $processed['palet'][$row->nomor_palet]['nomor_lot'][$row->nomor_lot] = [
+            if (!isset($processed['palet'][$row->nomor_palet]['production_id'][$row->production_id])) {
+                $processed['palet'][$row->nomor_palet]['production_id'][$row->production_id] = [
                     'nomor_lot' => $row->nomor_lot,
                     'qty_produksi' => $row->qty_produksi,
                 ];
@@ -299,8 +300,8 @@ class LabelMasukGudangReportExport
             ];
 
             // Tulis detail untuk setiap lot
-            $countLot = count($paletData['nomor_lot']);
-            foreach ($paletData['nomor_lot'] as $nomor_lot => $data) {
+            $countLot = count($paletData['production_id']);
+            foreach ($paletData['production_id'] as $production_id => $data) {
                 $rowData = array_merge($rowData, [
                     $data['nomor_lot']
                 ]);
@@ -311,7 +312,7 @@ class LabelMasukGudangReportExport
             }
 
             // Tulis detail untuk setiap qty
-            foreach ($paletData['nomor_lot'] as $nomor_lot => $data) {
+            foreach ($paletData['production_id'] as $production_id => $data) {
                 $rowData = array_merge($rowData, [
                     $data['qty_produksi']
                 ]);
