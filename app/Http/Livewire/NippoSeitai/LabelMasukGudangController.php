@@ -560,11 +560,10 @@ class LabelMasukGudangController extends Component
         // border pengecekan
         phpspreadsheet::addOutlineBorder($spreadsheet, $columnPengecekanStart . $rowPengecekanStart . ':' . $columnPengecekanEnd . $rowPengecekanEnd);
 
-        // checkboxes petugas setai (kotak titik-titik)
+        // checkboxes petugas setai
         $columnPetugasSeitai = 'W';
         $rowPetugasSeitai = 23;
-        phpspreadsheet::addFullBorderDotted($spreadsheet, $columnPetugasSeitai . $rowPetugasSeitai);
-        phpspreadsheet::fillWithDots($spreadsheet, $columnPetugasSeitai . $rowPetugasSeitai, '.', 6, 1, 10);
+        phpspreadsheet::addOutlineBorder($spreadsheet, $columnPetugasSeitai . $rowPetugasSeitai);
 
         // title petugas seitai
         $columnTitlePetugasSeitaiStart = 'X';
@@ -575,11 +574,10 @@ class LabelMasukGudangController extends Component
         phpspreadsheet::styleFont($spreadsheet, $columnTitlePetugasSeitaiStart . $rowTitlePetugasSeitai, false, 12, 'Tahoma');
         phpspreadsheet::textAlignLeft($spreadsheet, $columnTitlePetugasSeitaiStart . $rowTitlePetugasSeitai);
 
-        // checkboxes sebelum suffing (kotak titik-titik)
+        // checkboxes sebelum suffing
         $columnSebelumSuffing = 'AE';
         $rowSebelumSuffing = 23;
-        phpspreadsheet::addFullBorderDotted($spreadsheet, $columnSebelumSuffing . $rowSebelumSuffing);
-        phpspreadsheet::fillWithDots($spreadsheet, $columnSebelumSuffing . $rowSebelumSuffing, '.', 6, 1, 10);
+        phpspreadsheet::addOutlineBorder($spreadsheet, $columnSebelumSuffing . $rowSebelumSuffing);
 
         // title sebelum suffing
         $columnTitleSebelumSuffingStart = 'AF';
