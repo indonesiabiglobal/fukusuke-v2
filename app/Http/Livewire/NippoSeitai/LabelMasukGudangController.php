@@ -341,7 +341,7 @@ class LabelMasukGudangController extends Component
             // shift value
             $spreadsheet->getActiveSheet()->mergeCells($columnTitleShiftStart . $rowNomorLot . ':' . $columnTitleShiftEnd . $rowNomorLot);
             $spreadsheet->getActiveSheet()->setCellValue($columnTitleShiftStart . $rowNomorLot, $data[$nomorLotIndex]->work_shift ?? '');
-            phpspreadsheet::styleFont($spreadsheet, $startColumn . $rowNomorLot . ':' . $columnTitleShiftEnd . $rowNomorLot, false, 11, 'Times New Roman');
+            phpspreadsheet::styleFont($spreadsheet, $startColumn . $rowNomorLot . ':' . $columnTitleShiftEnd . $rowNomorLot, false, 13, 'Times New Roman');
             phpspreadsheet::textAlignCenter($spreadsheet, $startColumn . $rowNomorLot . ':' . $columnTitleShiftEnd . $rowNomorLot);
 
             $rowNomorLot++;
