@@ -600,7 +600,7 @@ class LabelMasukGudangController extends Component
 
         // baris 8 -25 untuk height dibuat 26px
         for ($rowHeightIndex = 8; $rowHeightIndex <= 25; $rowHeightIndex++) {
-            $spreadsheet->getActiveSheet()->getRowDimension($rowHeightIndex)->setRowHeight(26, 'px');
+            $spreadsheet->getActiveSheet()->getRowDimension($rowHeightIndex)->setRowHeight(30, 'px');
         }
 
         $writer = new Xlsx($spreadsheet);
