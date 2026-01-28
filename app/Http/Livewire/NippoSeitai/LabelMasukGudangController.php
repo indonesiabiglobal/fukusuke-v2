@@ -112,7 +112,7 @@ class LabelMasukGudangController extends Component
         $imagePath = public_path('asset/image/kotak-rak.png');
 
         // AF
-        phpspreadsheet::addOutlineBorder($spreadsheet, 'AF' . $rowTitleCard . ':' . 'AF' . $rowTitleCard);
+        // phpspreadsheet::addOutlineBorder($spreadsheet, 'AF' . $rowTitleCard . ':' . 'AF' . $rowTitleCard);
         if (file_exists($imagePath)) {
             $drawingAF = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
             $drawingAF->setName('Kotak Rak AF');
@@ -125,7 +125,7 @@ class LabelMasukGudangController extends Component
         }
 
         // AG
-        phpspreadsheet::addOutlineBorder($spreadsheet, 'AG' . $rowTitleCard . ':' . 'AG' . $rowTitleCard);
+        // phpspreadsheet::addOutlineBorder($spreadsheet, 'AG' . $rowTitleCard . ':' . 'AG' . $rowTitleCard);
         if (file_exists($imagePath)) {
             $drawingAG = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
             $drawingAG->setName('Kotak Rak AG');
@@ -138,7 +138,7 @@ class LabelMasukGudangController extends Component
         }
 
         // AH:AI (gambar di AH)
-        phpspreadsheet::addOutlineBorder($spreadsheet, 'AH' . $rowTitleCard . ':' . 'AI' . $rowTitleCard);
+        // phpspreadsheet::addOutlineBorder($spreadsheet, 'AH' . $rowTitleCard . ':' . 'AI' . $rowTitleCard);
         if (file_exists($imagePath)) {
             $drawingAH = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
             $drawingAH->setName('Kotak Rak AH');
@@ -160,7 +160,7 @@ class LabelMasukGudangController extends Component
         }
 
         // AJ:AK (gambar di AJ)
-        phpspreadsheet::addOutlineBorder($spreadsheet, 'AJ' . $rowTitleCard . ':' . 'AK' . $rowTitleCard);
+        // phpspreadsheet::addOutlineBorder($spreadsheet, 'AJ' . $rowTitleCard . ':' . 'AK' . $rowTitleCard);
         if (file_exists($imagePath)) {
             $drawingAJ = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
             $drawingAJ->setName('Kotak Rak AJ');
@@ -182,7 +182,7 @@ class LabelMasukGudangController extends Component
         }
 
         // AL
-        phpspreadsheet::addOutlineBorder($spreadsheet, 'AL' . $rowTitleCard . ':' . 'AL' . $rowTitleCard);
+        // phpspreadsheet::addOutlineBorder($spreadsheet, 'AL' . $rowTitleCard . ':' . 'AL' . $rowTitleCard);
         if (file_exists($imagePath)) {
             $drawingAL = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
             $drawingAL->setName('Kotak Rak AL');
@@ -193,6 +193,7 @@ class LabelMasukGudangController extends Component
             $drawingAL->setOffsetY(4);
             $drawingAL->setWorksheet($spreadsheet->getActiveSheet());
         }
+        phpspreadsheet::addFullBorder($spreadsheet, 'AF' . $rowTitleCard . ':' . 'AL' . $rowTitleCard);
 
         /* Gudang */
         // Text Gudang
@@ -338,6 +339,7 @@ class LabelMasukGudangController extends Component
 
             // jumlah revisi value
             $spreadsheet->getActiveSheet()->mergeCells($columnTitleJumlahRevisiStart . $rowNomorLot . ':' . $columnTitleJumlahRevisiEnd . $rowNomorLot);
+            phpspreadsheet::textAlignCenter($spreadsheet, $startColumn . $rowNomorLot . ':' . $columnTitleJumlahRevisiEnd . $rowNomorLot);
 
             // operator value
             $spreadsheet->getActiveSheet()->mergeCells($columnTitleOperatorStart . $rowNomorLot . ':' . $columnTitleOperatorEnd . $rowNomorLot);
@@ -347,12 +349,12 @@ class LabelMasukGudangController extends Component
             $spreadsheet->getActiveSheet()->mergeCells($columnTitleShiftStart . $rowNomorLot . ':' . $columnTitleShiftEnd . $rowNomorLot);
             $spreadsheet->getActiveSheet()->setCellValue($columnTitleShiftStart . $rowNomorLot, $data[$nomorLotIndex]->work_shift ?? '');
             phpspreadsheet::styleFont($spreadsheet, $startColumn . $rowNomorLot . ':' . $columnTitleShiftEnd . $rowNomorLot, false, 13, 'Times New Roman');
-            phpspreadsheet::textAlignCenter($spreadsheet, $startColumn . $rowNomorLot . ':' . $columnTitleShiftEnd . $rowNomorLot);
+            phpspreadsheet::textAlignCenter($spreadsheet, $columnTitleShiftStart . $rowNomorLot . ':' . $columnTitleShiftEnd . $rowNomorLot);
 
             $rowNomorLot++;
         }
         // border untuk value
-        phpspreadsheet::addBorderDottedMiddleHorizontal($spreadsheet, $startColumn . '10' . ':' . $columnTitleOperatorEnd . '19');
+        phpspreadsheet::addBorderDottedMiddleHorizontal($spreadsheet, $startColumn . '10' . ':' . $columnTitleShiftEnd . '19');
 
         // catatan
         $columnCatatanStart = 'B';
