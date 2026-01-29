@@ -8,6 +8,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Csv;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class LabelMasukGudangReportExport
 {
@@ -270,9 +271,8 @@ class LabelMasukGudangReportExport
 
     private function saveReport()
     {
-        $filename = 'Label-Masuk-Gudang-Report.csv';
-        $writer = new Csv($this->spreadsheet);
-        $writer->setDelimiter(';'); // Menggunakan titik koma sebagai delimiter untuk kompatibilitas Excel Indonesia
+        $filename = 'Label-Masuk-Gudang-Report.xlsx';
+        $writer = new Xlsx($this->spreadsheet);
         $writer->save($filename);
 
         return [
