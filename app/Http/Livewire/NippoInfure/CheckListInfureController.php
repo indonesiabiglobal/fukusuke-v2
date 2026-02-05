@@ -464,7 +464,7 @@ class CheckListInfureController extends Component
                 $columnLossStart = 'Q';
                 $columnLoss = $columnLossStart;
 
-                if ($lossItem['losscode'] === '' && $lossItem['lossname'] == null  && $lossItem['berat_loss'] == null) {
+                if ($production_loss_id == '' && $lossItem['losscode'] === null && $lossItem['lossname'] == null  && $lossItem['berat_loss'] == null) {
                     $columnLoss++;
                     break;
                 }

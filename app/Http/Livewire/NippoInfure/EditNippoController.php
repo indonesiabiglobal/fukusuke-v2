@@ -607,6 +607,14 @@ class EditNippoController extends Component
 
         $datas->save();
 
+        // Update total berat loss infure di tdproduct_assembly
+        $totalBerat = TdProductAssemblyLoss::where('product_assembly_id', $this->orderId)
+            ->sum('berat_loss');
+
+        TdProductAssembly::where('id', $this->orderId)->update([
+            'infure_berat_loss' => $totalBerat,
+        ]);
+
         $this->dispatch('closeModal');
     }
 
@@ -616,6 +624,14 @@ class EditNippoController extends Component
         $data->each(function ($item) {
             $item->delete();
         });
+
+        // Update total berat loss infure di tdproduct_assembly
+        $totalBerat = TdProductAssemblyLoss::where('product_assembly_id', $this->orderId)
+            ->sum('berat_loss');
+
+        TdProductAssembly::where('id', $this->orderId)->update([
+            'infure_berat_loss' => $totalBerat,
+        ]);
 
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Hapus']);
         $this->dispatch('closeModalDeleteLossInfure', $loss_infure_id);
