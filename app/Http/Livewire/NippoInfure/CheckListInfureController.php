@@ -256,6 +256,7 @@ class CheckListInfureController extends Component
                         tdpa.berat_standard,
                         msli.code AS losscode,
                         msli.NAME AS lossname,
+                        tdpal.id as production_loss_id,
                         tdpal.berat_loss
                     FROM
                         tdProduct_Assembly AS tdpa
@@ -308,6 +309,7 @@ class CheckListInfureController extends Component
                         tdpa.berat_standard,
                         msli.code AS losscode,
                         msli.NAME AS lossname,
+                        tdpal.id as production_loss_id,
                         tdpal.berat_loss
                     FROM
                         tdProduct_Assembly AS tdpa
@@ -370,7 +372,7 @@ class CheckListInfureController extends Component
             }
 
             // Add loss data to the corresponding key
-            $dataMap[$key]['loss_data'][$item->losscode] = [
+            $dataMap[$key]['loss_data'][$item->production_loss_id] = [
                 'losscode' => $item->losscode,
                 'lossname' => $item->lossname,
                 'berat_loss' => $item->berat_loss,
@@ -458,11 +460,11 @@ class CheckListInfureController extends Component
             $columnItemEnd++;
 
             // Write loss data from HashMap
-            foreach ($dataItem['loss_data'] as $losscode => $lossItem) {
+            foreach ($dataItem['loss_data'] as $production_loss_id => $lossItem) {
                 $columnLossStart = 'Q';
                 $columnLoss = $columnLossStart;
 
-                if ($losscode === '' && $lossItem['lossname'] == null  && $lossItem['berat_loss'] == null) {
+                if ($lossItem['losscode'] === '' && $lossItem['lossname'] == null  && $lossItem['berat_loss'] == null) {
                     $columnLoss++;
                     break;
                 }
