@@ -531,6 +531,7 @@ class ProduksiPerMesinReportService
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
         // hide column A
         $spreadsheet->getActiveSheet()->getColumnDimension('A')->setVisible(false);
+        $spreadsheet->getActiveSheet()->freezePane('B5');
 
         // Header
         $columnMesin = 'B';
@@ -658,6 +659,7 @@ class ProduksiPerMesinReportService
             $spreadsheet->getActiveSheet()->mergeCells($startColumnItem . $rowItem . ':' . $endColumnItem . $rowItem);
             phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $rowItem, true, 9, 'Calibri');
             $rowItem++;
+            $startRowItem = $rowItem;
             $countMachine = 0;
             // daftar mesin
             foreach ($listMachine[$department['department_id']] as $machineNo => $machineName) {
@@ -717,13 +719,6 @@ class ProduksiPerMesinReportService
                 $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->work_hour_on_mm > 0 ? $dataItem->qty_produksi / ($workHours / 60) : 0);
                 phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
-                // $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->berat_standard > 0 ? $dataItem->berat_produksi / $dataItem->berat_standard : 0);
-                // phpspreadsheet::numberPercentageOrZero($spreadsheet, $columnItem . $rowItem);
-                // $columnItem++;
-                // $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->infure_cost_printing);
-                // $columnItem++;
-                // $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->infure_cost + $dataItem->infure_cost_printing);
-                // $columnItem++;
 
                 // jam kerja
                 $workHours = $dataItem->work_hour_on_mm; // Ambil nilai menit dari data
@@ -746,12 +741,10 @@ class ProduksiPerMesinReportService
                 $columnItem++;
                 // jam mati
                 $activeWorksheet->setCellValue($columnItem . $rowItem, $formatedOffHours);
-                phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
-                $columnItem++;
-
                 phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem, false, 8, 'Calibri');
                 $rowItem++;
             }
+            phpspreadsheet::addBorderDottedMiddleHorizontal($spreadsheet, $startColumnItem . $startRowItem . ':' . $columnItem . $rowItem);
             // perhitungan jumlah berdasarkan departemen
             $spreadsheet->getActiveSheet()->mergeCells($columnMachineNo . $rowItem . ':' . $columnMachineName . $rowItem);
             // $activeWorksheet->setCellValue($columnMachineNo . $rowItem, 'Total ' . $department['department_name']);
@@ -831,7 +824,7 @@ class ProduksiPerMesinReportService
             $activeWorksheet->setCellValue($columnItem . $rowItem, $formatedOffHours);
 
             phpspreadsheet::styleFont($spreadsheet, $columnMachineNo . $rowItem . ':' . $columnItem . $rowItem, true, 8, 'Calibri');
-            phpspreadsheet::addFullBorder($spreadsheet, $columnMachineNo . $rowItem . ':' . $columnItem . $rowItem);
+            phpspreadsheet::addBorderDottedMiddleHorizontal($spreadsheet, $columnMachineNo . $rowItem . ':' . $columnItem . $rowItem);
             $columnItem++;
 
             $rowItem++;
@@ -843,7 +836,6 @@ class ProduksiPerMesinReportService
         $spreadsheet->getActiveSheet()->mergeCells($columnMachineNo . $rowGrandTotal . ':' . $columnMachineName . $rowGrandTotal);
         $spreadsheet->getActiveSheet()->setCellValue($columnMachineNo . $rowGrandTotal, 'GRAND TOTAL');
         phpspreadsheet::styleFont($spreadsheet, $columnMachineNo . $rowGrandTotal . ':' . $columnHeaderEnd . $rowGrandTotal, true, 8, 'Calibri');
-        // $this->addFullBorder($spreadsheet, $columnMachineNo . $rowGrandTotal . ':' . $columnValueAvg . $rowGrandTotal);
 
         // grand total
         $grandTotal = [

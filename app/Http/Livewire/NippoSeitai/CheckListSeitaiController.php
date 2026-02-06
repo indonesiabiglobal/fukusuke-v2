@@ -175,16 +175,16 @@ class CheckListSeitaiController extends Component
                         INNER JOIN msDepartment AS msd ON msd.ID = msm.department_id
                     ),
                     lossgoods AS (
-                    SELECT
-                        tpgl.id,
-                        tpgl.product_goods_id,
-                        msls.code,
-                        msls.NAME AS namaloss,
-                        tpgl.berat_loss
-                    FROM
-                        tdproduct_goods_loss AS tpgl
-                    INNER JOIN mslossseitai AS msls ON msls.ID = tpgl.loss_seitai_id
-                    ORDER BY tpgl.id ASC
+                        SELECT
+                            tpgl.id,
+                            tpgl.product_goods_id,
+                            msls.code,
+                            msls.NAME AS namaloss,
+                            tpgl.berat_loss
+                        FROM
+                            tdproduct_goods_loss AS tpgl
+                        INNER JOIN mslossseitai AS msls ON msls.ID = tpgl.loss_seitai_id
+                        ORDER BY tpgl.id ASC
                     ) SELECT
                     tdpg.ID as id_tdpg,
                     tdpg.production_no AS production_no,
@@ -387,8 +387,8 @@ class CheckListSeitaiController extends Component
             }
 
             // Data Loss
-            if (!isset($dataLoss[$item->id_tdpg][$item->losscode])) {
-                $dataLoss[$item->id_tdpg][$item->losscode] = (object)[
+            if (!isset($dataLoss[$item->id_tdpg][$item->id_tpfl])) {
+                $dataLoss[$item->id_tdpg][$item->id_tpfl] = (object)[
                     'losscode' => $item->losscode,
                     'lossname' => $item->lossname,
                     'berat_loss' => $item->berat_loss,

@@ -336,10 +336,6 @@ class AddSeitaiController extends Component
             $data->updated_on = $createdOn;
             $data->updated_by = auth()->user()->username;
 
-            // jumlah berat loss
-            if (isset($this->jumlahBeratLoss)) {
-                $data->seitai_berat_loss = $this->jumlahBeratLoss;
-            }
             $data->save();
 
             $this->product_goods_id = $data->id;
@@ -379,6 +375,13 @@ class AddSeitaiController extends Component
                 $datas->lpk_id = $lpkid->id;
                 $datas->save();
             }
+
+            // update seitai_berat_loss pada TdProductGoods
+            $totalLoss = TdProductGoodsLoss::where('product_goods_id', $data->id)
+                ->sum('berat_loss');
+            TdProductGoods::where('id', $data->id)->update([
+                'seitai_berat_loss' => $totalLoss,
+            ]);
 
             $totalGoods = DB::select("
             SELECT

@@ -402,12 +402,12 @@ class EditSeitaiController extends Component
     public function deleteLoss($orderId)
     {
         $data = TdProductGoodsLoss::findOrFail($orderId);
-        // mengurangi dari tdproduct_goods
-        $tdproductgoods = TdProductGoods::where('id', $this->tdpgId)->update([
-            'seitai_berat_loss' => $this->jumlahBeratLoss - $data->berat_loss
-        ]);
-
         $data->delete();
+
+        $totalBeratLoss = TdProductGoodsLoss::where('product_goods_id', $this->tdpgId)->sum('berat_loss');
+        TdProductGoods::where('id', $this->tdpgId)->update([
+            'seitai_berat_loss' => $totalBeratLoss
+        ]);
 
         $this->dispatch('closeModalDeleteLoss', $orderId);
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Data Berhasil di Hapus']);
@@ -453,9 +453,9 @@ class EditSeitaiController extends Component
             $data->save();
 
             // update total berat loss on tdproduct_goods
-            $newTotal = $this->jumlahBeratLoss - $oldBerat + $this->berat_loss;
+            $totalBeratLoss = TdProductGoodsLoss::where('product_goods_id', $this->tdpgId)->sum('berat_loss');
             TdProductGoods::where('id', $this->tdpgId)->update([
-                'seitai_berat_loss' => $newTotal
+                'seitai_berat_loss' => $totalBeratLoss
             ]);
 
             $this->editing_id = null;
@@ -566,12 +566,12 @@ class EditSeitaiController extends Component
         $datas->updated_on = Carbon::now();
         $datas->updated_by = auth()->user()->username;
 
-        // menambahkan ke tdproduct_goods
-        $tdproductgoods = TdProductGoods::where('id', $this->tdpgId)->update([
-            'seitai_berat_loss' => $this->jumlahBeratLoss + $this->berat_loss
-        ]);
-
         $datas->save();
+
+        $totalBeratLoss = TdProductGoodsLoss::where('product_goods_id', $this->tdpgId)->sum('berat_loss');
+        TdProductGoods::where('id', $this->tdpgId)->update([
+            'seitai_berat_loss' => $totalBeratLoss
+        ]);
 
         $this->clearLoss();
 
