@@ -1,7 +1,28 @@
 <div class="row">
     <form wire:submit.prevent="save">
         <div class="row mt-2">
-            <div class="col-12 col-lg-12">
+            <div class="col-12 col-lg-6">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label col-12 col-lg-4">Tanggal Insiden</label>
+                        <input class="form-control" type="text" data-provider="flatpickr" data-date-format="d-m-Y"
+                            data-maxDate="{{ now()->format('d/m/Y') }}" wire:model.change="incident_date"
+                            placeholder="yyyy/mm/dd" />
+                        <span class="input-group-text py-0">
+                            <i class="ri-calendar-event-fill fs-4"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label col-4">Shift</label>
+                        <input class="form-control col-8" type="number" min="1" max="3" wire:model="shift" placeholder="Shift" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-12 mt-1">
                 <div class="form-group">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-2">Tanggal Kenpin</label>
@@ -125,7 +146,7 @@
                         <input type="text" placeholder="-" x-ref="employeenoInput"
                             class="form-control @error('employeeno') is-invalid @enderror" maxlength="8"
                             wire:model.change="employeeno"
-                            x-on:keydown.tab="$event.preventDefault(); $refs.ngInput.focus();" />
+                            x-on:keydown.tab="$event.preventDefault(); $refs.penemuNoInput.focus();" />
                         @error('employeeno')
                             <span class="invalid-feedback">{{ $message }}</span>
                         @enderror
@@ -151,10 +172,40 @@
             <div class="col-12 col-lg-4 mt-1">
                 <div class="form-group">
                     <div class="input-group">
+                        <label class="control-label col-12 col-lg-6">Penemu</label>
+                        <input type="text" placeholder="-" x-ref="penemuNoInput"
+                            class="form-control @error('penemuEmployeeNo') is-invalid @enderror" maxlength="8"
+                            wire:model.change="penemuEmployeeNo"
+                            x-on:keydown.tab="$event.preventDefault(); $refs.ngInput.focus();" />
+                        @error('penemuEmployeeNo')
+                            <span class="invalid-feedback">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-8 mt-1">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label"></label>
+                        <input type="text"
+                            @error('penemuEmployeeNo') placeholder="{{ $message }}" id="penemuEmployeeNameId" @else placeholder="-" @enderror
+                            class="form-control col-12 col-lg-8 readonly bg-light" readonly="readonly"
+                            wire:model="penemuEmployeeName" />
+                        <style>
+                            #penemuEmployeeNameId::placeholder {
+                                color: red;
+                            }
+                        </style>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-4 mt-1">
+                <div class="form-group">
+                    <div class="input-group">
                         <label class="control-label col-12 col-lg-6">Kode NG</label>
                         <input type="text" placeholder="..."
                             class="form-control @error('kode_ng') is-invalid @enderror" x-ref="ngInput"
-                            x-on:keydown.tab="$event.preventDefault(); $refs.isKasusInput.focus();"
+                            x-on:keydown.tab="$event.preventDefault(); $refs.detailNGInput.focus();"
                             wire:model.change="kode_ng" maxlength="10" />
                         @error('kode_ng')
                             <span class="invalid-feedback">{{ $message }}</span>
@@ -168,6 +219,20 @@
                         <label class="control-label"></label>
                         <input type="text" placeholder="-" class="form-control readonly bg-light"
                             readonly="readonly" wire:model="nama_ng" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-12 mt-1">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label col-12 col-lg-2">Detail NG</label>
+                        <input type="text" placeholder="Detail NG" x-ref="detailNGInput"
+                            class="form-control @error('detailMasalah') is-invalid @enderror"
+                            wire:model.defer="detailMasalah"
+                            x-on:keydown.tab="$event.preventDefault(); $refs.isKasusInput.focus();" />
+                        @error('detailMasalah')
+                            <span class="invalid-feedback">{{ $message }}</span>
+                        @enderror
                     </div>
                 </div>
             </div>

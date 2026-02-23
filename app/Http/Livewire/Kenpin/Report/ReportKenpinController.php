@@ -93,8 +93,8 @@ class ReportKenpinController extends Component
             return;
         }
 
-        $tglAwal = Carbon::parse($this->tglAwal);
-        $tglAkhir = Carbon::parse($this->tglAkhir);
+        $tglAwal = Carbon::parse($this->tglAwal)->startOfDay();
+        $tglAkhir = Carbon::parse($this->tglAkhir)->endOfDay();
 
         if ($this->nippo == 'INFURE') {
             $filter = [

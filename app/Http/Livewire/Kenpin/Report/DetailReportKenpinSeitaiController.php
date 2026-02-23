@@ -92,6 +92,9 @@ class DetailReportKenpinSeitaiController extends Component
 
         $header = [
             'Tanggal Input',
+            'Tanggal Kejadian',
+            'Shift',
+            'Grup',
             'No. Kartu Kenpin',
             'No. Label Gudang',
             'Department NG',
@@ -103,35 +106,32 @@ class DetailReportKenpinSeitaiController extends Component
             'Bagian Mesin',
             'Kode Masalah',
             'Masalah',
+            'Detail Masalah',
             'Jumlah Box Seitai',
+        ];
+
+        $headerLot = [
             'No Lot',
             'Jumlah Box Palet',
             'No Box Dari',
             'No Box Sampai',
             'Jumlah Box Kenpin',
             'Qty Loss',
+            'Jumlah Orang kenpin'
+        ];
+
+        $headerEnd = [
+            'Total Jumlah Box Kenpin',
+            'Total Loss Kenpin (Box)',
             'NIK',
             'Nama Operator',
             'Tanggal Selesai Kenpin',
-            'Total Loss (Lembar)',
+            'Jumlah NG yang ditemukan (Box)',
+            'Jumlah NG yang ditemukan (Gaiso)',
             'Penyebab',
             'Keterangan Penyebab',
             'Penanggulangan Masalah',
         ];
-
-        foreach ($header as $key => $value) {
-            $activeWorksheet->setCellValue($columnHeaderEnd . $rowHeaderStart, $value);
-            $columnHeaderEnd++;
-        }
-
-        $activeWorksheet->freezePane('A4');
-        $columnHeaderEnd = Coordinate::stringFromColumnIndex(Coordinate::columnIndexFromString($columnHeaderEnd) - 1);
-
-        // style header
-        phpspreadsheet::addFullBorder($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
-        phpspreadsheet::styleFont($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart, true, 9, 'Calibri');
-        phpspreadsheet::textAlignCenter($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
-        $activeWorksheet->getStyle($columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart)->getAlignment()->setWrapText(true);
 
         // Filter Query
         $filterKenpinId = $filter && isset($filter['kenpin_id']) ? " AND (tdka.ID = '" . $filter['kenpin_id'] . "')" : '';
@@ -146,9 +146,13 @@ class DetailReportKenpinSeitaiController extends Component
             "
                 SELECT
                     tdka.kenpin_date AS kenpin_date,
+                    tdka.incident_date AS incident_date,
+                    tdka.shift AS shift,
+                    tdka.grup AS grup,
                     tdka.kenpin_no AS kenpin_no,
                     tdka.nomor_palet AS nomor_palet,
                     tdka.status_kenpin AS status_kenpin,
+                    tdka.detail_masalah,
                     tdka.penyebab,
                     tdka.keterangan_penyebab,
                     tdka.penanggulangan,
@@ -156,9 +160,6 @@ class DetailReportKenpinSeitaiController extends Component
                     tdka.is_kasus,
                     tdka.qty_loss as total_qty_loss,
                     msd.name AS department_ng,
-                    tdkad.qty_loss AS qty_loss,
-                    tdkad.nomor_box_dari,
-                    tdkad.nomor_box_sampai,
                     msp.code_alias AS produk_code,
                     msp.NAME AS nama_produk,
                     msp.case_box_count,
@@ -170,7 +171,13 @@ class DetailReportKenpinSeitaiController extends Component
                     msmk.code AS code_masalah,
                     msmk.name AS nama_masalah,
                     tdpg.nomor_lot,
-                    tdpg.qty_produksi
+                    tdpg.qty_produksi,
+                    tdkad.qty_loss AS qty_loss,
+                    tdkad.nomor_box_dari,
+                    tdkad.nomor_box_sampai,
+                    tdkad.jumlah_orang_kenpin,
+                    tdkad.jumlah_ng_box,
+                    tdkad.jumlah_ng_gaiso
                 FROM
                     tdkenpin AS tdka
                     INNER JOIN msdepartment AS msd ON msd.ID = tdka.kenpin_department_id
@@ -206,14 +213,18 @@ class DetailReportKenpinSeitaiController extends Component
         foreach ($data as $item) {
             if (!isset($dataFiltered[$item->kenpin_no])) {
                 $dataFiltered[$item->kenpin_no] = [
+                    'incident_date' => $item->incident_date,
                     'kenpin_date' => $item->kenpin_date,
                     'kenpin_no' => $item->kenpin_no,
+                    'shift' => $item->shift,
+                    'grup' => $item->grup,
                     'nomor_palet' => $item->nomor_palet,
                     'status_kenpin' => $item->status_kenpin,
                     'penyebab' => $item->penyebab,
                     'keterangan_penyebab' => $item->keterangan_penyebab,
                     'penanggulangan' => $item->penanggulangan,
                     'is_kasus' => $item->is_kasus,
+                    'detail_masalah' => $item->detail_masalah,
                     'total_qty_loss' => $item->total_qty_loss,
                     'done_at' => $item->done_at,
                     'department_ng' => $item->department_ng,
@@ -232,28 +243,90 @@ class DetailReportKenpinSeitaiController extends Component
             }
 
             $jumlahBoxPalet = $item->qty_produksi / $item->case_box_count ?: 0;
+            $jumlahBoxKenpin = $item->nomor_box_sampai ? $item->nomor_box_sampai - $item->nomor_box_dari + 1 : 0;
             $dataFiltered[$item->kenpin_no][$item->nomor_palet][] = [
                 'nomor_lot' => $item->nomor_lot,
                 'jumlah_box_palet' => $jumlahBoxPalet,
-                'jumlah_box_kenpin' => $item->nomor_box_sampai ? $item->nomor_box_sampai - $item->nomor_box_dari + 1 : 0,
                 'nomor_box_dari' => $item->nomor_box_dari ?? '-',
                 'nomor_box_sampai' => $item->nomor_box_sampai ?? '-',
+                'jumlah_box_kenpin' => $jumlahBoxKenpin,
                 'qty_loss' => $item->qty_loss,
+                'jumlah_orang_kenpin' => $item->jumlah_orang_kenpin,
             ];
 
             // jumlah box palet dan kenpin total
             $dataFiltered[$item->kenpin_no]['jumlah_box_seitai'] = isset($dataFiltered[$item->kenpin_no]['jumlah_box_seitai']) ? $dataFiltered[$item->kenpin_no]['jumlah_box_seitai'] + $jumlahBoxPalet : $jumlahBoxPalet;
+            $dataFiltered[$item->kenpin_no]['total_jumlah_box_kenpin'] = isset($dataFiltered[$item->kenpin_no]['total_jumlah_box_kenpin']) ? $dataFiltered[$item->kenpin_no]['total_jumlah_box_kenpin'] + $jumlahBoxKenpin : $jumlahBoxKenpin;
+
+            $dataFiltered[$item->kenpin_no]['total_jumlah_ng_box'] = isset($dataFiltered[$item->kenpin_no]['total_jumlah_ng_box']) ? $dataFiltered[$item->kenpin_no]['total_jumlah_ng_box'] + $item->jumlah_ng_box : $item->jumlah_ng_box;
+            $dataFiltered[$item->kenpin_no]['total_jumlah_ng_gaiso'] = isset($dataFiltered[$item->kenpin_no]['total_jumlah_ng_gaiso']) ? $dataFiltered[$item->kenpin_no]['total_jumlah_ng_gaiso'] + $item->jumlah_ng_gaiso : $item->jumlah_ng_gaiso;
         }
+
+        // header
+        foreach ($header as $key => $value) {
+            $activeWorksheet->setCellValue($columnHeaderEnd . $rowHeaderStart, $value);
+            $columnHeaderEnd++;
+        }
+
+        $maxLot = 0;
+        foreach ($dataFiltered as $itemKenpin) {
+            $lotCount = count($itemKenpin[$itemKenpin['nomor_palet']]);
+            if ($lotCount > $maxLot) {
+                $maxLot = $lotCount;
+            }
+        }
+        for ($i = 0; $i < $maxLot; $i++) {
+            $columnHeaderStartLot = Coordinate::stringFromColumnIndex(Coordinate::columnIndexFromString($columnHeaderEnd));
+            foreach ($headerLot as $key => $value) {
+                $activeWorksheet->setCellValue($columnHeaderEnd . $rowHeaderStart, $value);
+                $columnHeaderEnd++;
+            }
+
+            // style header lot background color with random bright color
+            // generate bright RGB by keeping each channel in high range (180-255)
+            $r = mt_rand(180, 255);
+            $g = mt_rand(180, 255);
+            $b = mt_rand(180, 255);
+            // ARGB expects 8 hex chars, prefix with FF for full opacity
+            $randomColor = 'FF' . sprintf('%02X%02X%02X', $r, $g, $b);
+            $activeWorksheet->getStyle($columnHeaderStartLot . $rowHeaderStart . ':' . Coordinate::stringFromColumnIndex(Coordinate::columnIndexFromString($columnHeaderEnd) - 1) . $rowHeaderStart)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB($randomColor);
+        }
+
+        foreach ($headerEnd as $key => $value) {
+            $activeWorksheet->setCellValue($columnHeaderEnd . $rowHeaderStart, $value);
+            $columnHeaderEnd++;
+        }
+
+        $activeWorksheet->freezePane('A4');
+        $columnHeaderEnd = Coordinate::stringFromColumnIndex(Coordinate::columnIndexFromString($columnHeaderEnd) - 1);
+
+        // style header
+        phpspreadsheet::addFullBorder($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
+        phpspreadsheet::styleFont($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart, true, 9, 'Calibri');
+        phpspreadsheet::textAlignCenter($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
+        $activeWorksheet->getStyle($columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart)->getAlignment()->setWrapText(true);
+        // end header
 
         // index
         $rowItemStart = 4;
         $columnItemStart = 'A';
-        $columnLotStart = 'N';
         $rowItem = $rowItemStart;
         foreach ($dataFiltered as $kenpinNo => $itemKenpin) {
             $columnItemEnd = $columnItemStart;
             // tgl input
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($itemKenpin['kenpin_date'])->translatedFormat('d-M-Y'));
+            $columnItemEnd++;
+
+            // tgl kejadian
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($itemKenpin['incident_date'])->translatedFormat('d-M-Y'));
+            $columnItemEnd++;
+
+            // shift
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['shift']);
+            $columnItemEnd++;
+
+            // grup
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['grup']);
             $columnItemEnd++;
 
             // nomor kenpin
@@ -300,40 +373,51 @@ class DetailReportKenpinSeitaiController extends Component
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['nama_masalah']);
             $columnItemEnd++;
 
+            // detail masalah
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['detail_masalah']);
+            $columnItemEnd++;
+
             // jumlah box seitai
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['jumlah_box_seitai']);
             $columnItemEnd++;
 
-            $rowItemLot = $rowItem;
             foreach ($itemKenpin[$itemKenpin['nomor_palet']] as $lotNo => $itemLot) {
-                $columnItemEnd = $columnLotStart;
-
                 // nomor lot
-                $activeWorksheet->setCellValue($columnItemEnd . $rowItemLot, $itemLot['nomor_lot']);
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemLot['nomor_lot']);
                 $columnItemEnd++;
 
                 // jumlah box palet
-                $activeWorksheet->setCellValue($columnItemEnd . $rowItemLot, $itemLot['jumlah_box_palet']);
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemLot['jumlah_box_palet']);
                 $columnItemEnd++;
 
                 // nomor box dari
-                $activeWorksheet->setCellValue($columnItemEnd . $rowItemLot, $itemLot['nomor_box_dari']);
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemLot['nomor_box_dari']);
                 $columnItemEnd++;
 
                 // nomor box sampai
-                $activeWorksheet->setCellValue($columnItemEnd . $rowItemLot, $itemLot['nomor_box_sampai']);
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemLot['nomor_box_sampai']);
                 $columnItemEnd++;
 
                 // jumlah box kenpin
-                $activeWorksheet->setCellValue($columnItemEnd . $rowItemLot, $itemLot['jumlah_box_kenpin']);
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemLot['jumlah_box_kenpin']);
                 $columnItemEnd++;
 
                 // qty loss
-                $activeWorksheet->setCellValue($columnItemEnd . $rowItemLot, $itemLot['qty_loss']);
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemLot['qty_loss']);
                 $columnItemEnd++;
 
-                $rowItemLot++;
+                // jumlah orang kenpin
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemLot['jumlah_orang_kenpin']);
+                $columnItemEnd++;
             }
+
+            // total jumlah box kenpin
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['total_jumlah_box_kenpin']);
+            $columnItemEnd++;
+
+            // Total Loss Kenpin
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['total_qty_loss'] ?? 0);
+            $columnItemEnd++;
 
             // nik petugas
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['nik_petugas']);
@@ -347,9 +431,12 @@ class DetailReportKenpinSeitaiController extends Component
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['done_at'] ? Carbon::parse($itemKenpin['done_at'])->translatedFormat('d-M-Y') : '-');
             $columnItemEnd++;
 
-            // loss (lembar)
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['total_qty_loss'] ?? 0);
-            phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnItemEnd . $rowItem);
+            // total jumlah ng box
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['total_jumlah_ng_box'] ?? 0);
+            $columnItemEnd++;
+
+            // total jumlah ng gaiso
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['total_jumlah_ng_gaiso'] ?? 0);
             $columnItemEnd++;
 
             // penyebab
@@ -363,7 +450,7 @@ class DetailReportKenpinSeitaiController extends Component
             // penanggulangan
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['penanggulangan']);
 
-            $rowItem = $rowItemLot;
+            $rowItem++;
         }
         phpspreadsheet::addBorderDottedMiddleHorizontal($spreadsheet, $columnItemStart . $rowItemStart . ':' . $columnItemEnd . $rowItem - 1);
         phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItemStart . ':' . $columnItemEnd . $rowItem - 1, false, 8, 'Calibri');

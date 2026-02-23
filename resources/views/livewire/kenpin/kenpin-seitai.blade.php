@@ -224,7 +224,7 @@
                 <li>
                     <label style="cursor: pointer;">
                         <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="6"
-                            checked> Jumlah Loss (lbr)
+                            checked> Jumlah Loss (Box)
                     </label>
                 </li>
                 <li>

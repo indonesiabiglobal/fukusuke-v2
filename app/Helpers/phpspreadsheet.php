@@ -338,6 +338,30 @@ class phpspreadsheet
         ]);
     }
 
+    /**
+     * Fill a (merged) cell with dot characters to create a dotted-box appearance.
+     * Uses the top-left cell of the given range to set the value.
+     */
+    public static function fillWithDots($spreadsheet, $range, $dot = '.', $repeat = 30, $lines = 3, $fontSize = 8, $font = 'Tahoma')
+    {
+        $parts = explode(':', $range);
+        $startCell = trim($parts[0]);
+        $dotLine = str_repeat($dot, max(1, (int) $repeat));
+        $valueLines = array_fill(0, max(1, (int) $lines), $dotLine);
+        $value = implode(PHP_EOL, $valueLines);
+
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setCellValue($startCell, $value);
+        $sheet->getStyle($range)->getAlignment()->setWrapText(true)->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER)->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+        $sheet->getStyle($range)->applyFromArray([
+            'font' => [
+                'bold' => false,
+                'size' => $fontSize,
+                'name' => $font,
+            ],
+        ]);
+    }
+
     public static function numberFormatCommaSeparated($spreadsheet, $range, $decimal = 2)
     {
         $spreadsheet->getActiveSheet()->getStyle($range)

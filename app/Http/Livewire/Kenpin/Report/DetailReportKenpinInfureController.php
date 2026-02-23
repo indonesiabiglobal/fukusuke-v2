@@ -91,21 +91,29 @@ class DetailReportKenpinInfureController extends Component
 
         $header = [
             'Tanggal Input',
+            'Tanggal Kejadian',
+            'Shift',
             'No. Kartu Kenpin',
             'Status Kenpin',
             'Kasus',
             'No. Produk',
             'Nama Produk',
             'No. Mesin Infure',
+            'NIK Operator',
+            'Nama Operator',
+            'NIK Penemu',
+            'Nama Penemu',
             'Bagian Mesin',
             'Kode Masalah',
             'Masalah',
+            'Detail Masalah',
             'Jumlah Gentan',
             'Total Loss',
             'Shift',
-            'NIK',
-            'Nama Operator',
+            'NIK Produksi',
+            'Nama Produksi',
             'Nomor Gentan',
+            'Tanggal Produksi',
             'Tanggal Selesai Kenpin',
             'Loss (Kg)',
             'Penyebab',
@@ -113,13 +121,16 @@ class DetailReportKenpinInfureController extends Component
             'Penanggulangan Masalah',
         ];
 
-        foreach ($header as $key => $value) {
+        foreach ($header as $value) {
             $activeWorksheet->setCellValue($columnHeaderEnd . $rowHeaderStart, $value);
-            $columnHeaderEnd++;
+            $columnHeaderEnd = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($columnHeaderEnd) + 1;
+            $columnHeaderEnd = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($columnHeaderEnd);
         }
 
         $activeWorksheet->freezePane('A4');
-        $columnHeaderEnd = chr(ord($columnHeaderEnd) - 1);
+        // Pastikan decrement kolom dilakukan dengan aman untuk kolom lebih dari satu huruf
+        $columnHeaderEndIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($columnHeaderEnd) - 1;
+        $columnHeaderEnd = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($columnHeaderEndIndex);
 
         // style header
         phpspreadsheet::addFullBorder($spreadsheet, $columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart);
@@ -149,12 +160,20 @@ class DetailReportKenpinInfureController extends Component
                     tdka.done_at,
                     tdka.is_kasus,
                     tdka.total_berat_loss,
+                    tdka.incident_date,
+                    tdka.shift,
+                    tdka.detail_masalah,
                     tdkad.berat_loss AS berat_loss,
                     msp.code_alias as produk_code,
                     msp.NAME AS nama_produk,
-                    mse.empname AS nama_petugas,
-                    mse.employeeno AS nik_petugas,
+                    mseOperator.empname AS nama_operator,
+                    mseOperator.employeeno AS nik_operator,
+                    msePenemu.empname AS nama_penemu,
+                    msePenemu.employeeno AS nik_penemu,
+                    tdpa.production_date AS production_date,
                     tdpa.gentan_no AS gentan_no,
+                    mseProduksi.empname AS nama_produksi,
+                    mseProduksi.employeeno AS nik_produksi,
                     msm.machineno,
                     tdpa.work_shift AS work_shift,
                     msmpd.name AS nama_bagian_mesin,
@@ -166,7 +185,9 @@ class DetailReportKenpinInfureController extends Component
                     INNER JOIN tdProduct_Assembly AS tdpa ON tdkad.product_assembly_id = tdpa.ID
                     INNER JOIN tdOrderLpk AS tdol ON tdka.lpk_id = tdol.ID
                     INNER JOIN msProduct AS msp ON tdol.product_id = msp.ID
-                    INNER JOIN msemployee AS mse ON mse.ID = tdka.employee_id
+                    INNER JOIN msemployee AS mseOperator ON mseOperator.ID = tdka.employee_id
+                    INNER JOIN msemployee AS msePenemu ON msePenemu.ID = tdka.penemu_masalah_id
+                    INNER JOIN msemployee AS mseProduksi ON mseProduksi.ID = tdpa.employee_id
                     INNER JOIN msmachine AS msm ON msm.ID = tdpa.machine_id
                     INNER JOIN ms_machine_part_detail AS msmpd ON msmpd.ID = tdka.machine_part_detail_id
                     INNER JOIN msmasalahkenpin AS msmk ON msmk.ID = tdka.masalah_kenpin_id
@@ -198,6 +219,13 @@ class DetailReportKenpinInfureController extends Component
                 $dataFiltered[$item->kenpin_no] = [
                     'kenpin_no' => $item->kenpin_no,
                     'kenpin_date' => $item->kenpin_date,
+                    'incident_date' => $item->incident_date,
+                    'shift' => $item->shift,
+                    'nik_operator' => $item->nik_operator,
+                    'nama_operator' => $item->nama_operator,
+                    'nik_penemu' => $item->nik_penemu,
+                    'nama_penemu' => $item->nama_penemu,
+                    'detail_masalah' => $item->detail_masalah,
                     'status_kenpin' => $item->status_kenpin,
                     'penyebab' => $item->penyebab,
                     'keterangan_penyebab' => $item->keterangan_penyebab,
@@ -217,9 +245,10 @@ class DetailReportKenpinInfureController extends Component
 
             $dataFiltered[$item->kenpin_no]['gentan'][] = [
                 'work_shift' => $item->work_shift,
-                'nik_petugas' => $item->nik_petugas,
-                'nama_petugas' => $item->nama_petugas,
+                'nik_produksi' => $item->nik_produksi,
+                'nama_produksi' => $item->nama_produksi,
                 'gentan_no' => $item->gentan_no,
+                'tanggal_produksi' => $item->production_date,
                 'done_at' => $item->done_at,
                 'berat_loss' => $item->berat_loss,
             ];
@@ -228,12 +257,20 @@ class DetailReportKenpinInfureController extends Component
         // index
         $rowItemStart = 4;
         $columnItemStart = 'A';
-        $columnGentanStart = 'M';
+        $columnGentanStart = 'T';
         $rowItem = $rowItemStart;
         foreach ($dataFiltered as $kenpinNo => $itemKenpin) {
             $columnItemEnd = $columnItemStart;
             // tgl input
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($itemKenpin['kenpin_date'])->translatedFormat('d-M-Y'));
+            $columnItemEnd++;
+
+            // tanggal insiden
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($itemKenpin['incident_date'])->translatedFormat('d-M-Y'));
+            $columnItemEnd++;
+
+            // shift
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['shift']);
             $columnItemEnd++;
 
             // nomor kenpin
@@ -260,6 +297,22 @@ class DetailReportKenpinInfureController extends Component
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, substr($itemKenpin['machineno'], -2));
             $columnItemEnd++;
 
+            // nik operator
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['nik_operator']);
+            $columnItemEnd++;
+
+            // nama operator
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['nama_operator']);
+            $columnItemEnd++;
+
+            // nik penemu
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['nik_penemu']);
+            $columnItemEnd++;
+
+            // nama penemu
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['nama_penemu']);
+            $columnItemEnd++;
+
             // bagian mesin
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['nama_bagian_mesin']);
             $columnItemEnd++;
@@ -270,6 +323,10 @@ class DetailReportKenpinInfureController extends Component
 
             // masalah
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['nama_masalah']);
+            $columnItemEnd++;
+
+            // detail masalah
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['detail_masalah']);
             $columnItemEnd++;
 
             // jumlah gentan
@@ -289,16 +346,20 @@ class DetailReportKenpinInfureController extends Component
                 $activeWorksheet->setCellValue($columnItemEnd . $rowItemGentan, $itemGentan['work_shift']);
                 $columnItemEnd++;
 
-                // nik petugas
-                $activeWorksheet->setCellValue($columnItemEnd . $rowItemGentan, $itemGentan['nik_petugas']);
+                // nik produksi
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItemGentan, $itemGentan['nik_produksi']);
                 $columnItemEnd++;
 
-                // nama petugas
-                $activeWorksheet->setCellValue($columnItemEnd . $rowItemGentan, $itemGentan['nama_petugas']);
+                // nama produksi
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItemGentan, $itemGentan['nama_produksi']);
                 $columnItemEnd++;
 
                 // nomor gentan
                 $activeWorksheet->setCellValue($columnItemEnd . $rowItemGentan, $itemGentan['gentan_no']);
+                $columnItemEnd++;
+
+                // tanggal produksi
+                $activeWorksheet->setCellValue($columnItemEnd . $rowItemGentan, $itemGentan['tanggal_produksi'] ? Carbon::parse($itemGentan['tanggal_produksi'])->translatedFormat('d-M-Y') : '-');
                 $columnItemEnd++;
 
                 // tanggal selesai kenpin
@@ -326,9 +387,9 @@ class DetailReportKenpinInfureController extends Component
 
             $rowItem = $rowItemGentan;
         }
-        phpspreadsheet::addBorderDottedMiddleHorizontal($spreadsheet, $columnItemStart . $rowItemStart . ':' . $columnItemEnd . $rowItem - 1);
-        phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItemStart . ':' . $columnItemEnd . $rowItem - 1, false, 8, 'Calibri');
-        phpspreadsheet::textAlignCenter($spreadsheet, $columnItemStart . $rowItemStart . ':' . $columnItemEnd . $rowItem - 1);
+        phpspreadsheet::addBorderDottedMiddleHorizontal($spreadsheet, $columnItemStart . $rowItemStart . ':' . $columnItemEnd . ($rowItem - 1));
+        phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItemStart . ':' . $columnItemEnd . ($rowItem - 1), false, 8, 'Calibri');
+        phpspreadsheet::textAlignCenter($spreadsheet, $columnItemStart . $rowItemStart . ':' . $columnItemEnd . ($rowItem - 1));
 
         $activeWorksheet->getStyle($columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart)->getAlignment()->setWrapText(true);
 

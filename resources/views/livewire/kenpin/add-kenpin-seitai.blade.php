@@ -1,7 +1,36 @@
 <div class="row">
     <form wire:submit.prevent="save">
         <div class="row mt-2">
-            <div class="col-12 col-lg-12">
+            <div class="col-12 col-lg-6">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label col-12 col-lg-4 align-self-center">Tanggal Insiden</label>
+                        <input class="form-control" type="text" data-provider="flatpickr" data-date-format="d-m-Y"
+                            data-maxDate="{{ now()->format('d/m/Y') }}" wire:model.change="incident_date"
+                            placeholder="yyyy/mm/dd" />
+                        <span class="input-group-text py-0">
+                            <i class="ri-calendar-event-fill fs-4"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-3">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label col-4 align-self-center">Shift</label>
+                        <input class="form-control col-8" type="number" min="1" max="3" wire:model="shift" placeholder="Shift" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-3">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label col-4 align-self-center">Grup</label>
+                        <input class="form-control col-8" type="number" min="1" max="3" wire:model="grup" placeholder="Grup" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-12 mt-1">
                 <div class="form-group">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-2">Tanggal Kenpin</label>
@@ -71,25 +100,6 @@
                                         x-on:keydown.tab="$event.preventDefault(); $refs.departmentInput.focus();"
                                         placeholder="A0000-000000" />
                                 </div>
-
-                                {{-- <div class="d-flex align-items-center">
-                                    <button wire:click="addPalet" type="button" class="btn btn-info"
-                                        wire:loading.attr="disabled">
-                                        <span wire:loading.remove wire:target="addPalet">
-                                            <i class="ri-search-line"></i>
-                                        </span>
-                                        <div wire:loading wire:target="addPalet">
-                                            <span class="d-flex align-items-center">
-                                                <span class="spinner-border flex-shrink-0" role="status">
-                                                    <span class="visually-hidden">Loading...</span>
-                                                </span>
-                                                <span class="flex-grow-1 ms-1">
-                                                    Loading...
-                                                </span>
-                                            </span>
-                                        </div>
-                                    </button>
-                                </div> --}}
                             </div>
                         </div>
                     </div>
@@ -136,36 +146,6 @@
                     </div>
                 </div>
             </div>
-            {{-- <div class="col-12 col-lg-4 mt-1">
-                <div class="form-group">
-                    <div class="input-group">
-                        <label class="control-label col-12 col-lg-6">
-                            <a href="#" data-bs-toggle="modal" wire:click="showModalNoOrder"
-                                class="text-underscore">
-                                Nomor Order <i class="ri-information-fill"></i>
-                            </a>
-                        </label>
-                        <input type="text" placeholder="-" maxlength="10"
-                            class="form-control col-4 @error('code') is-invalid @enderror" wire:model.change="code"
-                            x-on:keydown.tab="$event.preventDefault(); $refs.employeenoInput.focus();" />
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 col-lg-8 mt-1">
-                <div class="form-group">
-                    <div class="input-group">
-                        <label class="control-label"></label>
-                        <input type="text" class="form-control col-8 readonly bg-light"
-                            @error('code') placeholder="{{ $message }}" id="nameId" @else placeholder="-" @enderror
-                            readonly="readonly" wire:model="name" />
-                        <style>
-                            #nameId::placeholder {
-                                color: red;
-                            }
-                        </style>
-                    </div>
-                </div>
-            </div> --}}
             <div class="col-12 col-lg-4 mt-1">
                 <div class="form-group">
                     <div class="input-group">
@@ -173,7 +153,7 @@
                         <input type="text" placeholder="-"
                             class="form-control @error('employeeno') is-invalid @enderror"
                             wire:model.change="employeeno" x-ref="employeenoInput" maxlength="8"
-                            x-on:keydown.tab="$event.preventDefault(); $refs.ngInput.focus();" />
+                            x-on:keydown.tab="$event.preventDefault(); $refs.penemuNoInput.focus();" />
                         @error('employeeno')
                             <span class="invalid-feedback">{{ $message }}</span>
                         @enderror
@@ -198,10 +178,40 @@
             <div class="col-12 col-lg-4 mt-1">
                 <div class="form-group">
                     <div class="input-group">
+                        <label class="control-label col-12 col-lg-6">Penemu</label>
+                        <input type="text" placeholder="-" x-ref="penemuNoInput"
+                            class="form-control @error('penemuEmployeeNo') is-invalid @enderror" maxlength="8"
+                            wire:model.change="penemuEmployeeNo"
+                            x-on:keydown.tab="$event.preventDefault(); $refs.ngInput.focus();" />
+                        @error('penemuEmployeeNo')
+                            <span class="invalid-feedback">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-8 mt-1">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label"></label>
+                        <input type="text"
+                            @error('penemuEmployeeNo') placeholder="{{ $message }}" id="penemuEmployeeNameId" @else placeholder="-" @enderror
+                            class="form-control col-12 col-lg-8 readonly bg-light" readonly="readonly"
+                            wire:model="penemuEmployeeName" />
+                        <style>
+                            #penemuEmployeeNameId::placeholder {
+                                color: red;
+                            }
+                        </style>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-4 mt-1">
+                <div class="form-group">
+                    <div class="input-group">
                         <label class="control-label col-12 col-lg-6">NG</label>
                         <input type="text" placeholder="Kode NG"
                             class="form-control @error('kode_ng') is-invalid @enderror" x-ref="ngInput"
-                            x-on:keydown.tab="$event.preventDefault(); $refs.isKasusInput.focus();"
+                            x-on:keydown.tab="$event.preventDefault(); $refs.detailNGInput.focus();"
                             wire:model.change="kode_ng" maxlength="10" />
                         @error('kode_ng')
                             <span class="invalid-feedback">{{ $message }}</span>
@@ -222,6 +232,20 @@
                                 color: red;
                             }
                         </style>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-12 mt-1">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="control-label col-12 col-lg-2">Detail NG</label>
+                        <input type="text" placeholder="Detail NG" x-ref="detailNGInput"
+                            class="form-control @error('detailMasalah') is-invalid @enderror"
+                            wire:model.defer="detailMasalah"
+                            x-on:keydown.tab="$event.preventDefault(); $refs.isKasusInput.focus();" />
+                        @error('detailMasalah')
+                            <span class="invalid-feedback">{{ $message }}</span>
+                        @enderror
                     </div>
                 </div>
             </div>
@@ -481,7 +505,7 @@
                             </div>
                             <div class="col-lg-12 mb-1">
                                 <div class="form-group">
-                                    <label>Loss (Lembar) </label>
+                                    <label>Loss (Box) </label>
                                     <div class="input-group col-md-9 col-xs-8">
                                         <input class="form-control" type="text" wire:model.defer="qty_loss"
                                             placeholder="..." wire:loading.attr="disabled"
@@ -549,6 +573,48 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-lg-12 mb-1">
+                                <div class="form-group">
+                                    <label>Jumlah Orang kenpin</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control @error('jumlah_orang_kenpin') is-invalid @enderror"
+                                            wire:model.defer="jumlah_orang_kenpin"
+                                            placeholder="Jumlah orang" wire:loading.attr="disabled"
+                                            wire:loading.class="bg-light readonly" />
+                                        @error('jumlah_orang_kenpin')
+                                            <span class="invalid-feedback">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 mb-1">
+                                <div class="form-group">
+                                    <label>Jumlah NG Box</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control @error('jumlah_ng_box') is-invalid @enderror"
+                                            wire:model.defer="jumlah_ng_box"
+                                            placeholder="Jumlah NG Box" wire:loading.attr="disabled"
+                                            wire:loading.class="bg-light readonly" />
+                                        @error('jumlah_ng_box')
+                                            <span class="invalid-feedback">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 mb-1">
+                                <div class="form-group">
+                                    <label>Jumlah NG Gaiso</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control @error('jumlah_ng_gaiso') is-invalid @enderror"
+                                            wire:model.defer="jumlah_ng_gaiso"
+                                            placeholder="Jumlah NG Gaiso" wire:loading.attr="disabled"
+                                            wire:loading.class="bg-light readonly" />
+                                        @error('jumlah_ng_gaiso')
+                                            <span class="invalid-feedback">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -590,7 +656,10 @@
                                 <th class="border-0">Quantity</th>
                                 <th class="border-0">Nomor Box</th>
                                 <th class="border-0">Waktu Kenpin</th>
-                                <th class="border-0 rounded-end">Loss (Lembar)</th>
+                                <th class="border-0">Jml Orang Kenpin</th>
+                                <th class="border-0">Jml NG Box</th>
+                                <th class="border-0">Jml NG Gaiso</th>
+                                <th class="border-0 rounded-end">Loss (Box)</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -641,17 +710,29 @@
                                             -
                                         @endif
                                     </td>
+                                    {{-- jumlah orang kenpin --}}
+                                    <td>
+                                        {{ number_format($item->jumlah_orang_kenpin) }}
+                                    </td>
+                                    {{-- jumlah ng box --}}
+                                    <td>
+                                        {{ number_format($item->jumlah_ng_box) }}
+                                    </td>
+                                    {{-- jumlah ng gaiso --}}
+                                    <td>
+                                        {{ number_format($item->jumlah_ng_gaiso) }}
+                                    </td>
                                     <td>
                                         {{ number_format($item->qty_loss) }}
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="8" class="text-center">No results found</td>
+                                    <td colspan="12" class="text-center">No results found</td>
                                 </tr>
                             @endforelse
                             <tr>
-                                <td colspan="7" class="text-end">Qty Loss Total (Lembar):</td>
+                                <td colspan="11" class="text-end">Qty Loss Total (Box):</td>
                                 <td colspan="1" class="text-center">{{ number_format($beratLossTotal) }}</td>
                             </tr>
                         </tbody>

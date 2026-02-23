@@ -19,6 +19,8 @@ use Illuminate\Support\Facades\DB;
 
 class AddKenpinInfureController extends Component
 {
+    public $incident_date;
+    public $shift;
     public $kenpin_date;
     public $kenpin_no;
     public $lpk_no;
@@ -28,8 +30,12 @@ class AddKenpinInfureController extends Component
     public $productAssemblyId;
     public $code;
     public $name;
+    public $employeeId;
     public $employeeno;
     public $empname;
+    public $penemuEmployeeId;
+    public $penemuEmployeeNo;
+    public $penemuEmployeeName;
     public $remark;
     public $status_kenpin = 1;
     public $details;
@@ -54,6 +60,7 @@ class AddKenpinInfureController extends Component
     public $kode_ng;
     public $is_kasus = false;
     public $nama_ng;
+    public $detailMasalah;
     public $bagian_mesin_id;
     public $bagianMesinList;
     public $penyebab;
@@ -72,6 +79,7 @@ class AddKenpinInfureController extends Component
     public function mount()
     {
         $this->details = collect([]);
+        $this->incident_date = Carbon::now()->format('d-m-Y');
         $this->kenpin_date = Carbon::now()->format('d-m-Y');
 
         $this->generateKenpinNo();
@@ -83,8 +91,8 @@ class AddKenpinInfureController extends Component
 
     public function generateKenpinNo()
     {
-        $kenpinDate = Carbon::parse($this->kenpin_date);
-        $latestKenpin = TdKenpin::whereRaw("kenpin_no LIKE ?", ['INF' . $kenpinDate->format('ym') . '%'])
+        $incidentDate = Carbon::parse($this->incident_date);
+        $latestKenpin = TdKenpin::whereRaw("kenpin_no LIKE ?", ['INF' . $incidentDate->format('ym') . '%'])
             ->orderBy('kenpin_no', 'desc')
             ->first();
 
@@ -95,12 +103,12 @@ class AddKenpinInfureController extends Component
             $nextNumber = 1;
         }
 
-        $this->kenpin_no = 'INF' . $kenpinDate->format('ym') . '-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+        $this->kenpin_no = 'INF' . $incidentDate->format('ym') . '-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
     }
 
-    public function updatedKenpinDate()
+    public function updatedIncidentDate()
     {
-        if (!empty($this->kenpin_date)) {
+        if (!empty($this->incident_date)) {
             $this->generateKenpinNo();
         } else {
             $this->kenpin_no = '';
@@ -174,12 +182,33 @@ class AddKenpinInfureController extends Component
 
             if ($msemployee == null) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
+                $this->employeeId = '';
                 $this->employeeno = '';
                 $this->empname = '';
             } else {
+                $this->employeeId = $msemployee->id;
                 $this->employeeno = $msemployee->employeeno;
                 $this->empname = $msemployee->empname;
                 $this->resetValidation('employeeno');
+            }
+        }
+    }
+
+    public function updatedPenemuEmployeeNo()
+    {
+        if (isset($this->penemuEmployeeNo) && $this->penemuEmployeeNo != '' && strlen($this->penemuEmployeeNo) >= 2) {
+            $msemployee = MsEmployee::where('employeeno', 'ilike', '%' . $this->penemuEmployeeNo . '%')->first();
+
+            if ($msemployee == null) {
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->penemuEmployeeNo . ' Tidak Terdaftar']);
+                $this->penemuEmployeeId = '';
+                $this->penemuEmployeeNo = '';
+                $this->penemuEmployeeName = '';
+            } else {
+                $this->penemuEmployeeId = $msemployee->id;
+                $this->penemuEmployeeNo = $msemployee->employeeno;
+                $this->penemuEmployeeName = $msemployee->empname;
+                $this->resetValidation('penemuEmployeeNo');
             }
         }
     }
@@ -470,40 +499,42 @@ class AddKenpinInfureController extends Component
     {
         $this->validate([
             'employeeno' => 'required',
+            'penemuEmployeeNo' => 'required',
+            'shift' => 'required',
             'status_kenpin' => 'required',
             'lpk_no' => 'required',
             'kode_ng' => 'required',
             'is_kasus' => 'boolean',
-            'penyebab' => 'required',
-            'keterangan_penyebab' => 'required',
             'penanggulangan' => 'required_if:status_kenpin,2',
-            'bagian_mesin_id' => 'required'
+            'bagian_mesin_id' => 'required',
         ], [
             'employeeno.required' => 'Petugas tidak boleh kosong',
+            'penemuEmployeeNo.required' => 'Nomor Penemu tidak boleh kosong',
+            'shift.required' => 'Shift tidak boleh kosong',
             'status_kenpin.required' => 'Status Kenpin tidak boleh kosong',
             'lpk_no.required' => 'Nomor LPK tidak boleh kosong',
             'kode_ng.required' => 'Kode NG tidak boleh kosong',
             'is_kasus.boolean' => 'Kasus harus bernilai true atau false',
-            'penyebab.required' => 'Penyebab tidak boleh kosong',
-            'keterangan_penyebab.required' => 'Keterangan Penyebab tidak boleh kosong',
             'penanggulangan.required_if' => 'Penanggulangan tidak boleh kosong jika status selesai',
             'bagian_mesin_id.required' => 'Bagian Mesin tidak boleh kosong',
         ]);
 
         DB::beginTransaction();
         try {
-            $mspetugas = MsEmployee::where('employeeno', $this->employeeno)->first();
-
             $kenpinAssembly = new TdKenpin();
+            $kenpinAssembly->incident_date = Carbon::createFromFormat('d-m-Y H:i:s', $this->incident_date . ' ' . Carbon::now()->format('H:i:s'));
             $kenpinAssembly->kenpin_no = $this->kenpin_no;
             $kenpinAssembly->kenpin_date = Carbon::createFromFormat('d-m-Y H:i:s', $this->kenpin_date . ' ' . Carbon::now()->format('H:i:s'));
-            $kenpinAssembly->employee_id = $mspetugas->id;
+            $kenpinAssembly->shift = $this->shift;
+            $kenpinAssembly->employee_id = $this->employeeId;
+            $kenpinAssembly->penemu_masalah_id = $this->penemuEmployeeId;
             $kenpinAssembly->lpk_id = $this->lpk_id;
             $kenpinAssembly->total_berat_loss = $this->beratLossTotal;
             $kenpinAssembly->status_kenpin = $this->status_kenpin;
             $kenpinAssembly->is_kasus = $this->is_kasus ? true : false;
             $kenpinAssembly->masalah_kenpin_id = $this->masalahInfure->id;
             $kenpinAssembly->machine_part_detail_id = $this->bagian_mesin_id;
+            $kenpinAssembly->detail_masalah = $this->detailMasalah;
             $kenpinAssembly->penyebab = $this->penyebab;
             $kenpinAssembly->keterangan_penyebab = $this->keterangan_penyebab;
             $kenpinAssembly->penanggulangan = $this->penanggulangan;

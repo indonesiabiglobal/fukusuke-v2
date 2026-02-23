@@ -16,6 +16,9 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class AddKenpinSeitaiController extends Component
 {
+    public $incident_date;
+    public $shift;
+    public $grup;
     public $kenpin_no;
     public $kenpin_date;
     public $department_id = 7; // default ke seitai
@@ -23,10 +26,15 @@ class AddKenpinSeitaiController extends Component
     public $nama_produk;
     public $product_id;
     public $code_alias;
+    public $employeeId;
     public $empname;
     public $employeeno;
+    public $penemuEmployeeId;
+    public $penemuEmployeeNo;
+    public $penemuEmployeeName;
     public $kode_ng;
     public $nama_ng;
+    public $detailMasalah;
     public $penyebab;
     public $keterangan_penyebab;
     public $penanggulangan;
@@ -47,10 +55,14 @@ class AddKenpinSeitaiController extends Component
     public $beratLossTotal;
     public $qtyProduksiTotal = 0;
     public $is_kasus = false;
+
     public $nomor_box_dari;
     public $nomor_box_sampai;
     public $waktu_kenpin_dari;
     public $waktu_kenpin_sampai;
+    public $jumlah_orang_kenpin;
+    public $jumlah_ng_box;
+    public $jumlah_ng_gaiso;
 
     // Master data for NG codes
     public $masalahKenpin;
@@ -58,6 +70,7 @@ class AddKenpinSeitaiController extends Component
     public function mount()
     {
         $this->details = collect([]);
+        $this->incident_date = Carbon::now()->format('d-m-Y');
         $this->kenpin_date = Carbon::now()->format('d-m-Y');
 
         // Generate kenpin number
@@ -73,7 +86,7 @@ class AddKenpinSeitaiController extends Component
 
     public function generateKenpinNo()
     {
-        $kenpin_date = Carbon::createFromFormat('d-m-Y', $this->kenpin_date);
+        $incidentDate = Carbon::createFromFormat('d-m-Y', $this->incident_date);
 
         // check department
         if ($this->department_id == 2) {
@@ -82,7 +95,7 @@ class AddKenpinSeitaiController extends Component
             $prefix = 'SEI';
         }
 
-        $latestKenpin = TdKenpin::whereRaw("kenpin_no LIKE ?", [$prefix . $kenpin_date->format('ym') . '%'])
+        $latestKenpin = TdKenpin::whereRaw("kenpin_no LIKE ?", [$prefix . $incidentDate->format('ym') . '%'])
             ->where('department_id', $this->department_id)
             ->orderBy('kenpin_no', 'desc')
             ->first();
@@ -94,7 +107,22 @@ class AddKenpinSeitaiController extends Component
             $nextNumber = 1;
         }
 
-        $this->kenpin_no = $prefix . $kenpin_date->format('ym') . '-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+        $this->kenpin_no = $prefix . $incidentDate->format('ym') . '-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+    }
+
+    public function updatedIncidentDate()
+    {
+        if (!empty($this->incident_date)) {
+            $this->generateKenpinNo();
+        } else {
+            $this->kenpin_no = '';
+        }
+    }
+
+    public function updatedDepartmentId()
+    {
+        // Reset kenpin number
+        $this->generateKenpinNo();
     }
 
     public function edit($idKenpinGoodDetailUpdate)
@@ -113,14 +141,11 @@ class AddKenpinSeitaiController extends Component
                 $this->nomor_box_sampai = $detail->nomor_box_sampai ?? '';
                 $this->waktu_kenpin_dari = $detail->waktu_kenpin_dari ?? '';
                 $this->waktu_kenpin_sampai = $detail->waktu_kenpin_sampai ?? '';
+                $this->jumlah_orang_kenpin = $detail->jumlah_orang_kenpin ?? '';
+                $this->jumlah_ng_box = $detail->jumlah_ng_box ?? '';
+                $this->jumlah_ng_gaiso = $detail->jumlah_ng_gaiso ?? '';
             }
         }, $this->details->toArray());
-    }
-
-    public function updatedDepartmentId()
-    {
-        // Reset kenpin number
-        $this->generateKenpinNo();
     }
 
     public function updatedEmployeeno()
@@ -130,12 +155,33 @@ class AddKenpinSeitaiController extends Component
 
             if ($msemployee == null) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->employeeno . ' Tidak Terdaftar']);
+                $this->employeeId = '';
                 $this->employeeno = '';
                 $this->empname = '';
             } else {
+                $this->employeeId = $msemployee->id;
                 $this->employeeno = $msemployee->employeeno;
                 $this->empname = $msemployee->empname;
                 $this->resetValidation('employeeno');
+            }
+        }
+    }
+
+    public function updatedPenemuEmployeeNo()
+    {
+        if (isset($this->penemuEmployeeNo) && $this->penemuEmployeeNo != '' && strlen($this->penemuEmployeeNo) >= 2) {
+            $msemployee = MsEmployee::where('employeeno', 'ilike', '%' . $this->penemuEmployeeNo . '%')->first();
+
+            if ($msemployee == null) {
+                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Employee ' . $this->penemuEmployeeNo . ' Tidak Terdaftar']);
+                $this->penemuEmployeeId = '';
+                $this->penemuEmployeeNo = '';
+                $this->penemuEmployeeName = '';
+            } else {
+                $this->penemuEmployeeId = $msemployee->id;
+                $this->penemuEmployeeNo = $msemployee->employeeno;
+                $this->penemuEmployeeName = $msemployee->empname;
+                $this->resetValidation('penemuEmployeeNo');
             }
         }
     }
@@ -186,6 +232,9 @@ class AddKenpinSeitaiController extends Component
         $this->no_lot = '';
         $this->no_lpk = '';
         $this->quantity = '';
+        $this->jumlah_orang_kenpin = '';
+        $this->jumlah_ng_box = '';
+        $this->jumlah_ng_gaiso = '';
     }
 
     public function saveSeitai()
@@ -196,6 +245,9 @@ class AddKenpinSeitaiController extends Component
             'nomor_box_sampai' => 'nullable|numeric|gte:nomor_box_dari',
             'waktu_kenpin_dari' => 'nullable|date_format:H:i',
             'waktu_kenpin_sampai' => 'nullable|date_format:H:i',
+            'jumlah_orang_kenpin' => 'nullable|numeric|min:0',
+            'jumlah_ng_box' => 'nullable|numeric|min:0',
+            'jumlah_ng_gaiso' => 'nullable|numeric|min:0'
         ]);
 
         // update pada details
@@ -206,6 +258,9 @@ class AddKenpinSeitaiController extends Component
                 $detail->nomor_box_sampai = $this->nomor_box_sampai;
                 $detail->waktu_kenpin_dari = $this->waktu_kenpin_dari;
                 $detail->waktu_kenpin_sampai = $this->waktu_kenpin_sampai;
+                $detail->jumlah_orang_kenpin = $this->jumlah_orang_kenpin;
+                $detail->jumlah_ng_box = $this->jumlah_ng_box;
+                $detail->jumlah_ng_gaiso = $this->jumlah_ng_gaiso;
                 break;
             }
         }
@@ -221,33 +276,45 @@ class AddKenpinSeitaiController extends Component
 
     public function save()
     {
-        $this->validate([
-            'kode_produk' => 'required',
-            'employeeno' => 'required',
-            'kode_ng' => 'required',
-            'is_kasus' => 'required',
-            'penyebab' => 'required',
-            'keterangan_penyebab' => 'required',
-            'penanggulangan' => 'required_if:status,2',
-            'bagian_mesin_id' => 'required'
-        ], [
-            'kode_produk.required' => 'Kode Produk tidak boleh kosong',
-            'employeeno.required' => 'Petugas tidak boleh kosong',
-            'kode_ng.required' => 'Kode NG tidak boleh kosong',
-            'penyebab.required' => 'Penyebab tidak boleh kosong',
-            'keterangan_penyebab.required' => 'Keterangan penyebab tidak boleh kosong',
-            'penanggulangan.required_if' => 'Penanggulangan tidak boleh kosong',
-            'bagian_mesin_id.required' => 'Bagian mesin tidak boleh kosong'
-        ]);
+        try {
+            $this->validate([
+                'kode_produk' => 'required',
+                'employeeno' => 'required',
+                'penemuEmployeeNo' => 'required',
+                'shift' => 'required',
+                'grup' => 'required',
+                'kode_ng' => 'required',
+                'is_kasus' => 'boolean',
+                'penanggulangan' => 'required_if:status,2',
+                'bagian_mesin_id' => 'required',
+            ], [
+                'kode_produk.required' => 'Kode Produk tidak boleh kosong',
+                'employeeno.required' => 'Petugas tidak boleh kosong',
+                'penemuEmployeeNo.required' => 'Nomor Penemu tidak boleh kosong',
+                'shift.required' => 'Shift tidak boleh kosong',
+                'grup.required' => 'Grup tidak boleh kosong',
+                'kode_ng.required' => 'Kode NG tidak boleh kosong',
+                'is_kasus.boolean' => 'Kasus harus bernilai true atau false',
+                'penanggulangan.required_if' => 'Penanggulangan tidak boleh kosong',
+                'bagian_mesin_id.required' => 'Bagian mesin tidak boleh kosong',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Validation Error: ' . implode(', ', $e->validator->errors()->all())]);
+            return;
+        }
 
         DB::beginTransaction();
         try {
             $mspetugas = MsEmployee::where('employeeno', $this->employeeno)->first();
 
             $data = new TdKenpin();
+            $data->incident_date = Carbon::createFromFormat('d-m-Y H:i:s', $this->incident_date . ' ' . Carbon::now()->format('H:i:s'));
             $data->kenpin_no = $this->kenpin_no;
             $data->kenpin_date = Carbon::createFromFormat('d-m-Y H:i:s', $this->kenpin_date . ' ' . Carbon::now()->format('H:i:s'));
             $data->employee_id = $mspetugas->id;
+            $data->shift = $this->shift;
+            $data->grup = $this->grup;
+            $data->penemu_masalah_id = $this->penemuEmployeeId;
             $data->product_id = $this->product_id;
             $data->department_id = $this->department_id;
             $data->nomor_palet = $this->nomor_palet;
@@ -255,6 +322,7 @@ class AddKenpinSeitaiController extends Component
             $data->qty_loss = $qtyLoss;
             $data->status_kenpin = $this->status;
             $data->is_kasus = $this->is_kasus ? true : false;
+            $data->detail_masalah = $this->detailMasalah;
 
             if ($this->masalahKenpin) {
                 $data->masalah_kenpin_id = $this->masalahKenpin->id;
@@ -288,6 +356,9 @@ class AddKenpinSeitaiController extends Component
                 $kenpinGoodsDetail->nomor_box_sampai = $detail->nomor_box_sampai ?? null;
                 $kenpinGoodsDetail->waktu_kenpin_dari = $detail->waktu_kenpin_dari ?? null;
                 $kenpinGoodsDetail->waktu_kenpin_sampai = $detail->waktu_kenpin_sampai ?? null;
+                $kenpinGoodsDetail->jumlah_orang_kenpin = $detail->jumlah_orang_kenpin ?? null;
+                $kenpinGoodsDetail->jumlah_ng_box = $detail->jumlah_ng_box ?? null;
+                $kenpinGoodsDetail->jumlah_ng_gaiso = $detail->jumlah_ng_gaiso ?? null;
                 $kenpinGoodsDetail->created_on = Carbon::now();
                 $kenpinGoodsDetail->created_by = auth()->user()->username;
                 $kenpinGoodsDetail->updated_on = Carbon::now();
@@ -636,7 +707,10 @@ class AddKenpinSeitaiController extends Component
                     DB::raw('NULL AS nomor_box_dari'),
                     DB::raw('NULL AS nomor_box_sampai'),
                     DB::raw('NULL AS waktu_kenpin_dari'),
-                    DB::raw('NULL AS waktu_kenpin_sampai')
+                    DB::raw('NULL AS waktu_kenpin_sampai'),
+                    DB::raw('0 AS jumlah_orang_kenpin'),
+                    DB::raw('0 AS jumlah_ng_box'),
+                    DB::raw('0 AS jumlah_ng_gaiso')
                 )
                 ->join('tdorderlpk AS tdol', 'tdpg.lpk_id', '=', 'tdol.id')
                 ->join('msproduct AS msp', 'tdpg.product_id', '=', 'msp.id')
