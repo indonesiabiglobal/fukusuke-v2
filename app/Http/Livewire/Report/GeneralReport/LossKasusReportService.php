@@ -159,6 +159,7 @@ class LossKasusReportService
                 )
                 ->crossJoin('mslossinfure as msloss')
                 ->where('msloss.status', 1)
+                ->where('produksi.total_produksi', '>', 0)
                 ->leftJoin('tdproduct_assembly as tpa', function ($join) use ($tglMasuk, $tglKeluar) {
                     $join->on('tpa.machine_id', '=', 'msmachine.id')
                         ->whereBetween('tpa.production_date', [$tglMasuk, $tglKeluar]);
@@ -274,7 +275,6 @@ class LossKasusReportService
                 $activeWorksheet->setCellValue($produksiCol . $rowItem, $machineData->total_produksi);
                 $startRowMachine = $rowItem;
                 // daftar mesin
-
                 $itemLossColIndex = $startLossColIndex;
 
                 foreach ($kasus as $key => $value) {
@@ -282,18 +282,20 @@ class LossKasusReportService
                         $colLetter = Coordinate::stringFromColumnIndex($itemLossColIndex);
                         $lossData = $machine->where('loss_id', $loss->id)->first()->total_loss ?? 0;
                         $activeWorksheet->setCellValue($colLetter . $rowItem, $lossData);
+                        phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $colLetter . $rowItem);
                         $itemLossColIndex++;
                     }
                 }
                 // total loss
                 $activeWorksheet->setCellValue(Coordinate::stringFromColumnIndex($itemLossColIndex) . $rowItem, '=SUM(' . Coordinate::stringFromColumnIndex($startLossColIndex) . $rowItem . ':' . Coordinate::stringFromColumnIndex($itemLossColIndex - 1) . $rowItem . ')');
+                phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, Coordinate::stringFromColumnIndex($itemLossColIndex) . $rowItem);
 
                 $itemLossColIndex++;
                 // % loss
-                $activeWorksheet->setCellValue(Coordinate::stringFromColumnIndex($itemLossColIndex) . $rowItem, '=IF(' . $produksiCol . $rowItem . ' = 0, 0, ' . Coordinate::stringFromColumnIndex($itemLossColIndex - 1) . $rowItem . '/' . $produksiCol . $rowItem . ')');
-                phpspreadsheet::numberPercentage($spreadsheet, Coordinate::stringFromColumnIndex($itemLossColIndex) . $rowItem);
+                $activeWorksheet->setCellValue(Coordinate::stringFromColumnIndex($itemLossColIndex) . $rowItem, '=IF(' . $produksiCol . $rowItem . ' = 0, 0, ' . Coordinate::stringFromColumnIndex($itemLossColIndex - 1) . $rowItem . '/(' . $produksiCol . $rowItem . ' + ' . Coordinate::stringFromColumnIndex($itemLossColIndex - 1) . $rowItem . ')*100)');
+                phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, Coordinate::stringFromColumnIndex($itemLossColIndex) . $rowItem);
 
-                phpspreadsheet::styleFont($spreadsheet, $codeMachineCol . $startRowMachine . ':' . Coordinate::stringFromColumnIndex($itemLossColIndex) . $rowItem, false, 9, 'Calibri');
+                phpspreadsheet::styleFont($spreadsheet, $codeMachineCol . $startRowMachine . ':' . Coordinate::stringFromColumnIndex($itemLossColIndex) . $rowItem, false, 8, 'Calibri');
                 $rowItem++;
             }
             phpspreadsheet::addInlineBorderDotted($spreadsheet, $codeMachineCol . $startRowDepartment + 1 . ':' . Coordinate::stringFromColumnIndex($itemLossColIndex) . $rowItem);
@@ -304,17 +306,20 @@ class LossKasusReportService
             $rowTotalLoss[] = $rowItem;
             foreach ($lossCategoryColIndex as $index => $item) {
                 $activeWorksheet->setCellValue(Coordinate::stringFromColumnIndex($item) . $rowItem, '=SUM(' . Coordinate::stringFromColumnIndex($item) . $startRowDepartment + 1 . ':' . Coordinate::stringFromColumnIndex($item) . $rowItem - 1 . ')');
+                phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, Coordinate::stringFromColumnIndex($item) . $rowItem);
             }
             foreach ($lossClassColIndex as $index => $item) {
                 if ($index == 0) {
                     phpspreadsheet::addOutlineBorder($spreadsheet, Coordinate::stringFromColumnIndex($startLossColIndex) . $startRowDepartment + 1 . ':' . Coordinate::stringFromColumnIndex($item) . $rowItem);
                     $spreadsheet->getActiveSheet()->mergeCells(Coordinate::stringFromColumnIndex($startLossColIndex) . $rowTotalLossPerDepartment . ':' . Coordinate::stringFromColumnIndex($item) . $rowTotalLossPerDepartment);
                     $activeWorksheet->setCellValue(Coordinate::stringFromColumnIndex($startLossColIndex) . $rowTotalLossPerDepartment, '=SUM(' . Coordinate::stringFromColumnIndex($startLossColIndex) . $rowItem . ':' . Coordinate::stringFromColumnIndex($item) . $rowItem . ')');
+                    phpspreadsheet::textAlignCenter($spreadsheet, Coordinate::stringFromColumnIndex($startLossColIndex) . $rowTotalLossPerDepartment);
                     continue;
                 }
                 phpspreadsheet::addOutlineBorder($spreadsheet, Coordinate::stringFromColumnIndex($lossClassColIndex[$index - 1] + 1) . $startRowDepartment + 1 . ':' . Coordinate::stringFromColumnIndex($item) . $rowItem);
                 $spreadsheet->getActiveSheet()->mergeCells(Coordinate::stringFromColumnIndex($lossClassColIndex[$index - 1] + 1) . $rowTotalLossPerDepartment . ':' . Coordinate::stringFromColumnIndex($item) . $rowTotalLossPerDepartment);
                 $activeWorksheet->setCellValue(Coordinate::stringFromColumnIndex($lossClassColIndex[$index - 1] + 1) . $rowTotalLossPerDepartment, '=SUM(' . Coordinate::stringFromColumnIndex($lossClassColIndex[$index - 1] + 1) . $rowItem . ':' . Coordinate::stringFromColumnIndex($item) . $rowItem . ')');
+                phpspreadsheet::textAlignCenter($spreadsheet, Coordinate::stringFromColumnIndex($lossClassColIndex[$index - 1] + 1) . $rowTotalLossPerDepartment);
             }
             $rowItemStyling = $rowItem;
 
@@ -345,6 +350,7 @@ class LossKasusReportService
         phpspreadsheet::textAlignCenter($spreadsheet, $codeMachineCol . $rowGrandTotal . ':' . $itemLossColLetter . $rowGrandTotal);
 
         $spreadsheet->getActiveSheet()->setCellValue($produksiCol . $rowGrandTotal, '=SUM(' . implode(',', $columnRowTotalProduksi) . ')');
+        phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $produksiCol . $rowGrandTotal);
 
         foreach ($lossCategoryColIndex as $item) {
             $columnRowTotalLoss = [];
@@ -352,6 +358,7 @@ class LossKasusReportService
                 $columnRowTotalLoss[] = Coordinate::stringFromColumnIndex($item) . $value;
             }
             $spreadsheet->getActiveSheet()->setCellValue(Coordinate::stringFromColumnIndex($item) . $rowGrandTotal, '=SUM(' . implode(',', $columnRowTotalLoss) . ')');
+            $spreadsheet->getActiveSheet()->getColumnDimension(Coordinate::stringFromColumnIndex($item))->setAutoSize(true);
         }
         phpspreadsheet::addFullBorder($spreadsheet, $codeMachineCol . $rowGrandTotal . ':' . $itemLossColLetter . $rowGrandTotal);
 
@@ -405,7 +412,7 @@ class LossKasusReportService
         $activeWorksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
 
         // Judul
-        $activeWorksheet->setCellValue('A1', 'DAFTAR KASUS PER MESIN & JENIS ' . strtoupper($nipon));
+        $activeWorksheet->setCellValue('A1', 'DAFTAR KASUS PER MESIN & JENIS ' . strtoupper($nipon) . '(Kasus)');
         $activeWorksheet->setCellValue('A2', 'Periode : ' . $tglMasuk->format('d-M-Y H:i') . '  ~  ' . $tglKeluar->format('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'A1:A2', true, 11, 'Calibri');
@@ -511,6 +518,7 @@ class LossKasusReportService
                 )
                 ->crossJoin('mslossinfure as msloss')
                 ->where('msloss.status', 1)
+                ->where('produksi.total_produksi', '>', 0)
                 ->leftJoin('tdproduct_assembly as tpa', function ($join) use ($tglMasuk, $tglKeluar) {
                     $join->on('tpa.machine_id', '=', 'msmachine.id')
                         ->whereBetween('tpa.production_date', [$tglMasuk, $tglKeluar]);
@@ -634,18 +642,20 @@ class LossKasusReportService
                         $colLetter = Coordinate::stringFromColumnIndex($itemLossColIndex);
                         $lossData = $machine->where('loss_id', $loss->id)->first()->frekuensi_loss ?? 0;
                         $activeWorksheet->setCellValue($colLetter . $rowItem, $lossData);
+                        phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $colLetter . $rowItem);
                         $itemLossColIndex++;
                     }
                 }
                 // total loss
                 $activeWorksheet->setCellValue(Coordinate::stringFromColumnIndex($itemLossColIndex) . $rowItem, '=SUM(' . Coordinate::stringFromColumnIndex($startLossColIndex) . $rowItem . ':' . Coordinate::stringFromColumnIndex($itemLossColIndex - 1) . $rowItem . ')');
+                phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, Coordinate::stringFromColumnIndex($itemLossColIndex) . $rowItem);
 
                 $itemLossColIndex++;
                 // % loss
-                $activeWorksheet->setCellValue(Coordinate::stringFromColumnIndex($itemLossColIndex) . $rowItem, '=IF(' . $produksiCol . $rowItem . ' = 0, 0, ' . Coordinate::stringFromColumnIndex($itemLossColIndex - 1) . $rowItem . '/' . $produksiCol . $rowItem . ')');
-                phpspreadsheet::numberPercentage($spreadsheet, Coordinate::stringFromColumnIndex($itemLossColIndex) . $rowItem);
+                $activeWorksheet->setCellValue(Coordinate::stringFromColumnIndex($itemLossColIndex) . $rowItem, '=IF(' . $produksiCol . $rowItem . ' = 0, 0, ' . Coordinate::stringFromColumnIndex($itemLossColIndex - 1) . $rowItem . '/(' . $produksiCol . $rowItem . ' + ' . Coordinate::stringFromColumnIndex($itemLossColIndex - 1) . $rowItem . ')*100)');
+                phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, Coordinate::stringFromColumnIndex($itemLossColIndex) . $rowItem);
 
-                phpspreadsheet::styleFont($spreadsheet, $codeMachineCol . $startRowMachine . ':' . Coordinate::stringFromColumnIndex($itemLossColIndex) . $rowItem, false, 9, 'Calibri');
+                phpspreadsheet::styleFont($spreadsheet, $codeMachineCol . $startRowMachine . ':' . Coordinate::stringFromColumnIndex($itemLossColIndex) . $rowItem, false, 8, 'Calibri');
                 $rowItem++;
             }
             phpspreadsheet::addInlineBorderDotted($spreadsheet, $codeMachineCol . $startRowDepartment + 1 . ':' . Coordinate::stringFromColumnIndex($itemLossColIndex) . $rowItem);
@@ -656,17 +666,20 @@ class LossKasusReportService
             $rowTotalLoss[] = $rowItem;
             foreach ($lossCategoryColIndex as $index => $item) {
                 $activeWorksheet->setCellValue(Coordinate::stringFromColumnIndex($item) . $rowItem, '=SUM(' . Coordinate::stringFromColumnIndex($item) . $startRowDepartment + 1 . ':' . Coordinate::stringFromColumnIndex($item) . $rowItem - 1 . ')');
+                phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, Coordinate::stringFromColumnIndex($item) . $rowItem);
             }
             foreach ($lossClassColIndex as $index => $item) {
                 if ($index == 0) {
                     phpspreadsheet::addOutlineBorder($spreadsheet, Coordinate::stringFromColumnIndex($startLossColIndex) . $startRowDepartment + 1 . ':' . Coordinate::stringFromColumnIndex($item) . $rowItem);
                     $spreadsheet->getActiveSheet()->mergeCells(Coordinate::stringFromColumnIndex($startLossColIndex) . $rowTotalLossPerDepartment . ':' . Coordinate::stringFromColumnIndex($item) . $rowTotalLossPerDepartment);
                     $activeWorksheet->setCellValue(Coordinate::stringFromColumnIndex($startLossColIndex) . $rowTotalLossPerDepartment, '=SUM(' . Coordinate::stringFromColumnIndex($startLossColIndex) . $rowItem . ':' . Coordinate::stringFromColumnIndex($item) . $rowItem . ')');
+                    phpspreadsheet::textAlignCenter($spreadsheet, Coordinate::stringFromColumnIndex($startLossColIndex) . $rowTotalLossPerDepartment);
                     continue;
                 }
                 phpspreadsheet::addOutlineBorder($spreadsheet, Coordinate::stringFromColumnIndex($lossClassColIndex[$index - 1] + 1) . $startRowDepartment + 1 . ':' . Coordinate::stringFromColumnIndex($item) . $rowItem);
                 $spreadsheet->getActiveSheet()->mergeCells(Coordinate::stringFromColumnIndex($lossClassColIndex[$index - 1] + 1) . $rowTotalLossPerDepartment . ':' . Coordinate::stringFromColumnIndex($item) . $rowTotalLossPerDepartment);
                 $activeWorksheet->setCellValue(Coordinate::stringFromColumnIndex($lossClassColIndex[$index - 1] + 1) . $rowTotalLossPerDepartment, '=SUM(' . Coordinate::stringFromColumnIndex($lossClassColIndex[$index - 1] + 1) . $rowItem . ':' . Coordinate::stringFromColumnIndex($item) . $rowItem . ')');
+                phpspreadsheet::textAlignCenter($spreadsheet, Coordinate::stringFromColumnIndex($lossClassColIndex[$index - 1] + 1) . $rowTotalLossPerDepartment);
             }
             $rowItemStyling = $rowItem;
 
@@ -679,6 +692,7 @@ class LossKasusReportService
             $activeWorksheet->setCellValue($produksiCol . $rowItemStyling, '=SUM(' . $produksiCol . $startRowDepartment . ':' . $produksiCol . $rowItemStyling - 1 . ')');
             $spreadsheet->getActiveSheet()->mergeCells($produksiCol . $rowItemStyling . ':' . $produksiCol . $rowItem);
             phpspreadsheet::textAlignRight($spreadsheet, $produksiCol . $rowItemStyling);
+            phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $produksiCol . $rowItemStyling);
             $columnRowTotalProduksi[] = $produksiCol . $rowItemStyling;
 
 
@@ -697,6 +711,7 @@ class LossKasusReportService
         phpspreadsheet::textAlignCenter($spreadsheet, $codeMachineCol . $rowGrandTotal . ':' . $itemLossColLetter . $rowGrandTotal);
 
         $spreadsheet->getActiveSheet()->setCellValue($produksiCol . $rowGrandTotal, '=SUM(' . implode(',', $columnRowTotalProduksi) . ')');
+        phpspreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $produksiCol . $rowGrandTotal);
 
         foreach ($lossCategoryColIndex as $item) {
             $columnRowTotalLoss = [];
@@ -704,6 +719,7 @@ class LossKasusReportService
                 $columnRowTotalLoss[] = Coordinate::stringFromColumnIndex($item) . $value;
             }
             $spreadsheet->getActiveSheet()->setCellValue(Coordinate::stringFromColumnIndex($item) . $rowGrandTotal, '=SUM(' . implode(',', $columnRowTotalLoss) . ')');
+            $spreadsheet->getActiveSheet()->getColumnDimension(Coordinate::stringFromColumnIndex($item))->setAutoSize(true);
         }
         phpspreadsheet::addFullBorder($spreadsheet, $codeMachineCol . $rowGrandTotal . ':' . $itemLossColLetter . $rowGrandTotal);
 

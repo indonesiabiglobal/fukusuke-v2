@@ -10,9 +10,9 @@ use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-class LossPerMesinReportService
+class LossPerDepartemenReportService
 {
-    public static function daftarLossPerMesinInfure($nippon, $jenisReport, $tglMasuk, $tglKeluar)
+    public static function daftarLossPerDepartemenInfure($nippon, $jenisReport, $tglMasuk, $tglKeluar)
     {
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
@@ -48,7 +48,7 @@ class LossPerMesinReportService
         $activeWorksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
 
         // Judul
-        $activeWorksheet->setCellValue('B1', 'DAFTAR LOSS PER MESIN INFURE');
+        $activeWorksheet->setCellValue('B1', 'DAFTAR LOSS PER DEPARTEMEN INFURE');
         $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk->format('d-M-Y H:i') . '  ~  ' . $tglKeluar->format('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
@@ -86,8 +86,8 @@ class LossPerMesinReportService
 
         $data = DB::select("
             SELECT
-                max(mac.machineNo) AS machine_no,
-                max(mac.machineNo || ' : ' || mac.machineName) AS machine_name,
+                max(dep.id) AS department_id,
+                max(dep.name) AS department_name,
                 max(mslosCls.name) AS loss_class_name,
                 max(mslos.code) AS loss_code,
                 max(mslos.name) AS loss_name,
@@ -99,9 +99,9 @@ class LossPerMesinReportService
             INNER JOIN msLossInfure AS mslos ON det.loss_infure_id = mslos.id
             INNER JOIN msLossClass AS mslosCls ON mslos.loss_class_id = mslosCls.id
             INNER JOIN msMachine AS mac ON asy.machine_id = mac.id
+            INNER JOIN msDepartment AS dep ON mac.department_id = dep.id
             WHERE asy.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
-            GROUP BY mac.id, det.loss_infure_id
-            ORDER BY machine_no
+            GROUP BY dep.id, det.loss_infure_id
         ");
 
         if (count($data) == 0) {
@@ -113,37 +113,36 @@ class LossPerMesinReportService
             return $response;
         }
 
-        // list mesin
-        $listMachine = array_reduce($data, function ($carry, $item) {
-            $carry[$item->machine_no] = [
-                'machine_no' => $item->machine_no,
-                'machine_name' => $item->machine_name
+        $listDepartment = array_reduce($data, function ($carry, $item) {
+            $carry[$item->department_id] = [
+                'department_id' => $item->department_id,
+                'department_name' => $item->department_name
             ];
             return $carry;
         }, []);
 
         // list klasifikasi
         $listLossClass = array_reduce($data, function ($carry, $item) {
-            $carry[$item->machine_no][$item->loss_class_name] = $item->loss_class_name;
+            $carry[$item->department_id][$item->loss_class_name] = $item->loss_class_name;
             return $carry;
         }, []);
 
         $dataFilter = array_reduce($data, function ($carry, $item) {
-            // Periksa apakah machine_no sudah ada
-            if (!isset($carry[$item->machine_no])) {
-                $carry[$item->machine_no] = [];
+            // Periksa apakah department_id sudah ada
+            if (!isset($carry[$item->department_id])) {
+                $carry[$item->department_id] = [];
             }
 
-            // Periksa apakah loss_class_name sudah ada di machine_no tersebut
-            if (!isset($carry[$item->machine_no][$item->loss_class_name])) {
-                $carry[$item->machine_no][$item->loss_class_name] = [
+            // Periksa apakah loss_class_name sudah ada di department_id tersebut
+            if (!isset($carry[$item->department_id][$item->loss_class_name])) {
+                $carry[$item->department_id][$item->loss_class_name] = [
                     'loss_class_name' => $item->loss_class_name,
                     'losses' => []  // Buat array untuk menampung beberapa loss_name
                 ];
             }
 
             // Tambahkan loss_name ke dalam array 'losses'
-            $carry[$item->machine_no][$item->loss_class_name]['losses'][] = [
+            $carry[$item->department_id][$item->loss_class_name]['losses'][] = [
                 'loss_code' => $item->loss_code,
                 'loss_name' => $item->loss_name,
                 'berat_loss_produksi' => $item->berat_loss_produksi,
@@ -161,20 +160,19 @@ class LossPerMesinReportService
         $startColumnItemData = 'D';
         $columnLossClass = 'B';
         $columnLossClassName = 'C';
-        $startRowItem = 4;
+        $startRowItem = 5;
         $rowItem = $startRowItem;
         // daftar departemen
-        foreach ($listMachine as $machine) {
+        foreach ($listDepartment as $department) {
             // Menulis data departemen
-            $activeWorksheet->setCellValue($startColumnItem . $rowItem, $machine['machine_name']);
+            $activeWorksheet->setCellValue($startColumnItem . $rowItem, $department['department_name']);
             $spreadsheet->getActiveSheet()->mergeCells($startColumnItem . $rowItem . ':' . $endColumnItem . $rowItem);
             phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $rowItem, true, 9, 'Calibri');
             $rowItem++;
             $startRowItemSum = $rowItem;
-            $startRowDepartment = $rowItem;
             // daftar mesin
-            foreach ($listLossClass[$machine['machine_no']] as $lossClass) {
-                if ($dataFilter[$machine['machine_no']][$lossClass] == null) {
+            foreach ($listLossClass[$department['department_id']] as $lossClass) {
+                if ($dataFilter[$department['department_id']][$lossClass] == null) {
                     continue;
                 }
                 // Menulis data mesin
@@ -182,7 +180,7 @@ class LossPerMesinReportService
                 $spreadsheet->getActiveSheet()->setCellValue($columnLossClass . $rowItem, $lossClass);
 
                 // memasukkan data
-                $dataItem = $dataFilter[$machine['machine_no']][$lossClass];
+                $dataItem = $dataFilter[$department['department_id']][$lossClass];
 
                 foreach ($dataItem['losses'] as $item) {
                     $spreadsheet->getActiveSheet()->mergeCells($columnLossClass . $rowItem . ':' . $columnLossClassName . $rowItem);
@@ -216,9 +214,8 @@ class LossPerMesinReportService
                     $rowItem++;
                 }
             }
-            phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $startRowDepartment . ':' . $columnItem . $rowItem, false, 8, 'Calibri');
-            phpspreadsheet::addBorderDottedMiddleHorizontal($spreadsheet, $startColumnItem . $startRowDepartment . ':' . $columnItem . $rowItem);
-
+            phpspreadsheet::addBorderDottedMiddleHorizontal($spreadsheet, $startColumnItem . $startRowItemSum . ':' . $columnItem . $rowItem);
+            phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $startRowItemSum . ':' . $columnItem . $rowItem, false, 8, 'Calibri');
             // perhitungan jumlah berdasarkan departemen
             $spreadsheet->getActiveSheet()->mergeCells($columnLossClass . $rowItem . ':' . 'E' . $rowItem);
             $activeWorksheet->setCellValue($columnLossClass . $rowItem, 'Total');
@@ -235,7 +232,7 @@ class LossPerMesinReportService
             $columnItem++;
             // frekuensi
             $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
-            phpSpreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
+            phpSpreadsheet::numberFormatThousands($spreadsheet, $columnItem . $rowItem);
             phpspreadsheet::addFullBorder($spreadsheet, $columnLossClass . $rowItem . ':' . $columnItem . $rowItem);
             phpspreadsheet::styleFont($spreadsheet, $columnLossClass . $rowItem . ':' . $columnItem . $rowItem, true, 8, 'Calibri');
             $columnItem++;
@@ -257,8 +254,8 @@ class LossPerMesinReportService
             'frekuensi' => 0
         ];
 
-        foreach ($dataFilter as $machineNo => $lossClasses) {
-            foreach ($listLossClass[$machineNo] as $lossClass => $lossClassName) {
+        foreach ($dataFilter as $departmentId => $lossClasses) {
+            foreach ($listLossClass[$departmentId] as $lossClass => $lossClassName) {
                 if (isset($lossClasses[$lossClass])) {
                     $dataItem = $lossClasses[$lossClass];
                     foreach ($dataItem['losses'] as $item) {
@@ -278,16 +275,17 @@ class LossPerMesinReportService
         $columnItem = $startColumnItemData;
         $columnItem++;
         $columnItem++;
+        // berat loss produksi
         $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_loss_produksi']);
         phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
         $columnItem++;
+        // berat loss kebutuhan
         $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_loss_kebutuhan']);
         phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
         $columnItem++;
         // frekuensi
         $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['frekuensi']);
         phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowGrandTotal);
-        phpspreadsheet::addFullBorder($spreadsheet, $columnLossClass . $rowGrandTotal . ':' . $columnItem . $rowGrandTotal);
         phpspreadsheet::addFullBorder($spreadsheet, $columnLossClass . $rowGrandTotal . ':' . $columnItem . $rowGrandTotal);
         $columnItem++;
 
@@ -310,7 +308,7 @@ class LossPerMesinReportService
         return $response;
     }
 
-    public static function daftarLossPerMesinSeitai($nippon, $jenisReport, $tglMasuk, $tglKeluar)
+    public static function daftarLossPerDepartemenSeitai($nippon, $jenisReport, $tglMasuk, $tglKeluar)
     {
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
@@ -346,7 +344,7 @@ class LossPerMesinReportService
         $activeWorksheet->getHeaderFooter()->setOddFooter($footerLeft . $footerRight);
 
         // Judul
-        $activeWorksheet->setCellValue('B1', 'DAFTAR LOSS PER MESIN SEITAI');
+        $activeWorksheet->setCellValue('B1', 'DAFTAR LOSS PER DEPARTEMEN SEITAI');
         $activeWorksheet->setCellValue('B2', 'Periode : ' . $tglMasuk->format('d-M-Y H:i') . '  ~  ' . $tglKeluar->format('d-M-Y H:i'));
         // Style Judul
         phpspreadsheet::styleFont($spreadsheet, 'B1:B2', true, 11, 'Calibri');
@@ -384,8 +382,8 @@ class LossPerMesinReportService
 
         $data = DB::select("
             SELECT
-                max(mac.machineNo) AS machine_no,
-                max(mac.machineNo || ' : ' || mac.machineName) AS machine_name,
+                max(dep.name) AS department_name,
+                max(dep.id) AS department_id,
                 max(mslosCls.name) AS loss_class_name,
                 max(mslos.code) AS loss_code,
                 max(mslos.name) AS loss_name,
@@ -397,9 +395,10 @@ class LossPerMesinReportService
             INNER JOIN msLossSeitai AS mslos ON det.loss_seitai_id = mslos.id
             INNER JOIN msLossClass AS mslosCls ON mslos.loss_class_id = mslosCls.id
             INNER JOIN msMachine AS mac ON good.machine_id = mac.id
+            INNER JOIN msDepartment AS dep ON mac.department_id = dep.id
             WHERE good.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
-            GROUP BY mac.id, det.loss_seitai_id
-            ORDER BY machine_no
+            GROUP BY dep.id, det.loss_seitai_id
+            ORDER BY loss_code ASC
         ");
 
         if (count($data) == 0) {
@@ -411,37 +410,36 @@ class LossPerMesinReportService
             return $response;
         }
 
-        // list mesin
-        $listMachine = array_reduce($data, function ($carry, $item) {
-            $carry[$item->machine_no] = [
-                'machine_no' => $item->machine_no,
-                'machine_name' => $item->machine_name
+        $listDepartment = array_reduce($data, function ($carry, $item) {
+            $carry[$item->department_id] = [
+                'department_id' => $item->department_id,
+                'department_name' => $item->department_name
             ];
             return $carry;
         }, []);
 
         // list klasifikasi
         $listLossClass = array_reduce($data, function ($carry, $item) {
-            $carry[$item->machine_no][$item->loss_class_name] = $item->loss_class_name;
+            $carry[$item->department_id][$item->loss_class_name] = $item->loss_class_name;
             return $carry;
         }, []);
 
         $dataFilter = array_reduce($data, function ($carry, $item) {
-            // Periksa apakah machine_no sudah ada
-            if (!isset($carry[$item->machine_no])) {
-                $carry[$item->machine_no] = [];
+            // Periksa apakah department_id sudah ada
+            if (!isset($carry[$item->department_id])) {
+                $carry[$item->department_id] = [];
             }
 
-            // Periksa apakah loss_class_name sudah ada di machine_no tersebut
-            if (!isset($carry[$item->machine_no][$item->loss_class_name])) {
-                $carry[$item->machine_no][$item->loss_class_name] = [
+            // Periksa apakah loss_class_name sudah ada di department_id tersebut
+            if (!isset($carry[$item->department_id][$item->loss_class_name])) {
+                $carry[$item->department_id][$item->loss_class_name] = [
                     'loss_class_name' => $item->loss_class_name,
                     'losses' => []  // Buat array untuk menampung beberapa loss_name
                 ];
             }
 
             // Tambahkan loss_name ke dalam array 'losses'
-            $carry[$item->machine_no][$item->loss_class_name]['losses'][] = [
+            $carry[$item->department_id][$item->loss_class_name]['losses'][] = [
                 'loss_code' => $item->loss_code,
                 'loss_name' => $item->loss_name,
                 'berat_loss_produksi' => $item->berat_loss_produksi,
@@ -459,20 +457,19 @@ class LossPerMesinReportService
         $startColumnItemData = 'D';
         $columnLossClass = 'B';
         $columnLossClassName = 'C';
-        $startRowItem = 4;
+        $startRowItem = 5;
         $rowItem = $startRowItem;
         // daftar departemen
-        foreach ($listMachine as $machine) {
+        foreach ($listDepartment as $department) {
             // Menulis data departemen
-            $activeWorksheet->setCellValue($startColumnItem . $rowItem, $machine['machine_name']);
+            $activeWorksheet->setCellValue($startColumnItem . $rowItem, $department['department_name']);
             $spreadsheet->getActiveSheet()->mergeCells($startColumnItem . $rowItem . ':' . $endColumnItem . $rowItem);
             phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $rowItem, true, 9, 'Calibri');
             $rowItem++;
             $startRowItemSum = $rowItem;
             // daftar mesin
-            $startRowDepartment = $rowItem;
-            foreach ($listLossClass[$machine['machine_no']] as $lossClass) {
-                if ($dataFilter[$machine['machine_no']][$lossClass] == null) {
+            foreach ($listLossClass[$department['department_id']] as $lossClass) {
+                if ($dataFilter[$department['department_id']][$lossClass] == null) {
                     continue;
                 }
                 // Menulis data mesin
@@ -481,7 +478,7 @@ class LossPerMesinReportService
                 // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
 
                 // memasukkan data
-                $dataItem = $dataFilter[$machine['machine_no']][$lossClass];
+                $dataItem = $dataFilter[$department['department_id']][$lossClass];
 
                 foreach ($dataItem['losses'] as $item) {
                     $spreadsheet->getActiveSheet()->mergeCells($columnLossClass . $rowItem . ':' . $columnLossClassName . $rowItem);
@@ -512,13 +509,11 @@ class LossPerMesinReportService
                     // frekuensi
                     $activeWorksheet->setCellValue($columnItem . $rowItem, $item['frekuensi']);
                     phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
-                    // Terapkan custom format untuk mengganti tampilan 0 dengan -
                     $rowItem++;
                 }
             }
-            phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $startRowDepartment . ':' . $columnItem . $rowItem, false, 8, 'Calibri');
-            phpspreadsheet::addBorderDottedMiddleHorizontal($spreadsheet, $startColumnItem . $startRowDepartment . ':' . $columnItem . $rowItem);
-
+            phpspreadsheet::addBorderDottedMiddleHorizontal($spreadsheet, $startColumnItem . $startRowItemSum . ':' . $columnItem . $rowItem);
+            phpspreadsheet::styleFont($spreadsheet, $startColumnItem . $startRowItemSum . ':' . $columnItem . $rowItem, false, 8, 'Calibri');
             // perhitungan jumlah berdasarkan departemen
             $spreadsheet->getActiveSheet()->mergeCells($columnLossClass . $rowItem . ':' . 'E' . $rowItem);
             $activeWorksheet->setCellValue($columnLossClass . $rowItem, 'Total');
@@ -535,7 +530,7 @@ class LossPerMesinReportService
             $columnItem++;
             // frekuensi
             $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . $startRowItemSum . ':' . $columnItem . ($rowItem - 1) . ')');
-            phpSpreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
+            phpSpreadsheet::numberFormatThousands($spreadsheet, $columnItem . $rowItem);
             phpspreadsheet::addFullBorder($spreadsheet, $columnLossClass . $rowItem . ':' . $columnItem . $rowItem);
             phpspreadsheet::styleFont($spreadsheet, $columnLossClass . $rowItem . ':' . $columnItem . $rowItem, true, 8, 'Calibri');
             $columnItem++;
@@ -557,8 +552,8 @@ class LossPerMesinReportService
             'frekuensi' => 0
         ];
 
-        foreach ($dataFilter as $machineNo => $lossClasses) {
-            foreach ($listLossClass[$machineNo] as $lossClass => $lossClassName) {
+        foreach ($dataFilter as $departmentId => $lossClasses) {
+            foreach ($listLossClass[$departmentId] as $lossClass => $lossClassName) {
                 if (isset($lossClasses[$lossClass])) {
                     $dataItem = $lossClasses[$lossClass];
                     foreach ($dataItem['losses'] as $item) {
