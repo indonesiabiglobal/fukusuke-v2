@@ -147,6 +147,8 @@ class ProduksiPerDepartemenPerTypeReportService
         $startColumnItemData = 'D';
         $columnTypeCode = 'B';
         $columnTypeName = 'C';
+        $columnBeratProduksi = 'E';
+        $columnLoss = 'H';
         $startRowItem = 4;
         $rowItem = $startRowItem;
         // daftar departemen
@@ -178,29 +180,30 @@ class ProduksiPerDepartemenPerTypeReportService
                 $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->berat_produksi);
                 phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
-                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->berat_standard > 0 ? $dataItem->berat_produksi / $dataItem->berat_standard : 0);
-                phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowItem);
+                // weight rate
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->berat_standard > 0 ? $dataItem->berat_produksi / $dataItem->berat_standard * 100 : 0);
+                phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
                 $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->infure_cost);
-                phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                phpSpreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
                 $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->infure_berat_loss);
                 phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
-                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->berat_produksi > 0 ? $dataItem->infure_berat_loss / $dataItem->berat_produksi : 0);
-                phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowItem);
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->berat_produksi > 0 ? $dataItem->infure_berat_loss /  ($dataItem->infure_berat_loss + $dataItem->berat_produksi)*100: 0);
+                phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
                 $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->panjang_produksi);
-                phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                phpSpreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
                 $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->panjang_printing_inline);
-                phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                phpSpreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
                 $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->infure_cost_printing);
-                phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                phpSpreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
                 $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->infure_cost + $dataItem->infure_cost_printing);
-                phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                phpSpreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
 
                 $rowItem++;
             }
@@ -219,29 +222,32 @@ class ProduksiPerDepartemenPerTypeReportService
             $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listProductType[$department['department_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
             phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
             $columnItem++;
+            // weight rate
             $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listProductType[$department['department_id']])) . ':' . $columnItem . ($rowItem - 1) . ')/COUNTIF(' . $columnItem . ($rowItem - count($listProductType[$department['department_id']])) . ':' . $columnItem . ($rowItem - 1) . ', "<>0")');
+            phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // infure cost
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listProductType[$department['department_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpSpreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listProductType[$department['department_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
+            phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            $columnItem++;
+            // loss %
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=' . $columnLoss . ($rowItem) . '/(' . $columnLoss . ($rowItem) . '+' . $columnBeratProduksi . ($rowItem) . ')*100');
             phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowItem);
             $columnItem++;
             $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listProductType[$department['department_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
-            phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            phpSpreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
             $columnItem++;
             $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listProductType[$department['department_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
-            phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
-            $columnItem++;
-            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listProductType[$department['department_id']])) . ':' . $columnItem . ($rowItem - 1) . ')/COUNTIF(' . $columnItem . ($rowItem - count($listProductType[$department['department_id']])) . ':' . $columnItem . ($rowItem - 1) . ', "<>0")');
-            phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowItem);
+            phpSpreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
             $columnItem++;
             $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listProductType[$department['department_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
-            phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            phpSpreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
             $columnItem++;
             $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listProductType[$department['department_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
-            phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
-            $columnItem++;
-            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listProductType[$department['department_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
-            phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
-            $columnItem++;
-            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listProductType[$department['department_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
-            phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            phpSpreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
             phpspreadsheet::addFullBorder($spreadsheet, $columnTypeCode . $rowItem . ':' . $columnItem . $rowItem);
             phpspreadsheet::styleFont($spreadsheet, $columnTypeCode . $rowItem . ':' . $columnItem . $rowItem, true, 8, 'Calibri');
             $columnItem++;
@@ -288,29 +294,32 @@ class ProduksiPerDepartemenPerTypeReportService
         $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_produksi']);
         phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
         $columnItem++;
-        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_standard'] > 0 ? $grandTotal['berat_produksi'] / $grandTotal['berat_standard'] : 0);
-        phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowGrandTotal);
+        // weight rate
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_standard'] > 0 ? $grandTotal['berat_produksi'] / $grandTotal['berat_standard'] * 100 : 0);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
         $columnItem++;
+        // infure cost
         $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['infure_cost']);
-        phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        phpSpreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowGrandTotal);
         $columnItem++;
         $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['infure_berat_loss']);
         phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
         $columnItem++;
-        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_produksi'] > 0 ? $grandTotal['infure_berat_loss'] / $grandTotal['berat_produksi'] : 0);
-        phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowGrandTotal);
+        // loss rate
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_produksi'] > 0 ? $grandTotal['infure_berat_loss'] / ($grandTotal['infure_berat_loss'] + $grandTotal['berat_produksi'])*100 : 0);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
         $columnItem++;
         $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['panjang_produksi']);
-        phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        phpSpreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowGrandTotal);
         $columnItem++;
         $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['panjang_printing_inline']);
-        phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        phpSpreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowGrandTotal);
         $columnItem++;
         $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['infure_cost_printing']);
-        phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        phpSpreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowGrandTotal);
         $columnItem++;
         $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['infure_cost'] + $grandTotal['infure_cost_printing']);
-        phpSpreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        phpSpreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowGrandTotal);
         phpspreadsheet::addFullBorder($spreadsheet, $columnTypeCode . $rowGrandTotal . ':' . $columnItem . $rowGrandTotal);
         $columnItem++;
 
@@ -327,8 +336,7 @@ class ProduksiPerDepartemenPerTypeReportService
         };
 
         $pixelWidths = [
-            'B' => 48,
-            'C' => 65,
+            'B' => 40,
             'D' => 84,
             'E' => 84,
             'F' => 84,
@@ -349,7 +357,7 @@ class ProduksiPerDepartemenPerTypeReportService
         }
 
         // auto-size any remaining columns between startColumnItemData and endColumnItem
-        $col = $startColumnItemData;
+        $col = 'B';
         while ($col !== $endColumnItem) {
             if (!isset($pixelWidths[$col])) {
                 $spreadsheet->getActiveSheet()->getColumnDimension($col)->setAutoSize(true);
@@ -422,7 +430,7 @@ class ProduksiPerDepartemenPerTypeReportService
         $columnHeaderEnd = 'D';
         $header = [
             'Jumlah Produksi (Lembar)',
-            'Berat Standar (Kg)',
+            'Berat Produksi (Kg)',
             'Loss (Kg)',
             'Loss (%)',
             'Seitai Cost',
@@ -505,6 +513,8 @@ class ProduksiPerDepartemenPerTypeReportService
         $startColumnItemData = 'D';
         $columnTypeCode = 'B';
         $columnTypeName = 'C';
+        $columnBeratProduksi = 'E';
+        $columnLoss = 'F';
         $startRowItem = 4;
         $rowItem = $startRowItem;
         // daftar departemen
@@ -525,7 +535,6 @@ class ProduksiPerDepartemenPerTypeReportService
                 // Menulis data mesin
                 $spreadsheet->getActiveSheet()->setCellValue($columnTypeCode . $rowItem, $TypeCode);
                 $spreadsheet->getActiveSheet()->setCellValue($columnTypeName . $rowItem, $TypeName);
-                // phpspreadsheet::addFullBorder($spreadsheet, $startColumnItem . $rowItem . ':' . $columnItem . $rowItem);
 
                 // memasukkan data
                 $dataItem = $dataFilter[$department['department_id']][$TypeCode];
@@ -543,12 +552,12 @@ class ProduksiPerDepartemenPerTypeReportService
                 phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
                 // seitai loss %
-                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->berat_produksi > 0 ? $dataItem->seitai_berat_loss / $dataItem->berat_produksi : 0);
-                phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowItem);
+                $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->berat_produksi > 0 ? $dataItem->seitai_berat_loss / ($dataItem->seitai_berat_loss + $dataItem->berat_produksi)*100 : 0);
+                phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
                 // seitai_cost
                 $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->seitai_cost);
-                phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+                phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
                 $columnItem++;
                 // seitai_berat_loss_ponsu
                 $activeWorksheet->setCellValue($columnItem . $rowItem, $dataItem->seitai_berat_loss_ponsu);
@@ -581,12 +590,12 @@ class ProduksiPerDepartemenPerTypeReportService
             phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
             $columnItem++;
             // seitai loss %
-            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listProductType[$department['department_id']])) . ':' . $columnItem . ($rowItem - 1) . ')/COUNTIF(' . $columnItem . ($rowItem - count($listProductType[$department['department_id']])) . ':' . $columnItem . ($rowItem - 1) . ', "<>0")');
-            phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowItem);
+            $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=' . $columnLoss . ($rowItem) . '/(' . $columnLoss . ($rowItem) . '+' . $columnBeratProduksi . ($rowItem) . ')*100');
+            phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
             $columnItem++;
             // seitai_cost
             $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listProductType[$department['department_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
-            phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
+            phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
             $columnItem++;
             // seitai_berat_loss_ponsu
             $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listProductType[$department['department_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
@@ -644,11 +653,11 @@ class ProduksiPerDepartemenPerTypeReportService
         phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
         $columnItem++;
         // seitai loss %
-        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_produksi'] > 0 ? $grandTotal['seitai_berat_loss'] / $grandTotal['berat_produksi'] : 0);
-        phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowGrandTotal);
+        $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['berat_produksi'] > 0 ? $grandTotal['seitai_berat_loss'] / ($grandTotal['seitai_berat_loss'] + $grandTotal['berat_produksi'])*100 : 0);
+        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
         $columnItem++;
         $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['seitai_cost']);
-        phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
+        phpspreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowGrandTotal);
         $columnItem++;
         $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowGrandTotal, $grandTotal['seitai_berat_loss_ponsu']);
         phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowGrandTotal);
@@ -671,7 +680,7 @@ class ProduksiPerDepartemenPerTypeReportService
 
         $pixelWidths = [
             'B' => 48,
-            'C' => 65,
+            // 'C' => 65,
             'D' => 84,
             'E' => 84,
             'F' => 84,
@@ -689,7 +698,7 @@ class ProduksiPerDepartemenPerTypeReportService
         }
 
         // auto-size any remaining columns between startColumnItemData and endColumnItem
-        $col = $startColumnItemData;
+        $col = 'B';
         while ($col !== $endColumnItem) {
             if (!isset($pixelWidths[$col])) {
                 $spreadsheet->getActiveSheet()->getColumnDimension($col)->setAutoSize(true);
