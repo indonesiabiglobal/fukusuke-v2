@@ -4,7 +4,7 @@
             <div class="col-12 col-lg-6">
                 <div class="form-group">
                     <div class="input-group">
-                        <label class="control-label col-12 col-lg-4 align-self-center">Tanggal Insiden</label>
+                        <label class="control-label col-12 col-lg-4 align-self-center">Tanggal Kejadian</label>
                         <input class="form-control" type="text" data-provider="flatpickr" data-date-format="d-m-Y"
                             data-maxDate="{{ now()->format('d/m/Y') }}" wire:model.change="incident_date"
                             placeholder="yyyy/mm/dd" />
@@ -26,7 +26,7 @@
                 <div class="form-group">
                     <div class="input-group">
                         <label class="control-label col-4 align-self-center">Grup</label>
-                        <input class="form-control col-8" type="number" min="1" max="3" wire:model="grup" placeholder="Grup" />
+                        <input class="form-control col-8" type="text" wire:model="grup" placeholder="Grup" maxlength="1" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase(); if(!/^[A-D]$/.test(this.value) && this.value !== '') this.value = this.value.slice(0, -1);" />
                     </div>
                 </div>
             </div>

@@ -4,7 +4,7 @@
             <div class="col-12 col-lg-6">
                 <div class="form-group">
                     <div class="input-group">
-                        <label class="control-label col-12 col-lg-4">Tanggal Insiden</label>
+                        <label class="control-label col-12 col-lg-4">Tanggal Kejadian</label>
                         <input class="form-control" type="text" data-provider="flatpickr" data-date-format="d-m-Y"
                             data-maxDate="{{ now()->format('d/m/Y') }}" wire:model.change="incident_date"
                             placeholder="yyyy/mm/dd" />
