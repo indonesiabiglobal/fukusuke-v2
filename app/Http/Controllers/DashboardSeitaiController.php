@@ -226,7 +226,9 @@ class DashboardSeitaiController extends Controller
                     COUNT(tjkjmm.id) AS frekuensi_trouble
                 FROM tdjamkerjamesin
                 LEFT JOIN tdjamkerja_jammatimesin tjkjmm ON tjkjmm.jam_kerja_mesin_id = tdjamkerjamesin.id
-                WHERE working_date BETWEEN ? AND ?
+                    AND tjkjmm.jam_mati_mesin_id != 17 -- filter jam mati mesin yang bukan order tidak ada
+                LEFT JOIN msworkingshift ws ON tdjamkerjamesin.work_shift = ws.id
+                WHERE working_date + ws.work_hour_from BETWEEN ? AND ?
                 GROUP BY machine_id
             ) jam ON mac.id = jam.machine_id
             WHERE mac.status = 1
@@ -418,22 +420,24 @@ class DashboardSeitaiController extends Controller
             SELECT
                 mac.id AS machine_id,
                 RIGHT(mac.machineno, 2) AS machineno,
-                CASE
-                    WHEN tpg.production_date BETWEEN :startMonth AND :firstPeriod THEN 1
-                    WHEN tpg.production_date BETWEEN :firstPeriodPlus AND :secondPeriod THEN 2
-                    WHEN tpg.production_date BETWEEN :secondPeriodPlus AND :endMonth THEN 3
-                END AS period_ke,
-                ROUND(SUM(tpgloss.berat_loss)::numeric, 1) AS berat_loss,
-                ROUND(COALESCE(SUM(tpg.qty_produksi * prd.unit_weight * 0.001), 0)::numeric, 1) AS berat_produksi
+                periods.period_ke,
+                COALESCE(ROUND(SUM(tpgloss.berat_loss)::numeric, 1), 0) AS berat_loss,
+                COALESCE(ROUND(SUM(tpg.qty_produksi * prd.unit_weight * 0.001)::numeric, 1), 0) AS berat_produksi
             FROM msmachine mac
-            LEFT JOIN tdproduct_goods tpg ON mac.id = tpg.machine_id
+            CROSS JOIN (VALUES (1), (2), (3)) AS periods(period_ke)
+            LEFT JOIN tdproduct_goods tpg
+                ON mac.id = tpg.machine_id
+                AND (
+                    (periods.period_ke = 1 AND tpg.production_date BETWEEN :startMonth AND :firstPeriod)
+                    OR (periods.period_ke = 2 AND tpg.production_date BETWEEN :firstPeriodPlus AND :secondPeriod)
+                    OR (periods.period_ke = 3 AND tpg.production_date BETWEEN :secondPeriodPlus AND :endMonth)
+                )
             LEFT JOIN tdproduct_goods_loss tpgloss ON tpg.id = tpgloss.product_goods_id
             LEFT JOIN msproduct prd ON tpg.product_id = prd.id
             WHERE mac.department_id = :factory
-                AND tpg.production_date BETWEEN :startMonth AND :endMonth
                 AND mac.status = 1
-            GROUP BY mac.id, mac.machineno, period_ke
-            ORDER BY mac.machineno ASC, period_ke ASC
+            GROUP BY mac.id, mac.machineno, periods.period_ke
+            ORDER BY mac.machineno ASC, periods.period_ke ASC
         ', [
             'factory'         => $request->factory,
             'startMonth'      => $startMonth,
@@ -547,19 +551,21 @@ class DashboardSeitaiController extends Controller
             SELECT
                 mac.id AS machine_id,
                 RIGHT(mac.machineno, 2) AS machineno,
-                CASE
-                    WHEN tpa.production_date BETWEEN :startMonth AND :firstPeriod THEN 1
-                    WHEN tpa.production_date BETWEEN :firstPeriodPlus AND :secondPeriod THEN 2
-                    WHEN tpa.production_date BETWEEN :secondPeriodPlus AND :endMonth THEN 3
-                END AS period_ke,
-                ROUND(SUM(tpa.qty_produksi)::numeric, 1) AS qty_produksi
+                periods.period_ke,
+                COALESCE(ROUND(SUM(tpa.qty_produksi)::numeric, 1), 0) AS qty_produksi
             FROM msmachine mac
-            LEFT JOIN tdproduct_goods tpa ON mac.id = tpa.machine_id
+            CROSS JOIN (VALUES (1), (2), (3)) AS periods(period_ke)
+            LEFT JOIN tdproduct_goods tpa
+                ON mac.id = tpa.machine_id
+                AND (
+                    (periods.period_ke = 1 AND tpa.production_date BETWEEN :startMonth AND :firstPeriod)
+                    OR (periods.period_ke = 2 AND tpa.production_date BETWEEN :firstPeriodPlus AND :secondPeriod)
+                    OR (periods.period_ke = 3 AND tpa.production_date BETWEEN :secondPeriodPlus AND :endMonth)
+                )
             WHERE mac.department_id = :factory
-                AND tpa.production_date BETWEEN :startMonth AND :endMonth
                 AND mac.status = 1
-            GROUP BY mac.id, mac.machineno, period_ke
-            ORDER BY mac.id ASC, period_ke ASC
+            GROUP BY mac.id, mac.machineno, periods.period_ke
+            ORDER BY machineno ASC, periods.period_ke ASC
         ', [
             'factory'         => $request->factory,
             'startMonth'      => $startMonth,
@@ -568,7 +574,8 @@ class DashboardSeitaiController extends Controller
             'secondPeriod'    => $secondPeriod,
             'secondPeriodPlus' => Carbon::parse($secondPeriod)->format('Y-m-d 07:00:00'),
             'endMonth'        => $endMonth,
-        ]))->groupBy('period_ke')->map(function ($items, $period) {
+        ]))
+        ->groupBy('period_ke')->map(function ($items, $period) {
             return $items->map(function ($item) use ($period) {
                 return [
                     'machine_id' => $item->machine_id,
@@ -577,7 +584,8 @@ class DashboardSeitaiController extends Controller
                     'period_ke' => $period
                 ];
             });
-        })->toArray();
+        })
+        ->toArray();
 
         return $produksiLossMonthly;
     }

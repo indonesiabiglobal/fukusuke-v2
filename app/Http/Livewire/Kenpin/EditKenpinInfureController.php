@@ -79,10 +79,10 @@ class EditKenpinInfureController extends Component
     public function mount(Request $request)
     {
         $data = DB::table('tdkenpin AS tda')
-            ->join('tdorderlpk AS tdo', 'tdo.id', '=', 'tda.lpk_id')
-            ->join('msproduct AS msp', 'msp.id', '=', 'tdo.product_id')
-            ->join('msemployee AS mse', 'mse.id', '=', 'tda.employee_id')
-            ->join('msemployee AS mse_penemu', 'mse_penemu.id', '=', 'tda.penemu_masalah_id')
+            ->leftJoin('tdorderlpk AS tdo', 'tdo.id', '=', 'tda.lpk_id')
+            ->leftJoin('msproduct AS msp', 'msp.id', '=', 'tdo.product_id')
+            ->leftJoin('msemployee AS mse', 'mse.id', '=', 'tda.employee_id')
+            ->leftJoin('msemployee AS mse_penemu', 'mse_penemu.id', '=', 'tda.penemu_masalah_id')
             ->leftJoin('msmasalahkenpin AS mmi', 'mmi.id', '=', 'tda.masalah_kenpin_id')
             ->where('tda.id', $request->query('orderId'))
             ->select(

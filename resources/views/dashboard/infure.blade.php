@@ -1243,12 +1243,21 @@
                         y: -20,
                     },
                 },
-                xAxis: {
+                xAxis: [{
                     categories: lossPerBulan[1].map(item => item.machineno),
                     title: {
                         text: 'Loss',
                     },
-                },
+                    crosshair: true,
+                    labels: {
+                        step: 1,
+                        autoRotation: [-45, -90],
+                        autoRotationLimit: 80,
+                        style: {
+                            fontSize: '8px'
+                        }
+                    }
+                }],
                 legend: {
                     layout: 'vertical',
                     align: 'right',
@@ -1285,6 +1294,14 @@
                                 align: 'center',
                                 verticalAlign: 'bottom'
                             },
+                            xAxis: [{
+                                labels: {
+                                    rotation: -90,
+                                    style: {
+                                        fontSize: '11px'
+                                    }
+                                }
+                            }],
                             yAxis: [{
                                 labels: {
                                     align: 'left',
@@ -1313,14 +1330,23 @@
                     text: 'PRODUKSI PER BULAN',
                     align: 'center'
                 },
-                xAxis: {
+                xAxis: [{
                     categories: produksiPerBulan[1].map(item => item.machineno),
-                },
+                    crosshair: true,
+                    labels: {
+                        step: 1,
+                        autoRotation: [-45, -90],
+                        autoRotationLimit: 80,
+                        style: {
+                            fontSize: '8px'
+                        }
+                    }
+                }],
                 yAxis: {
                     allowDecimals: false,
                     min: 0,
                     title: {
-                        text: '(Kg)',
+                        text: '(Ton)',
                         align: 'high',
                         offset: 0,
                         rotation: 0,
@@ -1336,19 +1362,20 @@
                         stacking: 'normal'
                     }
                 },
+                // convert kg to ton and handle missing data gracefully
                 series: [{
                     name: 'Periode C',
-                    data: produksiPerBulan[3] ? produksiPerBulan[3].map((item) => parseFloat(item.berat_produksi) || 0) : [],
+                    data: produksiPerBulan[3] ? produksiPerBulan[3].map((item) => parseFloat(item.berat_produksi / 1000) || 0) : [],
                     stack: 'produksi',
                     color: '#93D1FF'
                 }, {
                     name: 'Periode B',
-                    data: produksiPerBulan[2] ? produksiPerBulan[2].map((item) => parseFloat(item.berat_produksi) || 0) : [],
+                    data: produksiPerBulan[2] ? produksiPerBulan[2].map((item) => parseFloat(item.berat_produksi / 1000) || 0) : [],
                     stack: 'produksi',
                     color: '#29A3FF'
                 }, {
                     name: 'Periode A',
-                    data: produksiPerBulan[1].map((item) => parseFloat(item.berat_produksi) || 0),
+                    data: produksiPerBulan[1].map((item) => parseFloat(item.berat_produksi / 1000) || 0),
                     stack: 'produksi',
                     color: '#0070C0'
                 }],
@@ -1369,6 +1396,14 @@
                                 x: 0,
                                 y: 0
                             },
+                            xAxis: [{
+                                labels: {
+                                    rotation: -90,
+                                    style: {
+                                        fontSize: '11px'
+                                    }
+                                }
+                            }],
                             yAxis: [{
                                 labels: {
                                     align: 'left',
@@ -1490,6 +1525,8 @@
                     setButtonMonthlyLoading(false);
                 }
             };
+
+            fetchPeringatanKatagae();
 
             // Placeholder loading
             $('#lossPerBulan, #produksiPerBulan').html(
@@ -1639,11 +1676,11 @@
             }, refreshIntervalMs);
 
             // Interval khusus untuk peringatan katagae (setiap 1 menit)
-            setInterval(function() {
-                const form = $('#form-dashboard-monthly');
-                if (form.length === 0) return;
-                fetchPeringatanKatagae();
-            }, 60000); // 1 menit
+            // setInterval(function() {
+            //     const form = $('#form-dashboard-monthly');
+            //     if (form.length === 0) return;
+            //     fetchPeringatanKatagae();
+            // }, 60000); // 1 menit
 
             Highcharts.setOptions({
                 chart: {
