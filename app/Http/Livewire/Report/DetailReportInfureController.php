@@ -310,7 +310,7 @@ class DetailReportInfureController
             $startRow = $currentRow;
 
             // Tulis detail untuk setiap produk
-            foreach ($data['workHours'][$productId] as $data => $hours) {
+            foreach ($data['workHours'][$productId] as $productionId => $hours) {
                 foreach ($hours as $hour => $details) {
                     $rowItemStart = $currentRow;
                     $baseData = $details['base'];
@@ -346,6 +346,7 @@ class DetailReportInfureController
                     $this->applyDataBlockStyles($rowItemStart);
                 }
             }
+
             $this->applyProductBlockStyles($startRow, $currentRow);
         }
 
