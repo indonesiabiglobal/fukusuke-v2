@@ -14,7 +14,7 @@ use function PHPSTORM_META\map;
 
 class DashboardSeitaiController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $now = Carbon::now();
         if ($now->between(Carbon::parse($now->format('Y-m-d 00:00:00')), Carbon::parse($now->format('Y-m-d 15:00:00')))) {
@@ -23,9 +23,17 @@ class DashboardSeitaiController extends Controller
             $filterDateDaily = Carbon::now()->format('d-m-Y');
         }
 
+        $department = departmentHelper::seitaiPabrikDepartment()
+            ->filter(function ($dept) use ($request) {
+                if ($request->user()->department_id == null) {
+                    return true;
+                }
+                return $dept->id == $request->user()->department_id;
+            })->values();
+
         $data = [
             'period' => ['A', 'B', 'C'],
-            'listFactory' => departmentHelper::seitaiPabrikDepartment(),
+            'listFactory' => $department,
             'filterDateDaily' => $filterDateDaily,
             'filterDateMonthly' => Carbon::now()->format('Y-m'),
         ];

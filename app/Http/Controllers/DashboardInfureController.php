@@ -6,6 +6,7 @@ use App\Helpers\departmentHelper;
 use App\Helpers\LossInfureHelper;
 use App\Helpers\workingShiftHelper;
 use App\Models\MsDepartment;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -23,9 +24,17 @@ class DashboardInfureController extends Controller
             $filterDateDaily = Carbon::now()->format('d-m-Y');
         }
 
+        $department = departmentHelper::infurePabrikDepartment()
+            ->filter(function ($dept) use ($request) {
+                if ($request->user()->department_id == null) {
+                    return true;
+                }
+                return $dept->id == $request->user()->department_id;
+            })->values();
+
         $data = [
             'period' => ['A', 'B', 'C'],
-            'listFactory' => departmentHelper::infurePabrikDepartment(),
+            'listFactory' => $department,
             'filterDateDaily' => $filterDateDaily,
             'filterDateMonthly' => Carbon::now()->format('Y-m'),
         ];
