@@ -826,6 +826,14 @@ class EditNippoController extends Component
                 'frekuensi' => $this->frekuensi,
             ]);
 
+        // Update total berat loss infure di tdproduct_assembly
+        $totalBerat = TdProductAssemblyLoss::where('product_assembly_id', $this->orderId)
+            ->sum('berat_loss');
+
+        TdProductAssembly::where('id', $this->orderId)->update([
+            'infure_berat_loss' => $totalBerat,
+        ]);
+
         $this->resetInputFields();
         $this->dispatch('notification', ['type' => 'success', 'message' => 'Loss Infure berhasil diupdate']);
         $this->dispatch('closeModal', 'modal-edit');
