@@ -7,6 +7,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\Helpers\phpspreadsheet;
 
 class DetailReportInfureController
 {
@@ -315,9 +316,9 @@ class DetailReportInfureController
                     $rowItemStart = $currentRow;
                     $baseData = $details['base'];
 
-                    // Tulis data dasar dalam satu baris
+                    // Tulis data dasar dalam satu baris (kirim tanggal mentah, helper akan format)
                     $this->writeRowData($currentRow, [
-                        Carbon::parse($baseData['tglproduksi'])->translatedFormat('d-M-Y'),
+                        $baseData['tglproduksi'],
                         $baseData['shift'],
                         $baseData['jam'],
                         $baseData['nik'],
@@ -386,7 +387,14 @@ class DetailReportInfureController
     {
         foreach ($data as $col => $value) {
             $column = chr(65 + $col); // Konversi 0 -> A, 1 -> B, dst
-            $this->worksheet->setCellValue($column . $row, $value);
+            $cell = $column . $row;
+
+            // Jika nilai terlihat seperti tanggal (YYYY-MM-DD...) tulis sebagai Excel date
+            if ($value !== null && is_string($value) && preg_match('/^\d{4}-\d{2}-\d{2}/', $value)) {
+                phpspreadsheet::setCellDate($this->spreadsheet, $cell, $value);
+            } else {
+                $this->worksheet->setCellValue($cell, $value);
+            }
         }
     }
 

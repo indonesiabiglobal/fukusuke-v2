@@ -8,6 +8,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\Helpers\phpspreadsheet;
 
 class DetailReportSeitaiController
 {
@@ -362,7 +363,8 @@ class DetailReportSeitaiController
             foreach ($data['productionIds'][$productCode] as $productionId => $baseData) {
                 $rowItemStart = $currentRow;
                 $maxRow = $currentRow;
-                $productionDate = Carbon::parse($baseData['production_date'])->translatedFormat('d-M-Y');
+                // Pass raw production date to writeBaseData; helper will format into Excel date
+                $productionDate = $baseData['production_date'];
 
                 // Write base data
                 $this->writeBaseData($currentRow, $baseData, $productionDate);
@@ -413,7 +415,13 @@ class DetailReportSeitaiController
         ];
 
         foreach ($columns as $column => $value) {
-            $this->worksheet->setCellValue($column . $row, $value);
+            $cell = $column . $row;
+            if ($column === 'A') {
+                // write production date as Excel date
+                phpspreadsheet::setCellDate($this->spreadsheet, $cell, $value);
+            } else {
+                $this->worksheet->setCellValue($cell, $value);
+            }
         }
     }
 
@@ -428,7 +436,7 @@ class DetailReportSeitaiController
         $columns = [
             'M' => $data['gentan_no_line'],
             'N' => $data['panjang_produksi'],
-            'O' => Carbon::parse($data['tgl_produksi'])->translatedFormat('d-M-Y'),
+            'O' => $data['tgl_produksi'],
             'P' => $data['work_shift'],
             'Q' => $data['work_hour'],
             'R' => $data['no_mesin'],
@@ -439,7 +447,12 @@ class DetailReportSeitaiController
         ];
 
         foreach ($columns as $column => $value) {
-            $this->worksheet->setCellValue($column . $row, $value);
+            $cell = $column . $row;
+            if ($column === 'O') {
+                phpspreadsheet::setCellDate($this->spreadsheet, $cell, $value);
+            } else {
+                $this->worksheet->setCellValue($cell, $value);
+            }
         }
     }
 

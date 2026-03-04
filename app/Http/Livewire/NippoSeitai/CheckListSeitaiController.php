@@ -933,7 +933,7 @@ class CheckListSeitaiController extends Component
         foreach ($dataFiltered as $productionDate => $dataItem) {
             foreach ($dataItem as $id_tdpg => $item) {
                 // Tanggal Proses
-                $activeWorksheet->setCellValue($startColumn . $rowItemStart, Carbon::parse($item['tglproses'])->format('d-M-Y'));
+                phpspreadsheet::setCellDate($spreadsheet, $startColumn . $rowItemStart, $item['tglproses']);
                 phpspreadsheet::styleFont($spreadsheet, $startColumn . $rowItemStart, false, 8, 'Calibri');
                 phpspreadsheet::textAlignCenter($spreadsheet, $startColumn . $rowItemStart);
                 // No Proses
@@ -941,7 +941,7 @@ class CheckListSeitaiController extends Component
                 phpspreadsheet::styleFont($spreadsheet, $startColumn . $rowItemEnd, false, 8, 'Calibri');
                 phpspreadsheet::textAlignCenter($spreadsheet, $startColumn . $rowItemEnd);
                 // Tangga Produksi
-                $activeWorksheet->setCellValue($columnProduksi . $rowItemStart, Carbon::parse($item['tglproduksi'])->format('d-M-Y'));
+                phpspreadsheet::setCellDate($spreadsheet, $columnProduksi . $rowItemStart, $item['tglproduksi']);
                 phpspreadsheet::styleFont($spreadsheet, $columnProduksi . $rowItemStart, false, 8, 'Calibri');
                 phpspreadsheet::textAlignCenter($spreadsheet, $columnProduksi . $rowItemStart);
                 // Shift
@@ -1201,7 +1201,7 @@ class CheckListSeitaiController extends Component
         // Row 9 - Tanggal Produksi
         $activeWorksheet->setCellValue('B9', 'Tanggal Produksi');
         $activeWorksheet->setCellValue('H9', ':');
-        $activeWorksheet->setCellValue('I9', Carbon::parse($item->tglproduksi)->format('d-m-Y'));
+        phpspreadsheet::setCellDate($spreadsheet, 'I9', $item->tglproduksi);
         phpspreadsheet::styleFont($spreadsheet, 'B9', false, 14, 'Tahoma');
         phpspreadsheet::styleFont($spreadsheet, 'I9', false, 14, 'Tahoma');
 
@@ -1249,6 +1249,7 @@ class CheckListSeitaiController extends Component
         $activeWorksheet->setCellValue('H14', ':');
         $stuffingDate = Carbon::parse($item->stufingdate)->format('d-m-Y');
         $activeWorksheet->setCellValue('I14', $stuffingDate);
+        phpspreadsheet::setCellDate($spreadsheet, 'I14', $item->stufingdate);
         phpspreadsheet::styleFont($spreadsheet, 'B14', false, 14, 'Tahoma');
         phpspreadsheet::styleFont($spreadsheet, 'I14', false, 14, 'Tahoma');
 

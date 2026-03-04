@@ -425,4 +425,39 @@ class phpspreadsheet
             ->setTextRotation(90)
             ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
     }
+
+    /**
+     * Set a cell value as an Excel date and apply a date number format.
+     * Accepts string, DateTimeInterface, Carbon instance or timestamp.
+     */
+    public static function setCellDate($spreadsheet, $cell, $date, $format = 'dd-mmm-yyyy')
+    {
+        if ($date === null || $date === '') {
+            $spreadsheet->getActiveSheet()->setCellValue($cell, '');
+            return;
+        }
+
+        if (is_string($date)) {
+            $dt = \Carbon\Carbon::parse($date);
+        } elseif ($date instanceof \DateTimeInterface) {
+            $dt = \Carbon\Carbon::instance($date);
+        } elseif (is_numeric($date)) {
+            $dt = \Carbon\Carbon::createFromTimestamp((int) $date);
+        } else {
+            $dt = \Carbon\Carbon::parse((string) $date);
+        }
+
+        $excelDate = \PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel($dt->toDateTime());
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setCellValue($cell, $excelDate);
+        $sheet->getStyle($cell)->getNumberFormat()->setFormatCode($format);
+    }
+
+    /**
+     * Apply a date number format to a range of cells.
+     */
+    public static function setRangeDateFormat($spreadsheet, $range, $format = 'dd-mmm-yyyy')
+    {
+        $spreadsheet->getActiveSheet()->getStyle($range)->getNumberFormat()->setFormatCode($format);
+    }
 }

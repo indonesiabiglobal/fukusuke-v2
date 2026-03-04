@@ -395,7 +395,7 @@ class CheckListInfureController extends Component
             $columnItemEnd = $columnItemStart;
 
             // tanggal proses
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($dataItem['tanggal_proses'])->translatedFormat('d-M-Y'));
+            phpspreadsheet::setCellDate($spreadsheet, $columnItemEnd . $rowItem, $dataItem['tanggal_proses']);
             $columnItemEnd++;
 
             // no proses
@@ -403,7 +403,7 @@ class CheckListInfureController extends Component
             $columnItemEnd++;
 
             // tanggal produksi
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($dataItem['tglproduksi'])->translatedFormat('d-M-Y'));
+            phpspreadsheet::setCellDate($spreadsheet, $columnItemEnd . $rowItem, $dataItem['tglproduksi']);
             $columnItemEnd++;
 
             // shift

@@ -402,7 +402,7 @@ class CheckListJamKerjaController extends Component
             $worksheet->setCellValue($columnItemEnd . $rowItem, $key + 1);
             $columnItemEnd++;
             // Tanggal
-            $worksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($dataItem['working_date'])->translatedFormat('d-M-Y'));
+            phpspreadsheet::setCellDate($spreadsheet, $columnItemEnd . $rowItem, $dataItem['working_date']);
             $columnItemEnd++;
             // Shift
             $worksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['work_shift']);
@@ -473,7 +473,7 @@ class CheckListJamKerjaController extends Component
             $worksheet->setCellValue($columnItemEnd . $rowItem, $key + 1);
             $columnItemEnd++;
             // Tanggal
-            $worksheet->setCellValue($columnItemEnd . $rowItem, Carbon::parse($dataItem['working_date'])->translatedFormat('d-M-Y'));
+            phpspreadsheet::setCellDate($spreadsheet, $columnItemEnd . $rowItem, $dataItem['working_date']);
             $columnItemEnd++;
             // Shift
             $worksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['work_shift']);
