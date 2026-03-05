@@ -115,7 +115,7 @@ class ProduksiPerTypePerMesinReportService
             left JOIN msProduct_type AS prTip ON prd.product_type_id = prTip.id
             WHERE asy.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
             GROUP BY dep.id, asy.machine_id, prTip.id
-            ORDER BY dep.name ASC, prTip.name ASC, mac.machineNo ASC
+            ORDER BY MAX(dep.name) ASC, MAX(prTip.name) ASC, MAX(mac.machineNo) ASC
         ");
 
         if (count($data) == 0) {
@@ -566,7 +566,7 @@ class ProduksiPerTypePerMesinReportService
             INNER JOIN msProduct_type AS prT ON prd.product_type_id = prT.id
             WHERE good.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
             GROUP BY dep.id, prT.name, good.machine_id
-            ORDER BY dep.name, prT.name, mac.machineNo
+            ORDER BY MAX(dep.name), MAX(prT.name), MAX(mac.machineNo)
         ");
 
         if (count($data) == 0) {

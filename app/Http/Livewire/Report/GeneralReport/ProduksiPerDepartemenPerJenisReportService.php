@@ -111,7 +111,7 @@ class ProduksiPerDepartemenPerJenisReportService
             INNER JOIN msProduct_group AS prGrp ON prTip.product_group_id = prGrp.id
             WHERE asy.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
             GROUP BY dep.id, prGrp.id
-            ORDER BY department_name, product_group_code
+            ORDER BY MAX(dep.name), MAX(prGrp.code)
         ");
 
         if (count($data) == 0) {
@@ -474,7 +474,7 @@ class ProduksiPerDepartemenPerJenisReportService
             INNER JOIN msProduct_group AS prGrp ON prT.product_group_id = prGrp.id
             WHERE good.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
             GROUP BY dep.id, prGrp.id
-            ORDER BY department_name, product_group_code
+            ORDER BY MAX(dep.name), MAX(prGrp.code)
         ");
 
         if (count($data) == 0) {

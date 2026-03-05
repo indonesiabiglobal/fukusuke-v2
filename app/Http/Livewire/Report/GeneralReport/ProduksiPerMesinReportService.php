@@ -610,7 +610,7 @@ class ProduksiPerMesinReportService
                 INNER JOIN msProduct_type AS prT ON prd.product_type_id = prT.id
             WHERE good.production_date BETWEEN  '$tglMasuk' AND '$tglKeluar'
             GROUP BY good.machine_id
-            ORDER BY mac.machineNo ASC
+            ORDER BY MAX(dep.name), MAX(mac.machineNo) ASC
         ");
 
         if (count($data) == 0) {
