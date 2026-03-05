@@ -645,7 +645,8 @@ class LossPerPetugasReportService
             INNER JOIN msProduct AS prd ON good.product_id = prd.id
             LEFT JOIN LossAggregates AS loss ON good.id = loss.product_goods_id
             WHERE good.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
-            GROUP BY dep.name,dep.id, mac.employeeNo, mac.empName;
+            GROUP BY dep.name,dep.id, mac.employeeNo, mac.empName
+            ORDER BY dep.name, mac.employeeNo;
         ");
 
         if (count($data) == 0) {

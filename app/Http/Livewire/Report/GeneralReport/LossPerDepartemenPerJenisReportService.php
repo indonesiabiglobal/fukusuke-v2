@@ -107,6 +107,7 @@ class LossPerDepartemenPerJenisReportService
             INNER JOIN msProduct_group AS prGrp ON prTip.product_group_id = prGrp.id
             WHERE asy.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
             GROUP BY dep.id, prGrp.id, det.loss_infure_id
+            ORDER BY dep.name ASC, mslos.code ASC
         ");
 
         if (count($data) == 0) {
@@ -425,6 +426,7 @@ class LossPerDepartemenPerJenisReportService
             INNER JOIN msProduct_group AS prGrp ON prTip.product_group_id = prGrp.id
             WHERE good.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
             GROUP BY dep.id, prGrp.id, det.loss_seitai_id
+            ORDER BY dep.name ASC, mslos.code ASC
         ");
 
         if (count($data) == 0) {

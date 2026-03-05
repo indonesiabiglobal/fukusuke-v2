@@ -108,6 +108,7 @@ class ProduksiPerDepartemenPerPetugasReportService
             INNER JOIN msDepartment AS dep ON man.department_id = dep.id
             WHERE asy.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
             GROUP BY dep.id, asy.employee_id
+            ORDER BY dep.name, man.employeeNo
         ");
 
         if (count($data) == 0) {
@@ -471,6 +472,7 @@ class ProduksiPerDepartemenPerPetugasReportService
             INNER JOIN msProduct_type AS prT ON prd.product_type_id = prT.id
             WHERE good.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
             GROUP BY dep.id, good.employee_id
+            ORDER BY dep.name, man.employeeNo
         ");
 
         if (count($data) == 0) {

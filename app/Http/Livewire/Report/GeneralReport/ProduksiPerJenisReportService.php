@@ -423,6 +423,7 @@ class ProduksiPerJenisReportService
             INNER JOIN msProduct_group AS prGrp ON prT.product_group_id = prGrp.id
             WHERE good.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
             GROUP BY prGrp.name
+            ORDER BY product_group_code
         ");
 
         if (count($data) == 0) {

@@ -102,6 +102,7 @@ class LossPerDepartemenReportService
             INNER JOIN msDepartment AS dep ON mac.department_id = dep.id
             WHERE asy.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
             GROUP BY dep.id, det.loss_infure_id
+            ORDER BY dep.name ASC, mslos.code ASC
         ");
 
         if (count($data) == 0) {
@@ -398,7 +399,7 @@ class LossPerDepartemenReportService
             INNER JOIN msDepartment AS dep ON mac.department_id = dep.id
             WHERE good.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
             GROUP BY dep.id, det.loss_seitai_id
-            ORDER BY loss_code ASC
+            ORDER BY dep.name ASC, mslos.code ASC
         ");
 
         if (count($data) == 0) {
