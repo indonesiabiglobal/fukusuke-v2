@@ -120,7 +120,7 @@ class DetailReportKenpinSeitaiController extends Component
             'Jumlah Orang kenpin'
         ];
 
-        $headerEnd = [
+        $headerKenpin = [
             'Total Jumlah Box Kenpin',
             'Total Loss Kenpin (Box)',
             'NIK',
@@ -292,7 +292,8 @@ class DetailReportKenpinSeitaiController extends Component
             $activeWorksheet->getStyle($columnHeaderStartLot . $rowHeaderStart . ':' . Coordinate::stringFromColumnIndex(Coordinate::columnIndexFromString($columnHeaderEnd) - 1) . $rowHeaderStart)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB($randomColor);
         }
 
-        foreach ($headerEnd as $key => $value) {
+        $columnHeaderKenpinStart = $columnHeaderEnd;
+        foreach ($headerKenpin as $key => $value) {
             $activeWorksheet->setCellValue($columnHeaderEnd . $rowHeaderStart, $value);
             $columnHeaderEnd++;
         }
@@ -410,6 +411,7 @@ class DetailReportKenpinSeitaiController extends Component
                 $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemLot['jumlah_orang_kenpin']);
                 $columnItemEnd++;
             }
+            $columnItemEnd = Coordinate::stringFromColumnIndex(Coordinate::columnIndexFromString($columnHeaderKenpinStart));
 
             // total jumlah box kenpin
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['total_jumlah_box_kenpin']);
@@ -459,6 +461,7 @@ class DetailReportKenpinSeitaiController extends Component
         $activeWorksheet->getStyle($columnHeaderStart . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart)->getAlignment()->setWrapText(true);
 
         // size auto
+        $columnItemEnd++;
         $columnSizeStart = $columnItemStart;
         $columnSizeStart++;
         while ($columnSizeStart !== $columnItemEnd) {

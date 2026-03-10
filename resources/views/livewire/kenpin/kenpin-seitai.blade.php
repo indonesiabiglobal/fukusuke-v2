@@ -262,7 +262,7 @@
                     <th>Nama Produk</th>
                     <th>No. Order</th>
                     <th>Petugas</th>
-                    <th>Jumlah Loss (lbr)</th>
+                    <th>Jumlah Loss (box)</th>
                     <th>Status</th>
                     <th>Department</th>
                     <th>Update By</th>

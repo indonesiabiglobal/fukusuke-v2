@@ -112,9 +112,9 @@ class EditKenpinSeitaiController extends Component
         $this->employeeId = $employee->id;
         $this->empname = $employee->empname;
         $this->employeeno = $employee->employeeno;
-        $this->penemuEmployeeId = $penemuEmployee->id;
-        $this->penemuEmployeeNo = $penemuEmployee->employeeno;
-        $this->penemuEmployeeName = $penemuEmployee->empname;
+        $this->penemuEmployeeId = $penemuEmployee->id ?? null;
+        $this->penemuEmployeeNo = $penemuEmployee->employeeno ?? null;
+        $this->penemuEmployeeName = $penemuEmployee->empname ?? null;
         $this->qty_loss = $data->qty_loss;
         $this->remark = $data->remark;
         $this->status = $data->status_kenpin;
