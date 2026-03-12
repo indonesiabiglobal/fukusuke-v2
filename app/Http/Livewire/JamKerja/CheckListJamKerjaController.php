@@ -329,13 +329,13 @@ class CheckListJamKerjaController extends Component
         }, 'jamKerjaJamMatiMesin', 'jamKerjaJamMatiMesin.jamMatiMesin'])
             ->select('id', 'working_date', 'work_shift', 'machine_id', 'employee_id', 'work_hour', 'off_hour', 'on_hour');
 
-        $tableName = (new TdJamKerjaMesin)->getTable();
+        $jamKerjaMesinTable = (new TdJamKerjaMesin)->getTable();
         $machineTable = (new MsMachine)->getTable();
 
         if (isset($filter['transaksi']) && $filter['transaksi'] != '') {
             if ($filter['transaksi'] == 1) {
                 $query = $query->whereRaw(
-                    "({$tableName}.working_date + (select work_hour_from from msworkingshift where id = {$tableName}.work_shift)) BETWEEN ? AND ?",
+                    "({$jamKerjaMesinTable}.working_date + (select work_hour_from from msworkingshift where id = {$jamKerjaMesinTable}.work_shift)) BETWEEN ? AND ?",
                     [
                         $tglAwal->toDateTimeString(),
                         $tglAkhir->toDateTimeString()
@@ -377,9 +377,9 @@ class CheckListJamKerjaController extends Component
             $query = $query->orderBy('off_hour', 'desc');
         } else {
             $query = $query
-            ->orderBy('working_date', 'asc')
-            ->orderByRaw("(select machineno from {$machineTable} where id = {$tableName}.machine_id) asc")
-            ->orderBy('work_shift', 'asc');
+                ->orderBy('working_date', 'asc')
+                ->orderByRaw("(select machineno from {$machineTable} where id = {$jamKerjaMesinTable}.machine_id) asc")
+                ->orderBy('work_shift', 'asc');
         }
 
         return $query

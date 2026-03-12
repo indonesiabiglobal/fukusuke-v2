@@ -109,7 +109,7 @@ class DashboardInfureController extends Controller
                     SELECT 1
                     FROM mslossinfure msl
                     WHERE msl.id = tpaloss.loss_infure_id
-                    AND msl.loss_class_id IN (' . implode(',', $lossClassIds ) . ')
+                    AND msl.loss_class_id IN (' . implode(',', $lossClassIds) . ')
                 )
             WHERE mac.department_id = ?
                 AND mac.status = 1
@@ -140,7 +140,7 @@ class DashboardInfureController extends Controller
                 AND tpa.production_date between ? AND ?
             INNER JOIN msmachine mac ON tpa.machine_id = mac.id
             WHERE mac.department_id = ?
-                AND mslos.loss_class_id IN (' . implode(',', $lossClassIds ) . ')
+                AND mslos.loss_class_id IN (' . implode(',', $lossClassIds) . ')
                 AND mac.status = 1
             GROUP BY loss_name
             ORDER BY berat_loss DESC limit 5
@@ -332,29 +332,62 @@ class DashboardInfureController extends Controller
         $secondPeriod = Carbon::parse($firstPeriod)->addDays(10)->format('d-m-Y 07:00:00');
         $endMonth = Carbon::parse($filterDate)->endOfMonth()->addDay()->format('d-m-Y 07:00:00');
 
+        // Aggregate tdjamkerjamesin per machine per period (restrict to factory machines) and join to machines
         $totalProductionMonthly = collect(DB::select('
-            SELECT
-                ROUND(COALESCE(SUM(tpa.berat_produksi), 0)::numeric, 1) as target_produksi,
-                ROUND(COALESCE(SUM(tpa.berat_produksi), 0)::numeric, 1) as total_produksi,
-                CASE
-                    WHEN tpa.production_date BETWEEN :startMonth AND :firstPeriod THEN 1
-                    WHEN tpa.production_date BETWEEN :firstPeriodPlus AND :secondPeriod THEN 2
-                    WHEN tpa.production_date BETWEEN :secondPeriodPlus AND :endMonth THEN 3
-                END AS period_ke
-            FROM tdproduct_assembly tpa
-            LEFT JOIN msmachine mac ON tpa.machine_id = mac.id
-            WHERE mac.department_id = :factory
-                AND tpa.production_date BETWEEN :startMonth AND :endMonth
-                AND mac.status = 1
-            GROUP BY period_ke
-            ORDER BY period_ke ASC
-        ', [
+                SELECT
+                    ROUND(COALESCE(SUM(COALESCE(tjm_agg.work_hour_h,0)), 0)::numeric, 1) AS total_work_hour,
+                    SUM(mac.capacity_kg) AS total_capacity,
+                    ROUND(COALESCE(SUM(COALESCE(tjm_agg.work_hour_h,0)) * SUM(mac.capacity_kg) * 95 / 100, 0)::numeric, 1) AS target_produksi,
+                    ROUND(COALESCE(SUM(COALESCE(tpa_agg.berat_produksi,0)), 0)::numeric, 1) as total_produksi,
+                    periods.period_ke
+                FROM msmachine mac
+                CROSS JOIN (VALUES (1), (2), (3)) AS periods(period_ke)
+                LEFT JOIN (
+                    SELECT
+                        tpa.machine_id,
+                        CASE
+                            WHEN tpa.production_date BETWEEN :startMonth AND :firstPeriod THEN 1
+                            WHEN tpa.production_date BETWEEN :firstPeriodPlus AND :secondPeriod THEN 2
+                            WHEN tpa.production_date BETWEEN :secondPeriodPlus AND :endMonth THEN 3
+                        END AS period_ke,
+                        COALESCE(SUM(tpa.berat_produksi),0) AS berat_produksi
+                    FROM tdproduct_assembly tpa
+                    WHERE tpa.production_date BETWEEN :startMonth AND :endMonth
+                    GROUP BY tpa.machine_id, period_ke
+                ) tpa_agg ON mac.id = tpa_agg.machine_id AND tpa_agg.period_ke = periods.period_ke
+                LEFT JOIN (
+                    SELECT mac.id AS machine_id, 1 AS period_ke, COALESCE(SUM(EXTRACT(EPOCH FROM tjm.work_hour))/3600.0,0) AS work_hour_h
+                    FROM tdjamkerjamesin tjm
+                    INNER JOIN msmachine mac ON mac.id = tjm.machine_id
+                    WHERE mac.department_id = :factory
+                        AND tjm.working_date + (SELECT work_hour_from FROM msworkingshift WHERE id = tjm.work_shift) BETWEEN :startMonth AND :firstPeriod
+                    GROUP BY mac.id
+                    UNION ALL
+                    SELECT mac.id AS machine_id, 2 AS period_ke, COALESCE(SUM(EXTRACT(EPOCH FROM tjm.work_hour))/3600.0,0) AS work_hour_h
+                    FROM tdjamkerjamesin tjm
+                    INNER JOIN msmachine mac ON mac.id = tjm.machine_id
+                    WHERE mac.department_id = :factory
+                        AND tjm.working_date + (SELECT work_hour_from FROM msworkingshift WHERE id = tjm.work_shift) BETWEEN :firstPeriodPlus AND :secondPeriod
+                    GROUP BY mac.id
+                    UNION ALL
+                    SELECT mac.id AS machine_id, 3 AS period_ke, COALESCE(SUM(EXTRACT(EPOCH FROM tjm.work_hour))/3600.0,0) AS work_hour_h
+                    FROM tdjamkerjamesin tjm
+                    INNER JOIN msmachine mac ON mac.id = tjm.machine_id
+                    WHERE mac.department_id = :factory
+                        AND tjm.working_date + (SELECT work_hour_from FROM msworkingshift WHERE id = tjm.work_shift) BETWEEN :secondPeriodPlus AND :endMonth
+                    GROUP BY mac.id
+                ) tjm_agg ON mac.id = tjm_agg.machine_id AND tjm_agg.period_ke = periods.period_ke
+                WHERE mac.department_id = :factory
+                    AND mac.status = 1
+                GROUP BY periods.period_ke
+                ORDER BY periods.period_ke ASC
+            ', [
             'factory'         => $request->factory,
             'startMonth'      => $startMonth,
             'firstPeriod'     => $firstPeriod,
-            'firstPeriodPlus' => Carbon::parse($firstPeriod)->format('Y-m-d 07:00:00'),
+            'firstPeriodPlus' => Carbon::parse($firstPeriod)->format('Y-m-d 07:01:00'),
             'secondPeriod'    => $secondPeriod,
-            'secondPeriodPlus' => Carbon::parse($secondPeriod)->format('Y-m-d 07:00:00'),
+            'secondPeriodPlus' => Carbon::parse($secondPeriod)->format('Y-m-d 07:01:00'),
             'endMonth'        => $endMonth,
         ]));
 
@@ -394,7 +427,7 @@ class DashboardInfureController extends Controller
             'endMonth' => $endMonth,
         ]))->map(function ($item) {
             $berat = $item->unit_weight / $item->productlength * $item->sisa_meter;
-            $menit = $berat/$item->capacity_kg*60;
+            $menit = $berat / $item->capacity_kg * 60;
             return [
                 'machine_id' => $item->machine_id,
                 'machineno' => $item->machineno,
@@ -446,9 +479,9 @@ class DashboardInfureController extends Controller
             'factory'         => $request->factory,
             'startMonth'      => $startMonth,
             'firstPeriod'     => $firstPeriod,
-            'firstPeriodPlus' => Carbon::parse($firstPeriod)->format('Y-m-d 07:00:00'),
+            'firstPeriodPlus' => Carbon::parse($firstPeriod)->format('Y-m-d 07:01:00'),
             'secondPeriod'    => $secondPeriod,
-            'secondPeriodPlus' => Carbon::parse($secondPeriod)->format('Y-m-d 07:00:00'),
+            'secondPeriodPlus' => Carbon::parse($secondPeriod)->format('Y-m-d 07:01:00'),
             'endMonth'        => $endMonth,
         ]))->groupBy('period_ke')->map(function ($items, $period) {
             return $items->map(function ($item) use ($period) {
@@ -498,9 +531,9 @@ class DashboardInfureController extends Controller
             'factory'         => $request->factory,
             'startMonth'      => $startMonth,
             'firstPeriod'     => $firstPeriod,
-            'firstPeriodPlus' => Carbon::parse($firstPeriod)->format('Y-m-d 07:00:00'),
+            'firstPeriodPlus' => Carbon::parse($firstPeriod)->format('Y-m-d 07:01:00'),
             'secondPeriod'    => $secondPeriod,
-            'secondPeriodPlus' => Carbon::parse($secondPeriod)->format('Y-m-d 07:00:00'),
+            'secondPeriodPlus' => Carbon::parse($secondPeriod)->format('Y-m-d 07:01:00'),
             'endMonth'        => $endMonth,
         ]))->groupBy('period_ke')->map(function ($items, $period) {
             return $items->map(function ($item) use ($period) {
