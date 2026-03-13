@@ -117,7 +117,7 @@
                     <form method="get" class="row g-2 align-items-center" id="form-dashboard-daily">
                         <div class="input-group">
                             <div class="col-md-3">
-                                <select class="form-select p-2" name="factory" id="factory">
+                                <select class="form-select p-2" name="factory" id="factory" onchange="loadInitialDailyData();loadInitialMonthlyData()">
                                     @foreach ($listFactory as $factory)
                                         <option value="{{ $factory->id }}">{{ $factory->name }}</option>
                                     @endforeach
