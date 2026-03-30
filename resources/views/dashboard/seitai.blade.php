@@ -1126,10 +1126,10 @@
                     <tr>
                         <td class="fw-semibold fs-6" rowspan="2">${period[idx]}</td>
                         <td class="fw-semibold fs-6">Kg</td>
-                        <td class="fw-semibold fs-6">${formatNumber(targetBerat, 0)}</td>
+                        <td class="fw-semibold fs-6">-</td>
                         <td class="fw-semibold fs-6">${formatNumber(aktualBerat, 0)}</td>
                         <td class="fw-semibold fs-6 ${selisihBerat < 0 ? 'text-danger' : 'text-success'}">
-                            ${formatNumber(selisihBerat, 0)}
+                            -
                         </td>
                     </tr>
                     <tr>
