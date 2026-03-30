@@ -337,7 +337,13 @@ class DashboardInfureController extends Controller
                 SELECT
                     ROUND(COALESCE(SUM(COALESCE(tjm_agg.work_hour_h,0)), 0)::numeric, 1) AS total_work_hour,
                     SUM(mac.capacity_kg) AS total_capacity,
-                    ROUND(COALESCE(SUM(COALESCE(tjm_agg.work_hour_h,0)) * SUM(mac.capacity_kg) * 95 / 100, 0)::numeric, 1) AS target_produksi,
+                    ROUND(
+                        COALESCE(
+                            SUM(
+                                COALESCE(tjm_agg.work_hour_h,0) * COALESCE(mac.capacity_kg,0) * 0.95
+                            ),
+                        0)::numeric,
+                    1) AS target_produksi,
                     ROUND(COALESCE(SUM(COALESCE(tpa_agg.berat_produksi,0)), 0)::numeric, 1) as total_produksi,
                     periods.period_ke
                 FROM msmachine mac

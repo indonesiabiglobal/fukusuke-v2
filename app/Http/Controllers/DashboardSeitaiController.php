@@ -339,9 +339,21 @@ class DashboardSeitaiController extends Controller
                 periods.period_ke,
                 ROUND(COALESCE(SUM(COALESCE(tjm_agg.work_hour_h,0)), 0)::numeric, 1) AS total_work_hour,
                 ROUND(COALESCE(SUM(COALESCE(tpa_agg.qty_produksi,0)),0)::numeric,1) AS total_produksi,
-                ROUND(COALESCE(SUM(COALESCE(tjm_agg.work_hour_h,0) * COALESCE(mac.capacity_lembar,0)),0)::numeric,1) AS target_produksi,
-                ROUND(COALESCE(SUM(COALESCE(tpa_agg.berat_produksi,0)),0)::numeric,1) AS total_berat_produksi,
-                ROUND(COALESCE(SUM(COALESCE(tjm_agg.work_hour_h,0) * COALESCE(mac.capacity_lembar,0) * COALESCE(tpa_agg.sum_unit_weight,0) / 1000.0),0)::numeric,1) AS target_berat_produksi
+                ROUND(COALESCE(
+                    SUM(
+                        COALESCE(tjm_agg.work_hour_h,0) * COALESCE(mac.capacity_lembar,0)
+                    ),0)::numeric,1
+                ) AS target_produksi,
+                ROUND(COALESCE(
+                    SUM(
+                        COALESCE(tpa_agg.berat_produksi,0)
+                    ),0)::numeric,
+                1) AS total_berat_produksi,
+                ROUND(COALESCE(
+                    SUM(
+                        COALESCE(tjm_agg.work_hour_h,0) * COALESCE(mac.capacity_lembar,0) * COALESCE(tpa_agg.sum_unit_weight,0) / 1000.0),
+                    0)::numeric,
+                1) AS target_berat_produksi
             FROM msmachine mac
             CROSS JOIN (VALUES (1),(2),(3)) AS periods(period_ke)
             LEFT JOIN (
