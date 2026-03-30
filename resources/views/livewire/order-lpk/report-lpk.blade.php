@@ -202,14 +202,17 @@
                     mpb.code AS seitai_kodebox,
                     mpb.name AS seitai_namabox,
                     mp.case_box_count AS seitai_isibox,
+                    mu_box.name AS seitai_satuanbox,
                     mp.case_box_stampel,
                     mpg.code AS seitai_kodegaiso,
                     mpg.name AS seitai_namagaiso,
                     mp.case_gaiso_count AS seitai_isigaiso,
+                    mu_gaiso.name AS seitai_satuangaiso,
                     mp.case_gaiso_stampel,
                     mpi.code AS seitai_kodeinner,
                     mpi.name AS seitai_namainner,
                     mp.case_inner_count AS seitai_isiinner,
+                    mu_inner.name AS seitai_satuaninner,
                     mp.case_inner_stampel,
                     mpl.code AS seitai_kodelayer,
                     mpl.name AS seitai_namalayer,
@@ -257,6 +260,9 @@
                     LEFT JOIN msendless AS mse ON mse.code = mp.endless_printing
                     LEFT JOIN mssifattinta AS msi ON msi.code = mp.ink_characteristic
                     LEFT JOIN msjeniscetak AS mjc ON mjc.code = mp.print_type
+                    LEFT JOIN msunit AS mu_box ON mu_box.id = mp.case_box_count_unit
+                    LEFT JOIN msunit AS mu_gaiso ON mu_gaiso.id = mp.case_gaiso_count_unit
+                    LEFT JOIN msunit AS mu_inner ON mu_inner.id = mp.case_inner_count_unit
                 WHERE
                     tdol.id IN ($placeholders);
         ",
@@ -779,186 +785,121 @@
                                     </td>
                                 </tr>
                             </table>
+                            @php
+                                $packagingRows = [
+                                    [
+                                        'label' => 'Gaiso',
+                                        'code' => $data->seitai_kodegaiso,
+                                        'isi' => $data->seitai_isigaiso,
+                                        'satuan' => $data->seitai_satuangaiso,
+                                        'jenis' => $data->jns_gaiso,
+                                        'stample' => $data->case_gaiso_stampel,
+                                        'nama' => $data->seitai_namagaiso,
+                                    ],
+                                    [
+                                        'label' => 'Box',
+                                        'code' => $data->seitai_kodebox,
+                                        'isi' => $data->seitai_isibox,
+                                        'satuan' => $data->seitai_satuanbox,
+                                        'jenis' => $data->jns_box,
+                                        'stample' => $data->case_box_stampel,
+                                        'nama' => $data->seitai_namabox,
+                                    ],
+                                    [
+                                        'label' => 'Inner',
+                                        'code' => $data->seitai_kodeinner,
+                                        'isi' => $data->seitai_isiinner,
+                                        'satuan' => $data->seitai_satuaninner,
+                                        'jenis' => $data->jns_inner,
+                                        'stample' => $data->case_inner_stampel,
+                                        'nama' => $data->seitai_namainner,
+                                    ],
+                                    [
+                                        'label' => 'Layer',
+                                        'code' => $data->seitai_kodelayer,
+                                        'isi' => $data->seitai_isilayer ?? '',
+                                        'satuan' => $data->seitai_satuanlayer ?? '',
+                                        'jenis' => $data->jns_layer,
+                                        'stample' => $data->case_layer_stampel ?? '',
+                                        'nama' => $data->seitai_namalayer,
+                                    ],
+                                    [
+                                        'label' => 'Lakban',
+                                        'code' => $data->seitai_kodelakban,
+                                        'isi' => $data->seitai_isilakban ?? '',
+                                        'satuan' => $data->seitai_satuanlakban ?? '',
+                                        'jenis' => $data->jns_lakban ?? '',
+                                        'stample' => $data->case_lakban_stampel ?? '',
+                                        'nama' => $data->seitai_namalakban,
+                                    ],
+                                ];
+                            @endphp
                             <table width="100%" cellspacing="0" cellpadding="0">
                                 <tr>
-                                    <td style="padding: 3px;border-top: 2px solid grey; border-right: 2px solid grey; border-left: 2px solid black;"
-                                        width="8%">
-                                        <span>
-                                            -
-                                        </span>
-                                        <table>
-                                            <tr>
-                                                <td>
-                                                    <font style="font-weight: bold;" style="font-size: 14.5px">
-                                                        Gaiso
-                                                    </font>
-                                                    <br>
-                                                    <font style="font-weight: bold;" style="font-size: 14.5px">Box
-                                                    </font>
-                                                    <br>
-                                                    <font style="font-weight: bold;" style="font-size: 14.5px">
-                                                        Inner
-                                                    </font>
-                                                    <br>
-                                                    <font style="font-weight: bold;" style="font-size: 14.5px">
-                                                        Layer
-                                                    </font>
-                                                    <br>
-                                                    <font style="font-weight: bold;" style="font-size: 14.5px">
-                                                        Lakban
-                                                    </font>
-                                                    <br>
-                                                </td>
-                                            </tr>
-                                        </table>
+                                    <td style="padding: 3px;border-left: 2px solid black; border-top: 2px solid grey; border-right: 2px solid grey;font-size: 13.5px;font-weight: bold;">
+                                        -
                                     </td>
-                                    <td style="padding: 3px;border-top: 2px solid grey; border-right: 2px solid grey;text-align: center; vertical-align: top;"
-                                        width="8%">
-                                        <span style="font-size: 13.5px">
-                                            Kode
-                                        </span>
-                                        <table>
-                                            <tr>
-                                                <td>
-                                                    <font style="font-weight: bold;" style="font-size: 14.5px">
-                                                        {{ $data->seitai_kodegaiso }}</font>
-                                                    <br>
-                                                    <font style="font-weight: bold;" style="font-size: 14.5px">
-                                                        {{ $data->seitai_kodebox }}</font>
-                                                    <br>
-                                                    <font style="font-weight: bold;" style="font-size: 14.5px">
-                                                        {{ $data->seitai_kodeinner }}</font>
-                                                    <br>
-                                                    <font style="font-weight: bold;" style="font-size: 14.5px">
-                                                        {{ $data->seitai_kodelayer }}</font>
-                                                    <br>
-                                                    <font style="font-weight: bold;" style="font-size: 14.5px">
-                                                        {{ $data->seitai_kodelakban }}</font>
-                                                    <br>
-                                                </td>
-                                            </tr>
-                                        </table>
+                                    <td style="padding: 3px;border-top: 2px solid grey; border-right: 2px solid grey;text-align: center;font-size: 13.5px;">
+                                        Kode
                                     </td>
-                                    <td style="padding: 3px;border-top: 2px solid grey; border-right: 2px solid grey;text-align: center; vertical-align: top;"
-                                        width="12%">
-                                        <span style="font-size: 13.5px">
-                                            Isi
-                                        </span>
-                                        <table>
-                                            <tr>
-                                                <td>
-                                                    <font style="font-weight: bold;" style="font-size: 14.5px">
-                                                        {{ $data->seitai_isigaiso }}</font>
-                                                    lembar<br>
-                                                    <font style="font-weight: bold;" style="font-size: 14.5px">
-                                                        {{ $data->seitai_isibox }}</font>
-                                                    lembar<br>
-                                                    <font style="font-weight: bold;" style="font-size: 14.5px">
-                                                        {{ $data->seitai_isiinner }}</font>
-                                                    lembar<br>
-                                                </td>
-                                            </tr>
-                                        </table>
+                                    <td style="padding: 3px;border-top: 2px solid grey; border-right: 2px solid grey;text-align: center;font-size: 13.5px;">
+                                        Isi
                                     </td>
-
-                                    <td style="padding: 3px;border-top: 2px solid grey; border-right: 2px solid grey;text-align: center; vertical-align: top;"
-                                        width="8%">
-                                        <span style="font-size: 13.5px">
-                                            Jenis
-                                        </span>
-                                        <table>
-                                            <tr>
-                                                <td>
-                                                    <font style="font-weight: bold;" style="font-size: 14.5px">
-                                                        {{ $data->jns_gaiso }}
-                                                    </font><br>
-                                                    <font style="font-weight: bold;" style="font-size: 14.5px">
-                                                        {{ $data->jns_box }}
-                                                    </font><br>
-                                                    <font style="font-weight: bold;" style="font-size: 14.5px">
-                                                        {{ $data->jns_inner }}
-                                                    </font><br>
-                                                    <font style="font-weight: bold;" style="font-size: 14.5px">
-                                                        {{ $data->jns_layer }}
-                                                    </font><br>
-                                                    {{-- <font style="font-weight: bold;" style="font-size: 14.5px">{{ $data->seitai_namalakban }}</font><br> --}}
-                                                </td>
-                                            </tr>
-                                        </table>
+                                    <td style="padding: 3px;border-top: 2px solid grey; border-right: 2px solid grey;text-align: center;font-size: 13.5px;">
+                                        Jenis
                                     </td>
-                                    <td style="padding: 3px;border-top: 2px solid grey; border-right: 2px solid grey;text-align: center; vertical-align: top;"
-                                        width="10%">
-                                        <span style="font-size: 13.5px">
-                                            Stample
-                                        </span>
-                                        <table>
-                                            <tr>
-                                                <td>
-                                                    <font style="font-weight: bold;" style="font-size: 14.5px">
-                                                        {{ $data->case_box_stampel }}</font><br>
-                                                    <font style="font-weight: bold;" style="font-size: 14.5px">
-                                                        {{ $data->case_gaiso_stampel }}</font><br>
-                                                    <font style="font-weight: bold;" style="font-size: 14.5px">
-                                                        {{ $data->case_inner_stampel }}</font><br>
-                                                </td>
-                                            </tr>
-                                        </table>
+                                    <td style="padding: 3px;border-top: 2px solid grey; border-right: 2px solid grey;text-align: center;font-size: 13.5px;">
+                                        Stample
                                     </td>
-                                    <td style="padding: 3px;border-top: 2px solid grey; border-right: 2px solid grey;vertical-align: top;"
-                                        width="33%">
-                                        <span style="font-size: 13.5px">
-                                            Nama
-                                        </span>
-                                        <table>
-                                            <tr>
-                                                <td>
-                                                    <font style="font-weight: bold;" style="font-size: 14.5px">
-                                                        {{ $data->seitai_namagaiso }}</font><br>
-                                                    <font style="font-weight: bold;" style="font-size: 14.5px">
-                                                        {{ $data->seitai_namabox }}</font><br>
-                                                    <font style="font-weight: bold;" style="font-size: 14.5px">
-                                                        {{ $data->seitai_namainner }}</font><br>
-                                                    <font style="font-weight: bold;" style="font-size: 14.5px">
-                                                        {{ $data->seitai_namalayer }}</font><br>
-                                                    <font style="font-weight: bold;" style="font-size: 14.5px">
-                                                        {{ $data->seitai_namalakban }}</font><br>
-                                                </td>
-                                            </tr>
-                                        </table>
+                                    <td style="padding: 3px;border-top: 2px solid grey; border-right: 2px solid grey;text-align: center;font-size: 13.5px;">
+                                        Nama
                                     </td>
-                                    <td
-                                        style="padding: 3px;border-top: 2px solid grey; border-right: 2px solid black; text-align:center">
-                                        <img src="{{ asset('storage/' . $data->filename) }}" alt=""
-                                            style="height:100%; width:100%">
+                                    <td style="padding: 3px;border-top: 2px solid grey; border-right: 2px solid black; text-align:center" rowspan="{{ count($packagingRows) + 2 }}">
+                                        <div style="display: flex; flex-direction: column; gap: 6px; align-items: center;">
+                                            <img src="{{ asset('storage/' . $data->filename) }}" alt="" style="height:100%; width:100%">
+                                            <table style="margin: 0 auto;">
+                                                <tr>
+                                                    <td style="text-align:center">
+                                                        <span style="font-weight: bold;font-size: 14.5px;color:red;">A=</span>
+                                                        <span style="font-weight: bold;font-size: 14.5px;">{{ $data->hagata_a }}</span>
+                                                    </td>
+                                                    <td style="text-align:center">
+                                                        <span style="font-weight: bold;font-size: 14.5px;">B={{ $data->hagata_b }}</span><br>
+                                                    </td>
+                                                    <td style="text-align:center">
+                                                        <span style="font-weight: bold;font-size: 14.5px;color:blue;">C=</span>
+                                                        <span style="font-weight: bold;font-size: 14.5px;">{{ $data->hagata_c }}</span><br>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
                                     </td>
                                 </tr>
-                            </table>
-                            <table width="100%" cellspacing="0" cellpadding="0" style="text-align:center;">
+                                @foreach ($packagingRows as $row)
+                                    <tr>
+                                        <td style="padding: 3px;border-left: 2px solid black; border-right: 2px solid grey;font-size: 14.5px;font-weight: bold;">
+                                            {{ $row['label'] }}
+                                        </td>
+                                        <td style="padding: 3px;border-right: 2px solid grey;text-align: center;font-size: 14.5px;font-weight: bold;">
+                                            {{ $row['code'] }}
+                                        </td>
+                                        <td style="padding: 3px;border-right: 2px solid grey;text-align: center;font-size: 14.5px;font-weight: bold;">
+                                            @if ($row['isi'] !== '-' && $row['isi'] !== 0) {{ $row['isi'] }} {{ $row['satuan'] }} @endif
+                                        </td>
+                                        <td style="padding: 3px;border-right: 2px solid grey;text-align: center;font-size: 14.5px;font-weight: bold;">
+                                            {{ $row['jenis'] }}
+                                        </td>
+                                        <td style="padding: 3px;border-right: 2px solid grey;text-align: center;font-size: 14.5px;font-weight: bold;">
+                                            {{ $row['stample'] }}
+                                        </td>
+                                        <td style="padding: 3px;border-right: 2px solid grey;font-size: 14.5px;font-weight: bold;">
+                                            {{ $row['nama'] }}
+                                        </td>
+                                    </tr>
+                                @endforeach
                                 <tr>
-                                    <td style="padding: 3px;border-top: 2px solid grey; border-right: 2px solid grey; border-left: 2px solid black;"
-                                        width="79%"> - </td>
-                                    <td style="padding: 3px;border-right: 2px solid black; text-align:center"
-                                        width="21%">
-                                        <table style="margin: 0 auto;">
-                                            <tr>
-                                                <td style="text-align:center">
-                                                    <span
-                                                        style="font-weight: bold;font-size: 14.5px;color:red;">A=</span>
-                                                    <span
-                                                        style="font-weight: bold;font-size: 14.5px;">{{ $data->hagata_a }}</span>
-                                                </td>
-                                                <td style="text-align:center">
-                                                    <span
-                                                        style="font-weight: bold;font-size: 14.5px;">B={{ $data->hagata_b }}</span><br>
-                                                </td>
-                                                <td style="text-align:center">
-                                                    <span
-                                                        style="font-weight: bold;font-size: 14.5px;color:blue;">C=</span>
-                                                    <span
-                                                        style="font-weight: bold;font-size: 14.5px;">{{ $data->hagata_c }}</span><br>
-                                                </td>
-                                            </tr>
-                                        </table>
+                                    <td style="padding: 3px;border-left: 2px solid black; border-right: 2px solid grey; border-top: 2px solid grey;font-size: 13.5px;font-weight: bold; text-align: center;" colspan="6">
+                                        -
                                     </td>
                                 </tr>
                             </table>
