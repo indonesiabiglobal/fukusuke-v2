@@ -280,6 +280,11 @@ class AddSeitaiController extends Component
             'end_box' => 'nullable',
         ]);
 
+        if ($this->jumlah_box_product != $this->jumlah_box) {
+            $this->dispatch('notification', ['type' => 'warning', 'message' => 'Jumlah Box Tidak Sesuai dengan Jumlah Box sesuai produk']);
+            return;
+        }
+
         // mengecek detailsGentan yang tidak boleh kosong
         if (count($this->detailsGentan) == 0) {
             $this->dispatch('notification', ['type' => 'warning', 'message' => 'Data Gentan tidak boleh kosong']);

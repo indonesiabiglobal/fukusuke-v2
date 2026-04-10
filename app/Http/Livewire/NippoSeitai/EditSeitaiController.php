@@ -200,6 +200,7 @@ class EditSeitaiController extends Component
             ->get();
         $this->jumlahBeratLoss = $this->detailsLoss->sum('berat_loss');
 
+        $this->jumlah_box = $this->end_box - $this->start_box + 1;
         $this->caseBoxCount = isset($data->case_box_count) ? (int) $data->case_box_count : 0;
         $this->jumlah_box_product = $this->caseBoxCount > 0 ? (int) ceil($data->qty_produksi / $this->caseBoxCount) : 0;
     }
@@ -612,6 +613,11 @@ class EditSeitaiController extends Component
             'start_box' => 'nullable',
             'end_box' => 'nullable',
         ]);
+
+        if ($this->jumlah_box_product != $this->jumlah_box) {
+            $this->dispatch('notification', ['type' => 'warning', 'message' => 'Jumlah Box Tidak Sesuai dengan Jumlah Box sesuai produk']);
+            return;
+        }
 
         try {
             $machine = MsMachine::where('machineno', $this->machineno)->first();
