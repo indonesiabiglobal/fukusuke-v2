@@ -856,7 +856,7 @@
                                     </td>
                                     <td style="padding: 3px;border-top: 2px solid grey; border-right: 2px solid black; text-align:center" rowspan="{{ count($packagingRows) + 2 }}">
                                         <div style="display: flex; flex-direction: column; gap: 6px; align-items: center;">
-                                            <img src="{{ asset('storage/' . $data->filename) }}" alt="" style="height:100%; width:100%">
+                                            <img src="{{ asset('storage/' . $data->filename) }}" alt="" style="max-height:240px; width:100%">
                                             <table style="margin: 0 auto;">
                                                 <tr>
                                                     <td style="text-align:center">
