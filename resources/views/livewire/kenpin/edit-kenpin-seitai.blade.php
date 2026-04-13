@@ -34,8 +34,8 @@
                 <div class="form-group">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-2">Tanggal Kenpin</label>
-                        <input wire:model.defer="kenpin_date" type="text" class="form-control readonly bg-light"
-                            disabled style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
+                        <input wire:model.defer="kenpin_date" type="text" class="form-control"
+                            style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
                         <span class="input-group-text py-0">
                             <i class="ri-calendar-event-fill fs-4"></i>
                         </span>
