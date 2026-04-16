@@ -1882,18 +1882,13 @@ window.handleThermalPrintEdit = async function(orderId) {
         alpineComponent.isPrinting = true;
     }
 
+    // checkPrinterReady / connectThermalPrinter tidak ada di Flutter WebView → crash
+    const isFlutterWebView =
+        window.isFlutterWebView === true &&
+        typeof window.FlutterPrinter !== 'undefined';
+
     try {
-        // ✅ CEK PRINTER READY
-        console.log('🔍 Checking printer status...');
-        const printerReady = await window.checkPrinterReady();
-
-        if (!printerReady) {
-            console.log('⚠️ Printer not ready, requesting pairing...');
-            await window.connectThermalPrinter();
-            await new Promise(r => setTimeout(r, 500));
-        }
-
-        // Fetch data
+        // Fetch data diperlukan oleh kedua path (Flutter & Cordova)
         console.log('📡 Fetching print data...');
         const response = await fetch(`/get-print-data/${orderId}?t=${Date.now()}`);
 
@@ -1911,12 +1906,40 @@ window.handleThermalPrintEdit = async function(orderId) {
 
         console.log('✅ Data received');
 
+        if (isFlutterWebView) {
+            console.log('📱 Flutter WebView → silent print native');
+            const _alpine = alpineComponent;
+            window.onFlutterPrintResult = function(success) {
+                if (success) {
+                    console.log('✅ Flutter print berhasil!');
+                } else {
+                    console.error('❌ Flutter print gagal');
+                    if (confirm('Flutter print gagal.\n\nGunakan Print Normal?')) {
+                        window.open(`{{ route("report-gentan") }}?produk_asemblyid=${orderId}`, '_blank');
+                    }
+                }
+                if (_alpine) _alpine.isPrinting = false;
+            };
+            window.FlutterPrinter.postMessage(JSON.stringify(printData));
+            return; // isPrinting di-reset oleh callback
+        }
+
+        // ===== CORDOVA PATH =====
+        // checkPrinterReady hanya dipanggil jika bukan Flutter WebView
+        console.log('🔍 Checking printer status...');
+        const printerReady = await window.checkPrinterReady();
+
+        if (!printerReady) {
+            console.log('⚠️ Printer not ready, requesting pairing...');
+            await window.connectThermalPrinter();
+            await new Promise(r => setTimeout(r, 500));
+        }
+
         // ✅ PRINT 2X
         console.log('🖨️ Printing 2 copies...');
         await window.printToThermalPrinter(printData, 2);
 
         console.log('✅ Print success!');
-        // alert('✅ Print berhasil (2 copy)');
 
     } catch (error) {
         console.error('❌ Print error:', error);
@@ -1925,7 +1948,7 @@ window.handleThermalPrintEdit = async function(orderId) {
             window.open(`{{ route("report-gentan") }}?produk_asemblyid=${orderId}`, '_blank');
         }
     } finally {
-        // Reset loading state
+        // Reset loading state (hanya untuk non-Flutter path)
         const buttonContainer = document.querySelector('[x-data*="isPrinting"]');
         const alpineComponent = buttonContainer ? Alpine.$data(buttonContainer) : null;
         if (alpineComponent) {

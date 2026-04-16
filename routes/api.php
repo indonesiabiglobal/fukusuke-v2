@@ -3,6 +3,12 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\TestTimbanganController;
+use App\Http\Controllers\Api\MobileAuthController;
+use App\Http\Controllers\Api\MobileMasterController;
+use App\Http\Controllers\Api\MobileNippoInfureController;
+use App\Http\Controllers\Api\MobileLossInfureController;
+use App\Http\Controllers\Api\MobileChecklistController;
+use App\Http\Controllers\Api\MobileLabelGentanController;
 use App\Http\Controllers\DashboardSeitaiController;
 
 /*
@@ -43,5 +49,41 @@ Route::middleware(['web', 'auth'])->group(function () {
         Route::get('/top-mesin-masalah-loss-monthly', 'getTopMesinMasalahLossMonthly')->name('api.dashboard-seitai-top-mesin-masalah-loss-monthly');
         Route::get('/top-loss-per-kasus-monthly', 'getTopLossByCaseMonthly')->name('api.dashboard-seitai-top-loss-per-kasus-monthly');
         Route::get('/ranking-problem-machine-monthly', 'getRankingProblemMachineMonthly')->name('api.dashboard-seitai-ranking-problem-machine-monthly');
+    });
+});
+
+// ============================================================
+// Mobile App API — /api/mobile
+// ============================================================
+Route::prefix('mobile')->group(function () {
+
+    // ── Public: login only ──────────────────────────────────
+    Route::post('/login', [MobileAuthController::class, 'login']);
+
+    // ── Authenticated routes ────────────────────────────────
+    Route::middleware('auth:sanctum')->group(function () {
+
+        Route::post('/logout', [MobileAuthController::class, 'logout']);
+        Route::get('/me',      [MobileAuthController::class, 'me']);
+
+        // Master data
+        Route::prefix('master')->group(function () {
+            Route::get('/machines',   [MobileMasterController::class, 'machines']);
+            Route::get('/products',   [MobileMasterController::class, 'products']);
+            Route::get('/loss-types', [MobileMasterController::class, 'lossTypes']);
+            Route::get('/lpk/{lpk_no}', [MobileMasterController::class, 'lpkByNo']);
+        });
+
+        // Nippo Infure (CRUD)
+        Route::apiResource('nippo-infure', MobileNippoInfureController::class);
+
+        // Loss Infure (CRUD)
+        Route::apiResource('loss-infure', MobileLossInfureController::class);
+
+        // Checklist Infure (read-only)
+        Route::get('/checklist-infure', [MobileChecklistController::class, 'index']);
+
+        // Label Gentan (read-only)
+        Route::get('/label-gentan', [MobileLabelGentanController::class, 'show']);
     });
 });

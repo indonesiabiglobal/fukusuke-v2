@@ -58,7 +58,7 @@ jobs:
             echo "${{ secrets.REMOTE_PASSWORD_3 }}" | sudo -S php artisan route:clear
             echo "${{ secrets.REMOTE_PASSWORD_3 }}" | sudo -S php artisan view:clear
             echo "${{ secrets.REMOTE_PASSWORD_3 }}" | sudo -S php artisan cache:clear
-            # echo "${{ secrets.REMOTE_PASSWORD_3 }}" | sudo -S php artisan optimize
+            # echo "${{ secrets.REMOTE_PASSWORD_3 }}" | sudo -S php artisan optimize:clear
 
       # - name: Deploy to production server 2
       #   uses: appleboy/ssh-action@v1.2.0

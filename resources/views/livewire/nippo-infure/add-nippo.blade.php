@@ -1958,6 +1958,11 @@ document.addEventListener('livewire:initialized', () => {
             return;
         }
 
+        // checkPrinterReady / connectThermalPrinter tidak ada di Flutter WebView → crash
+        const isFlutterWebView =
+            window.isFlutterWebView === true &&
+            typeof window.FlutterPrinter !== 'undefined';
+
         // Show loading overlay
         let loadingOverlay = document.getElementById('printLoadingOverlay');
 
@@ -1981,17 +1986,7 @@ document.addEventListener('livewire:initialized', () => {
         }
 
         try {
-            // ✅ CEK PRINTER READY
-            console.log('🔍 Checking printer status...');
-            const printerReady = await window.checkPrinterReady();
-
-            if (!printerReady) {
-                console.log('⚠️ Printer not ready, requesting pairing...');
-                await window.connectThermalPrinter();
-                await new Promise(r => setTimeout(r, 500));
-            }
-
-            // Fetch data
+            // Fetch data diperlukan oleh kedua path (Flutter & Cordova)
             console.log('📡 Fetching print data...');
             const response = await fetch(`/get-print-data/${produk_asemblyid}`);
 
@@ -2008,6 +2003,31 @@ document.addEventListener('livewire:initialized', () => {
             }
 
             console.log('✅ Data received');
+
+            if (isFlutterWebView) {
+                console.log('📱 Flutter WebView → silent print native');
+                // Callback akan menyembunyikan overlay dan redirect
+                window.onFlutterPrintResult = function(success) {
+                    const ov = document.getElementById('printLoadingOverlay');
+                    if (ov) ov.style.display = 'none';
+                    if (success) {
+                        console.log('✅ Flutter print berhasil!');
+                        setTimeout(() => {
+                            window.location.href = '{{ route("nippo-infure") }}';
+                        }, 2000);
+                    } else {
+                        console.error('❌ Flutter print gagal');
+                        if (confirm('Flutter print gagal.\n\nGunakan Print Normal?')) {
+                            window.open(`{{ route("report-gentan") }}?produk_asemblyid=${produk_asemblyid}`, '_blank');
+                        }
+                        setTimeout(() => {
+                            window.location.href = '{{ route("nippo-infure") }}';
+                        }, 1000);
+                    }
+                };
+                window.FlutterPrinter.postMessage(JSON.stringify(printData));
+                return; // overlay & redirect ditangani oleh callback
+            }
 
             // ✅ PRINT 2X (PARAMETER KEDUA = 2)
             console.log('🖨️ Printing 2 copies...');
@@ -2031,7 +2051,7 @@ document.addEventListener('livewire:initialized', () => {
                 window.location.href = '{{ route("nippo-infure") }}';
             }, 1000);
         } finally {
-            // Hide loading overlay
+            // Hide loading overlay (hanya untuk non-Flutter path)
             const loadingOverlay = document.getElementById('printLoadingOverlay');
             if (loadingOverlay) {
                 loadingOverlay.style.display = 'none';

@@ -82,20 +82,8 @@
 			</div>
 		</div>
 		<hr />
-
-        <div id="debugLog" style="display:none; background:#000; color:#0f0; padding:10px; margin-bottom:10px; font-family:monospace; font-size:11px; max-height:200px; overflow-y:auto; border-radius:5px;">
-			<strong style="color:#ff0;">DEBUG LOG:</strong><br>
-			<div id="logContent"></div>
-		</div>
-
 		<div class="form-group" x-data="{ isPrinting: false }">
 			<div class="input-group flex-wrap">
-				{{-- Button Debug --}}
-				<button type="button"
-					class="btn btn-warning btn-sm me-2 mb-2"
-					onclick="toggleDebugLog()">
-					🔍 Toggle Debug
-				</button>
 
 				{{-- Button Thermal --}}
 				<button type="button"
@@ -111,26 +99,6 @@
 						Printing...
 					</span>
 				</button>
-
-				{{-- Button Normal --}}
-				<button type="button"
-					class="btn btn-outline-secondary btn-print mb-2"
-					wire:click="printNormal"
-					{{ !$statusPrint ? 'disabled' : '' }}>
-					<i class="ri-printer-line"></i> Print Normal
-				</button>
-
-                <button type="button"
-                    class="btn btn-info btn-sm me-2 mb-2"
-                    onclick="scanPrinterUUID()">
-                    🔬 Scan UUID Epson
-                </button>
-
-				<div class="w-100"></div>
-				<small class="text-info">
-					💡 Support: Printer Panda & Epson TM-P20II<br>
-					🔍 Klik "Toggle Debug" untuk lihat error
-				</small>
 			</div>
 		</div>
 	</div>
@@ -230,6 +198,50 @@ window.handleThermalPrint = async function() {
 
     window.debugLog('=== MEMULAI PRINT ===', 'warn');
 
+    // ===== DETEKSI FLUTTER WEBVIEW =====
+    // Flutter menginject window.isFlutterWebView = true saat page load
+    // dan menyediakan channel FlutterPrinter untuk silent print native
+    const isFlutterWebView =
+        window.isFlutterWebView === true &&
+        typeof window.FlutterPrinter !== 'undefined';
+
+    if (isFlutterWebView) {
+        window.debugLog('📱 Flutter WebView terdeteksi → silent print native', 'info');
+        try {
+            const component = window.Livewire.find(
+                document.querySelector('[wire\\:id]').getAttribute('wire:id')
+            );
+
+            const printData = {
+                gentan_no: component.get('gentan_no'),
+                lpk_no: component.get('lpk_no'),
+                product_name: component.get('product_name'),
+                code: component.get('code'),
+                code_alias: component.get('code_alias'),
+                production_date: component.get('production_date'),
+                work_hour: component.get('work_hour'),
+                work_shift: component.get('work_shift'),
+                machineno: component.get('machineno'),
+                berat_produksi: component.get('berat_produksi'),
+                panjang_produksi: component.get('product_panjang'),
+                selisih: component.get('selisih'),
+                nomor_han: component.get('nomor_han'),
+                nik: component.get('nik'),
+                empname: component.get('empname'),
+            };
+
+            window.debugLog('📤 Mengirim data ke Flutter...', 'info');
+            window.FlutterPrinter.postMessage(JSON.stringify(printData));
+            window.debugLog('✅ Data terkirim ke Flutter', 'success');
+            // isPrinting akan di-reset oleh onFlutterPrintResult callback
+        } catch (err) {
+            window.debugLog('❌ Flutter print error: ' + err.message, 'error');
+            if (alpineComponent) alpineComponent.isPrinting = false;
+        }
+        return;
+    }
+
+    // ===== DETEKSI WEB BROWSER BIASA =====
     const isCordova =
     typeof window.cordova !== 'undefined' &&
     typeof window.bluetoothSerial !== 'undefined';
@@ -240,6 +252,7 @@ window.handleThermalPrint = async function() {
     if (!isCordova && !isWebBLE) {
         window.debugLog('❌ Tidak ada metode print tersedia', 'error');
         alert('❌ Device tidak support print');
+        if (alpineComponent) alpineComponent.isPrinting = false;
         return;
     }
 
@@ -332,6 +345,20 @@ window.handleThermalPrint = async function() {
             if (alpineComponent) {
                 alpineComponent.isPrinting = false;
             }
+    }
+};
+
+// ===== CALLBACK DARI FLUTTER (dipanggil setelah print selesai) =====
+window.onFlutterPrintResult = function(success) {
+    if (success) {
+        window.debugLog('✅ Flutter silent print berhasil!', 'success');
+    } else {
+        window.debugLog('❌ Flutter silent print gagal', 'error');
+    }
+    const buttonContainer = document.querySelector('[x-data*="isPrinting"]');
+    const alpineComponent = buttonContainer ? Alpine.$data(buttonContainer) : null;
+    if (alpineComponent) {
+        alpineComponent.isPrinting = false;
     }
 };
 
