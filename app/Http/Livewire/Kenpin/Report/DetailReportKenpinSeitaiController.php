@@ -117,7 +117,8 @@ class DetailReportKenpinSeitaiController extends Component
             'No Box Sampai',
             'Jumlah Box Kenpin',
             'Qty Loss',
-            'Jumlah Orang kenpin'
+            'Jumlah Orang kenpin',
+            'Waktu Kenpin',
         ];
 
         $headerKenpin = [
@@ -125,9 +126,12 @@ class DetailReportKenpinSeitaiController extends Component
             'Total Loss Kenpin (Box)',
             'NIK',
             'Nama Operator',
+            'Nama Penemu',
             'Tanggal Selesai Kenpin',
             'Jumlah NG yang ditemukan (Box)',
             'Jumlah NG yang ditemukan (Gaiso)',
+            'Total Loss (Box)',
+            'Waktu Kenpin (jam)',
             'Penyebab',
             'Keterangan Penyebab',
             'Penanggulangan Masalah',
@@ -165,6 +169,8 @@ class DetailReportKenpinSeitaiController extends Component
                     msp.case_box_count,
                     mse.empname AS nama_petugas,
                     mse.employeeno AS nik_petugas,
+                    mse_penemu.empname AS nama_penemu,
+                    mse_penemu.employeeno AS nik_penemu,
                     msm.machineno,
                     msmpd.code AS code_bagian_mesin,
                     msmpd.name AS nama_bagian_mesin,
@@ -177,7 +183,9 @@ class DetailReportKenpinSeitaiController extends Component
                     tdkad.nomor_box_sampai,
                     tdkad.jumlah_orang_kenpin,
                     tdkad.jumlah_ng_box,
-                    tdkad.jumlah_ng_gaiso
+                    tdkad.jumlah_ng_gaiso,
+                    tdkad.waktu_kenpin_dari,
+                    tdkad.waktu_kenpin_sampai
                 FROM
                     tdkenpin AS tdka
                     INNER JOIN msdepartment AS msd ON msd.ID = tdka.kenpin_department_id
@@ -185,6 +193,7 @@ class DetailReportKenpinSeitaiController extends Component
                     LEFT JOIN tdproduct_goods AS tdpg ON tdkad.product_goods_id = tdpg.ID
                     INNER JOIN msProduct AS msp ON tdpg.product_id = msp.ID
                     INNER JOIN msemployee AS mse ON mse.ID = tdka.employee_id
+                    LEFT JOIN msemployee AS mse_penemu ON mse_penemu.ID = tdka.penemu_masalah_id
                     INNER JOIN msmachine AS msm ON msm.ID = tdpg.machine_id
                     INNER JOIN ms_machine_part_detail AS msmpd ON msmpd.ID = tdka.machine_part_detail_id
                     INNER JOIN msmasalahkenpin AS msmk ON msmk.ID = tdka.masalah_kenpin_id
@@ -233,6 +242,8 @@ class DetailReportKenpinSeitaiController extends Component
                     'nama_produk' => $item->nama_produk,
                     'nik_petugas' => $item->nik_petugas,
                     'nama_petugas' => $item->nama_petugas,
+                    'nik_penemu' => $item->nik_penemu,
+                    'nama_penemu' => $item->nama_penemu,
                     'machineno' => $item->machineno,
                     'code_bagian_mesin' => $item->code_bagian_mesin,
                     'nama_bagian_mesin' => $item->nama_bagian_mesin,
@@ -252,6 +263,8 @@ class DetailReportKenpinSeitaiController extends Component
                 'jumlah_box_kenpin' => $jumlahBoxKenpin,
                 'qty_loss' => $item->qty_loss,
                 'jumlah_orang_kenpin' => $item->jumlah_orang_kenpin,
+                'waktu_kenpin_dari' => $item->waktu_kenpin_dari,
+                'waktu_kenpin_sampai' => $item->waktu_kenpin_sampai,
             ];
 
             // jumlah box palet dan kenpin total
@@ -260,6 +273,42 @@ class DetailReportKenpinSeitaiController extends Component
 
             $dataFiltered[$item->kenpin_no]['total_jumlah_ng_box'] = isset($dataFiltered[$item->kenpin_no]['total_jumlah_ng_box']) ? $dataFiltered[$item->kenpin_no]['total_jumlah_ng_box'] + $item->jumlah_ng_box : $item->jumlah_ng_box;
             $dataFiltered[$item->kenpin_no]['total_jumlah_ng_gaiso'] = isset($dataFiltered[$item->kenpin_no]['total_jumlah_ng_gaiso']) ? $dataFiltered[$item->kenpin_no]['total_jumlah_ng_gaiso'] + $item->jumlah_ng_gaiso : $item->jumlah_ng_gaiso;
+
+            // totalLossBox
+            $dataFiltered[$item->kenpin_no]['total_qty_loss'] = isset($dataFiltered[$item->kenpin_no]['total_qty_loss']) ? $dataFiltered[$item->kenpin_no]['total_qty_loss'] + $item->qty_loss : $item->qty_loss;
+
+            // total jumlah orang kenpin
+            $dataFiltered[$item->kenpin_no]['total_jumlah_orang_kenpin'] = isset($dataFiltered[$item->kenpin_no]['total_jumlah_orang_kenpin']) ? $dataFiltered[$item->kenpin_no]['total_jumlah_orang_kenpin'] + $item->jumlah_orang_kenpin : $item->jumlah_orang_kenpin;
+
+            // Hitung selisih waktu kenpin secara aman (hasil dalam detik)
+            $waktuDiff = 0;
+            $waktuDari = $item->waktu_kenpin_dari;
+            $waktuSampai = $item->waktu_kenpin_sampai;
+
+            if ($waktuDari !== null && $waktuSampai !== null && $waktuDari !== '' && $waktuSampai !== '') {
+                // Jika keduanya numeric, anggap sudah dalam detik
+                if (is_numeric($waktuDari) && is_numeric($waktuSampai)) {
+                    $waktuDiff = floatval($waktuSampai) - floatval($waktuDari);
+                } else {
+                    // Coba parsing sebagai time string
+                    $tsDari = strtotime($waktuDari);
+                    $tsSampai = strtotime($waktuSampai);
+                    if ($tsDari !== false && $tsSampai !== false) {
+                        $waktuDiff = $tsSampai - $tsDari;
+                        // Tangani lintas hari (mis. 23:55 -> 00:55)
+                        if ($waktuDiff < 0) {
+                            $waktuDiff += 24 * 3600;
+                        }
+                    } else {
+                        // Fallback: konversi desimal (anggap jam) lalu ke detik
+                        $numDari = floatval(str_replace(',', '.', (string) $waktuDari));
+                        $numSampai = floatval(str_replace(',', '.', (string) $waktuSampai));
+                        $waktuDiff = ($numSampai - $numDari) * 3600;
+                    }
+                }
+            }
+
+            $dataFiltered[$item->kenpin_no]['total_waktu_kenpin'] = isset($dataFiltered[$item->kenpin_no]['total_waktu_kenpin']) ? $dataFiltered[$item->kenpin_no]['total_waktu_kenpin'] + $waktuDiff : $waktuDiff;
         }
 
         // header
@@ -410,6 +459,14 @@ class DetailReportKenpinSeitaiController extends Component
                 // jumlah orang kenpin
                 $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemLot['jumlah_orang_kenpin']);
                 $columnItemEnd++;
+
+                // waktu kenpin
+                if ($itemLot['waktu_kenpin_dari'] && $itemLot['waktu_kenpin_sampai']) {
+                    $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemLot['waktu_kenpin_dari'] . ' - ' . $itemLot['waktu_kenpin_sampai']);
+                } else {
+                    $activeWorksheet->setCellValue($columnItemEnd . $rowItem, '-');
+                }
+                $columnItemEnd++;
             }
             $columnItemEnd = Coordinate::stringFromColumnIndex(Coordinate::columnIndexFromString($columnHeaderKenpinStart));
 
@@ -429,6 +486,10 @@ class DetailReportKenpinSeitaiController extends Component
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['nama_petugas']);
             $columnItemEnd++;
 
+            // nama penemu
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['nama_penemu']);
+            $columnItemEnd++;
+
             // tanggal selesai kenpin
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['done_at'] ? Carbon::parse($itemKenpin['done_at'])->translatedFormat('d-M-Y') : '-');
             $columnItemEnd++;
@@ -439,6 +500,15 @@ class DetailReportKenpinSeitaiController extends Component
 
             // total jumlah ng gaiso
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['total_jumlah_ng_gaiso'] ?? 0);
+            $columnItemEnd++;
+
+            // total loss box
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['total_qty_loss'] ?? 0);
+            $columnItemEnd++;
+
+            // waktu kenpin (jam)
+            $waktuKenpin = isset($itemKenpin['total_waktu_kenpin']) ? round($itemKenpin['total_waktu_kenpin'] / 3600, 2) : 0;
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $waktuKenpin);
             $columnItemEnd++;
 
             // penyebab
