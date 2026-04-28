@@ -221,10 +221,10 @@
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-2">Detail NG</label>
                         <input type="text" placeholder="Detail NG" x-ref="detailNGInput"
-                            class="form-control @error('detailMasalah') is-invalid @enderror"
-                            wire:model.defer="detailMasalah"
+                            class="form-control @error('detail_masalah') is-invalid @enderror"
+                            wire:model.defer="detail_masalah"
                             x-on:keydown.tab="$event.preventDefault(); $refs.isKasusInput.focus();" />
-                        @error('detailMasalah')
+                        @error('detail_masalah')
                             <span class="invalid-feedback">{{ $message }}</span>
                         @enderror
                     </div>

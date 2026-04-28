@@ -46,7 +46,7 @@ class EditKenpinSeitaiController extends Component
     public $penemuEmployeeName;
     public $kode_ng;
     public $nama_ng;
-    public $detailMasalah;
+    public $detail_masalah;
     public $penyebab;
     public $keterangan_penyebab;
     public $penanggulangan;
@@ -124,7 +124,7 @@ class EditKenpinSeitaiController extends Component
         $this->keterangan_penyebab = $data->keterangan_penyebab;
         $this->penanggulangan = $data->penanggulangan;
         $this->is_kasus = $data->is_kasus;
-        $this->detailMasalah = $data->detailMasalah;
+        $this->detail_masalah = $data->detail_masalah;
 
         // Load masalah kenpin if exists
         if ($data->masalah_kenpin_id) {
@@ -455,7 +455,7 @@ class EditKenpinSeitaiController extends Component
             $data->qty_loss = $qtyLoss;
             $data->status_kenpin = $this->status;
             $data->is_kasus = $this->is_kasus ? true : false;
-            $data->detail_masalah = $this->detailMasalah;
+            $data->detail_masalah = $this->detail_masalah;
 
             if ($this->masalahKenpin) {
                 $data->masalah_kenpin_id = $this->masalahKenpin->id;
