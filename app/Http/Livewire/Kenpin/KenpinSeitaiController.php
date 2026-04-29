@@ -78,6 +78,8 @@ class KenpinSeitaiController extends Component
             ->join('msdepartment AS msd', 'msd.id', '=', 'tdkg.department_id')
             ->join('msproduct AS msp', 'tdkg.product_id', '=', 'msp.id')
             ->join('msemployee AS mse', 'mse.id', '=', 'tdkg.employee_id')
+            ->join('tdkenpin_goods_detail AS tdkgd', 'tdkgd.kenpin_id', '=', 'tdkg.id')
+            ->join('tdproduct_goods AS tdpg', 'tdkgd.product_goods_id', '=', 'tdpg.id')
             ->select(
                 'tdkg.id',
                 'tdkg.kenpin_no',
@@ -94,6 +96,8 @@ class KenpinSeitaiController extends Component
                 'msp.name AS namaproduk',
                 'mse.empname AS namapetugas',
                 'msd.name AS nama_department',
+                'tdpg.nomor_palet',
+                'tdpg.nomor_lot',
             );
 
         if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {

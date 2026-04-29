@@ -206,48 +206,54 @@
                 <li>
                     <label style="cursor: pointer;">
                         <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="3"
-                            checked> Nama Produk
+                            checked> No Palet
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
                         <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="4"
-                            checked> No. Order
+                            checked> Nama Produk
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
                         <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="5"
-                            checked> Petugas
+                            checked> No. Order
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
                         <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="6"
-                            checked> Jumlah Loss (Box)
+                            checked> Petugas
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
                         <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="7"
-                            checked> Status
+                            checked> Jumlah Loss (Box)
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
                         <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="8"
+                            checked> Status
+                    </label>
+                </li>
+                <li>
+                    <label style="cursor: pointer;">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="9"
                             checked> Department
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="9">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="10">
                         Update By
                     </label>
                 </li>
                 <li>
                     <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="10">
+                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="11">
                         Updated
                     </label>
                 </li>
@@ -259,6 +265,7 @@
                     <th>Action</th>
                     <th>Tgl. Kenpin</th>
                     <th>No Kenpin</th>
+                    <th>No Palet</th>
                     <th>Nama Produk</th>
                     <th>No. Order</th>
                     <th>Petugas</th>
@@ -280,6 +287,7 @@
                         </td>
                         <td data-order="{{ $item->kenpin_date }}">{{ \Carbon\Carbon::parse($item->kenpin_date)->format('d M Y') }}</td>
                         <td>{{ $item->kenpin_no }}</td>
+                        <td>{{ $item->nomor_palet }}</td>
                         <td>{{ $item->namaproduk }}</td>
                         <td>{{ $item->code }}</td>
                         <td>{{ $item->namapetugas }}</td>
