@@ -491,7 +491,7 @@ class DetailReportKenpinSeitaiController extends Component
             $columnItemEnd++;
 
             // tanggal selesai kenpin
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['done_at'] ? Carbon::parse($itemKenpin['done_at'])->translatedFormat('d-M-Y') : '-');
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['done_at'] ? Carbon::parse($itemKenpin['done_at'])->translatedFormat('d-M-Y') : Carbon::parse($itemKenpin['kenpin_date'])->translatedFormat('d-M-Y'));
             $columnItemEnd++;
 
             // total jumlah ng box
@@ -506,9 +506,16 @@ class DetailReportKenpinSeitaiController extends Component
             $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $itemKenpin['total_qty_loss'] ?? 0);
             $columnItemEnd++;
 
-            // waktu kenpin (jam)
-            $waktuKenpin = isset($itemKenpin['total_waktu_kenpin']) ? round($itemKenpin['total_waktu_kenpin'] / 3600, 2) : 0;
-            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $waktuKenpin);
+            // waktu kenpin (jam) -> format HH:ii
+            if (isset($itemKenpin['total_waktu_kenpin'])) {
+                $seconds = intval($itemKenpin['total_waktu_kenpin']);
+                $hours = floor($seconds / 3600);
+                $minutes = floor(($seconds % 3600) / 60);
+                $waktuKenpinFormatted = sprintf('%02d:%02d', $hours, $minutes);
+            } else {
+                $waktuKenpinFormatted = '00:00';
+            }
+            $activeWorksheet->setCellValue($columnItemEnd . $rowItem, $waktuKenpinFormatted);
             $columnItemEnd++;
 
             // penyebab
