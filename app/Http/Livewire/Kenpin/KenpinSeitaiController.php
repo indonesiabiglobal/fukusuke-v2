@@ -64,22 +64,25 @@ class KenpinSeitaiController extends Component
 
     public function render()
     {
-        $data = DB::table('tdkenpin AS tdkg')
-            ->leftJoin(
-                DB::raw("(SELECT DISTINCT tdkgd.kenpin_id AS kenpin_goods_id
-                      FROM tdkenpin_goods_detail AS tdkgd
-                      INNER JOIN tdproduct_goods AS tdpg ON tdkgd.product_goods_id = tdpg.id
-                      INNER JOIN tdorderlpk AS tdol ON tdpg.lpk_id = tdol.id
-                      ) AS distinct1"),
-                'tdkg.id',
-                '=',
-                'distinct1.kenpin_goods_id'
+        // aggregate goods per kenpin to avoid duplicate tdkg rows
+        $pg = DB::table('tdkenpin_goods_detail AS tdkgd')
+            ->join('tdproduct_goods AS tdpg', 'tdkgd.product_goods_id', '=', 'tdpg.id')
+            ->join('tdorderlpk AS tdol', 'tdpg.lpk_id', '=', 'tdol.id')
+            ->select(
+                'tdkgd.kenpin_id',
+                DB::raw('MIN(tdpg.nomor_palet) AS nomor_palet'),
+                DB::raw('MIN(tdpg.nomor_lot) AS nomor_lot'),
+                DB::raw('MIN(tdol.lpk_no) AS lpk_no')
             )
+            ->groupBy('tdkgd.kenpin_id');
+
+        $data = DB::table('tdkenpin AS tdkg')
+            ->leftJoinSub($pg, 'pg', function ($join) {
+                $join->on('pg.kenpin_id', '=', 'tdkg.id');
+            })
             ->join('msdepartment AS msd', 'msd.id', '=', 'tdkg.department_id')
             ->join('msproduct AS msp', 'tdkg.product_id', '=', 'msp.id')
             ->join('msemployee AS mse', 'mse.id', '=', 'tdkg.employee_id')
-            ->join('tdkenpin_goods_detail AS tdkgd', 'tdkgd.kenpin_id', '=', 'tdkg.id')
-            ->join('tdproduct_goods AS tdpg', 'tdkgd.product_goods_id', '=', 'tdpg.id')
             ->select(
                 'tdkg.id',
                 'tdkg.kenpin_no',
@@ -96,8 +99,8 @@ class KenpinSeitaiController extends Component
                 'msp.name AS namaproduk',
                 'mse.empname AS namapetugas',
                 'msd.name AS nama_department',
-                'tdpg.nomor_palet',
-                'tdpg.nomor_lot',
+                'pg.nomor_palet',
+                'pg.nomor_lot'
             );
 
         if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
