@@ -235,7 +235,7 @@ class ProduksiPerDepartemenPerTypeReportService
             $columnItem++;
             // loss %
             $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=' . $columnLoss . ($rowItem) . '/(' . $columnLoss . ($rowItem) . '+' . $columnBeratProduksi . ($rowItem) . ')*100');
-            phpspreadsheet::numberPercentage($spreadsheet, $columnItem . $rowItem);
+            phpspreadsheet::numberFormatCommaSeparated($spreadsheet, $columnItem . $rowItem);
             $columnItem++;
             $spreadsheet->getActiveSheet()->setCellValue($columnItem . $rowItem, '=SUM(' . $columnItem . ($rowItem - count($listProductType[$department['department_id']])) . ':' . $columnItem . ($rowItem - 1) . ')');
             phpSpreadsheet::numberFormatThousandsOrZero($spreadsheet, $columnItem . $rowItem);
