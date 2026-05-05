@@ -123,7 +123,7 @@ class ProduksiPerMesinPerProdukReportService
                 asy.machine_id,
                 asy.product_id
             ORDER BY
-                asy.machine_id
+                MAX ( mac.machineNo )
         ");
 
         if (count($data) == 0) {
@@ -534,7 +534,7 @@ class ProduksiPerMesinPerProdukReportService
             WHERE good.production_date BETWEEN '$tglMasuk' AND '$tglKeluar'
             AND (dep.division_code = '$divisionCodeSeitai')
             GROUP BY dep.id, good.machine_id, prd.name
-            ORDER BY good.machine_id;
+            ORDER BY MAX(mac.machineNo);
         ");
 
         if (count($data) == 0) {
