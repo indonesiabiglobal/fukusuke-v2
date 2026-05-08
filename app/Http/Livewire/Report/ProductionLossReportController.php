@@ -55,7 +55,8 @@ class ProductionLossReportController extends Component
                     mac.machineno AS machine_no,
                         mac.machinename AS machine_name,
                         dep.name AS department_name,
-                            dep.id AS department_id,
+                        dep.id AS department_id,
+                        dep.code AS department_code,
                         dep.division_code,
                             pro.bulan,
                         COALESCE(pro.tot_produksi, 0) AS tot_produksi
@@ -66,31 +67,36 @@ class ProductionLossReportController extends Component
                         msdepartment AS dep ON mac.department_id = dep.id
                     LEFT JOIN (
                         SELECT
-                            tpa.machine_id,to_char(tpa.production_date, 'MM yyyy') as bulan,
-                                    sum(tpa.berat_produksi) as tot_produksi
+                            tpa.machine_id,
+                            to_char(CASE WHEN tpa.work_shift = 3 AND tpa.production_date::time < '23:01:00' THEN tpa.production_date - INTERVAL '1 day' ELSE tpa.production_date END, 'MM yyyy') as bulan,
+                            sum(tpa.berat_produksi) as tot_produksi
 
                         FROM
                             tdproduct_assembly AS tpa
                         where tpa.production_date BETWEEN :filterDateStart and :filterDateEnd
                         GROUP BY
-                            tpa.machine_id,to_char(tpa.production_date, 'MM yyyy')
+                            tpa.machine_id,
+                            to_char(CASE WHEN tpa.work_shift = 3 AND tpa.production_date::time < '23:01:00' THEN tpa.production_date - INTERVAL '1 day' ELSE tpa.production_date END, 'MM yyyy')
                     ) AS pro ON mac.id = pro.machine_id
                     WHERE
                         mac.status = 1
                             and dep.division_code= :divisionCode
                         ) as x
-                        LEFT JOIN (
+                    LEFT JOIN (
                         SELECT
-                            tpa.machine_id,to_char(tpa.production_date, 'MM yyyy') as bulan,
-                                    sum(tpal.berat_loss) as berat_loss
+                            tpa.machine_id,
+                            to_char(CASE WHEN tpa.work_shift = 3 AND tpa.production_date::time < '23:01:00' THEN tpa.production_date - INTERVAL '1 day' ELSE tpa.production_date END, 'MM yyyy') as bulan,
+                            sum(tpal.berat_loss) as berat_loss
 
                         FROM
                             tdproduct_assembly AS tpa
-                                    left join tdproduct_assembly_loss as tpal on tpa.id=tpal.product_assembly_id
+                                    LEFT JOIN tdproduct_assembly_loss as tpal on tpa.id=tpal.product_assembly_id
                         where tpa.production_date BETWEEN :filterDateStart and :filterDateEnd
                         GROUP BY
-                            tpa.machine_id,to_char(tpa.production_date, 'MM yyyy')
-                    ) AS loss ON x.id = loss.machine_id and x.bulan=loss.bulan",
+                            tpa.machine_id,
+                            to_char(CASE WHEN tpa.work_shift = 3 AND tpa.production_date::time < '23:01:00' THEN tpa.production_date - INTERVAL '1 day' ELSE tpa.production_date END, 'MM yyyy')
+                    ) AS loss ON x.id = loss.machine_id and x.bulan=loss.bulan
+                    ORDER BY x.bulan,x.department_code,x.machine_no",
                 [
                     'filterDateStart' => $filterDateStart,
                     'filterDateEnd' => $filterDateEnd,
@@ -153,7 +159,7 @@ class ProductionLossReportController extends Component
                         ID LEFT JOIN (
                         SELECT
                             tpa.machine_id,
-                            to_char( tpa.production_date, 'MM yyyy' ) AS bulan,
+                            to_char(CASE WHEN tpa.work_shift = 3 AND tpa.production_date::time < '23:01:00' THEN tpa.production_date - INTERVAL '1 day' ELSE tpa.production_date END, 'MM yyyy') AS bulan,
                             SUM ( tpa.qty_produksi ) AS tot_produksi
                         FROM
                             tdproduct_goods AS tpa
@@ -162,7 +168,7 @@ class ProductionLossReportController extends Component
                             AND :filterDateEnd
                         GROUP BY
                             tpa.machine_id,
-                            to_char( tpa.production_date, 'MM yyyy' )
+                            to_char(CASE WHEN tpa.work_shift = 3 AND tpa.production_date::time < '23:01:00' THEN tpa.production_date - INTERVAL '1 day' ELSE tpa.production_date END, 'MM yyyy')
                         ) AS pro ON mac.ID = pro.machine_id
                     WHERE
                         mac.status = 1
@@ -171,7 +177,7 @@ class ProductionLossReportController extends Component
                     LEFT JOIN (
                     SELECT
                         tpa.machine_id,
-                        to_char( tpa.production_date, 'MM yyyy' ) AS bulan,
+                        to_char(CASE WHEN tpa.work_shift = 3 AND tpa.production_date::time < '23:01:00' THEN tpa.production_date - INTERVAL '1 day' ELSE tpa.production_date END, 'MM yyyy') AS bulan,
                         SUM ( tpal.berat_loss ) AS berat_loss
                     FROM
                         tdproduct_goods AS tpa
@@ -181,9 +187,9 @@ class ProductionLossReportController extends Component
                         AND :filterDateEnd
                     GROUP BY
                         tpa.machine_id,
-                        to_char( tpa.production_date, 'MM yyyy' )
+                        to_char(CASE WHEN tpa.work_shift = 3 AND tpa.production_date::time < '23:01:00' THEN tpa.production_date - INTERVAL '1 day' ELSE tpa.production_date END, 'MM yyyy')
                     ) AS loss ON x.ID = loss.machine_id
-                    AND x.bulan = loss.bulan ORDER BY x.bulan, x.department_id, x.machine_name",
+                    AND x.bulan = loss.bulan ORDER BY x.bulan, x.department_id, x.machine_no",
                 [
                     'filterDateStart' => $filterDateStart,
                     'filterDateEnd' => $filterDateEnd,
