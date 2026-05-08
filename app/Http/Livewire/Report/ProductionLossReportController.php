@@ -273,7 +273,11 @@ class ProductionLossReportController extends Component
         $this->textAlignCenter($spreadsheet, $cellMesin);
 
         // buatkan looping dari bulan awal sampai bulan akhir
-        $diffMonth = Carbon::parse($this->tglAkhir)->diffInMonths(Carbon::parse($this->tglAwal)) + 1;
+        $tglAkhir = $filterDateEnd;
+        if ($tglAkhir->day == 1 && $tglAkhir->hour <= 7 && $tglAkhir->minute <= 0) {
+            $tglAkhir->subDay();
+        }
+        $diffMonth = $tglAkhir->diffInMonths(Carbon::parse($this->tglAwal)) + 1;
         $tglAwalHeader = Carbon::parse($this->tglAwal);
         $columnHeaderStartDate = 'D';
         $listMachineExist = [];
