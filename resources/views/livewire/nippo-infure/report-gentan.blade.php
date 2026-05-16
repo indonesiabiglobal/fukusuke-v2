@@ -281,7 +281,7 @@
                                 <td width="60%">
                                     <span>
                                         <font style="font-size: 22px;">
-                                            : {{ number_format($data->lebih, 0, ',', '.') }}
+                                            : {{ number_format($data->selisih, 0, ',', '.') }}
                                         </font>
                                     </span>
                                 </td>
