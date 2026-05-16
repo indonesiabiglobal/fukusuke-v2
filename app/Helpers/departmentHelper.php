@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use App\Models\MsDepartment;
+use App\Models\MsDepartmentGroup;
 
 class departmentHelper
 {
@@ -24,6 +25,12 @@ class departmentHelper
             ->get();
     }
 
+    public static function masalahKenpinInfureDepartmentGroup()
+    {
+        return MsDepartmentGroup::select('id', 'name', 'code')
+            ->where('department_id', [2])->get();
+    }
+
     public static function seitaiDivision()
     {
         return MsDepartment::where('name', 'SEITAI')->first('id');
@@ -42,9 +49,9 @@ class departmentHelper
             ->get();
     }
 
-    public static function masalahKenpinSeitaiDepartment()
+    public static function masalahKenpinSeitaiDepartmentGroup()
     {
-        return MsDepartment::select('id', 'name', 'code')
-            ->whereIn('id', [2, 7])->get();
+        return MsDepartmentGroup::select('id', 'name', 'code')
+            ->where('department_id', [7])->get();
     }
 }

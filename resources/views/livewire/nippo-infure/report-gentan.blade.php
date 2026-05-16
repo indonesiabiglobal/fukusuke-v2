@@ -264,7 +264,7 @@
                                     <span>
                                         <font style="font-size: 22px;">
                                             : @if (isset($data->panjang_produksi))
-                                                {{ $data->panjang_produksi }}
+                                                {{ number_format($data->panjang_produksi, 0, ',', '.') }}
                                             @endif
                                         </font>
                                     </span>
@@ -281,7 +281,7 @@
                                 <td width="60%">
                                     <span>
                                         <font style="font-size: 22px;">
-                                            : {{ $data->selisih }}
+                                            : {{ number_format($data->lebih, 0, ',', '.') }}
                                         </font>
                                     </span>
                                 </td>
