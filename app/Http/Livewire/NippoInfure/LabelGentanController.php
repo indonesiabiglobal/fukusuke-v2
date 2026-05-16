@@ -146,7 +146,7 @@ class LabelGentanController extends Component
             } else {
                 // ===== ASSIGN SEMUA DATA =====
                 $this->produk_asemblyid = $data2->produk_asembly_id;
-                $this->product_panjang = number_format($data2->panjang_produksi, 0, ',', '.');
+                $this->product_panjang = $data2->panjang_produksi;
                 $this->berat_produksi = $data2->berat_produksi;
                 $this->berat_standard = $data2->berat_standard;
 
@@ -158,7 +158,7 @@ class LabelGentanController extends Component
                 $this->work_hour = $data2->work_hour;
                 $this->work_shift = $data2->work_shift;
                 $this->machineno = $data2->machineno;
-                $this->selisih = number_format($data2->selisih, 0, ',', '.');
+                $this->selisih = $data2->selisih;
                 $this->nomor_han = $data2->nomor_han;
                 $this->nik = $data2->nik;
                 $this->empname = $data2->empname;
