@@ -3,7 +3,7 @@
 namespace App\Http\Livewire\MasterTabel\MasalahKenpin;
 
 use App\Helpers\departmentHelper;
-use App\Models\MsMasalahKenpinSeitai;
+use App\Models\MsMasalahKenpin;
 use Livewire\Component;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -34,7 +34,7 @@ class MasalahKenpinSeitaiController extends Component
     public $statusIsVisible = false;
     #[Session]
     public $sortingTable;
-    public $statusFilter = 'all';
+    public $statusFilter = 'active';
     public $data;
 
     // Loading states
@@ -51,7 +51,7 @@ class MasalahKenpinSeitaiController extends Component
         if (empty($this->sortingTable)) {
             $this->sortingTable = [[2, 'asc']];
         }
-        $this->listDepartments = departmentHelper::masalahKenpinSeitaiDepartment();
+        $this->listDepartments = departmentHelper::masalahKenpinSeitaiDepartmentGroup();
     }
 
     public function filterByStatus($status)
@@ -79,7 +79,7 @@ class MasalahKenpinSeitaiController extends Component
 
     public function getTotalRecordsProperty()
     {
-        return MsMasalahKenpinSeitai::count(); // Ganti dengan model yang sesuai
+        return MsMasalahKenpin::whereIn('department_group_id', departmentHelper::masalahKenpinSeitaiDepartmentGroup()->pluck('id'))->count();
     }
 
     public function updateSortingTable($value)
@@ -92,7 +92,7 @@ class MasalahKenpinSeitaiController extends Component
     {
         $this->code = '';
         $this->name = '';
-        $this->department["value"] = '';
+        $this->department = '';
     }
 
     public function showModalCreate()
@@ -109,10 +109,10 @@ class MasalahKenpinSeitaiController extends Component
 
         DB::beginTransaction();
         try {
-            $data = MsMasalahKenpinSeitai::create([
+            MsMasalahKenpin::create([
                 'code' => $this->code,
-                'masalah' => $this->name,
-                'department' => $this->department["value"] ?? $this->department,
+                'name' => $this->name,
+                'department_group_id' => $this->department ?? $this->department["value"],
                 'status' => 1,
                 'created_by' => Auth::user()->username,
                 'updated_by' => Auth::user()->username,
@@ -120,25 +120,24 @@ class MasalahKenpinSeitaiController extends Component
 
             DB::commit();
             $this->dispatch('closeModalCreate');
-            $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Jam Mati Mesin Seitai saved successfully.']);
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Kenpin Seitai saved successfully.']);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Failed to save master Box: ' . $e->getMessage());
-            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the Box: ' . $e->getMessage()]);
+            Log::error('Failed to save master Kenpin Seitai: ' . $e->getMessage());
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the Kenpin Seitai: ' . $e->getMessage()]);
         }
     }
 
     public function edit($id)
     {
-        $data = MsMasalahKenpinSeitai::where('id', $id)->first();
+        $data = MsMasalahKenpin::where('id', $id)->first();
         $this->idUpdate = $id;
         $this->code = $data->code;
-        $this->name = $data->masalah;
-        $this->department = $data->department;
+        $this->name = $data->name;
+        $this->department = $data->department_group_id;
         $this->status = $data->status;
         $this->statusIsVisible = $data->status == 0 ? true : false;
         $this->skipRender();
-        // dd($this->department["value"]);
 
         $this->dispatch('showModalUpdate');
     }
@@ -149,10 +148,10 @@ class MasalahKenpinSeitaiController extends Component
 
         DB::beginTransaction();
         try {
-            $data = MsMasalahKenpinSeitai::where('id', $this->idUpdate)->first();
+            $data = MsMasalahKenpin::where('id', $this->idUpdate)->first();
             $data->code = $this->code;
-            $data->masalah = $this->name;
-            $data->department = $this->department["value"] ?? $this->department;
+            $data->name = $this->name;
+            $data->department_group_id = $this->department ?? $this->department["value"];
             $data->status = $this->status;
             $data->updated_by = Auth::user()->username;
             $data->save();
@@ -163,8 +162,8 @@ class MasalahKenpinSeitaiController extends Component
         } catch (\Exception $e) {
             $this->skipRender();
             DB::rollBack();
-            Log::error('Failed to update master Box: ' . $e->getMessage());
-            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to update the Box: ' . $e->getMessage()]);
+            Log::error('Failed to update master Kenpin Seitai: ' . $e->getMessage());
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to update the Kenpin Seitai: ' . $e->getMessage()]);
         }
     }
 
@@ -181,30 +180,32 @@ class MasalahKenpinSeitaiController extends Component
         DB::beginTransaction();
         try {
             $statusInactive = 0;
-            $data = MsMasalahKenpinSeitai::where('id', $this->idDelete)->first();
+            $data = MsMasalahKenpin::where('id', $this->idDelete)->first();
             $data->status = $statusInactive;
             $data->updated_by = Auth::user()->username;
             $data->save();
 
             DB::commit();
             $this->dispatch('closeModalDelete');
-            $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Jam Mati Mesin Seitai deleted successfully.']);
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Master Kenpin Seitai deleted successfully.']);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Failed to delete master Box: ' . $e->getMessage());
-            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to delete the Box: ' . $e->getMessage()]);
+            Log::error('Failed to delete master Kenpin Seitai: ' . $e->getMessage());
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to delete the Kenpin Seitai: ' . $e->getMessage()]);
         }
     }
 
     public function render()
     {
-        $query = MsMasalahKenpinSeitai::query();
+        $query = MsMasalahKenpin::with('departmentGroup');
 
         // Apply status filter
         if ($this->statusFilter !== 'all') {
             $status = $this->statusFilter === 'active' ? 1 : 0;
             $query->where('status', $status);
         }
+
+        $query->whereIn('department_group_id', $this->listDepartments->pluck('id'));
 
         $result = $query->get();
 

@@ -137,7 +137,7 @@
                                             <input class="form-check-input toggle-column" type="checkbox"
                                                 data-column="1" checked id="col1">
                                             <label class="form-check-label" for="col1">
-                                                Jenis Klaim
+                                                Nama Masalah Kenpin
                                             </label>
                                         </div>
                                     </li>
@@ -454,6 +454,8 @@
         // Show modal update buyer
         $wire.on('showModalUpdate', () => {
             $('#modal-edit').modal('show');
+            // Reset semua tombol edit
+            $('.btn-edit').prop('disabled', false).html('<i class="ri-edit-box-line text-white"></i>');
         });
 
         // close modal update buyer
@@ -464,6 +466,8 @@
         // show modal delete buyer
         $wire.on('showModalDelete', () => {
             $('#removeBuyerModal').modal('show');
+            // Reset semua tombol delete
+            $('.btn-delete').prop('disabled', false).html('<i class="ri-delete-bin-line text-white"></i>');
         });
 
         // close modal delete buyer
@@ -538,21 +542,17 @@
                 });
                 // tombol delete
                 $('.btn-delete').on('click', function() {
-                    let id = $(this).attr('data-delete-id');
-
-                    // livewire click
-                    $wire.dispatch('delete', {
-                        id
-                    });
+                    let btn = $(this);
+                    let id = btn.attr('data-delete-id');
+                    btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm text-white" role="status"><span class="visually-hidden">Loading...</span></span>');
+                    $wire.call('delete', id);
                 });
                 // tombol edit
                 $('.btn-edit').on('click', function() {
-                    let id = $(this).attr('data-edit-id');
-
-                    // livewire click
-                    $wire.dispatch('edit', {
-                        id
-                    });
+                    let btn = $(this);
+                    let id = btn.attr('data-edit-id');
+                    btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm text-white" role="status"><span class="visually-hidden">Loading...</span></span>');
+                    $wire.call('edit', id);
                 });
 
                 // default column visibility

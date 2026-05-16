@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\MasterTabel\MasalahKenpin;
 
+use App\Helpers\departmentHelper;
 use App\Models\MsMasalahKenpin;
 use Livewire\Component;
 use Carbon\Carbon;
@@ -31,8 +32,9 @@ class MasalahKenpinInfureController extends Component
     public $statusIsVisible = false;
     #[Session]
     public $sortingTable;
-    public $statusFilter = 'all';
+    public $statusFilter = 'active';
     public $data;
+    public $listDepartments;
 
     // Loading states
     public $isLoading = false;
@@ -47,6 +49,7 @@ class MasalahKenpinInfureController extends Component
         if (empty($this->sortingTable)) {
             $this->sortingTable = [[2, 'asc']];
         }
+        $this->listDepartments = departmentHelper::masalahKenpinInfureDepartmentGroup();
     }
 
     public function filterByStatus($status)
@@ -106,6 +109,7 @@ class MasalahKenpinInfureController extends Component
             $data = MsMasalahKenpin::create([
                 'code' => $this->code,
                 'name' => $this->name,
+                'department_group_id' => $this->listDepartments[0]->id, // Set default department group
                 'status' => 1,
                 'created_by' => Auth::user()->username,
                 'updated_by' => Auth::user()->username,
@@ -196,7 +200,8 @@ class MasalahKenpinInfureController extends Component
             $query->where('status', $status);
         }
 
-        $query->orderBy('code', 'asc');
+        $query->where('department_group_id', $this->listDepartments[0]->id)
+            ->orderBy('code', 'asc');
         $result = $query->get();
 
         return view('livewire.master-tabel.masalah-kenpin.infure', [
