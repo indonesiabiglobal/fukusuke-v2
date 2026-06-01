@@ -21,11 +21,12 @@ class Login extends Component
         if (auth()->user()) {
             $this->userRoles = auth()->user()->roles->pluck('code')->toArray();
 
-            if (in_array('ADMIN', $this->userRoles) || in_array('DASHBOARD-INFURE', $this->userRoles)) {
-                return redirect()->intended('/dashboard-infure');
-            } elseif (in_array('DASHBOARD-SEITAI', $this->userRoles)) {
-                return redirect()->intended('/dashboard-seitai');
-            }
+            // if (in_array('ADMIN', $this->userRoles) || in_array('DASHBOARD-INFURE', $this->userRoles)) {
+            //     return redirect()->intended('/dashboard-infure');
+            // } elseif (in_array('DASHBOARD-SEITAI', $this->userRoles)) {
+            //     return redirect()->intended('/dashboard-seitai');
+            // }
+            return redirect()->intended('/nippo-infure');
         }
     }
 
@@ -41,11 +42,12 @@ class Login extends Component
 
         if (Auth::attempt($user)) {
             $userAccess = auth()->user()->roles->flatMap->access->pluck('code')->unique()->toArray();
-            if (in_array('DASHBOARD-SEITAI', $userAccess)) {
-                return redirect()->intended('/dashboard-seitai');
-            } else {
-                return redirect()->intended('/dashboard-infure');
-            }
+            // if (in_array('DASHBOARD-SEITAI', $userAccess)) {
+            //     return redirect()->intended('/dashboard-seitai');
+            // } else {
+            //     return redirect()->intended('/dashboard-infure');
+            // }
+            return redirect()->intended('/nippo-infure');
         } else {
             $this->addError('email', trans('auth.failed'));
             return redirect()->back();
