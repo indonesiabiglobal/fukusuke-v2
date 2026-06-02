@@ -387,12 +387,13 @@ Route::group(['middleware' => 'auth'], function () {
     });
 
     Route::get('/', function () {
-        $userAccess = auth()->user()->roles->flatMap->access->pluck('code')->unique()->toArray();
-        if (in_array('DASHBOARD-SEITAI', $userAccess)) {
-            return redirect()->intended('/dashboard-seitai');
-        } else {
-            return redirect()->intended('/dashboard-infure');
-        }
+        // $userAccess = auth()->user()->roles->flatMap->access->pluck('code')->unique()->toArray();
+        // if (in_array('DASHBOARD-SEITAI', $userAccess)) {
+        //     return redirect()->intended('/dashboard-seitai');
+        // } else {
+        //     return redirect()->intended('/dashboard-infure');
+        // }
+        return redirect()->intended('/nippo-infure');
     });
 
     // Infure
