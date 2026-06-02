@@ -620,7 +620,7 @@ class LabelMasukGudangController extends Component
 
         $writer = new Xlsx($spreadsheet);
         $writer->save('asset/report/Label-Gudang-' . $this->nomor_palet . '.xlsx');
-        return response()->download('asset/report/Label-Gudang-' . $this->nomor_palet . '.xlsx');
+        return response()->download('asset/report/Label-Gudang-' . $this->nomor_palet . '.xlsx')->deleteFileAfterSend(true);
     }
 
     public function render()
