@@ -58,6 +58,9 @@ class NippoInfureController extends Component
         if (is_array($this->machineId)) {
             $this->machineId = $this->machineId['value'] ?? null;
         }
+        if (is_array($this->status)) {
+            $this->status = $this->status['value'] ?? null;
+        }
 
         if (empty($this->transaksi)) {
             $this->transaksi = 1;
@@ -122,7 +125,7 @@ class NippoInfureController extends Component
             'lpk_no' => $this->lpk_no ?? null,
             'machineId' => $this->machineId ?? null,
             'idProduct' => $this->idProduct ?? null,
-            'status' => $this->status['value'] ?? null,
+            'status' => $this->status ?? null,
             'searchTerm' => $this->searchTerm ?? null,
             'transaksi' => $this->transaksi ?? 1,
         ];
@@ -225,13 +228,13 @@ class NippoInfureController extends Component
                 $data = $data->where('tda.product_id', $this->idProduct);
             }
 
-            if (isset($this->status) && $this->status['value'] != "" && $this->status != "undefined") {
-                if ($this->status['value'] == 0) {
+            if (isset($this->status) && $this->status !== "" && $this->status !== null && $this->status != "undefined") {
+                if ($this->status == 0) {
                     $data->where('tda.status_production', 0)
                         ->where('tda.status_kenpin', 0);
-                } elseif ($this->status['value'] == 1) {
+                } elseif ($this->status == 1) {
                     $data->where('tda.status_production', 1);
-                } elseif ($this->status['value'] == 2) {
+                } elseif ($this->status == 2) {
                     $data->where('tda.status_kenpin', 1);
                 }
             }

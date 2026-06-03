@@ -111,8 +111,8 @@
                         <select class="form-control select2-status-infure">
                             <option value="">- all -</option>
                             <option value="0">Open</option>
-                            <option value="1" @if (($status['value'] ?? null) == 1) selected @endif>Seitai</option>
-                            <option value="2" @if (($status['value'] ?? null) == 2) selected @endif>Kenpin</option>
+                            <option value="1" @if (($status ?? null) == 1) selected @endif>Seitai</option>
+                            <option value="2" @if (($status ?? null) == 2) selected @endif>Kenpin</option>
                         </select>
                     </div>
                 </div>
