@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\NippoSeitai;
 
 use Livewire\Component;
+use Livewire\Attributes\Lazy;
 use Carbon\Carbon;
 use App\Models\MsProduct;
 use App\Models\MsBuyer;
@@ -15,10 +16,23 @@ use Livewire\WithoutUrlPagination;
 use Livewire\Attributes\Session;
 use App\Traits\HandlesHeavyJob;
 
+#[Lazy]
 class NippoSeitaiController extends Component
 {
     use HandlesHeavyJob;
     use WithPagination, WithoutUrlPagination;
+
+    public function placeholder(): string
+    {
+        return <<<HTML
+        <div class="card">
+            <div class="card-body py-5 text-center">
+                <div class="spinner-border text-primary me-2" role="status" style="width:2rem;height:2rem;"></div>
+                <span class="text-muted fs-5">Memuat data nippo seitai...</span>
+            </div>
+        </div>
+        HTML;
+    }
 
     protected $paginationTheme = 'bootstrap';
 
