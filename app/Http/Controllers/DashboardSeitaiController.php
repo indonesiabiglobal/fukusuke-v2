@@ -376,22 +376,25 @@ class DashboardSeitaiController extends Controller
                 SELECT mac.id AS machine_id, 1 AS period_ke, COALESCE(SUM(EXTRACT(EPOCH FROM tjm.work_hour))/3600.0,0) AS work_hour_h
                 FROM tdjamkerjamesin tjm
                 INNER JOIN msmachine mac ON mac.id = tjm.machine_id
+                INNER JOIN msworkingshift mws ON mws.id = tjm.work_shift
                 WHERE mac.department_id = :factory
-                    AND tjm.working_date + (SELECT work_hour_from FROM msworkingshift WHERE id = tjm.work_shift) BETWEEN :startMonth AND :firstPeriod
+                    AND tjm.working_date + mws.work_hour_from BETWEEN :startMonth AND :firstPeriod
                 GROUP BY mac.id
                 UNION ALL
                 SELECT mac.id AS machine_id, 2 AS period_ke, COALESCE(SUM(EXTRACT(EPOCH FROM tjm.work_hour))/3600.0,0) AS work_hour_h
                 FROM tdjamkerjamesin tjm
                 INNER JOIN msmachine mac ON mac.id = tjm.machine_id
+                INNER JOIN msworkingshift mws ON mws.id = tjm.work_shift
                 WHERE mac.department_id = :factory
-                    AND tjm.working_date + (SELECT work_hour_from FROM msworkingshift WHERE id = tjm.work_shift) BETWEEN :firstPeriodPlus AND :secondPeriod
+                    AND tjm.working_date + mws.work_hour_from BETWEEN :firstPeriodPlus AND :secondPeriod
                 GROUP BY mac.id
                 UNION ALL
                 SELECT mac.id AS machine_id, 3 AS period_ke, COALESCE(SUM(EXTRACT(EPOCH FROM tjm.work_hour))/3600.0,0) AS work_hour_h
                 FROM tdjamkerjamesin tjm
                 INNER JOIN msmachine mac ON mac.id = tjm.machine_id
+                INNER JOIN msworkingshift mws ON mws.id = tjm.work_shift
                 WHERE mac.department_id = :factory
-                    AND tjm.working_date + (SELECT work_hour_from FROM msworkingshift WHERE id = tjm.work_shift) BETWEEN :secondPeriodPlus AND :endMonth
+                    AND tjm.working_date + mws.work_hour_from BETWEEN :secondPeriodPlus AND :endMonth
                 GROUP BY mac.id
             ) tjm_agg ON mac.id = tjm_agg.machine_id AND tjm_agg.period_ke = periods.period_ke
             WHERE mac.department_id = :factory
