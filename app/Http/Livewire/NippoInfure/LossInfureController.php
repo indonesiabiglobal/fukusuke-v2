@@ -34,6 +34,11 @@ class LossInfureController extends Component
     #[Session] public $sortColumn   = 'tdpa.created_on';
     #[Session] public $sortDirection = 'desc';
 
+    public function updatedPerPage(): void
+    {
+        $this->resetPage();
+    }
+
     public function loadData(): void
     {
         $this->isLoaded = true;
