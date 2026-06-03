@@ -2,354 +2,214 @@
 
 namespace App\Http\Livewire\NippoSeitai;
 
-use App\Exports\NippoSeitaiExport;
-use App\Helpers\phpspreadsheet;
 use Livewire\Component;
 use Carbon\Carbon;
 use App\Models\MsProduct;
 use App\Models\MsBuyer;
 use App\Models\MsMachine;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
-use Maatwebsite\Excel\Facades\Excel;
 use Livewire\Attributes\Session;
 use App\Traits\HandlesHeavyJob;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class NippoSeitaiController extends Component
 {
     use HandlesHeavyJob;
-    protected $paginationTheme = 'bootstrap';
-    public $products;
-    public $buyer;
-    #[Session]
-    public $tglMasuk;
-    #[Session]
-    public $tglKeluar;
-    public $machine;
-    #[Session]
-    public $transaksi;
-    #[Session]
-    public $gentan_no;
-    #[Session]
-    public $machineId;
-    #[Session]
-    public $searchTerm;
-    #[Session]
-    public $lpk_no;
-    #[Session]
-    public $idProduct;
-    #[Session]
-    public $status;
-    #[Session]
-    public $sortingTable;
-    #[Session]
-    public $entriesPerPage = 10;
-
     use WithPagination, WithoutUrlPagination;
+
+    protected $paginationTheme = 'bootstrap';
+
+    #[Session] public $tglMasuk;
+    #[Session] public $tglKeluar;
+    #[Session] public $transaksi;
+    #[Session] public $gentan_no;
+    #[Session] public $machineId;
+    #[Session] public $searchTerm;
+    #[Session] public $lpk_no;
+    #[Session] public $idProduct;
+    #[Session] public $status;
+    #[Session] public $perPage = 10;
+    #[Session] public $sortColumn = 'tdpg.created_on';
+    #[Session] public $sortDirection = 'desc';
 
     public function mount()
     {
-        // menghapus session kondisi bukan dari nippo seitai
         $this->shouldForgetSession();
 
-        $this->products = MsProduct::get();
-        $this->buyer = MsBuyer::get();
-        $this->machine = MsMachine::where('machineno',  'LIKE', '00S%')->orderBy('machineno')->get();
-        $this->machine = $this->machine->map(function ($item) {
-            $item->machinenumber = str_replace('00S', '', $item->machineno);
-            return $item;
-        });
-        if (empty($this->transaksi)) {
-            $this->transaksi = 1;
-        }
-        if (empty($this->tglMasuk)) {
-            $this->tglMasuk = Carbon::now()->format('d M Y');
-        }
-        if (empty($this->tglKeluar)) {
-            $this->tglKeluar = Carbon::now()->format('d M Y');
-        }
-        if (empty($this->sortingTable)) {
-            $this->sortingTable = [[1, 'asc']];
-        }
-        if (empty($this->entriesPerPage)) {
-            $this->entriesPerPage = 10;
-        }
-    }
+        // Normalize legacy {value: x} array format (choices.js) to scalar (select2)
+        if (is_array($this->idProduct)) { $this->idProduct = $this->idProduct['value'] ?? null; }
+        if (is_array($this->machineId)) { $this->machineId = $this->machineId['value'] ?? null; }
+        if (is_array($this->status))    { $this->status    = $this->status['value']    ?? null; }
 
-    public function updateSortingTable($value)
-    {
-        $this->sortingTable = $value;
-        $this->skipRender();
-    }
-
-    public function updateEntriesPerPage($value)
-    {
-        $this->entriesPerPage = $value;
-        $this->skipRender();
+        if (empty($this->transaksi)) { $this->transaksi = 1; }
+        if (empty($this->tglMasuk))  { $this->tglMasuk  = Carbon::now()->format('d M Y'); }
+        if (empty($this->tglKeluar)) { $this->tglKeluar = Carbon::now()->format('d M Y'); }
     }
 
     protected function shouldForgetSession()
     {
-        // Periksa jika URL saat ini bukan 'nippo-seitai/edit-seitai' atau 'nippo-seitai/add-seitai'
-        $previousUrl = url()->previous();
-        $previousUrl = last(explode('/', $previousUrl));
-        if (!(Str::contains($previousUrl, 'edit-seitai') || Str::contains($previousUrl,'add-seitai') || Str::contains($previousUrl,'nippo-seitai'))) {
-            $this->reset('tglMasuk', 'tglKeluar', 'gentan_no', 'machineId', 'searchTerm', 'lpk_no', 'idProduct', 'status', 'transaksi', 'sortingTable', 'entriesPerPage');
+        $previousUrl = last(explode('/', url()->previous()));
+        if (!(Str::contains($previousUrl, 'edit-seitai') || Str::contains($previousUrl, 'add-seitai') || Str::contains($previousUrl, 'nippo-seitai'))) {
+            $this->reset('tglMasuk', 'tglKeluar', 'transaksi', 'gentan_no', 'machineId', 'searchTerm', 'lpk_no', 'idProduct', 'status', 'perPage', 'sortColumn', 'sortDirection');
         }
-    }
-
-    public function add()
-    {
-        return redirect()->route('add-order');
     }
 
     public function search()
     {
-        $this->render();
+        $this->resetPage();
     }
 
-    public function print()
+    public function sortBy($column)
     {
-        return Excel::download(new NippoSeitaiExport(
-            $this->tglMasuk,
-            $this->tglKeluar,
-            // $this->searchTerm,
-            // $this->idProduct,
-            // $this->idBuyer,
-            // $this->status,
-        ), 'NippoSeitai-CheckList.xlsx');
+        $allowed = [
+            'tdol.lpk_no', 'tdol.lpk_date', 'tdol.qty_lpk',
+            'tdpg.qty_produksi', 'tdpg.seitai_berat_loss', 'tdpg.infure_berat_loss',
+            'tdpg.nomor_palet', 'tdpg.nomor_lot', 'tdpg.seq_no',
+            'tdpg.work_hour', 'tdpg.work_shift', 'tdpg.production_date',
+            'tdpg.created_on', 'tdpg.updated_on',
+            'mp.name', 'mp.code', 'mc.machineno',
+        ];
+        if (!in_array($column, $allowed)) return;
+
+        if ($this->sortColumn === $column) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortColumn    = $column;
+            $this->sortDirection = 'asc';
+        }
+        $this->resetPage();
     }
 
     public function export()
     {
         $this->startHeavyJob();
         $filter = [
-            'tglAwal' => Carbon::parse($this->tglMasuk)->format('d-m-Y'),
-            'tglAkhir' => Carbon::parse($this->tglKeluar)->format('d-m-Y'),
-            'jamAwal' => '00:00:00',
-            'jamAkhir' => '23:59:59',
-            'transaksi' => $this->transaksi == 1 ? 'proses' : 'produksi',
-            'lpk_no' => $this->lpk_no ?? null,
-            'machineId' => $this->machineId['value'] ?? null,
-            'idProduct' => $this->idProduct['value'] ?? null,
-            'status' => $this->status['value'] ?? null,
-            'gentan_no' => $this->gentan_no ?? null,
+            'tglAwal'     => Carbon::parse($this->tglMasuk)->format('d-m-Y'),
+            'tglAkhir'    => Carbon::parse($this->tglKeluar)->format('d-m-Y'),
+            'jamAwal'     => '00:00:00',
+            'jamAkhir'    => '23:59:59',
+            'transaksi'   => $this->transaksi == 1 ? 'proses' : 'produksi',
+            'lpk_no'      => $this->lpk_no   ?? null,
+            'machineId'   => $this->machineId ?? null,
+            'idProduct'   => $this->idProduct ?? null,
+            'status'      => $this->status    ?? null,
+            'gentan_no'   => $this->gentan_no ?? null,
             'jenisReport' => 'CheckList',
-            'searchTerm' => $this->searchTerm ?? null,
+            'searchTerm'  => $this->searchTerm ?? null,
         ];
 
-        $checklistInfure = new CheckListSeitaiController();
-        $response = $checklistInfure->checklist(true, $filter);
-        if ($response['status'] == 'success') {
+        $checklistSeitai = new CheckListSeitaiController();
+        $response = $checklistSeitai->checklist(true, $filter);
+        if ($response['status'] === 'success') {
             return response()->download($response['filename']);
-        } else if ($response['status'] == 'error') {
-            $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
-            return;
         }
+        $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
     }
 
     public function render()
     {
-        // $tglAwal = $this->tglMasuk;
-        $tglAwal = Carbon::parse($this->tglMasuk)->format('d-m-Y 00:00:00');
+        $tglAwal  = Carbon::parse($this->tglMasuk)->format('d-m-Y 00:00:00');
         $tglAkhir = Carbon::parse($this->tglKeluar)->format('d-m-Y 23:59:59');
 
-        if ($this->transaksi == 2) {
-            // produksi
-            $data = DB::table('tdproduct_goods AS tdpg')
-                ->select(
-                    'tdpg.id AS id',
-                    'tdpg.production_no AS production_no',
-                    'tdpg.production_date AS production_date',
-                    'tdpg.employee_id AS employee_id',
-                    'tdpg.employee_id_infure AS employee_id_infure',
-                    'tdpg.work_shift AS work_shift',
-                    'tdpg.work_hour AS work_hour',
-                    'tdpg.machine_id AS machine_id',
-                    'tdpg.lpk_id AS lpk_id',
-                    'tdpg.product_id AS product_id',
-                    'tdpg.qty_produksi AS qty_produksi',
-                    'tdpg.seitai_berat_loss AS seitai_berat_loss',
-                    'tdpg.infure_berat_loss AS infure_berat_loss',
-                    'tdpg.nomor_palet AS nomor_palet',
-                    'tdpg.nomor_lot AS nomor_lot',
-                    'tdpg.seq_no AS seq_no',
-                    'tdpg.status_production AS status_production',
-                    'tdpg.status_warehouse AS status_warehouse',
-                    'tdpg.kenpin_qty_loss AS kenpin_qty_loss',
-                    'tdpg.kenpin_qty_loss_proses AS kenpin_qty_loss_proses',
-                    'tdpg.created_by AS created_by',
-                    'tdpg.created_on AS created_on',
-                    'tdpg.updated_by AS updated_by',
-                    'tdpg.updated_on AS updated_on',
-                    'tdol.order_id AS order_id',
-                    'tdol.lpk_no AS lpk_no',
-                    'tdol.lpk_date AS lpk_date',
-                    'tdol.panjang_lpk AS panjang_lpk',
-                    'tdol.qty_gentan AS qty_gentan',
-                    'tdol.qty_gulung AS qty_gulung',
-                    'tdol.qty_lpk AS qty_lpk',
-                    'tdol.total_assembly_qty AS total_assembly_qty',
-                    DB::raw('tdol.qty_lpk - tdol.total_assembly_qty AS selisih'),
-                    'mp.name AS product_name',
-                    'mp.code',
-                    'mc.machineno',
-                )
-                ->distinct()
-                ->join('tdorderlpk AS tdol', 'tdpg.lpk_id', '=', 'tdol.id')
-                ->leftJoin('msproduct AS mp', 'mp.id', '=', 'tdol.product_id')
-                ->leftJoin('tdproduct_goods_assembly AS tga', 'tga.product_goods_id', '=', 'tdpg.id')
-                ->leftJoin('msmachine AS mc', 'mc.id', '=', 'tdpg.machine_id')
-                ->leftJoin('tdproduct_assembly AS ta', 'ta.id', '=', 'tga.product_assembly_id');
+        $columns = [
+            'tdpg.id AS id', 'tdpg.production_no AS production_no',
+            'tdpg.production_date AS production_date',
+            'tdpg.work_shift AS work_shift', 'tdpg.work_hour AS work_hour',
+            'tdpg.machine_id AS machine_id', 'tdpg.lpk_id AS lpk_id',
+            'tdpg.product_id AS product_id', 'tdpg.qty_produksi AS qty_produksi',
+            'tdpg.seitai_berat_loss AS seitai_berat_loss',
+            'tdpg.infure_berat_loss AS infure_berat_loss',
+            'tdpg.nomor_palet AS nomor_palet', 'tdpg.nomor_lot AS nomor_lot',
+            'tdpg.seq_no AS seq_no',
+            'tdpg.status_production AS status_production',
+            'tdpg.status_warehouse AS status_warehouse',
+            'tdpg.created_by AS created_by', 'tdpg.created_on AS created_on',
+            'tdpg.updated_by AS updated_by', 'tdpg.updated_on AS updated_on',
+            'tdol.order_id AS order_id', 'tdol.lpk_no AS lpk_no',
+            'tdol.lpk_date AS lpk_date', 'tdol.qty_lpk AS qty_lpk',
+            'tdol.panjang_lpk AS panjang_lpk',
+            'tdol.total_assembly_qty AS total_assembly_qty',
+            DB::raw('tdol.qty_lpk - tdol.total_assembly_qty AS selisih'),
+            'mp.name AS product_name', 'mp.code', 'mc.machineno',
+        ];
 
-            if (!empty($this->tglMasuk)) {
-                $data = $data->whereRaw(
-                    "(tdpg.production_date::date + tdpg.work_hour::time) >= ?",
-                    [$tglAwal]
-                );
-            }
-
-            if (!empty($this->tglKeluar)) {
-                $data = $data->whereRaw(
-                    "(tdpg.production_date::date + tdpg.work_hour::time) <= ?",
-                    [$tglAkhir]
-                );
-            }
-            if (isset($this->lpk_no) && $this->lpk_no != "" && $this->lpk_no != "undefined") {
-                $data = $data->where('tdol.lpk_no', 'ilike', "%{$this->lpk_no}%");
-            }
-            if (isset($this->searchTerm) && $this->searchTerm != '') {
-                $data = $data->where(function ($query) {
-                    $query->where('tdol.lpk_no', 'ilike', '%' . $this->searchTerm . '%')
-                        ->orWhere('tdpg.production_no', 'ilike', '%' . $this->searchTerm . '%')
-                        ->orWhere('tdpg.product_id', 'ilike', '%' . $this->searchTerm . '%')
-                        ->orWhere('tdpg.nomor_palet', 'ilike', '%' . $this->searchTerm . '%')
-                        ->orWhere('tdpg.machine_id', 'ilike', '%' . $this->searchTerm . '%')
-                        ->orWhere('tdpg.nomor_lot', 'ilike', '%' . $this->searchTerm . '%');
-                });
-            }
-            if (isset($this->idProduct) && $this->idProduct['value'] != "" && $this->idProduct != "undefined") {
-                $data = $data->where('tdpg.product_id', $this->idProduct['value']);
-            }
-            if (isset($this->machineId) && $this->machineId['value'] != "" && $this->machineId != "undefined") {
-                $data = $data->where('tdpg.machine_id', $this->machineId['value']);
-            }
-            if (isset($this->gentan_no) && $this->gentan_no != "" && $this->gentan_no != "undefined") {
-                $data = $data->where('ta.gentan_no', $this->gentan_no);
-            }
-            if (isset($this->status) && $this->status['value'] != "" && $this->status != "undefined") {
-                if ($this->status['value'] == 0) {
-                    $data->where('tdpg.status_production', 0)
-                        ->where('tdpg.status_warehouse', 0);
-                } elseif ($this->status['value'] == 1) {
-                    $data->where('tdpg.status_production', 1);
-                } elseif ($this->status['value'] == 2) {
-                    $data->where('tdpg.status_warehouse', 1);
-                }
-            }
-            // $data = $data->paginate(8);
-        } else {
-            // proses
+        try {
             $data = DB::table('tdproduct_goods AS tdpg')
-                ->select([
-                    'tdpg.id AS id',
-                    'tdpg.production_no AS production_no',
-                    'tdpg.production_date AS production_date',
-                    'tdpg.employee_id AS employee_id',
-                    'tdpg.employee_id_infure AS employee_id_infure',
-                    'tdpg.work_shift AS work_shift',
-                    'tdpg.work_hour AS work_hour',
-                    'tdpg.machine_id AS machine_id',
-                    'tdpg.lpk_id AS lpk_id',
-                    'tdpg.product_id AS product_id',
-                    'tdpg.qty_produksi AS qty_produksi',
-                    'tdpg.seitai_berat_loss AS seitai_berat_loss',
-                    'tdpg.infure_berat_loss AS infure_berat_loss',
-                    'tdpg.nomor_palet AS nomor_palet',
-                    'tdpg.nomor_lot AS nomor_lot',
-                    'tdpg.seq_no AS seq_no',
-                    'tdpg.status_production AS status_production',
-                    'tdpg.status_warehouse AS status_warehouse',
-                    'tdpg.kenpin_qty_loss AS kenpin_qty_loss',
-                    'tdpg.kenpin_qty_loss_proses AS kenpin_qty_loss_proses',
-                    'tdpg.created_by AS created_by',
-                    'tdpg.created_on AS created_on',
-                    'tdpg.updated_by AS updated_by',
-                    'tdpg.updated_on AS updated_on',
-                    'tdol.order_id AS order_id',
-                    'tdol.lpk_no AS lpk_no',
-                    'tdol.lpk_date AS lpk_date',
-                    'tdol.panjang_lpk AS panjang_lpk',
-                    'tdol.qty_gentan AS qty_gentan',
-                    'tdol.qty_gulung AS qty_gulung',
-                    'tdol.qty_lpk AS qty_lpk',
-                    'tdol.total_assembly_qty AS total_assembly_qty',
-                    DB::raw('tdol.qty_lpk - tdol.total_assembly_qty AS selisih'),
-                    'mp.name AS product_name',
-                    'mp.code',
-                    'mc.machineno',
-                ])
-                ->distinct()
+                ->select($columns)
                 ->join('tdorderlpk AS tdol', 'tdpg.lpk_id', '=', 'tdol.id')
                 ->leftJoin('msproduct AS mp', 'mp.id', '=', 'tdol.product_id')
                 ->leftJoin('tdproduct_goods_assembly AS tga', 'tga.product_goods_id', '=', 'tdpg.id')
                 ->leftJoin('tdproduct_assembly AS ta', 'ta.id', '=', 'tga.product_assembly_id')
                 ->leftJoin('msmachine AS mc', 'mc.id', '=', 'tdpg.machine_id');
 
-            if (isset($this->tglMasuk) && $this->tglMasuk != '') {
-                $data = $data->where('tdpg.created_on', '>=', $tglAwal);
+            if ($this->transaksi == 2) {
+                if (!empty($this->tglMasuk)) {
+                    $data->whereRaw("(tdpg.production_date::date + tdpg.work_hour::time) >= ?", [$tglAwal]);
+                }
+                if (!empty($this->tglKeluar)) {
+                    $data->whereRaw("(tdpg.production_date::date + tdpg.work_hour::time) <= ?", [$tglAkhir]);
+                }
+            } else {
+                if (!empty($this->tglMasuk))  { $data->where('tdpg.created_on', '>=', $tglAwal); }
+                if (!empty($this->tglKeluar)) { $data->where('tdpg.created_on', '<=', $tglAkhir); }
             }
-            if (isset($this->tglKeluar) && $this->tglKeluar != '') {
-                $data = $data->where('tdpg.created_on', '<=', $tglAkhir);
+
+            if (!empty($this->lpk_no) && $this->lpk_no != "undefined") {
+                $data->where('tdol.lpk_no', 'ilike', "%{$this->lpk_no}%");
             }
-            if (isset($this->lpk_no) && $this->lpk_no != "" && $this->lpk_no != "undefined") {
-                $data = $data->where('tdol.lpk_no', 'ilike', "%{$this->lpk_no}%");
-            }
-            if (isset($this->searchTerm) && $this->searchTerm != '') {
-                $data = $data->where(function ($query) {
-                    $query->where('tdol.lpk_no', 'ilike', '%' . $this->searchTerm . '%')
-                        ->orWhere('tdpg.production_no', 'ilike', '%' . $this->searchTerm . '%')
-                        ->orWhere('tdpg.product_id', 'ilike', '%' . $this->searchTerm . '%')
-                        ->orWhere('tdpg.nomor_palet', 'ilike', '%' . $this->searchTerm . '%')
-                        ->orWhere('tdpg.machine_id', 'ilike', '%' . $this->searchTerm . '%')
-                        ->orWhere('tdpg.nomor_lot', 'ilike', '%' . $this->searchTerm . '%');
+            if (!empty($this->searchTerm)) {
+                $data->where(function ($q) {
+                    $q->where('tdol.lpk_no',         'ilike', "%{$this->searchTerm}%")
+                      ->orWhere('tdpg.production_no', 'ilike', "%{$this->searchTerm}%")
+                      ->orWhere('tdpg.nomor_palet',   'ilike', "%{$this->searchTerm}%")
+                      ->orWhere('tdpg.nomor_lot',     'ilike', "%{$this->searchTerm}%")
+                      ->orWhere('mp.name',             'ilike', "%{$this->searchTerm}%")
+                      ->orWhere('mp.code',             'ilike', "%{$this->searchTerm}%");
                 });
             }
-            if (isset($this->idProduct) && $this->idProduct['value'] != "" && $this->idProduct != "undefined") {
-                $data = $data->where('tdpg.product_id', $this->idProduct['value']);
+            if (!empty($this->idProduct) && $this->idProduct != "undefined") {
+                $data->where('tdpg.product_id', $this->idProduct);
             }
-            if (isset($this->machineId) && $this->machineId['value'] != "" && $this->machineId != "undefined") {
-                $data = $data->where('tdpg.machine_id', $this->machineId['value']);
+            if (!empty($this->machineId) && $this->machineId != "undefined") {
+                $data->where('tdpg.machine_id', $this->machineId);
             }
-            if (isset($this->gentan_no) && $this->gentan_no != '') {
-                $data = $data->where('ta.gentan_no', $this->gentan_no);
+            if (!empty($this->gentan_no) && $this->gentan_no != "undefined") {
+                $data->where('ta.gentan_no', $this->gentan_no);
             }
-            if (isset($this->status) && $this->status['value'] != "" && $this->status != "undefined") {
-                if ($this->status['value'] == 0) {
-                    $data->where('tdpg.status_production', 0)
-                        ->where('tdpg.status_warehouse', 0);
-                } elseif ($this->status['value'] == 1) {
+            if (isset($this->status) && $this->status !== "" && $this->status !== null) {
+                if ($this->status == 0) {
+                    $data->where('tdpg.status_production', 0)->where('tdpg.status_warehouse', 0);
+                } elseif ($this->status == 1) {
                     $data->where('tdpg.status_production', 1);
-                } elseif ($this->status['value'] == 2) {
+                } elseif ($this->status == 2) {
                     $data->where('tdpg.status_warehouse', 1);
                 }
             }
 
-            // $data = $data->paginate(8);
+            $data = $data->orderBy($this->sortColumn, $this->sortDirection)
+                         ->paginate($this->perPage);
+
+        } catch (\Exception $e) {
+            $data = new \Illuminate\Pagination\LengthAwarePaginator([], 0, $this->perPage);
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Terjadi kesalahan: ' . $e->getMessage()]);
         }
-        $data = $data->get();
+
+        $products = Cache::remember('ms_products_seitai', 3600, fn() =>
+            MsProduct::select(['id', 'name', 'code'])->orderBy('code')->get()
+        );
+        $machine = Cache::remember('ms_machines_seitai', 3600, fn() =>
+            MsMachine::select(['id', 'machineno'])
+                ->where('machineno', 'LIKE', '00S%')
+                ->orderBy('machineno')->get()
+        );
+
         return view('livewire.nippo-seitai.nippo-seitai', [
-            'data' => $data,
+            'data'     => $data,
+            'products' => $products,
+            'machine'  => $machine,
         ])->extends('layouts.master');
-    }
-
-
-    public function rendered()
-    {
-        $this->dispatch('initDataTable');
     }
 }
