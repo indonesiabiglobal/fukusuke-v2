@@ -163,6 +163,7 @@ class NippoSeitaiController extends Component
         try {
             $data = DB::table('tdproduct_goods AS tdpg')
                 ->select($columns)
+                ->distinct()
                 ->join('tdorderlpk AS tdol', 'tdpg.lpk_id', '=', 'tdol.id')
                 ->leftJoin('msproduct AS mp', 'mp.id', '=', 'tdol.product_id')
                 ->leftJoin('tdproduct_goods_assembly AS tga', 'tga.product_goods_id', '=', 'tdpg.id')
