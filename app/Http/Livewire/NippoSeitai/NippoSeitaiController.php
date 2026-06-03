@@ -3,7 +3,6 @@
 namespace App\Http\Livewire\NippoSeitai;
 
 use Livewire\Component;
-use Livewire\Attributes\Lazy;
 use Carbon\Carbon;
 use App\Models\MsProduct;
 use App\Models\MsBuyer;
@@ -16,22 +15,16 @@ use Livewire\WithoutUrlPagination;
 use Livewire\Attributes\Session;
 use App\Traits\HandlesHeavyJob;
 
-#[Lazy]
 class NippoSeitaiController extends Component
 {
     use HandlesHeavyJob;
     use WithPagination, WithoutUrlPagination;
 
-    public function placeholder(): string
+    public bool $isLoaded = false;
+
+    public function loadData(): void
     {
-        return <<<HTML
-        <div class="card">
-            <div class="card-body py-5 text-center">
-                <div class="spinner-border text-primary me-2" role="status" style="width:2rem;height:2rem;"></div>
-                <span class="text-muted fs-5">Memuat data nippo seitai...</span>
-            </div>
-        </div>
-        HTML;
+        $this->isLoaded = true;
     }
 
     protected $paginationTheme = 'bootstrap';
@@ -125,6 +118,23 @@ class NippoSeitaiController extends Component
 
     public function render()
     {
+        // Return empty paginator immediately on first render (wire:init will trigger loadData)
+        if (!$this->isLoaded) {
+            $products = Cache::remember('ms_products_seitai', 3600, fn() =>
+                MsProduct::select(['id', 'name', 'code'])->orderBy('code')->get()
+            );
+            $machine = Cache::remember('ms_machines_seitai', 3600, fn() =>
+                MsMachine::select(['id', 'machineno'])
+                    ->where('machineno', 'LIKE', '00S%')
+                    ->orderBy('machineno')->get()
+            );
+            return view('livewire.nippo-seitai.nippo-seitai', [
+                'data'     => new \Illuminate\Pagination\LengthAwarePaginator([], 0, $this->perPage),
+                'products' => $products,
+                'machine'  => $machine,
+            ])->extends('layouts.master');
+        }
+
         $tglAwal  = Carbon::parse($this->tglMasuk)->format('d-m-Y 00:00:00');
         $tglAkhir = Carbon::parse($this->tglKeluar)->format('d-m-Y 23:59:59');
 
