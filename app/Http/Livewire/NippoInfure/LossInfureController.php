@@ -12,60 +12,65 @@ use Illuminate\Support\Facades\DB;
 use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
 use Livewire\Attributes\Session;
-use PhpOffice\PhpSpreadsheet\Calculation\MathTrig\Sum;
 use App\Traits\HandlesHeavyJob;
 
 class LossInfureController extends Component
 {
-    use HandlesHeavyJob;
-    protected $paginationTheme = 'bootstrap';
-    public bool $isLoaded = false;
-    #[Session]
-    public $tglMasuk;
-    #[Session]
-    public $tglKeluar;
-    #[Session]
-    public $transaksi;
-    #[Session]
-    public $machineId;
-    #[Session]
-    public $status;
-    #[Session]
-    public $lpk_no;
-    #[Session]
-    public $searchTerm;
-    #[Session]
-    public $idProduct;
-    #[Session]
-    public $sortingTable;
+    use HandlesHeavyJob, WithPagination, WithoutUrlPagination;
 
-    use WithPagination, WithoutUrlPagination;
+    protected $paginationTheme = 'bootstrap';
+
+    public bool $isLoaded = false;
+
+    #[Session] public $tglMasuk;
+    #[Session] public $tglKeluar;
+    #[Session] public $transaksi;
+    #[Session] public $machineId;
+    #[Session] public $status;
+    #[Session] public $lpk_no;
+    #[Session] public $searchTerm;
+    #[Session] public $idProduct;
+    #[Session] public $perPage      = 10;
+    #[Session] public $sortColumn   = 'tdpa.created_on';
+    #[Session] public $sortDirection = 'desc';
 
     public function loadData(): void
     {
         $this->isLoaded = true;
     }
 
-    public function mount()
+    public function mount(): void
     {
-        if (empty($this->transaksi)) {
-            $this->transaksi = 1;
-        }
+        if (is_array($this->idProduct)) { $this->idProduct = $this->idProduct['value'] ?? null; }
+        if (is_array($this->machineId)) { $this->machineId = $this->machineId['value'] ?? null; }
+        if (is_array($this->status))    { $this->status    = $this->status['value']    ?? null; }
+
+        if (empty($this->transaksi)) { $this->transaksi = 1; }
         if (empty($this->tglMasuk) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $this->tglMasuk)) {
             $this->tglMasuk = Carbon::now()->format('Y-m-d');
         }
         if (empty($this->tglKeluar) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $this->tglKeluar)) {
             $this->tglKeluar = Carbon::now()->format('Y-m-d');
         }
-        if (empty($this->sortingTable)) {
-            $this->sortingTable = [[1, 'asc']];
-        }
     }
 
-    public function updateSortingTable($value)
+    public function sortBy(string $column): void
     {
-        $this->sortingTable = $value;
-        $this->skipRender();
+        $allowed = [
+            'tdol.lpk_no', 'tdol.lpk_date', 'tdol.panjang_lpk',
+            'tdpa.panjang_produksi', 'tdol.qty_gentan', 'tdpa.gentan_no',
+            'tdpa.berat_standard', 'mp.name', 'mp.code', 'msm.machineno',
+            'tdpa.production_date', 'tdpa.created_on', 'tdpa.work_shift',
+            'tdpa.seq_no', 'tdpa.infure_berat_loss', 'tdpa.updated_on',
+        ];
+        if (!in_array($column, $allowed)) return;
+        if ($this->sortColumn === $column) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortColumn    = $column;
+            $this->sortDirection = 'asc';
+        }
+        $this->resetPage();
     }
 
     public function add()
@@ -73,9 +78,9 @@ class LossInfureController extends Component
         return redirect()->route('add-order');
     }
 
-    public function search()
+    public function search(): void
     {
-        $this->render();
+        $this->resetPage();
     }
 
     public function print()
@@ -138,7 +143,7 @@ class LossInfureController extends Component
 
         if (!$this->isLoaded) {
             return view('livewire.nippo-infure.loss-infure', [
-                'data'    => collect(),
+                'data'     => new \Illuminate\Pagination\LengthAwarePaginator([], 0, $this->perPage),
                 'products' => $products,
                 'buyer'    => $buyer,
                 'machine'  => $machine,
@@ -193,57 +198,47 @@ class LossInfureController extends Component
             ->leftJoin('msproduct AS mp', 'mp.id', '=', 'tdol.product_id')
             ->join('msmachine AS msm', 'msm.id', '=', 'tdpa.machine_id');
 
-        if ($this->transaksi == 2) {
-            if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
-                $data = $data->where('tdpa.created_on', '>=', $this->tglMasuk);
-            }
-
-            if (isset($this->tglKeluar) && $this->tglKeluar != "" && $this->tglKeluar != "undefined") {
-                $data = $data->where('tdpa.created_on', '<=', $this->tglKeluar);
-            }
-        } else {
-            if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
-                $data = $data->where('tdpa.production_date', '>=', $this->tglMasuk);
-            }
-
-            if (isset($this->tglKeluar) && $this->tglKeluar != "" && $this->tglKeluar != "undefined") {
-                $data = $data->where('tdpa.production_date', '<=', $this->tglKeluar);
-            }
+        $dateColumn = $this->transaksi == 2 ? 'tdpa.created_on' : 'tdpa.production_date';
+        if (!empty($this->tglMasuk) && $this->tglMasuk !== 'undefined') {
+            $data->where($dateColumn, '>=', $this->tglMasuk);
         }
-        if (isset($this->machineId) && $this->machineId['value'] != "" && $this->machineId != "undefined") {
-            $data = $data->where('msm.id', $this->machineId['value']);
+        if (!empty($this->tglKeluar) && $this->tglKeluar !== 'undefined') {
+            $data->where($dateColumn, '<=', $this->tglKeluar);
         }
-
-        if (isset($this->lpk_no) && $this->lpk_no != "" && $this->lpk_no != "undefined") {
-            $data = $data->where('tdol.lpk_no', 'ilike', "%{$this->lpk_no}%");
+        if (!empty($this->machineId) && $this->machineId !== 'undefined') {
+            $data->where('msm.id', $this->machineId);
         }
-
-        if (isset($this->idProduct) && $this->idProduct['value'] != "" && $this->idProduct != "undefined") {
-            $data = $data->where('tdpa.product_id', $this->idProduct['value']);
+        if (!empty($this->lpk_no) && $this->lpk_no !== 'undefined') {
+            $data->where('tdol.lpk_no', 'ilike', "%{$this->lpk_no}%");
         }
-
-        if (isset($this->status) && $this->status['value'] != "" && $this->status != "undefined") {
-            if ($this->status['value'] == 0) {
-                $data->where('tdpa.status_production', 0)
-                    ->where('tdpa.status_kenpin', 0);
-            } elseif ($this->status['value'] == 1) {
+        if (!empty($this->idProduct) && $this->idProduct !== 'undefined') {
+            $data->where('tdpa.product_id', $this->idProduct);
+        }
+        if (isset($this->status) && $this->status !== '' && $this->status !== null && $this->status !== 'undefined') {
+            if ($this->status == 0) {
+                $data->where('tdpa.status_production', 0)->where('tdpa.status_kenpin', 0);
+            } elseif ($this->status == 1) {
                 $data->where('tdpa.status_production', 1);
-            } elseif ($this->status['value'] == 2) {
+            } elseif ($this->status == 2) {
                 $data->where('tdpa.status_kenpin', 1);
             }
         }
-
-        if (isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined") {
-            $data = $data->where(function ($query) {
-                $query->where('tdpa.production_no', 'ilike', "%{$this->searchTerm}%")
-                    ->orWhere('tdpa.product_id', 'ilike', "%{$this->searchTerm}%")
-                    ->orWhere('tdpa.machine_id', 'ilike', "%{$this->searchTerm}%")
-                    ->orWhere('tdpa.nomor_han', 'ilike', "%{$this->searchTerm}%");
+        if (!empty($this->searchTerm) && $this->searchTerm !== 'undefined') {
+            $data->where(function ($q) {
+                $q->where('tdpa.production_no', 'ilike', "%{$this->searchTerm}%")
+                    ->orWhere('tdpa.product_id',  'ilike', "%{$this->searchTerm}%")
+                    ->orWhere('tdpa.machine_id',  'ilike', "%{$this->searchTerm}%")
+                    ->orWhere('tdpa.nomor_han',   'ilike', "%{$this->searchTerm}%");
             });
         }
-        $data->orderBy('tdpa.created_on', 'desc');
-        // $data = $data->paginate(8);
-        $data = $data->get();
+
+        try {
+            $data = $data->orderBy($this->sortColumn, $this->sortDirection)
+                         ->paginate($this->perPage);
+        } catch (\Exception $e) {
+            $data = new \Illuminate\Pagination\LengthAwarePaginator([], 0, $this->perPage);
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Terjadi kesalahan: ' . $e->getMessage()]);
+        }
 
         return view('livewire.nippo-infure.loss-infure', [
             'data'     => $data,
@@ -251,10 +246,5 @@ class LossInfureController extends Component
             'buyer'    => $buyer,
             'machine'  => $machine,
         ])->extends('layouts.master');
-    }
-
-    public function rendered()
-    {
-        $this->dispatch('initDataTable');
     }
 }
