@@ -129,7 +129,7 @@
                         </span>
                         <div wire:loading wire:target="file">
                             <span class="d-flex align-items-center">
-                                <span class="spinner-border flex-shrink-0" role="status"></span>
+<span class="spinner-border flex-shrink-0" role="status"><span class="visually-hidden">Loading...</span></span>
                                 <span class="flex-grow-1 ms-1">Loading...</span>
                             </span>
                         </div>

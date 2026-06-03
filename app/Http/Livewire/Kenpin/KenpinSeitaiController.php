@@ -31,6 +31,11 @@ class KenpinSeitaiController extends Component
     #[Session] public $sortColumn   = 'tdkg.kenpin_date';
     #[Session] public $sortDirection = 'desc';
 
+    public function updatedPerPage(): void
+    {
+        $this->resetPage();
+    }
+
     public function loadData(): void
     {
         $this->isLoaded = true;

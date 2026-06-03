@@ -30,6 +30,11 @@ class KenpinInfureController extends Component
     #[Session] public $sortColumn   = 'tdka.kenpin_date';
     #[Session] public $sortDirection = 'desc';
 
+    public function updatedPerPage(): void
+    {
+        $this->resetPage();
+    }
+
     public function loadData(): void
     {
         $this->isLoaded = true;

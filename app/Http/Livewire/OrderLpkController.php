@@ -37,6 +37,11 @@ class OrderLpkController extends Component
     #[Session] public $sortColumn   = 'tod.order_date';
     #[Session] public $sortDirection = 'desc';
 
+    public function updatedPerPage(): void
+    {
+        $this->resetPage();
+    }
+
     public $file;
 
     public function sortBy(string $column): void
