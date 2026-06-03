@@ -33,16 +33,10 @@
                             </div>
                             <div class="col-9">
                                 <div class="input-group">
-                                    <input wire:model.defer="tglMasuk" type="text" class="form-control"
-                                        style="padding:0.44rem" data-provider="flatpickr" data-date-format="d M Y">
-                                    <span class="input-group-text py-0">
-                                        <i class="ri-calendar-event-fill fs-4"></i>
-                                    </span>
-                                    <input wire:model.defer="tglKeluar" type="text" class="form-control"
-                                        style="padding:0.44rem" data-provider="flatpickr" data-date-format="d M Y">
-                                    <span class="input-group-text py-0">
-                                        <i class="ri-calendar-event-fill fs-4"></i>
-                                    </span>
+                                    <input wire:model.defer="tglMasuk" type="date" class="form-control"
+                                        style="padding:0.44rem">
+                                    <input wire:model.defer="tglKeluar" type="date" class="form-control"
+                                        style="padding:0.44rem">
                                 </div>
                             </div>
                         </div>
@@ -359,6 +353,7 @@
         }
     </style>
 </div>
+@endif
 
 @script
     <script>
@@ -424,5 +419,4 @@
         });
     </script>
 @endscript
-@endif
 
