@@ -1,4 +1,13 @@
-<div class="row">
+<div wire:init="loadData">
+    @if(!$isLoaded)
+    <div class="card">
+        <div class="card-body py-5 text-center">
+            <div class="spinner-border text-primary me-2" role="status" style="width:2.5rem;height:2.5rem;"></div>
+            <p class="text-muted mt-3 mb-0 fs-5">Memuat data kenpin seitai...</p>
+        </div>
+    </div>
+    @else
+    <div class="row">
     <div class="col-12 col-lg-6">
         <div class="row">
             <div class="col-12 col-lg-3">
@@ -373,3 +382,5 @@
         }
     </script>
 @endscript
+@endif
+

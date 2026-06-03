@@ -19,6 +19,7 @@ class NippoInfureController extends Component
 {
     use HandlesHeavyJob;
     protected $paginationTheme = 'bootstrap';
+    public bool $isLoaded = false;
     #[Session]
     public $tglMasuk;
     #[Session]
@@ -140,6 +141,11 @@ class NippoInfureController extends Component
         }
     }
 
+    public function loadData(): void
+    {
+        $this->isLoaded = true;
+    }
+
     public function add()
     {
         return redirect()->route('add-order');
@@ -147,6 +153,21 @@ class NippoInfureController extends Component
 
     public function render()
     {
+        $products = Cache::remember('ms_products_infure', 3600, fn() =>
+            MsProduct::select(['id', 'name', 'code', 'code_alias'])->orderBy('code')->get()
+        );
+        $machine = Cache::remember('ms_machines_infure', 3600, fn() =>
+            MsMachine::select(['id', 'machineno'])->whereIn('department_id', [10, 12, 15, 2, 4, 10])->orderBy('machineno')->get()
+        );
+
+        if (!$this->isLoaded) {
+            return view('livewire.nippo-infure.nippo-infure', [
+                'data'     => new \Illuminate\Pagination\LengthAwarePaginator([], 0, $this->perPage),
+                'products' => $products,
+                'machine'  => $machine,
+            ])->extends('layouts.master');
+        }
+
         try {
             $data = DB::table('tdproduct_assembly AS tda')
                 ->select([
@@ -254,15 +275,6 @@ class NippoInfureController extends Component
             $data = new \Illuminate\Pagination\LengthAwarePaginator([], 0, $this->perPage);
             $this->dispatch('notification', ['type' => 'error', 'message' => 'Terjadi kesalahan saat mengambil data: ' . $e->getMessage()]);
         }
-
-        // Select hanya kolom yang dipakai di dropdown — dari 97 kolom jadi 4 kolom (~25x lebih kecil)
-        // TTL 3600s (1 jam): produk & mesin jarang berubah, tidak perlu refresh tiap 5 menit
-        $products = Cache::remember('ms_products_infure', 3600, fn() =>
-            MsProduct::select(['id', 'name', 'code', 'code_alias'])->orderBy('code')->get()
-        );
-        $machine = Cache::remember('ms_machines_infure', 3600, fn() =>
-            MsMachine::select(['id', 'machineno'])->whereIn('department_id', [10, 12, 15, 2, 4, 10])->orderBy('machineno')->get()
-        );
 
         return view('livewire.nippo-infure.nippo-infure', [
             'data'     => $data,

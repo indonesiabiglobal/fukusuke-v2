@@ -14,14 +14,14 @@ use Livewire\WithFileUploads;
 use Maatwebsite\Excel\Facades\Excel;
 use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\Session;
 use Illuminate\Support\Str;
 
 class OrderLpkController extends Component
 {
     protected $paginationTheme = 'bootstrap';
-    public $products;
-    public $buyer;
+    public bool $isLoaded = false;
     #[Session]
     public $tglMasuk;
     #[Session]
@@ -60,11 +60,14 @@ class OrderLpkController extends Component
         }
     }
 
+    public function loadData(): void
+    {
+        $this->isLoaded = true;
+    }
+
     public function mount()
     {
         $this->shouldForgetSession();
-        $this->products = MsProduct::get();
-        $this->buyer = MsBuyer::get();
 
         if (empty($this->tglMasuk)) {
             $this->tglMasuk = Carbon::now()->format('d M Y');
@@ -150,6 +153,21 @@ class OrderLpkController extends Component
 
     public function render()
     {
+        $products = Cache::remember('ms_products_order_lpk', 3600, fn() =>
+            MsProduct::select(['id', 'name', 'code'])->orderBy('code')->get()
+        );
+        $buyer = Cache::remember('ms_buyers_order_lpk', 3600, fn() =>
+            MsBuyer::select(['id', 'name'])->orderBy('name')->get()
+        );
+
+        if (!$this->isLoaded) {
+            return view('livewire.order-lpk.order-lpk', [
+                'data'     => collect(),
+                'products' => $products,
+                'buyer'    => $buyer,
+            ])->extends('layouts.master');
+        }
+
         $tglAwal = Carbon::parse($this->tglMasuk)->format('d-m-Y 00:00:00');
         $tglAkhir = Carbon::parse($this->tglKeluar)->format('d-m-Y 23:59:59');
 
@@ -217,7 +235,9 @@ class OrderLpkController extends Component
         $data = $data->get();
 
         return view('livewire.order-lpk.order-lpk', [
-            'data' => $data,
+            'data'     => $data,
+            'products' => $products,
+            'buyer'    => $buyer,
         ])->extends('layouts.master');
     }
 
