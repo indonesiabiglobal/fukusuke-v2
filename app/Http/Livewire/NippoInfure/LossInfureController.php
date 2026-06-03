@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use App\Models\MsProduct;
 use App\Models\MsBuyer;
 use App\Models\MsMachine;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
@@ -18,9 +19,7 @@ class LossInfureController extends Component
 {
     use HandlesHeavyJob;
     protected $paginationTheme = 'bootstrap';
-    public $products;
-    public $buyer;
-    public $machine;
+    public bool $isLoaded = false;
     #[Session]
     public $tglMasuk;
     #[Session]
@@ -42,12 +41,13 @@ class LossInfureController extends Component
 
     use WithPagination, WithoutUrlPagination;
 
+    public function loadData(): void
+    {
+        $this->isLoaded = true;
+    }
+
     public function mount()
     {
-        $this->products = MsProduct::get();
-        $this->buyer = MsBuyer::get();
-        $this->machine = MsMachine::get();
-
         if (empty($this->transaksi)) {
             $this->transaksi = 1;
         }
@@ -126,6 +126,25 @@ class LossInfureController extends Component
 
     public function render()
     {
+        $products = Cache::remember('ms_products_loss_infure', 3600, fn() =>
+            MsProduct::select(['id', 'name', 'code'])->orderBy('code')->get()
+        );
+        $buyer = Cache::remember('ms_buyers_loss_infure', 3600, fn() =>
+            MsBuyer::select(['id', 'name'])->orderBy('name')->get()
+        );
+        $machine = Cache::remember('ms_machines_loss_infure', 3600, fn() =>
+            MsMachine::select(['id', 'machineno'])->orderBy('machineno')->get()
+        );
+
+        if (!$this->isLoaded) {
+            return view('livewire.nippo-infure.loss-infure', [
+                'data'    => collect(),
+                'products' => $products,
+                'buyer'    => $buyer,
+                'machine'  => $machine,
+            ])->extends('layouts.master');
+        }
+
         $data = DB::table('tdproduct_assembly AS tdpa')
             ->select([
                 'tdpa.id AS id',
@@ -227,7 +246,10 @@ class LossInfureController extends Component
         $data = $data->get();
 
         return view('livewire.nippo-infure.loss-infure', [
-            'data' => $data
+            'data'     => $data,
+            'products' => $products,
+            'buyer'    => $buyer,
+            'machine'  => $machine,
         ])->extends('layouts.master');
     }
 

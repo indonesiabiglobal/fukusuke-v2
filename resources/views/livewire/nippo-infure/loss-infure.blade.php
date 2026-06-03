@@ -1,4 +1,12 @@
-<div>
+<div wire:init="loadData">
+    @if(!$isLoaded)
+    <div class="card">
+        <div class="card-body py-5 text-center">
+            <div class="spinner-border text-primary me-2" role="status" style="width:2.5rem;height:2.5rem;"></div>
+            <p class="text-muted mt-3 mb-0 fs-5">Memuat data loss infure...</p>
+        </div>
+    </div>
+    @else
     <div class="row filter-section">
         <div class="col-12 col-lg-7">
             <div class="row">
@@ -460,3 +468,5 @@
         }
     </script>
 @endscript
+@endif
+

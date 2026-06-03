@@ -6,6 +6,7 @@ use App\Models\MsProduct;
 use Carbon\Carbon;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Livewire\WithoutUrlPagination;
 use Livewire\Attributes\Session;
@@ -14,7 +15,7 @@ class KenpinSeitaiController extends Component
 {
     use WithPagination, WithoutUrlPagination;
 
-    public $products;
+    public bool $isLoaded = false;
     #[Session]
     public $tglMasuk;
     #[Session]
@@ -35,11 +36,13 @@ class KenpinSeitaiController extends Component
     public $sortingTable;
 
 
+    public function loadData(): void
+    {
+        $this->isLoaded = true;
+    }
+
     public function mount()
     {
-        $this->products = MsProduct::active()
-            ->orderBy('code_alias', 'ASC')
-            ->orderBy('name', 'ASC')->get();
         if (empty($this->tglMasuk)) {
             $this->tglMasuk = Carbon::now()->format('d-m-Y');
         }
@@ -64,6 +67,18 @@ class KenpinSeitaiController extends Component
 
     public function render()
     {
+        $products = Cache::remember('ms_products_kenpin', 3600, fn() =>
+            MsProduct::select(['id', 'name', 'code', 'code_alias'])
+                ->active()->orderBy('code_alias', 'ASC')->orderBy('name', 'ASC')->get()
+        );
+
+        if (!$this->isLoaded) {
+            return view('livewire.kenpin.kenpin-seitai', [
+                'data'     => collect(),
+                'products' => $products,
+            ])->extends('layouts.master');
+        }
+
         // aggregate goods per kenpin to avoid duplicate tdkg rows
         $pg = DB::table('tdkenpin_goods_detail AS tdkgd')
             ->join('tdproduct_goods AS tdpg', 'tdkgd.product_goods_id', '=', 'tdpg.id')
@@ -124,7 +139,8 @@ class KenpinSeitaiController extends Component
         $data = $data->get();
 
         return view('livewire.kenpin.kenpin-seitai', [
-            'data' => $data
+            'data'     => $data,
+            'products' => $products,
         ])->extends('layouts.master');
     }
 

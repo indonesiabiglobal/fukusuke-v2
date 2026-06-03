@@ -7,6 +7,7 @@ use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
 use Carbon\Carbon;
 use App\Models\MsProduct;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Session;
 
@@ -15,7 +16,7 @@ class KenpinInfureController extends Component
     use WithPagination, WithoutUrlPagination;
 
     protected $paginationTheme = 'bootstrap';
-    public $products;
+    public bool $isLoaded = false;
     #[Session]
     public $tglMasuk;
     #[Session]
@@ -33,12 +34,13 @@ class KenpinInfureController extends Component
     #[Session]
     public $sortingTable;
 
+    public function loadData(): void
+    {
+        $this->isLoaded = true;
+    }
+
     public function mount()
     {
-        $this->products = MsProduct::active()
-            ->orderBy('code_alias', 'ASC')
-            ->orderBy('name', 'ASC')->get();
-
         if (empty($this->tglMasuk)) {
             $this->tglMasuk = Carbon::now()->format('d-m-Y');
         }
@@ -69,6 +71,18 @@ class KenpinInfureController extends Component
 
     public function render()
     {
+        $products = Cache::remember('ms_products_kenpin', 3600, fn() =>
+            MsProduct::select(['id', 'name', 'code', 'code_alias'])
+                ->active()->orderBy('code_alias', 'ASC')->orderBy('name', 'ASC')->get()
+        );
+
+        if (!$this->isLoaded) {
+            return view('livewire.kenpin.kenpin-infure', [
+                'data'     => collect(),
+                'products' => $products,
+            ])->extends('layouts.master');
+        }
+
         $data = DB::table('tdkenpin AS tdka')
             ->join('tdorderlpk AS tdol', 'tdka.lpk_id', '=', 'tdol.id')
             ->join('msproduct AS msp', 'tdol.product_id', '=', 'msp.id')
@@ -120,7 +134,8 @@ class KenpinInfureController extends Component
         $data = $data->get();
 
         return view('livewire.kenpin.kenpin-infure', [
-            'data' => $data
+            'data'     => $data,
+            'products' => $products,
         ])->extends('layouts.master');
     }
 

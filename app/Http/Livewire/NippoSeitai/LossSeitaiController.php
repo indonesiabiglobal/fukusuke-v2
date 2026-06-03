@@ -6,6 +6,7 @@ use App\Models\MsMachine;
 use App\Models\MsProduct;
 use Carbon\Carbon;
 use Livewire\Component;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
@@ -21,12 +22,11 @@ class LossSeitaiController extends Component
 {
     use HandlesHeavyJob;
     protected $paginationTheme = 'bootstrap';
-    public $products;
+    public bool $isLoaded = false;
     #[Session]
     public $tglMasuk;
     #[Session]
     public $tglKeluar;
-    public $machine;
     #[Session]
     public $transaksi;
     #[Session]
@@ -44,11 +44,13 @@ class LossSeitaiController extends Component
 
     use WithPagination, WithoutUrlPagination;
 
+    public function loadData(): void
+    {
+        $this->isLoaded = true;
+    }
+
     public function mount()
     {
-        $this->products = MsProduct::get();
-        // $this->buyer = MsBuyer::get();
-        $this->machine = MsMachine::where('machineno',  'LIKE', '00S%')->orderBy('machineno')->get();
 
         if (empty($this->transaksi)) {
             $this->transaksi = 1;
@@ -547,6 +549,21 @@ class LossSeitaiController extends Component
 
     public function render()
     {
+        $products = Cache::remember('ms_products_loss_seitai', 3600, fn() =>
+            MsProduct::select(['id', 'name', 'code'])->orderBy('code')->get()
+        );
+        $machine = Cache::remember('ms_machines_loss_seitai', 3600, fn() =>
+            MsMachine::select(['id', 'machineno'])->where('machineno', 'LIKE', '00S%')->orderBy('machineno')->get()
+        );
+
+        if (!$this->isLoaded) {
+            return view('livewire.nippo-seitai.loss-seitai', [
+                'data'     => collect(),
+                'products' => $products,
+                'machine'  => $machine,
+            ])->extends('layouts.master');
+        }
+
         if ($this->transaksi == 2) {
             $data = DB::table('tdproduct_goods AS tdpg')
                 ->select([
@@ -718,7 +735,9 @@ class LossSeitaiController extends Component
             $data = $data->get();
         }
         return view('livewire.nippo-seitai.loss-seitai', [
-            'data' => $data,
+            'data'     => $data,
+            'products' => $products,
+            'machine'  => $machine,
         ])->extends('layouts.master');
     }
 
