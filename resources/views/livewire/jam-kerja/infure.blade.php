@@ -1,4 +1,17 @@
-<div>
+<div wire:init="loadData">
+    @if (!$isLoaded)
+        <div>
+            <div class="placeholder-glow mb-3" style="height:80px">
+                <span class="placeholder col-12 rounded" style="height:80px"></span>
+            </div>
+            <div style="overflow:hidden;border-radius:4px">
+                @for ($i = 0; $i < 8; $i++)
+                    <div style="height:36px;margin-bottom:2px;border-radius:3px;background:linear-gradient(90deg,#e9ecef 25%,#f8f9fa 50%,#e9ecef 75%);background-size:200% 100%;animation:ijk-bar-slide 1.2s {{ $i * 0.1 }}s infinite linear"></div>
+                @endfor
+            </div>
+            <style>@keyframes ijk-bar-slide{0%{background-position:200% 0}100%{background-position:-200% 0}}</style>
+        </div>
+    @else
     <div class="row filter-section">
         <div class="col-12 col-lg-7">
             <div class="row">
@@ -17,17 +30,10 @@
                             <div class="col-9">
                                 <div class="form-group">
                                     <div class="input-group">
-                                        <input wire:model.defer="tglMasuk" type="text" class="form-control"
-                                            style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
-                                        <span class="input-group-text py-0">
-                                            <i class="ri-calendar-event-fill fs-4"></i>
-                                        </span>
-
-                                        <input wire:model.defer="tglKeluar" type="text" class="form-control"
-                                            style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
-                                        <span class="input-group-text py-0">
-                                            <i class="ri-calendar-event-fill fs-4"></i>
-                                        </span>
+                                        <input wire:model.defer="tglMasuk" type="date" class="form-control"
+                                            style="padding:0.44rem" value="{{ $tglMasuk }}">
+                                        <input wire:model.defer="tglKeluar" type="date" class="form-control"
+                                            style="padding:0.44rem" value="{{ $tglKeluar }}">
                                     </div>
                                 </div>
                             </div>
@@ -53,11 +59,10 @@
                 </div>
                 <div class="col-12 col-lg-10">
                     <div class="mb-1" wire:ignore>
-                        <select class="form-control" wire:model.defer="machine_id" data-choices
-                            data-choices-sorting-false data-choices-removeItem data-choices-search-field-label>
+                        <select class="form-control select2-machine-ijk">
                             <option value="">- All -</option>
                             @foreach ($machine as $item)
-                                <option value="{{ $item->id }}" @if ($item->id == ($machine_id['value'] ?? null)) selected @endif>
+                                <option value="{{ $item->id }}" @if ($item->id == ($machine_id ?? null)) selected @endif>
                                     {{ $item->machineno }}</option>
                             @endforeach
                         </select>
@@ -68,11 +73,10 @@
                 </div>
                 <div class="col-12 col-lg-10">
                     <div class="mb-1" wire:ignore>
-                        <select class="form-control" wire:model.defer="work_shift_filter" data-choices
-                            data-choices-sorting-false data-choices-removeItem data-choices-search-field-label>
+                        <select class="form-control select2-shift-ijk">
                             <option value="">- All -</option>
                             @foreach ($workShift as $item)
-                                <option value="{{ $item->id }}" @if ($item->id == ($work_shift_filter['value'] ?? null)) selected @endif>
+                                <option value="{{ $item->id }}" @if ($item->id == ($work_shift_filter ?? null)) selected @endif>
                                     Shift-{{ $item->work_shift }}</option>
                             @endforeach
                         </select>
@@ -121,8 +125,8 @@
                                             <div class="form-group" style="margin-left:1px; white-space:nowrap">
                                                 <div class="input-group">
                                                     <input class="form-control" style="padding:0.44rem" autocomplete="off"
-                                                        data-provider="flatpickr" data-date-format="d-m-Y" data-max-date="{{ now()->format('d-m-Y') }}"
-                                                        type="text" wire:model.defer="working_date" placeholder="yyyy/mm/dd" />
+                                                        type="date" wire:model.defer="working_date"
+                                                        max="{{ now()->format('Y-m-d') }}" />
                                                     <span class="input-group-text py-0">
                                                         <i class="ri-calendar-event-fill fs-4"></i>
                                                     </span>
@@ -655,157 +659,144 @@
         </div>
     </div>
 
-    <div class="table-responsive table-card  mt-2  mb-2">
-        {{-- toggle column table --}}
-        <div class="col text-end dropdown">
-            <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
-                class="btn btn-soft-primary btn-icon fs-14 mt-2">
-                <i class="ri-grid-fill"></i>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end">
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="1"
-                            checked> Tanggal
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="2"
-                            checked> Shift
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="3"
-                            checked> Nomor Mesin
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="4"
-                            checked> NIK
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="5"
-                            checked> Petugas
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="6"
-                            checked> Jam Kerja
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="7"
-                            checked> Jam Mati
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="8"
-                            checked> Jam Jalan
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="10"
-                            checked> Update By
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="11"
-                            checked> Updated
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="12"
-                            checked> Created
-                    </label>
-                </li>
-            </ul>
+    <div x-data="{
+        cols: {1:true,2:true,3:true,4:true,5:true,6:true,7:true,8:true,9:true,10:true,11:true}
+    }" class="mt-2 mb-2">
+        <div class="d-flex justify-content-between align-items-center mb-1 flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-2">
+                <label class="text-muted small mb-0">Show</label>
+                <select wire:model.live="perPage" class="form-select form-select-sm" style="width:auto">
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+                <label class="text-muted small mb-0">entries</label>
+            </div>
+            <div class="dropdown">
+                <button type="button" data-bs-toggle="dropdown" class="btn btn-soft-primary btn-icon fs-14">
+                    <i class="ri-grid-fill"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" style="min-width:160px">
+                    <li><label class="dropdown-item" style="cursor:pointer"><input type="checkbox" x-model="cols[1]" class="form-check-input me-1"> Tanggal</label></li>
+                    <li><label class="dropdown-item" style="cursor:pointer"><input type="checkbox" x-model="cols[2]" class="form-check-input me-1"> Shift</label></li>
+                    <li><label class="dropdown-item" style="cursor:pointer"><input type="checkbox" x-model="cols[3]" class="form-check-input me-1"> Nomor Mesin</label></li>
+                    <li><label class="dropdown-item" style="cursor:pointer"><input type="checkbox" x-model="cols[4]" class="form-check-input me-1"> NIK</label></li>
+                    <li><label class="dropdown-item" style="cursor:pointer"><input type="checkbox" x-model="cols[5]" class="form-check-input me-1"> Petugas</label></li>
+                    <li><label class="dropdown-item" style="cursor:pointer"><input type="checkbox" x-model="cols[6]" class="form-check-input me-1"> Jam Kerja</label></li>
+                    <li><label class="dropdown-item" style="cursor:pointer"><input type="checkbox" x-model="cols[7]" class="form-check-input me-1"> Jam Mati</label></li>
+                    <li><label class="dropdown-item" style="cursor:pointer"><input type="checkbox" x-model="cols[8]" class="form-check-input me-1"> Jam Jalan</label></li>
+                    <li><label class="dropdown-item" style="cursor:pointer"><input type="checkbox" x-model="cols[9]" class="form-check-input me-1"> Update By</label></li>
+                    <li><label class="dropdown-item" style="cursor:pointer"><input type="checkbox" x-model="cols[10]" class="form-check-input me-1"> Updated</label></li>
+                    <li><label class="dropdown-item" style="cursor:pointer"><input type="checkbox" x-model="cols[11]" class="form-check-input me-1"> Created</label></li>
+                </ul>
+            </div>
         </div>
-        <table class="table align-middle" id="infureTable">
-            <thead class="table-light">
-                <tr>
-                    <th>Action</th>
-                    <th>Tanggal</th>
-                    <th>Shift</th>
-                    <th>Nomor Mesin</th>
-                    <th>NIK</th>
-                    <th>Petugas</th>
-                    <th>Jam Kerja</th>
-                    <th>Jam Mati</th>
-                    <th>Jam Jalan</th>
-                    <th>Update By</th>
-                    <th>Updated</th>
-                    <th>Created</th>
-                </tr>
-            </thead>
-            <tbody class="list form-check-all">
-                @forelse ($data as $item)
+
+        <div wire:loading.class="opacity-50"
+             wire:target="search,sortBy,gotoPage,nextPage,previousPage,perPage"
+             style="overflow-x:auto; overflow-y:auto; max-height:65vh; transition:opacity 0.15s;">
+            <table class="table align-middle table-nowrap table-hover" id="infureTable">
+                <thead class="table-light">
                     <tr>
-                        <td>
-                            <button type="button" class="btn fs-15 p-1 bg-primary rounded btn-edit"
-                                data-edit-id="{{ $item->id }}" wire:click="edit({{ $item->id }})">
-                                <i class="ri-edit-box-line text-white"></i>
-                            </button>
-                            <button type="button" class="btn fs-15 p-1 bg-danger rounded btn-delete"
-                                data-delete-id="{{ $item->id }}" wire:click="delete({{ $item->id }})">
-                                <i class="ri-delete-bin-line text-white"></i>
-                            </button>
-                        </td>
-                        <td>{{ \Carbon\Carbon::parse($item->working_date)->format('d M Y') }}</td>
-                        <td>{{ $item->work_shift }}</td>
-                        <td>{{ $item->machineno }}</td>
-                        <td> {{ $item->employeeno }}</td>
-                        <td> {{ $item->empname }}</td>
-                        <td>{{ $item->work_hour }}</td>
-                        <td>{{ $item->off_hour }}</td>
-                        <td>{{ $item->on_hour }}</td>
-                        <td>{{ $item->updated_by }}</td>
-                        <td>{{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y H:i:s') }}</td>
-                        <td>{{ \Carbon\Carbon::parse($item->created_on)->format('d M Y H:i:s') }}</td>
+                        <th style="width:80px">Action</th>
+                        <th :class="{'d-none': !cols[1]}" wire:click="sortBy('tdjkm.working_date')" style="cursor:pointer;white-space:nowrap">
+                            Tanggal <i class="{{ $sortColumn === 'tdjkm.working_date' ? ($sortDirection === 'asc' ? 'ri-arrow-up-s-line text-primary' : 'ri-arrow-down-s-line text-primary') : 'ri-expand-up-down-line text-muted' }} fs-12"></i>
+                        </th>
+                        <th :class="{'d-none': !cols[2]}" wire:click="sortBy('tdjkm.work_shift')" style="cursor:pointer;white-space:nowrap">
+                            Shift <i class="{{ $sortColumn === 'tdjkm.work_shift' ? ($sortDirection === 'asc' ? 'ri-arrow-up-s-line text-primary' : 'ri-arrow-down-s-line text-primary') : 'ri-expand-up-down-line text-muted' }} fs-12"></i>
+                        </th>
+                        <th :class="{'d-none': !cols[3]}" wire:click="sortBy('msm.machineno')" style="cursor:pointer;white-space:nowrap">
+                            Nomor Mesin <i class="{{ $sortColumn === 'msm.machineno' ? ($sortDirection === 'asc' ? 'ri-arrow-up-s-line text-primary' : 'ri-arrow-down-s-line text-primary') : 'ri-expand-up-down-line text-muted' }} fs-12"></i>
+                        </th>
+                        <th :class="{'d-none': !cols[4]}" wire:click="sortBy('mse.employeeno')" style="cursor:pointer;white-space:nowrap">
+                            NIK <i class="{{ $sortColumn === 'mse.employeeno' ? ($sortDirection === 'asc' ? 'ri-arrow-up-s-line text-primary' : 'ri-arrow-down-s-line text-primary') : 'ri-expand-up-down-line text-muted' }} fs-12"></i>
+                        </th>
+                        <th :class="{'d-none': !cols[5]}" wire:click="sortBy('mse.empname')" style="cursor:pointer;white-space:nowrap">
+                            Petugas <i class="{{ $sortColumn === 'mse.empname' ? ($sortDirection === 'asc' ? 'ri-arrow-up-s-line text-primary' : 'ri-arrow-down-s-line text-primary') : 'ri-expand-up-down-line text-muted' }} fs-12"></i>
+                        </th>
+                        <th :class="{'d-none': !cols[6]}" wire:click="sortBy('tdjkm.work_hour')" style="cursor:pointer;white-space:nowrap">
+                            Jam Kerja <i class="{{ $sortColumn === 'tdjkm.work_hour' ? ($sortDirection === 'asc' ? 'ri-arrow-up-s-line text-primary' : 'ri-arrow-down-s-line text-primary') : 'ri-expand-up-down-line text-muted' }} fs-12"></i>
+                        </th>
+                        <th :class="{'d-none': !cols[7]}" wire:click="sortBy('tdjkm.off_hour')" style="cursor:pointer;white-space:nowrap">
+                            Jam Mati <i class="{{ $sortColumn === 'tdjkm.off_hour' ? ($sortDirection === 'asc' ? 'ri-arrow-up-s-line text-primary' : 'ri-arrow-down-s-line text-primary') : 'ri-expand-up-down-line text-muted' }} fs-12"></i>
+                        </th>
+                        <th :class="{'d-none': !cols[8]}" wire:click="sortBy('tdjkm.on_hour')" style="cursor:pointer;white-space:nowrap">
+                            Jam Jalan <i class="{{ $sortColumn === 'tdjkm.on_hour' ? ($sortDirection === 'asc' ? 'ri-arrow-up-s-line text-primary' : 'ri-arrow-down-s-line text-primary') : 'ri-expand-up-down-line text-muted' }} fs-12"></i>
+                        </th>
+                        <th :class="{'d-none': !cols[9]}" style="white-space:nowrap">Update By</th>
+                        <th :class="{'d-none': !cols[10]}" wire:click="sortBy('tdjkm.updated_on')" style="cursor:pointer;white-space:nowrap">
+                            Updated <i class="{{ $sortColumn === 'tdjkm.updated_on' ? ($sortDirection === 'asc' ? 'ri-arrow-up-s-line text-primary' : 'ri-arrow-down-s-line text-primary') : 'ri-expand-up-down-line text-muted' }} fs-12"></i>
+                        </th>
+                        <th :class="{'d-none': !cols[11]}" wire:click="sortBy('tdjkm.created_on')" style="cursor:pointer;white-space:nowrap">
+                            Created <i class="{{ $sortColumn === 'tdjkm.created_on' ? ($sortDirection === 'asc' ? 'ri-arrow-up-s-line text-primary' : 'ri-arrow-down-s-line text-primary') : 'ri-expand-up-down-line text-muted' }} fs-12"></i>
+                        </th>
                     </tr>
-                @empty
-                @endforelse
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @forelse ($data as $item)
+                        <tr>
+                            <td>
+                                <button type="button" class="btn fs-15 p-1 bg-primary rounded"
+                                    wire:click="edit({{ $item->id }})">
+                                    <i class="ri-edit-box-line text-white"></i>
+                                </button>
+                                <button type="button" class="btn fs-15 p-1 bg-danger rounded"
+                                    wire:click="delete({{ $item->id }})">
+                                    <i class="ri-delete-bin-line text-white"></i>
+                                </button>
+                            </td>
+                            <td :class="{'d-none': !cols[1]}">{{ \Carbon\Carbon::parse($item->working_date)->format('d M Y') }}</td>
+                            <td :class="{'d-none': !cols[2]}">{{ $item->work_shift }}</td>
+                            <td :class="{'d-none': !cols[3]}">{{ $item->machineno }}</td>
+                            <td :class="{'d-none': !cols[4]}">{{ $item->employeeno }}</td>
+                            <td :class="{'d-none': !cols[5]}">{{ $item->empname }}</td>
+                            <td :class="{'d-none': !cols[6]}">{{ $item->work_hour }}</td>
+                            <td :class="{'d-none': !cols[7]}">{{ $item->off_hour }}</td>
+                            <td :class="{'d-none': !cols[8]}">{{ $item->on_hour }}</td>
+                            <td :class="{'d-none': !cols[9]}">{{ $item->updated_by }}</td>
+                            <td :class="{'d-none': !cols[10]}">{{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y H:i:s') }}</td>
+                            <td :class="{'d-none': !cols[11]}">{{ \Carbon\Carbon::parse($item->created_on)->format('d M Y H:i:s') }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="12" class="text-center py-4">
+                                <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                                    colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
+                                <h5 class="mt-2">Record not Found..!</h5>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap mt-2 gap-2">
+            <div class="text-muted small">
+                @if ($data instanceof \Illuminate\Pagination\LengthAwarePaginator)
+                    Showing {{ $data->firstItem() ?? 0 }}–{{ $data->lastItem() ?? 0 }} of {{ $data->total() }} entries
+                @endif
+            </div>
+            <div>
+                @if ($data instanceof \Illuminate\Pagination\LengthAwarePaginator)
+                    {{ $data->links() }}
+                @endif
+            </div>
+        </div>
     </div>
 
     <style>
-        .modal-overlay-top {
-            z-index: 1060;
-            /* default Bootstrap modal z-index is 1055 */
-        }
-
+        .modal-overlay-top { z-index: 1060; }
         .modal-backdrop-custom {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: rgba(0, 0, 0, 0.5);
-            /* gelap transparan */
-            z-index: 1058;
-            /* di bawah modal-jam-mati, tapi di atas modal-jam-kerja */
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: rgba(0,0,0,0.5); z-index: 1058;
         }
-
-        #infureTable.table>:not(caption)>*>* {
+        #infureTable.table > :not(caption) > * > * {
             font-size: 13px !important;
             padding: 4px 2px 4px 4px;
-            color: var(--tb-table-color-state, var(--tb-table-color-type, var(--tb-table-color)));
-            background-color: var(--tb-table-bg);
-            border-bottom-width: var(--tb-border-width);
-            box-shadow: inset 0 0 0 9999px var(--tb-table-bg-state, var(--tb-table-bg-type, var(--tb-table-accent-bg)));
         }
     </style>
+    @endif
 </div>
 
 @script
@@ -891,101 +882,38 @@
             $('#removModal').modal('hide');
         });
 
-        // datatable
-        // inisialisasi DataTable
-        $wire.on('initDataTable', () => {
-            initDataTable();
+        document.addEventListener('livewire:initialized', function() {
+            function initMachineSelect() {
+                if ($('.select2-machine-ijk').hasClass('select2-hidden-accessible')) {
+                    $('.select2-machine-ijk').select2('destroy');
+                }
+                $('.select2-machine-ijk').select2({
+                    theme: 'bootstrap-5', allowClear: true, placeholder: '- All -',
+                }).on('change', function() {
+                    @this.set('machine_id', $(this).val() || null);
+                });
+            }
+
+            function initShiftSelect() {
+                if ($('.select2-shift-ijk').hasClass('select2-hidden-accessible')) {
+                    $('.select2-shift-ijk').select2('destroy');
+                }
+                $('.select2-shift-ijk').select2({
+                    theme: 'bootstrap-5', allowClear: true, placeholder: '- All -',
+                }).on('change', function() {
+                    @this.set('work_shift_filter', $(this).val() || null);
+                });
+            }
+
+            initMachineSelect();
+            initShiftSelect();
+
+            Livewire.hook('morph', ({ el, component }) => {
+                setTimeout(() => {
+                    initMachineSelect();
+                    initShiftSelect();
+                }, 100);
+            });
         });
-
-        function calculateTableHeight() {
-            const totalHeight = window.innerHeight;
-
-            const filterSectionTop = document.querySelector('.filter-section')?.getBoundingClientRect().top || 0;
-            const offsetTop = document.querySelector('#infureTable')?.getBoundingClientRect().top || 0;
-
-            const paddingTop = document.querySelector('.navbar-header')?.getBoundingClientRect().top || 0;
-            const availableHeight = totalHeight - offsetTop - filterSectionTop - paddingTop;
-
-            return availableHeight;
-        }
-
-        // Fungsi untuk menginisialisasi ulang DataTable
-        function initDataTable() {
-            const savedOrder = $wire.get('sortingTable');
-
-            let defaultOrder = [
-                [1, "asc"]
-            ];
-            if (savedOrder) {
-                defaultOrder = savedOrder;
-            }
-            // Hapus DataTable jika sudah ada
-            if ($.fn.dataTable.isDataTable('#infureTable')) {
-                let table = $('#infureTable').DataTable();
-                table.clear(); // Bersihkan data tabel
-                table.destroy(); // Hancurkan DataTable
-            }
-
-            setTimeout(() => {
-                // Inisialisasi ulang DataTable
-                let table = $('#infureTable').DataTable({
-                    "pageLength": 10,
-                    "searching": true,
-                    "responsive": true,
-                    "scrollX": true,
-                    "order": defaultOrder,
-                    "scrollY": calculateTableHeight() + 'px',
-                    "scrollCollapse": true,
-                    "scrollX": true,
-                    "language": {
-                        "emptyTable": `
-                            <div class="text-center">
-                                <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
-                                    colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
-                                <h5 class="mt-2">Sorry! No Result Found</h5>
-                            </div>
-                        `
-                    }
-                });
-                // tombol edit
-                $('.btn-edit').on('click', function() {
-                    let id = $(this).attr('data-edit-id');
-
-                    // livewire click
-                    $wire.dispatch('edit', {
-                        id
-                    });
-                });
-                // tombol delete
-                $('.btn-delete').on('click', function() {
-                    let id = $(this).attr('data-delete-id');
-
-                    // livewire click
-                    $wire.dispatch('delete', {
-                        id
-                    });
-                });
-                // Listen to sort event
-                table.on('order.dt', function() {
-                    let order = table.order();
-                    if (order.length == 0 && defaultOrder.length > 0) {
-                        order = defaultOrder;
-                    }
-                    $wire.call('updateSortingTable', order);
-                });
-
-                // default column visibility
-                $('.toggle-column').each(function() {
-                    let column = table.column($(this).attr('data-column'));
-                    column.visible($(this).is(':checked'));
-                });
-
-                // Inisialisasi ulang event listener checkbox
-                $('.toggle-column').off('change').on('change', function() {
-                    let column = table.column($(this).attr('data-column'));
-                    column.visible(!column.visible());
-                });
-            }, 500);
-        }
     </script>
 @endscript
