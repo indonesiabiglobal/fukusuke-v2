@@ -599,9 +599,7 @@ class LossSeitaiController extends Component
                 ])
                 ->join('tdorderlpk AS tdol', 'tdpg.lpk_id', '=', 'tdol.id')
                 ->leftJoin('msproduct AS mp', 'mp.id', '=', 'tdol.product_id')
-                ->leftJoin('msmachine AS msm', 'msm.id', '=', 'tdpg.machine_id')
-                ->leftJoin('tdproduct_goods_assembly AS tga', 'tga.product_goods_id', '=', 'tdpg.id')
-                ->leftJoin('tdproduct_assembly AS ta', 'ta.id', '=', 'tga.product_assembly_id');
+                ->leftJoin('msmachine AS msm', 'msm.id', '=', 'tdpg.machine_id');
 
             $dateColumn = $this->transaksi == 2 ? 'tdpg.production_date' : 'tdpg.created_on';
             if (!empty($this->tglMasuk) && $this->tglMasuk !== 'undefined') {
@@ -628,7 +626,13 @@ class LossSeitaiController extends Component
                 $data->where('tdpg.machine_id', $this->machineid);
             }
             if (!empty($this->gentan_no) && $this->gentan_no !== 'undefined') {
-                $data->where('ta.gentan_no', $this->gentan_no);
+                $data->whereExists(function ($q) {
+                    $q->select(DB::raw(1))
+                      ->from('tdproduct_goods_assembly AS tga')
+                      ->join('tdproduct_assembly AS ta', 'ta.id', '=', 'tga.product_assembly_id')
+                      ->whereColumn('tga.product_goods_id', 'tdpg.id')
+                      ->where('ta.gentan_no', $this->gentan_no);
+                });
             }
             if (isset($this->status) && $this->status !== '' && $this->status !== null && $this->status !== 'undefined') {
                 if ($this->status == 0) {

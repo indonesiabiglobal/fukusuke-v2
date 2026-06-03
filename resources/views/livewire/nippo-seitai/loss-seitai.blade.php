@@ -102,9 +102,9 @@
                 <div class="mb-1" wire:ignore>
                     <select class="form-control select2-status-ls">
                         <option value="">- All -</option>
-                        <option value="0">Open</option>
-                        <option value="1" @if (($status ?? null) == 1) selected @endif>Warehouse</option>
-                        <option value="2" @if (($status ?? null) == 2) selected @endif>Kenpin</option>
+                        <option value="0" @if (($status ?? null) === '0') selected @endif>Open</option>
+                        <option value="1" @if (($status ?? null) === '1') selected @endif>Warehouse</option>
+                        <option value="2" @if (($status ?? null) === '2') selected @endif>Kenpin</option>
                     </select>
                 </div>
             </div>
@@ -140,7 +140,7 @@
                             <span class="spinner-border flex-shrink-0" role="status">
                                 <span class="visually-hidden">Loading...</span>
                             </span>
-                            <span class="flex-grow-1 ms-1"></span>
+                            <span class="flex-grow-1 ms-1">Loading...</span>
                         </span>
                     </div>
                 </button>

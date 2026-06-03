@@ -89,8 +89,8 @@
                     <div class="mb-1" wire:ignore>
                         <select class="form-control select2-status-ol">
                             <option value="">- All -</option>
-                            <option value="0" @if (($status ?? '') == 0) selected @endif>Belum LPK</option>
-                            <option value="1" @if (($status ?? '') == 1) selected @endif>Sudah LPK</option>
+                            <option value="0" @if (($status ?? '') === '0') selected @endif>Belum LPK</option>
+                            <option value="1" @if (($status ?? '') === '1') selected @endif>Sudah LPK</option>
                         </select>
                     </div>
                 </div>

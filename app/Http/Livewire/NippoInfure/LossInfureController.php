@@ -165,7 +165,7 @@ class LossInfureController extends Component
                 'tdpa.panjang_printing_inline AS panjang_printing_inline',
                 'tdpa.berat_standard AS berat_standard',
                 'tdpa.berat_produksi AS berat_produksi',
-                DB::raw('tdpa.berat_produksi / tdpa.berat_standard * 100 AS rasio'),
+                DB::raw('tdpa.berat_produksi / NULLIF(tdpa.berat_standard, 0) * 100 AS rasio'),
                 DB::raw('tdol.total_assembly_line - tdol.panjang_lpk AS selisih'),
                 'tdpa.nomor_han AS nomor_han',
                 'tdpa.gentan_no AS gentan_no',
