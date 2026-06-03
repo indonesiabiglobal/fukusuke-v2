@@ -7,6 +7,31 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+---
+
+## 🆕 Latest Updates
+
+### 🖨️ Bluetooth Printer Auto-Reconnect (v2.0) - January 3, 2026
+
+Fitur baru untuk **auto-reconnect ke printer Bluetooth yang sudah tersimpan** tanpa perlu pairing ulang!
+
+**Key Features:**
+- ⚡ Auto-reconnect dalam 1-2 detik
+- 👌 Tidak perlu pilih printer berulang kali
+- 🔄 Smart fallback jika gagal
+- ✅ Backward compatible dengan kode lama
+
+**📚 Documentation:**
+- [Bluetooth Printer Guide](BLUETOOTH_PRINTER_GUIDE.md) - Complete guide
+- [Quick Reference](BLUETOOTH_QUICK_REFERENCE.md) - Quick lookup
+- [Implementation Details](AUTO_RECONNECT_IMPLEMENTATION.md) - Technical docs
+- [Testing Checklist](TESTING_CHECKLIST.md) - QA testing
+- [UI Examples](EXAMPLE_UI_IMPLEMENTATION.blade.php) - Code examples
+
+**Browser Support:** Chrome 90+, Edge 90+, Opera 76+, Samsung Internet 15+
+
+---
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:

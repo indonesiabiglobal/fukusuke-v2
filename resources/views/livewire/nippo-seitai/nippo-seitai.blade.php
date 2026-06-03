@@ -352,40 +352,46 @@
 
 @script
     <script>
-        function initProductSelect() {
-            if ($('.select2-product-seitai').hasClass('select2-hidden-accessible')) {
-                $('.select2-product-seitai').select2('destroy');
-            }
-            $('.select2-product-seitai').select2({
-                theme: 'bootstrap-5', allowClear: true, placeholder: '- All -',
-            }).on('change', function () {
-                @this.set('idProduct', $(this).val() || null);
-            });
-        }
-
-        function initMachineSelect() {
-            if ($('.select2-machine-seitai').hasClass('select2-hidden-accessible')) {
-                $('.select2-machine-seitai').select2('destroy');
-            }
-            $('.select2-machine-seitai').select2({
-                theme: 'bootstrap-5', allowClear: true, placeholder: '- All -',
-            }).on('change', function () {
-                @this.set('machineId', $(this).val() || null);
-            });
-        }
-
-        function initStatusSelect() {
-            if ($('.select2-status-seitai').hasClass('select2-hidden-accessible')) {
-                $('.select2-status-seitai').select2('destroy');
-            }
-            $('.select2-status-seitai').select2({
-                theme: 'bootstrap-5', allowClear: true, placeholder: '- All -',
-            }).on('change', function () {
-                @this.set('status', $(this).val() || null);
-            });
-        }
-
         document.addEventListener('livewire:initialized', function () {
+            function initProductSelect() {
+                if ($('.select2-product-seitai').hasClass('select2-hidden-accessible')) {
+                    $('.select2-product-seitai').select2('destroy');
+                }
+                $('.select2-product-seitai').select2({
+                    theme: 'bootstrap-5',
+                    allowClear: true,
+                    placeholder: '- All -',
+                }).on('change', function () {
+                    @this.set('idProduct', $(this).val() || null);
+                });
+            }
+
+            function initMachineSelect() {
+                if ($('.select2-machine-seitai').hasClass('select2-hidden-accessible')) {
+                    $('.select2-machine-seitai').select2('destroy');
+                }
+                $('.select2-machine-seitai').select2({
+                    theme: 'bootstrap-5',
+                    allowClear: true,
+                    placeholder: '- All -',
+                }).on('change', function () {
+                    @this.set('machineId', $(this).val() || null);
+                });
+            }
+
+            function initStatusSelect() {
+                if ($('.select2-status-seitai').hasClass('select2-hidden-accessible')) {
+                    $('.select2-status-seitai').select2('destroy');
+                }
+                $('.select2-status-seitai').select2({
+                    theme: 'bootstrap-5',
+                    allowClear: true,
+                    placeholder: '- All -',
+                }).on('change', function () {
+                    @this.set('status', $(this).val() || null);
+                });
+            }
+
             initProductSelect();
             initMachineSelect();
             initStatusSelect();
