@@ -66,11 +66,11 @@ class NippoInfureController extends Component
         if (empty($this->transaksi)) {
             $this->transaksi = 1;
         }
-        if (empty($this->tglMasuk)) {
-            $this->tglMasuk = Carbon::now()->format('d M Y');
+        if (empty($this->tglMasuk) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $this->tglMasuk)) {
+            $this->tglMasuk = Carbon::now()->format('Y-m-d');
         }
-        if (empty($this->tglKeluar)) {
-            $this->tglKeluar = Carbon::now()->format('d M Y');
+        if (empty($this->tglKeluar) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $this->tglKeluar)) {
+            $this->tglKeluar = Carbon::now()->format('Y-m-d');
         }
     }
 

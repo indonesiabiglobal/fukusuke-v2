@@ -19,17 +19,10 @@
                         <div class="col-12">
                             <div class="form-group">
                                 <div class="input-group">
-                                    <input wire:model.defer="tglMasuk" type="text" class="form-control"
-                                        style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
-                                    <span class="input-group-text py-0">
-                                        <i class="ri-calendar-event-fill fs-4"></i>
-                                    </span>
-
-                                    <input wire:model.defer="tglKeluar" type="text" class="form-control"
-                                        style="padding:0.44rem" data-provider="flatpickr" data-date-format="d-m-Y">
-                                    <span class="input-group-text py-0">
-                                        <i class="ri-calendar-event-fill fs-4"></i>
-                                    </span>
+                                    <input wire:model.defer="tglMasuk" type="date" class="form-control"
+                                        style="padding:0.44rem">
+                                    <input wire:model.defer="tglKeluar" type="date" class="form-control"
+                                        style="padding:0.44rem">
                                 </div>
                             </div>
                         </div>
@@ -332,9 +325,28 @@
         </table>
     </div>
 </div>
+@endif
 
 @script
     <script>
+        document.addEventListener('livewire:initialized', function() {
+            function initChoices() {
+                if (typeof Choices === 'undefined') return;
+                document.querySelectorAll('[data-choices]').forEach(function(item) {
+                    if (item.parentElement && item.parentElement.classList.contains('choices')) return;
+                    var opts = { allowHTML: true, shouldSort: false };
+                    if (item.hasAttribute('data-choices-removeItem')) { opts.removeItems = true; opts.removeItemButton = true; }
+                    if (item.hasAttribute('data-choices-search-field-label')) opts.searchEnabled = true;
+                    if (item.hasAttribute('data-choices-exact-match')) opts.fuseOptions = { threshold: 0 };
+                    new Choices(item, opts);
+                });
+            }
+            initChoices();
+            Livewire.hook('morph', ({ el, component }) => {
+                setTimeout(function() { initChoices(); }, 100);
+            });
+        });
+
         // datatable
         // inisialisasi DataTable
         $wire.on('initDataTable', () => {
@@ -401,5 +413,4 @@
         }
     </script>
 @endscript
-@endif
 

@@ -15,7 +15,7 @@
                     <label class="form-label text-muted fw-bold">Filter Tanggal</label>
                 </div>
                 <div class="col-12 col-lg-9 mb-1">
-                    <div class="form-group" wire:ignore>
+                    <div class="form-group">
                         <div class="input-group">
                             <div class="col-12 col-sm-3">
                                 <select class="form-select mb-2 mb-sm-0" style="padding:0.44rem" wire:model.defer="transaksi">
@@ -25,21 +25,10 @@
                             </div>
                             <div class="col-12 col-sm-9">
                                 <div class="d-flex flex-column flex-sm-row gap-2">
-                                    <div class="input-group">
-                                        <input wire:model.defer="tglMasuk" type="text" class="form-control"
-                                            style="padding:0.44rem" data-provider="flatpickr" data-date-format="d M Y">
-                                        <span class="input-group-text py-0">
-                                            <i class="ri-calendar-event-fill fs-4"></i>
-                                        </span>
-                                    </div>
-
-                                    <div class="input-group">
-                                        <input wire:model.defer="tglKeluar" type="text" class="form-control"
-                                            style="padding:0.44rem" data-provider="flatpickr" data-date-format="d M Y">
-                                        <span class="input-group-text py-0">
-                                            <i class="ri-calendar-event-fill fs-4"></i>
-                                        </span>
-                                    </div>
+                                    <input wire:model.defer="tglMasuk" type="date" class="form-control"
+                                        style="padding:0.44rem">
+                                    <input wire:model.defer="tglKeluar" type="date" class="form-control"
+                                        style="padding:0.44rem">
                                 </div>
                             </div>
                         </div>
@@ -333,6 +322,7 @@
         }
     </style>
 </div>
+@endif
 
 @script
     <script>
@@ -443,6 +433,18 @@
 
             selectProduct();
 
+            function initChoices() {
+                if (typeof Choices === 'undefined') return;
+                document.querySelectorAll('[data-choices]').forEach(function(item) {
+                    if (item.parentElement && item.parentElement.classList.contains('choices')) return;
+                    var opts = { allowHTML: true, shouldSort: false };
+                    if (item.hasAttribute('data-choices-removeItem')) { opts.removeItems = true; opts.removeItemButton = true; }
+                    if (item.hasAttribute('data-choices-search-field-label')) opts.searchEnabled = true;
+                    new Choices(item, opts);
+                });
+            }
+            initChoices();
+
             // Hook untuk Livewire v3
             Livewire.hook('morph', ({
                 el,
@@ -450,10 +452,10 @@
             }) => {
                 setTimeout(() => {
                     selectProduct();
+                    initChoices();
                 }, 100);
             });
         });
     </script>
 @endscript
-@endif
 
