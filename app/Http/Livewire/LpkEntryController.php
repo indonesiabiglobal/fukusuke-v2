@@ -10,99 +10,93 @@ use Carbon\Carbon;
 use App\Models\MsProduct;
 use App\Models\MsBuyer;
 use Illuminate\Support\Facades\DB;
-use Livewire\Attributes\Locked;
 use Livewire\Attributes\Session;
 use Livewire\WithPagination;
 use Maatwebsite\Excel\Facades\Excel;
 use Livewire\WithFileUploads;
 use Livewire\WithoutUrlPagination;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 class LpkEntryController extends Component
 {
-    use WithPagination;
-    protected $paginationTheme = 'bootstrap';
-    public $products;
-    public $lpkColors;
-    public $buyer;
-    #[Session]
-    public $tglMasuk;
-    #[Session]
-    public $tglKeluar;
-    #[Session]
-    public $searchTerm;
-    #[Session]
-    public $transaksi;
-    #[Session]
-    public $idBuyer;
-    #[Session]
-    public $status;
-    #[Session]
-    public $lpk_no;
-    #[Session]
-    public $idProduct;
-    #[Session]
-    public $idLPKColor;
-    public $checkListLPK = [];
-    #[Session]
-    public $entriesPerPage = 10;
-    #[Session]
-    public $sortingTable;
+    use WithFileUploads, WithPagination, WithoutUrlPagination;
 
-    use WithFileUploads, WithoutUrlPagination;
+    protected $paginationTheme = 'bootstrap';
+
+    public bool $isLoaded = false;
+
+    #[Session] public $tglMasuk;
+    #[Session] public $tglKeluar;
+    #[Session] public $searchTerm;
+    #[Session] public $transaksi;
+    #[Session] public $idBuyer;
+    #[Session] public $status;
+    #[Session] public $lpk_no;
+    #[Session] public $idProduct;
+    #[Session] public $idLPKColor;
+    #[Session] public $perPage      = 10;
+    #[Session] public $sortColumn   = 'tolp.lpk_date';
+    #[Session] public $sortDirection = 'desc';
+
+    public $checkListLPK = [];
     public $file;
 
-    public function mount()
+    public function sortBy(string $column): void
+    {
+        $allowed = [
+            'tolp.lpk_no', 'tolp.lpk_date', 'tolp.panjang_lpk',
+            'tolp.qty_lpk', 'tolp.qty_gentan', 'tolp.qty_gulung',
+            'tolp.total_assembly_line', 'tolp.total_assembly_qty',
+            'tod.po_no', 'mp.name', 'mp.code', 'mm.machineno',
+            'mbu.name', 'tolp.created_on', 'tolp.updated_on', 'tolp.seq_no',
+        ];
+        if (!in_array($column, $allowed)) return;
+        if ($this->sortColumn === $column) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortColumn    = $column;
+            $this->sortDirection = 'asc';
+        }
+        $this->resetPage();
+    }
+
+    public function loadData(): void
+    {
+        $this->isLoaded = true;
+    }
+
+    public function mount(): void
     {
         $this->shouldForgetSession();
-        $this->products = MsProduct::get();
-        $this->lpkColors = DB::table('mswarnalpk')->select('id', 'name', 'code')->get();
-        $this->buyer = MsBuyer::get();
 
-        if (empty($this->tglMasuk)) {
-            $this->tglMasuk = Carbon::now()->startOfDay()->format('d M Y');
+        if (is_array($this->idBuyer))    { $this->idBuyer    = $this->idBuyer['value']    ?? null; }
+        if (is_array($this->idProduct))  { $this->idProduct  = $this->idProduct['value']  ?? null; }
+        if (is_array($this->idLPKColor)) { $this->idLPKColor = $this->idLPKColor['value'] ?? null; }
+        if (is_array($this->status))     { $this->status     = $this->status['value']     ?? null; }
+
+        if (empty($this->tglMasuk) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $this->tglMasuk)) {
+            $this->tglMasuk = Carbon::now()->format('Y-m-d');
         }
-        if (empty($this->tglKeluar)) {
-            $this->tglKeluar = Carbon::now()->endOfDay()->format('d M Y');
+        if (empty($this->tglKeluar) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $this->tglKeluar)) {
+            $this->tglKeluar = Carbon::now()->format('Y-m-d');
         }
-        if (empty($this->sortingTable)) {
-            $this->sortingTable = [[2, 'asc']];
-        }
-        if (empty($this->entriesPerPage)) {
-            $this->entriesPerPage = 10;
+        if (empty($this->transaksi)) {
+            $this->transaksi = 1;
         }
     }
 
-    public function updateSortingTable($value)
+    protected function shouldForgetSession(): void
     {
-        $this->sortingTable = $value;
-        $this->skipRender();
-    }
-
-    public function updateEntriesPerPage($value)
-    {
-        $this->entriesPerPage = $value;
-        $this->skipRender();
-    }
-
-    protected function shouldForgetSession()
-    {
-        $previousUrl = url()->previous();
-        $previousUrl = last(explode('/', $previousUrl));
-        if (!(Str::contains($previousUrl, 'add-lpk') || Str::contains($previousUrl, 'edit-lpk') || Str::contains($previousUrl,'lpk-entry'))) {
-            $this->reset('tglMasuk', 'tglKeluar', 'searchTerm', 'idProduct', 'idBuyer', 'status', 'transaksi', 'lpk_no', 'sortingTable', 'entriesPerPage');
+        $previousUrl = last(explode('/', url()->previous()));
+        if (!(Str::contains($previousUrl, 'add-lpk') || Str::contains($previousUrl, 'edit-lpk') || Str::contains($previousUrl, 'lpk-entry'))) {
+            $this->reset('tglMasuk', 'tglKeluar', 'searchTerm', 'idProduct', 'idBuyer', 'status', 'transaksi', 'lpk_no', 'idLPKColor', 'perPage', 'sortColumn', 'sortDirection');
         }
     }
 
-    public function search()
+    public function search(): void
     {
         $this->resetPage();
-        $this->render();
-    }
-
-    public function add()
-    {
-        return redirect()->route('add-order');
     }
 
     public function download()
@@ -123,7 +117,6 @@ class LpkEntryController extends Component
 
         try {
             Excel::import(new LpkEntryImport, $this->file->path());
-
             $this->dispatch('notification', ['type' => 'success', 'message' => 'Excel imported successfully.']);
         } catch (\Exception $e) {
             $this->dispatch('notification', ['type' => 'error', 'message' => $e->getMessage()]);
@@ -135,10 +128,6 @@ class LpkEntryController extends Component
         return Excel::download(new LpkListExport(
             $this->tglMasuk,
             $this->tglKeluar,
-            // $this->searchTerm,
-            // $this->idProduct,
-            // $this->idBuyer,
-            // $this->status,
         ), 'LPKList.xlsx');
     }
 
@@ -149,108 +138,107 @@ class LpkEntryController extends Component
 
     public function render()
     {
-        $data = DB::table('tdorderlpk AS tolp')
-            ->selectRaw("
-                tolp.id,
-                tolp.lpk_no,
-                tolp.lpk_date,
-                tolp.panjang_lpk,
-                tolp.qty_lpk,
-                tolp.qty_gentan,
-                tolp.qty_gulung,
-                tolp.total_assembly_line AS infure,
-                tolp.panjang_lpk - (tolp.qty_lpk * mp.productlength / 1000) AS selisih,
-                tolp.total_assembly_qty,
-                tod.po_no,
-                mp.NAME AS product_name,
-                mp.code as product_code,
-                mm.machineno AS machine_no,
-                mbu.NAME AS buyer_name,
-                tolp.created_on,
-                tolp.seq_no,
-                tolp.updated_by,
-                tolp.updated_on AS updatedt,
-                mwl.name as warna_lpk
-            ")
-            ->join('tdorder AS tod', 'tod.id', '=', 'tolp.order_id')
-            ->leftJoin('msproduct AS mp', 'mp.id', '=', 'tolp.product_id')
-            ->join('msmachine AS mm', 'mm.id', '=', 'tolp.machine_id')
-            ->leftJoin('mswarnalpk AS mwl', 'mwl.id', '=', 'mp.warnalpkid')
-            ->join('msbuyer AS mbu', 'mbu.id', '=', 'tod.buyer_id');
+        $products = Cache::remember('ms_products_lpk_entry', 3600, fn() =>
+            MsProduct::select(['id', 'name', 'code'])->orderBy('code')->get()
+        );
+        $lpkColors = Cache::remember('ms_lpkcolors_lpk_entry', 3600, fn() =>
+            DB::table('mswarnalpk')->select('id', 'name', 'code')->get()
+        );
+        $buyer = Cache::remember('ms_buyers_lpk_entry', 3600, fn() =>
+            MsBuyer::select(['id', 'name'])->orderBy('name')->get()
+        );
 
-        if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
-            $tglMasuk = Carbon::parse($this->tglMasuk)->startOfDay()->format('Y-m-d H:i:s');
+        if (!$this->isLoaded) {
+            return view('livewire.order-lpk.lpk-entry', [
+                'data'      => new \Illuminate\Pagination\LengthAwarePaginator([], 0, $this->perPage),
+                'products'  => $products,
+                'lpkColors' => $lpkColors,
+                'buyer'     => $buyer,
+            ])->extends('layouts.master');
         }
 
-        if (isset($this->tglKeluar) && $this->tglKeluar != "" && $this->tglKeluar != "undefined") {
-            $tglKeluar = Carbon::parse($this->tglKeluar)->endOfDay()->format('Y-m-d H:i:s');
-        }
+        try {
+            $data = DB::table('tdorderlpk AS tolp')
+                ->selectRaw("
+                    tolp.id,
+                    tolp.lpk_no,
+                    tolp.lpk_date,
+                    tolp.panjang_lpk,
+                    tolp.qty_lpk,
+                    tolp.qty_gentan,
+                    tolp.qty_gulung,
+                    tolp.total_assembly_line AS infure,
+                    tolp.panjang_lpk - (tolp.qty_lpk * mp.productlength / 1000) AS selisih,
+                    tolp.total_assembly_qty,
+                    tod.po_no,
+                    mp.NAME AS product_name,
+                    mp.code as product_code,
+                    mm.machineno AS machine_no,
+                    mbu.NAME AS buyer_name,
+                    tolp.created_on,
+                    tolp.seq_no,
+                    tolp.updated_by,
+                    tolp.updated_on AS updatedt,
+                    mwl.name as warna_lpk
+                ")
+                ->join('tdorder AS tod', 'tod.id', '=', 'tolp.order_id')
+                ->leftJoin('msproduct AS mp', 'mp.id', '=', 'tolp.product_id')
+                ->join('msmachine AS mm', 'mm.id', '=', 'tolp.machine_id')
+                ->leftJoin('mswarnalpk AS mwl', 'mwl.id', '=', 'mp.warnalpkid')
+                ->join('msbuyer AS mbu', 'mbu.id', '=', 'tod.buyer_id');
 
-        if ($this->transaksi == 2) {
-            if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
-                $data = $data->where('tolp.lpk_date', '>=', $tglMasuk);
+            $dateColumn = $this->transaksi == 2 ? 'tolp.lpk_date' : 'tolp.created_on';
+
+            if (!empty($this->tglMasuk) && $this->tglMasuk !== 'undefined') {
+                $data->where($dateColumn, '>=', $this->tglMasuk . ' 00:00:00');
+            }
+            if (!empty($this->tglKeluar) && $this->tglKeluar !== 'undefined') {
+                $data->where($dateColumn, '<=', $this->tglKeluar . ' 23:59:59');
+            }
+            if (!empty($this->searchTerm) && $this->searchTerm !== 'undefined') {
+                $data->where(function ($q) {
+                    $q->where('mp.name', 'ilike', "%{$this->searchTerm}%")
+                      ->orWhere('tod.po_no', 'ilike', "%{$this->searchTerm}%");
+                });
+            }
+            if (!empty($this->lpk_no) && $this->lpk_no !== 'undefined') {
+                $data->where('tolp.lpk_no', 'ilike', "%{$this->lpk_no}%");
+            }
+            if (!empty($this->idBuyer) && $this->idBuyer !== 'undefined') {
+                $data->where('tod.buyer_id', $this->idBuyer);
+            }
+            if (!empty($this->idProduct) && $this->idProduct !== 'undefined') {
+                $data->where('mp.id', $this->idProduct);
+            }
+            if (!empty($this->idLPKColor) && $this->idLPKColor !== 'undefined') {
+                $data->where('mp.warnalpkid', $this->idLPKColor);
+            }
+            if (isset($this->status) && $this->status !== '' && $this->status !== null && $this->status !== 'undefined') {
+                if ($this->status == 0) {
+                    $data->where('tolp.reprint_no', 0);
+                } elseif ($this->status == 1) {
+                    $data->where('tolp.reprint_no', 1);
+                } elseif ($this->status == 2) {
+                    $data->where('tolp.reprint_no', '>', 1);
+                } elseif ($this->status == 3) {
+                    $data->where('tolp.status_lpk', 0);
+                } elseif ($this->status == 4) {
+                    $data->where('tolp.status_lpk', 1);
+                }
             }
 
-            if (isset($this->tglKeluar) && $this->tglKeluar != "" && $this->tglKeluar != "undefined") {
-                $data = $data->where('tolp.lpk_date', '<=', $tglKeluar);
-            }
-        } else {
-            if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
-                // $tglMasuk = Carbon::createFromFormat('d M Y', $this->tglMasuk)->startOfDay();
-                $data = $data->where('tolp.created_on', '>=', $tglMasuk);
-            }
-
-            if (isset($this->tglKeluar) && $this->tglKeluar != "" && $this->tglKeluar != "undefined") {
-                // $tglKeluar = Carbon::createFromFormat('d M Y', $this->tglKeluar)->endOfDay();
-                $data = $data->where('tolp.created_on', '<=', $tglKeluar);
-            }
+            $data = $data->orderBy($this->sortColumn, $this->sortDirection)
+                         ->paginate($this->perPage);
+        } catch (\Exception $e) {
+            $data = new \Illuminate\Pagination\LengthAwarePaginator([], 0, $this->perPage);
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Terjadi kesalahan: ' . $e->getMessage()]);
         }
-
-        if (isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined") {
-            $data = $data->where(function ($query) {
-                $query->where('mp.name', 'ilike', "%{$this->searchTerm}%")
-                    ->orWhere('tod.po_no', 'ilike', "%{$this->searchTerm}%");
-            });
-        }
-
-        if (isset($this->lpk_no) && $this->lpk_no != "" && $this->lpk_no != "undefined") {
-            $data = $data->where('tolp.lpk_no', 'ilike', "%{$this->lpk_no}%");
-        }
-
-        if (isset($this->idBuyer) && $this->idBuyer['value'] != "" && $this->idBuyer != "undefined") {
-            $data = $data->where('tod.buyer_id', $this->idBuyer['value']);
-        }
-        if (isset($this->idProduct) && $this->idProduct != "" && $this->idProduct != "undefined") {
-            $data = $data->where('mp.id', $this->idProduct);
-        }
-
-        if (isset($this->idLPKColor) && $this->idLPKColor['value'] != "" && $this->idLPKColor != "undefined") {
-            $data = $data->where('mp.warnalpkid', $this->idLPKColor['value']);
-        }
-
-        if (isset($this->status) && $this->status['value'] != "" && $this->status != "undefined") {
-            if ($this->status['value'] == 0) {
-                $data = $data->where('tolp.reprint_no', $this->status['value']);
-            } else if ($this->status['value'] == 1) {
-                $data = $data->where('tolp.reprint_no', $this->status['value']);
-            } else if ($this->status['value'] == 2) {
-                $data = $data->where('tolp.reprint_no', '>', 1);
-            } else if ($this->status['value'] == 3) {
-                $data = $data->where('tolp.status_lpk', 0);
-            } else if ($this->status['value'] == 4) {
-                $data = $data->where('tolp.status_lpk', 1);
-            }
-        }
-
-        $data = $data->get();
 
         return view('livewire.order-lpk.lpk-entry', [
-            'data' => $data,
+            'data'      => $data,
+            'products'  => $products,
+            'lpkColors' => $lpkColors,
+            'buyer'     => $buyer,
         ])->extends('layouts.master');
-    }
-
-    public function rendered()
-    {
-        $this->dispatch('initDataTable');
     }
 }

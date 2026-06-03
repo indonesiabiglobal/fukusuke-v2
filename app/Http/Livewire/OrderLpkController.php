@@ -20,44 +20,46 @@ use Illuminate\Support\Str;
 
 class OrderLpkController extends Component
 {
-    protected $paginationTheme = 'bootstrap';
-    public bool $isLoaded = false;
-    #[Session]
-    public $tglMasuk;
-    #[Session]
-    public $tglKeluar;
-    #[Session]
-    public $searchTerm;
-    #[Session]
-    public $idProduct;
-    #[Session]
-    public $idBuyer;
-    #[Session]
-    public $transaksi;
-    #[Session]
-    public $status;
-    #[Session]
-    public $sortingTable;
-    #[Session]
-    public $entriesPerPage = 10;
+    use WithFileUploads, WithPagination, WithoutUrlPagination;
 
-    use WithFileUploads;
+    protected $paginationTheme = 'bootstrap';
+
+    public bool $isLoaded = false;
+
+    #[Session] public $tglMasuk;
+    #[Session] public $tglKeluar;
+    #[Session] public $searchTerm;
+    #[Session] public $idProduct;
+    #[Session] public $idBuyer;
+    #[Session] public $transaksi;
+    #[Session] public $status;
+    #[Session] public $perPage      = 10;
+    #[Session] public $sortColumn   = 'tod.order_date';
+    #[Session] public $sortDirection = 'desc';
+
+    public function updatedPerPage(): void
+    {
+        $this->resetPage();
+    }
+
     public $file;
 
-    use WithPagination, WithoutUrlPagination;
-    public $searchParam = '';
-    public $paginate = 10;
-    public $sortField = 'id';
-    public $sortDirection = 'asc';
-
-    public function sortBy($field)
+    public function sortBy(string $column): void
     {
-        if ($this->sortField === $field) {
+        $allowed = [
+            'tod.po_no', 'mp.name', 'tod.product_code', 'mbu.name',
+            'tod.order_qty', 'tod.order_date', 'tod.stufingdate',
+            'tod.etddate', 'tod.etadate', 'tod.processdate',
+            'tod.updated_on', 'tod.created_on',
+        ];
+        if (!in_array($column, $allowed)) return;
+        if ($this->sortColumn === $column) {
             $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
         } else {
-            $this->sortField = $field;
-            $this->sortDirection = 'desc';
+            $this->sortColumn    = $column;
+            $this->sortDirection = 'asc';
         }
+        $this->resetPage();
     }
 
     public function loadData(): void
@@ -65,9 +67,13 @@ class OrderLpkController extends Component
         $this->isLoaded = true;
     }
 
-    public function mount()
+    public function mount(): void
     {
         $this->shouldForgetSession();
+
+        if (is_array($this->idProduct)) { $this->idProduct = $this->idProduct['value'] ?? null; }
+        if (is_array($this->idBuyer))   { $this->idBuyer   = $this->idBuyer['value']   ?? null; }
+        if (is_array($this->status))    { $this->status    = $this->status['value']    ?? null; }
 
         if (empty($this->tglMasuk) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $this->tglMasuk)) {
             $this->tglMasuk = Carbon::now()->format('Y-m-d');
@@ -78,39 +84,19 @@ class OrderLpkController extends Component
         if (empty($this->transaksi)) {
             $this->transaksi = 1;
         }
-        if (empty($this->sortingTable)) {
-            $this->sortingTable = [[1, 'asc']];
-        }
-        if (empty($this->entriesPerPage)) {
-            $this->entriesPerPage = 10;
-        }
     }
 
-    public function updateSortingTable($value)
+    protected function shouldForgetSession(): void
     {
-        $this->sortingTable = $value;
-        $this->skipRender();
-    }
-
-    public function updateEntriesPerPage($value)
-    {
-        $this->entriesPerPage = $value;
-        $this->skipRender();
-    }
-
-    protected function shouldForgetSession()
-    {
-        $previousUrl = url()->previous();
-        $previousUrl = last(explode('/', $previousUrl));
+        $previousUrl = last(explode('/', url()->previous()));
         if (!(Str::contains($previousUrl, 'add-order') || Str::contains($previousUrl, 'edit-order') || Str::contains($previousUrl, 'order-lpk'))) {
-            $this->reset('tglMasuk', 'tglKeluar', 'searchTerm', 'idProduct', 'idBuyer', 'status', 'transaksi', 'sortingTable', 'entriesPerPage');
+            $this->reset('tglMasuk', 'tglKeluar', 'searchTerm', 'idProduct', 'idBuyer', 'status', 'transaksi', 'perPage', 'sortColumn', 'sortDirection');
         }
     }
 
-    public function search()
+    public function search(): void
     {
         $this->resetPage();
-        $this->render();
     }
 
     public function add()
@@ -162,87 +148,69 @@ class OrderLpkController extends Component
 
         if (!$this->isLoaded) {
             return view('livewire.order-lpk.order-lpk', [
-                'data'     => collect(),
+                'data'     => new \Illuminate\Pagination\LengthAwarePaginator([], 0, $this->perPage),
                 'products' => $products,
                 'buyer'    => $buyer,
             ])->extends('layouts.master');
         }
 
-        $tglAwal = Carbon::parse($this->tglMasuk)->format('d-m-Y 00:00:00');
-        $tglAkhir = Carbon::parse($this->tglKeluar)->format('d-m-Y 23:59:59');
+        try {
+            $data = DB::table('tdorder AS tod')
+                ->select(
+                    'tod.id',
+                    'tod.po_no',
+                    'mp.name AS produk_name',
+                    'tod.product_code',
+                    'mbu.name AS buyer_name',
+                    'tod.order_qty',
+                    'tod.order_date',
+                    'tod.stufingdate',
+                    'tod.etddate',
+                    'tod.etadate',
+                    'tod.processdate',
+                    'tod.updated_by',
+                    'tod.updated_on',
+                    'tod.created_on'
+                )
+                ->leftJoin('msproduct AS mp', 'mp.id', '=', 'tod.product_id')
+                ->leftJoin('msbuyer AS mbu', 'mbu.id', '=', 'tod.buyer_id');
 
-        $data = DB::table('tdorder AS tod')
-            ->select(
-                'tod.id',
-                'tod.po_no',
-                'mp.name AS produk_name',
-                'tod.product_code',
-                'mbu.name AS buyer_name',
-                'tod.order_qty',
-                'tod.order_date',
-                'tod.stufingdate',
-                'tod.etddate',
-                'tod.etadate',
-                'tod.processdate',
-                'tod.processseq',
-                'tod.updated_by',
-                'tod.updated_on',
-                'tod.created_by',
-                'tod.created_on'
-            )
-            ->leftjoin('msproduct AS mp', 'mp.id', '=', 'tod.product_id')
-            ->leftjoin('msbuyer AS mbu', 'mbu.id', '=', 'tod.buyer_id')
-            ->orderBy($this->sortField, $this->sortDirection);
-
-        if ($this->transaksi == 1) {
-            if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
-                $data = $data->where('tod.processdate', '>=', $tglAwal);
+            $dateColumn = $this->transaksi == 2 ? 'tod.order_date' : 'tod.processdate';
+            if (!empty($this->tglMasuk) && $this->tglMasuk !== 'undefined') {
+                $data->where($dateColumn, '>=', $this->tglMasuk . ' 00:00:00');
+            }
+            if (!empty($this->tglKeluar) && $this->tglKeluar !== 'undefined') {
+                $data->where($dateColumn, '<=', $this->tglKeluar . ' 23:59:59');
+            }
+            if (!empty($this->searchTerm) && $this->searchTerm !== 'undefined') {
+                $data->where(function ($q) {
+                    $q->where('mp.name',          'ilike', "%{$this->searchTerm}%")
+                        ->orWhere('mbu.name',       'ilike', "%{$this->searchTerm}%")
+                        ->orWhere('tod.product_code', 'ilike', "%{$this->searchTerm}%")
+                        ->orWhere('tod.po_no',       'ilike', "%{$this->searchTerm}%");
+                });
+            }
+            if (!empty($this->idProduct) && $this->idProduct !== 'undefined') {
+                $data->where('mp.id', $this->idProduct);
+            }
+            if (!empty($this->idBuyer) && $this->idBuyer !== 'undefined') {
+                $data->where('tod.buyer_id', $this->idBuyer);
+            }
+            if (isset($this->status) && $this->status !== '' && $this->status !== null && $this->status !== 'undefined') {
+                $data->where('tod.status_order', $this->status);
             }
 
-            if (isset($this->tglKeluar) && $this->tglKeluar != "" && $this->tglKeluar != "undefined") {
-                $data = $data->where('tod.processdate', '<=', $tglAkhir);
-            }
-        } else if ($this->transaksi == 2) {
-            if (isset($this->tglMasuk) && $this->tglMasuk != "" && $this->tglMasuk != "undefined") {
-                $data = $data->where('tod.order_date', '>=', $tglAwal);
-            }
-
-            if (isset($this->tglKeluar) && $this->tglKeluar != "" && $this->tglKeluar != "undefined") {
-                $data = $data->where('tod.order_date', '<=', $tglAkhir);
-            }
+            $data = $data->orderBy($this->sortColumn, $this->sortDirection)
+                         ->paginate($this->perPage);
+        } catch (\Exception $e) {
+            $data = new \Illuminate\Pagination\LengthAwarePaginator([], 0, $this->perPage);
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Terjadi kesalahan: ' . $e->getMessage()]);
         }
-
-        if (isset($this->searchTerm) && $this->searchTerm != "" && $this->searchTerm != "undefined") {
-            $data = $data->where(function ($query) {
-                $query->where('mp.name', 'ilike', "%{$this->searchTerm}%")
-                    ->orWhere('mbu.name', 'ilike', "%{$this->searchTerm}%")
-                    ->orWhere('tod.product_code', 'ilike', "%{$this->searchTerm}%")
-                    ->orWhere('tod.po_no', 'ilike', "%{$this->searchTerm}%");
-            });
-        }
-
-        if (isset($this->idProduct) && $this->idProduct != "" && $this->idProduct != "undefined") {
-            $data = $data->where('mp.id', $this->idProduct);
-        }
-
-        if (isset($this->idBuyer) && $this->idBuyer['value'] != "" && $this->idBuyer != "undefined") {
-            $data = $data->where('tod.buyer_id', $this->idBuyer['value']);
-        }
-
-        if (isset($this->status) && $this->status['value'] != "" && $this->status != "undefined") {
-            $data = $data->where('tod.status_order', $this->status['value']);
-        }
-        $data = $data->get();
 
         return view('livewire.order-lpk.order-lpk', [
             'data'     => $data,
             'products' => $products,
             'buyer'    => $buyer,
         ])->extends('layouts.master');
-    }
-
-    public function rendered()
-    {
-        $this->dispatch('initDataTable');
     }
 }
