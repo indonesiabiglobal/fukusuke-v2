@@ -108,7 +108,7 @@
                 </div>
                 <div class="col-12 col-lg-10">
                     <div class="mb-1" wire:ignore>
-                        <select class="form-control" wire:model.defer="status" id="status" name="status">
+                        <select class="form-control select2-status-infure">
                             <option value="">- all -</option>
                             <option value="0">Open</option>
                             <option value="1" @if (($status['value'] ?? null) == 1) selected @endif>Seitai</option>
@@ -376,13 +376,28 @@
                 });
             }
 
+            function initStatusSelect() {
+                if ($('.select2-status-infure').hasClass('select2-hidden-accessible')) {
+                    $('.select2-status-infure').select2('destroy');
+                }
+                $('.select2-status-infure').select2({
+                    theme: 'bootstrap-5',
+                    allowClear: true,
+                    placeholder: '- all -',
+                }).on('change', function () {
+                    @this.set('status', $(this).val() || null);
+                });
+            }
+
             initProductSelect();
             initMachineSelect();
+            initStatusSelect();
 
             Livewire.hook('morph', ({ el, component }) => {
                 setTimeout(() => {
                     initProductSelect();
                     initMachineSelect();
+                    initStatusSelect();
                 }, 100);
             });
 
