@@ -163,11 +163,8 @@ class NippoSeitaiController extends Component
         try {
             $data = DB::table('tdproduct_goods AS tdpg')
                 ->select($columns)
-                ->distinct()
                 ->join('tdorderlpk AS tdol', 'tdpg.lpk_id', '=', 'tdol.id')
                 ->leftJoin('msproduct AS mp', 'mp.id', '=', 'tdol.product_id')
-                ->leftJoin('tdproduct_goods_assembly AS tga', 'tga.product_goods_id', '=', 'tdpg.id')
-                ->leftJoin('tdproduct_assembly AS ta', 'ta.id', '=', 'tga.product_assembly_id')
                 ->leftJoin('msmachine AS mc', 'mc.id', '=', 'tdpg.machine_id');
 
             if ($this->transaksi == 2) {
@@ -202,7 +199,13 @@ class NippoSeitaiController extends Component
                 $data->where('tdpg.machine_id', $this->machineId);
             }
             if (!empty($this->gentan_no) && $this->gentan_no != "undefined") {
-                $data->where('ta.gentan_no', $this->gentan_no);
+                $data->whereExists(function ($q) {
+                    $q->select(DB::raw(1))
+                      ->from('tdproduct_goods_assembly AS tga')
+                      ->join('tdproduct_assembly AS ta', 'ta.id', '=', 'tga.product_assembly_id')
+                      ->whereColumn('tga.product_goods_id', 'tdpg.id')
+                      ->where('ta.gentan_no', $this->gentan_no);
+                });
             }
             if (isset($this->status) && $this->status !== "" && $this->status !== null) {
                 if ($this->status == 0) {
