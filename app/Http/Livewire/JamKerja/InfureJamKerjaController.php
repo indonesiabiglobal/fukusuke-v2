@@ -13,6 +13,7 @@ use App\Models\TdJamKerjaJamMatiMesin;
 use App\Models\TdJamKerjaMesin;
 use Carbon\Carbon;
 use Livewire\Component;
+use App\Traits\HandlesHeavyJob;
 use Illuminate\Support\Facades\DB;
 use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
@@ -22,6 +23,7 @@ use Illuminate\Support\Str;
 
 class InfureJamKerjaController extends Component
 {
+    use HandlesHeavyJob;
     protected $paginationTheme = 'bootstrap';
     protected $listeners = ['edit', 'delete'];
     #[Session]
@@ -626,6 +628,7 @@ class InfureJamKerjaController extends Component
 
     public function export()
     {
+        $this->startHeavyJob();
         // validasi
         if ($this->tglMasuk == $this->tglKeluar) {
             $this->dispatch('notification', ['type' => 'warning', 'message' => 'Tanggal Masuk dan Tanggal Keluar tidak boleh sama']);

@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Kenpin;
 
 use App\Helpers\phpspreadsheet;
 use App\Http\Livewire\Kenpin\Report\DetailReportKenpinSeitaiController;
+use App\Traits\HandlesHeavyJob;
 use Livewire\Component;
 use App\Models\TdOrder;
 use App\Models\MsBuyer;
@@ -24,6 +25,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class EditKenpinSeitaiController extends Component
 {
+    use HandlesHeavyJob;
     public $idKenpinGoods;
     public $incident_date;
     public $shift;
@@ -593,6 +595,7 @@ class EditKenpinSeitaiController extends Component
 
     public function export()
     {
+        $this->startHeavyJob();
         $tglAwal = Carbon::parse($this->kenpin_date)->startOfDay();
         $tglAkhir = Carbon::parse($this->kenpin_date)->endOfDay();
 

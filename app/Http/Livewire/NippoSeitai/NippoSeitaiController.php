@@ -15,11 +15,13 @@ use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
 use Maatwebsite\Excel\Facades\Excel;
 use Livewire\Attributes\Session;
+use App\Traits\HandlesHeavyJob;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class NippoSeitaiController extends Component
 {
+    use HandlesHeavyJob;
     protected $paginationTheme = 'bootstrap';
     public $products;
     public $buyer;
@@ -124,6 +126,7 @@ class NippoSeitaiController extends Component
 
     public function export()
     {
+        $this->startHeavyJob();
         $filter = [
             'tglAwal' => Carbon::parse($this->tglMasuk)->format('d-m-Y'),
             'tglAkhir' => Carbon::parse($this->tglKeluar)->format('d-m-Y'),

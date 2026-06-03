@@ -10,9 +10,11 @@ use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PHPUnit\TextUI\Configuration\Php;
+use App\Traits\HandlesHeavyJob;
 
 class LabelMasukGudangController extends Component
 {
+    use HandlesHeavyJob;
     public $nomor_palet;
     public $data = [];
     public $code;
@@ -31,6 +33,7 @@ class LabelMasukGudangController extends Component
 
     public function export()
     {
+        $this->startHeavyJob();
         $nomer_dok = '';
         $maxRevisi = TdKartuMasukGudang::where('nomor_palet', $this->nomor_palet)->max('revisi');
         $revisi = $maxRevisi ? $maxRevisi + 1 : 1;

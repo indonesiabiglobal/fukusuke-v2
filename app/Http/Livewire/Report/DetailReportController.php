@@ -13,6 +13,7 @@ use App\Exports\DetailReportExport;
 use App\Exports\InfureReportExport;
 use App\Helpers\departmentHelper;
 use App\Helpers\MachineHelper;
+use App\Traits\HandlesHeavyJob;
 use App\Http\Livewire\Report\DetailReportInfureController;
 use Exception;
 use Maatwebsite\Excel\Facades\Excel;
@@ -24,6 +25,7 @@ use PHPUnit\TextUI\Configuration\Php;
 
 class DetailReportController extends Component
 {
+    use HandlesHeavyJob;
     public $tglAwal;
     public $tglAkhir;
     public $jamAwal;
@@ -53,6 +55,7 @@ class DetailReportController extends Component
 
     public function export()
     {
+        $this->startHeavyJob();
         $rules = [
             'tglAwal' => 'required',
             'tglAkhir' => 'required',

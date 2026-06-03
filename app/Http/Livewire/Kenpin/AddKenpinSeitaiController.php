@@ -13,9 +13,11 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use App\Traits\HandlesHeavyJob;
 
 class AddKenpinSeitaiController extends Component
 {
+    use HandlesHeavyJob;
     public $incident_date;
     public $shift;
     public $grup;
@@ -377,6 +379,7 @@ class AddKenpinSeitaiController extends Component
 
     public function export()
     {
+        $this->startHeavyJob();
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
 

@@ -13,6 +13,7 @@ use App\Exports\GeneralReportExport;
 use App\Http\Livewire\Report\GeneralReport\JamMatiReportService;
 use App\Http\Livewire\Report\GeneralReport\KapasitasProduksiReportService;
 use App\Http\Livewire\Report\GeneralReport\LossKasusReportService;
+use App\Traits\HandlesHeavyJob;
 use App\Http\Livewire\Report\GeneralReport\LossPerDepartemenPerJenisReportService;
 use App\Http\Livewire\Report\GeneralReport\ProduksiPerDepartemenPerJenisReportService;
 use App\Http\Livewire\Report\GeneralReport\ProduksiPerDepartemenPerTypeReportService;
@@ -32,6 +33,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class GeneralReportController extends Component
 {
+    use HandlesHeavyJob;
     public $jenisreport;
     public $tglMasuk;
     public $tglKeluar;
@@ -52,6 +54,7 @@ class GeneralReportController extends Component
 
     public function export()
     {
+        $this->startHeavyJob();
         // mengecek apakah jenis report sudah dipilih atau belum
         if ($this->jenisreport == null) {
             $this->dispatch('notification', ['type' => 'warning', 'message' => 'Pilih Jenis Report.']);

@@ -1,4 +1,10 @@
 <div>
+    {{-- Loading bar untuk Livewire request (filter, sort, paginate) --}}
+    <div wire:loading.delay class="position-fixed" style="top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,#0ab39c,#405189,#0ab39c);background-size:200%;animation:nippo-bar-slide 1.5s linear infinite;z-index:99999;"></div>
+    {{-- Overlay untuk navigasi full-page (edit, add) --}}
+    <div id="nippo-nav-overlay" class="d-none position-fixed top-0 start-0 w-100 h-100 justify-content-center align-items-center" style="background:rgba(255,255,255,0.75);z-index:99998;">
+        <div class="spinner-border text-primary" style="width:3rem;height:3rem;" role="status"><span class="visually-hidden">Loading...</span></div>
+    </div>
     <div class="row filter-section">
         <div class="col-12 col-lg-7">
             <div class="row">
@@ -72,15 +78,12 @@
                 </div>
                 <div class="col-12 col-lg-10">
                     <div class="mb-1" wire:ignore>
-                        <select class="form-control" wire:model.defer="idProduct" data-choices data-choices-sorting-true
-                            data-choices-removeItem data-choices-sorter data-choices-search-field-label>
+                        <select class="form-control select2-product-infure">
                             <option value="">- All -</option>
                             @foreach ($products as $item)
-                                <option
-                                    data-custom-properties='{"code": "{{ $item->code }} - {{ $item->code_alias }}"}'
-                                    value="{{ $item->id }}" @if ($item->id == ($idProduct['value'] ?? null)) selected @endif>
-                                    {{ $item->name }},
-                                    {{ $item->code }}</option>
+                                <option value="{{ $item->id }}" @if ($item->id == ($idProduct ?? null)) selected @endif>
+                                    {{ $item->name }}, {{ $item->code }}
+                                </option>
                             @endforeach
                         </select>
                     </div>
@@ -90,12 +93,12 @@
                 </div>
                 <div class="col-12 col-lg-10">
                     <div class="mb-1" wire:ignore>
-                        <select class="form-control" wire:model.defer="machineId" data-choices
-                            data-choices-sorting-false data-choices-removeItem data-choices-search-field-label>
+                        <select class="form-control select2-machine-infure">
                             <option value="">- All -</option>
                             @foreach ($machine as $item)
-                                <option value="{{ $item->id }}" @if ($item->id == ($machineId['value'] ?? null)) selected @endif>
-                                    {{ $item->machineno }}</option>
+                                <option value="{{ $item->id }}" @if ($item->id == ($machineId ?? null)) selected @endif>
+                                    {{ $item->machineno }}
+                                </option>
                             @endforeach
                         </select>
                     </div>
@@ -105,9 +108,7 @@
                 </div>
                 <div class="col-12 col-lg-10">
                     <div class="mb-1" wire:ignore>
-                        <select class="form-control" wire:model.defer="status" id="status" name="status"
-                            data-choices data-choices-sorting-false data-choices-removeItem
-                            data-choices-search-field-label>
+                        <select class="form-control" wire:model.defer="status" id="status" name="status">
                             <option value="">- all -</option>
                             <option value="0">Open</option>
                             <option value="1" @if (($status['value'] ?? null) == 1) selected @endif>Seitai</option>
@@ -164,205 +165,173 @@
         </div>
     </div>
 
-    <div class="table-responsive table-card  mt-2  mb-2">
-        <div class="col text-end dropdown">
-            <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
-                class="btn btn-soft-primary btn-icon fs-14 mt-2">
-                <i class="ri-grid-fill"></i>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end">
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="1"
-                            checked> Nomor LPK
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="2">
-                        Tanggal LPK
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="3">
-                        Panjang LPK
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="4"
-                            checked> Panjang Produksi
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="5"
-                            checked> Berat Gentan
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="6"
-                            checked> Nomor Gentan
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="7">
-                        Berat Standard
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="8">
-                        Rasio %
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="9">
-                        Selisih
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="10">
-                        Nama Produk
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="11"
-                            checked> Nomor Order
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="12"
-                            checked>
-                        Mesin
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="13"
-                            checked> Tanggal Produksi
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="14"
-                            checked> Tanggal Proses
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="15"
-                            checked> Jam
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="16"
-                            checked> Shift
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="17"
-                            checked> Seq
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="18">
-                        Loss
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="19">
-                        Update By
-                    </label>
-                </li>
-                <li>
-                    <label style="cursor: pointer;">
-                        <input class="form-check-input fs-15 ms-2 toggle-column" type="checkbox" data-column="20">
-                        Updated
-                    </label>
-                </li>
-            </ul>
+    <div x-data="{
+        cols: {1:true,2:false,3:false,4:true,5:true,6:true,7:false,8:false,9:false,10:false,11:true,12:true,13:true,14:true,15:true,16:true,17:true,18:false,19:false,20:false}
+    }" class="mt-2 mb-2">
+
+        <div class="d-flex justify-content-between align-items-center mb-1 flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-2">
+                <label class="text-muted small mb-0">Show</label>
+                <select wire:model.live="perPage" class="form-select form-select-sm" style="width:auto">
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+                <label class="text-muted small mb-0">entries</label>
+            </div>
+            <div class="dropdown">
+                <button type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                    class="btn btn-soft-primary btn-icon fs-14">
+                    <i class="ri-grid-fill"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><label style="cursor:pointer"><input class="form-check-input fs-15 ms-2" type="checkbox" x-model="cols[1]"> Nomor LPK</label></li>
+                    <li><label style="cursor:pointer"><input class="form-check-input fs-15 ms-2" type="checkbox" x-model="cols[2]"> Tanggal LPK</label></li>
+                    <li><label style="cursor:pointer"><input class="form-check-input fs-15 ms-2" type="checkbox" x-model="cols[3]"> Panjang LPK</label></li>
+                    <li><label style="cursor:pointer"><input class="form-check-input fs-15 ms-2" type="checkbox" x-model="cols[4]"> Panjang Produksi</label></li>
+                    <li><label style="cursor:pointer"><input class="form-check-input fs-15 ms-2" type="checkbox" x-model="cols[5]"> Berat Gentan</label></li>
+                    <li><label style="cursor:pointer"><input class="form-check-input fs-15 ms-2" type="checkbox" x-model="cols[6]"> Nomor Gentan</label></li>
+                    <li><label style="cursor:pointer"><input class="form-check-input fs-15 ms-2" type="checkbox" x-model="cols[7]"> Berat Standard</label></li>
+                    <li><label style="cursor:pointer"><input class="form-check-input fs-15 ms-2" type="checkbox" x-model="cols[8]"> Rasio %</label></li>
+                    <li><label style="cursor:pointer"><input class="form-check-input fs-15 ms-2" type="checkbox" x-model="cols[9]"> Selisih</label></li>
+                    <li><label style="cursor:pointer"><input class="form-check-input fs-15 ms-2" type="checkbox" x-model="cols[10]"> Nama Produk</label></li>
+                    <li><label style="cursor:pointer"><input class="form-check-input fs-15 ms-2" type="checkbox" x-model="cols[11]"> Nomor Order</label></li>
+                    <li><label style="cursor:pointer"><input class="form-check-input fs-15 ms-2" type="checkbox" x-model="cols[12]"> Mesin</label></li>
+                    <li><label style="cursor:pointer"><input class="form-check-input fs-15 ms-2" type="checkbox" x-model="cols[13]"> Tanggal Produksi</label></li>
+                    <li><label style="cursor:pointer"><input class="form-check-input fs-15 ms-2" type="checkbox" x-model="cols[14]"> Tanggal Proses</label></li>
+                    <li><label style="cursor:pointer"><input class="form-check-input fs-15 ms-2" type="checkbox" x-model="cols[15]"> Jam</label></li>
+                    <li><label style="cursor:pointer"><input class="form-check-input fs-15 ms-2" type="checkbox" x-model="cols[16]"> Shift</label></li>
+                    <li><label style="cursor:pointer"><input class="form-check-input fs-15 ms-2" type="checkbox" x-model="cols[17]"> Seq</label></li>
+                    <li><label style="cursor:pointer"><input class="form-check-input fs-15 ms-2" type="checkbox" x-model="cols[18]"> Loss</label></li>
+                    <li><label style="cursor:pointer"><input class="form-check-input fs-15 ms-2" type="checkbox" x-model="cols[19]"> Update By</label></li>
+                    <li><label style="cursor:pointer"><input class="form-check-input fs-15 ms-2" type="checkbox" x-model="cols[20]"> Updated</label></li>
+                </ul>
+            </div>
         </div>
-        <table class="table align-middle table-nowrap" id="tableInfure">
-            <thead class="table-light">
-                <tr>
-                    <th></th>
-                    <th>Nomor LPK</th>
-                    <th>Tanggal LPK</th>
-                    <th>Panjang LPK</th>
-                    <th>Panjang Produksi</th>
-                    <th>Berat Gentan</th>
-                    <th>Nomor Gentan</th>
-                    <th>Berat Standard</th>
-                    <th>Rasio %</th>
-                    <th>Selisih</th>
-                    <th>Nama Produk</th>
-                    <th>Nomor Order</th>
-                    <th>Mesin</th>
-                    <th>Tanggal Produksi</th>
-                    <th>Tanggal Proses</th>
-                    <th>Jam</th>
-                    <th>Shift</th>
-                    <th>Seq</th>
-                    <th>Loss</th>
-                    <th>Update By</th>
-                    <th>Updated</th>
-                </tr>
-            </thead>
-            <tbody class="list form-check-all">
-                @forelse ($data as $item)
+
+        <div wire:loading.class="opacity-50" wire:target="search,sortBy,gotoPage,nextPage,previousPage,perPage"
+            style="overflow-x:auto; overflow-y:auto; max-height:65vh; transition: opacity 0.15s;">
+            <table class="table align-middle table-nowrap table-hover" id="tableInfure">
+                <thead class="table-light">
                     <tr>
-                        <td>
-                            <a href="/edit-nippo?orderId={{ $item->id }}"
-                                class="link-success fs-15 p-1 bg-primary rounded">
-                                <i class="ri-edit-box-line text-white"></i>
-                            </a>
-                        </td>
-                        <td> {{ $item->lpk_no }} </td>
-                        <td data-order="{{ $item->lpk_date }}">
-                            {{ \Carbon\Carbon::parse($item->lpk_date)->format('d M Y') }}</td>
-                        <td> {{ number_format($item->panjang_lpk, 0, ',', ',') }} </td>
-                        <td> {{ number_format($item->panjang_produksi, 0, ',', ',') }} </td>
-                        <td>
-                            {{ number_format($item->berat_produksi, 2, ',', '.') }}
-                        </td>
-                        <td> {{ $item->gentan_no }} </td>
-                        <td> {{ number_format($item->berat_standard, 0, ',', ',') }} </td>
-                        <td>{{ number_format($item->rasio, 2, ',', ',') }}</td>
-                        <td>{{ number_format($item->selisih, 0, ',', ',') }}</td>
-                        <td> {{ $item->product_name }} </td>
-                        <td> {{ $item->product_code }} </td>
-                        <td> {{ $item->machineno }} </td>
-                        <td data-order="{{ $item->production_date }}">
-                            {{ \Carbon\Carbon::parse($item->production_date)->format('d M Y') }}</td>
-                        <td data-order="{{ $item->created_on }}">
-                            {{ \Carbon\Carbon::parse($item->created_on)->format('d M Y') }}</td>
-                        <td> {{ $item->work_hour }} </td>
-                        <td> {{ $item->work_shift }} </td>
-                        <td> {{ $item->seq_no }} </td>
-                        <td> {{ $item->infure_berat_loss }} </td>
-                        <td> {{ $item->updated_by }} </td>
-                        <td data-order="{{ $item->updated_on }}">
-                            {{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y H:i') }}</td>
+                        <th style="width:36px"></th>
+                        <th :class="{'d-none': !cols[1]}" wire:click="sortBy('tdol.lpk_no')" style="cursor:pointer;white-space:nowrap">
+                            Nomor LPK <i class="{{ $sortColumn === 'tdol.lpk_no' ? ($sortDirection === 'asc' ? 'ri-arrow-up-s-line text-primary' : 'ri-arrow-down-s-line text-primary') : 'ri-expand-up-down-line text-muted' }} fs-12"></i>
+                        </th>
+                        <th :class="{'d-none': !cols[2]}" wire:click="sortBy('tdol.lpk_date')" style="cursor:pointer;white-space:nowrap">
+                            Tanggal LPK <i class="{{ $sortColumn === 'tdol.lpk_date' ? ($sortDirection === 'asc' ? 'ri-arrow-up-s-line text-primary' : 'ri-arrow-down-s-line text-primary') : 'ri-expand-up-down-line text-muted' }} fs-12"></i>
+                        </th>
+                        <th :class="{'d-none': !cols[3]}" wire:click="sortBy('tdol.panjang_lpk')" style="cursor:pointer;white-space:nowrap">
+                            Panjang LPK <i class="{{ $sortColumn === 'tdol.panjang_lpk' ? ($sortDirection === 'asc' ? 'ri-arrow-up-s-line text-primary' : 'ri-arrow-down-s-line text-primary') : 'ri-expand-up-down-line text-muted' }} fs-12"></i>
+                        </th>
+                        <th :class="{'d-none': !cols[4]}" wire:click="sortBy('tda.panjang_produksi')" style="cursor:pointer;white-space:nowrap">
+                            Panjang Produksi <i class="{{ $sortColumn === 'tda.panjang_produksi' ? ($sortDirection === 'asc' ? 'ri-arrow-up-s-line text-primary' : 'ri-arrow-down-s-line text-primary') : 'ri-expand-up-down-line text-muted' }} fs-12"></i>
+                        </th>
+                        <th :class="{'d-none': !cols[5]}" wire:click="sortBy('tda.berat_produksi')" style="cursor:pointer;white-space:nowrap">
+                            Berat Gentan <i class="{{ $sortColumn === 'tda.berat_produksi' ? ($sortDirection === 'asc' ? 'ri-arrow-up-s-line text-primary' : 'ri-arrow-down-s-line text-primary') : 'ri-expand-up-down-line text-muted' }} fs-12"></i>
+                        </th>
+                        <th :class="{'d-none': !cols[6]}" wire:click="sortBy('tda.gentan_no')" style="cursor:pointer;white-space:nowrap">
+                            Nomor Gentan <i class="{{ $sortColumn === 'tda.gentan_no' ? ($sortDirection === 'asc' ? 'ri-arrow-up-s-line text-primary' : 'ri-arrow-down-s-line text-primary') : 'ri-expand-up-down-line text-muted' }} fs-12"></i>
+                        </th>
+                        <th :class="{'d-none': !cols[7]}" wire:click="sortBy('tda.berat_standard')" style="cursor:pointer;white-space:nowrap">
+                            Berat Standard <i class="{{ $sortColumn === 'tda.berat_standard' ? ($sortDirection === 'asc' ? 'ri-arrow-up-s-line text-primary' : 'ri-arrow-down-s-line text-primary') : 'ri-expand-up-down-line text-muted' }} fs-12"></i>
+                        </th>
+                        <th :class="{'d-none': !cols[8]}">Rasio %</th>
+                        <th :class="{'d-none': !cols[9]}">Selisih</th>
+                        <th :class="{'d-none': !cols[10]}" wire:click="sortBy('mp.name')" style="cursor:pointer;white-space:nowrap">
+                            Nama Produk <i class="{{ $sortColumn === 'mp.name' ? ($sortDirection === 'asc' ? 'ri-arrow-up-s-line text-primary' : 'ri-arrow-down-s-line text-primary') : 'ri-expand-up-down-line text-muted' }} fs-12"></i>
+                        </th>
+                        <th :class="{'d-none': !cols[11]}" wire:click="sortBy('tdo.product_code')" style="cursor:pointer;white-space:nowrap">
+                            Nomor Order <i class="{{ $sortColumn === 'tdo.product_code' ? ($sortDirection === 'asc' ? 'ri-arrow-up-s-line text-primary' : 'ri-arrow-down-s-line text-primary') : 'ri-expand-up-down-line text-muted' }} fs-12"></i>
+                        </th>
+                        <th :class="{'d-none': !cols[12]}" wire:click="sortBy('msm.machineno')" style="cursor:pointer;white-space:nowrap">
+                            Mesin <i class="{{ $sortColumn === 'msm.machineno' ? ($sortDirection === 'asc' ? 'ri-arrow-up-s-line text-primary' : 'ri-arrow-down-s-line text-primary') : 'ri-expand-up-down-line text-muted' }} fs-12"></i>
+                        </th>
+                        <th :class="{'d-none': !cols[13]}" wire:click="sortBy('tda.production_date')" style="cursor:pointer;white-space:nowrap">
+                            Tanggal Produksi <i class="{{ $sortColumn === 'tda.production_date' ? ($sortDirection === 'asc' ? 'ri-arrow-up-s-line text-primary' : 'ri-arrow-down-s-line text-primary') : 'ri-expand-up-down-line text-muted' }} fs-12"></i>
+                        </th>
+                        <th :class="{'d-none': !cols[14]}" wire:click="sortBy('tda.created_on')" style="cursor:pointer;white-space:nowrap">
+                            Tanggal Proses <i class="{{ $sortColumn === 'tda.created_on' ? ($sortDirection === 'asc' ? 'ri-arrow-up-s-line text-primary' : 'ri-arrow-down-s-line text-primary') : 'ri-expand-up-down-line text-muted' }} fs-12"></i>
+                        </th>
+                        <th :class="{'d-none': !cols[15]}" wire:click="sortBy('tda.work_hour')" style="cursor:pointer;white-space:nowrap">
+                            Jam <i class="{{ $sortColumn === 'tda.work_hour' ? ($sortDirection === 'asc' ? 'ri-arrow-up-s-line text-primary' : 'ri-arrow-down-s-line text-primary') : 'ri-expand-up-down-line text-muted' }} fs-12"></i>
+                        </th>
+                        <th :class="{'d-none': !cols[16]}" wire:click="sortBy('tda.work_shift')" style="cursor:pointer;white-space:nowrap">
+                            Shift <i class="{{ $sortColumn === 'tda.work_shift' ? ($sortDirection === 'asc' ? 'ri-arrow-up-s-line text-primary' : 'ri-arrow-down-s-line text-primary') : 'ri-expand-up-down-line text-muted' }} fs-12"></i>
+                        </th>
+                        <th :class="{'d-none': !cols[17]}" wire:click="sortBy('tda.seq_no')" style="cursor:pointer;white-space:nowrap">
+                            Seq <i class="{{ $sortColumn === 'tda.seq_no' ? ($sortDirection === 'asc' ? 'ri-arrow-up-s-line text-primary' : 'ri-arrow-down-s-line text-primary') : 'ri-expand-up-down-line text-muted' }} fs-12"></i>
+                        </th>
+                        <th :class="{'d-none': !cols[18]}">Loss</th>
+                        <th :class="{'d-none': !cols[19]}">Update By</th>
+                        <th :class="{'d-none': !cols[20]}" wire:click="sortBy('tda.updated_on')" style="cursor:pointer;white-space:nowrap">
+                            Updated <i class="{{ $sortColumn === 'tda.updated_on' ? ($sortDirection === 'asc' ? 'ri-arrow-up-s-line text-primary' : 'ri-arrow-down-s-line text-primary') : 'ri-expand-up-down-line text-muted' }} fs-12"></i>
+                        </th>
                     </tr>
-                @empty
-                @endforelse
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @forelse ($data as $item)
+                        <tr>
+                            <td>
+                                <a href="/edit-nippo?orderId={{ $item->id }}"
+                                    class="link-success fs-15 p-1 bg-primary rounded">
+                                    <i class="ri-edit-box-line text-white"></i>
+                                </a>
+                            </td>
+                            <td :class="{'d-none': !cols[1]}"> {{ $item->lpk_no }} </td>
+                            <td :class="{'d-none': !cols[2]}">{{ \Carbon\Carbon::parse($item->lpk_date)->format('d M Y') }}</td>
+                            <td :class="{'d-none': !cols[3]}"> {{ number_format($item->panjang_lpk, 0, ',', ',') }} </td>
+                            <td :class="{'d-none': !cols[4]}"> {{ number_format($item->panjang_produksi, 0, ',', ',') }} </td>
+                            <td :class="{'d-none': !cols[5]}"> {{ number_format($item->berat_produksi, 2, ',', '.') }} </td>
+                            <td :class="{'d-none': !cols[6]}"> {{ $item->gentan_no }} </td>
+                            <td :class="{'d-none': !cols[7]}"> {{ number_format($item->berat_standard, 0, ',', ',') }} </td>
+                            <td :class="{'d-none': !cols[8]}">{{ number_format($item->rasio, 2, ',', ',') }}</td>
+                            <td :class="{'d-none': !cols[9]}">{{ number_format($item->selisih, 0, ',', ',') }}</td>
+                            <td :class="{'d-none': !cols[10]}"> {{ $item->product_name }} </td>
+                            <td :class="{'d-none': !cols[11]}"> {{ $item->product_code }} </td>
+                            <td :class="{'d-none': !cols[12]}"> {{ $item->machineno }} </td>
+                            <td :class="{'d-none': !cols[13]}">{{ \Carbon\Carbon::parse($item->production_date)->format('d M Y') }}</td>
+                            <td :class="{'d-none': !cols[14]}">{{ \Carbon\Carbon::parse($item->created_on)->format('d M Y') }}</td>
+                            <td :class="{'d-none': !cols[15]}"> {{ $item->work_hour }} </td>
+                            <td :class="{'d-none': !cols[16]}"> {{ $item->work_shift }} </td>
+                            <td :class="{'d-none': !cols[17]}"> {{ $item->seq_no }} </td>
+                            <td :class="{'d-none': !cols[18]}"> {{ $item->infure_berat_loss }} </td>
+                            <td :class="{'d-none': !cols[19]}"> {{ $item->updated_by }} </td>
+                            <td :class="{'d-none': !cols[20]}">{{ \Carbon\Carbon::parse($item->updated_on)->format('d M Y H:i') }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="21" class="text-center py-4">
+                                <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                                    colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
+                                <h5 class="mt-2">Record not Found..!</h5>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap mt-2 gap-2">
+            <div class="text-muted small">
+                @if ($data instanceof \Illuminate\Pagination\LengthAwarePaginator)
+                    Showing {{ $data->firstItem() ?? 0 }}–{{ $data->lastItem() ?? 0 }} of {{ $data->total() }} entries
+                @endif
+            </div>
+            <div>
+                @if ($data instanceof \Illuminate\Pagination\LengthAwarePaginator)
+                    {{ $data->links() }}
+                @endif
+            </div>
+        </div>
     </div>
 
     <style>
+        @keyframes nippo-bar-slide {
+            0%   { background-position: 0% 0%; }
+            100% { background-position: 200% 0%; }
+        }
         #tableInfure.table>:not(caption)>*>* {
             font-size: 13px !important;
             padding: 4px 2px 4px 4px;
@@ -380,96 +349,51 @@
             window.open(printUrl, '_blank');
         });
 
-        function calculateTableHeight() {
-            const totalHeight = window.innerHeight;
+        document.addEventListener('livewire:initialized', function () {
+            function initProductSelect() {
+                if ($('.select2-product-infure').hasClass('select2-hidden-accessible')) {
+                    $('.select2-product-infure').select2('destroy');
+                }
+                $('.select2-product-infure').select2({
+                    theme: 'bootstrap-5',
+                    allowClear: true,
+                    placeholder: '- All -',
+                }).on('change', function () {
+                    @this.set('idProduct', $(this).val() || null);
+                });
+            }
 
-            const filterSectionTop = document.querySelector('.filter-section')?.getBoundingClientRect().top || 0;
-            const offsetTop = document.querySelector('#tableInfure')?.getBoundingClientRect().top || 0;
+            function initMachineSelect() {
+                if ($('.select2-machine-infure').hasClass('select2-hidden-accessible')) {
+                    $('.select2-machine-infure').select2('destroy');
+                }
+                $('.select2-machine-infure').select2({
+                    theme: 'bootstrap-5',
+                    allowClear: true,
+                    placeholder: '- All -',
+                }).on('change', function () {
+                    @this.set('machineId', $(this).val() || null);
+                });
+            }
 
-            const paddingTop = document.querySelector('.navbar-header')?.getBoundingClientRect().top || 0;
-            const availableHeight = totalHeight - offsetTop - filterSectionTop - paddingTop;
+            initProductSelect();
+            initMachineSelect();
 
-            return availableHeight;
-        }
+            Livewire.hook('morph', ({ el, component }) => {
+                setTimeout(() => {
+                    initProductSelect();
+                    initMachineSelect();
+                }, 100);
+            });
 
-
-        // datatable
-        // inisialisasi DataTable
-        $wire.on('initDataTable', () => {
-            initDataTable();
+            // Tampilkan overlay saat navigasi full-page (edit, add, dll)
+            window.addEventListener('beforeunload', function () {
+                var overlay = document.getElementById('nippo-nav-overlay');
+                if (overlay) {
+                    overlay.classList.remove('d-none');
+                    overlay.classList.add('d-flex');
+                }
+            });
         });
-
-        // Fungsi untuk menginisialisasi ulang DataTable
-        function initDataTable() {
-            const savedOrder = $wire.get('sortingTable');
-            const savedEntriesPerPage = $wire.get('entriesPerPage');
-
-            let defaultOrder = [
-                [1, "asc"]
-            ];
-            if (savedOrder) {
-                defaultOrder = savedOrder;
-            }
-
-            let entriesPerPage = 10;
-            if (savedEntriesPerPage) {
-                entriesPerPage = savedEntriesPerPage;
-            }
-            // Hapus DataTable jika sudah ada
-            if ($.fn.dataTable.isDataTable('#tableInfure')) {
-                let table = $('#tableInfure').DataTable();
-                table.clear(); // Bersihkan data tabel
-                table.destroy(); // Hancurkan DataTable
-            }
-
-            setTimeout(() => {
-                // Inisialisasi ulang DataTable
-                let table = $('#tableInfure').DataTable({
-                    "pageLength": entriesPerPage,
-                    "searching": true,
-                    "responsive": true,
-                    "scrollX": true,
-                    "order": defaultOrder,
-                    "scrollY": calculateTableHeight() + 'px',
-                    "scrollCollapse": true,
-                    "language": {
-                        "emptyTable": `
-                            <div class="text-center">
-                                <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
-                                    colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
-                                <h5 class="mt-2">Record not Found..!</h5>
-                            </div>
-                        `
-                    },
-                });
-
-                // Listen to sort event
-                table.on('order.dt', function() {
-                    let order = table.order();
-                    if (order.length == 0 && defaultOrder.length > 0) {
-                        order = defaultOrder;
-                    }
-                    $wire.call('updateSortingTable', order);
-                });
-
-                // Listen to page length change
-                table.on('length.dt', function() {
-                    let entriesPerPage = table.page.len();
-                    $wire.call('updateEntriesPerPage', entriesPerPage);
-                });
-
-                // default column visibility
-                $('.toggle-column').each(function() {
-                    let column = table.column($(this).attr('data-column'));
-                    column.visible($(this).is(':checked'));
-                });
-
-                // Inisialisasi ulang event listener checkbox
-                $('.toggle-column').off('change').on('change', function() {
-                    let column = table.column($(this).attr('data-column'));
-                    column.visible(!column.visible());
-                });
-            }, 500);
-        }
     </script>
 @endscript

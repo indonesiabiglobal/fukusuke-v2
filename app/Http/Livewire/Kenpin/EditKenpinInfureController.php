@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Kenpin;
 
 use App\Http\Livewire\Kenpin\Report\DetailReportKenpinInfureController;
 use App\Http\Livewire\Report\DetailReportController;
+use App\Traits\HandlesHeavyJob;
 use Livewire\Component;
 use App\Models\MsEmployee;
 use App\Models\MsProduct;
@@ -19,6 +20,7 @@ use Illuminate\Support\Facades\DB;
 
 class EditKenpinInfureController extends Component
 {
+    use HandlesHeavyJob;
     public $incident_date;
     public $shift;
     public $kenpin_date;
@@ -726,6 +728,7 @@ class EditKenpinInfureController extends Component
 
     public function export()
     {
+        $this->startHeavyJob();
         $tglAwal = Carbon::parse($this->kenpin_date)->startOfDay();
         $tglAkhir = Carbon::parse($this->kenpin_date)->endOfDay();
 

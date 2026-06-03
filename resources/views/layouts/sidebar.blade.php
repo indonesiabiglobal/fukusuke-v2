@@ -9,10 +9,13 @@
     </div>
 
     @php
-        // Get user roles with safe null checking
         $userAccess = [];
-        if (auth()->check() && auth()->user()->roles) {
-            $userAccess = auth()->user()->roles->flatMap->access->pluck('code')->unique()->toArray();
+        if (auth()->check()) {
+            $userAccess = \Illuminate\Support\Facades\Cache::remember(
+                'user_access_' . auth()->id(),
+                600, // 10 menit — cukup lama, role jarang berubah
+                fn() => auth()->user()->roles->flatMap->access->pluck('code')->unique()->toArray()
+            );
         }
     @endphp
 

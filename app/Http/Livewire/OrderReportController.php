@@ -13,12 +13,14 @@ use App\Models\MsWorkingShift;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use App\Traits\HandlesHeavyJob;
 use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class OrderReportController extends Component
 {
+    use HandlesHeavyJob;
     public $tglAwal;
     public $tglAkhir;
     public $jamAwal;
@@ -62,6 +64,7 @@ class OrderReportController extends Component
 
     public function export()
     {
+        $this->startHeavyJob();
         if ($this->tglAwal > $this->tglAkhir) {
             $this->dispatch('notification', ['type' => 'warning', 'message' => 'Tanggal akhir tidak boleh kurang dari tanggal awal']);
             return;

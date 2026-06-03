@@ -77,7 +77,10 @@ return [
             'search_path' => 'public',
             'sslmode' => 'prefer',
             'options' => [
-                PDO::ATTR_TIMEOUT => 30,        // Connection timeout 30 detik
+                // Persistent connection: TCP ke PostgreSQL dipertahankan antar request
+                // sehingga tidak perlu handshake ulang setiap request (menghilangkan cold start ~2000ms)
+                PDO::ATTR_PERSISTENT => env('DB_PERSISTENT', true),
+                PDO::ATTR_TIMEOUT => 30,
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             ],
         ],

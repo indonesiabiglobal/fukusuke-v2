@@ -13,10 +13,12 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use App\Traits\HandlesHeavyJob;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class CheckListSeitaiController extends Component
 {
+    use HandlesHeavyJob;
     public $tglAwal;
     public $tglAkhir;
     public $jamAwal;
@@ -69,6 +71,7 @@ class CheckListSeitaiController extends Component
 
     public function export()
     {
+        $this->startHeavyJob();
         if ($this->jenisReport == 'CheckList') {
             $response = $this->checklist();
             if ($response['status'] == 'success') {

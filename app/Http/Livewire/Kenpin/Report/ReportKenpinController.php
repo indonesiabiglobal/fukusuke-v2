@@ -13,10 +13,12 @@ use Illuminate\Support\Facades\Validator;
 use Livewire\Component;
 use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use App\Traits\HandlesHeavyJob;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class ReportKenpinController extends Component
 {
+    use HandlesHeavyJob;
     public $tglAwal;
     public $tglAkhir;
     public $jamAwal;
@@ -62,6 +64,7 @@ class ReportKenpinController extends Component
 
     public function export()
     {
+        $this->startHeavyJob();
         $rules = [
             'tglAwal' => 'required',
             'tglAkhir' => 'required',

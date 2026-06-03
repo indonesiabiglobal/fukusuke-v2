@@ -13,11 +13,13 @@ use App\Models\MsMachine;
 use App\Models\MsWorkingShift;
 use App\Models\TdJamKerjaMesin;
 use Illuminate\Support\Facades\Validator;
+use App\Traits\HandlesHeavyJob;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class CheckListJamKerjaController extends Component
 {
+    use HandlesHeavyJob;
     public $tglAwal;
     public $tglAkhir;
     public $jamAwal;
@@ -74,6 +76,7 @@ class CheckListJamKerjaController extends Component
 
     public function export()
     {
+        $this->startHeavyJob();
         $rules = [
             'tglAwal' => 'required',
             'tglAkhir' => 'required',

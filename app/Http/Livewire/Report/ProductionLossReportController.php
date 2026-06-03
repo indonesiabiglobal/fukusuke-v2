@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Report;
 use App\Exports\GeneralReportExport;
 use App\Helpers\phpspreadsheet;
 use App\Models\MsDepartment;
+use App\Traits\HandlesHeavyJob;
 use App\Models\MsMachine;
 use App\Models\MsWorkingShift;
 use Carbon\Carbon;
@@ -16,6 +17,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class ProductionLossReportController extends Component
 {
+    use HandlesHeavyJob;
     public $jenisreport;
     public $tglAwal;
     public $tglAkhir;
@@ -35,6 +37,7 @@ class ProductionLossReportController extends Component
 
     public function export()
     {
+        $this->startHeavyJob();
         if ($this->tglAwal > $this->tglAkhir) {
             session()->flash('error', 'Tanggal akhir tidak boleh kurang dari tanggal awal');
             return;

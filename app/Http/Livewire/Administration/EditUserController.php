@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Administration;
 use App\Models\User;
 use App\Models\Role;
 use Livewire\Component;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
@@ -114,6 +115,9 @@ class EditUserController extends Component
 
             // Sync multiple roles to user
             $this->user->roles()->sync($this->selectedRoles);
+
+            // Invalidate sidebar access cache agar perubahan role langsung berlaku
+            Cache::forget('user_access_' . $this->userId);
 
             DB::commit();
 

@@ -13,11 +13,13 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\NippoSeitaiExport;
 use App\Helpers\phpspreadsheet;
 use Livewire\Attributes\Session;
+use App\Traits\HandlesHeavyJob;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class LossSeitaiController extends Component
 {
+    use HandlesHeavyJob;
     protected $paginationTheme = 'bootstrap';
     public $products;
     #[Session]
@@ -87,6 +89,7 @@ class LossSeitaiController extends Component
 
     public function export()
     {
+        $this->startHeavyJob();
         // pengecekan inputan jam awal dan jam akhir
         // if (is_array($this->jamMasuk)) {
         //     $this->jamMasuk = $this->jamMasuk['value'];

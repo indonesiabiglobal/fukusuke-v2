@@ -4,25 +4,21 @@ namespace App\Http\Livewire\NippoInfure;
 
 use Livewire\Component;
 use Carbon\Carbon;
-use App\Models\TdOrderLpk;
 use App\Models\MsProduct;
-use App\Models\MsBuyer;
 use App\Models\MsMachine;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
 use Livewire\WithFileUploads;
-use Illuminate\Http\Request;
+use App\Traits\HandlesHeavyJob;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\Session;
 
 class NippoInfureController extends Component
 {
+    use HandlesHeavyJob;
     protected $paginationTheme = 'bootstrap';
-    public $tdOrderLpk;
-    public $products;
-    public $buyer;
-    public $machine;
     #[Session]
     public $tglMasuk;
     #[Session]
@@ -40,9 +36,11 @@ class NippoInfureController extends Component
     #[Session]
     public $idProduct;
     #[Session]
-    public $sortingTable;
+    public $perPage = 10;
     #[Session]
-    public $entriesPerPage = 10;
+    public $sortColumn = 'tda.created_on';
+    #[Session]
+    public $sortDirection = 'desc';
 
     use WithFileUploads;
     public $file;
@@ -51,13 +49,16 @@ class NippoInfureController extends Component
 
     public function mount()
     {
-        // menghapus session kondisi bukan dari nippo infure
         $this->shouldForgetSession();
 
-        $this->products = MsProduct::get();
-        $this->tdOrderLpk = TdOrderLpk::get();
-        $this->buyer = MsBuyer::get();
-        $this->machine = MsMachine::whereIn('department_id', [10, 12, 15, 2, 4, 10])->orderBy('machineno')->get();
+        // Normalize legacy {value: x} array format (choices.js) to scalar (select2)
+        if (is_array($this->idProduct)) {
+            $this->idProduct = $this->idProduct['value'] ?? null;
+        }
+        if (is_array($this->machineId)) {
+            $this->machineId = $this->machineId['value'] ?? null;
+        }
+
         if (empty($this->transaksi)) {
             $this->transaksi = 1;
         }
@@ -67,24 +68,6 @@ class NippoInfureController extends Component
         if (empty($this->tglKeluar)) {
             $this->tglKeluar = Carbon::now()->format('d M Y');
         }
-        if (empty($this->sortingTable)) {
-            $this->sortingTable = [[1, 'asc']];
-        }
-        if (empty($this->entriesPerPage)) {
-            $this->entriesPerPage = 10;
-        }
-    }
-
-    public function updateSortingTable($value)
-    {
-        $this->sortingTable = $value;
-        $this->skipRender();
-    }
-
-    public function updateEntriesPerPage($value)
-    {
-        $this->entriesPerPage = $value;
-        $this->skipRender();
     }
 
     protected function shouldForgetSession()
@@ -92,13 +75,34 @@ class NippoInfureController extends Component
         $previousUrl = url()->previous();
         $previousUrl = last(explode('/', $previousUrl));
         if (!(Str::contains($previousUrl, 'edit-nippo') || Str::contains($previousUrl, 'add-nippo') || Str::contains($previousUrl,'nippo-infure'))) {
-            $this->reset('tglMasuk', 'tglKeluar', 'transaksi', 'machineId', 'status', 'lpk_no', 'searchTerm', 'idProduct', 'sortingTable', 'entriesPerPage');
+            $this->reset('tglMasuk', 'tglKeluar', 'transaksi', 'machineId', 'status', 'lpk_no', 'searchTerm', 'idProduct', 'perPage', 'sortColumn', 'sortDirection');
         }
     }
 
     public function search()
     {
-        $this->render();
+        $this->resetPage();
+    }
+
+    public function sortBy($column)
+    {
+        $allowedSortColumns = [
+            'tdol.lpk_no', 'tdol.lpk_date', 'tdol.panjang_lpk',
+            'tda.panjang_produksi', 'tda.berat_produksi', 'tda.gentan_no',
+            'tda.berat_standard', 'tda.seq_no', 'tda.work_hour', 'tda.work_shift',
+            'tdo.product_code', 'mp.name', 'msm.machineno',
+            'tda.production_date', 'tda.created_on', 'tda.updated_on',
+        ];
+        if (!in_array($column, $allowedSortColumns)) {
+            return;
+        }
+        if ($this->sortColumn === $column) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortColumn = $column;
+            $this->sortDirection = 'asc';
+        }
+        $this->resetPage();
     }
 
     public function print()
@@ -111,12 +115,13 @@ class NippoInfureController extends Component
 
     public function export()
     {
+        $this->startHeavyJob();
         $tglMasuk = Carbon::parse($this->tglMasuk . " 00:00:00");
         $tglKeluar = Carbon::parse($this->tglKeluar . " 23:59:59");
         $filter = [
             'lpk_no' => $this->lpk_no ?? null,
-            'machineId' => $this->machineId['value'] ?? null,
-            'idProduct' => $this->idProduct['value'] ?? null,
+            'machineId' => $this->machineId ?? null,
+            'idProduct' => $this->idProduct ?? null,
             'status' => $this->status['value'] ?? null,
             'searchTerm' => $this->searchTerm ?? null,
             'transaksi' => $this->transaksi ?? 1,
@@ -208,16 +213,16 @@ class NippoInfureController extends Component
                 }
             }
 
-            if (isset($this->machineId) && $this->machineId['value'] != "" && $this->machineId != "undefined") {
-                $data = $data->where('msm.id', $this->machineId['value']);
+            if (!empty($this->machineId) && $this->machineId != "undefined") {
+                $data = $data->where('msm.id', $this->machineId);
             }
 
             if (isset($this->lpk_no) && $this->lpk_no != "" && $this->lpk_no != "undefined" && strlen($this->lpk_no) == 10) {
                 $data = $data->where('tdol.lpk_no', 'ilike', "%{$this->lpk_no}%");
             }
 
-            if (isset($this->idProduct) && $this->idProduct['value'] != "" && $this->idProduct != "undefined") {
-                $data = $data->where('tda.product_id', $this->idProduct['value']);
+            if (!empty($this->idProduct) && $this->idProduct != "undefined") {
+                $data = $data->where('tda.product_id', $this->idProduct);
             }
 
             if (isset($this->status) && $this->status['value'] != "" && $this->status != "undefined") {
@@ -240,20 +245,27 @@ class NippoInfureController extends Component
                         ->orWhere('tda.nomor_han', 'ilike', "%{$this->searchTerm}%");
                 });
             }
-            $data->orderBy('tda.created_on', 'desc');
-            $data = $data->get();
+            $data = $data->orderBy($this->sortColumn, $this->sortDirection)
+                         ->paginate($this->perPage);
         } catch (\Exception $e) {
-            $data = [];
+            $data = new \Illuminate\Pagination\LengthAwarePaginator([], 0, $this->perPage);
             $this->dispatch('notification', ['type' => 'error', 'message' => 'Terjadi kesalahan saat mengambil data: ' . $e->getMessage()]);
         }
 
+        // Select hanya kolom yang dipakai di dropdown — dari 97 kolom jadi 4 kolom (~25x lebih kecil)
+        // TTL 3600s (1 jam): produk & mesin jarang berubah, tidak perlu refresh tiap 5 menit
+        $products = Cache::remember('ms_products_infure', 3600, fn() =>
+            MsProduct::select(['id', 'name', 'code', 'code_alias'])->orderBy('code')->get()
+        );
+        $machine = Cache::remember('ms_machines_infure', 3600, fn() =>
+            MsMachine::select(['id', 'machineno'])->whereIn('department_id', [10, 12, 15, 2, 4, 10])->orderBy('machineno')->get()
+        );
+
         return view('livewire.nippo-infure.nippo-infure', [
-            'data' => $data
+            'data'     => $data,
+            'products' => $products,
+            'machine'  => $machine,
         ])->extends('layouts.master');
     }
 
-    public function rendered()
-    {
-        $this->dispatch('initDataTable');
-    }
 }

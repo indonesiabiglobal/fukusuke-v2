@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Administration;
 
 use App\Models\Role;
 use App\Models\Access;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -138,6 +139,9 @@ class RoleManagementController extends Component
                 ]);
 
                 $role->access()->sync($this->selectedAccess);
+
+                // Invalidate sidebar cache untuk semua user yang memiliki role ini
+                $role->users->each(fn($user) => Cache::forget('user_access_' . $user->id));
 
                 $this->dispatch('notification', ['type' => 'success', 'message' => 'Role updated successfully']);
             }

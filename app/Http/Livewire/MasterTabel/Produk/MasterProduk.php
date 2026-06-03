@@ -13,10 +13,12 @@ use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use App\Traits\HandlesHeavyJob;
 use Livewire\Attributes\Session;
 
 class MasterProduk extends Component
 {
+    use HandlesHeavyJob;
     use WithPagination, WithoutUrlPagination;
     protected $paginationTheme = 'bootstrap';
     protected $listeners = ['delete', 'edit'];
@@ -79,6 +81,7 @@ class MasterProduk extends Component
 
     public function export()
     {
+        $this->startHeavyJob();
         $response = $this->exportProduct();
         if ($response['status'] == 'success') {
             return response()->download($response['filename']);

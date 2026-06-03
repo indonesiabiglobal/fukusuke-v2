@@ -7,9 +7,11 @@ use Livewire\Component;
 use App\Models\MsWorkingShift;
 use Exception;
 use Illuminate\Support\Facades\Validator;
+use App\Traits\HandlesHeavyJob;
 
 class LabelMasukGudangReportController extends Component
 {
+    use HandlesHeavyJob;
     public $tglAwal;
     public $tglAkhir;
     public $jamAwal;
@@ -37,6 +39,7 @@ class LabelMasukGudangReportController extends Component
 
     public function export()
     {
+        $this->startHeavyJob();
         $rules = [
             'tglAwal' => 'required',
             'tglAkhir' => 'required',

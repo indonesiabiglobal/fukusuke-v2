@@ -12,9 +12,11 @@ use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
 use Livewire\Attributes\Session;
 use PhpOffice\PhpSpreadsheet\Calculation\MathTrig\Sum;
+use App\Traits\HandlesHeavyJob;
 
 class LossInfureController extends Component
 {
+    use HandlesHeavyJob;
     protected $paginationTheme = 'bootstrap';
     public $products;
     public $buyer;
@@ -86,6 +88,7 @@ class LossInfureController extends Component
 
     public function export()
     {
+        $this->startHeavyJob();
         $tglMasuk = Carbon::parse($this->tglMasuk . " 00:00:00");
         $tglKeluar = Carbon::parse($this->tglKeluar . " 23:59:59");
 

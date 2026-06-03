@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Auth;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class Login extends Component
 {
@@ -19,7 +20,11 @@ class Login extends Component
     public function mount()
     {
         if (auth()->user()) {
-            $this->userRoles = auth()->user()->roles->pluck('code')->toArray();
+            $this->userRoles = Cache::remember(
+                'user_roles_' . auth()->id(),
+                600,
+                fn() => auth()->user()->roles->pluck('code')->toArray()
+            );
 
             // if (in_array('ADMIN', $this->userRoles) || in_array('DASHBOARD-INFURE', $this->userRoles)) {
             //     return redirect()->intended('/dashboard-infure');
@@ -41,7 +46,12 @@ class Login extends Component
         );
 
         if (Auth::attempt($user)) {
-            $userAccess = auth()->user()->roles->flatMap->access->pluck('code')->unique()->toArray();
+            // Cache access saat login agar sidebar tidak query ulang saat halaman pertama dibuka
+            $userAccess = Cache::remember(
+                'user_access_' . auth()->id(),
+                600,
+                fn() => auth()->user()->roles->flatMap->access->pluck('code')->unique()->toArray()
+            );
             // if (in_array('DASHBOARD-SEITAI', $userAccess)) {
             //     return redirect()->intended('/dashboard-seitai');
             // } else {

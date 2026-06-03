@@ -8,9 +8,11 @@ use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use App\Traits\HandlesHeavyJob;
 
 class PrintLabelGudangKenpinController extends Component
 {
+    use HandlesHeavyJob;
     public $nomor_palet;
     public $data = [];
     public $code;
@@ -50,6 +52,7 @@ class PrintLabelGudangKenpinController extends Component
 
     public function export()
     {
+        $this->startHeavyJob();
         $data = collect(
             DB::select("
             SELECT

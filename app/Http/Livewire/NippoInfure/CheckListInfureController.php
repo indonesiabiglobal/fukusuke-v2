@@ -13,9 +13,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use App\Traits\HandlesHeavyJob;
 
 class CheckListInfureController extends Component
 {
+    use HandlesHeavyJob;
     public $tglAwal;
     public $tglAkhir;
     public $jamAwal;
@@ -51,7 +53,7 @@ class CheckListInfureController extends Component
 
     public function export()
     {
-
+        $this->startHeavyJob();
         $rules = [
             'tglAwal' => 'required',
             'tglAkhir' => 'required',
