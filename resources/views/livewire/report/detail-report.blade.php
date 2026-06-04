@@ -9,11 +9,8 @@
                     <div class="form-group">
                         <div class="input-group">
                             <span class="input-group-addon col-lg-3 text-muted">Awal: </span>
-                            <input wire:model.defer="tglAwal" type="text" class="form-control"
-                                style="padding:0.44rem" data-provider="flatpickr" data-date-format="Y-m-d">
-                            <span class="input-group-text py-0">
-                                <i class="ri-calendar-event-fill fs-4"></i>
-                            </span>
+                            <input wire:model.defer="tglAwal" type="date" class="form-control"
+                                style="padding:0.44rem">
 
                             <select wire:ignore wire:model.defer="jamAwal" class="form-control"
                                 placeholder="- pilih jam kerja -">
@@ -34,11 +31,8 @@
                     <div class="form-group">
                         <div class="input-group">
                             <span class="input-group-addon col-lg-3 text-muted">Akhir: </span>
-                            <input wire:model.defer="tglAkhir" type="text" class="form-control"
-                                style="padding:0.44rem" data-provider="flatpickr" data-date-format="Y-m-d">
-                            <span class="input-group-text py-0">
-                                <i class="ri-calendar-event-fill fs-4"></i>
-                            </span>
+                            <input wire:model.defer="tglAkhir" type="date" class="form-control"
+                                style="padding:0.44rem">
 
                             <select wire:ignore wire:model.defer="jamAkhir" class="form-control"
                                 placeholder="- pilih jam kerja -">

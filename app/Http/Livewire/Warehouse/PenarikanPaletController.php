@@ -27,8 +27,8 @@ class PenarikanPaletController extends Component
     {
         $this->products = MsProduct::get();
         $this->machine = MsMachine::get();
-        $this->tglMasuk = session('tglMasuk', Carbon::now()->format('d-m-Y'));
-        $this->tglKeluar = session('tglKeluar', Carbon::now()->format('d-m-Y'));
+        $this->tglMasuk = session('tglMasuk', Carbon::now()->format('Y-m-d'));
+        $this->tglKeluar = session('tglKeluar', Carbon::now()->format('Y-m-d'));
         if (empty($this->sortingTable)) {
             $this->sortingTable = [[2, 'asc']];
         }

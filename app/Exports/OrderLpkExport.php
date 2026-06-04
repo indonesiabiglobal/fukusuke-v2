@@ -34,11 +34,11 @@ class OrderLpkExport implements FromCollection, WithHeadings
     {
         $tglMasuk = Carbon::now();
         if (isset($this->tglMasuk) && $this->tglMasuk != '') {
-            $tglMasuk = Carbon::createFromFormat('d M Y', $this->tglMasuk)->startOfDay();
+            $tglMasuk = Carbon::parse($this->tglMasuk)->startOfDay();
         }
         $tglKeluar = Carbon::now();
         if (isset($this->tglKeluar) && $this->tglKeluar != '') {
-            $tglKeluar = Carbon::createFromFormat('d M Y', $this->tglKeluar)->endOfDay();
+            $tglKeluar = Carbon::parse($this->tglKeluar)->endOfDay();
         }
 
         $data =  collect(DB::select("

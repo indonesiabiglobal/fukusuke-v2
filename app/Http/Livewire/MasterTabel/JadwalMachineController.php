@@ -28,6 +28,8 @@ class JadwalMachineController extends Component
     public $idDelete;
     public $status;
     public $jadwal_mesin;
+    public $jadwal_mulai;
+    public $jadwal_selesai;
     public $jam;
     public $percent;
     public $startDate;
@@ -57,6 +59,8 @@ class JadwalMachineController extends Component
         $this->machineno = '';
         $this->machinename = '';
         $this->jadwal_mesin = '';
+        $this->jadwal_mulai = '';
+        $this->jadwal_selesai = '';
         $this->jam = '';
         $this->percent = '';
     }
@@ -73,17 +77,16 @@ class JadwalMachineController extends Component
     {
         $this->validate([
             'machineno' => 'required',
-            'jadwal_mesin' => 'required',
+            'jadwal_mulai' => 'required|date',
+            'jadwal_selesai' => 'required|date|after_or_equal:jadwal_mulai',
             'jam' => 'required',
             'percent' => 'required',
         ]);
 
         $machine = DB::table('msmachine')->where('machineno', $this->machineno)->first();
 
-        $dates = explode(' to ', $this->jadwal_mesin);
-
-        $startDate = isset($dates[0]) ? Carbon::createFromFormat('d M, Y', trim($dates[0])) : null;
-        $endDate = isset($dates[1]) ? Carbon::createFromFormat('d M, Y', trim($dates[1])) : null;
+        $startDate = Carbon::parse($this->jadwal_mulai);
+        $endDate = Carbon::parse($this->jadwal_selesai);
 
         DB::beginTransaction();
         try {
@@ -91,7 +94,7 @@ class JadwalMachineController extends Component
                 DB::table('msjadwalmachine')->insert([
                     'jam' => $this->jam,
                     'percent' => $this->percent,
-                    'jadwal' => $startDate->format('j M Y'),
+                    'jadwal' => $startDate->format('Y-m-d'),
                     'idmachine' => $machine->id,
                     'created_by' => auth()->user()->username,
                     'updated_by' => auth()->user()->username,
@@ -120,7 +123,7 @@ class JadwalMachineController extends Component
         $this->machineno = $machine->machineno;
         $this->machinename = $machine->machinename;
         $this->jam = $jadwalMachine->jam;
-        $this->jadwal_mesin = $jadwalMachine->jadwal;
+        $this->jadwal_mesin = Carbon::parse($jadwalMachine->jadwal)->format('Y-m-d');
         $this->percent = $jadwalMachine->percent;
         $this->skipRender();
         $this->dispatch('showModalUpdate');

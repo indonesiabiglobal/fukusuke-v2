@@ -119,7 +119,7 @@ class EditKenpinInfureController extends Component
 
         $this->orderid = $data->id;
         $this->kenpinId = $data->id;
-        $this->kenpin_date = Carbon::parse($data->kenpin_date)->format('d-m-Y');
+        $this->kenpin_date = Carbon::parse($data->kenpin_date)->format('Y-m-d');
         $this->kenpin_no = $data->kenpin_no;
         $this->lpk_id = $data->lpk_id;
         $this->lpk_no = $data->lpk_no;
@@ -133,7 +133,7 @@ class EditKenpinInfureController extends Component
         $this->status_kenpin = $data->status_kenpin;
         $this->status_kenpin_old = $data->status_kenpin;
 
-        $this->incident_date = Carbon::parse($data->incident_date)->format('d-m-Y');
+        $this->incident_date = Carbon::parse($data->incident_date)->format('Y-m-d');
         $this->shift = $data->shift;
         $this->detailMasalah = $data->detail_masalah;
         $this->penemuEmployeeId = $data->penemu_masalah_id;
@@ -641,29 +641,35 @@ class EditKenpinInfureController extends Component
 
     public function save()
     {
-        $this->validate([
-            'employeeno' => 'required',
-            'penemuEmployeeNo' => 'required',
-            'shift' => 'required',
-            'status_kenpin' => 'required',
-            'lpk_no' => 'required',
-            'kode_ng' => 'required',
-            'is_kasus' => 'boolean',
-            'penanggulangan' => 'required_if:status_kenpin,2',
-            'bagian_mesin_id' => 'required',
-            'detailMasalah' => 'required',
-        ], [
-            'employeeno.required' => 'Nomor Petugas tidak boleh kosong',
-            'penemuEmployeeNo.required' => 'Nomor Penemu tidak boleh kosong',
-            'shift.required' => 'Shift tidak boleh kosong',
-            'status_kenpin.required' => 'Status Kenpin tidak boleh kosong',
-            'lpk_no.required' => 'Nomor LPK tidak boleh kosong',
-            'kode_ng.required' => 'Kode NG tidak boleh kosong',
-            'is_kasus.boolean' => 'Is Kasus harus berupa nilai boolean',
-            'penanggulangan.required_if' => 'Penanggulangan harus diisi jika status kenpin adalah Finish',
-            'bagian_mesin_id.required' => 'Bagian Mesin tidak boleh kosong',
-            'detailMasalah.required' => 'Detail Masalah tidak boleh kosong',
-        ]);
+        try {
+            $this->validate([
+                'employeeno' => 'required',
+                'penemuEmployeeNo' => 'required',
+                'shift' => 'required|numeric|min:1|max:3',
+                'status_kenpin' => 'required',
+                'lpk_no' => 'required',
+                'kode_ng' => 'required',
+                'is_kasus' => 'boolean',
+                'penanggulangan' => 'required_if:status_kenpin,2',
+                'bagian_mesin_id' => 'required',
+            ], [
+                'employeeno.required' => 'Petugas tidak boleh kosong',
+                'penemuEmployeeNo.required' => 'Nomor Penemu tidak boleh kosong',
+                'shift.required' => 'Shift tidak boleh kosong',
+                'shift.numeric' => 'Shift harus berupa angka',
+                'shift.min' => 'Shift harus minimal 1',
+                'shift.max' => 'Shift tidak boleh lebih dari 3',
+                'status_kenpin.required' => 'Status Kenpin tidak boleh kosong',
+                'lpk_no.required' => 'Nomor LPK tidak boleh kosong',
+                'kode_ng.required' => 'Kode NG tidak boleh kosong',
+                'is_kasus.boolean' => 'Kasus harus bernilai true atau false',
+                'penanggulangan.required_if' => 'Penanggulangan tidak boleh kosong jika status selesai',
+                'bagian_mesin_id.required' => 'Bagian Mesin tidak boleh kosong',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Validation Error: ' . implode(', ', $e->validator->errors()->all())]);
+            return;
+        }
 
         DB::beginTransaction();
         try {

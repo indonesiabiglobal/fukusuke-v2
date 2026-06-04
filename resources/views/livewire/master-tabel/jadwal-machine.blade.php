@@ -37,11 +37,16 @@
                                             <div class="row">
                                                 <label class="form-label">Tanggal</label>
                                                 <div class="input-group">
-                                                    <input type="text" class="form-control" data-provider="flatpickr" data-date-format="d M, Y" data-range-date="true" wire:model="jadwal_mesin">
-                                                    <span class="input-group-text py-0">
-                                                        <i class="ri-calendar-event-fill fs-4"></i>
-                                                    </span>
+                                                    <input type="date" class="form-control" wire:model="jadwal_mulai" aria-label="Dari">
+                                                    <span class="input-group-text py-0">s/d</span>
+                                                    <input type="date" class="form-control" wire:model="jadwal_selesai" aria-label="Sampai">
                                                 </div>
+                                                @error('jadwal_mulai')
+                                                    <span class="text-danger small">{{ $message }}</span>
+                                                @enderror
+                                                @error('jadwal_selesai')
+                                                    <span class="text-danger small">{{ $message }}</span>
+                                                @enderror
                                             </div>
                                         </div>
                                         <div class="col-xxl-12">
@@ -126,14 +131,11 @@
                                                 @enderror
                                             </div>
                                         </div>
-                                        <div class="col-xxl-12" wire:ignore>
+                                        <div class="col-xxl-12">
                                             <div class="row">
                                                 <label class="form-label">Tanggal</label>
                                                 <div class="input-group">
-                                                    <input type="text" class="form-control" data-provider="flatpickr" data-date-format="d M, Y" wire:model="jadwal_mesin">
-                                                    <span class="input-group-text py-0">
-                                                        <i class="ri-calendar-event-fill fs-4"></i>
-                                                    </span>
+                                                    <input type="date" class="form-control" wire:model="jadwal_mesin">
                                                 </div>
                                             </div>
                                         </div>

@@ -54,10 +54,7 @@
                 <div class="form-group">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-3 fw-bold text-muted">Tanggal LPK</label>
-                        <input wire:model.defer="lpk_date" type="text" class="form-control @error('lpk_date') is-invalid @enderror" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d/m/Y">
-                        <span class="input-group-text py-0">
-                            <i class="ri-calendar-event-fill fs-4"></i>
-                        </span>
+                        <input wire:model.defer="lpk_date" type="date" class="form-control @error('lpk_date') is-invalid @enderror" style="padding:0.44rem">
                         @error('lpk_date')
                             <span class="invalid-feedback">{{ $message }}</span>
                         @enderror
@@ -189,10 +186,7 @@
                 <div class="form-group">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-3 fw-bold text-muted">Tanggal Proses</label>
-                        <input wire:model.defer="processdate" type="text" class="form-control datepicker-input @error('processdate') is-invalid @enderror" placeholder="yyyy/mm/dd" style="padding:0.44rem" data-provider="flatpickr" data-date-format="d/m/Y"/>
-                        <span class="input-group-text py-0">
-                            <i class="ri-calendar-event-fill fs-4"></i>
-                        </span>
+                        <input wire:model.defer="processdate" type="date" class="form-control datepicker-input @error('processdate') is-invalid @enderror" style="padding:0.44rem"/>
                         @error('processdate')
                             <span class="invalid-feedback">{{ $message }}</span>
                         @enderror

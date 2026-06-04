@@ -32,12 +32,8 @@
             <div class="form-group mt-1">
                 <div class="input-group">
                     <label class="control-label col-12 col-lg-3 fw-bold text-muted">Tanggal Order</label>
-                    <input wire:model.live="order_date" type="text"
-                        class="form-control @error('order_date') is-invalid @enderror" data-provider="flatpickr"
-                        data-date-format="d/m/Y">
-                    <span class="input-group-text py-0">
-                        <i class="ri-calendar-event-fill fs-4"></i>
-                    </span>
+                    <input wire:model.live="order_date" type="date"
+                        class="form-control @error('order_date') is-invalid @enderror">
                     @error('order_date')
                         <span class="invalid-feedback">{{ $message }}</span>
                     @enderror
@@ -109,11 +105,7 @@
                 <div class="input-group">
                     <label class="control-label col-12 col-lg-3 fw-bold text-muted">Tanggal Stuffing</label>
                     <input class="form-control datepicker-input @error('stufingdate') is-invalid @enderror"
-                        type="text" wire:model="stufingdate" data-provider="flatpickr" data-date-format="d/m/Y"
-                        placeholder="yyyy/mm/dd" />
-                    <span class="input-group-text py-0">
-                        <i class="ri-calendar-event-fill fs-4"></i>
-                    </span>
+                        type="date" wire:model="stufingdate" />
                     @error('stufingdate')
                         <span class="invalid-feedback">{{ $message }}</span>
                     @enderror
@@ -122,12 +114,8 @@
             <div class="form-group mt-1">
                 <div class="input-group">
                     <label class="control-label col-12 col-lg-3 fw-bold text-muted">ETD</label>
-                    <input class="form-control datepicker-input @error('etddate') is-invalid @enderror" type="text"
-                        wire:model="etddate" data-provider="flatpickr" data-date-format="d/m/Y"
-                        placeholder="yyyy/mm/dd" />
-                    <span class="input-group-text py-0">
-                        <i class="ri-calendar-event-fill fs-4"></i>
-                    </span>
+                    <input class="form-control datepicker-input @error('etddate') is-invalid @enderror" type="date"
+                        wire:model="etddate" />
                     @error('etddate')
                         <span class="invalid-feedback">{{ $message }}</span>
                     @enderror
@@ -136,12 +124,8 @@
             <div class="form-group mt-1">
                 <div class="input-group">
                     <label class="control-label col-12 col-lg-3 fw-bold text-muted">ETA</label>
-                    <input class="form-control datepicker-input @error('etadate') is-invalid @enderror" type="text"
-                        wire:model="etadate" data-provider="flatpickr" data-date-format="d/m/Y"
-                        placeholder="yyyy/mm/dd" />
-                    <span class="input-group-text py-0">
-                        <i class="ri-calendar-event-fill fs-4"></i>
-                    </span>
+                    <input class="form-control datepicker-input @error('etadate') is-invalid @enderror" type="date"
+                        wire:model="etadate" />
                     @error('etadate')
                         <span class="invalid-feedback">{{ $message }}</span>
                     @enderror

@@ -73,8 +73,8 @@ class AddLpkController extends Component
 
     public function mount()
     {
-        $this->lpk_date = Carbon::now()->format('d-m-Y');
-        $this->processdate = Carbon::now()->format('d-m-Y');
+        $this->lpk_date = Carbon::now()->format('Y-m-d');
+        $this->processdate = Carbon::now()->format('Y-m-d');
         $today = Carbon::now();
         $lastLPK = TdOrderLpk::whereDate('lpk_date', Carbon::today())
             ->orderBy('lpk_no', 'desc')

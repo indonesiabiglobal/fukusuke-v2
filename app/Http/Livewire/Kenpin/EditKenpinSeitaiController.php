@@ -100,7 +100,7 @@ class EditKenpinSeitaiController extends Component
         $this->kenpin_id = $data->id;
         $this->kenpin_no = $data->kenpin_no;
         $this->incident_date = Carbon::parse($data->incident_date)->format('Y-m-d');
-        $this->kenpin_date = Carbon::parse($data->kenpin_date)->format('d-m-Y');
+        $this->kenpin_date = Carbon::parse($data->kenpin_date)->format('Y-m-d');
         $this->shift = $data->shift;
         $this->grup = $data->grup;
         $this->department_id = $data->department_id;
@@ -204,7 +204,7 @@ class EditKenpinSeitaiController extends Component
 
     public function generateKenpinNo()
     {
-        $incidentDate = Carbon::createFromFormat('d-m-Y', $this->incident_date);
+        $incidentDate = Carbon::parse($this->incident_date);
 
         // check department
         if ($this->department_id == 2) {
@@ -524,30 +524,31 @@ class EditKenpinSeitaiController extends Component
     {
         try {
             $this->validate([
-            'kode_produk' => 'required',
-            'employeeno' => 'required',
-            'kode_ng' => 'required',
-            'penyebab' => 'required_if:status,2',
-            'keterangan_penyebab' => 'required_if:status,2',
-            'penanggulangan' => 'required_if:status,2',
-            'bagian_mesin_id' => 'required_if:status,2'
-        ], [
-            'kode_produk.required' => 'Kode Produk tidak boleh kosong',
-            'employeeno.required' => 'Petugas tidak boleh kosong',
-            'kode_ng.required' => 'Kode NG tidak boleh kosong',
-            'penyebab.required' => 'Penyebab tidak boleh kosong',
-            'keterangan_penyebab.required' => 'Keterangan penyebab tidak boleh kosong',
-            'penanggulangan.required' => 'Penanggulangan tidak boleh kosong',
-            'bagian_mesin_id.required' => 'Bagian mesin tidak boleh kosong'
-        ]);
-            // Kode Anda jika validasi berhasil
-        } catch (ValidationException $e) {
-            // Tangani validasi yang gagal
-            $this->dispatch('notification', ['type' => 'error', 'message' => 'Data belum lengkap']);
-
-            // Mengirimkan pesan error ke view Livewire secara manual jika diperlukan
-            $this->setErrorBag($e->validator->errors());
-
+                'kode_produk' => 'required',
+                'employeeno' => 'required',
+                'penemuEmployeeNo' => 'required',
+                'shift' => 'required|numeric|min:1|max:3',
+                'grup' => 'required',
+                'kode_ng' => 'required',
+                'is_kasus' => 'boolean',
+                'penanggulangan' => 'required_if:status,2',
+                'bagian_mesin_id' => 'required',
+            ], [
+                'kode_produk.required' => 'Kode Produk tidak boleh kosong',
+                'employeeno.required' => 'Petugas tidak boleh kosong',
+                'penemuEmployeeNo.required' => 'Nomor Penemu tidak boleh kosong',
+                'shift.required' => 'Shift tidak boleh kosong',
+                'shift.numeric' => 'Shift harus berupa angka',
+                'shift.min' => 'Shift harus minimal 1',
+                'shift.max' => 'Shift tidak boleh lebih dari 3',
+                'grup.required' => 'Grup tidak boleh kosong',
+                'kode_ng.required' => 'Kode NG tidak boleh kosong',
+                'is_kasus.boolean' => 'Kasus harus bernilai true atau false',
+                'penanggulangan.required_if' => 'Penanggulangan tidak boleh kosong',
+                'bagian_mesin_id.required' => 'Bagian mesin tidak boleh kosong',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Validation Error: ' . implode(', ', $e->validator->errors()->all())]);
             return;
         }
 
