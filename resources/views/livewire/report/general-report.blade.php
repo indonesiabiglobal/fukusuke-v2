@@ -6,22 +6,13 @@
             <div class="col-12 mt-1">
                 <div class="form-group">
                     <div class="input-group">
-                        <span class="input-group-addon col-12 col-lg-2 text-muted">Awal: </span>
-                        <input wire:model.defer="tglMasuk" type="text" class="form-control" style="padding:0.44rem"
-                            data-provider="flatpickr" data-date-format="Y-m-d">
-                        <span class="input-group-text py-0">
-                            <i class="ri-calendar-event-fill fs-4"></i>
-                        </span>
-
-                        <select wire:ignore wire:model.defer="jamMasuk" class="form-control"
-                            placeholder="- pilih jam kerja -">
+                        <span class="input-group-addon col-12 col-lg-3 text-muted">Awal: </span>
+                        <input wire:model.defer="tglMasuk" type="date" class="form-control" style="padding:0.44rem">
+                        <select wire:model.defer="jamMasuk" class="form-control" style="padding:0.44rem">
                             @foreach ($workingShiftHour as $item)
                                 <option value="{{ $item->work_hour_from }}">{{ $item->work_hour_from }}</option>
                             @endforeach
                         </select>
-                        <span class="input-group-text py-0">
-                            <i class="ri-time-line fs-4"></i>
-                        </span>
                     </div>
                 </div>
             </div>
@@ -30,23 +21,13 @@
             <div class="col-12">
                 <div class="form-group">
                     <div class="input-group">
-                        <span class="input-group-addon col-12 col-lg-2 text-muted">Akhir: </span>
-                        <input wire:model.defer="tglKeluar" type="text" class="form-control" style="padding:0.44rem"
-                            data-provider="flatpickr" data-date-format="Y-m-d">
-                        <span class="input-group-text py-0">
-                            <i class="ri-calendar-event-fill fs-4"></i>
-                        </span>
-
-                        <select wire:ignore wire:model.defer="jamKeluar" class="form-control"
-                            placeholder="- pilih jam kerja -">
+                        <span class="input-group-addon col-12 col-lg-3 text-muted">Akhir: </span>
+                        <input wire:model.defer="tglKeluar" type="date" class="form-control" style="padding:0.44rem">
+                        <select wire:model.defer="jamKeluar" class="form-control" style="padding:0.44rem">
                             @foreach ($workingShiftHour as $item)
                                 <option value="{{ $item->work_hour_till }}">{{ $item->work_hour_till }}</option>
                             @endforeach
                         </select>
-                        {{-- <input wire:model.defer="jamKeluar" type="text" class="form-control" data-provider="timepickr" data-time-hrs="true" id="timepicker-24hrs"> --}}
-                        <span class="input-group-text py-0">
-                            <i class="ri-time-line fs-4"></i>
-                        </span>
                     </div>
                 </div>
             </div>
