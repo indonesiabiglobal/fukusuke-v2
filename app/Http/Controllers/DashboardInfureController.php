@@ -19,9 +19,9 @@ class DashboardInfureController extends Controller
     {
         $now = Carbon::now();
         if ($now->between(Carbon::parse($now->format('Y-m-d 00:00:00')), Carbon::parse($now->format('Y-m-d 15:00:00')))) {
-            $filterDateDaily = Carbon::now()->subDay()->format('d-m-Y');
+            $filterDateDaily = Carbon::now()->subDay()->format('Y-m-d');
         } else {
-            $filterDateDaily = Carbon::now()->format('d-m-Y');
+            $filterDateDaily = Carbon::now()->format('Y-m-d');
         }
 
         $department = departmentHelper::infurePabrikDepartment()

@@ -125,12 +125,8 @@
                             </div>
                             <div class="col-md-9 d-flex">
                                 <div class="input-group">
-                                    <input type="text" name="filterDateDaily" id="filterDateDaily"
-                                        class="form-control p-2" data-provider="flatpickr" data-date-format="d-m-Y"
-                                        data-default-date="{{ $filterDateDaily }}">
-                                    <span class="input-group-text p-1">
-                                        <i class="ri-calendar-event-fill fs-5"></i>
-                                    </span>
+                                    <input type="date" name="filterDateDaily" id="filterDateDaily"
+                                        class="form-control p-2" value="{{ $filterDateDaily }}">
                                 </div>
                                 <button onclick="loadInitialDailyData()" type="submit"
                                     class="btn btn-primary btn-load w-lg p-1" id="form-dashboard-daily-button">
