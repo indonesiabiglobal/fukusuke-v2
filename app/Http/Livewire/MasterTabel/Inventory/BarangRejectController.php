@@ -63,8 +63,8 @@ class BarangRejectController extends Component
         $this->buyer = MsBuyer::get();
 
         // mengambil data dari session terlebih dahulu jika ada
-        $this->tglMasuk = session('tglMasuk', Carbon::now()->format('d M Y'));
-        $this->tglKeluar = session('tglKeluar', Carbon::now()->format('d M Y'));
+        $this->tglMasuk = session('tglMasuk', Carbon::now()->format('Y-m-d'));
+        $this->tglKeluar = session('tglKeluar', Carbon::now()->format('Y-m-d'));
         if (empty($this->sortingTable)) {
             $this->sortingTable = [[1, 'asc']];
         }

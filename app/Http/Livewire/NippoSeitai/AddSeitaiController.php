@@ -87,8 +87,8 @@ class AddSeitaiController extends Component
             $this->lpk_no = $request->query('lpk_no');
             $this->processLpkNo();
         }
-        $this->production_date = Carbon::now()->format('d/m/Y');
-        $this->created_on = Carbon::now()->format('d/m/Y');
+        $this->production_date = Carbon::now()->format('Y-m-d');
+        $this->created_on = Carbon::now()->format('Y-m-d\TH:i');
         $this->work_hour = Carbon::now()->format('H:i');
         $this->infure_berat_loss = 0;
 
@@ -310,7 +310,7 @@ class AddSeitaiController extends Component
                 $seqno = $lastSeq->seq_no + 1;
             }
             $today = Carbon::now();
-            $createdOn = Carbon::createFromFormat('d/m/Y H:i:s', $this->created_on . ' ' . now()->format('H:i:s'));
+            $createdOn = Carbon::parse($this->created_on);
 
             $data = new TdProductGoods();
             $data->production_no = $today->format('dmy') . '-' . $seqno;
@@ -866,7 +866,7 @@ class AddSeitaiController extends Component
 
         if (isset($this->work_hour) && $this->work_hour != '') {
             if (
-                Carbon::createFromFormat('d/m/Y', $this->production_date)->isSameDay(Carbon::now())
+                Carbon::parse($this->production_date)->isSameDay(Carbon::now())
                 && Carbon::parse($this->work_hour)->format('H:i') > Carbon::now()->format('H:i')
             ) {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => 'Jam Kerja Tidak Boleh Melebihi Jam Sekarang']);
@@ -973,7 +973,7 @@ class AddSeitaiController extends Component
     public function render()
     {
         if (!(isset($this->production_date) && $this->production_date != '')) {
-            $this->production_date = Carbon::now()->format('d/m/Y');
+            $this->production_date = Carbon::now()->format('Y-m-d');
         }
 
         return view('livewire.nippo-seitai.add-seitai')->extends('layouts.master');

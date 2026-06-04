@@ -72,8 +72,8 @@ class AddKenpinSeitaiController extends Component
     public function mount()
     {
         $this->details = collect([]);
-        $this->incident_date = Carbon::now()->format('d-m-Y');
-        $this->kenpin_date = Carbon::now()->format('d-m-Y');
+        $this->incident_date = Carbon::now()->format('Y-m-d');
+        $this->kenpin_date = Carbon::now()->format('Y-m-d');
 
         // Generate kenpin number
         $this->generateKenpinNo();
@@ -88,7 +88,7 @@ class AddKenpinSeitaiController extends Component
 
     public function generateKenpinNo()
     {
-        $incidentDate = Carbon::createFromFormat('d-m-Y', $this->incident_date);
+        $incidentDate = Carbon::parse($this->incident_date);
 
         // check department
         if ($this->department_id == 2) {
@@ -283,7 +283,7 @@ class AddKenpinSeitaiController extends Component
                 'kode_produk' => 'required',
                 'employeeno' => 'required',
                 'penemuEmployeeNo' => 'required',
-                'shift' => 'required',
+                'shift' => 'required|numeric|min:1|max:3',
                 'grup' => 'required',
                 'kode_ng' => 'required',
                 'is_kasus' => 'boolean',
@@ -294,6 +294,9 @@ class AddKenpinSeitaiController extends Component
                 'employeeno.required' => 'Petugas tidak boleh kosong',
                 'penemuEmployeeNo.required' => 'Nomor Penemu tidak boleh kosong',
                 'shift.required' => 'Shift tidak boleh kosong',
+                'shift.numeric' => 'Shift harus berupa angka',
+                'shift.min' => 'Shift harus minimal 1',
+                'shift.max' => 'Shift tidak boleh lebih dari 3',
                 'grup.required' => 'Grup tidak boleh kosong',
                 'kode_ng.required' => 'Kode NG tidak boleh kosong',
                 'is_kasus.boolean' => 'Kasus harus bernilai true atau false',
@@ -310,9 +313,9 @@ class AddKenpinSeitaiController extends Component
             $mspetugas = MsEmployee::where('employeeno', $this->employeeno)->first();
 
             $data = new TdKenpin();
-            $data->incident_date = Carbon::createFromFormat('d-m-Y H:i:s', $this->incident_date . ' ' . Carbon::now()->format('H:i:s'));
+            $data->incident_date = Carbon::parse($this->incident_date . ' ' . Carbon::now()->format('H:i:s'));
             $data->kenpin_no = $this->kenpin_no;
-            $data->kenpin_date = Carbon::createFromFormat('d-m-Y H:i:s', $this->kenpin_date . ' ' . Carbon::now()->format('H:i:s'));
+            $data->kenpin_date = Carbon::parse($this->kenpin_date . ' ' . Carbon::now()->format('H:i:s'));
             $data->employee_id = $mspetugas->id;
             $data->shift = $this->shift;
             $data->grup = $this->grup;

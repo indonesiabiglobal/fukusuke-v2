@@ -15,10 +15,7 @@
 				<div class="form-group">
 					<div class="input-group">
 						<span class="input-group-addon col-12 col-lg-3 text-muted fw-bold">Awal: </span>
-						<input wire:model.defer="tglAwal" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="Y-m-d">
-						<span class="input-group-text py-0">
-							<i class="ri-calendar-event-fill fs-4"></i>
-						</span>
+						<input wire:model.defer="tglAwal" type="date" class="form-control" style="padding:0.44rem">
 
 						<div class="mb-1" wire:ignore>
 							<select class="form-control" wire:model.defer="jamAwal" data-choices data-choices-sorting-false  data-choices-removeItem data-choices-search-field-label>
@@ -41,10 +38,7 @@
 				<div class="form-group">
 					<div class="input-group">
 						<span class="input-group-addon col-12 col-lg-3 text-muted fw-bold">Akhir: </span>
-						<input wire:model.defer="tglAkhir" type="text" class="form-control" style="padding:0.44rem" data-provider="flatpickr" data-date-format="Y-m-d">
-						<span class="input-group-text py-0">
-							<i class="ri-calendar-event-fill fs-4"></i>
-						</span>
+						<input wire:model.defer="tglAkhir" type="date" class="form-control" style="padding:0.44rem">
 
 						<div class="mb-1" wire:ignore>
 							<select class="form-control" wire:model.defer="jamAkhir" data-choices data-choices-sorting-false  data-choices-removeItem data-choices-search-field-label>

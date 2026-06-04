@@ -59,16 +59,6 @@
                         <span class="input-group-text py-0">
                             <i class="ri-calendar-event-fill fs-4"></i>
                         </span>
-
-                        {{-- <input wire:model.defer="lpk_date" type="text"
-                            class="form-control @error('lpk_date') is-invalid @enderror readonly" readonly="readonly" style="padding:0.44rem"
-                            data-provider="flatpickr" data-date-format="d/m/Y">
-                        <span class="input-group-text py-0">
-                            <i class="ri-calendar-event-fill fs-4"></i>
-                        </span>
-                        @error('lpk_date')
-                            <span class="invalid-feedback">{{ $message }}</span>
-                        @enderror --}}
                     </div>
                 </div>
                 <div class="form-group mt-1">

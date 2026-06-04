@@ -29,12 +29,8 @@
                                 <div class="input-group">
                                     <label class="control-label col-5 pe-2">Tanggal Proses</label>
                                     <input class="form-control bg-light @error('created_on') is-invalid @enderror"
-                                        readonly="readonly" disabled type="text" style="padding:0.44rem"
-                                        data-provider="flatpickr" data-date-format="d/m/Y" wire:model.defer="created_on"
-                                        placeholder="yyyy/mm/dd" />
-                                    <span class="input-group-text py-0">
-                                        <i class="ri-calendar-event-fill fs-4"></i>
-                                    </span>
+                                        readonly="readonly" disabled type="datetime-local" style="padding:0.44rem"
+                                        wire:model.defer="created_on" />
                                     @error('created_on')
                                         <span class="invalid-feedback">{{ $message }}</span>
                                     @enderror
@@ -1464,12 +1460,8 @@
                                             <div class="input-group">
                                                 <label class="control-label col-12 col-lg-3 fw-bold text-muted">Tanggal
                                                     LPK</label>
-                                                <input value="{{ $orderLPK->lpk_date ?? '' }}" disabled type="text"
-                                                    class="form-control" style="padding:0.44rem"
-                                                    data-provider="flatpickr" data-date-format="d/m/Y">
-                                                <span class="input-group-text py-0">
-                                                    <i class="ri-calendar-event-fill fs-4"></i>
-                                                </span>
+                                                <input value="{{ $orderLPK->lpk_date ?? '' }}" disabled type="date"
+                                                    class="form-control" style="padding:0.44rem">
                                             </div>
                                         </div>
                                         <div class="form-group mt-1">
@@ -1567,11 +1559,7 @@
                                                     Proses</label>
                                                 <input value="{{ $orderLPK->processdate ?? '' }}" disabled
                                                     type="date" class="form-control datepicker-input"
-                                                    placeholder="yyyy/mm/dd" style="padding:0.44rem"
-                                                    data-provider="flatpickr" data-date-format="d/m/Y" />
-                                                <span class="input-group-text py-0">
-                                                    <i class="ri-calendar-event-fill fs-4"></i>
-                                                </span>
+                                                    style="padding:0.44rem" />
                                             </div>
                                         </div>
 

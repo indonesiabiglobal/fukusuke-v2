@@ -5,12 +5,8 @@
                 <div class="form-group">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-4">Tanggal Kejadian</label>
-                        <input class="form-control" type="text" data-provider="flatpickr" data-date-format="d-m-Y"
-                            data-maxDate="{{ now()->format('d/m/Y') }}" wire:model.change="incident_date"
-                            placeholder="yyyy/mm/dd" />
-                        <span class="input-group-text py-0">
-                            <i class="ri-calendar-event-fill fs-4"></i>
-                        </span>
+                        <input class="form-control" type="date"
+                            max="{{ now()->format('Y-m-d') }}" wire:model.change="incident_date" />
                     </div>
                 </div>
             </div>
@@ -26,12 +22,8 @@
                 <div class="form-group">
                     <div class="input-group">
                         <label class="control-label col-12 col-lg-2">Tanggal Kenpin</label>
-                        <input class="form-control" type="text" data-provider="flatpickr" data-date-format="d-m-Y"
-                            data-maxDate="{{ now()->format('d/m/Y') }}" wire:model.change="kenpin_date"
-                            placeholder="yyyy/mm/dd" />
-                        <span class="input-group-text py-0">
-                            <i class="ri-calendar-event-fill fs-4"></i>
-                        </span>
+                        <input class="form-control" type="date"
+                            max="{{ now()->format('Y-m-d') }}" wire:model.change="kenpin_date" />
                     </div>
                 </div>
             </div>
@@ -1292,12 +1284,8 @@
                                         <div class="input-group">
                                             <label class="control-label col-12 col-lg-3 fw-bold text-muted">Tanggal
                                                 LPK</label>
-                                            <input value="{{ $orderLPK->lpk_date ?? '' }}" disabled type="text"
-                                                class="form-control" style="padding:0.44rem"
-                                                data-provider="flatpickr" data-date-format="d/m/Y">
-                                            <span class="input-group-text py-0">
-                                                <i class="ri-calendar-event-fill fs-4"></i>
-                                            </span>
+                                            <input value="{{ $orderLPK->lpk_date ?? '' }}" disabled type="date"
+                                                class="form-control" style="padding:0.44rem">
                                         </div>
                                     </div>
                                     <div class="form-group mt-1">
@@ -1395,11 +1383,7 @@
                                                 Proses</label>
                                             <input value="{{ $orderLPK->processdate ?? '' }}" disabled
                                                 type="date" class="form-control datepicker-input"
-                                                placeholder="yyyy/mm/dd" style="padding:0.44rem"
-                                                data-provider="flatpickr" data-date-format="d/m/Y" />
-                                            <span class="input-group-text py-0">
-                                                <i class="ri-calendar-event-fill fs-4"></i>
-                                            </span>
+                                                style="padding:0.44rem" />
                                         </div>
                                     </div>
 

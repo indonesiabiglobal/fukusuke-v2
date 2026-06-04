@@ -79,8 +79,8 @@ class AddKenpinInfureController extends Component
     public function mount()
     {
         $this->details = collect([]);
-        $this->incident_date = Carbon::now()->format('d-m-Y');
-        $this->kenpin_date = Carbon::now()->format('d-m-Y');
+        $this->incident_date = Carbon::now()->format('Y-m-d');
+        $this->kenpin_date = Carbon::now()->format('Y-m-d');
 
         $this->generateKenpinNo();
         $this->msLossKenpin = MsLossKenpin::get();
@@ -497,34 +497,42 @@ class AddKenpinInfureController extends Component
 
     public function save()
     {
-        $this->validate([
-            'employeeno' => 'required',
-            'penemuEmployeeNo' => 'required',
-            'shift' => 'required',
-            'status_kenpin' => 'required',
-            'lpk_no' => 'required',
-            'kode_ng' => 'required',
-            'is_kasus' => 'boolean',
-            'penanggulangan' => 'required_if:status_kenpin,2',
-            'bagian_mesin_id' => 'required',
-        ], [
-            'employeeno.required' => 'Petugas tidak boleh kosong',
-            'penemuEmployeeNo.required' => 'Nomor Penemu tidak boleh kosong',
-            'shift.required' => 'Shift tidak boleh kosong',
-            'status_kenpin.required' => 'Status Kenpin tidak boleh kosong',
-            'lpk_no.required' => 'Nomor LPK tidak boleh kosong',
-            'kode_ng.required' => 'Kode NG tidak boleh kosong',
-            'is_kasus.boolean' => 'Kasus harus bernilai true atau false',
-            'penanggulangan.required_if' => 'Penanggulangan tidak boleh kosong jika status selesai',
-            'bagian_mesin_id.required' => 'Bagian Mesin tidak boleh kosong',
-        ]);
+        try {
+            $this->validate([
+                'employeeno' => 'required',
+                'penemuEmployeeNo' => 'required',
+                'shift' => 'required|numeric|min:1|max:3',
+                'status_kenpin' => 'required',
+                'lpk_no' => 'required',
+                'kode_ng' => 'required',
+                'is_kasus' => 'boolean',
+                'penanggulangan' => 'required_if:status_kenpin,2',
+                'bagian_mesin_id' => 'required',
+            ], [
+                'employeeno.required' => 'Petugas tidak boleh kosong',
+                'penemuEmployeeNo.required' => 'Nomor Penemu tidak boleh kosong',
+                'shift.required' => 'Shift tidak boleh kosong',
+                'shift.numeric' => 'Shift harus berupa angka',
+                'shift.min' => 'Shift harus minimal 1',
+                'shift.max' => 'Shift tidak boleh lebih dari 3',
+                'status_kenpin.required' => 'Status Kenpin tidak boleh kosong',
+                'lpk_no.required' => 'Nomor LPK tidak boleh kosong',
+                'kode_ng.required' => 'Kode NG tidak boleh kosong',
+                'is_kasus.boolean' => 'Kasus harus bernilai true atau false',
+                'penanggulangan.required_if' => 'Penanggulangan tidak boleh kosong jika status selesai',
+                'bagian_mesin_id.required' => 'Bagian Mesin tidak boleh kosong',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $this->dispatch('notification', ['type' => 'error', 'message' => 'Validation Error: ' . implode(', ', $e->validator->errors()->all())]);
+            return;
+        }
 
         DB::beginTransaction();
         try {
             $kenpinAssembly = new TdKenpin();
-            $kenpinAssembly->incident_date = Carbon::createFromFormat('d-m-Y H:i:s', $this->incident_date . ' ' . Carbon::now()->format('H:i:s'));
+            $kenpinAssembly->incident_date = Carbon::parse($this->incident_date . ' ' . Carbon::now()->format('H:i:s'));
             $kenpinAssembly->kenpin_no = $this->kenpin_no;
-            $kenpinAssembly->kenpin_date = Carbon::createFromFormat('d-m-Y H:i:s', $this->kenpin_date . ' ' . Carbon::now()->format('H:i:s'));
+            $kenpinAssembly->kenpin_date = Carbon::parse($this->kenpin_date . ' ' . Carbon::now()->format('H:i:s'));
             $kenpinAssembly->shift = $this->shift;
             $kenpinAssembly->employee_id = $this->employeeId;
             $kenpinAssembly->penemu_masalah_id = $this->penemuEmployeeId;

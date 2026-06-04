@@ -79,7 +79,7 @@ class AddNippoController extends Component
         }
 
         $this->production_date = Carbon::now()->format('Y-m-d');
-        $this->created_on = Carbon::now()->format('d/m/Y H:i:s');
+        $this->created_on = Carbon::now()->format('Y-m-d\TH:i');
         $this->work_hour = Carbon::now()->format('H:i');
 
         $this->workShift();
@@ -352,7 +352,7 @@ class AddNippoController extends Component
                 $seqno = $lastSeq->seq_no + 1;
             }
             $today = Carbon::now();
-            $createdOn = Carbon::createFromFormat('d/m/Y H:i:s', $this->created_on);
+            $createdOn = Carbon::parse($this->created_on);
 
             $productionDate = Carbon::createFromFormat('Y-m-d', $this->production_date)
                 ->setTimeFromTimeString($this->work_hour)
@@ -555,7 +555,7 @@ class AddNippoController extends Component
     {
         $this->lpk_date = Carbon::now()->format('d/m/Y');
         $this->panjang_lpk = '';
-        $this->created_on = Carbon::now()->format('d/m/Y H:i:s');
+        $this->created_on = Carbon::now()->format('Y-m-d\TH:i');
         $this->code = '';
         $this->name = '';
         $this->dimensiinfure = '';
@@ -859,7 +859,7 @@ class AddNippoController extends Component
             $this->production_date = Carbon::now()->format('Y-m-d');
         }
         if (empty($this->created_on)) {
-            $this->created_on = Carbon::now()->format('d/m/Y H:i:s');
+            $this->created_on = Carbon::now()->format('Y-m-d\TH:i');
         }
         if (empty($this->work_hour)) {
             $this->work_hour = Carbon::now()->format('H:i');
