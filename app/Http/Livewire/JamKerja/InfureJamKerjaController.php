@@ -107,7 +107,7 @@ class InfureJamKerjaController extends Component
 
     protected function shouldForgetSession(): void
     {
-        $previousUrl = last(explode('/', url()->previous()));
+        $previousUrl = url()->previous();
         if (!Str::contains($previousUrl, 'infure-jam-kerja')) {
             $this->reset('tglMasuk', 'tglKeluar', 'transaksi', 'machine_id', 'work_shift_filter', 'searchTerm', 'perPage', 'sortColumn', 'sortDirection');
         }

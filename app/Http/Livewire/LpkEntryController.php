@@ -88,7 +88,7 @@ class LpkEntryController extends Component
 
     protected function shouldForgetSession(): void
     {
-        $previousUrl = last(explode('/', url()->previous()));
+        $previousUrl = url()->previous();
         if (!(Str::contains($previousUrl, 'add-lpk') || Str::contains($previousUrl, 'edit-lpk') || Str::contains($previousUrl, 'lpk-entry'))) {
             $this->reset('tglMasuk', 'tglKeluar', 'searchTerm', 'idProduct', 'idBuyer', 'status', 'transaksi', 'lpk_no', 'idLPKColor', 'perPage', 'sortColumn', 'sortDirection');
         }

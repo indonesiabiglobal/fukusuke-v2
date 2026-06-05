@@ -58,7 +58,7 @@ class NippoSeitaiController extends Component
 
     protected function shouldForgetSession()
     {
-        $previousUrl = last(explode('/', url()->previous()));
+        $previousUrl = url()->previous();
         if (!(Str::contains($previousUrl, 'edit-seitai') || Str::contains($previousUrl, 'add-seitai') || Str::contains($previousUrl, 'nippo-seitai'))) {
             $this->reset('tglMasuk', 'tglKeluar', 'transaksi', 'gentan_no', 'machineId', 'searchTerm', 'lpk_no', 'idProduct', 'status', 'perPage', 'sortColumn', 'sortDirection');
         }

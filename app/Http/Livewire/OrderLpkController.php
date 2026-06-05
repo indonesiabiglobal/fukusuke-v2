@@ -88,7 +88,7 @@ class OrderLpkController extends Component
 
     protected function shouldForgetSession(): void
     {
-        $previousUrl = last(explode('/', url()->previous()));
+        $previousUrl = url()->previous();
         if (!(Str::contains($previousUrl, 'add-order') || Str::contains($previousUrl, 'edit-order') || Str::contains($previousUrl, 'order-lpk'))) {
             $this->reset('tglMasuk', 'tglKeluar', 'searchTerm', 'idProduct', 'idBuyer', 'status', 'transaksi', 'perPage', 'sortColumn', 'sortDirection');
         }

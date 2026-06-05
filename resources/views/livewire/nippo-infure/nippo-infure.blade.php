@@ -23,7 +23,7 @@
                     <div class="form-group">
                         <div class="input-group">
                             <div class="col-3">
-                                <select class="form-select" style="padding:0.44rem" wire:model.defer="transaksi">
+                                <select class="form-select" style="padding:0.44rem" wire:model.live="transaksi">
                                     <option value="1">Produksi</option>
                                     <option value="2">Proses</option>
                                 </select>
@@ -31,9 +31,9 @@
                             <div class="col-9">
                                 <div class="form-group">
                                     <div class="input-group">
-                                        <input wire:model.defer="tglMasuk" type="date" class="form-control"
+                                        <input wire:model.live="tglMasuk" type="date" class="form-control"
                                             style="padding:0.44rem">
-                                        <input wire:model.defer="tglKeluar" type="date" class="form-control"
+                                        <input wire:model.live="tglKeluar" type="date" class="form-control"
                                             style="padding:0.44rem">
                                     </div>
                                 </div>
@@ -111,7 +111,7 @@
                     <div class="mb-1" wire:ignore>
                         <select class="form-control select2-status-infure">
                             <option value="">- all -</option>
-                            <option value="0">Open</option>
+                            <option value="0" @if (($status ?? null) == '0') selected @endif>Open</option>
                             <option value="1" @if (($status ?? null) == 1) selected @endif>Seitai</option>
                             <option value="2" @if (($status ?? null) == 2) selected @endif>Kenpin</option>
                         </select>
@@ -167,8 +167,9 @@
     </div>
 
     <div x-data="{
-        cols: {1:true,2:false,3:false,4:true,5:true,6:true,7:false,8:false,9:false,10:false,11:true,12:true,13:true,14:true,15:true,16:true,17:true,18:false,19:false,20:false}
-    }" class="mt-2 mb-2">
+        cols: JSON.parse(localStorage.getItem('nippo-infure-cols') || JSON.stringify({1:true,2:false,3:false,4:true,5:true,6:true,7:false,8:false,9:false,10:false,11:true,12:true,13:true,14:true,15:true,16:true,17:true,18:false,19:false,20:false})),
+    }" x-init="$watch('cols', val => { try { localStorage.setItem('nippo-infure-cols', JSON.stringify(val)); } catch(e) {} })"
+    class="mt-2 mb-2">
 
         <div class="d-flex justify-content-between align-items-center mb-1 flex-wrap gap-2">
             <div class="d-flex align-items-center gap-2">
@@ -398,9 +399,15 @@
 
             Livewire.hook('morph', ({ el, component }) => {
                 setTimeout(() => {
-                    initProductSelect();
-                    initMachineSelect();
-                    initStatusSelect();
+                    if (!$('.select2-product-infure').hasClass('select2-hidden-accessible')) {
+                        initProductSelect();
+                    }
+                    if (!$('.select2-machine-infure').hasClass('select2-hidden-accessible')) {
+                        initMachineSelect();
+                    }
+                    if (!$('.select2-status-infure').hasClass('select2-hidden-accessible')) {
+                        initStatusSelect();
+                    }
                 }, 100);
             });
 
