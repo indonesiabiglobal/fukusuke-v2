@@ -8,7 +8,7 @@
                     <div class="input-group">
                         <span class="input-group-addon col-12 col-lg-3 text-muted">Awal: </span>
                         <input wire:model.defer="tglMasuk" type="date" class="form-control" style="padding:0.44rem">
-                        <select wire:ignore wire:model.live="jamMasuk" class="form-control" style="padding:0.44rem">
+                        <select wire:ignore wire:model.defer="jamMasuk" class="form-control" style="padding:0.44rem">
                             @foreach ($workingShiftHour as $item)
                                 <option value="{{ $item->work_hour_from }}" @selected($item->work_hour_from === $jamMasuk)>{{ $item->work_hour_from }}</option>
                             @endforeach
@@ -23,7 +23,7 @@
                     <div class="input-group">
                         <span class="input-group-addon col-12 col-lg-3 text-muted">Akhir: </span>
                         <input wire:model.defer="tglKeluar" type="date" class="form-control" style="padding:0.44rem">
-                        <select wire:ignore wire:model.live="jamKeluar" class="form-control" style="padding:0.44rem">
+                        <select wire:ignore wire:model.defer="jamKeluar" class="form-control" style="padding:0.44rem">
                             @foreach ($workingShiftHour as $item)
                                 <option value="{{ $item->work_hour_till }}" @selected($item->work_hour_till === $jamKeluar)>{{ $item->work_hour_till }}</option>
                             @endforeach

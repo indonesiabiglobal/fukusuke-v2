@@ -39,7 +39,6 @@ class GeneralReportController extends Component
     public $tglKeluar;
     public $jamMasuk;
     public $jamKeluar;
-    public $workingShiftHour;
     public $nipon = 'Infure';
 
 
@@ -47,9 +46,9 @@ class GeneralReportController extends Component
     {
         $this->tglMasuk = Carbon::now()->format('Y-m-d');
         $this->tglKeluar = Carbon::now()->format('Y-m-d');
-        $this->workingShiftHour = MsWorkingShift::select('work_hour_from', 'work_hour_till')->active()->orderBy('work_hour_from', 'ASC')->get();
-        $this->jamMasuk = $this->workingShiftHour[0]->work_hour_from;
-        $this->jamKeluar = $this->workingShiftHour[count($this->workingShiftHour) - 1]->work_hour_till;
+        $shifts = MsWorkingShift::select('work_hour_from', 'work_hour_till')->active()->orderBy('work_hour_from', 'ASC')->get();
+        $this->jamMasuk = $shifts[0]->work_hour_from;
+        $this->jamKeluar = $shifts[count($shifts) - 1]->work_hour_till;
     }
 
     public function export()
@@ -966,6 +965,7 @@ class GeneralReportController extends Component
 
     public function render()
     {
-        return view('livewire.report.general-report')->extends('layouts.master');
+        $workingShiftHour = MsWorkingShift::select('work_hour_from', 'work_hour_till')->active()->orderBy('work_hour_from', 'ASC')->get();
+        return view('livewire.report.general-report', ['workingShiftHour' => $workingShiftHour])->extends('layouts.master');
     }
 }
