@@ -657,8 +657,9 @@
     </div>
 
     <div x-data="{
-        cols: {1:true,2:true,3:true,4:true,5:true,6:true,7:true,8:true,9:true,10:true,11:true}
-    }" class="mt-2 mb-2">
+        cols: JSON.parse(localStorage.getItem('jam-kerja-seitai-cols') || JSON.stringify({1:true,2:true,3:true,4:true,5:true,6:true,7:true,8:true,9:true,10:true,11:true})),
+    }" x-init="$watch('cols', val => { try { localStorage.setItem('jam-kerja-seitai-cols', JSON.stringify(val)); } catch(e) {} })"
+    class="mt-2 mb-2">
         <div class="d-flex justify-content-between align-items-center mb-1 flex-wrap gap-2">
             <div class="d-flex align-items-center gap-2">
                 <label class="text-muted small mb-0">Show</label>
