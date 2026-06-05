@@ -77,8 +77,7 @@ class NippoInfureController extends Component
     protected function shouldForgetSession()
     {
         $previousUrl = url()->previous();
-        $previousUrl = last(explode('/', $previousUrl));
-        if (!(Str::contains($previousUrl, 'edit-nippo') || Str::contains($previousUrl, 'add-nippo') || Str::contains($previousUrl,'nippo-infure'))) {
+        if (!(Str::contains($previousUrl, 'edit-nippo') || Str::contains($previousUrl, 'add-nippo') || Str::contains($previousUrl, 'nippo-infure'))) {
             $this->reset('tglMasuk', 'tglKeluar', 'transaksi', 'machineId', 'status', 'lpk_no', 'searchTerm', 'idProduct', 'perPage', 'sortColumn', 'sortDirection');
         }
     }

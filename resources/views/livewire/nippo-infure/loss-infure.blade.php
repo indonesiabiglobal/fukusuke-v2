@@ -150,8 +150,9 @@
     </div>
 
     <div x-data="{
-        cols: {1:true,2:false,3:false,4:true,5:true,6:false,7:true,8:false,9:false,10:false,11:true,12:true,13:true,14:true,15:true,16:true,17:false,18:false,19:false}
-    }" class="mt-2 mb-2">
+        cols: JSON.parse(localStorage.getItem('loss-infure-cols') || JSON.stringify({1:true,2:false,3:false,4:true,5:true,6:false,7:true,8:false,9:false,10:false,11:true,12:true,13:true,14:true,15:true,16:true,17:false,18:false,19:false})),
+    }" x-init="$watch('cols', val => { try { localStorage.setItem('loss-infure-cols', JSON.stringify(val)); } catch(e) {} })"
+    class="mt-2 mb-2">
 
         <div class="d-flex justify-content-between align-items-center mb-1 flex-wrap gap-2">
             <div class="d-flex align-items-center gap-2">

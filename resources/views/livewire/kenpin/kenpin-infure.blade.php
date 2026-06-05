@@ -141,8 +141,9 @@
     </div>
 
     <div x-data="{
-        cols: {1:true,2:true,3:true,4:true,5:false,6:false,7:true,8:true,9:true,10:true,11:true,12:false,13:false}
-    }" class="mt-2 mb-2">
+        cols: JSON.parse(localStorage.getItem('kenpin-infure-cols') || JSON.stringify({1:true,2:true,3:true,4:true,5:false,6:false,7:true,8:true,9:true,10:true,11:true,12:false,13:false})),
+    }" x-init="$watch('cols', val => { try { localStorage.setItem('kenpin-infure-cols', JSON.stringify(val)); } catch(e) {} })"
+    class="mt-2 mb-2">
 
         <div class="d-flex justify-content-between align-items-center mb-1 flex-wrap gap-2">
             <div class="d-flex align-items-center gap-2">

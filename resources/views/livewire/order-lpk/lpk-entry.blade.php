@@ -201,8 +201,9 @@
         </div>
 
         <div x-data="{
-            cols: {1:true,2:false,3:true,4:true,5:true,6:true,7:true,8:false,9:true,10:true,11:true,12:false,13:true,14:false,15:false,16:true,17:false,18:false,19:false}
-        }" class="mt-2 mb-2">
+            cols: JSON.parse(localStorage.getItem('lpk-entry-cols') || JSON.stringify({1:true,2:false,3:true,4:true,5:true,6:true,7:true,8:false,9:true,10:true,11:true,12:false,13:true,14:false,15:false,16:true,17:false,18:false,19:false})),
+        }" x-init="$watch('cols', val => { try { localStorage.setItem('lpk-entry-cols', JSON.stringify(val)); } catch(e) {} })"
+        class="mt-2 mb-2">
             <div class="d-flex justify-content-between align-items-center mb-1 flex-wrap gap-2">
                 <div class="d-flex align-items-center gap-2">
                     <label class="text-muted small mb-0">Show</label>
