@@ -81,7 +81,7 @@
                                     </option>
                                     @foreach ($masterWarnaLPK as $item)
                                         <option value="{{ $item->id }}"
-                                            @if ($warnalpkid['value'] == $item->id) selected @endif>
+                                            @if ($warnalpkid == $item->id) selected @endif>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -90,7 +90,7 @@
                                     </option>
                                 </select>
                             </div>
-                            @if (($warnalpkid['value'] ?? '') == 'lainnya')
+                            @if (($warnalpkid ?? '') == 'lainnya')
                                 <input required type="text" class="form-control mt-2" wire:model="custom_warna_lpk"
                                     placeholder="Masukkan warna LPK" />
                             @endif
@@ -147,21 +147,21 @@
                         </div>
                     </div>
                     <div class="form-group mt-1">
-                        <div class="input-group" wire:ignore>
+                        <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Satuan</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select required data-choices data-choices-sorting="true"
-                                    class="form-select @error('product_unit') is-invalid @enderror"
+                                <select required
+                                    class="form-select @error('product_unit') is-invalid @enderror select2-satuan"
                                     wire:model="product_unit" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterUnit as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ $product_unit['value'] != null ? ($item->id == $product_unit['value'] ? 'selected' : '') : '' }}>
+                                            {{ $product_unit != null ? ($item->id == $product_unit ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
-                                    @endforeach`
+                                    @endforeach
                                 </select>
                                 @error('product_unit')
                                     <span class="invalid-feedback">{{ $message }}</span>
@@ -212,15 +212,15 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Material</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
-                                    class="form-select col-12 col-lg-8 @error('material_classification') is-invalid @enderror"
+                                <select
+                                    class="form-select col-12 col-lg-8 @error('material_classification') is-invalid @enderror select2-material"
                                     wire:model="material_classification" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterMaterial as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ $material_classification['value'] != null ? ($item->id == $material_classification['value'] ? 'selected' : '') : '' }}>
+                                            {{ $material_classification != null ? ($item->id == $material_classification ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -235,15 +235,15 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Embos</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
-                                    class="form-select col-12 col-lg-8 @error('embossed_classification') is-invalid @enderror"
+                                <select
+                                    class="form-select col-12 col-lg-8 @error('embossed_classification') is-invalid @enderror select2-embossed"
                                     wire:model="embossed_classification" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterEmbossed as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ $embossed_classification['value'] != null ? ($item->id == $embossed_classification['value'] ? 'selected' : '') : '' }}>
+                                            {{ $embossed_classification != null ? ($item->id == $embossed_classification ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -259,15 +259,15 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Corona</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
-                                    class="form-select col-12 col-lg-8 @error('surface_classification') is-invalid @enderror"
+                                <select
+                                    class="form-select col-12 col-lg-8 @error('surface_classification') is-invalid @enderror select2-surface"
                                     wire:model="surface_classification" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterSurface as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ $surface_classification['value'] != null ? ($item->id == $surface_classification['value'] ? 'selected' : '') : '' }}>
+                                            {{ $surface_classification != null ? ($item->id == $surface_classification ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -283,15 +283,15 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Lakban Infure</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select data-choices data-choices-sorting-false
-                                    class="form-select @error('lakbaninfureid') is-invalid @enderror"
+                                <select
+                                    class="form-select @error('lakbaninfureid') is-invalid @enderror select2-lakban-infure"
                                     wire:model.live="lakbaninfureid" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterLakbanInfure as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ $lakbaninfureid['value'] != null ? ($item->id == $lakbaninfureid['value'] ? 'selected' : '') : '' }}>
+                                            {{ $lakbaninfureid != null ? ($item->id == $lakbaninfureid ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -300,7 +300,7 @@
                                     </option>
                                 </select>
                             </div>
-                            @if (($lakbaninfureid['value'] ?? '') === 'lainnya')
+                            @if (($lakbaninfureid ?? '') === 'lainnya')
                                 <input required type="text" class="form-control mt-2"
                                     wire:model="custom_lakban_infure" placeholder="Masukkan lakban infure lainnya" />
                             @endif
@@ -379,16 +379,16 @@
                     <div class="form-group">
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Gentan</label>
-                            <div class="col-12 col-lg-8" wire:ignore wire:ignore>
-                                <select data-choices data-choices-sorting="true"
-                                    class="form-select @error('gentan_classification') is-invalid @enderror"
+                            <div class="col-12 col-lg-8" wire:ignore>
+                                <select
+                                    class="form-select @error('gentan_classification') is-invalid @enderror select2-gentan"
                                     wire:model="gentan_classification" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterGentanClassifications as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ $gentan_classification['value'] != null ? ($item->id == $gentan_classification['value'] ? 'selected' : '') : '' }}>
+                                            {{ $gentan_classification != null ? ($item->id == $gentan_classification ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -403,15 +403,15 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Gazette</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
-                                    class="form-select @error('gazette_classification') is-invalid @enderror"
+                                <select
+                                    class="form-select @error('gazette_classification') is-invalid @enderror select2-gazette"
                                     wire:model="gazette_classification" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterGazetteClassifications as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ $gazette_classification['value'] != null ? ($item->id == $gazette_classification['value'] ? 'selected' : '') : '' }}>
+                                            {{ $gazette_classification != null ? ($item->id == $gazette_classification ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -568,15 +568,15 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Jenis Cetak</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
-                                    class="form-select @error('print_type') is-invalid @enderror"
+                                <select
+                                    class="form-select @error('print_type') is-invalid @enderror select2-print-type"
                                     wire:model="print_type" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterPrintType as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ $print_type['value'] != null ? ($item->id == $print_type['value'] ? 'selected' : '') : '' }}>
+                                            {{ $print_type != null ? ($item->id == $print_type ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -591,15 +591,15 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Sifat Tinta</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
-                                    class="form-select @error('ink_characteristic') is-invalid @enderror"
+                                <select
+                                    class="form-select @error('ink_characteristic') is-invalid @enderror select2-ink-characteristic"
                                     wire:model="ink_characteristic" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterInkCharacteristics as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ $ink_characteristic['value'] != null ? ($item->id == $ink_characteristic['value'] ? 'selected' : '') : '' }}>
+                                            {{ $ink_characteristic != null ? ($item->id == $ink_characteristic ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -614,15 +614,15 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Endless</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
-                                    class="form-select @error('endless_printing') is-invalid @enderror"
+                                <select
+                                    class="form-select @error('endless_printing') is-invalid @enderror select2-endless"
                                     wire:model="endless_printing" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterEndlessPrinting as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ $endless_printing['value'] != null ? ($item->id == $endless_printing['value'] ? 'selected' : '') : '' }}>
+                                            {{ $endless_printing != null ? ($item->id == $endless_printing ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -637,15 +637,15 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Arah Gulung</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
-                                    class="form-select @error('winding_direction_of_the_web') is-invalid @enderror"
+                                <select
+                                    class="form-select @error('winding_direction_of_the_web') is-invalid @enderror select2-winding-direction"
                                     wire:model="winding_direction_of_the_web" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterArahGulung as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ $winding_direction_of_the_web['value'] != null ? ($item->id == $winding_direction_of_the_web['value'] ? 'selected' : '') : '' }}>
+                                            {{ $winding_direction_of_the_web != null ? ($item->id == $winding_direction_of_the_web ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -694,7 +694,7 @@
                                     </option>
                                 </select>
                             </div>
-                            @if (($seal_classification_id ?? '') === 'lainnya')
+                            @if ($seal_classification_id === 'lainnya')
                                 <input required type="text" class="form-control mt-2"
                                     wire:model="custom_seal_classification"
                                     placeholder="Masukkan klasifikasi seal lainnya" />
@@ -740,15 +740,15 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-6">Lakban Seitai</label>
                             <div class="col-12 col-lg-6" wire:ignore>
-                                <select data-choices data-choices-sorting-false
-                                    class="form-select @error('lakbanseitaiid') is-invalid @enderror"
+                                <select
+                                    class="form-select @error('lakbanseitaiid') is-invalid @enderror select2-lakban-seitai"
                                     wire:model.live="lakbanseitaiid" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterLakbanSeitai as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ $lakbanseitaiid['value'] != null ? ($item->id == $lakbanseitaiid['value'] ? 'selected' : '') : '' }}>
+                                            {{ $lakbanseitaiid != null ? ($item->id == $lakbanseitaiid ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -757,7 +757,7 @@
                                     </option>
                                 </select>
                             </div>
-                            @if (($lakbanseitaiid['value'] ?? '') === 'lainnya')
+                            @if (($lakbanseitaiid ?? '') === 'lainnya')
                                 <input required type="text" class="form-control mt-2"
                                     wire:model="custom_lakban_seitai" placeholder="Masukkan lakban seitai lainnya" />
                             @endif
@@ -871,18 +871,18 @@
                                     placeholder="0" />
                             </div>
                             <div class="col-12 col-lg-2 me-2">
-                                <select data-choices data-choices-sorting="true"
-                                    class="form-control @error('case_gaiso_count_unit') is-invalid @enderror"
+                                <select
+                                    class="form-control @error('case_gaiso_count_unit') is-invalid @enderror select2-gaiso-unit"
                                     wire:model="case_gaiso_count_unit" placeholder="">
                                     <option value="">
                                         Unit
                                     </option>
                                     @foreach ($masterUnit as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ $case_gaiso_count_unit['value'] != null ? ($item->id == $case_gaiso_count_unit['value'] ? 'selected' : '') : '' }}>
+                                            {{ $case_gaiso_count_unit != null ? ($item->id == $case_gaiso_count_unit ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
-                                    @endforeach`
+                                    @endforeach
                                 </select>
                                 @error('case_gaiso_count_unit')
                                     <span class="invalid-feedback">{{ $message }}</span>
@@ -914,18 +914,18 @@
                                     placeholder="0" />
                             </div>
                             <div class="col-12 col-lg-2 me-2">
-                                <select required data-choices data-choices-sorting="true"
-                                    class="form-control @error('case_box_count_unit') is-invalid @enderror"
+                                <select required
+                                    class="form-control @error('case_box_count_unit') is-invalid @enderror select2-box-unit"
                                     wire:model="case_box_count_unit" placeholder="">
                                     <option value="" selected>
                                         Unit
                                     </option>
                                     @foreach ($masterUnit as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ $case_box_count_unit['value'] != null ? ($item->id == $case_box_count_unit['value'] ? 'selected' : '') : '' }}>
+                                            {{ $case_box_count_unit != null ? ($item->id == $case_box_count_unit ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
-                                    @endforeach`
+                                    @endforeach
                                 </select>
                                 @error('case_box_count_unit')
                                     <span class="invalid-feedback">{{ $message }}</span>
@@ -956,18 +956,18 @@
                                     placeholder="0" />
                             </div>
                             <div class="col-12 col-lg-2 me-2">
-                                <select data-choices data-choices-sorting="true"
-                                    class="form-control @error('case_inner_count_unit') is-invalid @enderror"
+                                <select
+                                    class="form-control @error('case_inner_count_unit') is-invalid @enderror select2-inner-unit"
                                     wire:model="case_inner_count_unit" placeholder="">
                                     <option value="" selected>
                                         Unit
                                     </option>
                                     @foreach ($masterUnit as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ $case_inner_count_unit['value'] != null ? ($item->id == $case_inner_count_unit['value'] ? 'selected' : '') : '' }}>
+                                            {{ $case_inner_count_unit != null ? ($item->id == $case_inner_count_unit ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
-                                    @endforeach`
+                                    @endforeach
                                 </select>
                                 @error('case_inner_count_unit')
                                     <span class="invalid-feedback">{{ $message }}</span>
@@ -1002,15 +1002,15 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Tipe Hagata</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
-                                    class="form-select @error('katanuki_id') is-invalid @enderror"
+                                <select
+                                    class="form-select @error('katanuki_id') is-invalid @enderror select2-katanuki"
                                     wire:model.live="katanuki_id" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterKatanuki as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ $katanuki_id['value'] != null ? ($item->id == $katanuki_id['value'] ? 'selected' : '') : '' }}>
+                                            {{ $katanuki_id != null ? ($item->id == $katanuki_id ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -1202,6 +1202,198 @@
             }
             selectKlasifikasiSeal();
 
+            function selectSatuan() {
+                if ($('.select2-satuan').hasClass("select2-hidden-accessible")) {
+                    $('.select2-satuan').select2('destroy');
+                }
+                $('.select2-satuan').select2({
+                    theme: 'bootstrap-5',
+                }).on('change', function(e) {
+                    @this.set('product_unit', $(this).val());
+                });
+            }
+            selectSatuan();
+
+            function selectMaterial() {
+                if ($('.select2-material').hasClass("select2-hidden-accessible")) {
+                    $('.select2-material').select2('destroy');
+                }
+                $('.select2-material').select2({
+                    theme: 'bootstrap-5',
+                }).on('change', function(e) {
+                    @this.set('material_classification', $(this).val());
+                });
+            }
+            selectMaterial();
+
+            function selectEmbossed() {
+                if ($('.select2-embossed').hasClass("select2-hidden-accessible")) {
+                    $('.select2-embossed').select2('destroy');
+                }
+                $('.select2-embossed').select2({
+                    theme: 'bootstrap-5',
+                }).on('change', function(e) {
+                    @this.set('embossed_classification', $(this).val());
+                });
+            }
+            selectEmbossed();
+
+            function selectSurface() {
+                if ($('.select2-surface').hasClass("select2-hidden-accessible")) {
+                    $('.select2-surface').select2('destroy');
+                }
+                $('.select2-surface').select2({
+                    theme: 'bootstrap-5',
+                }).on('change', function(e) {
+                    @this.set('surface_classification', $(this).val());
+                });
+            }
+            selectSurface();
+
+            function selectLakbanInfure() {
+                if ($('.select2-lakban-infure').hasClass("select2-hidden-accessible")) {
+                    $('.select2-lakban-infure').select2('destroy');
+                }
+                $('.select2-lakban-infure').select2({
+                    theme: 'bootstrap-5',
+                }).on('change', function(e) {
+                    @this.set('lakbaninfureid', $(this).val());
+                });
+            }
+            selectLakbanInfure();
+
+            function selectGentan() {
+                if ($('.select2-gentan').hasClass("select2-hidden-accessible")) {
+                    $('.select2-gentan').select2('destroy');
+                }
+                $('.select2-gentan').select2({
+                    theme: 'bootstrap-5',
+                }).on('change', function(e) {
+                    @this.set('gentan_classification', $(this).val());
+                });
+            }
+            selectGentan();
+
+            function selectGazette() {
+                if ($('.select2-gazette').hasClass("select2-hidden-accessible")) {
+                    $('.select2-gazette').select2('destroy');
+                }
+                $('.select2-gazette').select2({
+                    theme: 'bootstrap-5',
+                }).on('change', function(e) {
+                    @this.set('gazette_classification', $(this).val());
+                });
+            }
+            selectGazette();
+
+            function selectPrintType() {
+                if ($('.select2-print-type').hasClass("select2-hidden-accessible")) {
+                    $('.select2-print-type').select2('destroy');
+                }
+                $('.select2-print-type').select2({
+                    theme: 'bootstrap-5',
+                }).on('change', function(e) {
+                    @this.set('print_type', $(this).val());
+                });
+            }
+            selectPrintType();
+
+            function selectInkCharacteristic() {
+                if ($('.select2-ink-characteristic').hasClass("select2-hidden-accessible")) {
+                    $('.select2-ink-characteristic').select2('destroy');
+                }
+                $('.select2-ink-characteristic').select2({
+                    theme: 'bootstrap-5',
+                }).on('change', function(e) {
+                    @this.set('ink_characteristic', $(this).val());
+                });
+            }
+            selectInkCharacteristic();
+
+            function selectEndless() {
+                if ($('.select2-endless').hasClass("select2-hidden-accessible")) {
+                    $('.select2-endless').select2('destroy');
+                }
+                $('.select2-endless').select2({
+                    theme: 'bootstrap-5',
+                }).on('change', function(e) {
+                    @this.set('endless_printing', $(this).val());
+                });
+            }
+            selectEndless();
+
+            function selectWindingDirection() {
+                if ($('.select2-winding-direction').hasClass("select2-hidden-accessible")) {
+                    $('.select2-winding-direction').select2('destroy');
+                }
+                $('.select2-winding-direction').select2({
+                    theme: 'bootstrap-5',
+                }).on('change', function(e) {
+                    @this.set('winding_direction_of_the_web', $(this).val());
+                });
+            }
+            selectWindingDirection();
+
+            function selectGaisoUnit() {
+                if ($('.select2-gaiso-unit').hasClass("select2-hidden-accessible")) {
+                    $('.select2-gaiso-unit').select2('destroy');
+                }
+                $('.select2-gaiso-unit').select2({
+                    theme: 'bootstrap-5',
+                }).on('change', function(e) {
+                    @this.set('case_gaiso_count_unit', $(this).val());
+                });
+            }
+            selectGaisoUnit();
+
+            function selectBoxUnit() {
+                if ($('.select2-box-unit').hasClass("select2-hidden-accessible")) {
+                    $('.select2-box-unit').select2('destroy');
+                }
+                $('.select2-box-unit').select2({
+                    theme: 'bootstrap-5',
+                }).on('change', function(e) {
+                    @this.set('case_box_count_unit', $(this).val());
+                });
+            }
+            selectBoxUnit();
+
+            function selectInnerUnit() {
+                if ($('.select2-inner-unit').hasClass("select2-hidden-accessible")) {
+                    $('.select2-inner-unit').select2('destroy');
+                }
+                $('.select2-inner-unit').select2({
+                    theme: 'bootstrap-5',
+                }).on('change', function(e) {
+                    @this.set('case_inner_count_unit', $(this).val());
+                });
+            }
+            selectInnerUnit();
+
+            function selectLakbanSeitai() {
+                if ($('.select2-lakban-seitai').hasClass("select2-hidden-accessible")) {
+                    $('.select2-lakban-seitai').select2('destroy');
+                }
+                $('.select2-lakban-seitai').select2({
+                    theme: 'bootstrap-5',
+                }).on('change', function(e) {
+                    @this.set('lakbanseitaiid', $(this).val());
+                });
+            }
+            selectLakbanSeitai();
+
+            function selectKatanuki() {
+                if ($('.select2-katanuki').hasClass("select2-hidden-accessible")) {
+                    $('.select2-katanuki').select2('destroy');
+                }
+                $('.select2-katanuki').select2({
+                    theme: 'bootstrap-5',
+                }).on('change', function(e) {
+                    @this.set('katanuki_id', $(this).val());
+                });
+            }
+            selectKatanuki();
+
             // Hook untuk Livewire v3
             Livewire.hook('morph', ({
                 el,
@@ -1214,6 +1406,22 @@
                     selectKodeInner();
                     selectKodeLayer();
                     selectKlasifikasiSeal();
+                    selectSatuan();
+                    selectMaterial();
+                    selectEmbossed();
+                    selectSurface();
+                    selectLakbanInfure();
+                    selectGentan();
+                    selectGazette();
+                    selectPrintType();
+                    selectInkCharacteristic();
+                    selectEndless();
+                    selectWindingDirection();
+                    selectGaisoUnit();
+                    selectBoxUnit();
+                    selectInnerUnit();
+                    selectLakbanSeitai();
+                    selectKatanuki();
                 }, 100);
             });
         });

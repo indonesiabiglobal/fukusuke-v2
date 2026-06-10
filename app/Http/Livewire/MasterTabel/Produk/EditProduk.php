@@ -216,26 +216,26 @@ class EditProduk extends Component
         $this->diameterlipat = $this->product->diameterlipat;
         $this->productlength = $this->product->productlength;
         $this->unit_weight = $this->product->unit_weight;
-        $this->product_unit['value'] = $this->product->product_unit;
+        $this->product_unit = DB::table('msunit')->where('code', $this->product->product_unit)->first()->id ?? null;
         $this->inflation_thickness = $this->product->inflation_thickness;
         $this->inflation_fold_diameter = $this->product->inflation_fold_diameter;
         $this->one_winding_m_number = $this->product->one_winding_m_number;
-        $this->material_classification['value'] = $this->product->material_classification;
-        $this->embossed_classification['value'] = $this->product->embossed_classification;
-        $this->surface_classification['value'] = $this->product->surface_classification;
+        $this->material_classification = DB::table('msmaterial')->where('code', $this->product->material_classification)->first()->id ?? null;
+        $this->embossed_classification = DB::table('msembossedclassification')->where('code', $this->product->embossed_classification)->first()->id ?? null;
+        $this->surface_classification = DB::table('mssurfaceclassification')->where('code', $this->product->surface_classification)->first()->id ?? null;
         $this->coloring_1 = $this->product->coloring_1;
         $this->coloring_2 = $this->product->coloring_2;
         $this->coloring_3 = $this->product->coloring_3;
         $this->coloring_4 = $this->product->coloring_4;
         $this->coloring_5 = $this->product->coloring_5;
         $this->inflation_notes = $this->product->inflation_notes;
-        $this->gentan_classification['value'] = $this->product->gentan_classification;
-        $this->gazette_classification['value'] = $this->product->gazette_classification;
+        $this->gentan_classification = DB::table('msgentanclassification')->where('code', $this->product->gentan_classification)->first()->id ?? null;
+        $this->gazette_classification = DB::table('msgazetteclassification')->where('code', $this->product->gazette_classification)->first()->id ?? null;
         $this->gazette_dimension_a = $this->product->gazette_dimension_a;
         $this->gazette_dimension_b = $this->product->gazette_dimension_b;
         $this->gazette_dimension_c = $this->product->gazette_dimension_c;
         $this->gazette_dimension_d = $this->product->gazette_dimension_d;
-        $this->katanuki_id['value'] = $this->product->katanuki_id;
+        $this->katanuki_id = $this->product->katanuki_id;
         $this->extracted_dimension_a = $this->product->extracted_dimension_a;
         $this->extracted_dimension_b = $this->product->extracted_dimension_b;
         $this->extracted_dimension_c = $this->product->extracted_dimension_c;
@@ -251,10 +251,10 @@ class EditProduk extends Component
         $this->back_color_3 = $this->product->back_color_3;
         $this->back_color_4 = $this->product->back_color_4;
         $this->back_color_5 = $this->product->back_color_5;
-        $this->print_type['value'] = $this->product->print_type;
-        $this->ink_characteristic['value'] = $this->product->ink_characteristic;
-        $this->endless_printing['value'] = $this->product->endless_printing;
-        $this->winding_direction_of_the_web['value'] = $this->product->winding_direction_of_the_web;
+        $this->print_type = DB::table('msjeniscetak')->where('code', $this->product->print_type)->first()->id ?? null;
+        $this->ink_characteristic = DB::table('mssifattinta')->where('code', $this->product->ink_characteristic)->first()->id ?? null;
+        $this->endless_printing = DB::table('msendless')->where('code', $this->product->endless_printing)->first()->id ?? null;
+        $this->winding_direction_of_the_web = DB::table('msarahgulung')->where('code', $this->product->winding_direction_of_the_web)->first()->id ?? null;
         $this->seal_classification_id = $this->product->seal_classification_id;
         $this->from_seal_design = $this->product->from_seal_design;
         $this->lower_sealing_length = $this->product->lower_sealing_length;
@@ -266,17 +266,17 @@ class EditProduk extends Component
         $this->pack_layer_id = $this->product->pack_layer_id;
         $this->manufacturing_summary = $this->product->manufacturing_summary;
         $this->case_gaiso_count = $this->product->case_gaiso_count;
-        $this->case_gaiso_count_unit['value'] = $this->product->case_gaiso_count_unit;
+        $this->case_gaiso_count_unit = DB::table('msunit')->where('code', $this->product->case_gaiso_count_unit)->first()->id ?? null;
         $this->case_box_count = $this->product->case_box_count;
-        $this->case_box_count_unit['value'] = $this->product->case_box_count_unit;
+        $this->case_box_count_unit = DB::table('msunit')->where('code', $this->product->case_box_count_unit)->first()->id ?? null;
         $this->case_inner_count = $this->product->case_inner_count;
-        $this->case_inner_count_unit['value'] = $this->product->case_inner_count_unit;
-        $this->lakbanseitaiid['value'] = $this->product->lakbanseitaiid;
-        $this->lakbaninfureid['value'] = $this->product->lakbaninfureid;
+        $this->case_inner_count_unit = DB::table('msunit')->where('code', $this->product->case_inner_count_unit)->first()->id ?? null;
+        $this->lakbanseitaiid = $this->product->lakbanseitaiid;
+        $this->lakbaninfureid = $this->product->lakbaninfureid;
         $this->stampelseitaiid = $this->product->stampelseitaiid;
         $this->kodehagata = $this->product->kodehagata;
-        $this->jenissealseitaiid['value'] = $this->product->jenissealseitaiid;
-        $this->warnalpkid['value'] = $this->product->warnalpkid;
+        $this->jenissealseitaiid = $this->product->jenissealseitaiid;
+        $this->warnalpkid = $this->product->warnalpkid;
         $this->kode_plate = $this->product->kode_plate;
         $this->case_box_stampel = $this->product->case_box_stampel;
         $this->case_gaiso_stampel = $this->product->case_gaiso_stampel;
@@ -310,8 +310,8 @@ class EditProduk extends Component
             $product->productlength = isset($this->productlength) ? $this->productlength : null;
             $product->unit_weight = isset($this->unit_weight) ? $this->unit_weight : null;
 
-            if (isset($this->product_unit) && $this->product_unit['value'] != null) {
-                $produkUnit = DB::table('msunit')->where('id', $this->product_unit['value'])->first();
+            if ($this->product_unit != null) {
+                $produkUnit = DB::table('msunit')->where('id', $this->product_unit)->first();
                 $product->product_unit_id = $produkUnit->id;
                 $product->product_unit = $produkUnit->code;
             }
@@ -320,20 +320,20 @@ class EditProduk extends Component
             $product->inflation_fold_diameter = isset($this->inflation_fold_diameter) ? $this->inflation_fold_diameter : null;
             $product->one_winding_m_number = isset($this->one_winding_m_number) ? $this->one_winding_m_number : null;
 
-            if (isset($this->material_classification) && $this->material_classification['value'] != null) {
-                $material = DB::table('msmaterial')->where('id', $this->material_classification['value'])->first();
+            if ($this->material_classification != null) {
+                $material = DB::table('msmaterial')->where('id', $this->material_classification)->first();
                 $product->material_classification_id = $material->id;
                 $product->material_classification = $material->code;
             }
 
-            if (isset($this->embossed_classification) && $this->embossed_classification['value'] != null) {
-                $embossed = DB::table('msembossedclassification')->where('id', $this->embossed_classification['value'])->first();
+            if ($this->embossed_classification != null) {
+                $embossed = DB::table('msembossedclassification')->where('id', $this->embossed_classification)->first();
                 $product->embossed_classification_id = $embossed->id;
                 $product->embossed_classification = $embossed->code;
             }
 
-            if (isset($this->surface_classification) && $this->surface_classification['value'] != null) {
-                $surface = DB::table('mssurfaceclassification')->where('id', $this->surface_classification['value'])->first();
+            if ($this->surface_classification != null) {
+                $surface = DB::table('mssurfaceclassification')->where('id', $this->surface_classification)->first();
                 $product->surface_classification_id = $surface->id;
                 $product->surface_classification = $surface->code;
             }
@@ -345,14 +345,14 @@ class EditProduk extends Component
             $product->coloring_5 = isset($this->coloring_5) ? $this->coloring_5 : null;
             $product->inflation_notes = isset($this->inflation_notes) ? $this->inflation_notes : null;
 
-            if (isset($this->gentan_classification) && $this->gentan_classification['value'] != null) {
-                $gentan = DB::table('msgentanclassification')->where('id', $this->gentan_classification['value'])->first();
+            if ($this->gentan_classification != null) {
+                $gentan = DB::table('msgentanclassification')->where('id', $this->gentan_classification)->first();
                 $product->gentan_classification_id = $gentan->id;
                 $product->gentan_classification = $gentan->code;
             }
 
-            if (isset($this->gazette_classification) && $this->gazette_classification['value'] != null) {
-                $gazette = DB::table('msgazetteclassification')->where('id', $this->gazette_classification['value'])->first();
+            if ($this->gazette_classification != null) {
+                $gazette = DB::table('msgazetteclassification')->where('id', $this->gazette_classification)->first();
                 $product->gazette_classification_id = $gazette->id;
                 $product->gazette_classification = $gazette->code;
             }
@@ -361,7 +361,7 @@ class EditProduk extends Component
             $product->gazette_dimension_b = isset($this->gazette_dimension_b) ? $this->gazette_dimension_b : null;
             $product->gazette_dimension_c = isset($this->gazette_dimension_c) ? $this->gazette_dimension_c : null;
             $product->gazette_dimension_d = isset($this->gazette_dimension_d) ? $this->gazette_dimension_d : null;
-            $product->katanuki_id = isset($this->katanuki_id) ? $this->katanuki_id['value'] : null;
+            $product->katanuki_id = isset($this->katanuki_id) ? $this->katanuki_id : null;
             $product->extracted_dimension_a = isset($this->extracted_dimension_a) ? $this->extracted_dimension_a : null;
             $product->extracted_dimension_b = isset($this->extracted_dimension_b) ? $this->extracted_dimension_b : null;
             $product->extracted_dimension_c = isset($this->extracted_dimension_c) ? $this->extracted_dimension_c : null;
@@ -378,26 +378,26 @@ class EditProduk extends Component
             $product->back_color_4 = isset($this->back_color_4) ? $this->back_color_4 : null;
             $product->back_color_5 = isset($this->back_color_5) ? $this->back_color_5 : null;
 
-            if (isset($this->print_type) && $this->print_type['value'] != null) {
-                $printType = DB::table('msjeniscetak')->where('id', $this->print_type['value'])->first();
+            if ($this->print_type != null) {
+                $printType = DB::table('msjeniscetak')->where('id', $this->print_type)->first();
                 $product->print_type_id = $printType->id;
                 $product->print_type = $printType->code;
             }
 
-            if (isset($this->ink_characteristic) && $this->ink_characteristic['value'] != null) {
-                $inkCharacteristic = DB::table('mssifattinta')->where('id', $this->ink_characteristic['value'])->first();
+            if ($this->ink_characteristic != null) {
+                $inkCharacteristic = DB::table('mssifattinta')->where('id', $this->ink_characteristic)->first();
                 $product->ink_characteristic_id = $inkCharacteristic->id;
                 $product->ink_characteristic = $inkCharacteristic->code;
             }
 
-            if (isset($this->endless_printing) && $this->endless_printing['value'] != null) {
-                $endlessPrinting = DB::table('msendless')->where('id', $this->endless_printing['value'])->first();
+            if ($this->endless_printing != null) {
+                $endlessPrinting = DB::table('msendless')->where('id', $this->endless_printing)->first();
                 $product->endless_printing_id = $endlessPrinting->id;
                 $product->endless_printing = $endlessPrinting->code;
             }
 
-            if (isset($this->winding_direction_of_the_web) && $this->winding_direction_of_the_web['value'] != null) {
-                $windingDirection = DB::table('msarahgulung')->where('id', $this->winding_direction_of_the_web['value'])->first();
+            if ($this->winding_direction_of_the_web != null) {
+                $windingDirection = DB::table('msarahgulung')->where('id', $this->winding_direction_of_the_web)->first();
                 $product->winding_direction_of_the_web_id = $windingDirection->id;
                 $product->winding_direction_of_the_web = $windingDirection->code;
             }
@@ -434,18 +434,27 @@ class EditProduk extends Component
             $product->pack_layer_id = $this->pack_layer_id ? $this->pack_layer_id : null;
             $product->manufacturing_summary = isset($this->manufacturing_summary) ? $this->manufacturing_summary : null;
             $product->case_gaiso_count = isset($this->case_gaiso_count) ? $this->case_gaiso_count : null;
-            $product->case_gaiso_count_unit = isset($this->case_gaiso_count_unit) ? $this->case_gaiso_count_unit['value'] : null;
+            if ($this->case_gaiso_count_unit != null) {
+                $gaisoUnit = DB::table('msunit')->where('id', $this->case_gaiso_count_unit)->first();
+                $product->case_gaiso_count_unit = $gaisoUnit->code;
+            }
             $product->case_gaiso_stampel = isset($this->case_gaiso_stampel) ? $this->case_gaiso_stampel : null;
             $product->case_box_count = isset($this->case_box_count) ? $this->case_box_count : null;
-            $product->case_box_count_unit = isset($this->case_box_count_unit) ? $this->case_box_count_unit['value'] : null;
+            if ($this->case_box_count_unit != null) {
+                $boxUnit = DB::table('msunit')->where('id', $this->case_box_count_unit)->first();
+                $product->case_box_count_unit = $boxUnit->code;
+            }
             $product->case_box_stampel = isset($this->case_box_stampel) ? $this->case_box_stampel : null;
             $product->case_inner_count = isset($this->case_inner_count) ? $this->case_inner_count : null;
-            $product->case_inner_count_unit = isset($this->case_inner_count_unit) ? $this->case_inner_count_unit['value'] : null;
+            if ($this->case_inner_count_unit != null) {
+                $innerUnit = DB::table('msunit')->where('id', $this->case_inner_count_unit)->first();
+                $product->case_inner_count_unit = $innerUnit->code;
+            }
             $product->case_inner_stampel = isset($this->case_inner_stampel) ? $this->case_inner_stampel : null;
 
             // lakban seitai
-            if (isset($this->lakbanseitaiid) && $this->lakbanseitaiid['value'] != null) {
-                if ($this->lakbanseitaiid['value'] == 'lainnya') {
+            if ($this->lakbanseitaiid != null) {
+                if ($this->lakbanseitaiid == 'lainnya') {
                     // insert new seal classification
                     $maxCode = MsLakbanSeitai::max('code');
                     $lakbanSeitai = MsLakbanSeitai::insertGetId([
@@ -459,13 +468,13 @@ class EditProduk extends Component
                     ]);
                     $product->lakbanseitaiid = $lakbanSeitai;
                 } else {
-                    $product->lakbanseitaiid = $this->lakbanseitaiid['value'];
+                    $product->lakbanseitaiid = $this->lakbanseitaiid;
                 }
             }
 
             // lakban infure
-            if (isset($this->lakbaninfureid) && $this->lakbaninfureid['value'] != null) {
-                if ($this->lakbaninfureid['value'] == 'lainnya') {
+            if ($this->lakbaninfureid != null) {
+                if ($this->lakbaninfureid == 'lainnya') {
                     // insert new seal classification
                     $maxCode = MsLakbanInfure::max('code');
                     $lakbanInfure = MsLakbanInfure::insertGetId([
@@ -479,15 +488,14 @@ class EditProduk extends Component
                     ]);
                     $product->lakbaninfureid = $lakbanInfure;
                 } else {
-                    $product->lakbaninfureid = $this->lakbaninfureid['value'];
+                    $product->lakbaninfureid = $this->lakbaninfureid;
                 }
             }
-            // $product->stampelseitaiid = isset($this->stampelseitaiid) ? $this->stampelseitaiid : null;;
             $product->kodehagata = isset($this->kodehagata) ? $this->kodehagata : null;
             $product->kode_plate = isset($this->kode_plate) ? $this->kode_plate : null;
             // warna LPK
-            if (isset($this->warnalpkid) && $this->warnalpkid['value'] != null) {
-                if ($this->warnalpkid['value'] == 'lainnya') {
+            if ($this->warnalpkid != null) {
+                if ($this->warnalpkid == 'lainnya') {
                     // insert new seal classification
                     $maxCode = MsWarnaLPK::max('code');
                     $warnaLPK = MsWarnaLPK::insertGetId([
@@ -501,10 +509,9 @@ class EditProduk extends Component
                     ]);
                     $product->warnalpkid = $warnaLPK;
                 } else {
-                    $product->warnalpkid = $this->warnalpkid['value'];
+                    $product->warnalpkid = $this->warnalpkid;
                 }
             }
-            // $product->jenissealseitaiid = isset($this->jenissealseitaiid) ? $this->jenissealseitaiid : null;
             $product->status = 1;
             $product->updated_by = auth()->user()->username;
             $product->updated_on = Carbon::now();
@@ -528,9 +535,8 @@ class EditProduk extends Component
     public function render()
     {
         if (isset($this->katanuki_id) && $this->katanuki_id != '') {
-            $katanuki_id = is_array($this->katanuki_id) ? $this->katanuki_id['value'] : $this->katanuki_id;
-            if ($katanuki_id != '') {
-                $this->photoKatanuki = DB::table('mskatanuki')->where('id', $katanuki_id)->first()->filename;
+            if ($this->katanuki_id != '') {
+                $this->photoKatanuki = DB::table('mskatanuki')->where('id', $this->katanuki_id)->first()->filename;
             }
         }
         return view('livewire.master-tabel.produk.edit-produk')->extends('layouts.master');
