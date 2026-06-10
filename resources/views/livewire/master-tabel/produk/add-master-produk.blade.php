@@ -837,12 +837,12 @@
                     {{-- Isi gaiso --}}
                     <div class="form-group mt-1">
                         <div class="input-group" wire:ignore>
-                            <label class="control-label col-12 col-lg-1 me-2">Isi</label>
-                            <div class="col-12 col-lg-2 me-2">
+                            <label class="control-label col-12 col-lg-1 me-1">Isi</label>
+                            <div class="col-12 col-lg-2 me-1">
                                 <input required type="number" class="form-control" wire:model="case_gaiso_count"
                                     placeholder="0" />
                             </div>
-                            <div class="col-12 col-lg-2 me-2">
+                            <div class="col-12 col-lg-3 me-1">
                                 <select class="form-control @error('case_gaiso_count_unit') is-invalid @enderror"
                                     wire:model="case_gaiso_count_unit" placeholder="">
                                     <option value="" selected>
@@ -858,7 +858,7 @@
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
                             </div>
-                            <div class="col-12 col-lg-5 me-2">
+                            <div class="col-12 col-lg-5 me-1">
                                 <div class="form-group mt-1">
                                     <div class="input-group">
                                         <label class="control-label col-12 col-lg-6">Stempel</label>
@@ -878,12 +878,12 @@
                     {{-- Isi box --}}
                     <div class="form-group mt-1">
                         <div class="input-group" wire:ignore>
-                            <label class="control-label col-12 col-lg-1 me-2">Isi</label>
-                            <div class="col-12 col-lg-2 me-2">
+                            <label class="control-label col-12 col-lg-1 me-1">Isi</label>
+                            <div class="col-12 col-lg-2 me-1">
                                 <input required type="number" class="form-control" wire:model="case_box_count"
                                     placeholder="0" />
                             </div>
-                            <div class="col-12 col-lg-2 me-2">
+                            <div class="col-12 col-lg-3 me-1">
                                 <select class="form-control @error('case_box_count_unit') is-invalid @enderror"
                                     wire:model="case_box_count_unit" placeholder="">
                                     <option value="" selected>
@@ -899,7 +899,7 @@
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
                             </div>
-                            <div class="col-12 col-lg-5 me-2">
+                            <div class="col-12 col-lg-5 me-1">
                                 <div class="form-group mt-1">
                                     <div class="input-group">
                                         <label class="control-label col-12 col-lg-6">Stempel</label>
@@ -919,12 +919,12 @@
                     {{-- Isi inner --}}
                     <div class="form-group mt-1">
                         <div class="input-group" wire:ignore>
-                            <label class="control-label col-12 col-lg-1 me-2">Isi</label>
-                            <div class="col-12 col-lg-2 me-2">
+                            <label class="control-label col-12 col-lg-1 me-1">Isi</label>
+                            <div class="col-12 col-lg-2 me-1">
                                 <input required type="number" class="form-control" wire:model="case_inner_count"
                                     placeholder="0" />
                             </div>
-                            <div class="col-12 col-lg-2 me-2">
+                            <div class="col-12 col-lg-3 me-1">
                                 <select class="form-control @error('case_inner_count_unit') is-invalid @enderror"
                                     wire:model="case_inner_count_unit" placeholder="">
                                     <option value="" selected>
@@ -940,7 +940,7 @@
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
                             </div>
-                            <div class="col-12 col-lg-5 me-2">
+                            <div class="col-12 col-lg-5 me-1">
                                 <div class="form-group mt-1">
                                     <div class="input-group">
                                         <label class="control-label col-12 col-lg-6">Stempel</label>

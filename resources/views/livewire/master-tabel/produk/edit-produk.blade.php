@@ -213,7 +213,7 @@
                             <label class="control-label col-12 col-lg-4">Material</label>
                             <div class="col-12 col-lg-8" wire:ignore>
                                 <select
-                                    class="form-select col-12 col-lg-8 @error('material_classification') is-invalid @enderror select2-material"
+                                    class="form-select col-12 col-lg-8 @error('material_classification') is-invalid @enderror"
                                     wire:model="material_classification" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
@@ -236,7 +236,7 @@
                             <label class="control-label col-12 col-lg-4">Embos</label>
                             <div class="col-12 col-lg-8" wire:ignore>
                                 <select
-                                    class="form-select col-12 col-lg-8 @error('embossed_classification') is-invalid @enderror select2-embossed"
+                                    class="form-select col-12 col-lg-8 @error('embossed_classification') is-invalid @enderror"
                                     wire:model="embossed_classification" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
@@ -260,7 +260,7 @@
                             <label class="control-label col-12 col-lg-4">Corona</label>
                             <div class="col-12 col-lg-8" wire:ignore>
                                 <select
-                                    class="form-select col-12 col-lg-8 @error('surface_classification') is-invalid @enderror select2-surface"
+                                    class="form-select col-12 col-lg-8 @error('surface_classification') is-invalid @enderror"
                                     wire:model="surface_classification" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
@@ -284,7 +284,7 @@
                             <label class="control-label col-12 col-lg-4">Lakban Infure</label>
                             <div class="col-12 col-lg-8" wire:ignore>
                                 <select
-                                    class="form-select @error('lakbaninfureid') is-invalid @enderror select2-lakban-infure"
+                                    class="form-select @error('lakbaninfureid') is-invalid @enderror"
                                     wire:model.live="lakbaninfureid" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
@@ -381,7 +381,7 @@
                             <label class="control-label col-12 col-lg-4">Gentan</label>
                             <div class="col-12 col-lg-8" wire:ignore>
                                 <select
-                                    class="form-select @error('gentan_classification') is-invalid @enderror select2-gentan"
+                                    class="form-select @error('gentan_classification') is-invalid @enderror"
                                     wire:model="gentan_classification" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
@@ -404,7 +404,7 @@
                             <label class="control-label col-12 col-lg-4">Gazette</label>
                             <div class="col-12 col-lg-8" wire:ignore>
                                 <select
-                                    class="form-select @error('gazette_classification') is-invalid @enderror select2-gazette"
+                                    class="form-select @error('gazette_classification') is-invalid @enderror"
                                     wire:model="gazette_classification" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
@@ -569,7 +569,7 @@
                             <label class="control-label col-12 col-lg-4">Jenis Cetak</label>
                             <div class="col-12 col-lg-8" wire:ignore>
                                 <select
-                                    class="form-select @error('print_type') is-invalid @enderror select2-print-type"
+                                    class="form-select @error('print_type') is-invalid @enderror"
                                     wire:model="print_type" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
@@ -592,7 +592,7 @@
                             <label class="control-label col-12 col-lg-4">Sifat Tinta</label>
                             <div class="col-12 col-lg-8" wire:ignore>
                                 <select
-                                    class="form-select @error('ink_characteristic') is-invalid @enderror select2-ink-characteristic"
+                                    class="form-select @error('ink_characteristic') is-invalid @enderror"
                                     wire:model="ink_characteristic" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
@@ -615,7 +615,7 @@
                             <label class="control-label col-12 col-lg-4">Endless</label>
                             <div class="col-12 col-lg-8" wire:ignore>
                                 <select
-                                    class="form-select @error('endless_printing') is-invalid @enderror select2-endless"
+                                    class="form-select @error('endless_printing') is-invalid @enderror"
                                     wire:model="endless_printing" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
@@ -638,7 +638,7 @@
                             <label class="control-label col-12 col-lg-4">Arah Gulung</label>
                             <div class="col-12 col-lg-8" wire:ignore>
                                 <select
-                                    class="form-select @error('winding_direction_of_the_web') is-invalid @enderror select2-winding-direction"
+                                    class="form-select @error('winding_direction_of_the_web') is-invalid @enderror"
                                     wire:model="winding_direction_of_the_web" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
@@ -678,7 +678,7 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-6">Klarifikasi Seal</label>
                             <div class="col-12 col-lg-6">
-                                <select class="form-select @error('seal_classification_id') is-invalid @enderror select2-klasifikasi-seal"
+                                <select class="form-select @error('seal_classification_id') is-invalid @enderror"
                                     wire:model="seal_classification_id">
                                     <option value="">
                                         Silahkan Pilih
@@ -741,7 +741,7 @@
                             <label class="control-label col-12 col-lg-6">Lakban Seitai</label>
                             <div class="col-12 col-lg-6" wire:ignore>
                                 <select
-                                    class="form-select @error('lakbanseitaiid') is-invalid @enderror select2-lakban-seitai"
+                                    class="form-select @error('lakbanseitaiid') is-invalid @enderror"
                                     wire:model.live="lakbanseitaiid" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
@@ -865,14 +865,14 @@
                     {{-- Isi gaiso --}}
                     <div class="form-group">
                         <div class="input-group" wire:ignore>
-                            <label class="control-label col-12 col-lg-1 me-2">Isi</label>
-                            <div class="col-12 col-lg-2 me-2">
+                            <label class="control-label col-12 col-lg-1 me-1">Isi</label>
+                            <div class="col-12 col-lg-2 me-1">
                                 <input required type="number" class="form-control" wire:model="case_gaiso_count"
                                     placeholder="0" />
                             </div>
-                            <div class="col-12 col-lg-2 me-2">
+                            <div class="col-12 col-lg-3 me-1">
                                 <select
-                                    class="form-control @error('case_gaiso_count_unit') is-invalid @enderror select2-gaiso-unit"
+                                    class="form-select @error('case_gaiso_count_unit') is-invalid @enderror"
                                     wire:model="case_gaiso_count_unit" placeholder="">
                                     <option value="">
                                         Unit
@@ -888,7 +888,7 @@
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
                             </div>
-                            <div class="col-12 col-lg-5 me-2">
+                            <div class="col-12 col-lg-5 me-1">
                                 <div class="form-group mt-1">
                                     <div class="input-group">
                                         <label class="control-label col-12 col-lg-6">Stempel</label>
@@ -908,14 +908,14 @@
                     {{-- Isi box --}}
                     <div class="form-group mt-1">
                         <div class="input-group" wire:ignore>
-                            <label class="control-label col-12 col-lg-1 me-2">Isi</label>
-                            <div class="col-12 col-lg-2 me-2">
+                            <label class="control-label col-12 col-lg-1 me-1">Isi</label>
+                            <div class="col-12 col-lg-2 me-1">
                                 <input required type="number" class="form-control" wire:model="case_box_count"
                                     placeholder="0" />
                             </div>
-                            <div class="col-12 col-lg-2 me-2">
+                            <div class="col-12 col-lg-3 me-1">
                                 <select required
-                                    class="form-control @error('case_box_count_unit') is-invalid @enderror select2-box-unit"
+                                    class="form-select @error('case_box_count_unit') is-invalid @enderror"
                                     wire:model="case_box_count_unit" placeholder="">
                                     <option value="" selected>
                                         Unit
@@ -931,7 +931,7 @@
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
                             </div>
-                            <div class="col-12 col-lg-5 me-2">
+                            <div class="col-12 col-lg-5 me-1">
                                 <div class="form-group mt-1">
                                     <div class="input-group">
                                         <label class="control-label col-12 col-lg-6">Stempel</label>
@@ -950,14 +950,14 @@
                     </div>
                     <div class="form-group mt-1">
                         <div class="input-group" wire:ignore>
-                            <label class="control-label col-12 col-lg-1 me-2">Isi</label>
-                            <div class="col-12 col-lg-2 me-2">
+                            <label class="control-label col-12 col-lg-1 me-1">Isi</label>
+                            <div class="col-12 col-lg-2 me-1">
                                 <input required type="number" class="form-control" wire:model="case_inner_count"
                                     placeholder="0" />
                             </div>
-                            <div class="col-12 col-lg-2 me-2">
+                            <div class="col-12 col-lg-3 me-1">
                                 <select
-                                    class="form-control @error('case_inner_count_unit') is-invalid @enderror select2-inner-unit"
+                                    class="form-select @error('case_inner_count_unit') is-invalid @enderror"
                                     wire:model="case_inner_count_unit" placeholder="">
                                     <option value="" selected>
                                         Unit
@@ -973,7 +973,7 @@
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
                             </div>
-                            <div class="col-12 col-lg-5 me-2">
+                            <div class="col-12 col-lg-5 me-1">
                                 <div class="form-group mt-1">
                                     <div class="input-group">
                                         <label class="control-label col-12 col-lg-6">Stempel</label>
@@ -1003,7 +1003,7 @@
                             <label class="control-label col-12 col-lg-4">Tipe Hagata</label>
                             <div class="col-12 col-lg-8" wire:ignore>
                                 <select
-                                    class="form-select @error('katanuki_id') is-invalid @enderror select2-katanuki"
+                                    class="form-select @error('katanuki_id') is-invalid @enderror"
                                     wire:model.live="katanuki_id" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
@@ -1187,21 +1187,6 @@
             }
             selectKodeLayer();
 
-            function selectKlasifikasiSeal() {
-                // Destroy instance Select2 yang ada
-                if ($('.select2-klasifikasi-seal').hasClass("select2-hidden-accessible")) {
-                    $('.select2-klasifikasi-seal').select2('destroy');
-                }
-
-                $('.select2-klasifikasi-seal').select2({
-                    theme: 'bootstrap-5',
-                }).on('change', function(e) {
-                    var data = $(this).val();
-                    @this.set('seal_classification_id', data);
-                });
-            }
-            selectKlasifikasiSeal();
-
             function selectSatuan() {
                 if ($('.select2-satuan').hasClass("select2-hidden-accessible")) {
                     $('.select2-satuan').select2('destroy');
@@ -1214,186 +1199,6 @@
             }
             selectSatuan();
 
-            function selectMaterial() {
-                if ($('.select2-material').hasClass("select2-hidden-accessible")) {
-                    $('.select2-material').select2('destroy');
-                }
-                $('.select2-material').select2({
-                    theme: 'bootstrap-5',
-                }).on('change', function(e) {
-                    @this.set('material_classification', $(this).val());
-                });
-            }
-            selectMaterial();
-
-            function selectEmbossed() {
-                if ($('.select2-embossed').hasClass("select2-hidden-accessible")) {
-                    $('.select2-embossed').select2('destroy');
-                }
-                $('.select2-embossed').select2({
-                    theme: 'bootstrap-5',
-                }).on('change', function(e) {
-                    @this.set('embossed_classification', $(this).val());
-                });
-            }
-            selectEmbossed();
-
-            function selectSurface() {
-                if ($('.select2-surface').hasClass("select2-hidden-accessible")) {
-                    $('.select2-surface').select2('destroy');
-                }
-                $('.select2-surface').select2({
-                    theme: 'bootstrap-5',
-                }).on('change', function(e) {
-                    @this.set('surface_classification', $(this).val());
-                });
-            }
-            selectSurface();
-
-            function selectLakbanInfure() {
-                if ($('.select2-lakban-infure').hasClass("select2-hidden-accessible")) {
-                    $('.select2-lakban-infure').select2('destroy');
-                }
-                $('.select2-lakban-infure').select2({
-                    theme: 'bootstrap-5',
-                }).on('change', function(e) {
-                    @this.set('lakbaninfureid', $(this).val());
-                });
-            }
-            selectLakbanInfure();
-
-            function selectGentan() {
-                if ($('.select2-gentan').hasClass("select2-hidden-accessible")) {
-                    $('.select2-gentan').select2('destroy');
-                }
-                $('.select2-gentan').select2({
-                    theme: 'bootstrap-5',
-                }).on('change', function(e) {
-                    @this.set('gentan_classification', $(this).val());
-                });
-            }
-            selectGentan();
-
-            function selectGazette() {
-                if ($('.select2-gazette').hasClass("select2-hidden-accessible")) {
-                    $('.select2-gazette').select2('destroy');
-                }
-                $('.select2-gazette').select2({
-                    theme: 'bootstrap-5',
-                }).on('change', function(e) {
-                    @this.set('gazette_classification', $(this).val());
-                });
-            }
-            selectGazette();
-
-            function selectPrintType() {
-                if ($('.select2-print-type').hasClass("select2-hidden-accessible")) {
-                    $('.select2-print-type').select2('destroy');
-                }
-                $('.select2-print-type').select2({
-                    theme: 'bootstrap-5',
-                }).on('change', function(e) {
-                    @this.set('print_type', $(this).val());
-                });
-            }
-            selectPrintType();
-
-            function selectInkCharacteristic() {
-                if ($('.select2-ink-characteristic').hasClass("select2-hidden-accessible")) {
-                    $('.select2-ink-characteristic').select2('destroy');
-                }
-                $('.select2-ink-characteristic').select2({
-                    theme: 'bootstrap-5',
-                }).on('change', function(e) {
-                    @this.set('ink_characteristic', $(this).val());
-                });
-            }
-            selectInkCharacteristic();
-
-            function selectEndless() {
-                if ($('.select2-endless').hasClass("select2-hidden-accessible")) {
-                    $('.select2-endless').select2('destroy');
-                }
-                $('.select2-endless').select2({
-                    theme: 'bootstrap-5',
-                }).on('change', function(e) {
-                    @this.set('endless_printing', $(this).val());
-                });
-            }
-            selectEndless();
-
-            function selectWindingDirection() {
-                if ($('.select2-winding-direction').hasClass("select2-hidden-accessible")) {
-                    $('.select2-winding-direction').select2('destroy');
-                }
-                $('.select2-winding-direction').select2({
-                    theme: 'bootstrap-5',
-                }).on('change', function(e) {
-                    @this.set('winding_direction_of_the_web', $(this).val());
-                });
-            }
-            selectWindingDirection();
-
-            function selectGaisoUnit() {
-                if ($('.select2-gaiso-unit').hasClass("select2-hidden-accessible")) {
-                    $('.select2-gaiso-unit').select2('destroy');
-                }
-                $('.select2-gaiso-unit').select2({
-                    theme: 'bootstrap-5',
-                }).on('change', function(e) {
-                    @this.set('case_gaiso_count_unit', $(this).val());
-                });
-            }
-            selectGaisoUnit();
-
-            function selectBoxUnit() {
-                if ($('.select2-box-unit').hasClass("select2-hidden-accessible")) {
-                    $('.select2-box-unit').select2('destroy');
-                }
-                $('.select2-box-unit').select2({
-                    theme: 'bootstrap-5',
-                }).on('change', function(e) {
-                    @this.set('case_box_count_unit', $(this).val());
-                });
-            }
-            selectBoxUnit();
-
-            function selectInnerUnit() {
-                if ($('.select2-inner-unit').hasClass("select2-hidden-accessible")) {
-                    $('.select2-inner-unit').select2('destroy');
-                }
-                $('.select2-inner-unit').select2({
-                    theme: 'bootstrap-5',
-                }).on('change', function(e) {
-                    @this.set('case_inner_count_unit', $(this).val());
-                });
-            }
-            selectInnerUnit();
-
-            function selectLakbanSeitai() {
-                if ($('.select2-lakban-seitai').hasClass("select2-hidden-accessible")) {
-                    $('.select2-lakban-seitai').select2('destroy');
-                }
-                $('.select2-lakban-seitai').select2({
-                    theme: 'bootstrap-5',
-                }).on('change', function(e) {
-                    @this.set('lakbanseitaiid', $(this).val());
-                });
-            }
-            selectLakbanSeitai();
-
-            function selectKatanuki() {
-                if ($('.select2-katanuki').hasClass("select2-hidden-accessible")) {
-                    $('.select2-katanuki').select2('destroy');
-                }
-                $('.select2-katanuki').select2({
-                    theme: 'bootstrap-5',
-                }).on('change', function(e) {
-                    @this.set('katanuki_id', $(this).val());
-                });
-            }
-            selectKatanuki();
-
             // Hook untuk Livewire v3
             Livewire.hook('morph', ({
                 el,
@@ -1405,23 +1210,7 @@
                     selectKodeBox();
                     selectKodeInner();
                     selectKodeLayer();
-                    selectKlasifikasiSeal();
                     selectSatuan();
-                    selectMaterial();
-                    selectEmbossed();
-                    selectSurface();
-                    selectLakbanInfure();
-                    selectGentan();
-                    selectGazette();
-                    selectPrintType();
-                    selectInkCharacteristic();
-                    selectEndless();
-                    selectWindingDirection();
-                    selectGaisoUnit();
-                    selectBoxUnit();
-                    selectInnerUnit();
-                    selectLakbanSeitai();
-                    selectKatanuki();
                 }, 100);
             });
         });
