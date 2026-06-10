@@ -72,8 +72,8 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Warna LPK</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select required data-choices data-choices-sorting-false
-                                    class="form-select @error('warnalpkid') is-invalid @enderror"
+                                <select required
+                                    class="form-select @error('warnalpkid') is-invalid @enderror select2-warna-lpk"
                                     wire:model.live="warnalpkid">
                                     <option value="" selected>
                                         Silahkan Pilih
@@ -88,7 +88,7 @@
                                     </option>
                                 </select>
                             </div>
-                            @if (($warnalpkid['value'] ?? '') == 'lainnya')
+                            @if (($warnalpkid ?? '') == 'lainnya')
                                 <input required type="text" class="form-control mt-2" wire:model="custom_warna_lpk"
                                     placeholder="Masukkan warna LPK" />
                             @endif
@@ -148,8 +148,7 @@
                         <div class="input-group" wire:ignore>
                             <label class="control-label col-12 col-lg-4">Satuan</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select required data-choices data-choices-sorting="true"
-                                    class="form-select @error('product_unit') is-invalid @enderror"
+                                <select required                                    class="form-select @error('product_unit') is-invalid @enderror select2-satuan"
                                     wire:model="product_unit" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
@@ -209,8 +208,7 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Material</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
-                                    class="form-select col-12 col-lg-8 @error('material_classification') is-invalid @enderror"
+                                <select class="form-select col-12 col-lg-8 @error('material_classification') is-invalid @enderror"
                                     wire:model="material_classification" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
@@ -231,8 +229,7 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Embos</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
-                                    class="form-select col-12 col-lg-8 @error('embossed_classification') is-invalid @enderror"
+                                <select class="form-select col-12 col-lg-8 @error('embossed_classification') is-invalid @enderror"
                                     wire:model="embossed_classification" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
@@ -253,8 +250,7 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Corona</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
-                                    class="form-select col-12 col-lg-8 @error('surface_classification') is-invalid @enderror"
+                                <select class="form-select col-12 col-lg-8 @error('surface_classification') is-invalid @enderror"
                                     wire:model="surface_classification" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
@@ -276,8 +272,7 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Lakban Infure</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select data-choices data-choices-sorting-false
-                                    class="form-select @error('lakbaninfureid') is-invalid @enderror"
+                                <select class="form-select @error('lakbaninfureid') is-invalid @enderror"
                                     wire:model.live="lakbaninfureid" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
@@ -292,7 +287,7 @@
                                     </option>
                                 </select>
                             </div>
-                            @if (($lakbaninfureid['value'] ?? '') === 'lainnya')
+                            @if (($lakbaninfureid ?? '') === 'lainnya')
                                 <input required type="text" class="form-control mt-2"
                                     wire:model="custom_lakban_infure" placeholder="Masukkan lakban infure lainnya" />
                             @endif
@@ -372,8 +367,7 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Gentan</label>
                             <div class="col-12 col-lg-8" wire:ignore wire:ignore>
-                                <select data-choices data-choices-sorting="true"
-                                    class="form-select @error('gentan_classification') is-invalid @enderror"
+                                <select class="form-select @error('gentan_classification') is-invalid @enderror"
                                     wire:model="gentan_classification" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
@@ -394,8 +388,7 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Gazette</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
-                                    class="form-select @error('gazette_classification') is-invalid @enderror"
+                                <select class="form-select @error('gazette_classification') is-invalid @enderror"
                                     wire:model="gazette_classification" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
@@ -556,8 +549,7 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Jenis Cetak</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
-                                    class="form-select @error('print_type') is-invalid @enderror"
+                                <select class="form-select @error('print_type') is-invalid @enderror"
                                     wire:model="print_type" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
@@ -578,8 +570,7 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Sifat Tinta</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
-                                    class="form-select @error('ink_characteristic') is-invalid @enderror"
+                                <select class="form-select @error('ink_characteristic') is-invalid @enderror"
                                     wire:model="ink_characteristic" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
@@ -600,8 +591,7 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Endless</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
-                                    class="form-select @error('endless_printing') is-invalid @enderror"
+                                <select class="form-select @error('endless_printing') is-invalid @enderror"
                                     wire:model="endless_printing" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
@@ -622,8 +612,7 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Arah Gulung</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
-                                    class="form-select @error('winding_direction_of_the_web') is-invalid @enderror"
+                                <select class="form-select @error('winding_direction_of_the_web') is-invalid @enderror"
                                     wire:model="winding_direction_of_the_web" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
@@ -658,8 +647,7 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-6">Klarifikasi Seal</label>
                             <div class="col-12 col-lg-6" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
-                                    class="form-select @error('seal_classification') is-invalid @enderror"
+                                <select class="form-select @error('seal_classification') is-invalid @enderror"
                                     wire:model.live="seal_classification">
                                     <option value="" selected>
                                         Silahkan Pilih
@@ -674,7 +662,7 @@
                                     </option>
                                 </select>
                             </div>
-                            @if (($seal_classification['value'] ?? '') === 'lainnya')
+                            @if ($seal_classification === 'lainnya')
                                 <input required type="text" class="form-control mt-2"
                                     wire:model="custom_seal_classification"
                                     placeholder="Masukkan klasifikasi seal lainnya" />
@@ -721,8 +709,7 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-6">Lakban Seitai</label>
                             <div class="col-12 col-lg-6" wire:ignore>
-                                <select data-choices data-choices-sorting-false
-                                    class="form-select @error('lakbanseitaiid') is-invalid @enderror"
+                                <select class="form-select @error('lakbanseitaiid') is-invalid @enderror"
                                     wire:model.live="lakbanseitaiid" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
@@ -737,7 +724,7 @@
                                     </option>
                                 </select>
                             </div>
-                            @if (($lakbanseitaiid['value'] ?? '') === 'lainnya')
+                            @if (($lakbanseitaiid ?? '') === 'lainnya')
                                 <input required type="text" class="form-control mt-2"
                                     wire:model="custom_lakban_seitai" placeholder="Masukkan lakban seitai lainnya" />
                             @endif
@@ -856,8 +843,7 @@
                                     placeholder="0" />
                             </div>
                             <div class="col-12 col-lg-2 me-2">
-                                <select data-choices data-choices-sorting="true"
-                                    class="form-control @error('case_gaiso_count_unit') is-invalid @enderror"
+                                <select class="form-control @error('case_gaiso_count_unit') is-invalid @enderror"
                                     wire:model="case_gaiso_count_unit" placeholder="">
                                     <option value="" selected>
                                         Unit
@@ -898,8 +884,7 @@
                                     placeholder="0" />
                             </div>
                             <div class="col-12 col-lg-2 me-2">
-                                <select data-choices data-choices-sorting="true"
-                                    class="form-control @error('case_box_count_unit') is-invalid @enderror"
+                                <select class="form-control @error('case_box_count_unit') is-invalid @enderror"
                                     wire:model="case_box_count_unit" placeholder="">
                                     <option value="" selected>
                                         Unit
@@ -940,8 +925,7 @@
                                     placeholder="0" />
                             </div>
                             <div class="col-12 col-lg-2 me-2">
-                                <select data-choices data-choices-sorting="true"
-                                    class="form-control @error('case_inner_count_unit') is-invalid @enderror"
+                                <select class="form-control @error('case_inner_count_unit') is-invalid @enderror"
                                     wire:model="case_inner_count_unit" placeholder="">
                                     <option value="" selected>
                                         Unit
@@ -983,8 +967,7 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Tipe Hagata</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
-                                    class="form-select @error('katanuki_id') is-invalid @enderror"
+                                <select class="form-select @error('katanuki_id') is-invalid @enderror"
                                     wire:model.live="katanuki_id" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
@@ -1168,6 +1151,30 @@
             }
             selectKodeLayer();
 
+            function selectWarnaLPK() {
+                if ($('.select2-warna-lpk').hasClass("select2-hidden-accessible")) {
+                    $('.select2-warna-lpk').select2('destroy');
+                }
+                $('.select2-warna-lpk').select2({
+                    theme: 'bootstrap-5',
+                }).on('change', function(e) {
+                    @this.set('warnalpkid', $(this).val());
+                });
+            }
+            selectWarnaLPK();
+
+            function selectSatuan() {
+                if ($('.select2-satuan').hasClass("select2-hidden-accessible")) {
+                    $('.select2-satuan').select2('destroy');
+                }
+                $('.select2-satuan').select2({
+                    theme: 'bootstrap-5',
+                }).on('change', function(e) {
+                    @this.set('product_unit', $(this).val());
+                });
+            }
+            selectSatuan();
+
             // Hook untuk Livewire v3
             Livewire.hook('morph', ({
                 el,
@@ -1179,6 +1186,8 @@
                     selectKodeBox();
                     selectKodeInner();
                     selectKodeLayer();
+                    selectWarnaLPK();
+                    selectSatuan();
                 }, 100);
             });
         });
