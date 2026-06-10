@@ -29,6 +29,19 @@
                             <i class="ri-add-circle-line label-icon align-middle fs-16 me-2"></i>
                             Tambah Data
                         </button>
+                        <button class="btn btn-warning w-lg p-1" wire:click="export" type="button" wire:loading.attr="disabled">
+                            <span wire:loading.remove wire:target="export">
+                                <i class="ri-download-cloud-2-line"> </i> Export
+                            </span>
+                            <div wire:loading wire:target="export">
+                                <span class="d-flex align-items-center">
+                                    <span class="spinner-border flex-shrink-0" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </span>
+                                    <span class="flex-grow-1 ms-1">Loading...</span>
+                                </span>
+                            </div>
+                        </button>
                     </div>
 
                     {{-- Filter & Column Toggle --}}

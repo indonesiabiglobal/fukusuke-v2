@@ -287,6 +287,7 @@ class MasterProduk extends Component
             $columnItemEnd++;
 
             phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItem . ':' . $columnItemEnd . $rowItem, false, 8, 'Calibri');
+            phpspreadsheet::addFullBorder($spreadsheet, $columnItemStart . $rowItem . ':' . $columnItemEnd . $rowItem);
             $rowItem++;
         }
 
