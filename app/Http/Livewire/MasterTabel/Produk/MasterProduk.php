@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
@@ -84,7 +85,7 @@ class MasterProduk extends Component
         $this->startHeavyJob();
         $response = $this->exportProduct();
         if ($response['status'] == 'success') {
-            return response()->download($response['filename']);
+            return $response['spreadsheet'];
         } else if ($response['status'] == 'error') {
             $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
             return;
@@ -286,6 +287,7 @@ class MasterProduk extends Component
             $columnItemEnd++;
 
             phpspreadsheet::styleFont($spreadsheet, $columnItemStart . $rowItem . ':' . $columnItemEnd . $rowItem, false, 8, 'Calibri');
+            phpspreadsheet::addFullBorder($spreadsheet, $columnItemStart . $rowItem . ':' . $columnItemEnd . $rowItem);
             $rowItem++;
         }
 
@@ -321,14 +323,19 @@ class MasterProduk extends Component
         $spreadsheet->getActiveSheet()->getColumnDimension('P')->setAutoSize(true);
         phpspreadsheet::textAlignRight($spreadsheet, 'P' . $rowItemStart . ':' . 'P' . $rowFooterStart);
 
-        $writer = new Xlsx($spreadsheet);
         $filename = 'Master-Produk.xlsx';
-        $writer->save($filename);
-        $response = [
+        $writer = new Xlsx($spreadsheet);
+
+        $response = new StreamedResponse(function () use ($writer) {
+            $writer->save('php://output');
+        });
+        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $response->headers->set('Content-Disposition', 'attachment; filename="' . $filename . '"');
+
+        return [
             'status' => 'success',
-            'filename' => $filename
+            'spreadsheet' => $response
         ];
-        return $response;
     }
 
     public function render()

@@ -7,6 +7,19 @@
                     <button type="button" class="btn btn-success w-lg p-1" wire:click="showModalCreate">
                         <i class="ri-add-line"> </i> Add
                     </button>
+                    <button class="btn btn-warning w-lg p-1" wire:click="export" type="button" wire:loading.attr="disabled">
+                        <span wire:loading.remove wire:target="export">
+                            <i class="ri-download-cloud-2-line"> </i> Export
+                        </span>
+                        <div wire:loading wire:target="export">
+                            <span class="d-flex align-items-center">
+                                <span class="spinner-border flex-shrink-0" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </span>
+                                <span class="flex-grow-1 ms-1">Loading...</span>
+                            </span>
+                        </div>
+                    </button>
                     {{-- modal add buyer --}}
                     <div class="modal fade" id="modal-add" tabindex="-1" aria-labelledby="modal-addLabel"
                         aria-modal="true" wire:ignore.self>

@@ -81,7 +81,7 @@
                                     </option>
                                     @foreach ($masterWarnaLPK as $item)
                                         <option value="{{ $item->id }}"
-                                            @if ($warnalpkid['value'] == $item->id) selected @endif>
+                                            @if ($warnalpkid == $item->id) selected @endif>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -90,7 +90,7 @@
                                     </option>
                                 </select>
                             </div>
-                            @if (($warnalpkid['value'] ?? '') == 'lainnya')
+                            @if (($warnalpkid ?? '') == 'lainnya')
                                 <input required type="text" class="form-control mt-2" wire:model="custom_warna_lpk"
                                     placeholder="Masukkan warna LPK" />
                             @endif
@@ -147,21 +147,21 @@
                         </div>
                     </div>
                     <div class="form-group mt-1">
-                        <div class="input-group" wire:ignore>
+                        <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Satuan</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select required data-choices data-choices-sorting="true"
-                                    class="form-select @error('product_unit') is-invalid @enderror"
+                                <select required
+                                    class="form-select @error('product_unit') is-invalid @enderror select2-satuan"
                                     wire:model="product_unit" placeholder="">
                                     <option value="" selected>
                                         Silahkan Pilih
                                     </option>
                                     @foreach ($masterUnit as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ $product_unit['value'] != null ? ($item->id == $product_unit['value'] ? 'selected' : '') : '' }}>
+                                            {{ $product_unit != null ? ($item->id == $product_unit ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
-                                    @endforeach`
+                                    @endforeach
                                 </select>
                                 @error('product_unit')
                                     <span class="invalid-feedback">{{ $message }}</span>
@@ -212,7 +212,7 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Material</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
+                                <select
                                     class="form-select col-12 col-lg-8 @error('material_classification') is-invalid @enderror"
                                     wire:model="material_classification" placeholder="">
                                     <option value="" selected>
@@ -220,7 +220,7 @@
                                     </option>
                                     @foreach ($masterMaterial as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ $material_classification['value'] != null ? ($item->id == $material_classification['value'] ? 'selected' : '') : '' }}>
+                                            {{ $material_classification != null ? ($item->id == $material_classification ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -235,7 +235,7 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Embos</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
+                                <select
                                     class="form-select col-12 col-lg-8 @error('embossed_classification') is-invalid @enderror"
                                     wire:model="embossed_classification" placeholder="">
                                     <option value="" selected>
@@ -243,7 +243,7 @@
                                     </option>
                                     @foreach ($masterEmbossed as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ $embossed_classification['value'] != null ? ($item->id == $embossed_classification['value'] ? 'selected' : '') : '' }}>
+                                            {{ $embossed_classification != null ? ($item->id == $embossed_classification ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -259,7 +259,7 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Corona</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
+                                <select
                                     class="form-select col-12 col-lg-8 @error('surface_classification') is-invalid @enderror"
                                     wire:model="surface_classification" placeholder="">
                                     <option value="" selected>
@@ -267,7 +267,7 @@
                                     </option>
                                     @foreach ($masterSurface as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ $surface_classification['value'] != null ? ($item->id == $surface_classification['value'] ? 'selected' : '') : '' }}>
+                                            {{ $surface_classification != null ? ($item->id == $surface_classification ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -283,7 +283,7 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Lakban Infure</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select data-choices data-choices-sorting-false
+                                <select
                                     class="form-select @error('lakbaninfureid') is-invalid @enderror"
                                     wire:model.live="lakbaninfureid" placeholder="">
                                     <option value="" selected>
@@ -291,7 +291,7 @@
                                     </option>
                                     @foreach ($masterLakbanInfure as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ $lakbaninfureid['value'] != null ? ($item->id == $lakbaninfureid['value'] ? 'selected' : '') : '' }}>
+                                            {{ $lakbaninfureid != null ? ($item->id == $lakbaninfureid ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -300,7 +300,7 @@
                                     </option>
                                 </select>
                             </div>
-                            @if (($lakbaninfureid['value'] ?? '') === 'lainnya')
+                            @if (($lakbaninfureid ?? '') === 'lainnya')
                                 <input required type="text" class="form-control mt-2"
                                     wire:model="custom_lakban_infure" placeholder="Masukkan lakban infure lainnya" />
                             @endif
@@ -379,8 +379,8 @@
                     <div class="form-group">
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Gentan</label>
-                            <div class="col-12 col-lg-8" wire:ignore wire:ignore>
-                                <select data-choices data-choices-sorting="true"
+                            <div class="col-12 col-lg-8" wire:ignore>
+                                <select
                                     class="form-select @error('gentan_classification') is-invalid @enderror"
                                     wire:model="gentan_classification" placeholder="">
                                     <option value="" selected>
@@ -388,7 +388,7 @@
                                     </option>
                                     @foreach ($masterGentanClassifications as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ $gentan_classification['value'] != null ? ($item->id == $gentan_classification['value'] ? 'selected' : '') : '' }}>
+                                            {{ $gentan_classification != null ? ($item->id == $gentan_classification ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -403,7 +403,7 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Gazette</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
+                                <select
                                     class="form-select @error('gazette_classification') is-invalid @enderror"
                                     wire:model="gazette_classification" placeholder="">
                                     <option value="" selected>
@@ -411,7 +411,7 @@
                                     </option>
                                     @foreach ($masterGazetteClassifications as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ $gazette_classification['value'] != null ? ($item->id == $gazette_classification['value'] ? 'selected' : '') : '' }}>
+                                            {{ $gazette_classification != null ? ($item->id == $gazette_classification ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -568,7 +568,7 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Jenis Cetak</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
+                                <select
                                     class="form-select @error('print_type') is-invalid @enderror"
                                     wire:model="print_type" placeholder="">
                                     <option value="" selected>
@@ -576,7 +576,7 @@
                                     </option>
                                     @foreach ($masterPrintType as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ $print_type['value'] != null ? ($item->id == $print_type['value'] ? 'selected' : '') : '' }}>
+                                            {{ $print_type != null ? ($item->id == $print_type ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -591,7 +591,7 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Sifat Tinta</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
+                                <select
                                     class="form-select @error('ink_characteristic') is-invalid @enderror"
                                     wire:model="ink_characteristic" placeholder="">
                                     <option value="" selected>
@@ -599,7 +599,7 @@
                                     </option>
                                     @foreach ($masterInkCharacteristics as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ $ink_characteristic['value'] != null ? ($item->id == $ink_characteristic['value'] ? 'selected' : '') : '' }}>
+                                            {{ $ink_characteristic != null ? ($item->id == $ink_characteristic ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -614,7 +614,7 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Endless</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
+                                <select
                                     class="form-select @error('endless_printing') is-invalid @enderror"
                                     wire:model="endless_printing" placeholder="">
                                     <option value="" selected>
@@ -622,7 +622,7 @@
                                     </option>
                                     @foreach ($masterEndlessPrinting as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ $endless_printing['value'] != null ? ($item->id == $endless_printing['value'] ? 'selected' : '') : '' }}>
+                                            {{ $endless_printing != null ? ($item->id == $endless_printing ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -637,7 +637,7 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Arah Gulung</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
+                                <select
                                     class="form-select @error('winding_direction_of_the_web') is-invalid @enderror"
                                     wire:model="winding_direction_of_the_web" placeholder="">
                                     <option value="" selected>
@@ -645,7 +645,7 @@
                                     </option>
                                     @foreach ($masterArahGulung as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ $winding_direction_of_the_web['value'] != null ? ($item->id == $winding_direction_of_the_web['value'] ? 'selected' : '') : '' }}>
+                                            {{ $winding_direction_of_the_web != null ? ($item->id == $winding_direction_of_the_web ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -678,7 +678,7 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-6">Klarifikasi Seal</label>
                             <div class="col-12 col-lg-6">
-                                <select class="form-select @error('seal_classification_id') is-invalid @enderror select2-klasifikasi-seal"
+                                <select class="form-select @error('seal_classification_id') is-invalid @enderror"
                                     wire:model="seal_classification_id">
                                     <option value="">
                                         Silahkan Pilih
@@ -694,7 +694,7 @@
                                     </option>
                                 </select>
                             </div>
-                            @if (($seal_classification_id ?? '') === 'lainnya')
+                            @if ($seal_classification_id === 'lainnya')
                                 <input required type="text" class="form-control mt-2"
                                     wire:model="custom_seal_classification"
                                     placeholder="Masukkan klasifikasi seal lainnya" />
@@ -740,7 +740,7 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-6">Lakban Seitai</label>
                             <div class="col-12 col-lg-6" wire:ignore>
-                                <select data-choices data-choices-sorting-false
+                                <select
                                     class="form-select @error('lakbanseitaiid') is-invalid @enderror"
                                     wire:model.live="lakbanseitaiid" placeholder="">
                                     <option value="" selected>
@@ -748,7 +748,7 @@
                                     </option>
                                     @foreach ($masterLakbanSeitai as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ $lakbanseitaiid['value'] != null ? ($item->id == $lakbanseitaiid['value'] ? 'selected' : '') : '' }}>
+                                            {{ $lakbanseitaiid != null ? ($item->id == $lakbanseitaiid ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -757,7 +757,7 @@
                                     </option>
                                 </select>
                             </div>
-                            @if (($lakbanseitaiid['value'] ?? '') === 'lainnya')
+                            @if (($lakbanseitaiid ?? '') === 'lainnya')
                                 <input required type="text" class="form-control mt-2"
                                     wire:model="custom_lakban_seitai" placeholder="Masukkan lakban seitai lainnya" />
                             @endif
@@ -865,30 +865,30 @@
                     {{-- Isi gaiso --}}
                     <div class="form-group">
                         <div class="input-group" wire:ignore>
-                            <label class="control-label col-12 col-lg-1 me-2">Isi</label>
-                            <div class="col-12 col-lg-2 me-2">
+                            <label class="control-label col-12 col-lg-1 me-1">Isi</label>
+                            <div class="col-12 col-lg-2 me-1">
                                 <input required type="number" class="form-control" wire:model="case_gaiso_count"
                                     placeholder="0" />
                             </div>
-                            <div class="col-12 col-lg-2 me-2">
-                                <select data-choices data-choices-sorting="true"
-                                    class="form-control @error('case_gaiso_count_unit') is-invalid @enderror"
+                            <div class="col-12 col-lg-3 me-1">
+                                <select
+                                    class="form-select @error('case_gaiso_count_unit') is-invalid @enderror"
                                     wire:model="case_gaiso_count_unit" placeholder="">
                                     <option value="">
                                         Unit
                                     </option>
                                     @foreach ($masterUnit as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ $case_gaiso_count_unit['value'] != null ? ($item->id == $case_gaiso_count_unit['value'] ? 'selected' : '') : '' }}>
+                                            {{ $case_gaiso_count_unit != null ? ($item->id == $case_gaiso_count_unit ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
-                                    @endforeach`
+                                    @endforeach
                                 </select>
                                 @error('case_gaiso_count_unit')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
                             </div>
-                            <div class="col-12 col-lg-5 me-2">
+                            <div class="col-12 col-lg-5 me-1">
                                 <div class="form-group mt-1">
                                     <div class="input-group">
                                         <label class="control-label col-12 col-lg-6">Stempel</label>
@@ -908,30 +908,30 @@
                     {{-- Isi box --}}
                     <div class="form-group mt-1">
                         <div class="input-group" wire:ignore>
-                            <label class="control-label col-12 col-lg-1 me-2">Isi</label>
-                            <div class="col-12 col-lg-2 me-2">
+                            <label class="control-label col-12 col-lg-1 me-1">Isi</label>
+                            <div class="col-12 col-lg-2 me-1">
                                 <input required type="number" class="form-control" wire:model="case_box_count"
                                     placeholder="0" />
                             </div>
-                            <div class="col-12 col-lg-2 me-2">
-                                <select required data-choices data-choices-sorting="true"
-                                    class="form-control @error('case_box_count_unit') is-invalid @enderror"
+                            <div class="col-12 col-lg-3 me-1">
+                                <select required
+                                    class="form-select @error('case_box_count_unit') is-invalid @enderror"
                                     wire:model="case_box_count_unit" placeholder="">
                                     <option value="" selected>
                                         Unit
                                     </option>
                                     @foreach ($masterUnit as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ $case_box_count_unit['value'] != null ? ($item->id == $case_box_count_unit['value'] ? 'selected' : '') : '' }}>
+                                            {{ $case_box_count_unit != null ? ($item->id == $case_box_count_unit ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
-                                    @endforeach`
+                                    @endforeach
                                 </select>
                                 @error('case_box_count_unit')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
                             </div>
-                            <div class="col-12 col-lg-5 me-2">
+                            <div class="col-12 col-lg-5 me-1">
                                 <div class="form-group mt-1">
                                     <div class="input-group">
                                         <label class="control-label col-12 col-lg-6">Stempel</label>
@@ -950,30 +950,30 @@
                     </div>
                     <div class="form-group mt-1">
                         <div class="input-group" wire:ignore>
-                            <label class="control-label col-12 col-lg-1 me-2">Isi</label>
-                            <div class="col-12 col-lg-2 me-2">
+                            <label class="control-label col-12 col-lg-1 me-1">Isi</label>
+                            <div class="col-12 col-lg-2 me-1">
                                 <input required type="number" class="form-control" wire:model="case_inner_count"
                                     placeholder="0" />
                             </div>
-                            <div class="col-12 col-lg-2 me-2">
-                                <select data-choices data-choices-sorting="true"
-                                    class="form-control @error('case_inner_count_unit') is-invalid @enderror"
+                            <div class="col-12 col-lg-3 me-1">
+                                <select
+                                    class="form-select @error('case_inner_count_unit') is-invalid @enderror"
                                     wire:model="case_inner_count_unit" placeholder="">
                                     <option value="" selected>
                                         Unit
                                     </option>
                                     @foreach ($masterUnit as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ $case_inner_count_unit['value'] != null ? ($item->id == $case_inner_count_unit['value'] ? 'selected' : '') : '' }}>
+                                            {{ $case_inner_count_unit != null ? ($item->id == $case_inner_count_unit ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
-                                    @endforeach`
+                                    @endforeach
                                 </select>
                                 @error('case_inner_count_unit')
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
                             </div>
-                            <div class="col-12 col-lg-5 me-2">
+                            <div class="col-12 col-lg-5 me-1">
                                 <div class="form-group mt-1">
                                     <div class="input-group">
                                         <label class="control-label col-12 col-lg-6">Stempel</label>
@@ -1002,7 +1002,7 @@
                         <div class="input-group">
                             <label class="control-label col-12 col-lg-4">Tipe Hagata</label>
                             <div class="col-12 col-lg-8" wire:ignore>
-                                <select data-choices data-choices-sorting="true"
+                                <select
                                     class="form-select @error('katanuki_id') is-invalid @enderror"
                                     wire:model.live="katanuki_id" placeholder="">
                                     <option value="" selected>
@@ -1010,7 +1010,7 @@
                                     </option>
                                     @foreach ($masterKatanuki as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ $katanuki_id['value'] != null ? ($item->id == $katanuki_id['value'] ? 'selected' : '') : '' }}>
+                                            {{ $katanuki_id != null ? ($item->id == $katanuki_id ? 'selected' : '') : '' }}>
                                             {{ $item->name }}
                                         </option>
                                     @endforeach
@@ -1187,20 +1187,17 @@
             }
             selectKodeLayer();
 
-            function selectKlasifikasiSeal() {
-                // Destroy instance Select2 yang ada
-                if ($('.select2-klasifikasi-seal').hasClass("select2-hidden-accessible")) {
-                    $('.select2-klasifikasi-seal').select2('destroy');
+            function selectSatuan() {
+                if ($('.select2-satuan').hasClass("select2-hidden-accessible")) {
+                    $('.select2-satuan').select2('destroy');
                 }
-
-                $('.select2-klasifikasi-seal').select2({
+                $('.select2-satuan').select2({
                     theme: 'bootstrap-5',
                 }).on('change', function(e) {
-                    var data = $(this).val();
-                    @this.set('seal_classification_id', data);
+                    @this.set('product_unit', $(this).val());
                 });
             }
-            selectKlasifikasiSeal();
+            selectSatuan();
 
             // Hook untuk Livewire v3
             Livewire.hook('morph', ({
@@ -1213,7 +1210,7 @@
                     selectKodeBox();
                     selectKodeInner();
                     selectKodeLayer();
-                    selectKlasifikasiSeal();
+                    selectSatuan();
                 }, 100);
             });
         });
