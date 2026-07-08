@@ -357,13 +357,12 @@ class KapasitasProduksiReportService
         $spreadsheet->getActiveSheet()->getColumnDimension('I')->setAutoSize(true);
 
         $writer = new Xlsx($spreadsheet);
-        $filename = 'asset/report/' . $nippon . '-' . $jenisReport . '.xlsx';
-        $writer->save($filename);
-        $response = [
-            'status' => 'success',
+        $filename = $nippon . '-' . $jenisReport . '.xlsx';
+        return [
+            'status'   => 'success',
+            'writer'   => $writer,
             'filename' => $filename
         ];
-        return $response;
     }
 
     public static function kapasitasProduksiSeitai($nippon, $jenisReport, $tglMasuk, $tglKeluar)
@@ -711,12 +710,12 @@ class KapasitasProduksiReportService
         $spreadsheet->getActiveSheet()->getColumnDimension('I')->setAutoSize(true);
 
         $writer = new Xlsx($spreadsheet);
-        $filename = 'asset/report/' . $nippon . '-' . $jenisReport . '.xlsx';
-        $writer->save($filename);
-        $response = [
-            'status' => 'success',
+        $filename = $nippon . '-' . $jenisReport . '.xlsx';
+
+        return [
+            'status'   => 'success',
+            'writer'   => $writer,
             'filename' => $filename
         ];
-        return $response;
     }
 }

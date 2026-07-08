@@ -316,13 +316,12 @@ class ProduksiPerJenisReportService
         }
 
         $writer = new Xlsx($spreadsheet);
-        $filename = 'asset/report/' . $nippon . '-' . $jenisReport . '.xlsx';
-        $writer->save($filename);
-        $response = [
-            'status' => 'success',
+        $filename = $nippon . '-' . $jenisReport . '.xlsx';
+        return [
+            'status'   => 'success',
+            'writer'   => $writer,
             'filename' => $filename
         ];
-        return $response;
     }
 
     public static function daftarProduksiPerJenisSeitai($nippon, $jenisReport, $tglMasuk, $tglKeluar)
@@ -601,12 +600,11 @@ class ProduksiPerJenisReportService
         }
 
         $writer = new Xlsx($spreadsheet);
-        $filename = 'asset/report/' . $nippon . '-' . $jenisReport . '.xlsx';
-        $writer->save($filename);
-        $response = [
-            'status' => 'success',
+        $filename = $nippon . '-' . $jenisReport . '.xlsx';
+        return [
+            'status'   => 'success',
+            'writer'   => $writer,
             'filename' => $filename
         ];
-        return $response;
     }
 }

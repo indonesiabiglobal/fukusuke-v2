@@ -622,8 +622,16 @@ class LabelMasukGudangController extends Component
         ]);
 
         $writer = new Xlsx($spreadsheet);
-        $writer->save('asset/report/Label-Gudang-' . $this->nomor_palet . '.xlsx');
-        return response()->download('asset/report/Label-Gudang-' . $this->nomor_palet . '.xlsx')->deleteFileAfterSend(true);
+
+        $filename = 'Label-Gudang-' . $this->nomor_palet . '.xlsx';
+        return response()->streamDownload(function () use ($writer) {
+            // Data langsung ditembakkan ke buffer unduhan browser
+            $writer->save('php://output');
+        }, $filename, [
+            // Header spesifik untuk file Excel
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Cache-Control' => 'max-age=0',
+        ]);
     }
 
     public function render()

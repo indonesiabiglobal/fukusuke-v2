@@ -655,8 +655,15 @@ class AddKenpinSeitaiController extends Component
         $this->save();
 
         $writer = new Xlsx($spreadsheet);
-        $writer->save('asset/report/KKSeitai-' . $this->kenpin_no . '.xlsx');
-        return response()->download('asset/report/KKSeitai-' . $this->kenpin_no . '.xlsx');
+        $filename = 'KKSeitai-' . $this->kenpin_no . '.xlsx';
+        return response()->streamDownload(function () use ($writer) {
+            // Data langsung ditembakkan ke buffer unduhan browser
+            $writer->save('php://output');
+        }, $filename, [
+            // Header spesifik untuk file Excel
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Cache-Control' => 'max-age=0',
+        ]);
     }
 
     public function cancel()

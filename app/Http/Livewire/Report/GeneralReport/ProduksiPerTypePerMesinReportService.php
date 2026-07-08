@@ -451,13 +451,12 @@ class ProduksiPerTypePerMesinReportService
         $activeWorksheet->getStyle($columnTipeProduk . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart)->getAlignment()->setWrapText(true);
 
         $writer = new Xlsx($spreadsheet);
-        $filename = 'asset/report/' . $nippon . '-' . $jenisReport . '.xlsx';
-        $writer->save($filename);
-        $response = [
-            'status' => 'success',
+        $filename = $nippon . '-' . $jenisReport . '.xlsx';
+        return [
+            'status'   => 'success',
+            'writer'   => $writer,
             'filename' => $filename
         ];
-        return $response;
     }
 
     public static function daftarProduksiPerTipePerMesinSeitai($nippon, $jenisReport, $tglMasuk, $tglKeluar)
@@ -847,12 +846,12 @@ class ProduksiPerTypePerMesinReportService
         $activeWorksheet->getStyle($columnTipeProduk . $rowHeaderStart . ':' . $columnHeaderEnd . $rowHeaderStart)->getAlignment()->setWrapText(true);
 
         $writer = new Xlsx($spreadsheet);
-        $filename = 'asset/report/' . $nippon . '-' . $jenisReport . '.xlsx';
-        $writer->save($filename);
-        $response = [
-            'status' => 'success',
+        $filename = $nippon . '-' . $jenisReport . '.xlsx';
+
+        return [
+            'status'   => 'success',
+            'writer'   => $writer,
             'filename' => $filename
         ];
-        return $response;
     }
 }

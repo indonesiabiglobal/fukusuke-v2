@@ -73,7 +73,13 @@ class GeneralReportController extends Component
                 if ($this->nipon == 'Infure') {
                     $response = $this->daftarProduksiPerMesinInfure($tglMasuk, $tglKeluar);
                     if ($response['status'] == 'success') {
-                        return response()->download($response['filename'])->deleteFileAfterSend(true);
+                        return response()->streamDownload(function () use ($response) {
+                            // Langsung tembak ke output buffer browser
+                            $response['writer']->save('php://output');
+                        }, $response['filename'], [
+                            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'Cache-Control' => 'max-age=0',
+                        ]);
                     } else if ($response['status'] == 'error') {
                         $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                         return;
@@ -81,7 +87,13 @@ class GeneralReportController extends Component
                 } else {
                     $response = $this->daftarProduksiPerMesinSeitai($tglMasuk, $tglKeluar);
                     if ($response['status'] == 'success') {
-                        return response()->download($response['filename'])->deleteFileAfterSend(true);
+                        return response()->streamDownload(function () use ($response) {
+                            // Langsung tembak ke output buffer browser
+                            $response['writer']->save('php://output');
+                        }, $response['filename'], [
+                            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'Cache-Control' => 'max-age=0',
+                        ]);
                     } else if ($response['status'] == 'error') {
                         $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                         return;
@@ -92,7 +104,13 @@ class GeneralReportController extends Component
                 if ($this->nipon == 'Infure') {
                     $response = $this->daftarProduksiPerTipePerMesinInfure($tglMasuk, $tglKeluar);
                     if ($response['status'] == 'success') {
-                        return response()->download($response['filename'])->deleteFileAfterSend(true);
+                        return response()->streamDownload(function () use ($response) {
+                            // Langsung tembak ke output buffer browser
+                            $response['writer']->save('php://output');
+                        }, $response['filename'], [
+                            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'Cache-Control' => 'max-age=0',
+                        ]);
                     } else if ($response['status'] == 'error') {
                         $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                         return;
@@ -100,7 +118,13 @@ class GeneralReportController extends Component
                 } else {
                     $response = $this->daftarProduksiPerTipePerMesinSeitai($tglMasuk, $tglKeluar);
                     if ($response['status'] == 'success') {
-                        return response()->download($response['filename'])->deleteFileAfterSend(true);
+                        return response()->streamDownload(function () use ($response) {
+                            // Langsung tembak ke output buffer browser
+                            $response['writer']->save('php://output');
+                        }, $response['filename'], [
+                            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'Cache-Control' => 'max-age=0',
+                        ]);
                     } else if ($response['status'] == 'error') {
                         $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                         return;
@@ -111,7 +135,13 @@ class GeneralReportController extends Component
                 if ($this->nipon == 'Infure') {
                     $response = $this->daftarProduksiPerJenisInfure($tglMasuk, $tglKeluar);
                     if ($response['status'] == 'success') {
-                        return response()->download($response['filename'])->deleteFileAfterSend(true);
+                        return response()->streamDownload(function () use ($response) {
+                            // Langsung tembak ke output buffer browser
+                            $response['writer']->save('php://output');
+                        }, $response['filename'], [
+                            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'Cache-Control' => 'max-age=0',
+                        ]);
                     } else if ($response['status'] == 'error') {
                         $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                         return;
@@ -119,7 +149,13 @@ class GeneralReportController extends Component
                 } else {
                     $response = $this->daftarProduksiPerJenisSeitai($tglMasuk, $tglKeluar);
                     if ($response['status'] == 'success') {
-                        return response()->download($response['filename'])->deleteFileAfterSend(true);
+                        return response()->streamDownload(function () use ($response) {
+                            // Langsung tembak ke output buffer browser
+                            $response['writer']->save('php://output');
+                        }, $response['filename'], [
+                            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'Cache-Control' => 'max-age=0',
+                        ]);
                     } else if ($response['status'] == 'error') {
                         $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                         return;
@@ -130,7 +166,13 @@ class GeneralReportController extends Component
                 if ($this->nipon == 'Infure') {
                     $response = $this->daftarProduksiPerTipeInfure($tglMasuk, $tglKeluar);
                     if ($response['status'] == 'success') {
-                        return response()->download($response['filename'])->deleteFileAfterSend(true);
+                        return response()->streamDownload(function () use ($response) {
+                            // Langsung tembak ke output buffer browser
+                            $response['writer']->save('php://output');
+                        }, $response['filename'], [
+                            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'Cache-Control' => 'max-age=0',
+                        ]);
                     } else if ($response['status'] == 'error') {
                         $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                         return;
@@ -138,7 +180,13 @@ class GeneralReportController extends Component
                 } else {
                     $response = $this->daftarProduksiPerTipeSeitai($tglMasuk, $tglKeluar);
                     if ($response['status'] == 'success') {
-                        return response()->download($response['filename'])->deleteFileAfterSend(true);
+                        return response()->streamDownload(function () use ($response) {
+                            // Langsung tembak ke output buffer browser
+                            $response['writer']->save('php://output');
+                        }, $response['filename'], [
+                            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'Cache-Control' => 'max-age=0',
+                        ]);
                     } else if ($response['status'] == 'error') {
                         $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                         return;
@@ -149,7 +197,13 @@ class GeneralReportController extends Component
                 if ($this->nipon == 'Infure') {
                     $response = $this->daftarProduksiPerProdukInfure($tglMasuk, $tglKeluar);
                     if ($response['status'] == 'success') {
-                        return response()->download($response['filename'])->deleteFileAfterSend(true);
+                        return response()->streamDownload(function () use ($response) {
+                            // Langsung tembak ke output buffer browser
+                            $response['writer']->save('php://output');
+                        }, $response['filename'], [
+                            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'Cache-Control' => 'max-age=0',
+                        ]);
                     } else if ($response['status'] == 'error') {
                         $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                         return;
@@ -157,7 +211,13 @@ class GeneralReportController extends Component
                 } else {
                     $response = $this->daftarProduksiPerProdukSeitai($tglMasuk, $tglKeluar);
                     if ($response['status'] == 'success') {
-                        return response()->download($response['filename'])->deleteFileAfterSend(true);
+                        return response()->streamDownload(function () use ($response) {
+                            // Langsung tembak ke output buffer browser
+                            $response['writer']->save('php://output');
+                        }, $response['filename'], [
+                            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'Cache-Control' => 'max-age=0',
+                        ]);
                     } else if ($response['status'] == 'error') {
                         $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                         return;
@@ -168,7 +228,13 @@ class GeneralReportController extends Component
                 if ($this->nipon == 'Infure') {
                     $response = $this->daftarProduksiPerDepartemenPerJenisInfure($tglMasuk, $tglKeluar);
                     if ($response['status'] == 'success') {
-                        return response()->download($response['filename'])->deleteFileAfterSend(true);
+                        return response()->streamDownload(function () use ($response) {
+                            // Langsung tembak ke output buffer browser
+                            $response['writer']->save('php://output');
+                        }, $response['filename'], [
+                            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'Cache-Control' => 'max-age=0',
+                        ]);
                     } else if ($response['status'] == 'error') {
                         $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                         return;
@@ -176,7 +242,13 @@ class GeneralReportController extends Component
                 } else {
                     $response = $this->daftarProduksiPerDepartemenPerJenisSeitai($tglMasuk, $tglKeluar);
                     if ($response['status'] == 'success') {
-                        return response()->download($response['filename'])->deleteFileAfterSend(true);
+                        return response()->streamDownload(function () use ($response) {
+                            // Langsung tembak ke output buffer browser
+                            $response['writer']->save('php://output');
+                        }, $response['filename'], [
+                            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'Cache-Control' => 'max-age=0',
+                        ]);
                     } else if ($response['status'] == 'error') {
                         $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                         return;
@@ -187,7 +259,13 @@ class GeneralReportController extends Component
                 if ($this->nipon == 'Infure') {
                     $response = $this->daftarProduksiPerDepartemenPerTypeInfure($tglMasuk, $tglKeluar);
                     if ($response['status'] == 'success') {
-                        return response()->download($response['filename'])->deleteFileAfterSend(true);
+                        return response()->streamDownload(function () use ($response) {
+                            // Langsung tembak ke output buffer browser
+                            $response['writer']->save('php://output');
+                        }, $response['filename'], [
+                            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'Cache-Control' => 'max-age=0',
+                        ]);
                     } else if ($response['status'] == 'error') {
                         $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                         return;
@@ -195,7 +273,13 @@ class GeneralReportController extends Component
                 } else {
                     $response = $this->daftarProduksiPerDepartemenPerTypeSeitai($tglMasuk, $tglKeluar);
                     if ($response['status'] == 'success') {
-                        return response()->download($response['filename'])->deleteFileAfterSend(true);
+                        return response()->streamDownload(function () use ($response) {
+                            // Langsung tembak ke output buffer browser
+                            $response['writer']->save('php://output');
+                        }, $response['filename'], [
+                            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'Cache-Control' => 'max-age=0',
+                        ]);
                     } else if ($response['status'] == 'error') {
                         $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                         return;
@@ -206,7 +290,13 @@ class GeneralReportController extends Component
                 if ($this->nipon == 'Infure') {
                     $response = $this->daftarProduksiPerDepartemenPerPetugasInfure($tglMasuk, $tglKeluar);
                     if ($response['status'] == 'success') {
-                        return response()->download($response['filename'])->deleteFileAfterSend(true);
+                        return response()->streamDownload(function () use ($response) {
+                            // Langsung tembak ke output buffer browser
+                            $response['writer']->save('php://output');
+                        }, $response['filename'], [
+                            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'Cache-Control' => 'max-age=0',
+                        ]);
                     } else if ($response['status'] == 'error') {
                         $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                         return;
@@ -214,7 +304,13 @@ class GeneralReportController extends Component
                 } else {
                     $response = $this->daftarProduksiPerDepartemenPerPetugasSeitai($tglMasuk, $tglKeluar);
                     if ($response['status'] == 'success') {
-                        return response()->download($response['filename'])->deleteFileAfterSend(true);
+                        return response()->streamDownload(function () use ($response) {
+                            // Langsung tembak ke output buffer browser
+                            $response['writer']->save('php://output');
+                        }, $response['filename'], [
+                            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'Cache-Control' => 'max-age=0',
+                        ]);
                     } else if ($response['status'] == 'error') {
                         $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                         return;
@@ -225,7 +321,13 @@ class GeneralReportController extends Component
                 if ($this->nipon == 'Infure') {
                     $response = $this->daftarLossPerDepartemenInfure($tglMasuk, $tglKeluar);
                     if ($response['status'] == 'success') {
-                        return response()->download($response['filename'])->deleteFileAfterSend(true);
+                        return response()->streamDownload(function () use ($response) {
+                            // Langsung tembak ke output buffer browser
+                            $response['writer']->save('php://output');
+                        }, $response['filename'], [
+                            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'Cache-Control' => 'max-age=0',
+                        ]);
                     } else if ($response['status'] == 'error') {
                         $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                         return;
@@ -233,7 +335,13 @@ class GeneralReportController extends Component
                 } else {
                     $response = $this->daftarLossPerDepartemenSeitai($tglMasuk, $tglKeluar);
                     if ($response['status'] == 'success') {
-                        return response()->download($response['filename'])->deleteFileAfterSend(true);
+                        return response()->streamDownload(function () use ($response) {
+                            // Langsung tembak ke output buffer browser
+                            $response['writer']->save('php://output');
+                        }, $response['filename'], [
+                            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'Cache-Control' => 'max-age=0',
+                        ]);
                     } else if ($response['status'] == 'error') {
                         $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                         return;
@@ -244,7 +352,13 @@ class GeneralReportController extends Component
                 if ($this->nipon == 'Infure') {
                     $response = $this->daftarLossPerDepartemenPerJenisInfure($tglMasuk, $tglKeluar);
                     if ($response['status'] == 'success') {
-                        return response()->download($response['filename'])->deleteFileAfterSend(true);
+                        return response()->streamDownload(function () use ($response) {
+                            // Langsung tembak ke output buffer browser
+                            $response['writer']->save('php://output');
+                        }, $response['filename'], [
+                            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'Cache-Control' => 'max-age=0',
+                        ]);
                     } else if ($response['status'] == 'error') {
                         $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                         return;
@@ -252,7 +366,13 @@ class GeneralReportController extends Component
                 } else {
                     $response = $this->daftarLossPerDepartemenPerJenisSeitai($tglMasuk, $tglKeluar);
                     if ($response['status'] == 'success') {
-                        return response()->download($response['filename'])->deleteFileAfterSend(true);
+                        return response()->streamDownload(function () use ($response) {
+                            // Langsung tembak ke output buffer browser
+                            $response['writer']->save('php://output');
+                        }, $response['filename'], [
+                            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'Cache-Control' => 'max-age=0',
+                        ]);
                     } else if ($response['status'] == 'error') {
                         $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                         return;
@@ -263,7 +383,13 @@ class GeneralReportController extends Component
                 if ($this->nipon == 'Infure') {
                     $response = $this->daftarLossPerPetugasInfure($tglMasuk, $tglKeluar);
                     if ($response['status'] == 'success') {
-                        return response()->download($response['filename'])->deleteFileAfterSend(true);
+                        return response()->streamDownload(function () use ($response) {
+                            // Langsung tembak ke output buffer browser
+                            $response['writer']->save('php://output');
+                        }, $response['filename'], [
+                            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'Cache-Control' => 'max-age=0',
+                        ]);
                     } else if ($response['status'] == 'error') {
                         $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                         return;
@@ -271,7 +397,13 @@ class GeneralReportController extends Component
                 } else {
                     $response = $this->daftarLossPerPetugasSeitai($tglMasuk, $tglKeluar);
                     if ($response['status'] == 'success') {
-                        return response()->download($response['filename'])->deleteFileAfterSend(true);
+                        return response()->streamDownload(function () use ($response) {
+                            // Langsung tembak ke output buffer browser
+                            $response['writer']->save('php://output');
+                        }, $response['filename'], [
+                            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'Cache-Control' => 'max-age=0',
+                        ]);
                     } else if ($response['status'] == 'error') {
                         $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                         return;
@@ -282,7 +414,13 @@ class GeneralReportController extends Component
                 if ($this->nipon == 'Infure') {
                     $response = $this->daftarLossPerMesinInfure($tglMasuk, $tglKeluar);
                     if ($response['status'] == 'success') {
-                        return response()->download($response['filename'])->deleteFileAfterSend(true);
+                        return response()->streamDownload(function () use ($response) {
+                            // Langsung tembak ke output buffer browser
+                            $response['writer']->save('php://output');
+                        }, $response['filename'], [
+                            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'Cache-Control' => 'max-age=0',
+                        ]);
                     } else if ($response['status'] == 'error') {
                         $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                         return;
@@ -290,7 +428,13 @@ class GeneralReportController extends Component
                 } else {
                     $response = $this->daftarLossPerMesinSeitai($tglMasuk, $tglKeluar);
                     if ($response['status'] == 'success') {
-                        return response()->download($response['filename'])->deleteFileAfterSend(true);
+                        return response()->streamDownload(function () use ($response) {
+                            // Langsung tembak ke output buffer browser
+                            $response['writer']->save('php://output');
+                        }, $response['filename'], [
+                            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'Cache-Control' => 'max-age=0',
+                        ]);
                     } else if ($response['status'] == 'error') {
                         $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                         return;
@@ -301,7 +445,13 @@ class GeneralReportController extends Component
             case 'Daftar Loss Per Mesin dan Jenis':
                 $response = $this->daftarLossPerMesinJenis($tglMasuk, $tglKeluar);
                 if ($response['status'] == 'success') {
-                    return response()->download($response['filename'])->deleteFileAfterSend(true);
+                    return response()->streamDownload(function () use ($response) {
+                            // Langsung tembak ke output buffer browser
+                            $response['writer']->save('php://output');
+                        }, $response['filename'], [
+                            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'Cache-Control' => 'max-age=0',
+                        ]);
                 } else if ($response['status'] == 'error') {
                     $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                     return;
@@ -311,7 +461,13 @@ class GeneralReportController extends Component
             case 'Daftar Kasus Loss Per Mesin dan Jenis':
                 $response = $this->daftarKasusLossPerMesinJenis($tglMasuk, $tglKeluar);
                 if ($response['status'] == 'success') {
-                    return response()->download($response['filename'])->deleteFileAfterSend(true);
+                    return response()->streamDownload(function () use ($response) {
+                            // Langsung tembak ke output buffer browser
+                            $response['writer']->save('php://output');
+                        }, $response['filename'], [
+                            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'Cache-Control' => 'max-age=0',
+                        ]);
                 } else if ($response['status'] == 'error') {
                     $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                     return;
@@ -322,7 +478,13 @@ class GeneralReportController extends Component
                 if ($this->nipon == 'Infure') {
                     $response = $this->kapasitasProduksiInfure($tglMasuk, $tglKeluar);
                     if ($response['status'] == 'success') {
-                        return response()->download($response['filename'])->deleteFileAfterSend(true);
+                        return response()->streamDownload(function () use ($response) {
+                            // Langsung tembak ke output buffer browser
+                            $response['writer']->save('php://output');
+                        }, $response['filename'], [
+                            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'Cache-Control' => 'max-age=0',
+                        ]);
                     } else if ($response['status'] == 'error') {
                         $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                         return;
@@ -330,7 +492,13 @@ class GeneralReportController extends Component
                 } else {
                     $response = $this->kapasitasProduksiSeitai($tglMasuk, $tglKeluar);
                     if ($response['status'] == 'success') {
-                        return response()->download($response['filename'])->deleteFileAfterSend(true);
+                        return response()->streamDownload(function () use ($response) {
+                            // Langsung tembak ke output buffer browser
+                            $response['writer']->save('php://output');
+                        }, $response['filename'], [
+                            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'Cache-Control' => 'max-age=0',
+                        ]);
                     } else if ($response['status'] == 'error') {
                         $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                         return;
@@ -341,7 +509,13 @@ class GeneralReportController extends Component
                 if ($this->nipon == 'Seitai') {
                     $response = $this->daftarProduksiPerPaletSeitai($tglMasuk, $tglKeluar);
                     if ($response['status'] == 'success') {
-                        return response()->download($response['filename'])->deleteFileAfterSend(true);
+                        return response()->streamDownload(function () use ($response) {
+                            // Langsung tembak ke output buffer browser
+                            $response['writer']->save('php://output');
+                        }, $response['filename'], [
+                            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'Cache-Control' => 'max-age=0',
+                        ]);
                     } else if ($response['status'] == 'error') {
                         $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                         return;
@@ -354,7 +528,13 @@ class GeneralReportController extends Component
                 if ($this->nipon == 'Infure') {
                     $response = $this->daftarProduksiPerMesinPerProdukInfure($tglMasuk, $tglKeluar);
                     if ($response['status'] == 'success') {
-                        return response()->download($response['filename'])->deleteFileAfterSend(true);
+                        return response()->streamDownload(function () use ($response) {
+                            // Langsung tembak ke output buffer browser
+                            $response['writer']->save('php://output');
+                        }, $response['filename'], [
+                            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'Cache-Control' => 'max-age=0',
+                        ]);
                     } else if ($response['status'] == 'error') {
                         $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                         return;
@@ -362,7 +542,13 @@ class GeneralReportController extends Component
                 } else {
                     $response = $this->daftarProduksiPerMesinPerProdukSeitai($tglMasuk, $tglKeluar);
                     if ($response['status'] == 'success') {
-                        return response()->download($response['filename'])->deleteFileAfterSend(true);
+                        return response()->streamDownload(function () use ($response) {
+                            // Langsung tembak ke output buffer browser
+                            $response['writer']->save('php://output');
+                        }, $response['filename'], [
+                            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'Cache-Control' => 'max-age=0',
+                        ]);
                     } else if ($response['status'] == 'error') {
                         $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                         return;
@@ -373,7 +559,13 @@ class GeneralReportController extends Component
             case 'Jam Mati Per Mesin':
                 $response = $this->jamMatiPerMesin($tglMasuk, $tglKeluar);
                 if ($response['status'] == 'success') {
-                    return response()->download($response['filename'])->deleteFileAfterSend(true);
+                    return response()->streamDownload(function () use ($response) {
+                            // Langsung tembak ke output buffer browser
+                            $response['writer']->save('php://output');
+                        }, $response['filename'], [
+                            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'Cache-Control' => 'max-age=0',
+                        ]);
                 } else if ($response['status'] == 'error') {
                     $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                     return;
@@ -383,7 +575,13 @@ class GeneralReportController extends Component
             case 'Jam Mati Per Jenis':
                 $response = $this->jamMatiPerJenis($tglMasuk, $tglKeluar);
                 if ($response['status'] == 'success') {
-                    return response()->download($response['filename'])->deleteFileAfterSend(true);
+                    return response()->streamDownload(function () use ($response) {
+                            // Langsung tembak ke output buffer browser
+                            $response['writer']->save('php://output');
+                        }, $response['filename'], [
+                            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'Cache-Control' => 'max-age=0',
+                        ]);
                 } else if ($response['status'] == 'error') {
                     $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                     return;
@@ -924,13 +1122,11 @@ class GeneralReportController extends Component
         }
 
         $writer = new Xlsx($spreadsheet);
-        $filename = 'asset/report/' . $this->nipon . '-' . $this->jenisreport . '.xlsx';
-        $writer->save($filename);
-        $response = [
-            'status' => 'success',
-            'filename' => $filename
+        return [
+            'status'   => 'success',
+            'writer'   => $writer,
+            'filename' => $this->nipon . '-' . $this->jenisReport . '.xlsx'
         ];
-        return $response;
     }
 
     public function daftarProduksiPerMesinPerProdukInfure($tglMasuk, $tglKeluar)
