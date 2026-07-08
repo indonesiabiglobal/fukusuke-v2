@@ -103,7 +103,13 @@ class CheckListInfureController extends Component
 
         $response = $this->checklistInfure($tglAwal, $tglAkhir, $this->jenisReport);
         if ($response['status'] == 'success') {
-            return response()->download($response['filename'])->deleteFileAfterSend(true);
+            return response()->streamDownload(function () use ($response) {
+                // Langsung tembak ke output buffer browser
+                $response['writer']->save('php://output');
+            }, $response['filename'], [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'Cache-Control' => 'max-age=0',
+            ]);
         } else if ($response['status'] == 'error') {
             $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
             return;
@@ -112,6 +118,7 @@ class CheckListInfureController extends Component
 
     public function checklistInfure($tglAwal, $tglAkhir, $jenisReport = 'Checklist', $isNippo = false, $filter = null)
     {
+        ini_set('memory_limit', '512M');
         ini_set('max_execution_time', '300');
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
@@ -570,13 +577,11 @@ class CheckListInfureController extends Component
         $spreadsheet->getActiveSheet()->getColumnDimension('R')->setWidth(5.10);
 
         $writer = new Xlsx($spreadsheet);
-        $filename = 'asset/report/NippoInfure-' . $jenisReport . '.xlsx';
-        $writer->save($filename);
-        $response = [
-            'status' => 'success',
-            'filename' => $filename
+        return [
+            'status'   => 'success',
+            'writer'   => $writer,
+            'filename' => 'NippoInfure-' . $jenisReport . '.xlsx' // Hanya nama file untuk trigger browser
         ];
-        return $response;
     }
 
     public function render()
