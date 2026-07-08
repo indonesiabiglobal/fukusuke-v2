@@ -75,7 +75,13 @@ class CheckListSeitaiController extends Component
         if ($this->jenisReport == 'CheckList') {
             $response = $this->checklist();
             if ($response['status'] == 'success') {
-                return response()->download($response['filename'])->deleteFileAfterSend(true);
+                return response()->streamDownload(function () use ($response) {
+                    // Langsung tembak ke output buffer browser
+                    $response['writer']->save('php://output');
+                }, $response['filename'], [
+                    'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    'Cache-Control' => 'max-age=0',
+                ]);
             } else if ($response['status'] == 'error') {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                 return;
@@ -83,7 +89,13 @@ class CheckListSeitaiController extends Component
         } else if ($this->jenisReport == 'LossSeitai') {
             $response = $this->loss();
             if ($response['status'] == 'success') {
-                return response()->download($response['filename'])->deleteFileAfterSend(true);
+                return response()->streamDownload(function () use ($response) {
+                    // Langsung tembak ke output buffer browser
+                    $response['writer']->save('php://output');
+                }, $response['filename'], [
+                    'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    'Cache-Control' => 'max-age=0',
+                ]);
             } else if ($response['status'] == 'error') {
                 $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
                 return;
@@ -643,13 +655,12 @@ class CheckListSeitaiController extends Component
         $spreadsheet->getActiveSheet()->getColumnDimension('L')->setWidth(8.2);
 
         $writer = new Xlsx($spreadsheet);
-        $filename = 'asset/report/NippoSeitai-' . $this->jenisReport . '.xlsx';
-        $writer->save($filename);
-        $response = [
-            'status' => 'success',
-            'filename' => $filename
+
+        return [
+            'status'   => 'success',
+            'writer'   => $writer,
+            'filename' => 'NippoSeitai-' . $this->jenisReport . '.xlsx'
         ];
-        return $response;
     }
 
     public function loss()
@@ -973,9 +984,7 @@ class CheckListSeitaiController extends Component
                 phpspreadsheet::textAlignCenter($spreadsheet, $columnPetugas . $rowItemStart);
                 // Petugas
                 $activeWorksheet->setCellValue($columnPetugas . $rowItemEnd, $item['namapetugas']);
-                // $spreadsheet->getActiveSheet()->mergeCells($columnPetugas . $rowItemEnd . ':' . $columnLpk . $rowItemEnd);
                 phpspreadsheet::styleFont($spreadsheet, $columnPetugas . $rowItemEnd, false, 8, 'Calibri');
-                // phpspreadsheet::textAlignCenter($spreadsheet, $columnPetugas . $rowItemEnd);
 
                 // border
                 phpspreadsheet::addFullBorder($spreadsheet, $startColumn . $rowItemStart . ':' . $columnPetugas . $rowItemEnd);
@@ -1026,7 +1035,6 @@ class CheckListSeitaiController extends Component
         }
         $activeWorksheet->setCellValue($columnBerat . $rowGrandTotal, $totalBeratLoss);
         phpspreadsheet::addFullBorder($spreadsheet, 'A' . $rowGrandTotal . ':' . $columnBerat . $rowGrandTotal);
-        // phpSpreadsheet::numberFormatCommaThousandsOrZero($spreadsheet, $columnQty . $rowGrandTotal);
 
         phpspreadsheet::styleFont($spreadsheet, 'A' . $rowGrandTotal . ':' . $columnBerat . $rowGrandTotal, true, 9, 'Calibri');
 
@@ -1038,18 +1046,15 @@ class CheckListSeitaiController extends Component
         $spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(12.0);
         $spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(15.0);
         $spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(25.0);
-        // $activeWorksheet->getStyle('G' . $rowHeaderStart)->getAlignment()->setWrapText(true);
         $spreadsheet->getActiveSheet()->getColumnDimension('H')->setWidth(10.5);
         $spreadsheet->getActiveSheet()->getColumnDimension('I')->setWidth(12.0);
 
         $writer = new Xlsx($spreadsheet);
-        $filename = 'NippoSeitai-' . $this->jenisReport . '.xlsx';
-        $writer->save($filename);
-        $response = [
-            'status' => 'success',
-            'filename' => $filename
+        return [
+            'status'   => 'success',
+            'writer'   => $writer,
+            'filename' => 'NippoSeitai-' . $this->jenisReport . '.xlsx' // Hanya nama file untuk trigger browser
         ];
-        return $response;
     }
 
     public static function dataProduksi($orderId)
@@ -1293,17 +1298,6 @@ class CheckListSeitaiController extends Component
         for ($col = 'A'; $col <= 'W'; $col++) {
             $activeWorksheet->getColumnDimension($col)->setWidth(3.5);
         }
-
-        // Row heights
-        // for ($row = 1; $row <= 17; $row++) {
-        //     $activeWorksheet->getRowDimension($row)->setRowHeight(25);
-        // }
-
-        // // Special row heights
-        // $activeWorksheet->getRowDimension(11)->setRowHeight(40);
-        // $activeWorksheet->getRowDimension(12)->setRowHeight(40);
-        // $activeWorksheet->getRowDimension(13)->setRowHeight(40);
-        // $activeWorksheet->getRowDimension(14)->setRowHeight(40);
 
         // Save file
         $writer = new Xlsx($spreadsheet);

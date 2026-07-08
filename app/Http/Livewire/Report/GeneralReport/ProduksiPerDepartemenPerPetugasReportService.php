@@ -361,13 +361,12 @@ class ProduksiPerDepartemenPerPetugasReportService
         }
 
         $writer = new Xlsx($spreadsheet);
-        $filename = 'asset/report/' . $nippon . '-' . $jenisReport . '.xlsx';
-        $writer->save($filename);
-        $response = [
-            'status' => 'success',
+        $filename = $nippon . '-' . $jenisReport . '.xlsx';
+        return [
+            'status'   => 'success',
+            'writer'   => $writer,
             'filename' => $filename
         ];
-        return $response;
     }
 
     public static function daftarProduksiPerDepartemenPerPetugasSeitai($nippon, $jenisReport, $tglMasuk, $tglKeluar)
@@ -698,12 +697,11 @@ class ProduksiPerDepartemenPerPetugasReportService
         }
 
         $writer = new Xlsx($spreadsheet);
-        $filename = 'asset/report/' . $nippon . '-' . $jenisReport . '.xlsx';
-        $writer->save($filename);
-        $response = [
-            'status' => 'success',
+        $filename = $nippon . '-' . $jenisReport . '.xlsx';
+        return [
+            'status'   => 'success',
+            'writer'   => $writer,
             'filename' => $filename
         ];
-        return $response;
     }
 }

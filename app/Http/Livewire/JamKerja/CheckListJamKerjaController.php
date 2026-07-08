@@ -132,7 +132,13 @@ class CheckListJamKerjaController extends Component
 
         $response = $this->checklistJamKerja($tglAwal, $tglAkhir, $filter, $this->divisionId == 2 ? 'INFURE' : 'SEITAI', true);
         if ($response['status'] == 'success') {
-            return response()->download($response['filename'])->deleteFileAfterSend(true);
+            return response()->streamDownload(function () use ($response) {
+                // Langsung tembak ke output buffer browser
+                $response['writer']->save('php://output');
+            }, $response['filename'], [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'Cache-Control' => 'max-age=0',
+            ]);
         } else if ($response['status'] == 'error') {
             $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
             return;
@@ -185,13 +191,12 @@ class CheckListJamKerjaController extends Component
         $spreadsheet->setActiveSheetIndex(0);
 
         $writer = new Xlsx($spreadsheet);
-        $filename = 'asset/report/JamKerja-' . $nippo . '.xlsx';
-        $writer->save($filename);
-        $response = [
-            'status' => 'success',
-            'filename' => $filename
+
+        return [
+            'status'   => 'success',
+            'writer'   => $writer,
+            'filename' => 'JamKerja-' . $nippo . '.xlsx'
         ];
-        return $response;
     }
 
     private function setupGeneralSheet($worksheet, $nippo, $filter, $tglAwal, $tglAkhir, $spreadsheet)

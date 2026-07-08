@@ -322,13 +322,12 @@ class LossPerDepartemenPerJenisReportService
         }
 
         $writer = new Xlsx($spreadsheet);
-        $filename = 'asset/report/' . $nippon . '-' . $jenisReport . '.xlsx';
-        $writer->save($filename);
-        $response = [
-            'status' => 'success',
+        $filename = $nippon . '-' . $jenisReport . '.xlsx';
+        return [
+            'status'   => 'success',
+            'writer'   => $writer,
             'filename' => $filename
         ];
-        return $response;
     }
 
     public static function daftarLossPerDepartemenPerJenisSeitai($nippon, $jenisReport, $tglMasuk, $tglKeluar)
@@ -642,12 +641,11 @@ class LossPerDepartemenPerJenisReportService
         }
 
         $writer = new Xlsx($spreadsheet);
-        $filename = 'asset/report/' . $nippon . '-' . $jenisReport . '.xlsx';
-        $writer->save($filename);
-        $response = [
-            'status' => 'success',
+        $filename = $nippon . '-' . $jenisReport . '.xlsx';
+        return [
+            'status'   => 'success',
+            'writer'   => $writer,
             'filename' => $filename
         ];
-        return $response;
     }
 }

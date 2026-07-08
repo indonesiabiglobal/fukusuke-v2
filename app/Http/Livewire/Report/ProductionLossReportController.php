@@ -445,11 +445,25 @@ class ProductionLossReportController extends Component
 
         $writer = new Xlsx($spreadsheet);
         if ($this->nipon == 'infure') {
-            $writer->save('asset/report/Report-Infure.xlsx');
-            return response()->download('asset/report/Report-Infure.xlsx');
+            $filename = 'Report-Infure.xlsx.xlsx';
+            return response()->streamDownload(function () use ($writer) {
+                // Data langsung ditembakkan ke buffer unduhan browser
+                $writer->save('php://output');
+            }, $filename, [
+                // Header spesifik untuk file Excel
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'Cache-Control' => 'max-age=0',
+            ]);
         } else {
-            $writer->save('asset/report/Report-Seitai.xlsx');
-            return response()->download('asset/report/Report-Seitai.xlsx');
+            $filename = 'Report-Seitai.xlsx';
+            return response()->streamDownload(function () use ($writer) {
+                // Data langsung ditembakkan ke buffer unduhan browser
+                $writer->save('php://output');
+            }, $filename, [
+                // Header spesifik untuk file Excel
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'Cache-Control' => 'max-age=0',
+            ]);
         }
     }
 

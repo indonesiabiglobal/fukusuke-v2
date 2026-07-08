@@ -365,13 +365,13 @@ class LossKasusReportService
         $spreadsheet->getActiveSheet()->getColumnDimension('B')->setAutoSize(true);
 
         $writer = new Xlsx($spreadsheet);
-        $filename = 'asset/report/' . $nipon . '-' . $jenisReport . '.xlsx';
-        $writer->save($filename);
-        $response = [
-            'status' => 'success',
+        $filename = $nipon . '-' . $jenisReport . '.xlsx';
+
+        return [
+            'status'   => 'success',
+            'writer'   => $writer,
             'filename' => $filename
         ];
-        return $response;
     }
 
     public static function daftarKasusLossPerMesinJenis($nipon, $jenisReport, $tglMasuk, $tglKeluar)
@@ -726,12 +726,12 @@ class LossKasusReportService
         $spreadsheet->getActiveSheet()->getColumnDimension('B')->setAutoSize(true);
 
         $writer = new Xlsx($spreadsheet);
-        $filename = 'asset/report/' . $nipon . '-' . $jenisReport . '.xlsx';
-        $writer->save($filename);
-        $response = [
-            'status' => 'success',
+        $filename = $nipon . '-' . $jenisReport . '.xlsx';
+
+        return [
+            'status'   => 'success',
+            'writer'   => $writer,
             'filename' => $filename
         ];
-        return $response;
     }
 }
