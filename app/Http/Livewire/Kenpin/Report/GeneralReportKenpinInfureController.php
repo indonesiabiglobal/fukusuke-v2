@@ -239,12 +239,12 @@ class GeneralReportKenpinInfureController extends Component
 
         $writer = new Xlsx($spreadsheet);
         $filename = 'Kenpin-Infure-Per-Mesin-' . $tglAwal->format('dmyHi') . '-' . $tglAkhir->format('dmyHi') . '.xlsx';
-        $writer->save($filename);
-        $response = [
-            'status' => 'success',
+
+        return [
+            'status'   => 'success',
+            'writer'   => $writer,
             'filename' => $filename
         ];
-        return $response;
     }
 
     public function beratLossReportKenpinInfure($tglAwal, $tglAkhir, $filter = null)
@@ -451,12 +451,12 @@ class GeneralReportKenpinInfureController extends Component
 
         $writer = new Xlsx($spreadsheet);
         $filename = 'Berat-Loss-Kenpin-Infure-Per-Mesin-' . $tglAwal->format('dmyHi') . '-' . $tglAkhir->format('dmyHi') . '.xlsx';
-        $writer->save($filename);
-        $response = [
-            'status' => 'success',
+
+        return [
+            'status'   => 'success',
+            'writer'   => $writer,
             'filename' => $filename
         ];
-        return $response;
     }
 
     public function qtyLossReportKenpinInfure($tglAwal, $tglAkhir, $filter = null)
@@ -663,11 +663,11 @@ class GeneralReportKenpinInfureController extends Component
 
         $writer = new Xlsx($spreadsheet);
         $filename = 'Qty-Loss-Kenpin-Infure-Per-Mesin-' . $tglAwal->format('dmyHi') . '-' . $tglAkhir->format('dmyHi') . '.xlsx';
-        $writer->save($filename);
-        $response = [
-            'status' => 'success',
+
+        return [
+            'status'   => 'success',
+            'writer'   => $writer,
             'filename' => $filename
         ];
-        return $response;
     }
 }

@@ -38,7 +38,6 @@ class DetailReportKenpinSeitaiController extends Component
 
     public function detailReportKenpinSeitai($tglAwal, $tglAkhir, $filter = null, $isSingleReport = false)
     {
-
         $spreadsheet = new Spreadsheet();
         $activeWorksheet = $spreadsheet->getActiveSheet();
         $activeWorksheet->setShowGridlines(false);
@@ -552,11 +551,11 @@ class DetailReportKenpinSeitaiController extends Component
         } else {
             $filename = 'Detail-Kenpin-Seitai-' . $tglAwal->format('dmyHi') . '-' . $tglAkhir->format('dmyHi') . '.xlsx';
         }
-        $writer->save($filename);
-        $response = [
-            'status' => 'success',
+
+        return [
+            'status'   => 'success',
+            'writer'   => $writer,
             'filename' => $filename
         ];
-        return $response;
     }
 }

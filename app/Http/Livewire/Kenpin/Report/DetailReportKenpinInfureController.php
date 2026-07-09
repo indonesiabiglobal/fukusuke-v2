@@ -407,11 +407,11 @@ class DetailReportKenpinInfureController extends Component
         } else {
             $filename = 'Detail-Kenpin-Infure-' . $tglAwal->format('dmyHi') . '-' . $tglAkhir->format('dmyHi') . '.xlsx';
         }
-        $writer->save($filename);
-        $response = [
-            'status' => 'success',
+
+        return [
+            'status'   => 'success',
+            'writer'   => $writer,
             'filename' => $filename
         ];
-        return $response;
     }
 }

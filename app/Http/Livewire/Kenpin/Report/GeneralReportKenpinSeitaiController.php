@@ -271,12 +271,12 @@ class GeneralReportKenpinSeitaiController extends Component
 
         $writer = new Xlsx($spreadsheet);
         $filename = 'Kenpin-Seitai-Per-Mesin-' . $tglAwal->format('dmy') . '-' . $tglAkhir->format('dmy') . '.xlsx';
-        $writer->save($filename);
-        $response = [
-            'status' => 'success',
+
+        return [
+            'status'   => 'success',
+            'writer'   => $writer,
             'filename' => $filename
         ];
-        return $response;
     }
 
     public function perBoxReportKenpinSeitai($tglAwal, $tglAkhir, $filter = null)
@@ -516,12 +516,12 @@ class GeneralReportKenpinSeitaiController extends Component
 
         $writer = new Xlsx($spreadsheet);
         $filename = 'Kenpin-Seitai-Per-Box-' . $tglAwal->format('dmy') . '-' . $tglAkhir->format('dmy') . '.xlsx';
-        $writer->save($filename);
-        $response = [
-            'status' => 'success',
+
+        return [
+            'status'   => 'success',
+            'writer'   => $writer,
             'filename' => $filename
         ];
-        return $response;
     }
 
     public function perPaletReportKenpinSeitai($tglAwal, $tglAkhir, $filter = null)
@@ -757,12 +757,12 @@ class GeneralReportKenpinSeitaiController extends Component
 
         $writer = new Xlsx($spreadsheet);
         $filename = 'Kenpin-Seitai-Per-Palet-' . $tglAwal->format('dmy') . '-' . $tglAkhir->format('dmy') . '.xlsx';
-        $writer->save($filename);
-        $response = [
-            'status' => 'success',
+
+        return [
+            'status'   => 'success',
+            'writer'   => $writer,
             'filename' => $filename
         ];
-        return $response;
     }
 
     public function qtyLossReportKenpinSeitai($tglAwal, $tglAkhir, $filter = null)
@@ -992,11 +992,11 @@ class GeneralReportKenpinSeitaiController extends Component
 
         $writer = new Xlsx($spreadsheet);
         $filename = 'Qty-Loss-Kenpin-Seitai-Per-Mesin-' . $tglAwal->format('dmy') . '-' . $tglAkhir->format('dmy') . '.xlsx';
-        $writer->save($filename);
-        $response = [
-            'status' => 'success',
+
+        return [
+            'status'   => 'success',
+            'writer'   => $writer,
             'filename' => $filename
         ];
-        return $response;
     }
 }

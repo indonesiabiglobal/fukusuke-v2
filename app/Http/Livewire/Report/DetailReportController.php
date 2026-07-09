@@ -109,7 +109,13 @@ class DetailReportController extends Component
                     ]
                 );
 
-                return response()->download($result['filename'])->deleteFileAfterSend(true);
+                return response()->streamDownload(function () use ($result) {
+                    // Langsung tembak ke output buffer browser
+                    $result['writer']->save('php://output');
+                }, $result['filename'], [
+                    'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    'Cache-Control' => 'max-age=0',
+                ]);
             } catch (Exception $e) {
                 $this->dispatch('notification', ['type' => 'error', 'message' => 'Terjadi kesalahan saat generate report: ' . $e->getMessage()]);
                 return;
@@ -132,7 +138,13 @@ class DetailReportController extends Component
                 ]
             );
 
-            return response()->download($result['filename'])->deleteFileAfterSend(true);
+            return response()->streamDownload(function () use ($result) {
+                // Langsung tembak ke output buffer browser
+                $result['writer']->save('php://output');
+            }, $result['filename'], [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'Cache-Control' => 'max-age=0',
+            ]);
             } catch (Exception $e) {
                 $this->dispatch('notification', ['type' => 'error', 'message' => 'Terjadi kesalahan saat generate report: ' . $e->getMessage()]);
                 return;

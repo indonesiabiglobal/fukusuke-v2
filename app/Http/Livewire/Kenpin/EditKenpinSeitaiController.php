@@ -608,7 +608,13 @@ class EditKenpinSeitaiController extends Component
         $detailReportKenpinSeitai = new DetailReportKenpinSeitaiController();
         $response = $detailReportKenpinSeitai->detailReportKenpinSeitai($tglAwal, $tglAkhir, $filter, true);
         if ($response['status'] == 'success') {
-            return response()->download($response['filename'])->deleteFileAfterSend(true);
+            return response()->streamDownload(function () use ($response) {
+                // Langsung tembak ke output buffer browser
+                $response['writer']->save('php://output');
+            }, $response['filename'], [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'Cache-Control' => 'max-age=0',
+            ]);
         } else if ($response['status'] == 'error') {
             $this->dispatch('notification', ['type' => 'warning', 'message' => $response['message']]);
             return;
