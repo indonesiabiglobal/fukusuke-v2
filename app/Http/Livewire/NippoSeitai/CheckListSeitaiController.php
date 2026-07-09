@@ -1301,12 +1301,12 @@ class CheckListSeitaiController extends Component
 
         // Save file
         $writer = new Xlsx($spreadsheet);
-        $filename = 'asset/report/Label-Seitai-' . $orderId . '-' . date('YmdHis') . '.xlsx';
-        $writer->save($filename);
+        $filename = 'Label-Seitai-' . $orderId . '-' . date('YmdHis') . '.xlsx';
 
         return [
             'status' => 'success',
             'filename' => $filename,
+            'writer'   => $writer,
             'message' => 'Label Seitai berhasil dibuat',
             'data' => [
                 'lpk_no' => $item->nolpk,

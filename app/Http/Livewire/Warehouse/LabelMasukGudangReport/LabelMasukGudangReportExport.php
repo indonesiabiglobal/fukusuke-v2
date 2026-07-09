@@ -273,10 +273,10 @@ class LabelMasukGudangReportExport
     {
         $filename = 'Label-Masuk-Gudang-Report.xlsx';
         $writer = new Xlsx($this->spreadsheet);
-        $writer->save($filename);
 
         return [
-            'status' => 'success',
+            'status'   => 'success',
+            'writer'   => $writer,
             'filename' => $filename
         ];
     }
