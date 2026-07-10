@@ -26,6 +26,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 class EditKenpinSeitaiController extends Component
 {
     use HandlesHeavyJob;
+    use \App\Traits\HandlesDbSaveError;
     public $idKenpinGoods;
     public $incident_date;
     public $shift;
@@ -506,7 +507,10 @@ class EditKenpinSeitaiController extends Component
             return redirect()->route('kenpin-seitai-kenpin');
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to update the order: ' . $e->getMessage()]);
+            $this->dispatch('notification', ['type' => 'error', 'message' => $this->dbErrorMessage($e, 'Failed to update the order', [
+                '23505' => 'Data kenpin dengan kombinasi Departemen, Bagian Mesin, Nomor Palet, dan Masalah Kenpin yang sama sudah terdaftar.',
+                '23000' => 'Data kenpin dengan kombinasi Departemen, Bagian Mesin, Nomor Palet, dan Masalah Kenpin yang sama sudah terdaftar.',
+            ])]);
         }
     }
 

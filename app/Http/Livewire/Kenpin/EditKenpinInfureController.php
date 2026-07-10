@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\DB;
 class EditKenpinInfureController extends Component
 {
     use HandlesHeavyJob;
+    use \App\Traits\HandlesDbSaveError;
     public $incident_date;
     public $shift;
     public $kenpin_date;
@@ -723,7 +724,10 @@ class EditKenpinInfureController extends Component
             return redirect()->route('kenpin-infure');
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->dispatch('notification', ['type' => 'error', 'message' => 'Failed to save the order: ' . $e->getMessage()]);
+            $this->dispatch('notification', ['type' => 'error', 'message' => $this->dbErrorMessage($e, 'Failed to save the order', [
+                '23505' => 'Data kenpin dengan kombinasi Departemen, Bagian Mesin, Nomor Palet, dan Masalah Kenpin yang sama sudah terdaftar.',
+                '23000' => 'Data kenpin dengan kombinasi Departemen, Bagian Mesin, Nomor Palet, dan Masalah Kenpin yang sama sudah terdaftar.',
+            ])]);
         }
     }
 
