@@ -245,7 +245,8 @@ class DetailReportSeitaiController
     private function formatBaseData($row)
     {
         return [
-            'production_date' => $row->production_date,
+            'production_date' => Carbon::parse($row->production_date)->format('d-M-Y'),
+            'nik' => $row->nik,
             'namapetugas' => $row->namapetugas,
             'deptpetugas' => $row->deptpetugas,
             'nomesin' => $row->nomesin . ' - ' . $row->namamesin,
@@ -263,7 +264,7 @@ class DetailReportSeitaiController
         return [
             'gentan_no_line' => $row->gentan_no_line_asy,
             'panjang_produksi' => $row->panjang_produksi_asy,
-            'tgl_produksi' => $row->tgl_produksi_asy,
+            'tgl_produksi' => Carbon::parse($row->tgl_produksi_asy)->format('d-M-Y'),
             'work_shift' => $row->work_shift_asy,
             'work_hour' => $row->work_hour_asy,
             'no_mesin' => $row->no_mesin_asy,
@@ -308,6 +309,7 @@ class DetailReportSeitaiController
     {
         $headers = [
             'Tanggal Produksi',
+            'NIK Petugas',
             'Nama Petugas',
             'Dept. Petugas',
             'Nomor Mesin',
@@ -340,7 +342,7 @@ class DetailReportSeitaiController
 
 
         // Cache header styles
-        $this->cacheStyle('A3:V3', [
+        $this->cacheStyle('A3:W3', [
             'font' => ['bold' => true, 'size' => 9, 'name' => 'Calibri'],
             'alignment' => ['horizontal' => 'center', 'vertical' => 'center'],
             'borders' => ['allBorders' => ['borderStyle' => 'thin']]
@@ -403,15 +405,16 @@ class DetailReportSeitaiController
     {
         $columns = [
             'A' => $productionDate,
-            'B' => $data['namapetugas'],
-            'C' => $data['deptpetugas'],
-            'D' => $data['nomesin'],
-            'E' => $data['lpk_no'],
-            'F' => $data['work_shift'],
-            'G' => $data['work_hour'],
-            'H' => $data['nomor_palet'],
-            'I' => $data['nomor_lot'],
-            'J' => $data['qty_produksi']
+            'B' => $data['nik'],
+            'C' => $data['namapetugas'],
+            'D' => $data['deptpetugas'],
+            'E' => $data['nomesin'],
+            'F' => $data['lpk_no'],
+            'G' => $data['work_shift'],
+            'H' => $data['work_hour'],
+            'I' => $data['nomor_palet'],
+            'J' => $data['nomor_lot'],
+            'K' => $data['qty_produksi']
         ];
 
         foreach ($columns as $column => $value) {
@@ -427,28 +430,28 @@ class DetailReportSeitaiController
 
     private function writeLossData($row, $data)
     {
-        $this->worksheet->setCellValue('K' . $row, $data['name']);
-        $this->worksheet->setCellValue('L' . $row, $data['weight']);
+        $this->worksheet->setCellValue('L' . $row, $data['name']);
+        $this->worksheet->setCellValue('M' . $row, $data['weight']);
     }
 
     private function writeGentanData($row, $data)
     {
         $columns = [
-            'M' => $data['gentan_no_line'],
-            'N' => $data['panjang_produksi'],
-            'O' => $data['tgl_produksi'],
-            'P' => $data['work_shift'],
-            'Q' => $data['work_hour'],
-            'R' => $data['no_mesin'],
-            'S' => $data['nomor_han'],
-            'T' => $data['nama_petugas'],
-            'U' => $data['dept_petugas'],
-            'V' => $data['infure_berat_loss']
+            'N' => $data['gentan_no_line'],
+            'O' => $data['panjang_produksi'],
+            'P' => $data['tgl_produksi'],
+            'Q' => $data['work_shift'],
+            'R' => $data['work_hour'],
+            'S' => $data['no_mesin'],
+            'T' => $data['nomor_han'],
+            'U' => $data['nama_petugas'],
+            'V' => $data['dept_petugas'],
+            'W' => $data['infure_berat_loss']
         ];
 
         foreach ($columns as $column => $value) {
             $cell = $column . $row;
-            if ($column === 'O') {
+            if ($column === 'P') {
                 phpspreadsheet::setCellDate($this->spreadsheet, $cell, $value);
             } else {
                 $this->worksheet->setCellValue($cell, $value);
@@ -459,11 +462,11 @@ class DetailReportSeitaiController
     private function applyDataBlockStyles($startRow, $endRow)
     {
         // Apply font and alignment for the entire block
-        $this->cacheStyle("A{$startRow}:J{$startRow}", [
+        $this->cacheStyle("A{$startRow}:K{$startRow}", [
             'borders' => ['allBorders' => ['borderStyle' => 'thin']]
         ]);
 
-        $this->cacheStyle("K{$startRow}:V{$endRow}", [
+        $this->cacheStyle("L{$startRow}:W{$endRow}", [
             'borders' => [
                 'horizontal' => ['borderStyle' => 'hair'],
                 'vertical' => ['borderStyle' => 'thin'],
@@ -475,27 +478,27 @@ class DetailReportSeitaiController
     private function applyProductBlockStyles($startRow, $endRow)
     {
         // Apply font and alignment for the entire block
-        $this->cacheStyle("A{$startRow}:V{$endRow}", [
+        $this->cacheStyle("A{$startRow}:W{$endRow}", [
             'font' => ['size' => 8, 'name' => 'Calibri'],
         ]);
 
         // Center align specific columns
-        $this->cacheStyle("A{$startRow}:C{$startRow}", [
+        $this->cacheStyle("A{$startRow}:D{$startRow}", [
             'alignment' => ['horizontal' => 'center']
         ]);
-        $this->cacheStyle("E{$startRow}:I{$startRow}", [
+        $this->cacheStyle("F{$startRow}:J{$startRow}", [
             'alignment' => ['horizontal' => 'center']
         ]);
-        $this->cacheStyle("O{$startRow}:S{$endRow}", [
+        $this->cacheStyle("P{$startRow}:T{$endRow}", [
             'alignment' => ['horizontal' => 'center']
         ]);
 
-        $this->cacheStyle("J{$startRow}", [
+        $this->cacheStyle("K{$startRow}", [
             'numberFormat' => ['formatCode' => '#,##0']
         ]);
 
         // Cache number formats
-        $this->cacheStyle("N{$startRow}:N{$endRow}", [
+        $this->cacheStyle("O{$startRow}:O{$endRow}", [
             'numberFormat' => ['formatCode' => '#,##0']
         ]);
     }
@@ -505,28 +508,28 @@ class DetailReportSeitaiController
         $row = $this->currentRow;
 
         // Merge cells for GRAND TOTAL label
-        $this->worksheet->mergeCells("A{$row}:I{$row}");
+        $this->worksheet->mergeCells("A{$row}:J{$row}");
         $this->worksheet->setCellValue("A{$row}", 'GRAND TOTAL');
 
         // Write totals
-        $this->worksheet->setCellValue("J{$row}", $totals['qty_produksi']);
-        $this->worksheet->setCellValue("L{$row}", $totals['berat_loss']);
-        $this->worksheet->setCellValue("N{$row}", $totals['panjang_produksi']);
-        $this->worksheet->setCellValue("V{$row}", $totals['infure_berat_loss']);
+        $this->worksheet->setCellValue("K{$row}", $totals['qty_produksi']);
+        $this->worksheet->setCellValue("M{$row}", $totals['berat_loss']);
+        $this->worksheet->setCellValue("O{$row}", $totals['panjang_produksi']);
+        $this->worksheet->setCellValue("W{$row}", $totals['infure_berat_loss']);
 
         // Cache styles for grand total row
-        $this->cacheStyle("A{$row}:V{$row}", [
+        $this->cacheStyle("A{$row}:W{$row}", [
             'font' => ['bold' => true, 'size' => 9, 'name' => 'Calibri'],
             'borders' => ['allBorders' => ['borderStyle' => 'thin']]
         ]);
 
         // Cache number formats for total values
-        $this->cacheStyle("J{$row}:V{$row}", [
+        $this->cacheStyle("K{$row}:W{$row}", [
             'numberFormat' => ['formatCode' => '#,##0']
         ]);
 
         // L dengan koma 1
-        $this->cacheStyle("L{$row}", [
+        $this->cacheStyle("M{$row}", [
             'numberFormat' => ['formatCode' => '#,##0.0']
         ]);
     }
@@ -543,8 +546,8 @@ class DetailReportSeitaiController
         }
 
         // Set auto width untuk semua kolom yang digunakan
-        $this->worksheet->getStyle('A3:V3')->getAlignment()->setWrapText(true);
-        $this->worksheet->getStyle('K')->getAlignment()->setWrapText(true);
+        $this->worksheet->getStyle('A3:W3')->getAlignment()->setWrapText(true);
+        $this->worksheet->getStyle('L')->getAlignment()->setWrapText(true);
     }
 
     private function saveReport($nippo)

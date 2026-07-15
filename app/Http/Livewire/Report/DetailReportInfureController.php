@@ -318,7 +318,8 @@ class DetailReportInfureController
 
                     // Tulis data dasar dalam satu baris (kirim tanggal mentah, helper akan format)
                     $this->writeRowData($currentRow, [
-                        $baseData['tglproduksi'],
+                        // buatkan format tanggal saja $baseData['tglproduksi']
+                        Carbon::parse($baseData['tglproduksi'])->format('d-M-Y'),
                         $baseData['shift'],
                         $baseData['jam'],
                         $baseData['nik'],
