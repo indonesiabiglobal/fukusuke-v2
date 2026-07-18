@@ -41,6 +41,7 @@ class AutoInsertJamKerja extends Command
         if ($isDryRun) {
             $this->warn('DRY RUN MODE - No data will be inserted');
         }
+        Log::info("Command jamkerja:auto-insert dijalankan di server: " . gethostname());
 
         try {
             // Get current time and determine previous shift
@@ -150,6 +151,7 @@ class AutoInsertJamKerja extends Command
             // Log the activity
             if (!$isDryRun) {
                 Log::info("Auto-insert jam kerja completed", [
+                    'server' => gethostname(),
                     'department' => $department,
                     'shift' => $previousShift->work_shift,
                     'working_date' => $workingDate->format('Y-m-d'),
