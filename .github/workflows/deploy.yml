@@ -27,6 +27,8 @@ jobs:
             sudo php artisan route:cache
             sudo php artisan view:cache
             sudo php artisan optimize
+            sudo npm run build
+            sudo systemctl restart php8.2-fpm
 
       # - name: Deploy to production server 3
       #   uses: appleboy/ssh-action@v1.2.0
