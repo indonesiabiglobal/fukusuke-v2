@@ -120,20 +120,21 @@ class NippoSeitaiController extends Component
     {
         // Return empty paginator immediately on first render (wire:init will trigger loadData)
         if (!$this->isLoaded) {
-            $products = Cache::remember('ms_products_seitai', 3600, fn() =>
-                MsProduct::select(['id', 'name', 'code'])->orderBy('code')->get()
-            );
-            $machine = Cache::remember('ms_machines_seitai', 3600, fn() =>
-                MsMachine::select(['id', 'machineno'])
-                    ->where('machineno', 'LIKE', '00S%')
-                    ->orderBy('machineno')->get()
-            );
             return view('livewire.nippo-seitai.nippo-seitai', [
                 'data'     => new \Illuminate\Pagination\LengthAwarePaginator([], 0, $this->perPage),
-                'products' => $products,
-                'machine'  => $machine,
+                'products' => [],
+                'machine'  => [],
             ])->extends('layouts.master');
         }
+
+        $products = Cache::remember('ms_products_seitai', 3600, fn() =>
+            MsProduct::select(['id', 'name', 'code'])->orderBy('code')->get()
+        );
+        $machine = Cache::remember('ms_machines_seitai', 3600, fn() =>
+            MsMachine::select(['id', 'machineno'])
+                ->where('machineno', 'LIKE', '00S%')
+                ->orderBy('machineno')->get()
+        );
 
         $tglAwal  = Carbon::parse($this->tglMasuk)->format('d-m-Y 00:00:00');
         $tglAkhir = Carbon::parse($this->tglKeluar)->format('d-m-Y 23:59:59');

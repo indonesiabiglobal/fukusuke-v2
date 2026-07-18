@@ -138,6 +138,15 @@ class LpkEntryController extends Component
 
     public function render()
     {
+        if (!$this->isLoaded) {
+            return view('livewire.order-lpk.lpk-entry', [
+                'data'      => new \Illuminate\Pagination\LengthAwarePaginator([], 0, $this->perPage),
+                'products'  => [],
+                'lpkColors' => [],
+                'buyer'     => [],
+            ])->extends('layouts.master');
+        }
+
         $products = Cache::remember('ms_products_lpk_entry', 3600, fn() =>
             MsProduct::select(['id', 'name', 'code'])->orderBy('code')->get()
         );
@@ -147,15 +156,6 @@ class LpkEntryController extends Component
         $buyer = Cache::remember('ms_buyers_lpk_entry', 3600, fn() =>
             MsBuyer::select(['id', 'name'])->orderBy('name')->get()
         );
-
-        if (!$this->isLoaded) {
-            return view('livewire.order-lpk.lpk-entry', [
-                'data'      => new \Illuminate\Pagination\LengthAwarePaginator([], 0, $this->perPage),
-                'products'  => $products,
-                'lpkColors' => $lpkColors,
-                'buyer'     => $buyer,
-            ])->extends('layouts.master');
-        }
 
         try {
             $data = DB::table('tdorderlpk AS tolp')

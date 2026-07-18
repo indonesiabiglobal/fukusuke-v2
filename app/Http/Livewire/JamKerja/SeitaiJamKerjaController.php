@@ -558,6 +558,14 @@ class SeitaiJamKerjaController extends Component
 
     public function render()
     {
+        if (!$this->isLoaded) {
+            return view('livewire.jam-kerja.seitai', [
+                'data'      => new \Illuminate\Pagination\LengthAwarePaginator([], 0, $this->perPage),
+                'machine'   => [],
+                'workShift' => [],
+            ])->extends('layouts.master');
+        }
+
         $machine = Cache::remember('ms_machines_seitai_jk', 3600, fn() =>
             MsMachine::whereIn('department_id', departmentHelper::seitaiPabrikDepartment()->pluck('id'))
                 ->select(['id', 'machineno', 'machinename'])
@@ -567,13 +575,6 @@ class SeitaiJamKerjaController extends Component
             MsWorkingShift::active()->select(['id', 'work_shift'])->get()
         );
 
-        if (!$this->isLoaded) {
-            return view('livewire.jam-kerja.seitai', [
-                'data'      => new \Illuminate\Pagination\LengthAwarePaginator([], 0, $this->perPage),
-                'machine'   => $machine,
-                'workShift' => $workShift,
-            ])->extends('layouts.master');
-        }
 
         try {
             $data = DB::table('tdjamkerjamesin AS tdjkm')
