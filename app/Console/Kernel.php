@@ -41,7 +41,8 @@ class Kernel extends ConsoleKernel
             $schedule->command("jamkerja:auto-insert --department={$department}")
                 ->name("jamkerja-{$department}-{$timeName}")
                 ->dailyAt($time)
-                ->withoutOverlapping();
+                ->withoutOverlapping()
+                ->onOneServer();
         }
     }
 }

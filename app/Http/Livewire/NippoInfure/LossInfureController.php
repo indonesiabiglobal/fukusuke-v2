@@ -136,6 +136,15 @@ class LossInfureController extends Component
 
     public function render()
     {
+        if (!$this->isLoaded) {
+            return view('livewire.nippo-infure.loss-infure', [
+                'data'     => new \Illuminate\Pagination\LengthAwarePaginator([], 0, $this->perPage),
+                'products' => [],
+                'buyer'    => [],
+                'machine'  => [],
+            ])->extends('layouts.master');
+        }
+
         $products = Cache::remember('ms_products_loss_infure', 3600, fn() =>
             MsProduct::select(['id', 'name', 'code'])->orderBy('code')->get()
         );
@@ -145,15 +154,6 @@ class LossInfureController extends Component
         $machine = Cache::remember('ms_machines_loss_infure', 3600, fn() =>
             MsMachine::select(['id', 'machineno'])->orderBy('machineno')->get()
         );
-
-        if (!$this->isLoaded) {
-            return view('livewire.nippo-infure.loss-infure', [
-                'data'     => new \Illuminate\Pagination\LengthAwarePaginator([], 0, $this->perPage),
-                'products' => $products,
-                'buyer'    => $buyer,
-                'machine'  => $machine,
-            ])->extends('layouts.master');
-        }
 
         $data = DB::table('tdproduct_assembly AS tdpa')
             ->select([

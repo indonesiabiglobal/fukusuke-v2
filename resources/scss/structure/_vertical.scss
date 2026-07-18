@@ -34,8 +34,23 @@
     margin-top: 0;
     position: fixed;
     top: $top-tagbar-height;
-    padding: 0 0 calc(#{$header-height} + 25px) 0;
+    padding: 0;
     transition: all 0.1s ease-out;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - #{$top-tagbar-height});
+
+    #scrollbar {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding-bottom: calc(#{$header-height} + 25px);
+
+        .container-fluid {
+            height: 100%;
+        }
+    }
 
     .navbar-nav {
         .nav-link {

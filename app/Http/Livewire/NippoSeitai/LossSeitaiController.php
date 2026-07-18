@@ -568,20 +568,20 @@ class LossSeitaiController extends Component
 
     public function render()
     {
+        if (!$this->isLoaded) {
+            return view('livewire.nippo-seitai.loss-seitai', [
+                'data'     => new \Illuminate\Pagination\LengthAwarePaginator([], 0, $this->perPage),
+                'products' => [],
+                'machine'  => [],
+            ])->extends('layouts.master');
+        }
+
         $products = Cache::remember('ms_products_loss_seitai', 3600, fn() =>
             MsProduct::select(['id', 'name', 'code'])->orderBy('code')->get()
         );
         $machine = Cache::remember('ms_machines_loss_seitai', 3600, fn() =>
             MsMachine::select(['id', 'machineno'])->where('machineno', 'LIKE', '00S%')->orderBy('machineno')->get()
         );
-
-        if (!$this->isLoaded) {
-            return view('livewire.nippo-seitai.loss-seitai', [
-                'data'     => new \Illuminate\Pagination\LengthAwarePaginator([], 0, $this->perPage),
-                'products' => $products,
-                'machine'  => $machine,
-            ])->extends('layouts.master');
-        }
 
         try {
             $data = DB::table('tdproduct_goods AS tdpg')

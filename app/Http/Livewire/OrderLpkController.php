@@ -139,20 +139,20 @@ class OrderLpkController extends Component
 
     public function render()
     {
+        if (!$this->isLoaded) {
+            return view('livewire.order-lpk.order-lpk', [
+                'data'     => new \Illuminate\Pagination\LengthAwarePaginator([], 0, $this->perPage),
+                'products' => [],
+                'buyer'    => [],
+            ])->extends('layouts.master');
+        }
+
         $products = Cache::remember('ms_products_order_lpk', 3600, fn() =>
             MsProduct::select(['id', 'name', 'code'])->orderBy('code')->get()
         );
         $buyer = Cache::remember('ms_buyers_order_lpk', 3600, fn() =>
             MsBuyer::select(['id', 'name'])->orderBy('name')->get()
         );
-
-        if (!$this->isLoaded) {
-            return view('livewire.order-lpk.order-lpk', [
-                'data'     => new \Illuminate\Pagination\LengthAwarePaginator([], 0, $this->perPage),
-                'products' => $products,
-                'buyer'    => $buyer,
-            ])->extends('layouts.master');
-        }
 
         try {
             $data = DB::table('tdorder AS tod')

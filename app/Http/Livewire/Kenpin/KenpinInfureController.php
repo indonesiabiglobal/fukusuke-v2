@@ -77,17 +77,17 @@ class KenpinInfureController extends Component
 
     public function render()
     {
+        if (!$this->isLoaded) {
+            return view('livewire.kenpin.kenpin-infure', [
+                'data'     => new \Illuminate\Pagination\LengthAwarePaginator([], 0, $this->perPage),
+                'products' => [],
+            ])->extends('layouts.master');
+        }
+
         $products = Cache::remember('ms_products_kenpin', 3600, fn() =>
             MsProduct::select(['id', 'name', 'code', 'code_alias'])
                 ->active()->orderBy('code_alias', 'ASC')->orderBy('name', 'ASC')->get()
         );
-
-        if (!$this->isLoaded) {
-            return view('livewire.kenpin.kenpin-infure', [
-                'data'     => new \Illuminate\Pagination\LengthAwarePaginator([], 0, $this->perPage),
-                'products' => $products,
-            ])->extends('layouts.master');
-        }
 
         try {
             $data = DB::table('tdkenpin AS tdka')

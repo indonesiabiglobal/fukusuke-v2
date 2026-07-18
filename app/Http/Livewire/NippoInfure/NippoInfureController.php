@@ -152,6 +152,14 @@ class NippoInfureController extends Component
 
     public function render()
     {
+        if (!$this->isLoaded) {
+            return view('livewire.nippo-infure.nippo-infure', [
+                'data'     => new \Illuminate\Pagination\LengthAwarePaginator([], 0, $this->perPage),
+                'products' => [],
+                'machine'  => [],
+            ])->extends('layouts.master');
+        }
+
         $products = Cache::remember('ms_products_infure', 3600, fn() =>
             MsProduct::select(['id', 'name', 'code', 'code_alias'])->orderBy('code')->get()
         );
@@ -159,13 +167,6 @@ class NippoInfureController extends Component
             MsMachine::select(['id', 'machineno'])->whereIn('department_id', [10, 12, 15, 2, 4, 10])->orderBy('machineno')->get()
         );
 
-        if (!$this->isLoaded) {
-            return view('livewire.nippo-infure.nippo-infure', [
-                'data'     => new \Illuminate\Pagination\LengthAwarePaginator([], 0, $this->perPage),
-                'products' => $products,
-                'machine'  => $machine,
-            ])->extends('layouts.master');
-        }
 
         try {
             $data = DB::table('tdproduct_assembly AS tda')

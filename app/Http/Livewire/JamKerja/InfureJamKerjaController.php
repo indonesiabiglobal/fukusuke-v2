@@ -558,6 +558,14 @@ class InfureJamKerjaController extends Component
 
     public function render()
     {
+        if (!$this->isLoaded) {
+            return view('livewire.jam-kerja.infure', [
+                'data'      => new \Illuminate\Pagination\LengthAwarePaginator([], 0, $this->perPage),
+                'machine'   => [],
+                'workShift' => [],
+            ])->extends('layouts.master');
+        }
+
         $machine = Cache::remember('ms_machines_infure_jk', 3600, fn() =>
             MsMachine::whereIn('department_id', departmentHelper::infurePabrikDepartment()->pluck('id'))
                 ->select(['id', 'machineno', 'machinename'])
@@ -566,14 +574,6 @@ class InfureJamKerjaController extends Component
         $workShift = Cache::remember('ms_workshifts_jk', 3600, fn() =>
             MsWorkingShift::active()->select(['id', 'work_shift'])->get()
         );
-
-        if (!$this->isLoaded) {
-            return view('livewire.jam-kerja.infure', [
-                'data'      => new \Illuminate\Pagination\LengthAwarePaginator([], 0, $this->perPage),
-                'machine'   => $machine,
-                'workShift' => $workShift,
-            ])->extends('layouts.master');
-        }
 
         try {
             $data = DB::table('tdjamkerjamesin AS tdjkm')
