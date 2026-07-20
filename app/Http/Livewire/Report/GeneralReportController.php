@@ -1125,7 +1125,7 @@ class GeneralReportController extends Component
         return [
             'status'   => 'success',
             'writer'   => $writer,
-            'filename' => $this->nipon . '-' . $this->jenisReport . '.xlsx'
+            'filename' => $this->nipon . '-' . $this->jenisreport . '.xlsx'
         ];
     }
 
