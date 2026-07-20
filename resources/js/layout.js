@@ -11,6 +11,10 @@ File: Layout Js File
 
     'use strict';
 
+    sessionStorage.removeItem('data-bs-theme');
+    sessionStorage.removeItem('data-layout-auto');
+    document.documentElement.classList.remove('mode-auto');
+
     if (sessionStorage.getItem('defaultAttribute')) {
 
         var attributesValue = document.documentElement.attributes;
@@ -28,7 +32,6 @@ File: Layout Js File
             var isLayoutAttributes = {};
             isLayoutAttributes['data-layout'] = sessionStorage.getItem('data-layout');
             isLayoutAttributes['data-sidebar-size'] = sessionStorage.getItem('data-sidebar-size');
-            isLayoutAttributes['data-bs-theme'] = sessionStorage.getItem('data-bs-theme');
             isLayoutAttributes['data-layout-width'] = sessionStorage.getItem('data-layout-width');
             isLayoutAttributes['data-sidebar'] = sessionStorage.getItem('data-sidebar');
             isLayoutAttributes['data-sidebar-image'] = sessionStorage.getItem('data-sidebar-image');
