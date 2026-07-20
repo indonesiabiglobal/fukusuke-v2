@@ -1741,20 +1741,23 @@
 
             Highcharts.setOptions({
                 chart: {
+                    backgroundColor: '#ffffff',
                     style: {
                         fontSize: '12px',
                         // fontWeight: '600'
                     }
                 },
+                title: { style: { color: '#333333' } },
+                subtitle: { style: { color: '#666666' } },
+                xAxis: { labels: { style: { color: '#333333' } }, lineColor: '#ccd6eb', tickColor: '#ccd6eb' },
+                yAxis: { labels: { style: { color: '#333333' } }, gridLineColor: '#e6e6e6', tickAmount: 5 },
+                legend: { itemStyle: { color: '#333333' } },
                 plotOptions: {
                     column: {
                         pointPadding: 0.05, // default: 0.1
                         groupPadding: 0.05, // default: 0.2
                         borderWidth: 0
                     }
-                },
-                yAxis: {
-                    tickAmount: 5,
                 }
             });
         });
