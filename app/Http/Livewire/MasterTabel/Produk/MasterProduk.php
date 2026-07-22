@@ -198,9 +198,9 @@ class MasterProduk extends Component
             ->leftJoin('mspackagingbox as mspkb', 'mspkb.id', '=', 'msp.pack_box_id')
             ->leftJoin('mspackaginginner as mspki', 'mspki.id', '=', 'msp.pack_inner_id')
             ->leftJoin('mspackaginglayer as mspkl', 'mspkl.id', '=', 'msp.pack_layer_id')
-            ->leftJoin('msunit as msug', 'msug.code', '=', 'msp.case_gaiso_count_unit')
-            ->leftJoin('msunit as msub', 'msub.code', '=', 'msp.case_box_count_unit')
-            ->leftJoin('msunit as msui', 'msui.code', '=', 'msp.case_inner_count_unit')
+            ->leftJoin('msunit as msug', 'msug.id', '=', 'msp.case_gaiso_count_unit')
+            ->leftJoin('msunit as msub', 'msub.id', '=', 'msp.case_box_count_unit')
+            ->leftJoin('msunit as msui', 'msui.id', '=', 'msp.case_inner_count_unit')
             ->leftJoin('mskatanuki as mskat', 'mskat.id', '=', 'msp.katanuki_id')
             ->select(
                 'msp.code as product_code',
