@@ -109,7 +109,7 @@ class MasterProduk extends Component
 
         $header = [
             // Basic
-            'No', 'Nomor Order', 'Kode Produk (Alias)', 'Code Barcode',
+            'No', 'Nomor Order', 'Nama Produk', 'Kode Produk (Alias)', 'Code Barcode',
             'Kode Tipe Produk', 'Nama Tipe Produk', 'Jenis Produk',
             'Kode Satuan', 'Nama Satuan', 'Berat Satuan',
             'Tebal (T)', 'Lebar (L)', 'Panjang (P)',
@@ -204,6 +204,7 @@ class MasterProduk extends Component
             ->leftJoin('mskatanuki as mskat', 'mskat.id', '=', 'msp.katanuki_id')
             ->select(
                 'msp.code as product_code',
+                'msp.name as product_name',
                 'msp.code_alias',
                 'msp.codebarcode',
                 'msp.product_type_code',
@@ -300,6 +301,7 @@ class MasterProduk extends Component
             // Basic
             $activeWorksheet->setCellValue($col++ . $rowItem, $key + 1);
             $activeWorksheet->setCellValue($col++ . $rowItem, $item->product_code);
+            $activeWorksheet->setCellValue($col++ . $rowItem, $item->product_name);
             $activeWorksheet->setCellValue($col++ . $rowItem, $item->code_alias);
             $activeWorksheet->setCellValue($col++ . $rowItem, $item->codebarcode);
             $activeWorksheet->setCellValue($col++ . $rowItem, $item->product_type_code);
