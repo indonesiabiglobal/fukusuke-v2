@@ -659,9 +659,6 @@ File: Main Js File
 			if(document.querySelector(".navbar-menu")){
 			document.querySelector(".navbar-menu").innerHTML = navbarMenuHTML;
 		}
-			document.getElementById("scrollbar").setAttribute("data-simplebar", "");
-			document.getElementById("navbar-nav").setAttribute("data-simplebar", "");
-			document.getElementById("scrollbar").classList.add("h-100");
 		}
 
 		/**
