@@ -534,7 +534,9 @@ class DashboardSeitaiController extends Controller
                 mslos.id AS loss_id,
                 mslos.name AS loss_name,
                 periods.period_ke,
-                ROUND(COALESCE(SUM(tpaloss.berat_loss), 0)::numeric, 1) AS berat_loss
+                ROUND(COALESCE(SUM(
+                    CASE WHEN tpa.id IS NOT NULL AND mac.id IS NOT NULL THEN tpaloss.berat_loss ELSE 0 END
+                ), 0)::numeric, 1) AS berat_loss
             FROM mslossseitai mslos
             CROSS JOIN (VALUES (1), (2), (3)) AS periods(period_ke)
             LEFT JOIN tdproduct_goods_loss tpaloss ON mslos.id = tpaloss.loss_seitai_id
@@ -545,10 +547,11 @@ class DashboardSeitaiController extends Controller
                     OR (periods.period_ke = 2 AND tpa.production_date BETWEEN :firstPeriodPlus AND :secondPeriod)
                     OR (periods.period_ke = 3 AND tpa.production_date BETWEEN :secondPeriodPlus AND :endMonth)
                 )
-            LEFT JOIN msmachine mac ON tpa.machine_id = mac.id
+            LEFT JOIN msmachine mac
+                ON tpa.machine_id = mac.id
+                AND mac.department_id = :factory
+                AND mac.status = 1
             WHERE mslos.loss_class_id IN (' . implode(',', $lossClassIds) . ')
-                AND (mac.department_id = :factory OR mac.id IS NULL)
-                AND (mac.status = 1 OR mac.id IS NULL)
             GROUP BY mslos.id, mslos.name, periods.period_ke
             ORDER BY mslos.id, periods.period_ke
         ', [
