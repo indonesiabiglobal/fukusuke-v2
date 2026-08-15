@@ -567,7 +567,8 @@
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-success" wire:click="addJamMatiMesin"
-                                        wire:loading.attr="disabled" x-ref="addJamMatiMesin">
+                                        wire:loading.attr="disabled" x-ref="addJamMatiMesin"
+                                        :disabled="!$wire.off_hour || $wire.off_hour === '00:00'">
                                         <span wire:loading.remove wire:target="addJamMatiMesin">
                                             <i class="ri-save-3-line"></i> Save
                                         </span>
