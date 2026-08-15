@@ -28,6 +28,8 @@ jobs:
             sudo php artisan view:cache
             sudo php artisan optimize
             sudo npm run build
+            sudo chown -R www-data:www-data storage/framework storage/logs bootstrap/cache
+            sudo chmod -R 775 storage/framework storage/logs bootstrap/cache
             sudo systemctl restart php8.2-fpm
 
       # - name: Deploy to production server 3
