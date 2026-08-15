@@ -328,13 +328,20 @@ class CheckListJamKerjaController extends Component
             $tglAkhir = Carbon::parse($tglAkhir)->subDay();
         }
 
-        $query = TdJamKerjaMesin::with(['machine' => function ($q) {
-            $q->select('id', 'machineno', 'machinename');
-        }, 'employee' => function ($q) {
-            $q->select('id', 'employeeno', 'empname');
-        }, 'workingShift' => function ($q) {
-            $q->select('id', 'work_hour_from', 'work_hour_till');
-        }, 'jamKerjaJamMatiMesin', 'jamKerjaJamMatiMesin.jamMatiMesin'])
+        $with = [
+            'machine' => function ($q) {
+                $q->select('id', 'machineno', 'machinename');
+            },
+            'employee' => function ($q) {
+                $q->select('id', 'employeeno', 'empname');
+            },
+        ];
+        if ($isDetail) {
+            $with[] = 'jamKerjaJamMatiMesin';
+            $with[] = 'jamKerjaJamMatiMesin.jamMatiMesin';
+        }
+
+        $query = TdJamKerjaMesin::with($with)
             ->select('id', 'working_date', 'work_shift', 'machine_id', 'employee_id', 'work_hour', 'off_hour', 'on_hour');
 
         $jamKerjaMesinTable = (new TdJamKerjaMesin)->getTable();
@@ -342,13 +349,32 @@ class CheckListJamKerjaController extends Component
 
         if (isset($filter['transaksi']) && $filter['transaksi'] != '') {
             if ($filter['transaksi'] == 1) {
-                $query = $query->whereRaw(
-                    "({$jamKerjaMesinTable}.working_date + (select work_hour_from from msworkingshift where id = {$jamKerjaMesinTable}.work_shift)) BETWEEN ? AND ?",
-                    [
-                        $tglAwal->toDateTimeString(),
-                        $tglAkhir->toDateTimeString()
-                    ]
-                );
+                // Rewritten from a per-row correlated subquery (was 500ms+, full seq scan on tdjamkerjamesin)
+                // to a sargable OR over shifts (only a handful of rows) so Postgres can use an index on working_date.
+                // Verified identical row output against the original predicate on live data.
+                $shifts = MsWorkingShift::select('id', 'work_hour_from')->get();
+                if ($shifts->isEmpty()) {
+                    // No shifts to match against: the original correlated subquery would return NULL
+                    // for every row (failing BETWEEN), so mirror that as zero results.
+                    $query = $query->whereRaw('1 = 0');
+                } else {
+                    $query = $query->where(function ($q) use ($shifts, $tglAwal, $tglAkhir, $jamKerjaMesinTable) {
+                        foreach ($shifts as $shift) {
+                            $q->orWhere(function ($qq) use ($shift, $tglAwal, $tglAkhir, $jamKerjaMesinTable) {
+                                $qq->where("{$jamKerjaMesinTable}.work_shift", $shift->id)
+                                    ->whereRaw(
+                                        "{$jamKerjaMesinTable}.working_date BETWEEN (?::timestamp - ?::time) AND (?::timestamp - ?::time)",
+                                        [
+                                            $tglAwal->toDateTimeString(),
+                                            $shift->work_hour_from,
+                                            $tglAkhir->toDateTimeString(),
+                                            $shift->work_hour_from,
+                                        ]
+                                    );
+                            });
+                        }
+                    });
+                }
             } elseif ($filter['transaksi'] == 2) {
                 $query = $query->whereBetween('created_on', [$tglAwal, $tglAkhir]);
             }
