@@ -502,7 +502,7 @@ class EditNippoController extends Component
             $product->product_id = $msProduct->id;
             $product->panjang_produksi = $this->panjang_produksi;
             $product->berat_produksi = $this->berat_produksi;
-            $product->berat_standard = $this->berat_standard;
+            $product->berat_standard = ($this->ketebalan * $this->diameterlipat * (int)str_replace(',', '', $this->panjang_produksi) * 2 * $this->berat_jenis) / 1000;;
             $product->infure_cost = $this->berat_produksi * 20;
             if ($msProduct->product_cetak_id == 1) {
                 $product->panjang_printing_inline = $this->panjang_produksi;
