@@ -430,7 +430,7 @@ class phpspreadsheet
      * Set a cell value as an Excel date and apply a date number format.
      * Accepts string, DateTimeInterface, Carbon instance or timestamp.
      */
-    public static function setCellDate($spreadsheet, $cell, $date, $format = 'dd-mmm-yyyy')
+    public static function setCellDate($spreadsheet, $cell, $date, $format = 'dd-mmm-yyyy', $worksheet = null)
     {
         if ($date === null || $date === '') {
             $spreadsheet->getActiveSheet()->setCellValue($cell, '');
@@ -448,7 +448,11 @@ class phpspreadsheet
         }
 
         $excelDate = \PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel($dt->toDateTime());
-        $sheet = $spreadsheet->getActiveSheet();
+        if ($worksheet !== null) {
+            $sheet = $worksheet;
+        } else {
+            $sheet = $spreadsheet->getActiveSheet();
+        }
         $sheet->setCellValue($cell, $excelDate);
         $sheet->getStyle($cell)->getNumberFormat()->setFormatCode($format);
     }

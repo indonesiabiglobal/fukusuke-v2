@@ -125,7 +125,7 @@ class CheckListJamKerjaController extends Component
         $tglAkhir = Carbon::parse($this->tglAkhir . ' ' . $this->jamAkhir);
 
         $filter = [
-            'machine_id' => $this->machineId['value'] ?? null,
+            'machine_id' => $this->machineId ?? null,
             'transaksi' => $this->transaksi ?? 1,
             'department_id' => $this->departmentId ?? null,
         ];
@@ -410,7 +410,7 @@ class CheckListJamKerjaController extends Component
             $worksheet->setCellValue($columnItemEnd . $rowItem, $key + 1);
             $columnItemEnd++;
             // Tanggal
-            phpspreadsheet::setCellDate($spreadsheet, $columnItemEnd . $rowItem, $dataItem['working_date']);
+            phpspreadsheet::setCellDate($spreadsheet, $columnItemEnd . $rowItem, $dataItem['working_date'], 'dd-mmm-yyyy', $worksheet);
             $columnItemEnd++;
             // Shift
             $worksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['work_shift']);
@@ -481,7 +481,7 @@ class CheckListJamKerjaController extends Component
             $worksheet->setCellValue($columnItemEnd . $rowItem, $key + 1);
             $columnItemEnd++;
             // Tanggal
-            phpspreadsheet::setCellDate($spreadsheet, $columnItemEnd . $rowItem, $dataItem['working_date']);
+            phpspreadsheet::setCellDate($spreadsheet, $columnItemEnd . $rowItem, $dataItem['working_date'], 'dd-mmm-yyyy', $worksheet);
             $columnItemEnd++;
             // Shift
             $worksheet->setCellValue($columnItemEnd . $rowItem, $dataItem['work_shift']);

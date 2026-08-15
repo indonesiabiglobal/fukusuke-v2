@@ -108,7 +108,7 @@
                     <div class="col-12 col-lg-9">
                         <div class="mb-1">
                             <select class="form-control select2-machine py-2 px-3" wire:model="machineId" wire:loading.attr="disabled"
-                                wire:loading.class="bg-light" wire:target="divisionId">
+                                wire:loading.class="bg-light" wire:target="machineId">
                                 <option value="">- All -</option>
                                 @foreach ($machine as $item)
                                     <option value="{{ $item->id }}">{{ $item->machineno }} - {{ $item->machinename }}</option>
