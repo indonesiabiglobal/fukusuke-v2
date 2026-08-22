@@ -26,10 +26,6 @@ jobs:
 
             git pull origin main
 
-            # Bersihkan cache lama SEBELUM build. File view cache dibuat www-data
-            # saat runtime; user deploy boleh MENGHAPUSnya (direktori miliknya),
-            # tapi TIDAK boleh chmod -- itu yang dulu mematahkan deploy dengan
-            # "Operation not permitted".
             php artisan optimize:clear
 
             composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
@@ -41,7 +37,4 @@ jobs:
             php artisan optimize
             php artisan view:cache
 
-            # Tanpa chmod: storage/framework, storage/logs, dan bootstrap/cache
-            # sudah bermode 2775 (setgid) sejak disetel manual, jadi file baru
-            # otomatis bergrup www-data. Tidak perlu diatur ulang tiap deploy.
             sudo systemctl restart php8.2-fpm
