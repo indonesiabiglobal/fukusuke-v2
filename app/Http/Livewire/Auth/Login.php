@@ -46,6 +46,15 @@ class Login extends Component
         );
 
         if (Auth::attempt($user)) {
+            if ((int) auth()->user()->status === 0) {
+                Auth::logout();
+                $this->addError('email', trans('auth.failed'));
+                return;
+            }
+
+            // Cegah session fixation: ganti session ID setelah login berhasil
+            session()->regenerate();
+
             // Cache access saat login agar sidebar tidak query ulang saat halaman pertama dibuka
             $userAccess = Cache::remember(
                 'user_access_' . auth()->id(),

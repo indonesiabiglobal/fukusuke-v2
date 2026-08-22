@@ -84,7 +84,7 @@ class KatanukiController extends Component
 
         try {
             $this->validate([
-                'photo' => 'required|image|max:10240',
+                'photo' => 'required|image|mimes:jpg,jpeg,png|max:10240',
             ]);
         } catch (\Exception $e) {
             $this->dispatch('notification', ['type' => 'error', 'message' => 'The photo field is required and must be an image file not exceeding 10MB.']);
@@ -96,7 +96,7 @@ class KatanukiController extends Component
             $statusActive = 1;
             // menyimpan file image ke storage
             if (isset($this->photo)) {
-                $filename = Str::random(20) . '.' . $this->photo->getClientOriginalExtension();
+                $filename = Str::random(20) . '.' . $this->photo->extension();
 
                 // Menyimpan file dengan nama custom
                 $this->filename = $this->photo->storeAs('katanuki', $filename, 'public');
@@ -144,15 +144,14 @@ class KatanukiController extends Component
         $this->validate([
             'code' => 'required|max:10|unique:mskatanuki,code,' . $this->idUpdate,
             'name' => 'required',
-            'photo' => 'max:10240',
+            'photo' => 'nullable|image|mimes:jpg,jpeg,png|max:10240',
         ]);
 
         DB::beginTransaction();
         try {
-            // cek apakah file image diubah atau tidak
-            $this->filename = $this->photo ? 'katanuki/' . $this->photo->getClientOriginalName() : $this->filename;
+            // hanya proses file kalau user memang mengunggah foto baru
             $mskatanuki = DB::table('mskatanuki')->where('id', $this->idUpdate)->first();
-            if ($this->filename && $mskatanuki->filename != $this->filename) {
+            if ($this->photo) {
                 // hapus file image lama
                 $pathFile = $mskatanuki->filename;
                 if ($pathFile) {
@@ -161,12 +160,9 @@ class KatanukiController extends Component
                         unlink(storage_path('app/' . $pathFile));
                     }
                 }
-            }
 
-            $statusActive = 1;
-            if ($this->photo) {
-                // menyimpan file image ke storage
-                $filename = Str::random(20) . '.' . $this->photo->getClientOriginalExtension();
+                // extension() ditebak dari MIME asli, bukan nama file kiriman client
+                $filename = Str::random(20) . '.' . $this->photo->extension();
                 $this->filename = $this->photo->storeAs('katanuki', $filename, 'public');
             }
 

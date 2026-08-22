@@ -24,3 +24,17 @@ id_rsa
 id_rsa.pub
 .playwright-mcp
 id_rsa_deploy
+
+# Signing key Android - jangan pernah di-commit
+android.keystore
+*.jks
+
+# Artefak build Android
+*.apk
+*.aab
+*.idsig
+hs_err_pid*.log
+
+# File data yang tidak boleh disajikan publik lewat /public
+/public/docs
+/public/Master-Produk.xlsx
