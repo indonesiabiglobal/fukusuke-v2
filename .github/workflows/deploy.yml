@@ -26,6 +26,8 @@ jobs:
 
             git pull origin main
 
+            php artisan optimize:clear
+
             composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
             npm ci
@@ -34,7 +36,5 @@ jobs:
             # optimize = config:cache + route:cache. view:cache terpisah di Laravel 10.
             php artisan optimize
             php artisan view:cache
-
-            chmod -R 2775 storage/framework storage/logs bootstrap/cache
 
             sudo systemctl restart php8.2-fpm
