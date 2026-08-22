@@ -101,7 +101,7 @@
                 </div>
                 <div class="card-body">
                     <div class="markdown-body">
-                        {!! $content !!}
+                        {{ $content }}
                     </div>
                 </div>
             </div>

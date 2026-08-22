@@ -103,12 +103,11 @@ use Illuminate\Support\Facades\Log;
 */
 
 Route::get('/login', \App\Http\Livewire\Auth\Login::class)->name('login');
-Route::get('/register', \App\Http\Livewire\Auth\Register::class)->name('register');
+Route::redirect('/register', '/login')->name('register');
 Route::get('/forget-password', \App\Http\Livewire\Auth\ForgetPassword::class)->name('password.reset');
 Route::get('/new-password', \App\Http\Livewire\Auth\NewPassword::class);
 Route::get('/logout', [App\Http\Controllers\HomeController::class, 'logout']);
 Route::get('index/{locale}', [App\Http\Controllers\HomeController::class, 'lang']);
-Route::get('phpinfo', [App\Http\Controllers\HomeController::class, 'phpinfo']);
 
 // Documentation Routes
 Route::get('/docs/{file}', function ($file) {
@@ -128,7 +127,8 @@ Route::get('/docs/{file}', function ($file) {
         'content' => $content,
         'title' => $title
     ]);
-})->middleware('auth')->where('file', '.*');
+    // Tanpa titik & garis miring -> tidak bisa dipakai untuk path traversal (../).
+})->middleware('auth')->where('file', '[A-Za-z0-9_-]+');
 
 Route::group(['middleware' => 'auth'], function () {
     // Printer Settings

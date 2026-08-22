@@ -51,11 +51,6 @@ class HomeController extends Controller
         }
     }
 
-    public function phpinfo()
-    {
-        phpinfo();
-    }
-
     public function logout() {
         Auth::logout();
         return redirect('/login');

@@ -11,9 +11,8 @@ class AllowIframe
     {
         $response = $next($request);
 
-        // Allow iframe from Cordova app
         $response->headers->remove('X-Frame-Options');
-        $response->headers->set('Content-Security-Policy', "frame-ancestors *");
+        $response->headers->set('Content-Security-Policy', "frame-ancestors 'self'");
 
         return $response;
     }
