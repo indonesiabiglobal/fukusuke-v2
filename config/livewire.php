@@ -106,6 +106,7 @@ return [
             'jpg', 'jpeg', 'mpga', 'webp', 'wma',
         ],
         'max_upload_time' => 5, // Max duration (in minutes) before an upload gets invalidated.
+        'cleanup' => true, // Bersihkan unggahan sementara yang lebih tua dari 24 jam
     ],
 
     /*
