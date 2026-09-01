@@ -15,7 +15,7 @@
                 <div class="card mb-0 py-5">
                     <div class="card-body p-4 p-sm-5 m-lg-4 text-center">
                         <div class="mb-4 pb-2">
-                            <lord-icon src="https://cdn.lordicon.com/diihvcfp.json" trigger="loop" class="avatar-md"> </lord-icon>
+                            <lord-icon src="{{ URL::asset('build/libs/lordicon/diihvcfp.json') }}" trigger="loop" class="avatar-md"> </lord-icon>
                         </div>
                         <div class="text-muted text-center mx-lg-3">
                             <h4 class="">Verify Your Email</h4>

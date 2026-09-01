@@ -22,7 +22,7 @@
                     <div class="card-body p-4 p-sm-5 m-lg-4 text-center">
                         <div class="mt-2 text-center">
                             <div class="text-center">
-                                <lord-icon src="https://cdn.lordicon.com/ptzyuaia.json" trigger="loop" style="width:200px;height:200px">
+                                <lord-icon src="{{ URL::asset('build/libs/lordicon/ptzyuaia.json') }}" trigger="loop" style="width:200px;height:200px">
                                 </lord-icon>
                                 <h3 class="mt-4 fw-semibold">We're Currently Offline</h3>
                                 <p class="text-muted mb-4 fs-14">We can't show you this images because you aren't connected to the internet. When you’re back online refresh the page or hit the button below</p>

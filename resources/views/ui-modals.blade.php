@@ -87,7 +87,7 @@
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
                                 <div class="modal-body text-center p-5">
-                                    <lord-icon src="https://cdn.lordicon.com/hrqwmuhr.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:120px;height:120px"></lord-icon>
+                                    <lord-icon src="{{ URL::asset('build/libs/lordicon/hrqwmuhr.json') }}" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:120px;height:120px"></lord-icon>
                                     <div class="mt-4">
                                         <h4 class="mb-3">Oops something went wrong!</h4>
                                         <p class="text-muted mb-4"> The transfer was not successfully received by us. the email of the recipient wasn't correct.</p>
@@ -287,7 +287,7 @@ Launch Demo Modal
                         <div class="modal-dialog modal-dialog-centered" role="document">
                             <div class="modal-content">
                                 <div class="modal-body text-center p-5">
-                                    <lord-icon src="https://cdn.lordicon.com/lupuorrc.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:120px;height:120px"></lord-icon>
+                                    <lord-icon src="{{ URL::asset('build/libs/lordicon/lupuorrc.json') }}" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:120px;height:120px"></lord-icon>
 
                                     <div class="mt-4">
                                         <h4 class="mb-3">You've made it!</h4>
@@ -317,7 +317,7 @@ Static Backdrop Modal
         &lt;div class=&quot;modal-content&quot;&gt;
             &lt;div class=&quot;modal-body text-center p-5&quot;&gt;
                 &lt;lord-icon
-                    src=&quot;https://cdn.lordicon.com/lupuorrc.json&quot;
+                    src=&quot;{{ URL::asset('build/libs/lordicon/lupuorrc.json') }}&quot;
                     trigger=&quot;loop&quot;
                     colors=&quot;primary:#121331,secondary:#08a88a&quot;
                     style=&quot;width:120px;height:120px&quot;&gt;
@@ -357,7 +357,7 @@ Static Backdrop Modal
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
                                 <div class="modal-body text-center p-5">
-                                    <lord-icon src="https://cdn.lordicon.com/tdrtiskw.json" trigger="loop" colors="primary:#f7b84b,secondary:#405189" style="width:130px;height:130px"></lord-icon>
+                                    <lord-icon src="{{ URL::asset('build/libs/lordicon/tdrtiskw.json') }}" trigger="loop" colors="primary:#f7b84b,secondary:#405189" style="width:130px;height:130px"></lord-icon>
                                     <div class="mt-4 pt-4">
                                         <h4>Uh oh, something went wrong!</h4>
                                         <p class="text-muted"> The transfer was not successfully received by us. the email of the recipient wasn't correct.</p>
@@ -375,7 +375,7 @@ Static Backdrop Modal
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
                                 <div class="modal-body text-center p-5">
-                                    <lord-icon src="https://cdn.lordicon.com/zpxybbhl.json" trigger="loop" colors="primary:#405189,secondary:#0ab39c" style="width:150px;height:150px"></lord-icon>
+                                    <lord-icon src="{{ URL::asset('build/libs/lordicon/zpxybbhl.json') }}" trigger="loop" colors="primary:#405189,secondary:#0ab39c" style="width:150px;height:150px"></lord-icon>
                                     <div class="mt-4 pt-3">
                                         <h4 class="mb-3">Follow-Up Email</h4>
                                         <p class="text-muted mb-4">Hide this modal and show the first with the button below Automatically Send your invitees a follow -Up email.</p>
@@ -405,7 +405,7 @@ Static Backdrop Modal
         &lt;div class=&quot;modal-content&quot;&gt;
             &lt;div class=&quot;modal-body text-center p-5&quot;&gt;
                 &lt;lord-icon
-                    src=&quot;https://cdn.lordicon.com/tdrtiskw.json&quot;
+                    src=&quot;{{ URL::asset('build/libs/lordicon/tdrtiskw.json') }}&quot;
                     trigger=&quot;loop&quot;
                     colors=&quot;primary:#f7b84b,secondary:#405189&quot;
                     style=&quot;width:130px;height:130px&quot;&gt;
@@ -428,7 +428,7 @@ Static Backdrop Modal
         &lt;div class=&quot;modal-content&quot;&gt;
             &lt;div class=&quot;modal-body text-center p-5&quot;&gt;
                 &lt;lord-icon
-                    src=&quot;https://cdn.lordicon.com/zpxybbhl.json&quot;
+                    src=&quot;{{ URL::asset('build/libs/lordicon/zpxybbhl.json') }}&quot;
                     trigger=&quot;loop&quot;
                     colors=&quot;primary:#405189,secondary:#0ab39c&quot;
                     style=&quot;width:150px;height:150px&quot;&gt;
@@ -1648,7 +1648,7 @@ Static Backdrop Modal
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-body text-center p-5">
-                                    <lord-icon src="https://cdn.lordicon.com/pithnlch.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:120px;height:120px">
+                                    <lord-icon src="{{ URL::asset('build/libs/lordicon/pithnlch.json') }}" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:120px;height:120px">
                                     </lord-icon>
                                     <div class="mt-4">
                                         <h4 class="mb-3">Your event has been created.</h4>
@@ -1667,7 +1667,7 @@ Static Backdrop Modal
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-body text-center p-5">
-                                        <lord-icon src="https://cdn.lordicon.com/pithnlch.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:120px;height:120px"></lord-icon>
+                                        <lord-icon src="{{ URL::asset('build/libs/lordicon/pithnlch.json') }}" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:120px;height:120px"></lord-icon>
                                         <div class="mt-4">
                                             <h4 class="mb-3">Your event has been created.</h4>
                                             <p class="text-muted mb-4"> The transfer was not successfully received by us. the email of the recipient wasn't correct.</p>
@@ -1686,7 +1686,7 @@ Static Backdrop Modal
                         <div class="modal-dialog modal-dialog-bottom">
                             <div class="modal-content">
                                 <div class="modal-body text-center p-5">
-                                    <lord-icon src="https://cdn.lordicon.com/pithnlch.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:120px;height:120px"></lord-icon>
+                                    <lord-icon src="{{ URL::asset('build/libs/lordicon/pithnlch.json') }}" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:120px;height:120px"></lord-icon>
                                     <div class="mt-4">
                                         <h4 class="mb-3">Your event has been created.</h4>
                                         <p class="text-muted mb-4">The transfer was not successfully received by us. the email of the recipient wasn't correct.</p>
@@ -1705,7 +1705,7 @@ Static Backdrop Modal
                         <div class="modal-dialog modal-dialog-bottom-right">
                             <div class="modal-content">
                                 <div class="modal-body text-center p-5">
-                                    <lord-icon src="https://cdn.lordicon.com/pithnlch.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:120px;height:120px"></lord-icon>
+                                    <lord-icon src="{{ URL::asset('build/libs/lordicon/pithnlch.json') }}" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:120px;height:120px"></lord-icon>
                                     <div class="mt-4">
                                         <h4 class="mb-3">Your event has been created.</h4>
                                         <p class="text-muted mb-4"> The transfer was not successfully received by us. the email of the recipient wasn't correct.</p>
@@ -1771,7 +1771,7 @@ Static Backdrop Modal
                                     <button type="button" class="btn-close text-end" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="mt-2">
-                                    <lord-icon src="https://cdn.lordicon.com/tqywkdcz.json" trigger="hover" style="width:150px;height:150px">
+                                    <lord-icon src="{{ URL::asset('build/libs/lordicon/tqywkdcz.json') }}" trigger="hover" style="width:150px;height:150px">
                                     </lord-icon>
                                     <h4 class="mb-3 mt-4">Your Transaction is Successfull !</h4>
                                     <p class="text-muted fs-15 mb-4">Successful transaction is the status of operation whose result is the payment of the amount paid by the customer in favor of the merchant.</p>
@@ -1951,7 +1951,7 @@ Static Backdrop Modal
 @endsection
 @section('script')
 <script src="{{ URL::asset('build/libs/prismjs/prism.js') }}"></script>
-<script src="https://cdn.lordicon.com/libs/mssddfmo/lord-icon-2.1.0.js"></script>
+<script src="{{ URL::asset('build/js/pages/plugins/lord-icon-2.1.0.js') }}"></script>
 <script src="{{ URL::asset('build/js/pages/modal.init.js') }}"></script>
 
 <script src="{{ URL::asset('build/js/app.js') }}"></script>

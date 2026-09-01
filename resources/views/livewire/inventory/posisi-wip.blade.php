@@ -168,7 +168,7 @@
                 @empty --}}
                     {{-- <tr>
                         <td colspan="13" class="text-center">
-                            <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                            <lord-icon src="{{ URL::asset('build/libs/lordicon/msoeawqm.json') }}" trigger="loop"
                                 colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
                             <h5 class="mt-2">Record not found..!</h5>
                         </td>
@@ -217,7 +217,7 @@
                     "language": {
                         "emptyTable": `
                             <div class="text-center">
-                                <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                                <lord-icon src="{{ URL::asset('build/libs/lordicon/msoeawqm.json') }}" trigger="loop"
                                     colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
                                 <h5 class="mt-2">Record not found..!</h5>
                             </div>

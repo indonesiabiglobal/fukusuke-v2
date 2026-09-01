@@ -109,7 +109,7 @@
     </div>
 @endsection
 @section('script')
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="{{ URL::asset('build/libs/marked/marked.min.js') }}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const markdownBody = document.querySelector('.markdown-body');

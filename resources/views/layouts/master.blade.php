@@ -23,8 +23,7 @@
     @livewireStyles
 
     {{-- toastr --}}
-    {{-- <script src="https://code.jquery.com/jquery-3.5.0.min.js"></script> --}}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+    <link rel="stylesheet" href="{{ URL::asset('build/libs/toastr/toastr.min.css') }}" />
     {{-- @powerGridStyles --}}
 
     {{-- Vite Assets --}}
@@ -75,8 +74,8 @@
     @include('layouts.vendor-scripts')
     {{-- @stack('scripts') --}}
     {{-- toastr --}}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="{{ URL::asset('build/libs/toastr/toastr.min.js') }}"></script>
+    {{-- select2 sudah dimuat lokal di layouts.vendor-scripts --}}
     <script src="{{ asset('js/thermal-printer-global.js') }}"></script>
 
     @livewireScripts
@@ -121,7 +120,7 @@
                         "language": {
                             "emptyTable": `
                             <div class="text-center">
-                                <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                                <lord-icon src="{{ URL::asset('build/libs/lordicon/msoeawqm.json') }}" trigger="loop"
                                     colors="primary:#121331,secondary:#08a88a" style="width:40px;height:40px"></lord-icon>
                                 <h5 class="mt-2">Sorry! No Result Found</h5>
                             </div>
