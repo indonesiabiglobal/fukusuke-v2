@@ -148,7 +148,7 @@
             // Import QRCode library dinamis jika belum ada
             if (typeof QRCode === 'undefined') {
                 const script = document.createElement('script');
-                script.src = 'https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js';
+                script.src = '/build/libs/qrcode/qrcode.min.js';
                 script.onload = () => generateImage();
                 document.head.appendChild(script);
             } else {

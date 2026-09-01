@@ -72,6 +72,33 @@ class NoExternalCdnAssetsTest extends TestCase
         );
     }
 
+    /**
+     * public/js/ memuat library lewat script.src bikinan JS, bukan tag <script> —
+     * lolos dari pemeriksaan blade di atas. Ini yang menyembunyikan CDN qrcode.
+     */
+    public function test_no_public_js_loads_libraries_from_the_public_internet(): void
+    {
+        $root = dirname(__DIR__, 2);
+        $offenders = [];
+
+        foreach (glob($root . '/public/js/*.js') as $path) {
+            foreach (explode("\n", file_get_contents($path)) as $i => $line) {
+                if (preg_match('/\.src\s*=\s*[\'"](https?:\/\/[^\'"]+)[\'"]/i', $line, $m)) {
+                    $offenders[] = sprintf('public/js/%s:%d -> %s', basename($path), $i + 1, $m[1]);
+                }
+            }
+        }
+
+        sort($offenders);
+
+        $this->assertSame(
+            [],
+            $offenders,
+            "Script berikut dimuat dari internet publik saat runtime:\n  "
+            . implode("\n  ", $offenders)
+        );
+    }
+
     /** Kosongkan isi {{-- --}} tapi pertahankan jumlah baris agar nomor baris tetap akurat. */
     private function stripBladeComments(string $source): string
     {

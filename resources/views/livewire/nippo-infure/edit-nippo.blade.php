@@ -1880,7 +1880,7 @@ window.handleThermalPrintEdit = async function(orderId) {
         typeof window.FlutterPrinter !== 'undefined';
 
     try {
-        // Fetch data diperlukan oleh kedua path (Flutter & Cordova)
+        // Fetch data diperlukan oleh kedua path (Flutter & Web Bluetooth)
         console.log('📡 Fetching print data...');
         const response = await fetch(`/get-print-data/${orderId}?t=${Date.now()}`);
 
@@ -1916,7 +1916,7 @@ window.handleThermalPrintEdit = async function(orderId) {
             return; // isPrinting di-reset oleh callback
         }
 
-        // ===== CORDOVA PATH =====
+        // ===== WEB BLUETOOTH PATH =====
         // checkPrinterReady hanya dipanggil jika bukan Flutter WebView
         console.log('🔍 Checking printer status...');
         const printerReady = await window.checkPrinterReady();

@@ -1974,7 +1974,7 @@ document.addEventListener('livewire:initialized', () => {
         }
 
         try {
-            // Fetch data diperlukan oleh kedua path (Flutter & Cordova)
+            // Fetch data diperlukan oleh kedua path (Flutter & Web Bluetooth)
             console.log('📡 Fetching print data...');
             const response = await fetch(`/get-print-data/${produk_asemblyid}`);
 
