@@ -26,9 +26,7 @@
 {{-- Datatable --}}
 {{-- <script src="https://cdn.datatables.net/v/bs5/jq-3.7.0/dt-2.1.4/datatables.min.js"></script> --}}
 
-{{-- Select2 --}}
-<script src="{{ URL::asset('build/libs/select2/js/select2.min.js') }}"></script>
-<script src="{{ URL::asset('build/libs/select2/js/select2-3.5.1.min.js') }}"></script>
-{{-- Datatable --}}
+{{-- datatables bawa jQuery sendiri & timpa window.jQuery -> plugin jQuery wajib SESUDAHNYA --}}
 <script src="{{ URL::asset('build/libs/datatables/js/datatables.min.js') }}"></script>
+<script src="{{ URL::asset('build/libs/select2/js/select2.min.js') }}"></script>
 @yield('script')
