@@ -834,7 +834,6 @@ class EditSeitaiController extends Component
     {
         $this->start_box = $start_box;
 
-        // is_numeric, bukan isset: field yang dikosongkan operator bernilai "" dan lolos isset().
         if (! is_numeric($this->start_box) || ! is_numeric($this->end_box)) {
             return;
         }
@@ -843,7 +842,7 @@ class EditSeitaiController extends Component
             $this->dispatch('notification', ['type' => 'warning', 'message' => 'Start Box tidak boleh lebih besar dari End Box']);
             $this->start_box = null;
 
-            return; // jangan hitung jumlah_box pakai nilai yang baru di-null-kan
+            return;
         }
 
         $this->jumlah_box = ((int) $this->end_box - (int) $this->start_box) + 1;
@@ -853,7 +852,6 @@ class EditSeitaiController extends Component
     {
         $this->end_box = $end_box;
 
-        // is_numeric, bukan isset: field yang dikosongkan operator bernilai "" dan lolos isset().
         if (! is_numeric($this->start_box) || ! is_numeric($this->end_box)) {
             return;
         }
@@ -862,7 +860,7 @@ class EditSeitaiController extends Component
             $this->dispatch('notification', ['type' => 'warning', 'message' => 'End Box tidak boleh lebih kecil dari Start Box']);
             $this->end_box = null;
 
-            return; // jangan hitung jumlah_box pakai nilai yang baru di-null-kan
+            return;
         }
 
         $this->jumlah_box = ((int) $this->end_box - (int) $this->start_box) + 1;
