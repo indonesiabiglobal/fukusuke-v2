@@ -104,43 +104,6 @@
 	</div>
 	<div class="col-lg-2"></div>
 </div>
-{{-- Load Cordova Bluetooth Script jika APK --}}
-<script>
-    // Detect if mobile (likely APK)
-    const isMobile = /Android|iPhone/i.test(navigator.userAgent);
-
-    if (isMobile) {
-        console.log('📱 Mobile detected, loading Cordova script...');
-
-        // Load QRCode first
-        const qrScript = document.createElement('script');
-        qrScript.src = 'https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js';
-        document.head.appendChild(qrScript);
-
-        // Load Cordova thermal printer script
-        const script = document.createElement('script');
-        script.src = '{{ asset("js/thermal-printer-cordova.js") }}';
-        script.onload = function() {
-            console.log('✅ Cordova printer script loaded');
-
-            // Wait for REAL deviceready if in actual Cordova
-            if (typeof cordova !== 'undefined') {
-                document.addEventListener('deviceready', function() {
-                    console.log('✅ Real Cordova deviceready fired!');
-                    console.log('bluetoothSerial available:', typeof bluetoothSerial !== 'undefined');
-                }, false);
-            } else {
-                // Fake Cordova for testing
-                window.cordova = { plugins: {} };
-                console.log('⚠️ Simulated Cordova mode');
-            }
-        };
-        script.onerror = function() {
-            console.error('❌ Failed to load Cordova script');
-        };
-        document.head.appendChild(script);
-    }
-</script>
 {{-- Script Normal Print - TETAP --}}
 @script
 <script>
@@ -242,14 +205,10 @@ window.handleThermalPrint = async function() {
     }
 
     // ===== DETEKSI WEB BROWSER BIASA =====
-    const isCordova =
-    typeof window.cordova !== 'undefined' &&
-    typeof window.bluetoothSerial !== 'undefined';
-
     const isWebBLE =
         'bluetooth' in navigator;
 
-    if (!isCordova && !isWebBLE) {
+    if (!isWebBLE) {
         window.debugLog('❌ Tidak ada metode print tersedia', 'error');
         alert('❌ Device tidak support print');
         if (alpineComponent) alpineComponent.isPrinting = false;
@@ -295,24 +254,7 @@ window.handleThermalPrint = async function() {
         // window.debugLog('🖨️ Mulai print 2x...', 'info');
         // await window.printToThermalPrinter(printData, 2); // 👈 PARAMETER KEDUA = JUMLAH COPY
         // window.debugLog('✅ Print selesai!', 'success');
-        // ✅ DETECT CORDOVA
-        // Di dalam try block
-
-        if (window.cordova && typeof window.selectPrinterUI === 'function') {
-            // Cordova native print
-            window.debugLog('🤖 Using Cordova native Bluetooth', 'info');
-
-            // Check if printer connected
-            const isConnected = await window.checkPrinterConnected();
-
-            if (!isConnected) {
-                window.debugLog('📱 Selecting printer...', 'info');
-                await window.selectPrinterUI();
-            }
-
-            await window.printToThermalPrinter(printData, 2);
-
-        } else if (window.checkPrinterReady) {
+        if (window.checkPrinterReady) {
             // Web Bluetooth
             window.debugLog('🌐 Using Web Bluetooth', 'info');
 
@@ -423,12 +365,5 @@ window.scanPrinterUUID = async function() {
     } catch (error) {
         window.debugLog('❌ ERROR: ' + error.message, 'error');
     }
-};
-</script>
-<script>
-window.testCordova = function() {
-    alert('Cordova: ' + (window.cordova ? 'YES ✅' : 'NO ❌') + '\n' +
-          'bluetoothSerial: ' + (typeof bluetoothSerial !== 'undefined' ? 'YES ✅' : 'NO ❌') + '\n' +
-          'printToThermalPrinter: ' + (typeof window.printToThermalPrinter !== 'undefined' ? 'YES ✅' : 'NO ❌'));
 };
 </script>

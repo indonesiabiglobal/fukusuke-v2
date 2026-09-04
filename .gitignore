@@ -29,7 +29,10 @@ id_rsa_deploy
 android.keystore
 *.jks
 
-# Artefak build Android
+# Artefak build Android / Gradle
+# Android ditangani project terpisah - berkas ini tidak boleh kembali ke repo ini.
+/.gradle
+/build
 *.apk
 *.aab
 *.idsig

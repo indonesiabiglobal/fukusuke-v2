@@ -20,7 +20,7 @@
                 <div class="card mb-0 rounded-0 rounded-end border-0">
                     <div class="card-body p-4 p-sm-5 m-lg-4 text-center">
                         <div class="mb-4">
-                            <lord-icon src="https://cdn.lordicon.com/diihvcfp.json" trigger="loop" class="avatar-md"> </lord-icon>
+                            <lord-icon src="{{ URL::asset('build/libs/lordicon/diihvcfp.json') }}" trigger="loop" class="avatar-md"> </lord-icon>
                         </div>
 
                         <div class="p-2 mt-4">

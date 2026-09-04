@@ -6,14 +6,14 @@
     <link href="{{ URL::asset('build/libs/jsvectormap/css/jsvectormap.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ URL::asset('build/libs/swiper/swiper-bundle.min.css') }}" rel="stylesheet" type="text/css" />
 
-    <script src="https://code.highcharts.com/highcharts.js"></script>
-    <script src="https://code.highcharts.com/modules/data.js"></script>
-    <script src="https://code.highcharts.com/modules/drilldown.js"></script>
-    <script src="https://code.highcharts.com/modules/exporting.js"></script>
-    <script src="https://code.highcharts.com/modules/export-data.js"></script>
-    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+    <script src="{{ URL::asset('build/libs/highcharts/highcharts.js') }}"></script>
+    <script src="{{ URL::asset('build/libs/highcharts/modules/data.js') }}"></script>
+    <script src="{{ URL::asset('build/libs/highcharts/modules/drilldown.js') }}"></script>
+    <script src="{{ URL::asset('build/libs/highcharts/modules/exporting.js') }}"></script>
+    <script src="{{ URL::asset('build/libs/highcharts/modules/export-data.js') }}"></script>
+    <script src="{{ URL::asset('build/libs/highcharts/modules/accessibility.js') }}"></script>
     <!--datatable css-->
-    <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+    <link href="{{ URL::asset('build/libs/datatables-1.11.5/dataTables.bootstrap5.min.css') }}" rel="stylesheet" type="text/css" />
 
     <style>
         .page-content {
@@ -274,8 +274,8 @@
         integrity="sha512-BkpSL20WETFylMrcirBahHfSnY++H2O1W+UnEEO4yNIl+jI2+zowyoGJpbtk6bx97fBXf++WJHSSK2MV4ghPcg=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script> --}}
 
-    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="{{ URL::asset('build/libs/datatables-1.11.5/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ URL::asset('build/libs/datatables-1.11.5/dataTables.bootstrap5.min.js') }}"></script>
 
     <script>
         $(document).ready(function() {

@@ -802,7 +802,7 @@
                                                         </div>
                                                         <div class="modal-body">
                                                             <div class="mt-2 text-center">
-                                                                <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop"
+                                                                <lord-icon src="{{ URL::asset('build/libs/lordicon/gsqxdxog.json') }}" trigger="loop"
                                                                     colors="primary:#f7b84b,secondary:#f06548"
                                                                     style="width:100px;height:100px"></lord-icon>
                                                                 <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
@@ -1974,7 +1974,7 @@ document.addEventListener('livewire:initialized', () => {
         }
 
         try {
-            // Fetch data diperlukan oleh kedua path (Flutter & Cordova)
+            // Fetch data diperlukan oleh kedua path (Flutter & Web Bluetooth)
             console.log('📡 Fetching print data...');
             const response = await fetch(`/get-print-data/${produk_asemblyid}`);
 

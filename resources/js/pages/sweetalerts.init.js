@@ -345,7 +345,7 @@ if (document.getElementById("custom-sa-success"))
     document.getElementById("custom-sa-success").addEventListener("click", function () {
         Swal.fire({
             html: '<div class="mt-3">' +
-                '<lord-icon src="https://cdn.lordicon.com/lupuorrc.json" trigger="loop" colors="primary:#0ab39c,secondary:#405189" style="width:120px;height:120px"></lord-icon>' +
+                '<lord-icon src="/build/libs/lordicon/lupuorrc.json" trigger="loop" colors="primary:#0ab39c,secondary:#405189" style="width:120px;height:120px"></lord-icon>' +
                 '<div class="mt-4 pt-2 fs-15">' +
                 '<h4>Well done !</h4>' +
                 '<p class="text-muted mx-4 mb-0">Aww yeah, you successfully read this important message.</p>' +
@@ -367,7 +367,7 @@ if (document.getElementById("custom-sa-error"))
     document.getElementById("custom-sa-error").addEventListener("click", function () {
         Swal.fire({
             html: '<div class="mt-3">' +
-                '<lord-icon src="https://cdn.lordicon.com/tdrtiskw.json" trigger="loop" colors="primary:#f06548,secondary:#f7b84b" style="width:120px;height:120px"></lord-icon>' +
+                '<lord-icon src="/build/libs/lordicon/tdrtiskw.json" trigger="loop" colors="primary:#f06548,secondary:#f7b84b" style="width:120px;height:120px"></lord-icon>' +
                 '<div class="mt-4 pt-2 fs-15">' +
                 '<h4>Oops...! Something went Wrong !</h4>' +
                 '<p class="text-muted mx-4 mb-0">Your email Address is invalid</p>' +
@@ -389,7 +389,7 @@ if (document.getElementById("custom-sa-warning"))
     document.getElementById("custom-sa-warning").addEventListener("click", function () {
         Swal.fire({
             html: '<div class="mt-3">' +
-                '<lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop" colors="primary:#f7b84b,secondary:#f06548" style="width:100px;height:100px"></lord-icon>' +
+                '<lord-icon src="/build/libs/lordicon/gsqxdxog.json" trigger="loop" colors="primary:#f7b84b,secondary:#f06548" style="width:100px;height:100px"></lord-icon>' +
                 '<div class="mt-4 pt-2 fs-15 mx-5">' +
                 '<h4>Are you Sure ?</h4>' +
                 '<p class="text-muted mx-4 mb-0">Are you Sure You want to Delete this Account ?</p>' +

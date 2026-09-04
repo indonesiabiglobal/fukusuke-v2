@@ -597,11 +597,10 @@ class LossPerDepartemenReportService
 
         $writer = new Xlsx($spreadsheet);
         $filename = $nippon . '-' . $jenisReport . '.xlsx';
-        $writer->save($filename);
-        $response = [
-            'status' => 'success',
+        return [
+            'status'   => 'success',
+            'writer'   => $writer,
             'filename' => $filename
         ];
-        return $response;
     }
 }
