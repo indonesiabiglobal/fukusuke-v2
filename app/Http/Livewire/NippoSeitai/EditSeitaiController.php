@@ -834,28 +834,38 @@ class EditSeitaiController extends Component
     {
         $this->start_box = $start_box;
 
-        if (isset($this->start_box) && isset($this->end_box)) {
-            if ($this->start_box > $this->end_box) {
-                $this->dispatch('notification', ['type' => 'warning', 'message' => 'Start Box tidak boleh lebih besar dari End Box']);
-                $this->start_box = null;
-            }
-
-            $this->jumlah_box = ($this->end_box - $this->start_box) + 1;
+        // is_numeric, bukan isset: field yang dikosongkan operator bernilai "" dan lolos isset().
+        if (! is_numeric($this->start_box) || ! is_numeric($this->end_box)) {
+            return;
         }
+
+        if ((int) $this->start_box > (int) $this->end_box) {
+            $this->dispatch('notification', ['type' => 'warning', 'message' => 'Start Box tidak boleh lebih besar dari End Box']);
+            $this->start_box = null;
+
+            return; // jangan hitung jumlah_box pakai nilai yang baru di-null-kan
+        }
+
+        $this->jumlah_box = ((int) $this->end_box - (int) $this->start_box) + 1;
     }
 
     public function updatedEndBox($end_box)
     {
         $this->end_box = $end_box;
 
-        if (isset($this->start_box) && isset($this->end_box)) {
-            if ($this->start_box > $this->end_box) {
-                $this->dispatch('notification', ['type' => 'warning', 'message' => 'End Box tidak boleh lebih kecil dari Start Box']);
-                $this->end_box = null;
-            }
-
-            $this->jumlah_box = ($this->end_box - $this->start_box) + 1;
+        // is_numeric, bukan isset: field yang dikosongkan operator bernilai "" dan lolos isset().
+        if (! is_numeric($this->start_box) || ! is_numeric($this->end_box)) {
+            return;
         }
+
+        if ((int) $this->start_box > (int) $this->end_box) {
+            $this->dispatch('notification', ['type' => 'warning', 'message' => 'End Box tidak boleh lebih kecil dari Start Box']);
+            $this->end_box = null;
+
+            return; // jangan hitung jumlah_box pakai nilai yang baru di-null-kan
+        }
+
+        $this->jumlah_box = ((int) $this->end_box - (int) $this->start_box) + 1;
     }
 
     public function updatedInfureBeratLoss($infure_berat_loss)
