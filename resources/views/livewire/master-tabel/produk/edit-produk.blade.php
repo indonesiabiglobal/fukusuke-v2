@@ -1120,6 +1120,7 @@
 
                 $('.select2-kode-tipe').select2({
                     theme: 'bootstrap-5',
+                    width: '100%',
                 }).on('change', function(e) {
                     var data = $(this).val();
                     @this.set('product_type_id', data);
@@ -1135,6 +1136,7 @@
 
                 $('.select2-kode-gaiso').select2({
                     theme: 'bootstrap-5',
+                    width: '100%',
                 }).on('change', function(e) {
                     var data = $(this).val();
                     @this.set('pack_gaiso_id', data);
@@ -1150,6 +1152,7 @@
 
                 $('.select2-kode-box').select2({
                     theme: 'bootstrap-5',
+                    width: '100%',
                 }).on('change', function(e) {
                     var data = $(this).val();
                     @this.set('pack_box_id', data);
@@ -1165,6 +1168,7 @@
 
                 $('.select2-kode-inner').select2({
                     theme: 'bootstrap-5',
+                    width: '100%',
                 }).on('change', function(e) {
                     var data = $(this).val();
                     @this.set('pack_inner_id', data);
@@ -1180,6 +1184,7 @@
 
                 $('.select2-kode-layer').select2({
                     theme: 'bootstrap-5',
+                    width: '100%',
                 }).on('change', function(e) {
                     var data = $(this).val();
                     @this.set('pack_layer_id', data);
@@ -1193,6 +1198,7 @@
                 }
                 $('.select2-satuan').select2({
                     theme: 'bootstrap-5',
+                    width: '100%',
                 }).on('change', function(e) {
                     @this.set('product_unit', $(this).val());
                 });
