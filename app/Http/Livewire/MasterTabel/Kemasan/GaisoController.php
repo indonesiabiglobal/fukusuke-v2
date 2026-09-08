@@ -39,7 +39,7 @@ class GaisoController extends Component
     public $sortingTable;
 
     protected $rules = [
-        'code' => 'required',
+        'code' => 'required|unique:ms_packaging_gaiso,code',
         'name' => 'required',
         'box_class' => 'required',
         'panjang' => 'required',
@@ -91,7 +91,7 @@ class GaisoController extends Component
             $data = MsPackagingGaiso::create([
                 'code' => $this->code,
                 'name' => $this->name,
-                'box_class' => $this->box_class['value'],
+                'box_class' => is_array($this->box_class) ? $this->box_class['value'] : $this->box_class,
                 'panjang' => (int)str_replace(',', '', $this->panjang),
                 'lebar' => (int)str_replace(',', '', $this->lebar),
                 'tinggi' => (int)str_replace(',', '', $this->tinggi ?? 0),

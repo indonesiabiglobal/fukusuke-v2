@@ -106,7 +106,7 @@
                                         </div>
                                         <div class="col-xxl-12">
                                             <div class="form-group">
-                                                <label for="tinggi" class="form-label">Tinggi</label>
+                                                <label for="tinggi" class="form-label">Tebal</label>
                                                 <div class="input-group">
                                                     <input type="text"
                                                         class="form-control @error('tinggi') is-invalid @enderror"
