@@ -31,7 +31,6 @@ class Login extends Component
             } elseif (in_array('NIPPO-SEITAI', $this->userRoles)) {
                 return redirect()->intended('/nippo-seitai');
             }
-            // return redirect()->intended('/nippo-infure');
         }
     }
 
@@ -61,12 +60,11 @@ class Login extends Component
                 600,
                 fn() => auth()->user()->roles->flatMap->access->pluck('code')->unique()->toArray()
             );
-            // if (in_array('DASHBOARD-SEITAI', $userAccess)) {
-            //     return redirect()->intended('/dashboard-seitai');
-            // } else {
-            //     return redirect()->intended('/dashboard-infure');
-            // }
-            return redirect()->intended('/nippo-infure');
+            if (in_array('DASHBOARD-SEITAI', $userAccess)) {
+                return redirect()->intended('/nippo-seitai');
+            } else {
+                return redirect()->intended('/nippo-infure');
+            }
         } else {
             $this->addError('email', trans('auth.failed'));
             return redirect()->back();
