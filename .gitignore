@@ -41,3 +41,6 @@ hs_err_pid*.log
 # File data yang tidak boleh disajikan publik lewat /public
 /public/docs
 /public/Master-Produk.xlsx
+
+# Scratch workspace for superpowers subagent-driven-development (ledgers, briefs, review packages)
+/.superpowers/
