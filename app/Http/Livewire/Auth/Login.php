@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Auth;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use App\Services\AccessService;
 
 class Login extends Component
 {
@@ -55,11 +56,7 @@ class Login extends Component
             session()->regenerate();
 
             // Cache access saat login agar sidebar tidak query ulang saat halaman pertama dibuka
-            $userAccess = Cache::remember(
-                'user_access_' . auth()->id(),
-                600,
-                fn() => auth()->user()->roles->flatMap->access->pluck('code')->unique()->toArray()
-            );
+            $userAccess = app(AccessService::class)->codesFor(auth()->user());
             if (in_array('DASHBOARD-SEITAI', $userAccess)) {
                 return redirect()->intended('/nippo-seitai');
             } else {
