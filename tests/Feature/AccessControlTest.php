@@ -21,7 +21,10 @@ class AccessControlTest extends TestCase
 
     private function makeUserWithAccessCode(string $code): User
     {
-        $user = User::factory()->create(['status' => 1]);
+        $user = User::factory()->create([
+            'status' => 1,
+            'username' => 'test_' . uniqid(),
+        ]);
         $role = Role::create(['role_name' => 'Test Role ' . uniqid(), 'description' => 'test', 'status' => 1, 'can_delete' => 1]);
         $access = new Access();
         $access->access_name = 'Test Access ' . uniqid();
