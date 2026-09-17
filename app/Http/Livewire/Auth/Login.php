@@ -26,12 +26,12 @@ class Login extends Component
                 fn() => auth()->user()->roles->pluck('code')->toArray()
             );
 
-            // if (in_array('ADMIN', $this->userRoles) || in_array('DASHBOARD-INFURE', $this->userRoles)) {
-            //     return redirect()->intended('/dashboard-infure');
-            // } elseif (in_array('DASHBOARD-SEITAI', $this->userRoles)) {
-            //     return redirect()->intended('/dashboard-seitai');
-            // }
-            return redirect()->intended('/nippo-infure');
+            if (in_array('ADMIN', $this->userRoles) || in_array('NIPPO-INFURE', $this->userRoles)) {
+                return redirect()->intended('/nippo-infure');
+            } elseif (in_array('NIPPO-SEITAI', $this->userRoles)) {
+                return redirect()->intended('/nippo-seitai');
+            }
+            // return redirect()->intended('/nippo-infure');
         }
     }
 
