@@ -30,7 +30,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // Route::post('/test-timbangan', [TestTimbanganController::class, 'store']);
 
 // Sanctum SPA Authentication untuk dashboard
-Route::middleware(['web', 'auth'])->group(function () {
+Route::middleware(['web', 'auth', 'access:DASHBOARD-SEITAI'])->group(function () {
     // Seitai Dashboard API
     Route::controller(DashboardSeitaiController::class)->prefix('dashboard-seitai')->group(function () {
         // Daily endpoints

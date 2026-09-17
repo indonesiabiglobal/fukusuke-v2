@@ -24,6 +24,13 @@ class AppServiceProvider extends ServiceProvider
     {
         Schema::defaultStringLength(191);
 
+        // Livewire 3's /livewire/update endpoint only replays a fixed allowlist of
+        // "persistent" middleware from the original page's route. CheckAccess isn't in
+        // that allowlist by default, so without this, a user whose access is revoked
+        // mid-session could keep interacting with an already-open gated Livewire
+        // component until they reload/close the tab.
+        \Livewire\Livewire::addPersistentMiddleware(\App\Http\Middleware\CheckAccess::class);
+
         // Web requests: batasi memory dan execution time untuk keamanan
         // Artisan/CLI: tidak dibatasi agar serve/queue/command bisa jalan terus
         if (!app()->runningInConsole()) {

@@ -9,14 +9,7 @@
     </div>
 
     @php
-        $userAccess = [];
-        if (auth()->check()) {
-            $userAccess = \Illuminate\Support\Facades\Cache::remember(
-                'user_access_' . auth()->id(),
-                600, // 10 menit — cukup lama, role jarang berubah
-                fn() => auth()->user()->roles->flatMap->access->pluck('code')->unique()->toArray()
-            );
-        }
+        $userAccess = app(\App\Services\AccessService::class)->codesFor(auth()->user());
     @endphp
 
     <div id="scrollbar">
