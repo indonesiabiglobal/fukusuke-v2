@@ -298,18 +298,18 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/masalah-kenpin-seitai', MasalahKenpinSeitaiController::class)->name('masalah-kenpin-seitai')->middleware('access:MASTER');
 
     // Administration
-    Route::get('/security-management', SecurityManagementController::class)->name('security-management');
-    Route::get('/add-user', AddUserController::class)->name('add-user');
-    Route::get('/edit-user', EditUserController::class)->name('edit-user');
-    Route::get('/role-management', \App\Http\Livewire\Administration\RoleManagementController::class)->name('role-management');
+    Route::get('/security-management', SecurityManagementController::class)->name('security-management')->middleware('access:ADM');
+    Route::get('/add-user', AddUserController::class)->name('add-user')->middleware('access:ADM');
+    Route::get('/edit-user', EditUserController::class)->name('edit-user')->middleware('access:ADM');
+    Route::get('/role-management', \App\Http\Livewire\Administration\RoleManagementController::class)->name('role-management')->middleware('access:ADM');
 
-    Route::get('/pemasukan-barang', PemasukanBarangController::class)->name('pemasukan-barang');
-    Route::get('/pengeluaran-barang', PengeluaranBarangController::class)->name('pengeluaran-barang');
-    Route::get('/posisi-wip', PosisiWipController::class)->name('posisi-wip');
-    Route::get('/bahan-baku', BahanBakuController::class)->name('bahan-baku');
-    Route::get('/barang-jadi', BarangJadiController::class)->name('barang-jadi');
-    Route::get('/mesin-peralatan', MesinPeralatanController::class)->name('mesin-peralatan');
-    Route::get('/barang-reject', BarangRejectController::class)->name('barang-reject');
+    Route::get('/pemasukan-barang', PemasukanBarangController::class)->name('pemasukan-barang')->middleware('access:ADMIN');
+    Route::get('/pengeluaran-barang', PengeluaranBarangController::class)->name('pengeluaran-barang')->middleware('access:ADMIN');
+    Route::get('/posisi-wip', PosisiWipController::class)->name('posisi-wip')->middleware('access:ADMIN');
+    Route::get('/bahan-baku', BahanBakuController::class)->name('bahan-baku')->middleware('access:ADMIN');
+    Route::get('/barang-jadi', BarangJadiController::class)->name('barang-jadi')->middleware('access:ADMIN');
+    Route::get('/mesin-peralatan', MesinPeralatanController::class)->name('mesin-peralatan')->middleware('access:ADMIN');
+    Route::get('/barang-reject', BarangRejectController::class)->name('barang-reject')->middleware('access:ADMIN');
 
     Route::get('/report-lpk', function (Request $request) {
         // $lpk_ids = $request->query('lpk_ids');
@@ -397,7 +397,7 @@ Route::group(['middleware' => 'auth'], function () {
     });
 
     // Infure
-    Route::controller(DashboardInfureControllerOld::class)->group(function () {
+    Route::controller(DashboardInfureControllerOld::class)->middleware('access:DASHBOARD-INFURE')->group(function () {
         Route::get('/dashboard-infure-old', 'index')->name('dashboard-infure-old');
         Route::get('/dashboard-infure-old/kadou-jikan', 'getkadouJikanInfure')->name('dashboard-infure-kadou-jikan-infure');
         Route::get('/dashboard-infure-old/hasil-produksi', 'getHasilProduksiInfure')->name('dashboard-infure-hasil-produksi-infure');
@@ -405,7 +405,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/dashboard-infure-old/top-loss', 'getTopLossInfure')->name('dashboard-infure-top-loss-infure');
         Route::get('/dashboard-infure-old/counter-trouble', 'getCounterTroubleInfure')->name('dashboard-infure-counter-trouble-infure');
     });
-    Route::controller(DashboardInfureController::class)->group(function () {
+    Route::controller(DashboardInfureController::class)->middleware('access:DASHBOARD-INFURE')->group(function () {
         Route::get('/dashboard-infure', 'index')->name('dashboard-infure');
         Route::get('/dashboard-infure/produksi-loss-per-mesin', 'getProduksiLossInfure')->name('dashboard-infure-produksi-loss-per-mesin');
         Route::get('/dashboard-infure/top-loss-per-mesin', 'getTopLossByMachineInfure')->name('dashboard-infure-top-loss-per-mesin');
@@ -424,7 +424,7 @@ Route::group(['middleware' => 'auth'], function () {
     });
 
     // Seitai - hanya route untuk view/page
-    Route::controller(DashboardSeitaiController::class)->group(function () {
+    Route::controller(DashboardSeitaiController::class)->middleware('access:DASHBOARD-SEITAI')->group(function () {
         Route::get('/dashboard-seitai', 'index')->name('dashboard-seitai');
     });
 
