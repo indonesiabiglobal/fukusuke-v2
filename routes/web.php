@@ -246,56 +246,56 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/label-masuk-gudang-report', LabelMasukGudangReportController::class)->name('label-masuk-gudang-report')->middleware('access:WAREHOUSE');
 
     // Buyer
-    Route::get('/buyer', BuyerController::class)->name('buyer');
+    Route::get('/buyer', BuyerController::class)->name('buyer')->middleware('access:MASTER');
 
     // Master Tabel Produk
-    Route::get('/tipe-produk', TipeProduk::class)->name('tipe-produk');
-    Route::get('/jenis-produk', JenisProduk::class)->name('jenis-produk');
+    Route::get('/tipe-produk', TipeProduk::class)->name('tipe-produk')->middleware('access:MASTER');
+    Route::get('/jenis-produk', JenisProduk::class)->name('jenis-produk')->middleware('access:MASTER');
 
     // master table department
-    Route::get('/departemen', Department::class)->name('department');
+    Route::get('/departemen', Department::class)->name('department')->middleware('access:MASTER');
 
     // master table working shift
-    Route::get('/working-shift', WorkingShift::class)->name('working-shift');
+    Route::get('/working-shift', WorkingShift::class)->name('working-shift')->middleware('access:MASTER');
 
     // master table warehouse
-    Route::get('/warehouse', Warehouse::class)->name('warehouse');
+    Route::get('/warehouse', Warehouse::class)->name('warehouse')->middleware('access:MASTER');
 
     // master table mesin
-    Route::get('/mesin', Machine::class)->name('mesin');
-    Route::get('/bagian-mesin', MachinePartController::class)->name('bagian-mesin');
-    Route::get('/detail-bagian-mesin', MachinePartDetailController::class)->name('detail-bagian-mesin');
+    Route::get('/mesin', Machine::class)->name('mesin')->middleware('access:MASTER');
+    Route::get('/bagian-mesin', MachinePartController::class)->name('bagian-mesin')->middleware('access:MASTER');
+    Route::get('/detail-bagian-mesin', MachinePartDetailController::class)->name('detail-bagian-mesin')->middleware('access:MASTER');
 
-    Route::get('/jadwal-mesin', JadwalMachineController::class)->name('jadwal-mesin');
+    Route::get('/jadwal-mesin', JadwalMachineController::class)->name('jadwal-mesin')->middleware('access:MASTER');
 
     // master table karyawan
-    Route::get('/karyawan', Employee::class)->name('karyawan');
+    Route::get('/karyawan', Employee::class)->name('karyawan')->middleware('access:MASTER');
 
     // master table katanuki
-    Route::get('/menu-katanuki', KatanukiController::class)->name('menu-katanuki');
+    Route::get('/menu-katanuki', KatanukiController::class)->name('menu-katanuki')->middleware('access:MASTER');
 
     // master table produk
-    Route::get('/master-produk', MasterProduk::class)->name('product');
-    Route::get('/add-master-produk', AddMasterProduk::class)->name('add-master-product');
-    Route::get('/edit-master-produk', EditProduk::class)->name('edit-master-product');
+    Route::get('/master-produk', MasterProduk::class)->name('product')->middleware('access:MASTER');
+    Route::get('/add-master-produk', AddMasterProduk::class)->name('add-master-product')->middleware('access:MASTER');
+    Route::get('/edit-master-produk', EditProduk::class)->name('edit-master-product')->middleware('access:MASTER');
 
-    Route::get('/menu-loss-infure', MenuLossInfureController::class)->name('menu-loss-infure');
-    Route::get('/menu-loss-kategori', MenuLossKatagoriController::class)->name('menu-loss-katagori');
-    Route::get('/menu-loss-kenpin', MenuLossKenpinController::class)->name('menu-loss-kenpin');
-    Route::get('/menu-loss-klasifikasi', MenuLossKlasifikisasiController::class)->name('menu-loss-klasifikisasi');
-    Route::get('/menu-loss-seitai', MenuLossSeitaiController::class)->name('menu-loss-seitai');
+    Route::get('/menu-loss-infure', MenuLossInfureController::class)->name('menu-loss-infure')->middleware('access:MASTER');
+    Route::get('/menu-loss-kategori', MenuLossKatagoriController::class)->name('menu-loss-katagori')->middleware('access:MASTER');
+    Route::get('/menu-loss-kenpin', MenuLossKenpinController::class)->name('menu-loss-kenpin')->middleware('access:MASTER');
+    Route::get('/menu-loss-klasifikasi', MenuLossKlasifikisasiController::class)->name('menu-loss-klasifikisasi')->middleware('access:MASTER');
+    Route::get('/menu-loss-seitai', MenuLossSeitaiController::class)->name('menu-loss-seitai')->middleware('access:MASTER');
 
-    Route::get('/kemasan-box', BoxController::class)->name('kemasan-box');
-    Route::get('/kemasan-gasio', GaisoController::class)->name('kemasan-gasio');
-    Route::get('/kemasan-inner', InnerController::class)->name('kemasan-inner');
-    Route::get('/kemasan-layer', LayerController::class)->name('kemasan-layer');
+    Route::get('/kemasan-box', BoxController::class)->name('kemasan-box')->middleware('access:MASTER');
+    Route::get('/kemasan-gasio', GaisoController::class)->name('kemasan-gasio')->middleware('access:MASTER');
+    Route::get('/kemasan-inner', InnerController::class)->name('kemasan-inner')->middleware('access:MASTER');
+    Route::get('/kemasan-layer', LayerController::class)->name('kemasan-layer')->middleware('access:MASTER');
 
-    Route::get('/jam-mati-mesin-infure', JamMatiMesinInfureController::class)->name('master-jam-mati-mesin-infure');
-    Route::get('/jam-mati-mesin-seitai', JamMatiMesinSeitaiController::class)->name('master-jam-mati-mesin-seitai');
+    Route::get('/jam-mati-mesin-infure', JamMatiMesinInfureController::class)->name('master-jam-mati-mesin-infure')->middleware('access:MASTER');
+    Route::get('/jam-mati-mesin-seitai', JamMatiMesinSeitaiController::class)->name('master-jam-mati-mesin-seitai')->middleware('access:MASTER');
 
     // Masalah Kenpin
-    Route::get('/masalah-kenpin-infure', MasalahKenpinInfureController::class)->name('masalah-kenpin-infure');
-    Route::get('/masalah-kenpin-seitai', MasalahKenpinSeitaiController::class)->name('masalah-kenpin-seitai');
+    Route::get('/masalah-kenpin-infure', MasalahKenpinInfureController::class)->name('masalah-kenpin-infure')->middleware('access:MASTER');
+    Route::get('/masalah-kenpin-seitai', MasalahKenpinSeitaiController::class)->name('masalah-kenpin-seitai')->middleware('access:MASTER');
 
     // Administration
     Route::get('/security-management', SecurityManagementController::class)->name('security-management');
