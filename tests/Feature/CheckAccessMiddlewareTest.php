@@ -32,10 +32,12 @@ class CheckAccessMiddlewareTest extends TestCase
         $middleware = new CheckAccess($accessService);
         $request = Request::create('/security-management', 'GET');
 
-        $this->expectException(HttpException::class);
-        $this->expectExceptionCode(403);
-
-        $middleware->handle($request, fn ($req) => new \Illuminate\Http\Response('ok'), 'ADM');
+        try {
+            $middleware->handle($request, fn ($req) => new \Illuminate\Http\Response('ok'), 'ADM');
+            $this->fail('Expected an HttpException to be thrown');
+        } catch (HttpException $e) {
+            $this->assertSame(403, $e->getStatusCode());
+        }
     }
 
     public function test_passes_multiple_codes_through_to_access_service(): void
