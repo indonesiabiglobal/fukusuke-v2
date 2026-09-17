@@ -219,31 +219,31 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/label-masuk-gudang', LabelMasukGudangController::class)->name('label-masuk-gudang')->middleware('access:NIPPO-SEITAI');
 
     // Jam Kerja
-    Route::get('/infure-jam-kerja', InfureJamKerjaController::class)->name('infure-jam-kerja');
-    Route::get('/seitai-jam-kerja', SeitaiJamKerjaController::class)->name('seitai-jam-kerja');
-    Route::get('/checklist-jam-kerja', CheckListJamKerjaController::class)->name('checklist-jam-kerja');
+    Route::get('/infure-jam-kerja', InfureJamKerjaController::class)->name('infure-jam-kerja')->middleware('access:JAM-KERJA-INFURE');
+    Route::get('/seitai-jam-kerja', SeitaiJamKerjaController::class)->name('seitai-jam-kerja')->middleware('access:JAM-KERJA-SEITAI');
+    Route::get('/checklist-jam-kerja', CheckListJamKerjaController::class)->name('checklist-jam-kerja')->middleware('access:JAM-KERJA-INFURE,JAM-KERJA-SEITAI');
 
     // Kenpin
-    Route::get('/kenpin-infure', KenpinInfureController::class)->name('kenpin-infure');
-    Route::get('/add-kenpin-infure', AddKenpinInfureController::class)->name('add-kenpin-infure');
-    Route::get('/edit-kenpin-infure', EditKenpinInfureController::class)->name('edit-kenpin-infure');
+    Route::get('/kenpin-infure', KenpinInfureController::class)->name('kenpin-infure')->middleware('access:KENPIN');
+    Route::get('/add-kenpin-infure', AddKenpinInfureController::class)->name('add-kenpin-infure')->middleware('access:KENPIN');
+    Route::get('/edit-kenpin-infure', EditKenpinInfureController::class)->name('edit-kenpin-infure')->middleware('access:KENPIN');
 
-    Route::get('/kenpin-seitai', KenpinSeitaiController::class)->name('kenpin-seitai-kenpin');
-    Route::get('/add-kenpin-seitai', AddKenpinSeitaiController::class)->name('add-kenpin-seitai');
-    Route::get('/edit-kenpin-seitai', EditKenpinSeitaiController::class)->name('edit-kenpin-seitai');
+    Route::get('/kenpin-seitai', KenpinSeitaiController::class)->name('kenpin-seitai-kenpin')->middleware('access:KENPIN');
+    Route::get('/add-kenpin-seitai', AddKenpinSeitaiController::class)->name('add-kenpin-seitai')->middleware('access:KENPIN');
+    Route::get('/edit-kenpin-seitai', EditKenpinSeitaiController::class)->name('edit-kenpin-seitai')->middleware('access:KENPIN');
 
-    Route::get('/mutasi-isi-palet-kenpin', MutasiIsiPaletKenpinController::class)->name('mutasi-isi-palet-kenpin');
-    Route::get('/print-label-gudang-kenpin', PrintLabelGudangKenpinController::class)->name('print-label-gudang-kenpin');
-    Route::get('/report-kenpin', ReportKenpinController::class)->name('report-kenpin');
+    Route::get('/mutasi-isi-palet-kenpin', MutasiIsiPaletKenpinController::class)->name('mutasi-isi-palet-kenpin')->middleware('access:KENPIN');
+    Route::get('/print-label-gudang-kenpin', PrintLabelGudangKenpinController::class)->name('print-label-gudang-kenpin')->middleware('access:KENPIN');
+    Route::get('/report-kenpin', ReportKenpinController::class)->name('report-kenpin')->middleware('access:KENPIN');
 
     // Warehouse
-    Route::get('/penarikan-palet', PenarikanPaletController::class)->name('penarikan-palet');
-    Route::get('/pengembalian-palet', PengembalianPaletController::class)->name('pengembalian-palet');
+    Route::get('/penarikan-palet', PenarikanPaletController::class)->name('penarikan-palet')->middleware('access:WAREHOUSE');
+    Route::get('/pengembalian-palet', PengembalianPaletController::class)->name('pengembalian-palet')->middleware('access:WAREHOUSE');
 
-    Route::get('/general-report', GeneralReportController::class)->name('general-report');
-    Route::get('/detail-report', DetailReportController::class)->name('detail-report');
-    Route::get('/production-loss-report', ProductionLossReportController::class)->name('production-loss-report');
-    Route::get('/label-masuk-gudang-report', LabelMasukGudangReportController::class)->name('label-masuk-gudang-report');
+    Route::get('/general-report', GeneralReportController::class)->name('general-report')->middleware('access:REPORT');
+    Route::get('/detail-report', DetailReportController::class)->name('detail-report')->middleware('access:REPORT');
+    Route::get('/production-loss-report', ProductionLossReportController::class)->name('production-loss-report')->middleware('access:REPORT');
+    Route::get('/label-masuk-gudang-report', LabelMasukGudangReportController::class)->name('label-masuk-gudang-report')->middleware('access:WAREHOUSE');
 
     // Buyer
     Route::get('/buyer', BuyerController::class)->name('buyer');
