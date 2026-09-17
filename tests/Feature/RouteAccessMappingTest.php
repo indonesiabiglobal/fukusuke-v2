@@ -214,4 +214,101 @@ class RouteAccessMappingTest extends TestCase
 
         return [];
     }
+
+    /**
+     * Named routes that intentionally carry NO 'auth' (or 'auth:sanctum') middleware
+     * at all — login/password-reset flows and the like. By name where the route is
+     * named. This is distinct from UNGATED_NAMED_ALLOWLIST above, which is about
+     * routes that ARE in the auth group but deliberately have no access: code.
+     */
+    private const PUBLIC_NAMED_ALLOWLIST = [
+        'login',
+        'register',
+        'password.reset',
+    ];
+
+    /** Unnamed routes (matched by exact URI) with no auth mechanism, intentionally public. */
+    private const PUBLIC_URI_ALLOWLIST = [
+        'new-password',
+        'logout',
+        'index/{locale}',
+    ];
+
+    /**
+     * URI prefixes that are intentionally outside the 'auth' guard entirely: either
+     * genuinely public (mobile login) or gated by a different auth mechanism
+     * (auth:sanctum) rather than the session-based 'auth' guard this test otherwise
+     * requires. Covers /api/user and everything under /api/mobile/*.
+     */
+    private const PUBLIC_URI_PREFIX_ALLOWLIST = [
+        'api/user',
+        'api/mobile',
+    ];
+
+    /**
+     * Named routes registered by third-party packages (Sanctum, Ignition), not by
+     * this app's own route files. They're not part of the surface this test audits.
+     */
+    private const FRAMEWORK_NAMED_ALLOWLIST = [
+        'sanctum.csrf-cookie',
+        'ignition.healthCheck',
+        'ignition.executeSolution',
+        'ignition.updateConfig',
+    ];
+
+    /**
+     * Second, wider audit: every route in web.php AND api.php must carry 'auth' (or
+     * 'auth:sanctum'), unless explicitly allowlisted above as public. Unlike
+     * test_every_auth_route_is_either_mapped_or_allowlisted() (which only inspects
+     * routes that already have 'auth'), this test also catches a future route added
+     * with NO auth mechanism at all and no allowlist entry.
+     */
+    public function test_every_web_route_has_auth_or_is_explicitly_public(): void
+    {
+        $unprotected = [];
+
+        foreach (Route::getRoutes() as $route) {
+            $uri = $route->uri();
+            $name = $route->getName();
+
+            // Livewire's own internal AJAX/asset endpoints aren't part of this app's
+            // route table and aren't expected to carry 'auth'.
+            if (str_starts_with($uri, 'livewire/') || str_starts_with($uri, 'livewire-dusk/')) {
+                continue;
+            }
+
+            if ($name !== null && in_array($name, self::PUBLIC_NAMED_ALLOWLIST, true)) {
+                continue;
+            }
+
+            if ($name !== null && in_array($name, self::FRAMEWORK_NAMED_ALLOWLIST, true)) {
+                continue;
+            }
+
+            if (in_array($uri, self::PUBLIC_URI_ALLOWLIST, true)) {
+                continue;
+            }
+
+            $isAllowlistedPrefix = false;
+            foreach (self::PUBLIC_URI_PREFIX_ALLOWLIST as $prefix) {
+                if ($uri === $prefix || str_starts_with($uri, $prefix . '/')) {
+                    $isAllowlistedPrefix = true;
+                    break;
+                }
+            }
+            if ($isAllowlistedPrefix) {
+                continue;
+            }
+
+            $middlewareNames = $route->gatherMiddleware();
+
+            if (in_array('auth', $middlewareNames, true) || in_array('auth:sanctum', $middlewareNames, true)) {
+                continue;
+            }
+
+            $unprotected[] = $name ?? $uri;
+        }
+
+        $this->assertSame([], $unprotected, 'Routes with neither auth nor an explicit public allowlist entry: ' . implode(', ', $unprotected));
+    }
 }

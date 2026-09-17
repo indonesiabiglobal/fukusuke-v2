@@ -13,12 +13,6 @@ class AccessControlTest extends TestCase
 {
     use DatabaseTransactions;
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-        Cache::flush();
-    }
-
     private function makeUserWithAccessCode(string $code): User
     {
         $user = User::factory()->create([
@@ -34,6 +28,11 @@ class AccessControlTest extends TestCase
         $access->save();
         $role->access()->attach($access->id);
         $user->roles()->attach($role->id);
+
+        // Targeted forget (not Cache::flush()) so this test doesn't wipe the whole
+        // application cache when run against a real, non-'array' CACHE_DRIVER host.
+        // Key format matches AccessService::codesFor().
+        Cache::forget('user_access_' . $user->id);
 
         return $user;
     }

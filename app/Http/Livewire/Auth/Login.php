@@ -4,14 +4,12 @@ namespace App\Http\Livewire\Auth;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 use App\Services\AccessService;
 
 class Login extends Component
 {
     public $email;
     public $password;
-    public $userRoles = [];
 
     protected $rules = [
         'email' => 'required|string|email|max:255',
@@ -21,17 +19,11 @@ class Login extends Component
     public function mount()
     {
         if (auth()->user()) {
-            $this->userRoles = Cache::remember(
-                'user_roles_' . auth()->id(),
-                600,
-                fn() => auth()->user()->roles->pluck('code')->toArray()
-            );
-
-            if (in_array('ADMIN', $this->userRoles) || in_array('NIPPO-INFURE', $this->userRoles)) {
-                return redirect()->intended('/nippo-infure');
-            } elseif (in_array('NIPPO-SEITAI', $this->userRoles)) {
-                return redirect()->intended('/nippo-seitai');
-            }
+            // Same landing resolver as submit() below — an already-authenticated
+            // user revisiting /login must land on a route their Access codes
+            // actually grant, not a stale Role-code guess that can now 403
+            // (e.g. Role 'ADMIN' without Access 'NIPPO-INFURE').
+            return redirect()->intended(app(AccessService::class)->landingRouteFor(auth()->user()));
         }
     }
 
@@ -56,12 +48,7 @@ class Login extends Component
             session()->regenerate();
 
             // Cache access saat login agar sidebar tidak query ulang saat halaman pertama dibuka
-            $userAccess = app(AccessService::class)->codesFor(auth()->user());
-            if (in_array('DASHBOARD-SEITAI', $userAccess)) {
-                return redirect()->intended('/nippo-seitai');
-            } else {
-                return redirect()->intended('/nippo-infure');
-            }
+            return redirect()->intended(app(AccessService::class)->landingRouteFor(auth()->user()));
         } else {
             $this->addError('email', trans('auth.failed'));
             return redirect()->back();

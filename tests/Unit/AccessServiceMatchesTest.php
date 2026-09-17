@@ -44,4 +44,34 @@ class AccessServiceMatchesTest extends TestCase
     {
         $this->assertFalse($this->service->matches([], ['ORDER']));
     }
+
+    public function test_resolve_landing_picks_first_priority_code(): void
+    {
+        $this->assertSame('/nippo-infure', $this->service->resolveLanding(['NIPPO-INFURE']));
+    }
+
+    public function test_resolve_landing_handles_previously_failing_kenpin_only_role(): void
+    {
+        $this->assertSame('/kenpin-infure', $this->service->resolveLanding(['KENPIN']));
+    }
+
+    public function test_resolve_landing_wildcard_goes_to_nippo_infure(): void
+    {
+        $this->assertSame('/nippo-infure', $this->service->resolveLanding(['*']));
+    }
+
+    public function test_resolve_landing_falls_back_to_printer_settings_when_no_mapped_code(): void
+    {
+        $this->assertSame('/printer-settings', $this->service->resolveLanding(['SOME-UNMAPPED-CODE']));
+    }
+
+    public function test_resolve_landing_falls_back_to_printer_settings_when_no_codes_at_all(): void
+    {
+        $this->assertSame('/printer-settings', $this->service->resolveLanding([]));
+    }
+
+    public function test_resolve_landing_uses_declaration_order_when_user_has_multiple_codes(): void
+    {
+        $this->assertSame('/nippo-seitai', $this->service->resolveLanding(['WAREHOUSE', 'NIPPO-SEITAI']));
+    }
 }

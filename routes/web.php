@@ -393,7 +393,7 @@ Route::group(['middleware' => 'auth'], function () {
         // } else {
         //     return redirect()->intended('/dashboard-infure');
         // }
-        return redirect()->intended('/nippo-infure');
+        return redirect()->intended(app(\App\Services\AccessService::class)->landingRouteFor(auth()->user()));
     });
 
     // Infure
