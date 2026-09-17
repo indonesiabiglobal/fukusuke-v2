@@ -152,6 +152,14 @@ Applied directly in `routes/web.php`, grouped the same way the file is
 already commented/sectioned. Codes match exactly what already gates the
 matching sidebar section in `sidebar.blade.php`.
 
+**Addendum (found during implementation, Task 5):** `routes/api.php` was not
+inspected during the original investigation. It turned out to contain a
+`Route::middleware(['web','auth'])` group (not the `api` middleware group)
+wrapping 13 `DashboardSeitaiController` AJAX data endpoints — the direct
+Seitai counterpart to the Dashboard Infure AJAX sub-routes already mapped
+below. These carry the same `auth` web-session middleware this plan gates
+and are added to the mapping table below.
+
 | Section (web.php) | Routes | `access:` code |
 |---|---|---|
 | Printer Settings | `/printer-settings` | *(none — auth only, not in sidebar today)* |
@@ -169,7 +177,9 @@ matching sidebar section in `sidebar.blade.php`.
 | Inventory (hidden menu, `d-none` in sidebar today) | `pemasukan-barang`, `pengeluaran-barang`, `posisi-wip`, `bahan-baku`, `barang-jadi`, `mesin-peralatan`, `barang-reject` | `ADMIN` |
 | Dashboard Infure (page + all AJAX sub-routes under `DashboardInfureController`/`DashboardInfureControllerOld`) | `dashboard-infure*`, `dashboard-infure-old*` (11 sub-routes) | `DASHBOARD-INFURE` |
 | Dashboard Seitai | `dashboard-seitai` | `DASHBOARD-SEITAI` |
+| Dashboard Seitai AJAX API (`routes/api.php`, `Route::middleware(['web','auth'])` group wrapping `DashboardSeitaiController`, lines 33-52 — the Seitai counterpart to the Dashboard Infure AJAX sub-routes above) | `api.dashboard-seitai-produksi-loss-per-mesin`, `api.dashboard-seitai-top-loss-per-mesin`, `api.dashboard-seitai-top-loss-per-kasus`, `api.dashboard-seitai-kadou-jikan-frekuensi-trouble`, `api.dashboard-seitai-top-mesin-masalah-loss-daily`, `api.dashboard-seitai-ranking-problem-machine-daily`, `api.dashboard-seitai-total-produksi-per-bulan`, `api.dashboard-seitai-peringatan-katagae`, `api.dashboard-seitai-loss-per-bulan`, `api.dashboard-seitai-produksi-per-bulan`, `api.dashboard-seitai-top-mesin-masalah-loss-monthly`, `api.dashboard-seitai-top-loss-per-kasus-monthly`, `api.dashboard-seitai-ranking-problem-machine-monthly` | `DASHBOARD-SEITAI` |
 | Ungated utility | `/`, `/test`, `/docs/{file}` (already has its own `auth` middleware), `{any}` catch-all | *(none — auth only, unchanged)* |
+| Ungated (separate API surface, different auth mechanism) | `routes/api.php`'s `/api/user` (`auth:sanctum`) and the entire `/api/mobile/*` group (`auth:sanctum`, token-based mobile app auth) | *(out of scope — these never carry the `auth` web-session middleware this plan gates, they're a separate token-based authz concern for the mobile app, not the web sidebar/role system)* |
 
 Not in sidebar and not clearly tied to one module → left **auth-only** (no
 `access:` middleware), per the confirmed decision to not add restrictions
