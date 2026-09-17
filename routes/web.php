@@ -135,21 +135,21 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/printer-settings', [PrinterSettingsController::class, 'index'])->middleware('auth')->name('printer.settings');
 
     // Order LPK
-    Route::get('/order-lpk', OrderLpkController::class)->name('order-lpk');
-    Route::get('/edit-order', EditOrderController::class)->name('edit-order');
-    Route::get('/add-order', AddOrderController::class)->name('add-order');
+    Route::get('/order-lpk', OrderLpkController::class)->name('order-lpk')->middleware('access:ORDER');
+    Route::get('/edit-order', EditOrderController::class)->name('edit-order')->middleware('access:ORDER');
+    Route::get('/add-order', AddOrderController::class)->name('add-order')->middleware('access:ORDER');
 
-    Route::get('/lpk-entry', LpkEntryController::class)->name('lpk-entry');
-    Route::get('/add-lpk', AddLpkController::class)->name('add-lpk');
-    Route::get('/edit-lpk', EditLpkController::class)->name('edit-lpk');
+    Route::get('/lpk-entry', LpkEntryController::class)->name('lpk-entry')->middleware('access:ORDER');
+    Route::get('/add-lpk', AddLpkController::class)->name('add-lpk')->middleware('access:ORDER');
+    Route::get('/edit-lpk', EditLpkController::class)->name('edit-lpk')->middleware('access:ORDER');
 
-    Route::get('/cetak-lpk', CetakLpkController::class)->name('cetak-lpk');
-    Route::get('/order-report', OrderReportController::class)->name('order-report');
+    Route::get('/cetak-lpk', CetakLpkController::class)->name('cetak-lpk')->middleware('access:ORDER');
+    Route::get('/order-report', OrderReportController::class)->name('order-report')->middleware('access:ORDER');
 
     // Nipo Infure
-    Route::get('/nippo-infure', NippoInfureController::class)->name('nippo-infure');
-    Route::get('/edit-nippo/', EditNippoController::class)->name('edit-nippo');
-    Route::get('/add-nippo', AddNippoController::class)->name('add-nippo');
+    Route::get('/nippo-infure', NippoInfureController::class)->name('nippo-infure')->middleware('access:NIPPO-INFURE');
+    Route::get('/edit-nippo/', EditNippoController::class)->name('edit-nippo')->middleware('access:NIPPO-INFURE');
+    Route::get('/add-nippo', AddNippoController::class)->name('add-nippo')->middleware('access:NIPPO-INFURE');
     // Route untuk fetch print data
     Route::get('/get-print-data/{produk_asemblyid}', function ($produk_asemblyid) {
         try {
@@ -194,29 +194,29 @@ Route::group(['middleware' => 'auth'], function () {
                 'line' => $e->getLine()
             ], 500);
         }
-    })->name('get-print-data');
+    })->name('get-print-data')->middleware('access:NIPPO-INFURE');
 
-    Route::get('/loss-infure', LossInfureController::class)->name('loss-infure');
+    Route::get('/loss-infure', LossInfureController::class)->name('loss-infure')->middleware('access:NIPPO-INFURE');
 
-    Route::get('/checklist-infure', CheckListInfureController::class)->name('checklist-infure');
-    Route::get('/label-gentan', LabelGentanController::class)->name('label-gentan');
+    Route::get('/checklist-infure', CheckListInfureController::class)->name('checklist-infure')->middleware('access:NIPPO-INFURE');
+    Route::get('/label-gentan', LabelGentanController::class)->name('label-gentan')->middleware('access:NIPPO-INFURE');
 
     Route::get('/report-checklist-infure', function (Request $request) {
         $lpk_id = '180502-006';
         return view('livewire.nippo-infure.report-check-list', compact('lpk_id'));
-    })->name('nippo-infure-print');
+    })->name('nippo-infure-print')->middleware('access:NIPPO-INFURE');
 
     // Nippo Seitai
-    Route::get('/nippo-seitai', NippoSeitaiController::class)->name('nippo-seitai');
-    Route::get('/add-seitai', AddSeitaiController::class)->name('add-seitai');
-    Route::get('/edit-seitai', EditSeitaiController::class)->name('edit-seitai');
+    Route::get('/nippo-seitai', NippoSeitaiController::class)->name('nippo-seitai')->middleware('access:NIPPO-SEITAI');
+    Route::get('/add-seitai', AddSeitaiController::class)->name('add-seitai')->middleware('access:NIPPO-SEITAI');
+    Route::get('/edit-seitai', EditSeitaiController::class)->name('edit-seitai')->middleware('access:NIPPO-SEITAI');
 
-    Route::get('/loss-seitai', LossSeitaiController::class)->name('loss-seitai');
-    Route::get('/add-loss', AddSeitaiController::class)->name('add-loss');
+    Route::get('/loss-seitai', LossSeitaiController::class)->name('loss-seitai')->middleware('access:NIPPO-SEITAI');
+    Route::get('/add-loss', AddSeitaiController::class)->name('add-loss')->middleware('access:NIPPO-SEITAI');
 
-    Route::get('/mutasi-isi-palet', MutasiIsiPaletController::class)->name('mutasi-isi-palet');
-    Route::get('/check-list-seitai', CheckListSeitaiController::class)->name('check-list-seitai');
-    Route::get('/label-masuk-gudang', LabelMasukGudangController::class)->name('label-masuk-gudang');
+    Route::get('/mutasi-isi-palet', MutasiIsiPaletController::class)->name('mutasi-isi-palet')->middleware('access:NIPPO-SEITAI');
+    Route::get('/check-list-seitai', CheckListSeitaiController::class)->name('check-list-seitai')->middleware('access:NIPPO-SEITAI');
+    Route::get('/label-masuk-gudang', LabelMasukGudangController::class)->name('label-masuk-gudang')->middleware('access:NIPPO-SEITAI');
 
     // Jam Kerja
     Route::get('/infure-jam-kerja', InfureJamKerjaController::class)->name('infure-jam-kerja');
@@ -316,17 +316,17 @@ Route::group(['middleware' => 'auth'], function () {
         $lpk_ids = explode(',', request('lpk_ids'));
         $placeholders = implode(',', array_fill(0, count($lpk_ids), '?'));
         return view('livewire.order-lpk.report-lpk', compact('lpk_ids', 'placeholders'));
-    })->name('report-lpk');
+    })->name('report-lpk')->middleware('access:ORDER');
 
     Route::get('/report-masuk-gudang', function (Request $request) {
         $no_palet = $request->query('no_palet');
         return view('livewire.nippo-seitai.report-masuk-gudang', compact('no_palet'));
-    })->name('report-masuk-gudang');
+    })->name('report-masuk-gudang')->middleware('access:NIPPO-SEITAI');
 
     Route::get('/report-nippo-infure', function (Request $request) {
         $no_palet = $request->query('no_palet');
         return view('livewire.nippo-infure.report-nippo-infure', compact('no_palet'));
-    })->name('report-nippo-infure');
+    })->name('report-nippo-infure')->middleware('access:NIPPO-INFURE');
 
     Route::get('/report-gentan', function (Request $request) {
         $produk_asemblyid = $request->query('produk_asemblyid');
@@ -343,27 +343,27 @@ Route::group(['middleware' => 'auth'], function () {
         $nik = $request->query('nik');
         $empname = $request->query('empname');
         return view('livewire.nippo-infure.report-gentan', compact('produk_asemblyid', 'lpk_no', 'name', 'code', 'product_type_code', 'production_date', 'work_hour', 'work_shift', 'machineno', 'berat_produksi', 'nomor_han', 'nik', 'empname'));
-    })->name('report-gentan');
+    })->name('report-gentan')->middleware('access:NIPPO-INFURE');
 
     Route::get('/report-nippo-infure', function (Request $request) {
         $tanggal = $request->query('tanggal');
         return view('livewire.nippo-infure.report-nippo-infure', compact('tanggal'));
-    })->name('report-nippo-infure');
+    })->name('report-nippo-infure')->middleware('access:NIPPO-INFURE');
 
     Route::get('/cetak-order', function (Request $request) {
         $orderId = $request->query('orderId');
         return view('livewire.order-lpk.cetak-order', compact('orderId'));
-    })->name('cetak-order');
+    })->name('cetak-order')->middleware('access:ORDER');
 
     Route::get('/report-checklist-seitai', function (Request $request) {
         $tanggal = $request->query('tanggal');
         return view('livewire.nippo-seitai.report-checklist-seitai', compact('tanggal'));
-    })->name('report-checklist-seitai');
+    })->name('report-checklist-seitai')->middleware('access:NIPPO-SEITAI');
 
     Route::get('/report-loss-seitai', function (Request $request) {
         $tanggal = $request->query('tanggal');
         return view('livewire.nippo-seitai.report-loss-seitai', compact('tanggal'));
-    })->name('report-loss-seitai');
+    })->name('report-loss-seitai')->middleware('access:NIPPO-SEITAI');
 
     Route::get('/report-gentan', function (Request $request) {
         $produk_asemblyid = $request->query('produk_asemblyid');
@@ -380,7 +380,7 @@ Route::group(['middleware' => 'auth'], function () {
         $nik = $request->query('nik');
         $empname = $request->query('empname');
         return view('livewire.nippo-infure.report-gentan', compact('produk_asemblyid', 'lpk_no', 'name', 'code', 'product_type_code', 'production_date', 'work_hour', 'work_shift', 'machineno', 'berat_produksi', 'nomor_han', 'nik', 'empname'));
-    })->name('report-gentan');
+    })->name('report-gentan')->middleware('access:NIPPO-INFURE');
 
     Route::get('/test', function () {
         return view('widgets');
