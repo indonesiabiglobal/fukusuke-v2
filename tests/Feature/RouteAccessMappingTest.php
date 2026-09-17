@@ -127,6 +127,20 @@ class RouteAccessMappingTest extends TestCase
         'dashboard-infure-top-mesin-masalah-loss-monthly' => ['DASHBOARD-INFURE'],
         'dashboard-infure-ranking-problem-machine-monthly' => ['DASHBOARD-INFURE'],
         'dashboard-seitai' => ['DASHBOARD-SEITAI'],
+
+        'api.dashboard-seitai-produksi-loss-per-mesin' => ['DASHBOARD-SEITAI'],
+        'api.dashboard-seitai-top-loss-per-mesin' => ['DASHBOARD-SEITAI'],
+        'api.dashboard-seitai-top-loss-per-kasus' => ['DASHBOARD-SEITAI'],
+        'api.dashboard-seitai-kadou-jikan-frekuensi-trouble' => ['DASHBOARD-SEITAI'],
+        'api.dashboard-seitai-top-mesin-masalah-loss-daily' => ['DASHBOARD-SEITAI'],
+        'api.dashboard-seitai-ranking-problem-machine-daily' => ['DASHBOARD-SEITAI'],
+        'api.dashboard-seitai-total-produksi-per-bulan' => ['DASHBOARD-SEITAI'],
+        'api.dashboard-seitai-peringatan-katagae' => ['DASHBOARD-SEITAI'],
+        'api.dashboard-seitai-loss-per-bulan' => ['DASHBOARD-SEITAI'],
+        'api.dashboard-seitai-produksi-per-bulan' => ['DASHBOARD-SEITAI'],
+        'api.dashboard-seitai-top-mesin-masalah-loss-monthly' => ['DASHBOARD-SEITAI'],
+        'api.dashboard-seitai-top-loss-per-kasus-monthly' => ['DASHBOARD-SEITAI'],
+        'api.dashboard-seitai-ranking-problem-machine-monthly' => ['DASHBOARD-SEITAI'],
     ];
 
     /** Named routes intentionally left auth-only (no access: middleware), per the spec. */
@@ -157,6 +171,13 @@ class RouteAccessMappingTest extends TestCase
             $accessCodes = $this->extractAccessCodes($middlewareNames);
             $name = $route->getName();
 
+            if (in_array($route->uri(), self::UNGATED_URI_ALLOWLIST, true)) {
+                if ($accessCodes !== []) {
+                    $mismatched[] = sprintf('%s: expected no access: middleware, got [%s]', $route->uri(), implode(',', $accessCodes));
+                }
+                continue;
+            }
+
             if ($name !== null && array_key_exists($name, self::EXPECTED)) {
                 if ($accessCodes !== self::EXPECTED[$name]) {
                     $mismatched[] = sprintf(
@@ -172,13 +193,6 @@ class RouteAccessMappingTest extends TestCase
             if ($name !== null && in_array($name, self::UNGATED_NAMED_ALLOWLIST, true)) {
                 if ($accessCodes !== []) {
                     $mismatched[] = sprintf('%s: expected no access: middleware, got [%s]', $name, implode(',', $accessCodes));
-                }
-                continue;
-            }
-
-            if ($name === null && in_array($route->uri(), self::UNGATED_URI_ALLOWLIST, true)) {
-                if ($accessCodes !== []) {
-                    $mismatched[] = sprintf('%s: expected no access: middleware, got [%s]', $route->uri(), implode(',', $accessCodes));
                 }
                 continue;
             }
