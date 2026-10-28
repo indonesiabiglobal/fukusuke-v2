@@ -883,7 +883,8 @@
                                             {{ $row['code'] }}
                                         </td>
                                         <td style="padding: 3px;border-right: 2px solid grey;text-align: center;font-size: 14.5px;font-weight: bold;">
-                                            @if ($row['isi'] !== '-' && $row['isi'] !== 0) {{ $row['isi'] }} {{ $row['satuan'] }} @endif
+                                            {{-- 0 / "0" / 0.0 / null / '-' = kemasan tidak dipakai; (float) agar tidak bergantung pada tipe kolom --}}
+                                            @if (!in_array($row['isi'], [null, '', '-'], true) && (float) $row['isi'] != 0) {{ $row['isi'] }} {{ $row['satuan'] }} @endif
                                         </td>
                                         <td style="padding: 3px;border-right: 2px solid grey;text-align: center;font-size: 14.5px;font-weight: bold;">
                                             {{ $row['jenis'] }}
