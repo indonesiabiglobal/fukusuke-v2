@@ -21,7 +21,7 @@ return [
 
     'allowed_origins' => [
         'http://localhost:*',
-        'https://fukusuke-kogyo-sys.co.id',
+        'https://prc-epr-26.np.fukusuke-kogyo-sys.co.id',
     ],
 
     'allowed_origins_patterns' => [],
