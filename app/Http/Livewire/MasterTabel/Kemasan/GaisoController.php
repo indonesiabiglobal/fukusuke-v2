@@ -39,7 +39,7 @@ class GaisoController extends Component
     public $sortingTable;
 
     protected $rules = [
-        'code' => 'required|unique:ms_packaging_gaiso,code',
+        'code' => 'required|unique:mspackaginggaiso,code',
         'name' => 'required',
         'box_class' => 'required',
         'panjang' => 'required',
