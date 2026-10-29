@@ -38,13 +38,23 @@ class GaisoController extends Component
     #[Session]
     public $sortingTable;
 
-    protected $rules = [
-        'code' => 'required|unique:mspackaginggaiso,code',
-        'name' => 'required',
-        'box_class' => 'required',
-        'panjang' => 'required',
-        'lebar' => 'required',
-    ];
+    protected function rules()
+    {
+        // nilai berformat "1,234.5": buang pemisah ribuan sebelum dicek
+        $positive = function ($attribute, $value, $fail) {
+            if ((float) str_replace(',', '', $value) <= 0) {
+                $fail("The $attribute must be greater than 0.");
+            }
+        };
+
+        return [
+            'code' => 'required|unique:mspackaginggaiso,code',
+            'name' => 'required',
+            'box_class' => 'required',
+            'panjang' => ['required', $positive],
+            'lebar' => ['required', $positive],
+        ];
+    }
     public function mount()
     {
         if (empty($this->sortingTable)) {
@@ -92,9 +102,9 @@ class GaisoController extends Component
                 'code' => $this->code,
                 'name' => $this->name,
                 'box_class' => is_array($this->box_class) ? $this->box_class['value'] : $this->box_class,
-                'panjang' => (int)str_replace(',', '', $this->panjang),
-                'lebar' => (int)str_replace(',', '', $this->lebar),
-                'tinggi' => (int)str_replace(',', '', $this->tinggi ?? 0),
+                'panjang' => (float)str_replace(',', '', $this->panjang),
+                'lebar' => (float)str_replace(',', '', $this->lebar),
+                'tinggi' => (float)str_replace(',', '', $this->tinggi ?? 0),
                 'status' => $statusActive,
                 'created_by' => Auth::user()->username,
                 'created_on' => Carbon::now(),
@@ -119,9 +129,9 @@ class GaisoController extends Component
         $this->code = $data->code;
         $this->name = $data->name;
         $this->box_class = $data->box_class;
-        $this->panjang = number_format($data->panjang);
-        $this->lebar = number_format($data->lebar);
-        $this->tinggi = number_format($data->tinggi);
+        $this->panjang = rtrim(rtrim(number_format($data->panjang, 3), '0'), '.');
+        $this->lebar = rtrim(rtrim(number_format($data->lebar, 3), '0'), '.');
+        $this->tinggi = rtrim(rtrim(number_format($data->tinggi, 3), '0'), '.');
         $this->status = $data->status;
         $this->statusIsVisible = $data->status == 0 ? true : false;
         $this->skipRender();
@@ -140,9 +150,9 @@ class GaisoController extends Component
             $data->code = $this->code;
             $data->name = $this->name;
             $data->box_class = is_array($this->box_class) ? $this->box_class['value'] : $this->box_class;
-            $data->panjang = (int)str_replace(',', '', $this->panjang);
-            $data->lebar = (int)str_replace(',', '', $this->lebar);
-            $data->tinggi = (int)str_replace(',', '', $this->tinggi);
+            $data->panjang = (float)str_replace(',', '', $this->panjang);
+            $data->lebar = (float)str_replace(',', '', $this->lebar);
+            $data->tinggi = (float)str_replace(',', '', $this->tinggi);
             $data->status = $this->status;
             $data->updated_by = Auth::user()->username;
             $data->updated_on = Carbon::now();
