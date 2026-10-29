@@ -4,6 +4,7 @@ namespace App\Http\Livewire\MasterTabel\Kemasan;
 
 use App\Models\MsPackagingGaiso;
 use Livewire\Component;
+use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -48,7 +49,7 @@ class GaisoController extends Component
         };
 
         return [
-            'code' => 'required|unique:mspackaginggaiso,code',
+            'code' => ['required', Rule::unique('mspackaginggaiso', 'code')->ignore($this->idUpdate)],
             'name' => 'required',
             'box_class' => 'required',
             'panjang' => ['required', $positive],
@@ -70,6 +71,8 @@ class GaisoController extends Component
 
     public function resetFields()
     {
+        // idUpdate sisa dari edit sebelumnya jangan ikut mengabaikan unique saat Add
+        $this->idUpdate = null;
         $this->code = '';
         $this->name = '';
         $this->panjang = '';
