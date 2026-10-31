@@ -26,15 +26,15 @@
                     <div class="col-12 col-lg-9 mb-1">
                         <div class="input-group flex-column flex-sm-row">
                             <div class="col-12 col-sm-3 mb-2 mb-sm-0">
-                                <select class="form-select" style="padding:0.44rem" wire:model.defer="transaksi">
+                                <select class="form-select" style="padding:0.44rem" wire:model.live="transaksi">
                                     <option value="1">Proses</option>
                                     <option value="2">LPK</option>
                                 </select>
                             </div>
                             <div class="col-12 col-sm-9">
                                 <div class="d-flex flex-column flex-sm-row gap-2">
-                                    <input wire:model.defer="tglMasuk" type="date" class="form-control" style="padding:0.44rem" value="{{ $tglMasuk }}">
-                                    <input wire:model.defer="tglKeluar" type="date" class="form-control" style="padding:0.44rem" value="{{ $tglKeluar }}">
+                                    <input wire:model.live="tglMasuk" type="date" class="form-control" style="padding:0.44rem" value="{{ $tglMasuk }}">
+                                    <input wire:model.live="tglKeluar" type="date" class="form-control" style="padding:0.44rem" value="{{ $tglKeluar }}">
                                 </div>
                             </div>
                         </div>
@@ -60,7 +60,7 @@
                         <label class="form-label text-muted fw-bold">Search</label>
                     </div>
                     <div class="col-12 col-lg-9">
-                        <input wire:model.defer="searchTerm" class="form-control" style="padding:0.44rem" type="text"
+                        <input wire:model.blur="searchTerm" class="form-control" style="padding:0.44rem" type="text"
                             placeholder="search nomor PO atau nama produk" />
                     </div>
                 </div>
